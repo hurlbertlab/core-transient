@@ -1,11 +1,11 @@
-dataset_ID,dataset_name,data_obtained,Data type,reference ,System,taxa,life_stage,data_link,number_of_sites,location,spatial_grain,spatial_extent,temporal_grain,start_year,end_year,Notes 
-COM01A,Long Term Monitoring of Kelp Forest ,N,Community,PISCO ,Marine,fish,adult,FILL,FILL,"Channel Islands, CA",FILL,FILL,FILL,FILL,FILL,Sites also include other sites along Pacific Coast (e.g. Pt. Lobos)
+dataset_ID,dataset_name,data_obtained,Data type,referenceï¿½,System,taxa,life_stage,data_link,number_of_sites,location,spatial_grain,spatial_extent,temporal_grain,start_year,end_year,Notesï¿½
+COM01A,Long Term Monitoring of Kelp Forest ,N,Community,PISCOï¿½,Marine,fish,adult,FILL,FILL,"Channel Islands, CA",FILL,FILL,FILL,FILL,FILL,Sites also include other sites along Pacific Coast (e.g. Pt. Lobos)
 COM01B,Long Term Monitoring of Kelp Forest Fish: larvae,N,Community,Caselle et al. 2010 Bulletin of Marine Sciences,Marine,fish,larvae,FILL,FILL,"Channel Islands, CA",FILL,FILL,FILL,FILL,FILL,
-COM01C,California Cooperative Fisheries Institute (CALCOFI) ,N,Community,FILL,Marine,plankton,NA,FILL,FILL,FILL,FILL,FILL,FILL,FILL,FILL,"Dataset goes back to the 1950s, demonstrates strong ENSO effect "
-COM01D,NC Dept of Marine Fisheries Fish Seine Survey (Red drum?) ,N,Community,FILL,Marine,fish,FILL,FILL,FILL,Coastal NC,FILL,FILL,FILL,1982,2013,"6 regions of NC coast, ~4-6 sites/region "
-COM01E,Beaufort Bridge Net larval fish sampling,N,Community,contact: Todd Ellison ,Marine,fish,larvae,FILL,FILL,FILL,FILL,FILL,FILL,1986,present,poster at ECU showed flattish temporal occupancy distribution; similar data being gathered (along with data on adults) in SC and NJ
-COM01F,Gotelli Long-term fish dataset ,N,Community,Gotelli et al 2010.pdf ,FILL,fish,FILL,FILL,FILL,FILL,FILL,FILL,FILL,FILL,FILL,"Fish data is from Grossman et al 1982, insects from KBS LTER "
-COM01G,Gotelli Long-term insect dataset ,N,Community,Gotelli et al 2010.pdf ,Terrestrial,insect,FILL,FILL,FILL,FILL,FILL,FILL,FILL,FILL,FILL,"Fish data is from Grossman et al 1982, insects from KBS LTER "
+COM01C,California Cooperative Fisheries Institute (CALCOFI) ,N,Community,FILL,Marine,plankton,NA,FILL,FILL,FILL,FILL,FILL,FILL,FILL,FILL,"Dataset goes back to the 1950s, demonstrates strong ENSO effectï¿½"
+COM01D,NC Dept of Marine Fisheries Fish Seine Survey (Red drum?)ï¿½,N,Community,FILL,Marine,fish,FILL,FILL,FILL,Coastal NC,FILL,FILL,FILL,1982,2013,"6 regions of NC coast, ~4-6 sites/regionï¿½"
+COM01E,Beaufort Bridge Net larval fish sampling,N,Community,contact: Todd Ellisonï¿½,Marine,fish,larvae,FILL,FILL,FILL,FILL,FILL,FILL,1986,present,poster at ECU showed flattish temporal occupancy distribution; similar data being gathered (along with data on adults) in SC and NJ
+COM01F,Gotelli Long-term fish datasetï¿½,N,Community,Gotelli et al 2010.pdfï¿½,FILL,fish,FILL,FILL,FILL,FILL,FILL,FILL,FILL,FILL,FILL,"Fish data is from Grossman et al 1982, insects from KBS LTERï¿½"
+COM01G,Gotelli Long-term insect datasetï¿½,N,Community,Gotelli et al 2010.pdfï¿½,Terrestrial,insect,FILL,FILL,FILL,FILL,FILL,FILL,FILL,FILL,FILL,"Fish data is from Grossman et al 1982, insects from KBS LTERï¿½"
 COM01H,FILL,N,Community,Shaver and Chapin 1991,Terrestrial,plant,NA,FILL,20,"Arctic LTER, AK",0.04 m2,FILL,FILL,FILL,FILL,20 years of data. Soil data available
 COM01I,FILL,N,Community,Cleland et al. 2008,Terrestrial,plant,NA,FILL,25,"Carpinteria salt marsh, CA",0.25 m2,FILL,FILL,FILL,FILL,7 years of data. No soil data available
 COM01J,FILL,N,Community,Tilman 1987,Terrestrial,plant,NA,FILL,36,"Cedar Creek LTER, MN",16 m2,FILL,FILL,FILL,FILL,30 years of data. Soil data available
@@ -36,4 +36,4 @@ ENV01I,Chlorophyll-a,N,Environmental-Raster,MODIS/Aqua,Marine,NA,NA,FILL,NA,GLOB
 ENV01J,Organic pollutants,N,FILL,Halpern et al. (2008),Marine,NA,NA,FILL,NA,FILL,1 km,FILL,FILL,FILL,FILL,FILL
 ENV01K,Inorganic pollutants,N,FILL,Halpern et al. (2008),Marine,NA,NA,FILL,NA,FILL,1 km,FILL,FILL,FILL,FILL,FILL
 ENV01L,Reef area,N,FILL,Sea WiFS,Marine,NA,NA,FILL,NA,FILL,1 km,FILL,FILL,FILL,FILL,FILL
-ENVO1M,Ocean currents,N,FILL,"NOAA OSCAR, Bonjean & Lagerloef (2002)",Marine,NA,NA,FILL,NA,FILL,1/3 degree,FILL,FILL,FILL,FILL,FILL
+ENV01M,Ocean currents,N,FILL,"NOAA OSCAR, Bonjean & Lagerloef (2002)",Marine,NA,NA,FILL,NA,FILL,1/3 degree,FILL,FILL,FILL,FILL,FILL
