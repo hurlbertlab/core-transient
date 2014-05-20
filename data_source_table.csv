@@ -1,39 +1,27 @@
-dataset_ID,dataset_name,data_obtained,Data type,reference�,System,taxa,life_stage,data_link,number_of_sites,location,spatial_grain,spatial_extent,temporal_grain,start_year,end_year,Notes�
-COM01A,Long Term Monitoring of Kelp Forest ,N,Community,PISCO�,Marine,fish,adult,FILL,FILL,"Channel Islands, CA",FILL,FILL,FILL,FILL,FILL,Sites also include other sites along Pacific Coast (e.g. Pt. Lobos)
-COM01B,Long Term Monitoring of Kelp Forest Fish: larvae,N,Community,Caselle et al. 2010 Bulletin of Marine Sciences,Marine,fish,larvae,FILL,FILL,"Channel Islands, CA",FILL,FILL,FILL,FILL,FILL,
-COM01C,California Cooperative Fisheries Institute (CALCOFI) ,N,Community,FILL,Marine,plankton,NA,FILL,FILL,FILL,FILL,FILL,FILL,FILL,FILL,"Dataset goes back to the 1950s, demonstrates strong ENSO effect�"
-COM01D,NC Dept of Marine Fisheries Fish Seine Survey (Red drum?)�,N,Community,FILL,Marine,fish,FILL,FILL,FILL,Coastal NC,FILL,FILL,FILL,1982,2013,"6 regions of NC coast, ~4-6 sites/region�"
-COM01E,Beaufort Bridge Net larval fish sampling,N,Community,contact: Todd Ellison�,Marine,fish,larvae,FILL,FILL,FILL,FILL,FILL,FILL,1986,present,poster at ECU showed flattish temporal occupancy distribution; similar data being gathered (along with data on adults) in SC and NJ
-COM01F,Gotelli Long-term fish dataset�,N,Community,Gotelli et al 2010.pdf�,FILL,fish,FILL,FILL,FILL,FILL,FILL,FILL,FILL,FILL,FILL,"Fish data is from Grossman et al 1982, insects from KBS LTER�"
-COM01G,Gotelli Long-term insect dataset�,N,Community,Gotelli et al 2010.pdf�,Terrestrial,insect,FILL,FILL,FILL,FILL,FILL,FILL,FILL,FILL,FILL,"Fish data is from Grossman et al 1982, insects from KBS LTER�"
-COM01H,FILL,N,Community,Shaver and Chapin 1991,Terrestrial,plant,NA,FILL,20,"Arctic LTER, AK",0.04 m2,FILL,FILL,FILL,FILL,20 years of data. Soil data available
-COM01I,FILL,N,Community,Cleland et al. 2008,Terrestrial,plant,NA,FILL,25,"Carpinteria salt marsh, CA",0.25 m2,FILL,FILL,FILL,FILL,7 years of data. No soil data available
-COM01J,FILL,N,Community,Tilman 1987,Terrestrial,plant,NA,FILL,36,"Cedar Creek LTER, MN",16 m2,FILL,FILL,FILL,FILL,30 years of data. Soil data available
-COM01K,FILL,N,Community,Chu et al. 2013,Terrestrial,plant,NA,FILL,24,"Central Plains Exptl Range, CO",1 m2,FILL,FILL,FILL,FILL,14 years of data. No soil data available
-COM01L,FILL,N,Community,Johnson & Rodriguez 2001,Terrestrial,plant,NA,FILL,163,"Channel Islands, CA",30 m transect,FILL,FILL,FILL,FILL,17 years of data. No soil data available
-COM01M,FILL,N,Community,Adler et al. 2007,Terrestrial,plant,NA,FILL,51,"Fort Hays, KS",1 m2,FILL,FILL,FILL,FILL,41 years of data. No soil data available
-COM01N,FILL,N,Community,Zavaleta et al. 2003,Terrestrial,plant,NA,FILL,96,"Jasper Ridge, CA",0.8 m2,FILL,FILL,FILL,FILL,8 years of data. Soil data available
-COM01O,FILL,N,Community,"Nelson 1934, Huenneke et al. 2001",Terrestrial,plant,NA,FILL,751,"Jornada LTER, NM",1 m2,FILL,FILL,FILL,FILL,32 years of data. No soil data available
-COM01P,FILL,N,Community,Huberty et al. 1998,Terrestrial,plant,NA,FILL,12,"Kellogg Biological Station, MI",1 m2,FILL,FILL,FILL,FILL,23 years of data. Soil data available
-COM01Q,FILL,N,Community,Gibson & Hulbert 1987,Terrestrial,plant,NA,FILL,120,"Konza Prairie LTER, KS",10 m2,FILL,FILL,FILL,FILL,25 years of data. Soil data available
-COM01R,FILL,N,Community,Paquette et al. 2007,Terrestrial,plant,NA,FILL,43,"Lac Croche, Quebec",400 m2,FILL,FILL,FILL,FILL,9 years of data. Soil data available
-COM01S,FILL,N,Community,Elmendorf & Harrison 2011,Terrestrial,plant,NA,FILL,355,"McLaughlin Reserve, CA",1 m2,FILL,FILL,FILL,FILL,10 years of data. Soil data available
-COM01T,FILL,N,Community,Theodose & Bowman 1997,Terrestrial,plant,NA,FILL,40,"Niwot Ridge LTER, CO",4 m2,FILL,FILL,FILL,FILL,11 years of data. Soil data available
-COM01U,FILL,N,Community,Ernest et al. 2009,Terrestrial,plant,NA,FILL,384,"Portal, AZ",0.25 m2,FILL,FILL,FILL,FILL,30 years of data. No soil data available
-COM01V,FILL,N,Community,Zachmann et al. 2010,Terrestrial,plant,NA,FILL,26,"Sagebrush Steppe, ID",1 m2,FILL,FILL,FILL,FILL,35 years of data. No soil data available
-COM01W,FILL,N,Community,Baez et al. 2006,Terrestrial,plant,NA,FILL,36,"Sevilleta LTER, NM",1 m2,FILL,FILL,FILL,FILL,10 years of data. Soil data available
-COM01X,FILL,N,Community,Rodriguez-Buritica et al. 2013,Terrestrial,plant,NA,FILL,30,"Sonoran Desert Lab, AZ",100 m2,FILL,FILL,FILL,FILL,20 years of data. No soil data available
-COM01Y,FILL,N,Community,McGlinn et al. 2010,Terrestrial,plant,NA,FILL,80,"Tall Grass Prairie Preserve, OK",1 m2,FILL,FILL,FILL,FILL,12 years of data. Soil data available
-ENV01A,WorldClim Temperature,N,Environmental-Raster,Hijmans et al. 2005,Terrestrial,NA,NA,FILL,NA,GLOBAL,1 km,GLOBAL,FILL,FILL,FILL,FILL
-ENV01B,WorldClim Annual precipitation,N,Environmental-Raster,Hijmans et al. 2005,Terrestrial,NA,NA,FILL,NA,GLOBAL,1 km,GLOBAL,FILL,FILL,FILL,FILL
-ENV01C,WorldClim Normalized difference vegetation index,N,Environmental-Raster,"MODIS/Terra, MOD13",Terrestrial,NA,NA,FILL,NA,GLOBAL,250 m,GLOBAL,FILL,FILL,FILL,FILL
-ENV01D,MODIS Actual evapotranspiration,N,Environmental-Raster,"MODIS/Terra, MOD16",Terrestrial,NA,NA,FILL,NA,GLOBAL,1 km,GLOBAL,FILL,FILL,FILL,FILL
-ENV01E,USGS Elevation,N,Environmental-Raster,USGS GTOPO30,Terrestrial,NA,NA,FILL,NA,US,1 km,US,FILL,FILL,FILL,FILL
-ENV01F,NLCD Land cover,N,Environmental-Raster,Fry et al. 2011,Terrestrial,NA,NA,FILL,NA,US,30 m,US,FILL,FILL,FILL,FILL
-ENV01G,USGS Soil type,N,Environmental-Raster,SSURGO,Terrestrial,NA,NA,FILL,NA,US,10 m,US,FILL,FILL,FILL,FILL
-ENV01H,Sea surface temperature,N,Environmental-Raster,"MODIS/Aqua, MOD28",Marine,NA,NA,FILL,NA,GLOBAL,1 km,GLOBAL,FILL,FILL,FILL,FILL
-ENV01I,Chlorophyll-a,N,Environmental-Raster,MODIS/Aqua,Marine,NA,NA,FILL,NA,GLOBAL,1 km,GLOBAL,FILL,FILL,FILL,FILL
-ENV01J,Organic pollutants,N,FILL,Halpern et al. (2008),Marine,NA,NA,FILL,NA,FILL,1 km,FILL,FILL,FILL,FILL,FILL
-ENV01K,Inorganic pollutants,N,FILL,Halpern et al. (2008),Marine,NA,NA,FILL,NA,FILL,1 km,FILL,FILL,FILL,FILL,FILL
-ENV01L,Reef area,N,FILL,Sea WiFS,Marine,NA,NA,FILL,NA,FILL,1 km,FILL,FILL,FILL,FILL,FILL
-ENV01M,Ocean currents,N,FILL,"NOAA OSCAR, Bonjean & Lagerloef (2002)",Marine,NA,NA,FILL,NA,FILL,1/3 degree,FILL,FILL,FILL,FILL,FILL
+dataset_ID,dataset_name,data_obtained,reference,system,taxa,life_stage,data_link,number_of_sites,location,spatial_grain,spatial_extent,temporal_grain,start_year,end_year,notes
+COM01A,Long Term Monitoring of Kelp Forest ,N,PISCO,Marine,fish,adult,FILL,FILL,"Channel Islands, CA",FILL,FILL,FILL,FILL,FILL,Sites also include other sites along Pacific Coast (e.g. Pt. Lobos)
+COM01B,Long Term Monitoring of Kelp Forest Fish: larvae,N,Caselle et al. 2010 Bulletin of Marine Sciences,Marine,fish,larvae,FILL,FILL,"Channel Islands, CA",FILL,FILL,FILL,FILL,FILL,
+COM01C,California Cooperative Fisheries Institute (CALCOFI) ,N,FILL,Marine,plankton,NA,FILL,FILL,FILL,FILL,FILL,FILL,FILL,FILL,"Dataset goes back to the 1950s, demonstrates strong ENSO effect"
+COM01D,NC Dept of Marine Fisheries Fish Seine Survey (Red drum?),N,FILL,Marine,fish,FILL,FILL,FILL,Coastal NC,FILL,FILL,FILL,1982,2013,6 regions of NC coast; 4-6 sites per region
+COM01E,Beaufort Bridge Net larval fish sampling,N,contact: Todd Ellison,Marine,fish,larvae,FILL,FILL,FILL,FILL,FILL,FILL,1986,present,poster at ECU showed flattish temporal occupancy distribution; similar data being gathered (along with data on adults) in SC and NJ
+COM01F,Gotelli Long-term fish dataset,N,Gotelli et al 2010.pdf,FILL,fish,FILL,FILL,FILL,FILL,FILL,FILL,FILL,FILL,FILL,"Fish data is from Grossman et al 1982, insects from KBS LTER"
+COM01G,Gotelli Long-term insect dataset,N,Gotelli et al 2010,Terrestrial,insect,FILL,FILL,FILL,FILL,FILL,FILL,FILL,FILL,FILL,"Fish data is from Grossman et al 1982, insects from KBS LTER"
+COM01H,FILL,N,Shaver and Chapin 1991,Terrestrial,plant,NA,FILL,20,"Arctic LTER, AK",0.04 m2,FILL,FILL,FILL,FILL,20 years of data. Soil data available
+COM01I,FILL,N,Cleland et al. 2008,Terrestrial,plant,NA,FILL,25,"Carpinteria salt marsh, CA",0.25 m2,FILL,FILL,FILL,FILL,7 years of data. No soil data available
+COM01J,FILL,N,Tilman 1987,Terrestrial,plant,NA,FILL,36,"Cedar Creek LTER, MN",16 m2,FILL,FILL,FILL,FILL,30 years of data. Soil data available
+COM01K,FILL,N,Chu et al. 2013,Terrestrial,plant,NA,FILL,24,"Central Plains Exptl Range, CO",1 m2,FILL,FILL,FILL,FILL,14 years of data. No soil data available
+COM01L,FILL,N,Johnson & Rodriguez 2001,Terrestrial,plant,NA,FILL,163,"Channel Islands, CA",30 m transect,FILL,FILL,FILL,FILL,17 years of data. No soil data available
+COM01M,FILL,N,Adler et al. 2007,Terrestrial,plant,NA,FILL,51,"Fort Hays, KS",1 m2,FILL,FILL,FILL,FILL,41 years of data. No soil data available
+COM01N,FILL,N,Zavaleta et al. 2003,Terrestrial,plant,NA,FILL,96,"Jasper Ridge, CA",0.8 m2,FILL,FILL,FILL,FILL,8 years of data. Soil data available
+COM01O,FILL,N,"Nelson 1934, Huenneke et al. 2001",Terrestrial,plant,NA,FILL,751,"Jornada LTER, NM",1 m2,FILL,FILL,FILL,FILL,32 years of data. No soil data available
+COM01P,FILL,N,Huberty et al. 1998,Terrestrial,plant,NA,FILL,12,"Kellogg Biological Station, MI",1 m2,FILL,FILL,FILL,FILL,23 years of data. Soil data available
+COM01Q,FILL,N,Gibson & Hulbert 1987,Terrestrial,plant,NA,FILL,120,"Konza Prairie LTER, KS",10 m2,FILL,FILL,FILL,FILL,25 years of data. Soil data available
+COM01R,FILL,N,Paquette et al. 2007,Terrestrial,plant,NA,FILL,43,"Lac Croche, Quebec",400 m2,FILL,FILL,FILL,FILL,9 years of data. Soil data available
+COM01S,FILL,N,Elmendorf & Harrison 2011,Terrestrial,plant,NA,FILL,355,"McLaughlin Reserve, CA",1 m2,FILL,FILL,FILL,FILL,10 years of data. Soil data available
+COM01T,FILL,N,Theodose & Bowman 1997,Terrestrial,plant,NA,FILL,40,"Niwot Ridge LTER, CO",4 m2,FILL,FILL,FILL,FILL,11 years of data. Soil data available
+COM01U,FILL,N,Ernest et al. 2009,Terrestrial,plant,NA,FILL,384,"Portal, AZ",0.25 m2,FILL,FILL,FILL,FILL,30 years of data. No soil data available
+COM01V,FILL,N,Zachmann et al. 2010,Terrestrial,plant,NA,FILL,26,"Sagebrush Steppe, ID",1 m2,FILL,FILL,FILL,FILL,35 years of data. No soil data available
+COM01W,FILL,N,Baez et al. 2006,Terrestrial,plant,NA,FILL,36,"Sevilleta LTER, NM",1 m2,FILL,FILL,FILL,FILL,10 years of data. Soil data available
+COM01X,FILL,N,Rodriguez-Buritica et al. 2013,Terrestrial,plant,NA,FILL,30,"Sonoran Desert Lab, AZ",100 m2,FILL,FILL,FILL,FILL,20 years of data. No soil data available
+COM01Y,FILL,N,McGlinn et al. 2010,Terrestrial,plant,NA,FILL,80,"Tall Grass Prairie Preserve, OK",1 m2,FILL,FILL,FILL,FILL,12 years of data. Soil data available
+COM01Z,Eastern Wood Breeding Bird Data,N,"Beven 1976, Williamson 1989",Terrestrial,bird,NA,http://www.planta.cn/forum/files_planta/macroecology_214.pdf,FILL,FILL,FILL,FILL,year,1949,1979,"Source is a PDF of a book (Gaston and Blackburn 2000, Pattern and Process in Macroecology), see page 357 of print version, page 370 of PDF"
