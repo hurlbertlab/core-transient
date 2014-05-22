@@ -13,3 +13,4 @@ ENV01K,Inorganic pollutants,N,FILL,Halpern et al. (2008),Marine,FILL,FILL,1 km,F
 ENV01L,Reef area,N,FILL,Sea WiFS,Marine,FILL,FILL,1 km,FILL,FILL,FILL,FILL,FILL
 ENV01M,Ocean currents,N,FILL,"NOAA OSCAR, Bonjean & Lagerloef (2002)",Marine,FILL,FILL,1/3 degree,FILL,FILL,FILL,FILL,FILL
 ENV01N,DAYMET,N,Environmental-Raster,Thornton et al. 2014,Terrestrial,http://daymet.ornl.gov/,US,1 km,CONUS,daily,1980,present,"tmin, tmax, ppt"
+ENV01O,MARSPEC,N,Environmental-Raster,Sbrocco et al. 2013,Marine,http://esapubs.org/archive/ecol/E094/086/metadata.php,GLOBAL,1 km,GLOBAL,FILL,FILL,FILL,"Amazing set of 17 rasters for ocean temp, salinity, bathymetry, and more."

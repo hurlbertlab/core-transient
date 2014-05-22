@@ -4,3 +4,6 @@ Date,Start time,End time,Hours,Tasks,Notes
 5/20/2014,13:15,14:30,1.25,Explore EcoDR,Basically trying to get the hand of EcoDR
 5/20/2014,13:15,14:30,1.25,Explore EcoDR,
 5/20/2014,15:00,16:30,1.5,"Made changes to the data sources table, did some records hunting",
+5/22/2014,14:00,16:00,2,Data hunting in the Ecological Archives,Filled in table with useful datasets from 2013-2014
+5/22/2014,16:15,17:15,1,More data hunting.,Finished table additions of 2014 from Eco Archives
+5/23/2014,,,,Add EcoArchive additions to GIT via the retriever,
