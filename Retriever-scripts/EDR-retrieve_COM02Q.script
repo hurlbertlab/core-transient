@@ -4,10 +4,10 @@ shortname: COM02Q
 tags: Taxon > Fish, Spatial Scale > Local, Data Type > Time Series, Data Type > Observational
 
 table: COM02Q_FISH_DENS, http://esapubs.org/archive/ecol/E094/245/Fish%20Density%20Data.csv
-*nulls: NA
+*nulls: 'NA'
 
 table: COM02Q_RDFC, http://esapubs.org/archive/ecol/E094/245/RDFC%20data.csv
-*nulls: NA
+*nulls: 'NA'
 
 # Tables below are metadata
 
