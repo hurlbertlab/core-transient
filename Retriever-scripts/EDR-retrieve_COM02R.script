@@ -6,4 +6,10 @@ shortname: COM02R
 
 tags: taxon > Benthic, Spatial Scale > Local, Data Type > Time Series, Data Type > Observational
 
-table: COM02R_BENTHIC_DENS http://esa.pubs.org/archive/ecol/E094/245/Benthic%Density%20Data.csv
+table: COM02R_BENTHIC_DENS, http://esapubs.org/archive/ecol/E094/245/Benthic%20Density%20Data.csv
+
+# Tables below provide description of variables:
+
+table: COM02R_BENTHIC_VARS, http://esapubs.org/archive/ecol/E094/245/Table4B_benthic_density_variables.csv
+
+table: COM02R_BENTHIC_HEADERS, http://esapubs.org/archive/ecol/E094/245/Table4A_benthic_density_headers.csv
