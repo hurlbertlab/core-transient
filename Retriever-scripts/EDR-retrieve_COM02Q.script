@@ -4,7 +4,7 @@ description: David J. Kushner, Andrew Rassweiler, John P. McLaughlin, Kevin D. L
 
 shortname: COM02Q
 
-tags: taxon > Fish, Spatial Scale > Local, Data Type > Time Series, Data Type > Observational
+tags: Taxon > Fish, Spatial Scale > Local, Data Type > Time Series, Data Type > Observational
 
 table: COM02Q_FISH_DENS, http://esapubs.org/archive/ecol/E094/245/Fish%Density%20data.csv
 *nulls: 'NA'

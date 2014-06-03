@@ -4,7 +4,7 @@ description: David J. Kushner, Andrew Rassweiler, John P. McLaughlin, Kevin D. L
 
 shortname: COM02R
 
-tags: taxon > Benthic, Spatial Scale > Local, Data Type > Time Series, Data Type > Observational
+tags: Taxon > Benthic, Spatial Scale > Local, Data Type > Time Series, Data Type > Observational
 
 table: COM02R_BENTHIC_DENS, http://esapubs.org/archive/ecol/E094/245/Benthic%20Density%20Data.csv
 
