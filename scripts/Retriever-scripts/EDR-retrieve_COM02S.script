@@ -1,0 +1,15 @@
+name: A multi-decade time series of kelp forest community structure at San Nicolas Island, California (USA). Benthic fish/ Ecology 94:2654.
+
+description: Michael C. Kenner, James A. Estes, M. Tim Tinker, James L. Bodkin, Robert K. Cowen, Christopher Harrold, Brian B. Hatfield, Mark Novak, Andrew Rassweiler, and Daniel C. Reed. 2013. A multi-decade time series of kelp forest community structure at San Nicolas Island, California (USA). Ecology 94:2654.
+
+shortname: COMO2S
+
+tags: Taxon > fish, Spatial Scale > local, Data Type > Time series, Data Type > Observational
+
+table: COM02S_BFISH, http://esapubs.org/archive/ecol/E094/244/Benthic%20fish%20density%20raw%20data.csv
+
+# Tables below provide description of variables:
+
+table: COM02S_BFISH_HEADERS, http://esapubs.org/archive/ecol/E094/244/Table12B_benthic_fish_summary_headers.html
+
+table: COM02S_BFISH_VAR, http://esapubs.org/archive/ecol/E094/244/Table11A_benthic_fish_raw_variables.html
