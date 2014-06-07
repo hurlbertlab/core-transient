@@ -6,7 +6,7 @@ shortname: Kenner2013
 
 tags: Biome > Marine, Spatial Scale > Local, Data Type > Time Series, Data Type > Compilation
 
-# Tables below provide description of variables:
+# Data tables:
 
 table: BENTHIC_DENSITY, http://esapubs.org/archive/ecol/E094/244/Benthic%20density%20raw%20data.csv
 table: BENTHIC_DENSITY_SUMMARY, http://esapubs.org/archive/ecol/E094/244/Benthic%20density%20summary%20data.csv

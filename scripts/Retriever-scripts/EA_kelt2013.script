@@ -1,0 +1,23 @@
+name: Long-term monitoring of mammals in the face of biotic and abiotic influences at a semiarid site in north-central Chile. Ecology 94:977.
+
+description: D. A. Kelt, P. L. Meserve, J. R. Gutierrez, W. Bryan Milstead, and M. A. Previtali. 2013. Long-term monitoring of mammals in the face of biotic and abiotic influences at a semiarid site in north-central Chile. Ecology 94:977.
+
+shortname: Kelt2013
+
+tags: Biome > Desert, Spatial Scale > Local, Data Type > Time Series, Data Type > Observational, Data Type > Experimental, Taxon > Mammals, Taxon > Plants
+
+# Data tables:
+
+table: MAMMALS, http://esapubs.org/archive/ecol/E094/084/data/Fray_Jorge_Small_Mammals_198903-200512.txt
+table: ANNUAL_PLANTS, http://esapubs.org/archive/ecol/E094/084/data/Fray_Jorge_Annuals_1989-2005.txt
+table: PERENNIAL_PLANTS, http://esapubs.org/archive/ecol/E094/084/data/Fray_Jorge_Perennials_1989-2005.txt
+table: SEEDS_1989-2002, http://esapubs.org/archive/ecol/E094/084/data/Fray_Jorge_Seeds_1989-2002.txt
+table: SEEDS_2003-2005I, http://esapubs.org/archive/ecol/E094/084/data/Fray_Jorge_Seeds_2003-2005%20I.txt
+table: SEEDS_2003-2005II, http://esapubs.org/archive/ecol/E094/084/data/Fray_Jorge_Seeds_2003-2005%20II.txt
+table: PRECIPITATION, http://esapubs.org/archive/ecol/E094/084/data/Fray_Jorge_Precipitation_1989-2005.csv
+
+# Metadata files: 
+
+table: MAMMAL_METADATA, http://esapubs.org/archive/ecol/E094/084/Fray_Jorge_Small_Mammal_Metadata.php
+table: PLANT_METADATA, http://esapubs.org/archive/ecol/E094/084/Fray_Jorge_Plant_Metadata.php
+table: PRECIPITATION_METADATA, http://esapubs.org/archive/ecol/E094/084/Fray_Jorge_Precipitation_Metadata.php

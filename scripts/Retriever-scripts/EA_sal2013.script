@@ -1,0 +1,17 @@
+name: Marine microplankton diversity database. Ecology 94:1658.
+
+description: Sofia Sal, Angel Lopez-Urrutia, Xabier Irigoien, Derek S. Harbour, and Roger P. Harris. 2013. Marine microplankton diversity database. Ecology 94:1658.
+
+shortname: Sal2013
+
+tags: Biome > Marine, Taxon > Microplankton, Spatial Scale > Local, Data Type > Observational, Data Type > Time Series, Data Type > Compilation
+
+# Data tables:
+
+table: SAMPLING_STATIONS, http://esapubs.org/archive/ecol/E094/149/Table1.csv
+*nulls: 'NA'
+table: TAXONOMY, http://esapubs.org/archive/ecol/E094/149/Table2.csv
+*nulls: 'NA'
+table: ABUNDANCE, http://esapubs.org/archive/ecol/E094/149/Table3.csv
+*nulls: 'NA'
+
