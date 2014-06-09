@@ -1,0 +1,14 @@
+name: SBC LTER: Reef: Kelp Forest Community Dynamics: Fish abundance
+
+description: D.C. Reed and Santa Barbara LTER.2013. Benthic Fish abundance.
+
+shortname: Reed2013
+
+tags: Spatial Scale > Local, Data Type > Time Series, Data Type > Observational, Taxon > Fish
+
+# Data tables: 
+
+table: FISH_ABUNDANCE, https://portal.lternet.edu/nis/dataviewer?packageid=knb-lter-sbc.17.27&entityid=a7899f2e57ea29a240be2c00cce7a0d4
+*nulls: '-99999'
+
+# For metadata, see: https://portal.lternet.edu/nis/metadataviewer?packageid=knb-lter-sbc.17.27
