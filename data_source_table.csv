@@ -8,7 +8,7 @@ COM01F,Gotelli Long-term Fish dataset,Gotelli et al 2010.pdf,N,FILL,FILL,FILL,FI
 COM01G,Landis Long-term insect dataset,Landis and Gage 2014,Y,EA_landis2014,FILL,FILL,Terrestrial,Insect,FILL,http://lter.kbs.msu.edu/datatables/67,30,"Kellogg Biological Station, MI",Local,weekly,1989,2012,Observational,These data are used in Gotelli et al. 2010
 COM01H,FILL,Shaver and Chapin 1991,N,FILL,FILL,FILL,Terrestrial,Plant,NA,FILL,20,"Arctic LTER, AK",FILL,FILL,FILL,FILL,FILL,20 years of data. Soil data available
 COM01I,FILL,Cleland et al. 2008,N,FILL,FILL,FILL,Terrestrial,Plant,NA,FILL,25,"Carpinteria salt marsh, CA",FILL,FILL,FILL,FILL,FILL,7 years of data. No soil data available
-COM01J,FILL,Tilman 1987,N,FILL,FILL,FILL,Terrestrial,Plant,NA,FILL,36,"Cedar Creek LTER, MN",FILL,FILL,FILL,FILL,FILL,30 years of data. Soil data available
+COM01J,FILL,Tilman 1987,Y,FILL,FILL,FILL,Terrestrial,Plant,NA,FILL,36,"Cedar Creek LTER, MN",FILL,FILL,FILL,FILL,FILL,30 years of data. Soil data available
 COM01K,FILL,Chu et al. 2013,N,FILL,FILL,FILL,Terrestrial,Plant,NA,FILL,24,"Central Plains Exptl Range, CO",FILL,FILL,FILL,FILL,FILL,14 years of data. No soil data available
 COM01L,FILL,Johnson & Rodriguez 2001,N,FILL,FILL,FILL,Terrestrial,Plant,NA,FILL,163,"Channel Islands, CA",FILL,FILL,FILL,FILL,FILL,17 years of data. No soil data available
 COM01M,Long-term mapped quadrats from Kansas prairie: demographic information for herbaceaous Plants. Ecology 88:2673.,Adler et al. 2007,Y,EA_adler2007,Public,FILL,Terrestrial,Plant,NA,http://esapubs.org/archive/ecol/E088/161/,51,"Fort Hays, KS",Local,year,1932,1972,Observational,No soil data available
