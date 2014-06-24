@@ -1,8 +1,7 @@
-Hi Dr. Shapiro,
+Dear Dr. Shapiro,
 
-My lab, lead by Drs. Allen Hurlbert and Ethan White, is currently working on a research project that tests the importance and generality of core vs. transient species distinctions in species richness modeling across taxa and ecosystems (the original paper behind this idea is attached). To do so, we are acquiring as many community time series datasets as possible. Your 34 year dataset of butterfly communities would make a great addition to our study.
+I am a graduate student at the University of North Carolina. I am working with Drs. Allen Hurlbert and Ethan White on a research project that explores the influence of differences between core and transient species on species richness modeling across taxa and ecosystems (the original paper behind this idea is attached). To do so, we are putting together a large collection of community time series datasets.
 
-Dataset info (but not the datasets themselves) are being compiled at ecologicaldata.org. At the author's discression, datasets that authors wish to make publicly available will be downloadable via the EcoData Retriever (ecodataretriever.org, for more information see http://www.plosone.org/article/info%3Adoi%2F10.1371%2Fjournal.pone.0065848). We view this as a major service to the macroecology community!
- 
+Your 34 year dataset of butterfly communities would make a great addition to our study and we were wondering if you would be willing to let us work with it for this project. We would cite and acknowledge the dataset in whatever way you consider appropriate and are happy to discuss other limitations on the use of the data.
 
-Thank you for any help you can provide,
+Thank you for considering our request,
