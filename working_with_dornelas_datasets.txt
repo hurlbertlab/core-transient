@@ -1,3 +1,5 @@
+# The datasets from Dornelas are those with a dataset ID of <201! 
+
 # Notes for using datasets from Dornelas:
 
 Many samples do not include our minimum sample size of 5 years, including:
@@ -13,4 +15,10 @@ Additionally, there is good access to Smithsonian TRI data, and this should be g
 ID=20,201,202
 
 I believe we already have the Patuxent data: ID = 195
+
+Removed samples with < 10 observations, includes:
+
+ID = 52, 51, 53,63, 81, 192
+
+Temporal extent mislabelled for ID = 75. A 4 year study, listed as 5. Removed.
 
