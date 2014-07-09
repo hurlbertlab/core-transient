@@ -1,7 +1,8 @@
 # DATA EXTRACTION SCRIPT FOR DORNELAS ET AL. 2014
-# GOAL: This script subsets the data provided by into studies that fit our sampling 
-# criteria (>= 5 years and >= 10 species), excludes files that can be obtained using the
-# EcoData Retriever, separates the datasets by study, and writes the files.
+#
+# GOAL: This script subsets the data provided by Maria Dornelas into studies that fit our 
+# sampling criteria (>= 5 years and >= 10 species), excludes files that can be obtained using
+# the EcoData Retriever, separates the datasets by study, and writes the files.
 
 #=========================================================================================
 # SET-UP
