@@ -1,0 +1,10 @@
+# Newsome et al. 2010, LTER, Retriever Script
+name: Small Mammal Mark-Recapture Population Dynamics at Core Research Sites at the Sevilleta National Wildlife Refuge, New Mexico (1989-2013) 
+
+description: Newsome et al. 2010. Mark-recapture study of small mammals from spring and fall trapping. Though publication date is 2010, data are available to 2013.
+shortname: Newsome2010
+tags: Taxon > Mammals, Spatial Scale > Local, Data Type > Time Series, Data Type > Observational
+
+table: mammal_mark_recap, https://portal.lternet.edu/nis/dataviewer?packageid=knb-lter-sev.8.267873&entityid=37c4cab94cf9a8ebae0fc900a382bae2
+
+# See metadata at: https://portal.lternet.edu/nis/metadataviewer?packageid=knb-lter-sev.8.267873
