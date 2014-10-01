@@ -16,7 +16,7 @@ reshape.fun = function(sampling.site, site.code){
   # Remove X's from the year column:
     names(sampling.site) = gsub('X', '',names(sampling.site))
   # Melt from wide to long format:
-    dClean = melt(hb, id.vars = 'Bird.Species')
+    dClean = melt(sampling.site, id.vars = 'Bird.Species')
   # Set column names:
     names(dClean) = c('species','year','count')
   # Remove rows of summary data:
@@ -35,6 +35,8 @@ reshape.fun = function(sampling.site, site.code){
     dClean = dClean[,c(4,1:3)]
   # Remove 0's:
     dClean = dClean[dClean$count>0,]
+  # Remove NA's:
+    dClean = na.omit(dClean)
     dClean
    }
 
