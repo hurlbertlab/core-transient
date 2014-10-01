@@ -5,7 +5,7 @@ library(reshape2)
 
 # Get data:
 
-setwd('/Users/bsevans/Desktop/core-transient-datasets/dataset_228RAW')
+setwd('/Users/bsevans/Desktop/core-transient-datasets/raw_datasets/dataset_228RAW')
 
 hb = read.csv('hb_bird.txt')
 mk = read.csv('mk_bird.txt')
@@ -30,7 +30,8 @@ reshape.fun = function(sampling.site, site.code){
     dClean$count = as.numeric(dClean$count)
     dClean$year = as.numeric(levels(dClean$year))[as.integer(dClean$year)]
   # Add a site column (and arrange as the first column):
-    dClean$site = factor(rep(site.code, length(dClean$year)))
+    site.name = paste('d228',site.code, sep ='_')
+    dClean$site = factor(rep(site.name, length(dClean$year)))
     dClean = dClean[,c(4,1:3)]
   # Remove 0's:
     dClean = dClean[dClean$count>0,]
@@ -40,7 +41,7 @@ reshape.fun = function(sampling.site, site.code){
 d228 = rbind(reshape.fun(hb,'hb'),reshape.fun(mk,'mk'),
       reshape.fun(rp,'rp'),reshape.fun(sm,'sm'))
 
-setwd('/Users/bsevans/Desktop/core-transient-datasets')
+setwd('/Users/bsevans/Desktop/core-transient-datasets/formatted_datasets')
 
 write.csv(d228, 'dataset_228.csv', row.names = F)
 
