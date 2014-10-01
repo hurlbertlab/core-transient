@@ -1,0 +1,1125 @@
+Site_ID,Region,Site_name,Latitude,Longitude,Species,Date,Season,Count,Counted_object,Accuracy,Notes,Source
+LOOK,EI,Cape Lookout,-61.2802,-55.2047,GEPE,12/31/2010,2010,345,C,1,,ASI
+LOOK,EI,Cape Lookout,-61.2802,-55.2047,GEPE,12/1/2012,2012,238,N,1,,ASI
+AITC,SH,"Barrientos Island, Aitcho Islands",-62.3811,-59.7764,GEPE,12/13/1999,1999,1177,N,1,,ASI
+AITC,SH,"Barrientos Island, Aitcho Islands",-62.3811,-59.7764,GEPE,1/11/2002,2001,1236,C,1,,ASI
+AITC,SH,"Barrientos Island, Aitcho Islands",-62.3811,-59.7764,GEPE,12/20/2003,2003,1486,N,1,,ASI
+AITC,SH,"Barrientos Island, Aitcho Islands",-62.3811,-59.7764,GEPE,11/18/2005,2005,1998,N,1,,ASI
+AITC,SH,"Barrientos Island, Aitcho Islands",-62.3811,-59.7764,GEPE,1/22/2006,2005,2483,C,1,,ASI
+AITC,SH,"Barrientos Island, Aitcho Islands",-62.3811,-59.7764,GEPE,12/20/2006,2006,1639,N,1,,ASI
+AITC,SH,"Barrientos Island, Aitcho Islands",-62.3811,-59.7764,GEPE,12/3/2007,2007,1383,N,1,,ASI
+AITC,SH,"Barrientos Island, Aitcho Islands",-62.3811,-59.7764,GEPE,11/4/2008,2008,2210,N,1,,ASI
+AITC,SH,"Barrientos Island, Aitcho Islands",-62.3811,-59.7764,GEPE,12/29/2008,2008,2742,C,1,,ASI
+AITC,SH,"Barrientos Island, Aitcho Islands",-62.3811,-59.7764,GEPE,12/10/2009,2009,1900,N,1,,ASI
+AITC,SH,"Barrientos Island, Aitcho Islands",-62.3811,-59.7764,GEPE,12/21/2010,2010,1319,N,1,,ASI
+AITC,SH,"Barrientos Island, Aitcho Islands",-62.3811,-59.7764,GEPE,11/17/2011,2011,2213,N,1,,ASI
+ARDL,SH,Ardley Island,-62.2131,-58.9332,GEPE,xx/xx/1980(81),1980,3809,N,1,Accuracy has been estimated from original source.,Management Plan for ASPA No. 150
+ARDL,SH,Ardley Island,-62.2131,-58.9332,GEPE,xx/xx/1981(82),1981,2580,N,1,Accuracy has been estimated from original source.,Management Plan for ASPA No. 150
+ARDL,SH,Ardley Island,-62.2131,-58.9332,GEPE,xx/xx/1983(84),1983,1656,N,1,Accuracy has been estimated from original source.,Management Plan for ASPA No. 150
+ARDL,SH,Ardley Island,-62.2131,-58.9332,GEPE,xx/xx/1984(85),1984,3105,N,1,Accuracy has been estimated from original source.,Management Plan for ASPA No. 150
+ARDL,SH,Ardley Island,-62.2131,-58.9332,GEPE,xx/xx/1985(86),1985,3522,N,1,Accuracy has been estimated from original source.,Management Plan for ASPA No. 150
+ARDL,SH,Ardley Island,-62.2131,-58.9332,GEPE,xx/xx/1986(87),1986,3410,N,1,Accuracy has been estimated from original source.,Management Plan for ASPA No. 150
+ARDL,SH,Ardley Island,-62.2131,-58.9332,GEPE,xx/xx/1994(95),1994,3772,N,1,Accuracy has been estimated from original source.,Management Plan for ASPA No. 150
+ARDL,SH,Ardley Island,-62.2131,-58.9332,GEPE,xx/xx/1995(96),1995,2985,N,1,Accuracy has been estimated from original source.,Management Plan for ASPA No. 150
+ARDL,SH,Ardley Island,-62.2131,-58.9332,GEPE,xx/xx/1996(97),1996,2974,N,1,Accuracy has been estimated from original source.,Management Plan for ASPA No. 150
+ARDL,SH,Ardley Island,-62.2131,-58.9332,GEPE,xx/xx/1997(98),1997,3146,N,1,Accuracy has been estimated from original source.,Management Plan for ASPA No. 150
+ARDL,SH,Ardley Island,-62.2131,-58.9332,GEPE,xx/xx/1998(99),1998,3349,N,1,Accuracy has been estimated from original source.,Management Plan for ASPA No. 150
+ARDL,SH,Ardley Island,-62.2131,-58.9332,GEPE,xx/xx/1999(00),1999,3911,N,1,Accuracy has been estimated from original source.,Management Plan for ASPA No. 150
+ARDL,SH,Ardley Island,-62.2131,-58.9332,GEPE,xx/xx/2000(01),2000,4472,N,1,Accuracy has been estimated from original source.,Management Plan for ASPA No. 150
+ARDL,SH,Ardley Island,-62.2131,-58.9332,GEPE,xx/xx/2001(02),2001,4444,N,1,Accuracy has been estimated from original source.,Management Plan for ASPA No. 150
+ARDL,SH,Ardley Island,-62.2131,-58.9332,GEPE,xx/xx/2002(03),2002,5131,N,1,Accuracy has been estimated from original source.,Management Plan for ASPA No. 150
+ARDL,SH,Ardley Island,-62.2131,-58.9332,GEPE,xx/xx/2003(04),2003,4957,N,1,Accuracy has been estimated from original source.,Management Plan for ASPA No. 150
+ARDL,SH,Ardley Island,-62.2131,-58.9332,GEPE,xx/xx/2004(05),2004,4798,N,1,Accuracy has been estimated from original source.,Management Plan for ASPA No. 150
+ARDL,SH,Ardley Island,-62.2131,-58.9332,GEPE,xx/xx/2005(06),2005,4635,N,1,Accuracy has been estimated from original source.,Management Plan for ASPA No. 150
+DEEI,SH,Dee Island,-62.4229,-59.7836,GEPE,12/7/2010,2010,0,N,1,,ASI
+FORT,SH,Fort Point,-62.5431,-59.5752,GEPE,12/14/2011,2011,720,N,2,,ASI
+HANN,SH,Hannah Point,-62.6545,-60.6134,GEPE,xx/xx/1987,1987,1016,N,1,,"Woehler, E. J. 1993. The distribution and abundance of Antarctic and Subantarctic penguins. Scientific Committee on Antarctic Research, Cambridge, UK."
+HANN,SH,Hannah Point,-62.6545,-60.6134,GEPE,12/3/1996,1996,1115,N,1,,ASI
+HANN,SH,Hannah Point,-62.6545,-60.6134,GEPE,12/3/1997,1997,1350,N,1,,ASI
+HANN,SH,Hannah Point,-62.6545,-60.6134,GEPE,12/23/2004,2004,1885,N,1,,ASI
+HANN,SH,Hannah Point,-62.6545,-60.6134,GEPE,1/10/2011,2010,2520,C,1,,ASI
+HURW,SH,Hurd Peninsula West,-62.674,-60.406,GEPE,12/8/2010,2010,0,N,1,,ASI
+ROBE,SH,Robert Point,-62.45,-59.383,GEPE,12/15/2012,2012,916,N,1,,ASI
+ROBE,SH,Robert Point,-62.45,-59.383,GEPE,1/9/2013,2012,711,N,1,,ASI
+YANK,SH,Yankee Harbor,-62.5257,-59.7687,GEPE,xx/xx/1990,1990,4000,N,4,,"Woehler, E. J. 1993. The distribution and abundance of Antarctic and Subantarctic penguins. Scientific Committee on Antarctic Research, Cambridge, UK."
+YANK,SH,Yankee Harbor,-62.5257,-59.7687,GEPE,11/23/1996,1996,2500,N,3,,ASI
+YANK,SH,Yankee Harbor,-62.5257,-59.7687,GEPE,11/26/1999,1999,4751,N,1,,ASI
+YANK,SH,Yankee Harbor,-62.5257,-59.7687,GEPE,12/24/2000,2000,3974,N,1,,ASI
+YANK,SH,Yankee Harbor,-62.5257,-59.7687,GEPE,12/29/2002,2002,3804,N,1,,ASI
+YANK,SH,Yankee Harbor,-62.5257,-59.7687,GEPE,12/20/2003,2003,4918,N,1,,ASI
+YANK,SH,Yankee Harbor,-62.5257,-59.7687,GEPE,12/7/2007,2007,4817,N,1,,ASI
+YANK,SH,Yankee Harbor,-62.5257,-59.7687,GEPE,1/12/2013,2012,4803,N,1,,ASI
+BROW,NE,Brown Bluff,-63.5325,-56.9256,GEPE,1/22/1996,1995,225,C,3,,"R. Naveen as reported in Woehler, E.J., and J.P. Croxall. 1997. The status and trends of Antarctic and sub-Antarctic seabirds. Marine Ornithology 25: 43-66."
+BROW,NE,Brown Bluff,-63.5325,-56.9256,GEPE,11/25/1999,1999,617,N,1,,ASI
+BROW,NE,Brown Bluff,-63.5325,-56.9256,GEPE,12/11/2000,2000,756,N,1,,ASI
+BROW,NE,Brown Bluff,-63.5325,-56.9256,GEPE,1/9/2001,2000,511,C,1,,ASI
+BROW,NE,Brown Bluff,-63.5325,-56.9256,GEPE,12/11/2001,2001,450,N,1,,ASI
+BROW,NE,Brown Bluff,-63.5325,-56.9256,GEPE,1/24/2002,2001,409,C,1,,ASI
+BROW,NE,Brown Bluff,-63.5325,-56.9256,GEPE,1/1/2003,2002,490,N,1,,ASI
+BROW,NE,Brown Bluff,-63.5325,-56.9256,GEPE,1/10/2003,2002,764,C,1,,ASI
+BROW,NE,Brown Bluff,-63.5325,-56.9256,GEPE,11/29/2003,2003,200,N,1,,ASI
+BROW,NE,Brown Bluff,-63.5325,-56.9256,GEPE,12/24/2004,2004,370,N,1,,ASI
+BROW,NE,Brown Bluff,-63.5325,-56.9256,GEPE,1/11/2005,2004,589,C,1,,ASI
+BROW,NE,Brown Bluff,-63.5325,-56.9256,GEPE,12/22/2005,2005,247,N,1,,ASI
+BROW,NE,Brown Bluff,-63.5325,-56.9256,GEPE,1/13/2006,2005,118,C,1,,ASI
+BROW,NE,Brown Bluff,-63.5325,-56.9256,GEPE,11/19/2006,2006,444,N,1,,ASI
+BROW,NE,Brown Bluff,-63.5325,-56.9256,GEPE,1/24/2007,2006,682,C,1,,ASI
+BROW,NE,Brown Bluff,-63.5325,-56.9256,GEPE,1/18/2008,2007,702,C,1,,ASI
+BROW,NE,Brown Bluff,-63.5325,-56.9256,GEPE,11/28/2008,2008,554,N,1,,ASI
+BROW,NE,Brown Bluff,-63.5325,-56.9256,GEPE,1/15/2009,2008,858,C,1,,ASI
+BROW,NE,Brown Bluff,-63.5325,-56.9256,GEPE,11/23/2009,2009,538,N,1,,ASI
+BROW,NE,Brown Bluff,-63.5325,-56.9256,GEPE,1/21/2011,2010,533,C,1,,ASI
+BROW,NE,Brown Bluff,-63.5325,-56.9256,GEPE,12/23/2012,2012,598,N,1,,ASI
+HERO,NE,Heroína Island,-63.3946,-54.6065,GEPE,12/1/1996,1996,215,N,1,,ASI
+HERO,NE,Heroína Island,-63.3946,-54.6065,GEPE,2/3/2006,2005,142,C,1,,ASI
+HERO,NE,Heroína Island,-63.3946,-54.6065,GEPE,1/21/2009,2008,173,C,1,,ASI
+MADD,NE,Madder Cliffs,-63.2986,-56.4896,GEPE,1/12/2005,2004,304,N,1,,ASI
+MADD,NE,Madder Cliffs,-63.2986,-56.4896,GEPE,1/12/2005,2004,455,C,1,,ASI
+ALMI,CW,(Almirante) Brown Station,-64.8833,-62.8667,GEPE,11/28/1995,1995,8,N,1,,ASI
+ALMI,CW,(Almirante) Brown Station,-64.8833,-62.8667,GEPE,11/25/1996,1996,9,N,1,,ASI
+ALMI,CW,(Almirante) Brown Station,-64.8833,-62.8667,GEPE,12/4/1997,1997,8,N,1,,ASI
+ALMI,CW,(Almirante) Brown Station,-64.8833,-62.8667,GEPE,1/16/2006,2005,111,N,1,,ASI
+ALMI,CW,(Almirante) Brown Station,-64.8833,-62.8667,GEPE,2/6/2006,2005,121,C,1,,ASI
+ALMI,CW,(Almirante) Brown Station,-64.8833,-62.8667,GEPE,11/19/2006,2006,128,N,1,,ASI
+ALMI,CW,(Almirante) Brown Station,-64.8833,-62.8667,GEPE,1/8/2008,2007,123,N,1,,ASI
+ALMI,CW,(Almirante) Brown Station,-64.8833,-62.8667,GEPE,11/17/2008,2008,192,N,1,,ASI
+ALMI,CW,(Almirante) Brown Station,-64.8833,-62.8667,GEPE,1/29/2009,2008,165,C,1,,ASI
+ALMI,CW,(Almirante) Brown Station,-64.8833,-62.8667,GEPE,12/23/2009,2009,165,N,1,,ASI
+ALMI,CW,(Almirante) Brown Station,-64.8833,-62.8667,GEPE,2/5/2010,2009,228,C,1,,ASI
+ALMI,CW,(Almirante) Brown Station,-64.8833,-62.8667,GEPE,12/4/2011,2011,189,N,1,,ASI
+ALMI,CW,(Almirante) Brown Station,-64.8833,-62.8667,GEPE,2/1/2012,2011,178,C,1,,ASI
+ALMI,CW,(Almirante) Brown Station,-64.8833,-62.8667,GEPE,1/8/2013,2012,188,N,1,,ASI
+BENE,CW,Beneden Head,-64.7671,-62.701,GEPE,1/30/1986,1985,700,C,3,,"Parmelee, D. F., and J. M. Parmelee. 1987. Revised penguin numbers and distribution for Anvers Island, Antarctica. British Antarctic Survey Bulletin 76: 65-73."
+BENE,CW,Beneden Head,-64.7671,-62.701,GEPE,12/13/2006,2006,640,N,3,,ASI
+BENE,CW,Beneden Head,-64.7671,-62.701,GEPE,12/26/2007,2007,1098,N,1,,ASI
+BENE,CW,Beneden Head,-64.7671,-62.701,GEPE,2/2/2009,2008,981,C,1,,ASI
+BENE,CW,Beneden Head,-64.7671,-62.701,GEPE,12/11/2011,2011,1088,N,1,,ASI
+BENE,CW,Beneden Head,-64.7671,-62.701,GEPE,1/31/2012,2011,1720,C,1,,ASI
+PCHA,CW,"Port Charcot, Booth Island",-65.065,-63.9862,GEPE,1/26/1983,1982,318,N,1,,"Parmelee, D. F., and J. M. Parmelee. 1987. Revised penguin numbers and distribution for Anvers Island, Antarctica. British Antarctic Survey Bulletin 76: 65-73."
+PCHA,CW,"Port Charcot, Booth Island",-65.065,-63.9862,GEPE,1/13/2001,2000,1200,N,3,,ASI
+PCHA,CW,"Port Charcot, Booth Island",-65.065,-63.9862,GEPE,1/4/2006,2005,1151,N,1,,ASI
+PCHA,CW,"Port Charcot, Booth Island",-65.065,-63.9862,GEPE,12/30/2007,2007,1233,N,1,,ASI
+PCHA,CW,"Port Charcot, Booth Island",-65.065,-63.9862,GEPE,1/2/2009,2008,893,N,1,,ASI
+PCHA,CW,"Port Charcot, Booth Island",-65.065,-63.9862,GEPE,1/28/2009,2008,652,C,1,,ASI
+PCHA,CW,"Port Charcot, Booth Island",-65.065,-63.9862,GEPE,12/14/2009,2009,1954,N,1,,ASI
+PCHA,CW,"Port Charcot, Booth Island",-65.065,-63.9862,GEPE,2/6/2010,2009,2202,C,1,,ASI
+PCHA,CW,"Port Charcot, Booth Island",-65.065,-63.9862,GEPE,1/23/2011,2010,1181,N,1,,ASI
+PCHA,CW,"Port Charcot, Booth Island",-65.065,-63.9862,GEPE,2/14/2011,2010,997,C,1,,ASI
+PCHA,CW,"Port Charcot, Booth Island",-65.065,-63.9862,GEPE,1/7/2013,2012,1484,N,1,,ASI
+BISC,CW,Biscoe Point,-64.8133,-63.7935,GEPE,xx/xx/1984,1984,0,N,1,,Management Plan for ASPA No. 139
+BISC,CW,Biscoe Point,-64.8133,-63.7935,GEPE,xx/xx/1994,1994,14,N,1,,Management Plan for ASPA No. 139
+BISC,CW,Biscoe Point,-64.8133,-63.7935,GEPE,xx/xx/1995,1995,33,N,1,,Management Plan for ASPA No. 139
+BISC,CW,Biscoe Point,-64.8133,-63.7935,GEPE,xx/xx/1996,1996,45,N,1,,Management Plan for ASPA No. 139
+BISC,CW,Biscoe Point,-64.8133,-63.7935,GEPE,xx/xx/1997,1997,56,N,1,,Management Plan for ASPA No. 139
+BISC,CW,Biscoe Point,-64.8133,-63.7935,GEPE,xx/xx/1998,1998,26,N,1,,Management Plan for ASPA No. 139
+BISC,CW,Biscoe Point,-64.8133,-63.7935,GEPE,xx/xx/1999,1999,149,N,1,,Management Plan for ASPA No. 139
+BISC,CW,Biscoe Point,-64.8133,-63.7935,GEPE,xx/xx/2000,2000,296,N,1,,Management Plan for ASPA No. 139
+BISC,CW,Biscoe Point,-64.8133,-63.7935,GEPE,xx/xx/2001,2001,288,N,1,,Management Plan for ASPA No. 139
+BISC,CW,Biscoe Point,-64.8133,-63.7935,GEPE,xx/xx/2002,2002,639,N,1,,Management Plan for ASPA No. 139
+BISC,CW,Biscoe Point,-64.8133,-63.7935,GEPE,12/15/2010,2010,2372,N,1,,ASI
+BRYE,CW,Bryde Island East,-64.8833,-62.95,GEPE,1/31/1986,1985,173,N,1,,"Parmelee, D. F., and J. M. Parmelee. 1987. Revised penguin numbers and distribution for Anvers Island, Antarctica. British Antarctic Survey Bulletin 76: 65-73."
+BRYE,CW,Bryde Island East,-64.8833,-62.95,GEPE,12/24/2006,2006,486,N,2,,ASI
+BRYE,CW,Bryde Island East,-64.8833,-62.95,GEPE,1/3/2009,2008,528,N,1,,ASI
+BRYE,CW,Bryde Island East,-64.8833,-62.95,GEPE,1/6/2010,2009,560,N,1,,ASI
+BRYE,CW,Bryde Island East,-64.8833,-62.95,GEPE,12/15/2010,2010,505,N,1,,ASI
+BRYE,CW,Bryde Island East,-64.8833,-62.95,GEPE,12/22/2011,2011,558,N,1,,ASI
+BRYE,CW,Bryde Island East,-64.8833,-62.95,GEPE,2/1/2012,2011,741,C,1,,ASI
+BRYE,CW,Bryde Island East,-64.8833,-62.95,GEPE,1/11/2013,2012,620,N,1,,ASI
+BRYS,CW,Bryde Island South,-64.9,-62.95,GEPE,2/6/1987,1986,550,C,3,,"Parmelee, D. F., and J. M. Parmelee. 1987. Revised penguin numbers and distribution for Anvers Island, Antarctica. British Antarctic Survey Bulletin 76: 65-73."
+BRYS,CW,Bryde Island South,-64.9,-62.95,GEPE,12/24/2006,2006,818,N,1,,ASI
+BRYS,CW,Bryde Island South,-64.9,-62.95,GEPE,12/8/2008,2008,979,N,1,,ASI
+BRYS,CW,Bryde Island South,-64.9,-62.95,GEPE,1/6/2010,2009,917,N,1,,ASI
+BRYS,CW,Bryde Island South,-64.9,-62.95,GEPE,12/15/2010,2010,722,N,1,,ASI
+BRYS,CW,Bryde Island South,-64.9,-62.95,GEPE,2/1/2012,2011,925,N,1,,ASI
+BRYS,CW,Bryde Island South,-64.9,-62.95,GEPE,1/11/2013,2012,882,N,1,,ASI
+CHPT,CW,Charles Point,-64.2386,-61.0004,GEPE,1/23/1987,1986,130,N,3,,"Parmelee, D. F., and J. M. Parmelee. 1987. Revised penguin numbers and distribution for Anvers Island, Antarctica. British Antarctic Survey Bulletin 76: 65-73."
+CHPT,CW,Charles Point,-64.2386,-61.0004,GEPE,12/10/2010,2010,746,N,1,,ASI
+CUVE,CW,Cuverville Island,-64.6875,-62.6219,GEPE,1/30/1986,1985,3700,C,3,,"Parmelee, D. F., and J. M. Parmelee. 1987. Revised penguin numbers and distribution for Anvers Island, Antarctica. British Antarctic Survey Bulletin 76: 65-73."
+CUVE,CW,Cuverville Island,-64.6875,-62.6219,GEPE,xx/xx/1988,1988,3200,N,1,,"Woehler, E. J. 1993. The distribution and abundance of Antarctic and Subantarctic penguins. Scientific Committee on Antarctic Research, Cambridge, UK."
+CUVE,CW,Cuverville Island,-64.6875,-62.6219,GEPE,12/24/1992,1992,4294,N,1,,"Aguirre, C. A., and J. M. Acero. 1995. Distribution and abundance of birds in Errera Channel, Antarctic Peninsula, during the 1992/93 breeding season. Marine Ornithology 23: 129-134"
+CUVE,CW,Cuverville Island,-64.6875,-62.6219,GEPE,xx/xx/1993,1993,4421,N,1,,"Woehler, E.J., and J.P. Croxall. 1997. The status and trends of Antarctic and sub-Antarctic seabirds. Marine Ornithology 25: 43-66"
+CUVE,CW,Cuverville Island,-64.6875,-62.6219,GEPE,xx/xx/1994,1994,4818,N,1,,"Woehler, E.J., and J.P. Croxall. 1997. The status and trends of Antarctic and sub-Antarctic seabirds. Marine Ornithology 25: 43-66"
+CUVE,CW,Cuverville Island,-64.6875,-62.6219,GEPE,12/21/2003,2003,5990,N,1,,ASI
+CUVE,CW,Cuverville Island,-64.6875,-62.6219,GEPE,12/2/2005,2005,6294,N,1,,ASI
+CUVE,CW,Cuverville Island,-64.6875,-62.6219,GEPE,1/4/2007,2006,4420,N,3,,ASI
+CUVE,CW,Cuverville Island,-64.6875,-62.6219,GEPE,12/7/2008,2008,6878,N,1,,ASI
+CUVE,CW,Cuverville Island,-64.6875,-62.6219,GEPE,12/23/2009,2009,6468,N,1,,ASI
+CUVE,CW,Cuverville Island,-64.6875,-62.6219,GEPE,2/5/2010,2009,9014,C,1,,ASI
+CUVE,CW,Cuverville Island,-64.6875,-62.6219,GEPE,12/2/2010,2010,990,N,1,Count completed on 12/15/2010,ASI
+CUVE,CW,Cuverville Island,-64.6875,-62.6219,GEPE,12/23/2011,2011,6336,N,1,,ASI
+CUVE,CW,Cuverville Island,-64.6875,-62.6219,GEPE,12/12/2012,2012,5950,N,1,Count completed on 1/5/2010,ASI
+DAMO,CW,Dorian Bay / Damoy Point,-64.8149,-63.4968,GEPE,1/22/1983,1982,619,N,1,,"Parmelee, D. F., and J. M. Parmelee. 1987. Revised penguin numbers and distribution for Anvers Island, Antarctica. British Antarctic Survey Bulletin 76: 65-73."
+DAMO,CW,Dorian Bay / Damoy Point,-64.8149,-63.4968,GEPE,1/27/1984,1983,828,N,1,,"Parmelee, D. F., and J. M. Parmelee. 1987. Revised penguin numbers and distribution for Anvers Island, Antarctica. British Antarctic Survey Bulletin 76: 65-73."
+DAMO,CW,Dorian Bay / Damoy Point,-64.8149,-63.4968,GEPE,2/6/1987,1986,715,C,1,,"Parmelee, D. F., and J. M. Parmelee. 1987. Revised penguin numbers and distribution for Anvers Island, Antarctica. British Antarctic Survey Bulletin 76: 65-73."
+DAMO,CW,Dorian Bay / Damoy Point,-64.8149,-63.4968,GEPE,xx/xx/1988,1988,1663,N,3,,"Woehler, E. J. 1993. The distribution and abundance of Antarctic and Subantarctic penguins. Scientific Committee on Antarctic Research, Cambridge, UK."
+DAMO,CW,Dorian Bay / Damoy Point,-64.8149,-63.4968,GEPE,xx/xx/1990,1990,1658,N,1,,"Woehler, E. J. 1993. The distribution and abundance of Antarctic and Subantarctic penguins. Scientific Committee on Antarctic Research, Cambridge, UK."
+DAMO,CW,Dorian Bay / Damoy Point,-64.8149,-63.4968,GEPE,12/12/2002,2002,1928,N,1,,ASI
+DAMO,CW,Dorian Bay / Damoy Point,-64.8149,-63.4968,GEPE,1/4/2005,2004,2022,N,1,,ASI
+DAMO,CW,Dorian Bay / Damoy Point,-64.8149,-63.4968,GEPE,12/26/2005,2005,2273,N,1,,ASI
+DAMO,CW,Dorian Bay / Damoy Point,-64.8149,-63.4968,GEPE,2/5/2006,2005,2990,C,1,,ASI
+DAMO,CW,Dorian Bay / Damoy Point,-64.8149,-63.4968,GEPE,12/6/2007,2007,2055,N,1,,ASI
+DAMO,CW,Dorian Bay / Damoy Point,-64.8149,-63.4968,GEPE,11/30/2008,2008,2158,N,1,,ASI
+DAMO,CW,Dorian Bay / Damoy Point,-64.8149,-63.4968,GEPE,1/25/2009,2008,2498,C,1,,ASI
+DAMO,CW,Dorian Bay / Damoy Point,-64.8149,-63.4968,GEPE,1/15/2010,2009,2148,N,1,,ASI
+DAMO,CW,Dorian Bay / Damoy Point,-64.8149,-63.4968,GEPE,2/16/2010,2009,3371,C,1,,ASI
+DAMO,CW,Dorian Bay / Damoy Point,-64.8149,-63.4968,GEPE,1/25/2011,2010,1823,N,1,,ASI
+DAMO,CW,Dorian Bay / Damoy Point,-64.8149,-63.4968,GEPE,2/10/2011,2010,1955,C,1,,ASI
+DAMO,CW,Dorian Bay / Damoy Point,-64.8149,-63.4968,GEPE,12/11/2011,2011,2091,N,1,,ASI
+DAMO,CW,Dorian Bay / Damoy Point,-64.8149,-63.4968,GEPE,1/30/2012,2011,3345,C,1,,ASI
+DAMO,CW,Dorian Bay / Damoy Point,-64.8149,-63.4968,GEPE,1/11/2013,2012,2355,N,1,,ASI
+DANC,CW,Danco Island,-64.734,-62.5938,GEPE,1/31/1986,1985,1172,C,1,,"Parmelee, D. F., and J. M. Parmelee. 1987. Revised penguin numbers and distribution for Anvers Island, Antarctica. British Antarctic Survey Bulletin 76: 65-73."
+DANC,CW,Danco Island,-64.734,-62.5938,GEPE,12/31/1992,1992,1573,N,1,,"Aguirre, C. A., and J. M. Acero. 1995. Distribution and abundance of birds in Errera Channel, Antarctic Peninsula, during the 1992/93 breeding season. Marine Ornithology 23: 129-134"
+DANC,CW,Danco Island,-64.734,-62.5938,GEPE,xx/xx/1994,1994,1637,N,2,,"Woehler, E.J., and J.P. Croxall. 1997. The status and trends of Antarctic and sub-Antarctic seabirds. Marine Ornithology 25: 43-66"
+DANC,CW,Danco Island,-64.734,-62.5938,GEPE,11/29/1999,1999,2300,N,2,,ASI
+DANC,CW,Danco Island,-64.734,-62.5938,GEPE,12/8/2006,2006,2506,N,1,,ASI
+DANC,CW,Danco Island,-64.734,-62.5938,GEPE,11/25/2007,2007,2084,N,1,,ASI
+DANC,CW,Danco Island,-64.734,-62.5938,GEPE,12/8/2008,2008,2213,N,1,,ASI
+DANC,CW,Danco Island,-64.734,-62.5938,GEPE,2/12/2009,2008,1781,C,1,,ASI
+DANC,CW,Danco Island,-64.734,-62.5938,GEPE,12/13/2009,2009,3632,N,1,,ASI
+DANC,CW,Danco Island,-64.734,-62.5938,GEPE,1/25/2011,2010,2115,N,1,,ASI
+DANC,CW,Danco Island,-64.734,-62.5938,GEPE,1/23/2012,2011,2558,N,1,,ASI
+DANC,CW,Danco Island,-64.734,-62.5938,GEPE,12/13/2012,2012,2665,N,1,,ASI
+DOBE,CW,Dorian Beacon,-64.8149,-63.4968,GEPE,1/15/2005,2004,132,N,1,,ASI
+DOBE,CW,Dorian Beacon,-64.8149,-63.4968,GEPE,12/26/2005,2005,181,N,1,,ASI
+DOBE,CW,Dorian Beacon,-64.8149,-63.4968,GEPE,2/5/2006,2005,257,C,1,,ASI
+DOBE,CW,Dorian Beacon,-64.8149,-63.4968,GEPE,12/19/2007,2007,165,N,1,,ASI
+DOBE,CW,Dorian Beacon,-64.8149,-63.4968,GEPE,2/22/2008,2007,247,C,1,,ASI
+DOBE,CW,Dorian Beacon,-64.8149,-63.4968,GEPE,11/30/2008,2008,186,N,1,,ASI
+DOBE,CW,Dorian Beacon,-64.8149,-63.4968,GEPE,1/27/2009,2008,162,C,1,,ASI
+DOBE,CW,Dorian Beacon,-64.8149,-63.4968,GEPE,12/15/2009,2009,183,N,1,,ASI
+DOBE,CW,Dorian Beacon,-64.8149,-63.4968,GEPE,12/14/2010,2010,148,N,1,,ASI
+DOBE,CW,Dorian Beacon,-64.8149,-63.4968,GEPE,2/10/2011,2010,104,C,1,,ASI
+DOBE,CW,Dorian Beacon,-64.8149,-63.4968,GEPE,1/30/2012,2011,249,C,1,,ASI
+DOBE,CW,Dorian Beacon,-64.8149,-63.4968,GEPE,12/11/2012,2012,167,N,1,,ASI
+DUPT,CW,Duthiers Point,-64.8049,-62.8179,GEPE,12/13/2010,2010,485,N,1,,ASI
+DUPT,CW,Duthiers Point,-64.8049,-62.8179,GEPE,11/15/2011,2011,185,N,1,,ASI
+GALE,CW,Galindez Island East,-65.2476,-64.2399,GEPE,12/6/2008,2008,93,N,1,,ASI
+GEOR,CW,Georges Point,-64.6694,-62.6696,GEPE,xx/xx/1988,1988,1100,N,1,,"Woehler, E. J. 1993. The distribution and abundance of Antarctic and Subantarctic penguins. Scientific Committee on Antarctic Research, Cambridge, UK."
+GEOR,CW,Georges Point,-64.6694,-62.6696,GEPE,1/7/1993,1992,1631,N,1,,"Aguirre, C. A., and J. M. Acero. 1995. Distribution and abundance of birds in Errera Channel, Antarctic Peninsula, during the 1992/93 breeding season. Marine Ornithology 23: 129-134"
+GEOR,CW,Georges Point,-64.6694,-62.6696,GEPE,xx/xx/1994,1994,1752,N,2,,"Woehler, E.J., and J.P. Croxall. 1997. The status and trends of Antarctic and sub-Antarctic seabirds. Marine Ornithology 25: 43-66"
+GEOR,CW,Georges Point,-64.6694,-62.6696,GEPE,12/20/2004,2004,1995,N,1,,ASI
+GEOR,CW,Georges Point,-64.6694,-62.6696,GEPE,12/26/2005,2005,2464,N,1,,ASI
+GEOR,CW,Georges Point,-64.6694,-62.6696,GEPE,1/6/2008,2007,1200,N,5,,ASI
+GEOR,CW,Georges Point,-64.6694,-62.6696,GEPE,12/22/2008,2008,2196,N,1,,ASI
+GEOR,CW,Georges Point,-64.6694,-62.6696,GEPE,2/12/2009,2008,2104,C,1,,ASI
+GEOR,CW,Georges Point,-64.6694,-62.6696,GEPE,1/3/2010,2009,2555,N,1,,ASI
+GEOR,CW,Georges Point,-64.6694,-62.6696,GEPE,12/15/2010,2010,1158,N,1,,ASI
+GEOR,CW,Georges Point,-64.6694,-62.6696,GEPE,12/13/2011,2011,2408,N,1,,ASI
+GEOR,CW,Georges Point,-64.6694,-62.6696,GEPE,1/12/2013,2012,3296,N,1,,ASI
+GLAN,CW,Glandaz Point,-65.0911,-63.9591,GEPE,12/23/1982,1982,75,N,1,,"Parmelee, D. F., and J. M. Parmelee. 1987. Revised penguin numbers and distribution for Anvers Island, Antarctica. British Antarctic Survey Bulletin 76: 65-73."
+GLAN,CW,Glandaz Point,-65.0911,-63.9591,GEPE,12/10/2008,2008,49,N,1,,ASI
+GLAN,CW,Glandaz Point,-65.0911,-63.9591,GEPE,2/14/2009,2008,38,C,1,,ASI
+GLAN,CW,Glandaz Point,-65.0911,-63.9591,GEPE,1/20/2013,2012,145,N,1,,ASI
+HUMP,CW,Humphries Heights,-65.0557,-63.8637,GEPE,1/28/1983,1982,30,N,1,,"Parmelee, D. F., and J. M. Parmelee. 1987. Revised penguin numbers and distribution for Anvers Island, Antarctica. British Antarctic Survey Bulletin 76: 65-73."
+HUMP,CW,Humphries Heights,-65.0557,-63.8637,GEPE,1/19/2013,2012,57,N,1,,ASI
+JOUG,CW,Jougla Point,-64.827,-63.4932,GEPE,1/19/1983,1982,627,N,1,,"Parmelee, D. F., and J. M. Parmelee. 1987. Revised penguin numbers and distribution for Anvers Island, Antarctica. British Antarctic Survey Bulletin 76: 65-73."
+JOUG,CW,Jougla Point,-64.827,-63.4932,GEPE,1/25/1984,1983,786,N,1,,"Parmelee, D. F., and J. M. Parmelee. 1987. Revised penguin numbers and distribution for Anvers Island, Antarctica. British Antarctic Survey Bulletin 76: 65-73."
+JOUG,CW,Jougla Point,-64.827,-63.4932,GEPE,xx/xx/1988,1988,1616,N,1,,"Woehler, E. J. 1993. The distribution and abundance of Antarctic and Subantarctic penguins. Scientific Committee on Antarctic Research, Cambridge, UK."
+JOUG,CW,Jougla Point,-64.827,-63.4932,GEPE,11/24/1996,1996,1595,N,1,,ASI
+JOUG,CW,Jougla Point,-64.827,-63.4932,GEPE,12/5/1997,1997,1545,N,1,,ASI
+JOUG,CW,Jougla Point,-64.827,-63.4932,GEPE,2/7/1998,1997,2206,C,1,,ASI
+JOUG,CW,Jougla Point,-64.827,-63.4932,GEPE,11/28/1998,1998,1437,N,1,,ASI
+JOUG,CW,Jougla Point,-64.827,-63.4932,GEPE,11/27/1999,1999,1681,N,1,,ASI
+JOUG,CW,Jougla Point,-64.827,-63.4932,GEPE,1/19/2000,1999,1793,C,2,,ASI
+JOUG,CW,Jougla Point,-64.827,-63.4932,GEPE,1/12/2001,2000,1934,N,2,,ASI
+JOUG,CW,Jougla Point,-64.827,-63.4932,GEPE,12/15/2001,2001,837,N,1,,ASI
+JOUG,CW,Jougla Point,-64.827,-63.4932,GEPE,12/9/2002,2002,1556,N,1,,ASI
+JOUG,CW,Jougla Point,-64.827,-63.4932,GEPE,1/25/2003,2002,1621,C,1,,ASI
+JOUG,CW,Jougla Point,-64.827,-63.4932,GEPE,1/5/2004,2003,1540,N,1,,ASI
+JOUG,CW,Jougla Point,-64.827,-63.4932,GEPE,2/16/2004,2003,2043,C,1,,ASI
+JOUG,CW,Jougla Point,-64.827,-63.4932,GEPE,12/20/2004,2004,1306,N,1,,ASI
+JOUG,CW,Jougla Point,-64.827,-63.4932,GEPE,12/26/2005,2005,1409,N,1,,ASI
+JOUG,CW,Jougla Point,-64.827,-63.4932,GEPE,1/27/2006,2005,1925,C,1,,ASI
+JOUG,CW,Jougla Point,-64.827,-63.4932,GEPE,11/22/2006,2006,1282,N,1,,ASI
+JOUG,CW,Jougla Point,-64.827,-63.4932,GEPE,1/28/2007,2006,1684,C,1,,ASI
+JOUG,CW,Jougla Point,-64.827,-63.4932,GEPE,11/25/2007,2007,1276,N,1,,ASI
+JOUG,CW,Jougla Point,-64.827,-63.4932,GEPE,2/2/2008,2007,1666,C,1,,ASI
+JOUG,CW,Jougla Point,-64.827,-63.4932,GEPE,12/8/2008,2008,1479,N,1,,ASI
+JOUG,CW,Jougla Point,-64.827,-63.4932,GEPE,1/25/2009,2008,1656,C,1,,ASI
+JOUG,CW,Jougla Point,-64.827,-63.4932,GEPE,12/15/2009,2009,1521,N,1,,ASI
+JOUG,CW,Jougla Point,-64.827,-63.4932,GEPE,2/6/2010,2009,1980,C,1,,ASI
+JOUG,CW,Jougla Point,-64.827,-63.4932,GEPE,1/15/2011,2010,1147,N,1,,ASI
+JOUG,CW,Jougla Point,-64.827,-63.4932,GEPE,2/4/2011,2010,1336,C,1,,ASI
+JOUG,CW,Jougla Point,-64.827,-63.4932,GEPE,12/21/2011,2011,1172,N,1,,ASI
+JOUG,CW,Jougla Point,-64.827,-63.4932,GEPE,1/21/2012,2011,1773,C,1,,ASI
+JOUG,CW,Jougla Point,-64.827,-63.4932,GEPE,1/5/2013,2012,1264,N,1,,ASI
+KAIS,CW,Cape Kaiser,-64.2365,-61.9993,GEPE,12/9/2010,2010,0,N,1,,ASI
+LAUT,CW,"Lautaro Neck, Lautaro Island",-64.8285,-63.1027,GEPE,12/13/2010,2010,206,N,1,,ASI
+LOUB,CW,Loubat Point,-65.0776,-63.9265,GEPE,1/28/1983,1982,208,N,1,,"Parmelee, D. F., and J. M. Parmelee. 1987. Revised penguin numbers and distribution for Anvers Island, Antarctica. British Antarctic Survey Bulletin 76: 65-73."
+LOUB,CW,Loubat Point,-65.0776,-63.9265,GEPE,1/19/2013,2012,569,N,1,,ASI
+MIKK,CW,Mikkelsen Harbor,-63.8964,-60.7762,GEPE,1/16/1984,1983,300,N,4,,"Parmelee, D. F., and J. M. Parmelee. 1987. Revised penguin numbers and distribution for Anvers Island, Antarctica. British Antarctic Survey Bulletin 76: 65-73."
+MIKK,CW,Mikkelsen Harbor,-63.8964,-60.7762,GEPE,1/15/1996,1995,595,N,1,,ASI
+MIKK,CW,Mikkelsen Harbor,-63.8964,-60.7762,GEPE,2/11/1996,1995,600,C,1,,ASI
+MIKK,CW,Mikkelsen Harbor,-63.8964,-60.7762,GEPE,1/19/2008,2007,907,N,1,,ASI
+MIKK,CW,Mikkelsen Harbor,-63.8964,-60.7762,GEPE,1/29/2008,2007,646,C,1,,ASI
+MIKK,CW,Mikkelsen Harbor,-63.8964,-60.7762,GEPE,1/26/2009,2008,1267,C,1,,ASI
+MIKK,CW,Mikkelsen Harbor,-63.8964,-60.7762,GEPE,1/30/2011,2010,673,N,1,,ASI
+MIKK,CW,Mikkelsen Harbor,-63.8964,-60.7762,GEPE,1/10/2013,2012,1320,N,1,,ASI
+MOOT,CW,Moot Point,-65.2,-64.1,GEPE,11/24/2005,2005,74,N,1,,ASI
+MOOT,CW,Moot Point,-65.2,-64.1,GEPE,11/25/2006,2006,106,N,1,,ASI
+MOOT,CW,Moot Point,-65.2,-64.1,GEPE,2/12/2008,2007,278,C,1,,ASI
+MOOT,CW,Moot Point,-65.2,-64.1,GEPE,12/23/2008,2008,224,N,1,,ASI
+MOOT,CW,Moot Point,-65.2,-64.1,GEPE,2/14/2009,2008,272,C,1,,ASI
+MOOT,CW,Moot Point,-65.2,-64.1,GEPE,12/25/2009,2009,323,N,1,,ASI
+MOOT,CW,Moot Point,-65.2,-64.1,GEPE,1/2/2011,2010,371,N,1,,ASI
+MOOT,CW,Moot Point,-65.2,-64.1,GEPE,1/5/2013,2012,479,N,1,,ASI
+NEKO,CW,Neko Harbor,-64.8383,-62.5327,GEPE,2/4/1987,1986,397,C,1,,"Parmelee, D. F., and J. M. Parmelee. 1987. Revised penguin numbers and distribution for Anvers Island, Antarctica. British Antarctic Survey Bulletin 76: 65-73."
+NEKO,CW,Neko Harbor,-64.8383,-62.5327,GEPE,2/3/1996,1995,934,C,1,,ASI
+NEKO,CW,Neko Harbor,-64.8383,-62.5327,GEPE,1/23/1999,1998,625,C,1,,ASI
+NEKO,CW,Neko Harbor,-64.8383,-62.5327,GEPE,12/16/1999,1999,864,N,1,,ASI
+NEKO,CW,Neko Harbor,-64.8383,-62.5327,GEPE,1/24/2000,1999,1320,C,1,,ASI
+NEKO,CW,Neko Harbor,-64.8383,-62.5327,GEPE,12/11/2002,2002,1072,N,1,,ASI
+NEKO,CW,Neko Harbor,-64.8383,-62.5327,GEPE,12/21/2003,2003,1088,N,1,,ASI
+NEKO,CW,Neko Harbor,-64.8383,-62.5327,GEPE,2/6/2004,2003,1134,C,1,,ASI
+NEKO,CW,Neko Harbor,-64.8383,-62.5327,GEPE,12/14/2004,2004,1096,N,1,,ASI
+NEKO,CW,Neko Harbor,-64.8383,-62.5327,GEPE,12/3/2005,2005,1301,N,1,,ASI
+NEKO,CW,Neko Harbor,-64.8383,-62.5327,GEPE,1/28/2006,2005,1726,C,1,,ASI
+NEKO,CW,Neko Harbor,-64.8383,-62.5327,GEPE,12/13/2006,2006,1153,N,2,,ASI
+NEKO,CW,Neko Harbor,-64.8383,-62.5327,GEPE,11/27/2007,2007,1129,N,1,,ASI
+NEKO,CW,Neko Harbor,-64.8383,-62.5327,GEPE,12/2/2008,2008,1431,N,1,,ASI
+NEKO,CW,Neko Harbor,-64.8383,-62.5327,GEPE,1/27/2009,2008,1730,C,1,,ASI
+NEKO,CW,Neko Harbor,-64.8383,-62.5327,GEPE,1/3/2010,2009,1294,N,1,,ASI
+NEKO,CW,Neko Harbor,-64.8383,-62.5327,GEPE,12/13/2010,2010,1271,N,1,,ASI
+NEKO,CW,Neko Harbor,-64.8383,-62.5327,GEPE,1/22/2012,2011,1325,N,1,,ASI
+NEKO,CW,Neko Harbor,-64.8383,-62.5327,GEPE,2/1/2012,2011,1877,C,1,,ASI
+NEKO,CW,Neko Harbor,-64.8383,-62.5327,GEPE,12/13/2012,2012,1402,N,1,,ASI
+NUEM,CW,Nuemayer Channel,-64.776,-63.438,GEPE,12/16/2010,2010,24,N,1,Exact location unknown,ASI
+ONEI,CW,O'Neil Point,-64.8162,-63.0901,GEPE,xx/xx/1988,1987,100,N,1,"Previously called ""Nameless Is""","Woehler, E. J. 1993. The distribution and abundance of Antarctic and Subantarctic penguins. Scientific Committee on Antarctic Research, Cambridge, UK."
+ONEI,CW,O'Neil Point,-64.8162,-63.0901,GEPE,12/13/2010,2010,221,N,1,,ASI
+ORNE,CW,Orne Islands,-64.659,-62.6631,GEPE,11/27/1999,1999,3,N,1,,ASI
+ORNE,CW,Orne Islands,-64.659,-62.6631,GEPE,11/22/2005,2005,41,N,4,,ASI
+ORNE,CW,Orne Islands,-64.659,-62.6631,GEPE,1/26/2007,2006,65,C,1,,ASI
+ORNE,CW,Orne Islands,-64.659,-62.6631,GEPE,12/15/2007,2007,58,N,1,,ASI
+ORNE,CW,Orne Islands,-64.659,-62.6631,GEPE,1/30/2008,2007,68,C,1,,ASI
+ORNE,CW,Orne Islands,-64.659,-62.6631,GEPE,12/16/2008,2008,58,N,1,,ASI
+ORNE,CW,Orne Islands,-64.659,-62.6631,GEPE,2/12/2009,2008,68,C,1,,ASI
+ORNE,CW,Orne Islands,-64.659,-62.6631,GEPE,1/26/2010,2009,120,C,1,,ASI
+ORNE,CW,Orne Islands,-64.659,-62.6631,GEPE,12/27/2010,2010,103,N,3,,ASI
+ORNE,CW,Orne Islands,-64.659,-62.6631,GEPE,1/23/2013,2012,155,N,1,,ASI
+PELT,CW,Peltier Channel,-64.87,-63.53,GEPE,1/15/2009,2008,804,N,1,,ASI
+PELT,CW,Peltier Channel,-64.87,-63.53,GEPE,1/27/2010,2009,996,N,1,,ASI
+PETE,CW,Petermann Island,-65.1721,-64.142,GEPE,12/22/1982,1982,375,N,1,,"Parmelee, D. F., and J. M. Parmelee. 1987. Revised penguin numbers and distribution for Anvers Island, Antarctica. British Antarctic Survey Bulletin 76: 65-73."
+PETE,CW,Petermann Island,-65.1721,-64.142,GEPE,xx/xx/1988,1988,755,N,2,,"Woehler, E. J. 1993. The distribution and abundance of Antarctic and Subantarctic penguins. Scientific Committee on Antarctic Research, Cambridge, UK."
+PETE,CW,Petermann Island,-65.1721,-64.142,GEPE,12/4/2003,2003,2145,N,1,"See Lynch, H.J., W.F. Fagan, and R. Naveen. 2010. Population trends and reproductive success at a frequently visited penguin colony on the Western Antarctic Peninsula. Polar Biology 33(4): 493-503",ASI
+PETE,CW,Petermann Island,-65.1721,-64.142,GEPE,1/24/2004,2003,3260,C,1,"See Lynch, H.J., W.F. Fagan, and R. Naveen. 2010. Population trends and reproductive success at a frequently visited penguin colony on the Western Antarctic Peninsula. Polar Biology 33(4): 493-503",ASI
+PETE,CW,Petermann Island,-65.1721,-64.142,GEPE,12/7/2004,2004,2265,N,1,"See Lynch, H.J., W.F. Fagan, and R. Naveen. 2010. Population trends and reproductive success at a frequently visited penguin colony on the Western Antarctic Peninsula. Polar Biology 33(4): 493-503",ASI
+PETE,CW,Petermann Island,-65.1721,-64.142,GEPE,1/23/2005,2004,2781,C,1,"See Lynch, H.J., W.F. Fagan, and R. Naveen. 2010. Population trends and reproductive success at a frequently visited penguin colony on the Western Antarctic Peninsula. Polar Biology 33(4): 493-503",ASI
+PETE,CW,Petermann Island,-65.1721,-64.142,GEPE,12/2/2005,2005,2438,N,1,"See Lynch, H.J., W.F. Fagan, and R. Naveen. 2010. Population trends and reproductive success at a frequently visited penguin colony on the Western Antarctic Peninsula. Polar Biology 33(4): 493-503",ASI
+PETE,CW,Petermann Island,-65.1721,-64.142,GEPE,1/25/2006,2005,3453,C,1,"See Lynch, H.J., W.F. Fagan, and R. Naveen. 2010. Population trends and reproductive success at a frequently visited penguin colony on the Western Antarctic Peninsula. Polar Biology 33(4): 493-503",ASI
+PETE,CW,Petermann Island,-65.1721,-64.142,GEPE,11/24/2006,2006,2293,N,1,"See Lynch, H.J., W.F. Fagan, and R. Naveen. 2010. Population trends and reproductive success at a frequently visited penguin colony on the Western Antarctic Peninsula. Polar Biology 33(4): 493-503",ASI
+PETE,CW,Petermann Island,-65.1721,-64.142,GEPE,2/2/2007,2006,3344,C,1,"See Lynch, H.J., W.F. Fagan, and R. Naveen. 2010. Population trends and reproductive success at a frequently visited penguin colony on the Western Antarctic Peninsula. Polar Biology 33(4): 493-503",ASI
+PETE,CW,Petermann Island,-65.1721,-64.142,GEPE,11/23/2007,2007,2719,N,1,"See Lynch, H.J., W.F. Fagan, and R. Naveen. 2010. Population trends and reproductive success at a frequently visited penguin colony on the Western Antarctic Peninsula. Polar Biology 33(4): 493-503",ASI
+PETE,CW,Petermann Island,-65.1721,-64.142,GEPE,2/5/2008,2007,3348,C,1,"See Lynch, H.J., W.F. Fagan, and R. Naveen. 2010. Population trends and reproductive success at a frequently visited penguin colony on the Western Antarctic Peninsula. Polar Biology 33(4): 493-503",ASI
+PETE,CW,Petermann Island,-65.1721,-64.142,GEPE,12/1/2008,2008,2897,N,1,,ASI
+PETE,CW,Petermann Island,-65.1721,-64.142,GEPE,1/12/2009,2008,3731,C,1,,ASI
+PETE,CW,Petermann Island,-65.1721,-64.142,GEPE,12/14/2009,2009,3020,N,1,,ASI
+PETE,CW,Petermann Island,-65.1721,-64.142,GEPE,1/7/2013,2012,3300,N,1,,ASI
+PLEN,CW,Pléneau Island,-65.104,-64.0556,GEPE,12/23/1982,1982,500,N,1,,"Parmelee, D. F., and J. M. Parmelee. 1987. Revised penguin numbers and distribution for Anvers Island, Antarctica. British Antarctic Survey Bulletin 76: 65-73."
+PLEN,CW,Pléneau Island,-65.104,-64.0556,GEPE,11/28/1999,1999,1577,N,1,,ASI
+PLEN,CW,Pléneau Island,-65.104,-64.0556,GEPE,12/13/2000,2000,1579,N,1,,ASI
+PLEN,CW,Pléneau Island,-65.104,-64.0556,GEPE,1/3/2003,2002,1639,N,1,,ASI
+PLEN,CW,Pléneau Island,-65.104,-64.0556,GEPE,12/22/2003,2003,2170,N,1,,ASI
+PLEN,CW,Pléneau Island,-65.104,-64.0556,GEPE,1/4/2005,2004,2135,N,1,,ASI
+PLEN,CW,Pléneau Island,-65.104,-64.0556,GEPE,1/5/2007,2006,1574,N,1,,ASI
+PLEN,CW,Pléneau Island,-65.104,-64.0556,GEPE,1/10/2008,2007,1994,N,2,,ASI
+PLEN,CW,Pléneau Island,-65.104,-64.0556,GEPE,2/1/2008,2007,2984,C,1,,ASI
+PLEN,CW,Pléneau Island,-65.104,-64.0556,GEPE,12/4/2008,2008,2251,N,1,,ASI
+PLEN,CW,Pléneau Island,-65.104,-64.0556,GEPE,1/25/2009,2008,2829,C,1,,ASI
+PLEN,CW,Pléneau Island,-65.104,-64.0556,GEPE,11/22/2009,2009,2301,N,1,,ASI
+PLEN,CW,Pléneau Island,-65.104,-64.0556,GEPE,12/14/2010,2010,2386,N,1,,ASI
+PLEN,CW,Pléneau Island,-65.104,-64.0556,GEPE,2/2/2011,2010,2981,C,1,,ASI
+PLEN,CW,Pléneau Island,-65.104,-64.0556,GEPE,12/21/2012,2012,2795,N,1,,ASI
+PYPT,CW,Py Point,-64.8792,-63.5974,GEPE,1/15/2009,2008,2000,N,4,,ASI
+PYPT,CW,Py Point,-64.8792,-63.5974,GEPE,1/27/2010,2009,1359,N,3,,ASI
+RONE,CW,Ronge Island East,-64.6889,-62.6449,GEPE,1/28/1987,1986,202,C,1,,"Parmelee, D. F., and J. M. Parmelee. 1987. Revised penguin numbers and distribution for Anvers Island, Antarctica. British Antarctic Survey Bulletin 76: 65-73."
+RONE,CW,Ronge Island East,-64.6889,-62.6449,GEPE,xx/xx/1988,1988,214,N,1,,"Woehler, E.J., and J.P. Croxall. 1997. The status and trends of Antarctic and sub-Antarctic seabirds. Marine Ornithology 25: 43-66"
+RONE,CW,Ronge Island East,-64.6889,-62.6449,GEPE,12/29/1992,1992,384,N,1,,"Aguirre, C. A., and J. M. Acero. 1995. Distribution and abundance of birds in Errera Channel, Antarctic Peninsula, during the 1992/93 breeding season. Marine Ornithology 23: 129-134"
+RONE,CW,Ronge Island East,-64.6889,-62.6449,GEPE,xx/xx/1994,1994,445,N,2,,"Woehler, E.J., and J.P. Croxall. 1997. The status and trends of Antarctic and sub-Antarctic seabirds. Marine Ornithology 25: 43-66"
+RONE,CW,Ronge Island East,-64.6889,-62.6449,GEPE,12/26/2007,2007,328,N,1,,ASI
+RONE,CW,Ronge Island East,-64.6889,-62.6449,GEPE,2/19/2008,2007,538,C,1,,ASI
+RONE,CW,Ronge Island East,-64.6889,-62.6449,GEPE,12/7/2008,2008,155,N,3,,ASI
+RONE,CW,Ronge Island East,-64.6889,-62.6449,GEPE,2/12/2009,2008,301,C,1,,ASI
+RONE,CW,Ronge Island East,-64.6889,-62.6449,GEPE,1/13/2010,2009,319,N,1,,ASI
+RONE,CW,Ronge Island East,-64.6889,-62.6449,GEPE,2/16/2010,2009,434,C,1,,ASI
+RONE,CW,Ronge Island East,-64.6889,-62.6449,GEPE,12/5/2012,2012,271,N,1,,ASI
+SANE,CW,San Eliado Point,-64.844,-63.1166,GEPE,xx/xx/1989,1988,150,N,3,"Previously called Bryde Island ""north""","Woehler, E. J. 1993. The distribution and abundance of Antarctic and Subantarctic penguins. Scientific Committee on Antarctic Research, Cambridge, UK."
+SANE,CW,San Eliado Point,-64.844,-63.1166,GEPE,12/13/2010,2010,245,N,1,,ASI
+SELV,CW,Selvick Cove,-64.6498,-62.5718,GEPE,12/15/2007,2007,362,N,1,,ASI
+SELV,CW,Selvick Cove,-64.6498,-62.5718,GEPE,1/23/2009,2008,258,N,1,,ASI
+SELV,CW,Selvick Cove,-64.6498,-62.5718,GEPE,12/26/2009,2009,429,N,1,,ASI
+SELV,CW,Selvick Cove,-64.6498,-62.5718,GEPE,12/13/2012,2012,292,N,1,,ASI
+SKOT,CW,Skottsberg Point,-63.9205,-60.8089,GEPE,1/22/1987,1986,300,N,1,Nests assumed equal to reported number of breeding pairs.,"Parmelee, D. F., and J. M. Parmelee. 1987. Revised penguin numbers and distribution for Anvers Island, Antarctica. British Antarctic Survey Bulletin 76: 65-73."
+SKOT,CW,Skottsberg Point,-63.9205,-60.8089,GEPE,2/1/2009,2008,190,C,1,,ASI
+SKOT,CW,Skottsberg Point,-63.9205,-60.8089,GEPE,1/10/2013,2012,398,N,1,,ASI
+SPIG,CW,Spigot Peak,-64.6347,-62.5557,GEPE,12/15/2007,2007,1,N,1,,ASI
+SPIE,CW,Errera Channel side of Spigot Peak,-64.632,-62.561,GEPE,12/24/2011,2011,416,N,1,,ASI
+STER,CW,Sterneck Island,-64.188,-61.051,GEPE,1/24/1987,1986,450,N,1,,"Parmelee, D. F., and J. M. Parmelee. 1987. Revised penguin numbers and distribution for Anvers Island, Antarctica. British Antarctic Survey Bulletin 76: 65-73."
+STER,CW,Sterneck Island,-64.188,-61.051,GEPE,12/10/2010,2010,3305,N,1,,ASI
+USEF,CW,Useful Island,-64.717,-62.871,GEPE,1/17/1984,1983,150,N,3,,"Parmelee, D. F., and J. M. Parmelee. 1987. Revised penguin numbers and distribution for Anvers Island, Antarctica. British Antarctic Survey Bulletin 76: 65-73."
+USEF,CW,Useful Island,-64.717,-62.871,GEPE,1/3/2005,2004,1861,N,1,,ASI
+USEF,CW,Useful Island,-64.717,-62.871,GEPE,11/24/2007,2007,1432,N,1,,ASI
+USEF,CW,Useful Island,-64.717,-62.871,GEPE,11/20/2008,2008,1464,N,1,,ASI
+USEF,CW,Useful Island,-64.717,-62.871,GEPE,2/6/2009,2008,1400,C,1,,ASI
+USEF,CW,Useful Island,-64.717,-62.871,GEPE,2/8/2010,2009,2680,C,1,,ASI
+VERN,CW,Vernadsky Station,-65.2453,-64.2567,GEPE,1/24/2000,1999,0,N,1,,ASI
+VERN,CW,Vernadsky Station,-65.2453,-64.2567,GEPE,12/3/2007,2007,21,N,1,,ASI
+VERN,CW,Vernadsky Station,-65.2453,-64.2567,GEPE,12/6/2008,2008,51,N,1,,ASI
+VERN,CW,Vernadsky Station,-65.2453,-64.2567,GEPE,1/19/2009,2008,13,C,1,,ASI
+VERN,CW,Vernadsky Station,-65.2453,-64.2567,GEPE,12/16/2012,2012,206,N,1,,ASI
+WATE,CW,"Waterboat Point, Paradise Bay",-64.8236,-62.8581,GEPE,1/30/1986,1985,1010,C,1,,"Parmelee, D. F., and J. M. Parmelee. 1987. Revised penguin numbers and distribution for Anvers Island, Antarctica. British Antarctic Survey Bulletin 76: 65-73."
+WATE,CW,"Waterboat Point, Paradise Bay",-64.8236,-62.8581,GEPE,2/3/1996,1995,1216,C,2,,ASI
+WATE,CW,"Waterboat Point, Paradise Bay",-64.8236,-62.8581,GEPE,11/23/1997,1997,1455,N,1,,ASI
+WATE,CW,"Waterboat Point, Paradise Bay",-64.8236,-62.8581,GEPE,1/3/2005,2004,2456,N,1,,ASI
+WATE,CW,"Waterboat Point, Paradise Bay",-64.8236,-62.8581,GEPE,12/18/2008,2008,2681,N,2,,ASI
+WATE,CW,"Waterboat Point, Paradise Bay",-64.8236,-62.8581,GEPE,12/12/2011,2011,2509,N,1,,ASI
+WATE,CW,"Waterboat Point, Paradise Bay",-64.8236,-62.8581,GEPE,1/31/2012,2011,4381,C,1,,ASI
+WATE,CW,"Waterboat Point, Paradise Bay",-64.8236,-62.8581,GEPE,1/8/2013,2012,3154,N,1,,ASI
+YALO,SW,Yalour Islands,-65.2421,-64.1558,GEPE,11/30/2003,2003,0,N,1,,ASI
+YALO,SW,Yalour Islands,-65.2421,-64.1558,GEPE,12/25/2006,2006,15,N,1,,ASI
+YALO,SW,Yalour Islands,-65.2421,-64.1558,GEPE,12/25/2009,2009,23,N,1,,ASI
+LOOK,EI,Cape Lookout,-61.2802,-55.2047,CHPE,12/31/2010,2010,2168,N,1,,ASI
+ARDL,SH,Ardley Island,-62.2131,-58.9332,CHPE,xx/xx/1980(81),1980,244,N,1,,Management Plan for ASPA No. 150
+ARDL,SH,Ardley Island,-62.2131,-58.9332,CHPE,xx/xx/1981(82),1981,141,N,1,,Management Plan for ASPA No. 150
+ARDL,SH,Ardley Island,-62.2131,-58.9332,CHPE,xx/xx/1983(84),1983,91,N,1,,Management Plan for ASPA No. 150
+ARDL,SH,Ardley Island,-62.2131,-58.9332,CHPE,xx/xx/1984(85),1984,110,N,1,,Management Plan for ASPA No. 150
+ARDL,SH,Ardley Island,-62.2131,-58.9332,CHPE,xx/xx/1985(86),1985,39,N,1,,Management Plan for ASPA No. 150
+ARDL,SH,Ardley Island,-62.2131,-58.9332,CHPE,xx/xx/1994(95),1994,45,N,1,,Management Plan for ASPA No. 150
+ARDL,SH,Ardley Island,-62.2131,-58.9332,CHPE,xx/xx/1995(96),1995,49,N,1,,Management Plan for ASPA No. 150
+ARDL,SH,Ardley Island,-62.2131,-58.9332,CHPE,xx/xx/1996(97),1996,72,N,1,,Management Plan for ASPA No. 150
+ARDL,SH,Ardley Island,-62.2131,-58.9332,CHPE,xx/xx/1997(98),1997,33,N,1,,Management Plan for ASPA No. 150
+ARDL,SH,Ardley Island,-62.2131,-58.9332,CHPE,xx/xx/1998(99),1998,43,N,1,,Management Plan for ASPA No. 150
+ARDL,SH,Ardley Island,-62.2131,-58.9332,CHPE,xx/xx/1999(00),1999,34,N,1,,Management Plan for ASPA No. 150
+ARDL,SH,Ardley Island,-62.2131,-58.9332,CHPE,xx/xx/2000(01),2000,26,N,1,,Management Plan for ASPA No. 150
+ARDL,SH,Ardley Island,-62.2131,-58.9332,CHPE,xx/xx/2001(02),2001,22,N,1,,Management Plan for ASPA No. 150
+ARDL,SH,Ardley Island,-62.2131,-58.9332,CHPE,xx/xx/2002(03),2002,35,N,1,,Management Plan for ASPA No. 150
+ARDL,SH,Ardley Island,-62.2131,-58.9332,CHPE,xx/xx/2003(04),2003,29,N,1,,Management Plan for ASPA No. 150
+ARDL,SH,Ardley Island,-62.2131,-58.9332,CHPE,xx/xx/2004(05),2004,13,N,1,,Management Plan for ASPA No. 150
+ARDL,SH,Ardley Island,-62.2131,-58.9332,CHPE,xx/xx/2005(06),2005,9,N,1,,Management Plan for ASPA No. 150
+AITC,SH,"Barrientos Island, Aitcho Islands",-62.3811,-59.7764,CHPE,11/25/1997,1997,4608,N,1,,ASI
+AITC,SH,"Barrientos Island, Aitcho Islands",-62.3811,-59.7764,CHPE,11/26/2008,2008,5620,N,1,,ASI
+AITC,SH,"Barrientos Island, Aitcho Islands",-62.3811,-59.7764,CHPE,1/25/2009,2008,8307,C,1,,ASI
+AITC,SH,"Barrientos Island, Aitcho Islands",-62.3811,-59.7764,CHPE,1/22/2010,2009,4870,C,1,,ASI
+AITC,SH,"Barrientos Island, Aitcho Islands",-62.3811,-59.7764,CHPE,11/17/2011,2011,4047,N,1,,ASI
+BAIL,SH,Baily Head,-62.9667,-60.5,CHPE,1/21/2003,2002,85473,N,4,"see Naveen, R., H. J. Lynch, S. Forrest, T. Mueller, and M. Polito. 2012. First, complete site-wide penguin survey at Deception Island, Antarctica reveals massive declines consistent with climate change. Polar Biology 35(12): 1879-1888. ",ASI
+BAIL,SH,Baily Head,-62.9667,-60.5,CHPE,12/8/2011,2011,50408,N,1,"see Naveen, R., H. J. Lynch, S. Forrest, T. Mueller, and M. Polito. 2012. First, complete site-wide penguin survey at Deception Island, Antarctica reveals massive declines consistent with climate change. Polar Biology 35(12): 1879-1888. ",ASI
+CECI,SH,Cecilia Island,-62.4128,-59.7285,CHPE,1/11/2006,2005,14,N,1,,ASI
+DEEI,SH,Dee Island,-62.4229,-59.7836,CHPE,12/7/2010,2010,0,N,1,,ASI
+ENTR,SH,Entrance Point,-62.9981,-60.5533,CHPE,xx/xx/1987,1987,1000,N,4,Number of nests estimated from count of 2000 adults (A4).,"Woehler, E. J. 1993. The distribution and abundance of Antarctic and Subantarctic penguins. Scientific Committee on Antarctic Research, Cambridge, UK."
+ENTR,SH,Entrance Point,-62.9981,-60.5533,CHPE,3/xx/2000,1999,720,N,1,Accuracy has been estimated from original source.,"Bo, M. S., and S. Copello. 2000. Distribution and abundance of breeding birds at Deception Island, South Shetland Islands, Antarctica, February to April 2000. Marine Ornithology 29: 39-42"
+ENTR,SH,Entrance Point,-62.9981,-60.5533,CHPE,12/23/2005,2005,566,N,1,,ASI
+ENTR,SH,Entrance Point,-62.9981,-60.5533,CHPE,1/25/2006,2005,736,C,1,,ASI
+ENTR,SH,Entrance Point,-62.9981,-60.5533,CHPE,11/21/2006,2006,902,N,1,,ASI
+ENTR,SH,Entrance Point,-62.9981,-60.5533,CHPE,1/22/2011,2010,543,C,1,,ASI
+ENTR,SH,Entrance Point,-62.9981,-60.5533,CHPE,12/xx/2011,2011,551,N,1,,ASI
+ENTR,SH,Entrance Point,-62.9981,-60.5533,CHPE,12/21/2012,2012,696,N,1,,ASI
+ENTW,SH,Entrance Point West,-63.0078,-60.5619,CHPE,12/xx/2011,2011,852,N,3,,ASI
+FORT,SH,Fort Point,-62.5431,-59.5752,CHPE,xx/xx/1987,1987,1200,N,4,,"Woehler, E. J. 1993. The distribution and abundance of Antarctic and Subantarctic penguins. Scientific Committee on Antarctic Research, Cambridge, UK."
+FORT,SH,Fort Point,-62.5431,-59.5752,CHPE,12/13/1999,1999,853,N,1,,ASI
+FORT,SH,Fort Point,-62.5431,-59.5752,CHPE,12/14/2011,2011,983,N,3,,ASI
+HALF,SH,Half Moon Island,-62.5901,-59.9203,CHPE,2/10/1987,1986,6000,N,3,Number of nests estimated from count of 6000 adults (A3).,"Shuford, W. D., and L. B. Spear. 1988. Surveys of breeding chinstrap penguins in the South Shetland Islands, Antarctica. British Antarctic Survey Bulletin 81: 19-30"
+HALF,SH,Half Moon Island,-62.5901,-59.9203,CHPE,xx/xx/1987,1987,2500,N,1,,"Woehler, E. J. 1993. The distribution and abundance of Antarctic and Subantarctic penguins. Scientific Committee on Antarctic Research, Cambridge, UK."
+HALF,SH,Half Moon Island,-62.5901,-59.9203,CHPE,1/xx/1991,1990,1747,N,1,Nests assumed equal to reported number of breeding pairs.,"Esponda, C. M. G., N. R. Coria, and D. Montalti. 2000. Breeding birds at Halfmoon Island, South Shetland Islands, Antarctica, 1995/96. Marine Ornithology 28: 59-62"
+HALF,SH,Half Moon Island,-62.5901,-59.9203,CHPE,xx/xx/xxxx,1996,3342,N,1,,"Esponda, C. M. G., N. R. Coria, and D. Montalti. 2000. Breeding birds at Halfmoon Island, South Shetland Islands, Antarctica, 1995/96. Marine Ornithology 28: 59-62"
+HALF,SH,Half Moon Island,-62.5901,-59.9203,CHPE,11/26/1998,1998,3312,N,1,,ASI
+HALF,SH,Half Moon Island,-62.5901,-59.9203,CHPE,12/14/2007,2007,1732,N,1,,ASI
+HALF,SH,Half Moon Island,-62.5901,-59.9203,CHPE,12/18/2008,2008,2023,N,1,,ASI
+HALF,SH,Half Moon Island,-62.5901,-59.9203,CHPE,1/17/2009,2008,2263,C,1,,ASI
+HALF,SH,Half Moon Island,-62.5901,-59.9203,CHPE,12/21/2010,2010,2036,N,1,,ASI
+HALF,SH,Half Moon Island,-62.5901,-59.9203,CHPE,1/29/2011,2010,2574,C,1,,ASI
+HALF,SH,Half Moon Island,-62.5901,-59.9203,CHPE,12/2/2011,2011,2161,N,1,,ASI
+HALF,SH,Half Moon Island,-62.5901,-59.9203,CHPE,12/25/2012,2012,2094,N,1,,ASI
+HANN,SH,Hannah Point,-62.6545,-60.6134,CHPE,2/9/1987,1986,2599,N,2,,"Shuford, W. D., and L. B. Spear. 1988. Surveys of breeding chinstrap penguins in the South Shetland Islands, Antarctica. British Antarctic Survey Bulletin 81: 19-30"
+HANN,SH,Hannah Point,-62.6545,-60.6134,CHPE,12/9/1994,1994,1037,N,1,,ASI
+HANN,SH,Hannah Point,-62.6545,-60.6134,CHPE,1/23/1995,1994,1033,C,1,,ASI
+HANN,SH,Hannah Point,-62.6545,-60.6134,CHPE,11/18/1995,1995,1281,N,1,,ASI
+HANN,SH,Hannah Point,-62.6545,-60.6134,CHPE,12/3/1996,1996,1158,N,1,,ASI
+HANN,SH,Hannah Point,-62.6545,-60.6134,CHPE,12/3/1997,1997,1138,N,1,,ASI
+HANN,SH,Hannah Point,-62.6545,-60.6134,CHPE,12/18/1999,1999,1061,N,1,,ASI
+HANN,SH,Hannah Point,-62.6545,-60.6134,CHPE,1/25/2000,1999,1442,C,1,,ASI
+HANN,SH,Hannah Point,-62.6545,-60.6134,CHPE,12/23/2004,2004,759,N,1,,ASI
+HANN,SH,Hannah Point,-62.6545,-60.6134,CHPE,1/10/2011,2010,593,N,1,,ASI
+HANN,SH,Hannah Point,-62.6545,-60.6134,CHPE,1/30/2011,2010,874,C,1,,ASI
+HANN,SH,Hannah Point,-62.6545,-60.6134,CHPE,2/3/2012,2011,1017,C,1,,ASI
+HPSW,SH,Hall Peninsula,-62.7704,-61.2545,CHPE,2/8/1987,1986,2000,N,2,,"Shuford, W. D., and L. B. Spear. 1988. Surveys of breeding chinstrap penguins in the South Shetland Islands, Antarctica. British Antarctic Survey Bulletin 81: 19-30"
+HPSW,SH,Hall Peninsula,-62.7704,-61.2545,CHPE,12/15/2011,2011,1316,N,1,,ASI
+HURW,SH,Hurd Peninsula West,-62.674,-60.406,CHPE,12/8/2010,2010,0,N,1,,ASI
+MPTE,SH,Macaroni Point East,-62.8988,-60.5347,CHPE,12/xx/2011,2011,885,N,2,,ASI
+MPTW,SH,Macaroni Point West,-62.8997,-60.5888,CHPE,12/xx/2011,2011,2448,N,1,,ASI
+PENG,SH,Penguin Island,-62.1024,-57.9258,CHPE,12/xx/1979,1979,7058,N,1,Accuracy has been estimated from original source.,"Sander, M., T. C. Balbao, E. S. Costa, C. R. dos Santos, and M. V. Petry. 2007. Decline of the breeding population of Pygoscelis antarctica and Pygoscelis adeliae on Penguin Island, South Shetland, Antarctica. Polar Biology 30: 651-654"
+PENG,SH,Penguin Island,-62.1024,-57.9258,CHPE,12/xx/1980,1980,8794,N,1,Accuracy has been estimated from original source.,"Sander, M., T. C. Balbao, E. S. Costa, C. R. dos Santos, and M. V. Petry. 2007. Decline of the breeding population of Pygoscelis antarctica and Pygoscelis adeliae on Penguin Island, South Shetland, Antarctica. Polar Biology 30: 651-654"
+PENG,SH,Penguin Island,-62.1024,-57.9258,CHPE,1/xx/2000,1999,3774,N,1,Accuracy has been estimated from original source; date of census was between 4 and 12 JAN,"Sander, M., T. C. Balbao, E. S. Costa, C. R. dos Santos, and M. V. Petry. 2007. Decline of the breeding population of Pygoscelis antarctica and Pygoscelis adeliae on Penguin Island, South Shetland, Antarctica. Polar Biology 30: 651-654"
+PENG,SH,Penguin Island,-62.1024,-57.9258,CHPE,12/xx/2000,2000,3296,N,1,Accuracy has been estimated from original source; date of census was between 16 and 21 DEC,"Sander, M., T. C. Balbao, E. S. Costa, C. R. dos Santos, and M. V. Petry. 2007. Decline of the breeding population of Pygoscelis antarctica and Pygoscelis adeliae on Penguin Island, South Shetland, Antarctica. Polar Biology 30: 651-654"
+PENG,SH,Penguin Island,-62.1024,-57.9258,CHPE,12/xx/2003,2003,2672,N,1,Accuracy has been estimated from original source.,"Sander, M., T. C. Balbao, E. S. Costa, C. R. dos Santos, and M. V. Petry. 2007. Decline of the breeding population of Pygoscelis antarctica and Pygoscelis adeliae on Penguin Island, South Shetland, Antarctica. Polar Biology 30: 651-654"
+PENG,SH,Penguin Island,-62.1024,-57.9258,CHPE,12/6/2010,2010,3017,N,1,,ASI
+PENG,SH,Penguin Island,-62.1024,-57.9258,CHPE,1/12/2013,2012,1545,N,3,Counted from photographs.,ASI
+PRES,SH,President Head,-62.7255,-61.2001,CHPE,xx/xx/1987,1987,100,N,4,Number of nests estimated from count of 100 adults (A4).,"Shuford, W. D., and L. B. Spear. 1988. Surveys of breeding chinstrap penguins in the South Shetland Islands, Antarctica. British Antarctic Survey Bulletin 81: 19-30"
+PRES,SH,President Head,-62.7255,-61.2001,CHPE,11/21/2005,2005,23,N,1,,ASI
+PRES,SH,President Head,-62.7255,-61.2001,CHPE,12/15/2011,2011,0,N,1,,ASI
+PRES,SH,President Head,-62.7255,-61.2001,CHPE,11/28/2007,2007,7,N,1,,ASI
+RENI,SH,Renier Point,-62.61,-59.8062,CHPE,xx/xx/1987,1986,1428,N,3,,"Woehler, E. J. 1993. The distribution and abundance of Antarctic and Subantarctic penguins. Scientific Committee on Antarctic Research, Cambridge, UK."
+RENI,SH,Renier Point,-62.61,-59.8062,CHPE,12/2/2011,2011,302,N,1,,ASI
+ROBE,SH,Robert Point,-62.45,-59.383,CHPE,2/11/1987,1986,5000,N,2,,"Shuford, W. D., and L. B. Spear. 1988. Surveys of breeding chinstrap penguins in the South Shetland Islands, Antarctica. British Antarctic Survey Bulletin 81: 19-30"
+ROBE,SH,Robert Point,-62.45,-59.383,CHPE,12/15/2012,2012,2780,N,1,,ASI
+RUGG,SH,Rugged Rocks,-62.6012,-59.8155,CHPE,2/10/1987,1986,3000,N,2,,"Shuford, W. D., and L. B. Spear. 1988. Surveys of breeding chinstrap penguins in the South Shetland Islands, Antarctica. British Antarctic Survey Bulletin 81: 19-30"
+RUGG,SH,Rugged Rocks,-62.6012,-59.8155,CHPE,12/2/2011,2011,1554,N,1,,ASI
+RUGG,SH,Rugged Rocks,-62.6012,-59.8155,CHPE,12/21/2012,2012,1664,N,1,,ASI
+SPBL,SH,South Point Bluff,-63.0158,-60.6347,CHPE,12/9/2011,2011,217,N,3,,ASI
+SPNW,SH,South Point Northwest,-63.0189,-60.6608,CHPE,12/9/2011,2011,5352,N,2,,ASI
+TURR,SH,Turret Point ,-62.089,-57.9519,CHPE,2/12/1987,1986,300,N,2,,"Shuford, W. D., and L. B. Spear. 1988. Surveys of breeding chinstrap penguins in the South Shetland Islands, Antarctica. British Antarctic Survey Bulletin 81: 19-30"
+TURR,SH,Turret Point ,-62.089,-57.9519,CHPE,12/6/2010,2010,62,N,1,,ASI
+TURR,SH,Turret Point ,-62.089,-57.9519,CHPE,12/2/2012,2012,46,N,1,,ASI
+VAPO,SH,Vapour Col,-62.9767,-60.7283,CHPE,12/4/2011,2011,19177,N,1,,ASI
+ALCO,CW,Alcock Island,-64.2396,-61.1272,CHPE,xx/xx/1990,1989,3000,N,4,,"Woehler, E. J. 1993. The distribution and abundance of Antarctic and Subantarctic penguins. Scientific Committee on Antarctic Research, Cambridge, UK."
+ALCO,CW,Alcock Island,-64.2396,-61.1272,CHPE,12/10/2010,2010,1016,N,1,,ASI
+PCHA,CW,"Port Charcot, Booth Island",-65.065,-63.9862,CHPE,1/26/1983,1982,3,C,1,,"Woehler, E. J. 1993. The distribution and abundance of Antarctic and Subantarctic penguins. Scientific Committee on Antarctic Research, Cambridge, UK."
+PCHA,CW,"Port Charcot, Booth Island",-65.065,-63.9862,CHPE,2/1/1986,1985,3,N,1,,"Parmelee, D. F., and J. M. Parmelee. 1987. Revised penguin numbers and distribution for Anvers Island, Antarctica. British Antarctic Survey Bulletin 76: 65-73."
+PCHA,CW,"Port Charcot, Booth Island",-65.065,-63.9862,CHPE,xx/xx/1990,1990,3,N,1,,"Woehler, E. J. 1993. The distribution and abundance of Antarctic and Subantarctic penguins. Scientific Committee on Antarctic Research, Cambridge, UK."
+PCHA,CW,"Port Charcot, Booth Island",-65.065,-63.9862,CHPE,1/14/2001,2000,12,N,1,,ASI
+PCHA,CW,"Port Charcot, Booth Island",-65.065,-63.9862,CHPE,2/4/2001,2000,18,C,1,,ASI
+PCHA,CW,"Port Charcot, Booth Island",-65.065,-63.9862,CHPE,12/24/2001,2001,24,N,1,,ASI
+PCHA,CW,"Port Charcot, Booth Island",-65.065,-63.9862,CHPE,1/4/2006,2005,9,N,1,,ASI
+PCHA,CW,"Port Charcot, Booth Island",-65.065,-63.9862,CHPE,1/26/2006,2005,12,C,1,,ASI
+PCHA,CW,"Port Charcot, Booth Island",-65.065,-63.9862,CHPE,2/15/2007,2006,13,C,1,,ASI
+PCHA,CW,"Port Charcot, Booth Island",-65.065,-63.9862,CHPE,12/30/2007,2007,11,N,1,,ASI
+PCHA,CW,"Port Charcot, Booth Island",-65.065,-63.9862,CHPE,1/20/2008,2007,17,C,1,,ASI
+PCHA,CW,"Port Charcot, Booth Island",-65.065,-63.9862,CHPE,12/10/2008,2008,17,N,1,,ASI
+PCHA,CW,"Port Charcot, Booth Island",-65.065,-63.9862,CHPE,1/19/2009,2008,22,C,1,,ASI
+PCHA,CW,"Port Charcot, Booth Island",-65.065,-63.9862,CHPE,11/21/2009,2009,20,N,1,,ASI
+PCHA,CW,"Port Charcot, Booth Island",-65.065,-63.9862,CHPE,2/6/2010,2009,30,C,1,,ASI
+PCHA,CW,"Port Charcot, Booth Island",-65.065,-63.9862,CHPE,12/25/2010,2010,25,N,1,,ASI
+PCHA,CW,"Port Charcot, Booth Island",-65.065,-63.9862,CHPE,2/2/2011,2010,32,C,1,,ASI
+PCHA,CW,"Port Charcot, Booth Island",-65.065,-63.9862,CHPE,12/11/2012,2012,22,N,1,,ASI
+CHPT,CW,Charles Point,-64.2386,-61.0004,CHPE,1/23/1987,1986,10,N,1,,"Parmelee, D. F., and J. M. Parmelee. 1987. Revised penguin numbers and distribution for Anvers Island, Antarctica. British Antarctic Survey Bulletin 76: 65-73."
+CHPT,CW,Charles Point,-64.2386,-61.0004,CHPE,12/10/2010,2010,7,N,1,,ASI
+COBA,CW,Cobalescue Island,-64.1795,-61.6499,CHPE,1/29/1986,1985,500,N,5,,"Parmelee, D. F., and J. M. Parmelee. 1987. Revised penguin numbers and distribution for Anvers Island, Antarctica. British Antarctic Survey Bulletin 76: 65-73."
+COBA,CW,Cobalescue Island,-64.1795,-61.6499,CHPE,12/13/2011,2011,457,N,1,,ASI
+CUVE,CW,Cuverville Island,-64.6875,-62.6219,CHPE,12/3/2011,2011,1,N,1,,ASI
+DELA,CW,Delaite Island,-64.5643,-62.1881,CHPE,xx/xx/1989,1988,25,N,4,,"Woehler, E. J. 1993. The distribution and abundance of Antarctic and Subantarctic penguins. Scientific Committee on Antarctic Research, Cambridge, UK."
+DELA,CW,Delaite Island,-64.5643,-62.1881,CHPE,12/11/2010,2010,135,N,1,,ASI
+DUPT,CW,Duthiers Point,-64.8049,-62.8179,CHPE,1/30/1986,1985,137,C,1,,"Parmelee, D. F., and J. M. Parmelee. 1987. Revised penguin numbers and distribution for Anvers Island, Antarctica. British Antarctic Survey Bulletin 76: 65-73."
+DUPT,CW,Duthiers Point,-64.8049,-62.8179,CHPE,xx/xx/1989,1988,97,N,1,,"Woehler, E. J. 1993. The distribution and abundance of Antarctic and Subantarctic penguins. Scientific Committee on Antarctic Research, Cambridge, UK."
+DUPT,CW,Duthiers Point,-64.8049,-62.8179,CHPE,12/13/2010,2010,18,N,1,,ASI
+DUPT,CW,Duthiers Point,-64.8049,-62.8179,CHPE,11/15/2011,2011,21,N,1,,ASI
+ECKE,CW,Eckener Point,-64.4309,-61.6042,CHPE,1/25/1987,1986,40,N,4,,"Parmelee, D. F., and J. M. Parmelee. 1987. Revised penguin numbers and distribution for Anvers Island, Antarctica. British Antarctic Survey Bulletin 76: 65-73 AS CITED IN Woehler, E. J. 1993. The distribution and abundance of Antarctic and Subantarctic penguins. Scientific Committee on Antarctic Research, Cambridge, UK."
+ECKE,CW,Eckener Point,-64.4309,-61.6042,CHPE,12/13/2006,2006,30,N,1,,ASI
+ECKE,CW,Eckener Point,-64.4309,-61.6042,CHPE,11/12/2011,2011,41,N,1,,ASI
+GAST,CW,Gaston Island,-64.4848,-61.827,CHPE,1/26/1987,1986,500,N,4,,"Parmelee, D. F., and J. M. Parmelee. 1987. Revised penguin numbers and distribution for Anvers Island, Antarctica. British Antarctic Survey Bulletin 76: 65-73."
+GAST,CW,Gaston Island,-64.4848,-61.827,CHPE,xx/xx/1989,1988,250,N,1,,"Woehler, E. J. 1993. The distribution and abundance of Antarctic and Subantarctic penguins. Scientific Committee on Antarctic Research, Cambridge, UK."
+GAST,CW,Gaston Island,-64.4848,-61.827,CHPE,12/12/2010,2010,353,N,1,,ASI
+GAST,CW,Gaston Island,-64.4848,-61.827,CHPE,12/4/2012,2012,225,N,1,,ASI
+GEOR,CW,Georges Point,-64.6694,-62.6696,CHPE,1/17/1984,1983,300,N,4,,"Parmelee, D. F., and J. M. Parmelee. 1987. Revised penguin numbers and distribution for Anvers Island, Antarctica. British Antarctic Survey Bulletin 76: 65-73 AS CITED IN Woehler, E. J. 1993. The distribution and abundance of Antarctic and Subantarctic penguins. Scientific Committee on Antarctic Research, Cambridge, UK."
+GEOR,CW,Georges Point,-64.6694,-62.6696,CHPE,1/26/1987,1986,800,N,4,,"Parmelee, D. F., and J. M. Parmelee. 1987. Revised penguin numbers and distribution for Anvers Island, Antarctica. British Antarctic Survey Bulletin 76: 65-73."
+GEOR,CW,Georges Point,-64.6694,-62.6696,CHPE,xx/xx/1988,1988,600,N,3,Assumed this 1988 count is from the 1988/89 breeding season,"Woehler, E. J. 1993. The distribution and abundance of Antarctic and Subantarctic penguins. Scientific Committee on Antarctic Research, Cambridge, UK."
+GEOR,CW,Georges Point,-64.6694,-62.6696,CHPE,xx/xx/1992,1992,447,N,1,Assumed this 1992 count is from the 1992/93 breeding season,"Aguirre, C. A. 1995. Distribution and abundance of birds at Potter Peninsula, 25 de Mayo (King George) Island, South Shetland Islands, Antarctica. Marine Ornithology 23: 23-31"
+GEOR,CW,Georges Point,-64.6694,-62.6696,CHPE,xx/xx/1994,1994,414,N,2,Assumed this 1994 count is from the 1994/95 breeding season,"Woehler, E. J. 1993. The distribution and abundance of Antarctic and Subantarctic penguins. Scientific Committee on Antarctic Research, Cambridge, UK."
+GEOR,CW,Georges Point,-64.6694,-62.6696,CHPE,12/4/1996,1996,383,N,1,,ASI
+GEOR,CW,Georges Point,-64.6694,-62.6696,CHPE,12/4/1997,1997,397,N,1,,ASI
+GEOR,CW,Georges Point,-64.6694,-62.6696,CHPE,11/27/1998,1998,327,N,1,,ASI
+GEOR,CW,Georges Point,-64.6694,-62.6696,CHPE,1/12/2001,2000,356,N,1,,ASI
+GEOR,CW,Georges Point,-64.6694,-62.6696,CHPE,12/20/2004,2004,269,N,1,,ASI
+GEOR,CW,Georges Point,-64.6694,-62.6696,CHPE,12/26/2005,2005,246,N,1,,ASI
+GEOR,CW,Georges Point,-64.6694,-62.6696,CHPE,2/5/2006,2005,399,C,1,,ASI
+GEOR,CW,Georges Point,-64.6694,-62.6696,CHPE,11/22/2006,2006,260,N,1,,ASI
+GEOR,CW,Georges Point,-64.6694,-62.6696,CHPE,1/26/2007,2006,354,C,1,,ASI
+GEOR,CW,Georges Point,-64.6694,-62.6696,CHPE,1/6/2008,2007,213,N,1,,ASI
+GEOR,CW,Georges Point,-64.6694,-62.6696,CHPE,2/10/2008,2007,338,C,1,,ASI
+GEOR,CW,Georges Point,-64.6694,-62.6696,CHPE,12/22/2008,2008,256,N,1,,ASI
+GEOR,CW,Georges Point,-64.6694,-62.6696,CHPE,2/12/2009,2008,210,C,1,,ASI
+GEOR,CW,Georges Point,-64.6694,-62.6696,CHPE,1/3/2010,2009,232,N,1,,ASI
+GEOR,CW,Georges Point,-64.6694,-62.6696,CHPE,12/15/2010,2010,139,N,1,,ASI
+GEOR,CW,Georges Point,-64.6694,-62.6696,CHPE,12/13/2011,2011,193,N,1,,ASI
+GEOR,CW,Georges Point,-64.6694,-62.6696,CHPE,1/12/2013,2012,215,N,1,,ASI
+HYDR,CW,Hydrurga Rocks,-64.1454,-61.6259,CHPE,11/25/1996,1996,526,N,1,,ASI
+HYDR,CW,Hydrurga Rocks,-64.1454,-61.6259,CHPE,12/26/2000,2000,417,N,1,,ASI
+HYDR,CW,Hydrurga Rocks,-64.1454,-61.6259,CHPE,1/1/2003,2002,448,N,1,,ASI
+HYDR,CW,Hydrurga Rocks,-64.1454,-61.6259,CHPE,2/13/2008,2007,627,C,1,,ASI
+HYDR,CW,Hydrurga Rocks,-64.1454,-61.6259,CHPE,1/26/2009,2008,700,N,1,,ASI
+JACP,CW,Jacques Peak,-64.5152,-61.8342,CHPE,12/12/2010,2010,19,N,1,,ASI
+JACP,CW,Jacques Peak,-64.5152,-61.8342,CHPE,12/4/2012,2012,14,N,1,,ASI
+KAIS,CW,Cape Kaiser,-64.2365,-61.9993,CHPE,12/9/2010,2010,0,N,1,,ASI
+MIDA,CW,Midas Island,-64.1685,-61.1008,CHPE,1/24/1987,1986,2000,N,4,,"Parmelee, D. F., and J. M. Parmelee. 1987. Revised penguin numbers and distribution for Anvers Island, Antarctica. British Antarctic Survey Bulletin 76: 65-73."
+MIDA,CW,Midas Island,-64.1685,-61.1008,CHPE,12/10/2010,2010,685,N,4,,ASI
+MIER,CW,Miers Bluff,-62.7167,-60.4282,CHPE,xx/xx/1987,1986,2000,N,3,,"Woehler, E. J. 1993. The distribution and abundance of Antarctic and Subantarctic penguins. Scientific Committee on Antarctic Research, Cambridge, UK."
+MIER,CW,Miers Bluff,-62.7167,-60.4282,CHPE,12/8/2010,2010,2307,N,1,,ASI
+ORNE,CW,Orne Islands,-64.659,-62.6631,CHPE,1/17/1984,1983,340,N,4,,"Woehler, E. J. 1993. The distribution and abundance of Antarctic and Subantarctic penguins. Scientific Committee on Antarctic Research, Cambridge, UK."
+ORNE,CW,Orne Islands,-64.659,-62.6631,CHPE,1/26/1987,1986,860,N,3,,"Woehler, E. J. 1993. The distribution and abundance of Antarctic and Subantarctic penguins. Scientific Committee on Antarctic Research, Cambridge, UK."
+ORNE,CW,Orne Islands,-64.659,-62.6631,CHPE,1/7/1993,1992,521,N,1,,"Aguirre, C. A., and J. M. Acero. 1995. Distribution and abundance of birds in Errera Channel, Antarctic Peninsula, during the 1992/93 breeding season. Marine Ornithology 23: 129-134"
+ORNE,CW,Orne Islands,-64.659,-62.6631,CHPE,xx/xx/1994,1994,420,N,2,Assumed this 1994 count is from the 1994/95 breeding season,"Woehler, E.J., and J.P. Croxall. 1997. The status and trends of Antarctic and sub-Antarctic seabirds. Marine Ornithology 25: 43-66"
+ORNE,CW,Orne Islands,-64.659,-62.6631,CHPE,11/27/1995,1995,431,N,1,,ASI
+ORNE,CW,Orne Islands,-64.659,-62.6631,CHPE,12/4/1996,1996,342,N,1,,ASI
+ORNE,CW,Orne Islands,-64.659,-62.6631,CHPE,12/4/1997,1997,423,N,1,,ASI
+ORNE,CW,Orne Islands,-64.659,-62.6631,CHPE,11/27/1998,1998,370,N,1,,ASI
+ORNE,CW,Orne Islands,-64.659,-62.6631,CHPE,12/6/1998,1998,361,N,1,,ASI
+ORNE,CW,Orne Islands,-64.659,-62.6631,CHPE,11/27/1999,1999,421,N,1,,ASI
+ORNE,CW,Orne Islands,-64.659,-62.6631,CHPE,1/23/2000,1999,528,C,1,,ASI
+ORNE,CW,Orne Islands,-64.659,-62.6631,CHPE,12/14/2000,2000,396,N,1,,ASI
+ORNE,CW,Orne Islands,-64.659,-62.6631,CHPE,1/23/2001,2000,634,C,1,,ASI
+ORNE,CW,Orne Islands,-64.659,-62.6631,CHPE,12/24/2001,2001,106,N,1,,ASI
+ORNE,CW,Orne Islands,-64.659,-62.6631,CHPE,2/15/2002,2001,111,C,1,,ASI
+ORNE,CW,Orne Islands,-64.659,-62.6631,CHPE,12/9/2002,2002,338,N,1,,ASI
+ORNE,CW,Orne Islands,-64.659,-62.6631,CHPE,2/14/2003,2002,472,C,1,,ASI
+ORNE,CW,Orne Islands,-64.659,-62.6631,CHPE,11/22/2005,2005,350,N,1,,ASI
+ORNE,CW,Orne Islands,-64.659,-62.6631,CHPE,2/5/2006,2005,489,C,1,,ASI
+ORNE,CW,Orne Islands,-64.659,-62.6631,CHPE,1/26/2007,2006,447,C,1,,ASI
+ORNE,CW,Orne Islands,-64.659,-62.6631,CHPE,12/15/2007,2007,249,N,1,,ASI
+ORNE,CW,Orne Islands,-64.659,-62.6631,CHPE,1/30/2008,2007,321,C,1,,ASI
+ORNE,CW,Orne Islands,-64.659,-62.6631,CHPE,12/16/2008,2008,299,N,1,,ASI
+ORNE,CW,Orne Islands,-64.659,-62.6631,CHPE,2/12/2009,2008,434,C,1,,ASI
+ORNE,CW,Orne Islands,-64.659,-62.6631,CHPE,1/13/2010,2009,309,N,1,,ASI
+ORNE,CW,Orne Islands,-64.659,-62.6631,CHPE,1/26/2010,2009,526,C,1,,ASI
+ORNE,CW,Orne Islands,-64.659,-62.6631,CHPE,12/27/2010,2010,253,N,1,,ASI
+ORNE,CW,Orne Islands,-64.659,-62.6631,CHPE,12/23/2012,2012,310,N,1,,ASI
+PALA,CW,Palaver Point,-64.1486,-61.759,CHPE,12/13/2011,2011,352,N,3,,ASI
+PETE,CW,Petermann Island,-65.1721,-64.142,CHPE,1/2/2011,2010,1,N,1,,ASI
+PETE,CW,Petermann Island,-65.1721,-64.142,CHPE,1/7/2013,2012,0,N,1,,ASI
+PING,CW,Pinguino Island,-64.1435,-60.9857,CHPE,12/13/2012,2012,3142,N,1,,ASI
+SELV,CW,Selvick Cove,-64.6498,-62.5718,CHPE,12/15/2007,2007,133,N,1,,ASI
+SELV,CW,Selvick Cove,-64.6498,-62.5718,CHPE,12/26/2009,2009,146,N,1,,ASI
+SELV,CW,Selvick Cove,-64.6498,-62.5718,CHPE,12/4/2012,2012,144,N,1,,ASI
+SPIE,CW,Errera Channel side of Spigot Peak,-64.632,-62.561,CHPE,12/24/2011,2011,183,N,1,,ASI
+SPIG,CW,Spigot Peak,-64.6347,-62.5557,CHPE,3/10/1983,1982,3000,N,5,,"Parmelee, D. F., and J. M. Parmelee. 1987. Revised penguin numbers and distribution for Anvers Island, Antarctica. British Antarctic Survey Bulletin 76: 65-73 AS CITED IN Woehler, E. J. 1993. The distribution and abundance of Antarctic and Subantarctic penguins. Scientific Committee on Antarctic Research, Cambridge, UK."
+SPIG,CW,Spigot Peak,-64.6347,-62.5557,CHPE,1/8/1993,1992,1907,N,1,,"Aguirre, C. A., and J. M. Acero. 1995. Distribution and abundance of birds in Errera Channel, Antarctic Peninsula, during the 1992/93 breeding season. Marine Ornithology 23: 129-134"
+SPIG,CW,Spigot Peak,-64.6347,-62.5557,CHPE,12/15/2007,2007,814,N,1,,ASI
+SPIG,CW,Spigot Peak,-64.6347,-62.5557,CHPE,1/23/2009,2008,575,C,1,,ASI
+SPIG,CW,Spigot Peak,-64.6347,-62.5557,CHPE,12/26/2009,2009,706,N,1,,ASI
+SPIG,CW,Spigot Peak,-64.6347,-62.5557,CHPE,12/16/2010,2010,450,N,1,,ASI
+SPIG,CW,Spigot Peak,-64.6347,-62.5557,CHPE,12/13/2011,2011,499,N,1,,ASI
+SPIG,CW,Spigot Peak,-64.6347,-62.5557,CHPE,1/22/2013,2012,510,N,1,,
+SPRI,CW,Sprightly Islands Vicinity,-64.3,-61.05,CHPE,1/16/1984,1983,85,N,4,,"Parmelee, D. F., and J. M. Parmelee. 1987. Revised penguin numbers and distribution for Anvers Island, Antarctica. British Antarctic Survey Bulletin 76: 65-73 AS CITED IN Woehler, E. J. 1993. The distribution and abundance of Antarctic and Subantarctic penguins. Scientific Committee on Antarctic Research, Cambridge, UK."
+SPRI,CW,Sprightly Islands Vicinity,-64.3,-61.05,CHPE,xx/xx/1990,1990,60,N,4,Assumed this 1990 count is from the 1990/91 breeding season,"Woehler, E. J. 1993. The distribution and abundance of Antarctic and Subantarctic penguins. Scientific Committee on Antarctic Research, Cambridge, UK."
+STER,CW,Sterneck Island,-64.188,-61.051,CHPE,1/24/1987,1986,1100,N,4,,"Parmelee, D. F., and J. M. Parmelee. 1987. Revised penguin numbers and distribution for Anvers Island, Antarctica. British Antarctic Survey Bulletin 76: 65-73."
+STER,CW,Sterneck Island,-64.188,-61.051,CHPE,12/10/2010,2010,16,N,1,,ASI
+TETR,CW,Tetrad Islands,-63.9171,-60.7353,CHPE,1/16/1984,1983,180,N,4,,"Parmelee, D. F., and J. M. Parmelee. 1987. Revised penguin numbers and distribution for Anvers Island, Antarctica. British Antarctic Survey Bulletin 76: 65-73."
+TETR,CW,Tetrad Islands,-63.9171,-60.7353,CHPE,12/14/2012,2012,194,N,1,,ASI
+USEF,CW,Useful Island,-64.717,-62.871,CHPE,1/17/1984,1983,100,N,4,,"Parmelee, D. F., and J. M. Parmelee. 1987. Revised penguin numbers and distribution for Anvers Island, Antarctica. British Antarctic Survey Bulletin 76: 65-73 AS CITED IN Woehler, E. J. 1993. The distribution and abundance of Antarctic and Subantarctic penguins. Scientific Committee on Antarctic Research, Cambridge, UK."
+USEF,CW,Useful Island,-64.717,-62.871,CHPE,1/3/2005,2004,160,N,1,,ASI
+USEF,CW,Useful Island,-64.717,-62.871,CHPE,11/24/2007,2007,130,N,1,,ASI
+USEF,CW,Useful Island,-64.717,-62.871,CHPE,11/20/2008,2008,186,N,1,,ASI
+USEF,CW,Useful Island,-64.717,-62.871,CHPE,2/6/2009,2008,198,C,1,,ASI
+USEF,CW,Useful Island,-64.717,-62.871,CHPE,2/8/2010,2009,266,C,1,,ASI
+USEF,CW,Useful Island,-64.717,-62.871,CHPE,11/24/2010,2010,175,N,1,,ASI
+WATE,CW,"Waterboat Point, Paradise Bay",-64.8236,-62.8581,CHPE,1/30/1986,1985,20,C,1,,"Parmelee, D. F., and J. M. Parmelee. 1987. Revised penguin numbers and distribution for Anvers Island, Antarctica. British Antarctic Survey Bulletin 76: 65-73 AS CITED IN Woehler, E. J. 1993. The distribution and abundance of Antarctic and Subantarctic penguins. Scientific Committee on Antarctic Research, Cambridge, UK."
+WATE,CW,"Waterboat Point, Paradise Bay",-64.8236,-62.8581,CHPE,xx/xx/1989,1989,28,N,1,Assumed this 1989 count is from the 1989/90 breeding season,"Woehler, E. J. 1993. The distribution and abundance of Antarctic and Subantarctic penguins. Scientific Committee on Antarctic Research, Cambridge, UK."
+WATE,CW,"Waterboat Point, Paradise Bay",-64.8236,-62.8581,CHPE,12/7/1994,1994,8,N,1,,ASI
+WATE,CW,"Waterboat Point, Paradise Bay",-64.8236,-62.8581,CHPE,2/3/1996,1995,2,C,1,,ASI
+WATE,CW,"Waterboat Point, Paradise Bay",-64.8236,-62.8581,CHPE,11/23/1997,1997,8,N,1,,ASI
+WATE,CW,"Waterboat Point, Paradise Bay",-64.8236,-62.8581,CHPE,11/27/1998,1998,4,N,1,,ASI
+WATE,CW,"Waterboat Point, Paradise Bay",-64.8236,-62.8581,CHPE,1/3/2005,2004,0,N,1,,ASI
+WATE,CW,"Waterboat Point, Paradise Bay",-64.8236,-62.8581,CHPE,12/18/2008,2008,4,N,1,,ASI
+WATE,CW,"Waterboat Point, Paradise Bay",-64.8236,-62.8581,CHPE,2/1/2011,2010,2,N,1,,ASI
+WATE,CW,"Waterboat Point, Paradise Bay",-64.8236,-62.8581,CHPE,1/31/2012,2011,7,C,1,,ASI
+WATE,CW,"Waterboat Point, Paradise Bay",-64.8236,-62.8581,CHPE,12/12/2012,2012,4,N,1,,ASI
+WATE,CW,"Waterboat Point, Paradise Bay",-64.8236,-62.8581,CHPE,1/8/2013,2012,5,N,1,,ASI
+HANS,SO,"Cape Hansen, Marshall Bay",-60.651,-45.6551,ADPE,12/17/2003,2004,13381,N,3,,ASI
+SHIN,SO,Shingle Cove,-60.65,-45.5667,ADPE,12/17/2003,2004,3205,N,1,,ASI
+SHIN,SO,Shingle Cove,-60.65,-45.5667,ADPE,12/9/2006,2007,3041,N,3,,ASI
+ARDL,SH,Ardley Island,-62.2131,-58.9332,ADPE,xx/xx/1980(81),1980,1056,N,1,Accuracy has been estimated from original source.,Management Plan for ASPA No. 150
+ARDL,SH,Ardley Island,-62.2131,-58.9332,ADPE,xx/xx/1981(82),1981,1314,N,1,Accuracy has been estimated from original source.,Management Plan for ASPA No. 150
+ARDL,SH,Ardley Island,-62.2131,-58.9332,ADPE,xx/xx/1983(84),1983,1074,N,1,Accuracy has been estimated from original source.,Management Plan for ASPA No. 150
+ARDL,SH,Ardley Island,-62.2131,-58.9332,ADPE,xx/xx/1984(85),1984,1331,N,1,Accuracy has been estimated from original source.,Management Plan for ASPA No. 150
+ARDL,SH,Ardley Island,-62.2131,-58.9332,ADPE,xx/xx/1985(86),1985,929,N,1,Accuracy has been estimated from original source.,Management Plan for ASPA No. 150
+ARDL,SH,Ardley Island,-62.2131,-58.9332,ADPE,xx/xx/1986(87),1986,1160,N,1,Accuracy has been estimated from original source.,Management Plan for ASPA No. 150
+ARDL,SH,Ardley Island,-62.2131,-58.9332,ADPE,xx/xx/1994(95),1994,1095,N,1,Accuracy has been estimated from original source.,Management Plan for ASPA No. 150
+ARDL,SH,Ardley Island,-62.2131,-58.9332,ADPE,xx/xx/1995(96),1995,1226,N,1,Accuracy has been estimated from original source.,Management Plan for ASPA No. 150
+ARDL,SH,Ardley Island,-62.2131,-58.9332,ADPE,xx/xx/1996(97),1996,923,N,1,Accuracy has been estimated from original source.,Management Plan for ASPA No. 150
+ARDL,SH,Ardley Island,-62.2131,-58.9332,ADPE,xx/xx/1997(98),1997,1173,N,1,Accuracy has been estimated from original source.,Management Plan for ASPA No. 150
+ARDL,SH,Ardley Island,-62.2131,-58.9332,ADPE,xx/xx/1998(99),1998,1192,N,1,Accuracy has been estimated from original source.,Management Plan for ASPA No. 150
+ARDL,SH,Ardley Island,-62.2131,-58.9332,ADPE,xx/xx/1999(00),1999,974,N,1,Accuracy has been estimated from original source.,Management Plan for ASPA No. 150
+ARDL,SH,Ardley Island,-62.2131,-58.9332,ADPE,xx/xx/2000(01),2000,880,N,1,Accuracy has been estimated from original source.,Management Plan for ASPA No. 150
+ARDL,SH,Ardley Island,-62.2131,-58.9332,ADPE,xx/xx/2001(02),2001,780,N,1,Accuracy has been estimated from original source.,Management Plan for ASPA No. 150
+ARDL,SH,Ardley Island,-62.2131,-58.9332,ADPE,xx/xx/2002(03),2002,771,N,1,Accuracy has been estimated from original source.,Management Plan for ASPA No. 150
+ARDL,SH,Ardley Island,-62.2131,-58.9332,ADPE,xx/xx/2003(04),2003,559,N,1,Accuracy has been estimated from original source.,Management Plan for ASPA No. 150
+ARDL,SH,Ardley Island,-62.2131,-58.9332,ADPE,xx/xx/2004(05),2004,409,N,1,Accuracy has been estimated from original source.,Management Plan for ASPA No. 150
+ARDL,SH,Ardley Island,-62.2131,-58.9332,ADPE,xx/xx/2005(06),2005,334,N,1,Accuracy has been estimated from original source.,Management Plan for ASPA No. 150
+ARDL,SH,Ardley Island,-62.2131,-58.9332,ADPE,1/31/2013,2012,166,C,1,,ASI
+DEEI,SH,Dee Island,-62.4229,-59.7836,ADPE,12/7/2010,2010,0,N,1,,ASI
+HURW,SH,Hurd Peninsula West,-62.674,-60.406,ADPE,12/8/2010,2010,0,N,1,,ASI
+KAIS,SH,Cape Kaiser,-64.2365,-61.9993,ADPE,12/9/2010,2010,0,N,1,,ASI
+PENG,SH,Penguin Island,-62.1024,-57.9258,ADPE,xx/xx/1979,1979,1710,N,1,Accuracy has been estimated from original source.,"Sander, M., T. C. Balbao, E. S. Costa, C. R. dos Santos, and M. V. Petry. 2007. Decline of the breeding population of Pygoscelis antarctica and Pygoscelis adeliae on Penguin Island, South Shetland, Antarctica. Polar Biology 30: 651-654"
+PENG,SH,Penguin Island,-62.1024,-57.9258,ADPE,xx/xx/1980(81),1980,3114,N,3,Est. accuracy based on methods as described in original source,"Jablonski (1984) as reported in Sander, M., T. C. Balbao, E. S. Costa, C. R. dos Santos, and M. V. Petry. 2007. Decline of the breeding population of Pygoscelis antarctica and Pygoscelis adeliae on Penguin Island, South Shetland, Antarctica. Polar Biology 30: 651-654"
+PENG,SH,Penguin Island,-62.1024,-57.9258,ADPE,xx/xx/1980(81),1980,3425,N,1,Accuracy has been estimated from original source.,"Trivelpiece et al. (1987) as reported in Sander, M., T. C. Balbao, E. S. Costa, C. R. dos Santos, and M. V. Petry. 2007. Decline of the breeding population of Pygoscelis antarctica and Pygoscelis adeliae on Penguin Island, South Shetland, Antarctica. Polar Biology 30: 651-654"
+PENG,SH,Penguin Island,-62.1024,-57.9258,ADPE,11/30/1996,1996,2015,N,2,,ASI
+PENG,SH,Penguin Island,-62.1024,-57.9258,ADPE,12/1/1997,1997,2443,N,1,,ASI
+PENG,SH,Penguin Island,-62.1024,-57.9258,ADPE,1/xx/2000,1999,2390,N,1,Accuracy has been estimated from original source; date of census was between 4 to 12 JAN,"Sander, M., T. C. Balbao, E. S. Costa, C. R. dos Santos, and M. V. Petry. 2007. Decline of the breeding population of Pygoscelis antarctica and Pygoscelis adeliae on Penguin Island, South Shetland, Antarctica. Polar Biology 30: 651-654"
+PENG,SH,Penguin Island,-62.1024,-57.9258,ADPE,12/xx/2000,2000,792,N,1,Accuracy has been estimated from original source; date of census was between 16 and 21 DEC,"Sander, M., T. C. Balbao, E. S. Costa, C. R. dos Santos, and M. V. Petry. 2007. Decline of the breeding population of Pygoscelis antarctica and Pygoscelis adeliae on Penguin Island, South Shetland, Antarctica. Polar Biology 30: 651-654"
+PENG,SH,Penguin Island,-62.1024,-57.9258,ADPE,12/xx/2003,2003,684,N,1,Accuracy has been estimated from original source.,"Sander, M., T. C. Balbao, E. S. Costa, C. R. dos Santos, and M. V. Petry. 2007. Decline of the breeding population of Pygoscelis antarctica and Pygoscelis adeliae on Penguin Island, South Shetland, Antarctica. Polar Biology 30: 651-654"
+PENG,SH,Penguin Island,-62.1024,-57.9258,ADPE,1/18/2008,2007,11,C,1,,ASI
+PENG,SH,Penguin Island,-62.1024,-57.9258,ADPE,12/6/2010,2010,231,N,1,,ASI
+PENG,SH,Penguin Island,-62.1024,-57.9258,ADPE,1/12/2013,2012,54,C,1,,ASI
+TURR,SH,Turret Point ,-62.089,-57.9519,ADPE,12/6/2010,2010,170,N,1,,ASI
+TURR,SH,Turret Point ,-62.089,-57.9519,ADPE,12/2/2012,2012,102,N,1,,ASI
+BROW,NE,Brown Bluff,-63.5325,-56.9256,ADPE,1/10/2013,2012,18630,N,3,Adults individually counted from panoramic photographs; Assumed 1 adult per nest but deep snow made it difficult to identify individual nests and many adults were scattered over the site due to nest losses.,ASI
+DEVI,NE,Devil Island,-63.7992,-57.2889,ADPE,1/20/1996,1995,10320,C,2,,ASI
+DEVI,NE,Devil Island,-63.7992,-57.2889,ADPE,1/13/2000,1999,8501,C,2,,ASI
+DEVI,NE,Devil Island,-63.7992,-57.2889,ADPE,1/12/2002,2001,5880,C,3,,ASI
+DEVI,NE,Devil Island,-63.7992,-57.2889,ADPE,1/20/2003,2002,8500,C,3,,ASI
+DEVI,NE,Devil Island,-63.7992,-57.2889,ADPE,12/31/2004,2004,8802,N,2,,ASI
+DEVI,NE,Devil Island,-63.7992,-57.2889,ADPE,1/13/2007,2006,18000,C,3,,ASI
+DEVI,NE,Devil Island,-63.7992,-57.2889,ADPE,12/12/2008,2008,14681,N,1,Counted from photographs.,ASI
+DEVI,NE,Devil Island,-63.7992,-57.2889,ADPE,1/10/2009,2008,20040,C,1,Counted from photographs.,ASI
+DEVI,NE,Devil Island,-63.7992,-57.2889,ADPE,1/21/2011,2010,7108,C,1,,ASI
+DURV,NE,d'Urville Monument,-63.419,-56.3158,ADPE,1/24/2006,2005,10000,N,4,,ASI
+PEPO,NE,"Penguin Point, Seymour Island",-64.3077,-56.7085,ADPE,12/22/2006,2006,26400,N,4,,ASI
+PEPO,NE,"Penguin Point, Seymour Island",-64.3077,-56.7085,ADPE,12/21/2009,2009,16015,N,2,,ASI
+SAXU,NE,Saxum Nunatak,-63.1583,-56.0262,ADPE,12/22/2005,2005,150,N,4,,ASI
+TAYH,NE,Tay Head,-63.35,-55.55,ADPE,1/25/2002,2001,17500,N,4,,ASI
+TAYH,NE,Tay Head,-63.35,-55.55,ADPE,12/21/2006,2006,6450,N,4,,ASI
+TAYH,NE,Tay Head,-63.35,-55.55,ADPE,12/23/2010,2010,4156,N,3,,ASI
+VORT,NE,Vortex Island,-63.7257,-57.6415,ADPE,12/31/2008,2008,4319,N,2,,ASI
+GOUR,NW,Gourdin Island,-63.1969,-57.3074,ADPE,12/2/1997,1998,16334,N,2,,ASI
+BERT,CW,Berthelot Islands,-65.3321,-64.1165,ADPE,12/16/1982,1982,904,N,1,,"Parmelee, D. F., and J. M. Parmelee. 1987. Revised penguin numbers and distribution for Anvers Island, Antarctica. British Antarctic Survey Bulletin 76: 65-73."
+BERT,CW,Berthelot Islands,-65.3321,-64.1165,ADPE,12/25/2006,2006,402,N,1,,ASI
+BERT,CW,Berthelot Islands,-65.3321,-64.1165,ADPE,1/16/2007,2006,548,C,1,,ASI
+PCHA,CW,"Port Charcot, Booth Island",-65.065,-63.9862,ADPE,1/26/1983,1982,83,C,1,,"Parmelee, D. F., and J. M. Parmelee. 1987. Revised penguin numbers and distribution for Anvers Island, Antarctica. British Antarctic Survey Bulletin 76: 65-73."
+PCHA,CW,"Port Charcot, Booth Island",-65.065,-63.9862,ADPE,xx/xx/1990,1990,61,N,1,,"Woehler, E. J. 1993. The distribution and abundance of Antarctic and Subantarctic penguins. Scientific Committee on Antarctic Research, Cambridge, UK."
+PCHA,CW,"Port Charcot, Booth Island",-65.065,-63.9862,ADPE,1/14/2001,2000,18,N,1,,ASI
+PCHA,CW,"Port Charcot, Booth Island",-65.065,-63.9862,ADPE,1/24/2001,2000,18,C,1,,ASI
+PCHA,CW,"Port Charcot, Booth Island",-65.065,-63.9862,ADPE,12/24/2001,2001,34,N,1,,ASI
+PCHA,CW,"Port Charcot, Booth Island",-65.065,-63.9862,ADPE,1/4/2006,2005,17,N,1,,ASI
+PCHA,CW,"Port Charcot, Booth Island",-65.065,-63.9862,ADPE,1/26/2006,2005,23,C,1,,ASI
+PCHA,CW,"Port Charcot, Booth Island",-65.065,-63.9862,ADPE,12/30/2007,2007,10,N,1,,ASI
+PCHA,CW,"Port Charcot, Booth Island",-65.065,-63.9862,ADPE,1/20/2008,2007,14,C,1,,ASI
+PCHA,CW,"Port Charcot, Booth Island",-65.065,-63.9862,ADPE,12/10/2008,2008,11,N,1,,ASI
+PCHA,CW,"Port Charcot, Booth Island",-65.065,-63.9862,ADPE,1/2/2009,2008,18,C,1,,ASI
+PCHA,CW,"Port Charcot, Booth Island",-65.065,-63.9862,ADPE,11/21/2009,2009,15,N,1,,ASI
+PCHA,CW,"Port Charcot, Booth Island",-65.065,-63.9862,ADPE,2/6/2010,2009,17,C,1,,ASI
+PCHA,CW,"Port Charcot, Booth Island",-65.065,-63.9862,ADPE,12/4/2010,2010,11,N,1,,ASI
+PCHA,CW,"Port Charcot, Booth Island",-65.065,-63.9862,ADPE,2/14/2011,2010,12,C,1,,ASI
+PCHA,CW,"Port Charcot, Booth Island",-65.065,-63.9862,ADPE,12/11/2012,2012,15,N,1,,ASI
+BISC,CW,Biscoe Point,-64.8133,-63.7935,ADPE,xx/xx/1984,1983,3440,C,3,,Management Plan for ASPA No. 139
+BISC,CW,Biscoe Point,-64.8133,-63.7935,ADPE,xx/xx/1984,1984,2754,N,1,,Management Plan for ASPA No. 139
+BISC,CW,Biscoe Point,-64.8133,-63.7935,ADPE,xx/xx/1986,1986,3000,N,4,,Management Plan for ASPA No. 139
+BISC,CW,Biscoe Point,-64.8133,-63.7935,ADPE,xx/xx/1996,1996,1801,N,1,,Management Plan for ASPA No. 139
+BISC,CW,Biscoe Point,-64.8133,-63.7935,ADPE,xx/xx/1999,1999,1665,N,1,,Management Plan for ASPA No. 139
+BISC,CW,Biscoe Point,-64.8133,-63.7935,ADPE,xx/xx/2000,2000,1335,N,1,,Management Plan for ASPA No. 139
+BISC,CW,Biscoe Point,-64.8133,-63.7935,ADPE,xx/xx/2001,2001,692,N,1,,Management Plan for ASPA No. 139
+BISC,CW,Biscoe Point,-64.8133,-63.7935,ADPE,xx/xx/2002,2002,1025,N,1,,Management Plan for ASPA No. 139
+BISC,CW,Biscoe Point,-64.8133,-63.7935,ADPE,12/15/2010,2010,531,N,1,,ASI
+HUMB,CW,Humble Island,-64.7666,-64.1,ADPE,12/10/2011,2011,587,N,1,,ASI
+PETE,CW,Petermann Island,-65.1721,-64.142,ADPE,12/22/1982,1982,987,N,1,,"Parmelee, D. F., and J. M. Parmelee. 1987. Revised penguin numbers and distribution for Anvers Island, Antarctica. British Antarctic Survey Bulletin 76: 65-73."
+PETE,CW,Petermann Island,-65.1721,-64.142,ADPE,xx/xx/1988,1988,1080,N,3,,"Woehler, E. J. 1993. The distribution and abundance of Antarctic and Subantarctic penguins. Scientific Committee on Antarctic Research, Cambridge, UK."
+PETE,CW,Petermann Island,-65.1721,-64.142,ADPE,12/7/1994,1994,807,N,1,,ASI
+PETE,CW,Petermann Island,-65.1721,-64.142,ADPE,11/28/1995,1995,827,N,1,,ASI
+PETE,CW,Petermann Island,-65.1721,-64.142,ADPE,12/5/1996,1996,644,N,1,,ASI
+PETE,CW,Petermann Island,-65.1721,-64.142,ADPE,11/23/1997,1997,742,N,1,,ASI
+PETE,CW,Petermann Island,-65.1721,-64.142,ADPE,1/22/1999,1998,1135,C,1,,ASI
+PETE,CW,Petermann Island,-65.1721,-64.142,ADPE,1/20/2000,1999,935,C,1,,ASI
+PETE,CW,Petermann Island,-65.1721,-64.142,ADPE,1/14/2001,2000,926,N,1,,ASI
+PETE,CW,Petermann Island,-65.1721,-64.142,ADPE,12/10/2002,2002,485,N,1,,ASI
+PETE,CW,Petermann Island,-65.1721,-64.142,ADPE,1/23/2003,2002,661,C,1,,ASI
+PETE,CW,Petermann Island,-65.1721,-64.142,ADPE,11/21/2003,2003,553,N,1,,ASI
+PETE,CW,Petermann Island,-65.1721,-64.142,ADPE,1/24/2004,2003,731,C,1,,ASI
+PETE,CW,Petermann Island,-65.1721,-64.142,ADPE,11/21/2004,2004,532,N,1,,ASI
+PETE,CW,Petermann Island,-65.1721,-64.142,ADPE,2/4/2005,2004,580,C,1,,ASI
+PETE,CW,Petermann Island,-65.1721,-64.142,ADPE,11/22/2005,2005,479,N,1,,ASI
+PETE,CW,Petermann Island,-65.1721,-64.142,ADPE,1/27/2006,2005,589,C,1,,ASI
+PETE,CW,Petermann Island,-65.1721,-64.142,ADPE,11/21/2006,2006,410,N,1,,ASI
+PETE,CW,Petermann Island,-65.1721,-64.142,ADPE,2/4/2007,2006,458,C,1,,ASI
+PETE,CW,Petermann Island,-65.1721,-64.142,ADPE,11/18/2007,2007,390,N,1,,ASI
+PETE,CW,Petermann Island,-65.1721,-64.142,ADPE,1/30/2008,2007,434,C,1,,ASI
+PETE,CW,Petermann Island,-65.1721,-64.142,ADPE,11/19/2008,2008,395,N,1,,ASI
+PETE,CW,Petermann Island,-65.1721,-64.142,ADPE,12/1/2008,2008,331,N,1,,ASI
+PETE,CW,Petermann Island,-65.1721,-64.142,ADPE,1/12/2009,2008,438,C,1,,ASI
+PETE,CW,Petermann Island,-65.1721,-64.142,ADPE,11/11/2009,2009,367,N,1,,ASI
+PETE,CW,Petermann Island,-65.1721,-64.142,ADPE,1/28/2010,2009,450,C,1,,ASI
+PETE,CW,Petermann Island,-65.1721,-64.142,ADPE,12/5/2010,2010,239,N,1,,ASI
+PETE,CW,Petermann Island,-65.1721,-64.142,ADPE,12/21/2012,2012,296,N,1,,ASI
+PETE,CW,Petermann Island,-65.1721,-64.142,ADPE,2/3/2013,2012,439,C,1,,ASI
+YALO,CW,Yalour Islands,-65.2421,-64.1558,ADPE,12/10/1982,1982,5865,N,1,,"Parmelee, D. F., and J. M. Parmelee. 1987. Revised penguin numbers and distribution for Anvers Island, Antarctica. British Antarctic Survey Bulletin 76: 65-73."
+YALO,CW,Yalour Islands,-65.2421,-64.1558,ADPE,1/27/2004,2003,4249,N,1,,ASI
+YALO,CW,Yalour Islands,-65.2421,-64.1558,ADPE,1/27/2004,2003,5558,C,1,,ASI
+YALO,CW,Yalour Islands,-65.2421,-64.1558,ADPE,12/6/2008,2008,2837,N,1,,ASI
+YALO,CW,Yalour Islands,-65.2421,-64.1558,ADPE,12/25/2009,2009,2951,N,1,,ASI
+ANDI,SW,Andresen Island Site 2,-66.6492,-66.8789,ADPE,12/7/2007,2007,319,N,1,,ASI
+ANDI,SW,Andresen Island Site 2,-66.6492,-66.8789,ADPE,12/24/2009,2009,272,N,1,,ASI
+ANDR,SW,Andresen Island Site 1,-66.7104,-66.8753,ADPE,2/2/1984,1983,2200,N,4,,"Parmelee, D. F., and J. M. Parmelee. 1987. Revised penguin numbers and distribution for Anvers Island, Antarctica. British Antarctic Survey Bulletin 76: 65-73."
+ANDR,SW,Andresen Island Site 1,-66.7104,-66.8753,ADPE,12/7/2007,2007,1271,N,1,,ASI
+ANDR,SW,Andresen Island Site 1,-66.7104,-66.8753,ADPE,2/3/2009,2008,309,C,2,,ASI
+ANDR,SW,Andresen Island Site 1,-66.7104,-66.8753,ADPE,12/24/2009,2009,1139,N,1,,ASI
+BONG,SW,"Bongrain Point, Pourquoi Pas Island",-67.7222,-67.7314,ADPE,2/9/1984,1983,700,N,4,,"Parmelee, D. F., and J. M. Parmelee. 1987. Revised penguin numbers and distribution for Anvers Island, Antarctica. British Antarctic Survey Bulletin 76: 65-73."
+BONG,SW,"Bongrain Point, Pourquoi Pas Island",-67.7222,-67.7314,ADPE,1/8/2008,2007,1424,N,1,,ASI
+BONG,SW,"Bongrain Point, Pourquoi Pas Island",-67.7222,-67.7314,ADPE,12/14/2008,2008,2859,N,1,,ASI
+BONG,SW,"Bongrain Point, Pourquoi Pas Island",-67.7222,-67.7314,ADPE,2/7/2010,2009,4094,C,2,,ASI
+BONG,SW,"Bongrain Point, Pourquoi Pas Island",-67.7222,-67.7314,ADPE,1/3/2011,2010,2261,N,1,,ASI
+DETA,SW,Detaille Island,-66.8699,-66.79,ADPE,2/9/1986,1985,858,C,1,,"Parmelee, D. F., and J. M. Parmelee. 1987. Revised penguin numbers and distribution for Anvers Island, Antarctica. British Antarctic Survey Bulletin 76: 65-73."
+DETA,SW,Detaille Island,-66.8699,-66.79,ADPE,1/13/2003,2002,925,C,3,,ASI
+DETA,SW,Detaille Island,-66.8699,-66.79,ADPE,1/3/2004,2003,452,N,1,,ASI
+DETA,SW,Detaille Island,-66.8699,-66.79,ADPE,12/7/2007,2007,506,N,1,,ASI
+DETA,SW,Detaille Island,-66.8699,-66.79,ADPE,1/24/2009,2008,458,C,1,,ASI
+DETA,SW,Detaille Island,-66.8699,-66.79,ADPE,12/24/2009,2009,486,N,1,,ASI
+DETA,SW,Detaille Island,-66.8699,-66.79,ADPE,1/24/2011,2010,509,C,1,,ASI
+DETA,SW,Detaille Island,-66.8699,-66.79,ADPE,1/6/2013,2012,430,N,1,,ASI
+FISH,SW,Fish Islands,-66.0288,-65.3506,ADPE,1/30/1984,1983,4000,N,4,,"Parmelee, D. F., and J. M. Parmelee. 1987. Revised penguin numbers and distribution for Anvers Island, Antarctica. British Antarctic Survey Bulletin 76: 65-73."
+FISH,SW,Fish Islands,-66.0288,-65.3506,ADPE,1/13/2003,2002,1634,C,1,,ASI
+FISH,SW,Fish Islands,-66.0288,-65.3506,ADPE,12/18/2007,2007,1161,N,1,,ASI
+FISH,SW,Fish Islands,-66.0288,-65.3506,ADPE,2/11/2008,2007,1653,C,1,,ASI
+FISH,SW,Fish Islands,-66.0288,-65.3506,ADPE,2/5/2009,2008,810,C,1,,ASI
+FISH,SW,Fish Islands,-66.0288,-65.3506,ADPE,1/4/2011,2010,913,N,1,,ASI
+RRRI,SW,Red Rock Ridge,-68.295,-67.0728,ADPE,2/13/1984,1983,1820,C,1,,"Parmelee, D. F., and J. M. Parmelee. 1987. Revised penguin numbers and distribution for Anvers Island, Antarctica. British Antarctic Survey Bulletin 76: 65-73."
+RRRI,SW,Red Rock Ridge,-68.295,-67.0728,ADPE,12/28/2007,2007,3554,N,1,,ASI
+SOMI,SW,South of Martin Islands,-65.3379,-65.6854,ADPE,2/2/1983,1982,1277,C,1,,"Parmelee, D. F., and J. M. Parmelee. 1987. Revised penguin numbers and distribution for Anvers Island, Antarctica. British Antarctic Survey Bulletin 76: 65-73."
+SOMI,SW,South of Martin Islands,-65.3379,-65.6854,ADPE,12/8/2007,2007,495,N,1,,ASI
+AITC,SH,"Barrientos Island, Aitcho Islands",-62.4064,-59.75,SOGP,12/13/1999,1999,108,N,1,,ASI
+AITC,SH,"Barrientos Island, Aitcho Islands",-62.4064,-59.75,SOGP,1/9/2000,1999,172,N,1,,ASI
+AITC,SH,"Barrientos Island, Aitcho Islands",-62.4064,-59.75,SOGP,12/15/2000,2000,107,N,1,,ASI
+AITC,SH,"Barrientos Island, Aitcho Islands",-62.4064,-59.75,SOGP,12/24/2000,2000,117,N,1,,ASI
+AITC,SH,"Barrientos Island, Aitcho Islands",-62.4064,-59.75,SOGP,1/22/2001,2000,112,N,1,,ASI
+AITC,SH,"Barrientos Island, Aitcho Islands",-62.4064,-59.75,SOGP,12/12/2001,2001,153,N,1,,ASI
+AITC,SH,"Barrientos Island, Aitcho Islands",-62.4064,-59.75,SOGP,1/11/2002,2001,156,N,1,,ASI
+AITC,SH,"Barrientos Island, Aitcho Islands",-62.4064,-59.75,SOGP,1/22/2002,2001,116,C,1,,ASI
+AITC,SH,"Barrientos Island, Aitcho Islands",-62.4064,-59.75,SOGP,12/20/2003,2003,142,N,1,,ASI
+AITC,SH,"Barrientos Island, Aitcho Islands",-62.4064,-59.75,SOGP,1/10/2005,2004,164,N,1,,ASI
+AITC,SH,"Barrientos Island, Aitcho Islands",-62.4064,-59.75,SOGP,11/18/2005,2005,113,N,1,,ASI
+AITC,SH,"Barrientos Island, Aitcho Islands",-62.4064,-59.75,SOGP,11/29/2005,2005,143,N,1,,ASI
+AITC,SH,"Barrientos Island, Aitcho Islands",-62.4064,-59.75,SOGP,11/18/2006,2006,144,N,1,,ASI
+AITC,SH,"Barrientos Island, Aitcho Islands",-62.4064,-59.75,SOGP,12/3/2007,2007,34,N,2,,ASI
+AITC,SH,"Barrientos Island, Aitcho Islands",-62.4064,-59.75,SOGP,2/7/2008,2007,3,C,1,,ASI
+AITC,SH,"Barrientos Island, Aitcho Islands",-62.4064,-59.75,SOGP,12/7/2008,2008,134,N,1,,ASI
+AITC,SH,"Barrientos Island, Aitcho Islands",-62.4064,-59.75,SOGP,1/14/2009,2008,82,N,1,,ASI
+AITC,SH,"Barrientos Island, Aitcho Islands",-62.4064,-59.75,SOGP,1/20/2011,2010,15,N,1,,ASI
+AITC,SH,"Barrientos Island, Aitcho Islands",-62.4064,-59.75,SOGP,1/24/2012,2011,11,N,1,,ASI
+CECI,SH,Cecilia Island,-62.4167,-59.7167,SOGP,1/11/2006,2005,100,N,1,,ASI
+CECI,SH,Cecilia Island,-62.4167,-59.7167,SOGP,12/7/2010,2010,58,N,1,,ASI
+HANN,SH,Hannah Point,-62.65,-60.6167,SOGP,12/3/1997,1997,118,N,1,,ASI
+HANN,SH,Hannah Point,-62.65,-60.6167,SOGP,1/16/1999,1998,110,N,1,,ASI
+HANN,SH,Hannah Point,-62.65,-60.6167,SOGP,12/18/1999,1999,126,N,1,,ASI
+HANN,SH,Hannah Point,-62.65,-60.6167,SOGP,1/25/2000,1999,111,N,1,,ASI
+HANN,SH,Hannah Point,-62.65,-60.6167,SOGP,12/15/2000,2000,123,N,1,,ASI
+HANN,SH,Hannah Point,-62.65,-60.6167,SOGP,1/2/2005,2004,142,N,1,,ASI
+HANN,SH,Hannah Point,-62.65,-60.6167,SOGP,1/10/2011,2010,56,N,1,,ASI
+HANN,SH,Hannah Point,-62.65,-60.6167,SOGP,1/30/2011,2010,83,N,1,,ASI
+LAIN,SH,Lainez Point,-67.6966,-67.7847,SOGP,1/3/2011,2010,148,N,1,,ASI
+PENG,SH,Penguin Island,-62.1,-57.9,SOGP,12/1/1993,1993,424,N,2,,ASI
+PENG,SH,Penguin Island,-62.1,-57.9,SOGP,11/30/1996,1996,124,N,1,,ASI
+PENG,SH,Penguin Island,-62.1,-57.9,SOGP,12/1/1997,1997,507,N,1,,ASI
+PENG,SH,Penguin Island,-62.1,-57.9,SOGP,12/9/1998,1998,576,N,1,,ASI
+PENG,SH,Penguin Island,-62.1,-57.9,SOGP,1/12/1999,1998,451,N,1,,ASI
+PENG,SH,Penguin Island,-62.1,-57.9,SOGP,1/19/1999,1998,454,N,1,,ASI
+PENG,SH,Penguin Island,-62.1,-57.9,SOGP,12/15/1999,1999,634,N,1,,ASI
+PENG,SH,Penguin Island,-62.1,-57.9,SOGP,1/xx/2000,1999,698,N,1,Accuracy has been estimated; not specified in original source.,"Pfeiffer, S., and H.-U. Peter. 2004. Ecological studies toward the management of an Antarctic tourist landing site (Penguin Island, South Shetland Islands). Polar Record 40: 345-353"
+PENG,SH,Penguin Island,-62.1,-57.9,SOGP,12/xx/2000,2000,456,N,1,Accuracy has been estimated; not specified in original source.,"Pfeiffer, S., and H.-U. Peter. 2004. Ecological studies toward the management of an Antarctic tourist landing site (Penguin Island, South Shetland Islands). Polar Record 40: 345-353"
+PENG,SH,Penguin Island,-62.1,-57.9,SOGP,2/19/2001,2000,425,C,1,,ASI
+PENG,SH,Penguin Island,-62.1,-57.9,SOGP,1/18/2008,2007,75,N,1,,ASI
+PENG,SH,Penguin Island,-62.1,-57.9,SOGP,12/6/2010,2010,413,N,1,,ASI
+PENG,SH,Penguin Island,-62.1,-57.9,SOGP,12/2/2012,2012,288,N,1,,ASI
+PRES,SH,President Head,-62.7333,-61.2167,SOGP,11/21/2005,2005,40,N,4,,ASI
+PRES,SH,President Head,-62.7333,-61.2167,SOGP,11/28/2007,2007,18,N,3,,ASI
+TURR,SH,Turret Point,-62.089,-57.9519,SOGP,12/6/2010,2010,200,N,1,,ASI
+TURR,SH,Turret Point,-62.089,-57.9519,SOGP,12/2/2012,2012,165,N,1,,ASI
+BROW,NE,Brown Bluff,-63.5325,-56.9256,KEGU,1/11/2005,2004,10,C,1,,ASI
+CECI,SH,Cecilia Island,-62.4167,-59.7167,KEGU,1/11/2006,2005,10,N,3,,ASI
+DAMO,CW,Dorian Bay / Damoy Point,-64.8149,-63.4968,KEGU,1/27/2009,2008,2,C,1,,ASI
+FISH,SW,Fish Islands,-66.0288,-65.3506,KEGU,2/11/2008,2007,2,C,1,,ASI
+HANN,SH,Hannah Point,-62.6545,-60.6134,KEGU,12/3/1996,1996,18,N,1,,ASI
+JOUG,CW,Jougla Point,-64.827,-63.4932,KEGU,11/22/2006,2006,27,N,2,,ASI
+JOUG,CW,Jougla Point,-64.827,-63.4932,KEGU,12/15/2009,2009,10,N,1,,ASI
+NEKO,CW,Neko Harbor,-64.8383,-62.5327,KEGU,12/11/2002,2002,2,N,1,,ASI
+NEKO,CW,Neko Harbor,-64.8383,-62.5327,KEGU,1/11/2003,2002,6,C,1,,ASI
+NEKO,CW,Neko Harbor,-64.8383,-62.5327,KEGU,12/13/2009,2009,3,N,1,,ASI
+NEKO,CW,Neko Harbor,-64.8383,-62.5327,KEGU,1/3/2010,2009,1,N,1,,ASI
+WHAL,SH,"Whalers Bay, Deception Island",-62.9832,-60.5617,KEGU,1/23/1995,1994,5,C,1,,ASI
+WHAL,SH,"Whalers Bay, Deception Island",-62.9832,-60.5617,KEGU,2/2/1996,1995,5,C,1,,ASI
+WHAL,SH,"Whalers Bay, Deception Island",-62.9832,-60.5617,KEGU,11/25/1997,1997,5,N,1,,ASI
+WHAL,SH,"Whalers Bay, Deception Island",-62.9832,-60.5617,KEGU,12/12/2000,2000,5,N,1,,ASI
+WHAL,SH,"Whalers Bay, Deception Island",-62.9832,-60.5617,KEGU,1/6/2002,2001,2,C,1,,ASI
+WHAL,SH,"Whalers Bay, Deception Island",-62.9832,-60.5617,KEGU,1/11/2004,2003,3,C,1,,ASI
+WHAL,SH,"Whalers Bay, Deception Island",-62.9832,-60.5617,KEGU,1/13/2005,2004,4,C,1,,ASI
+WHAL,SH,"Whalers Bay, Deception Island",-62.9832,-60.5617,KEGU,1/19/2008,2007,3,C,1,,ASI
+WHAL,SH,"Whalers Bay, Deception Island",-62.9832,-60.5617,KEGU,11/17/2008,2008,4,N,1,,ASI
+WHAL,SH,"Whalers Bay, Deception Island",-62.9832,-60.5617,KEGU,12/11/2008,2008,2,N,1,,ASI
+WHAL,SH,"Whalers Bay, Deception Island",-62.9832,-60.5617,KEGU,1/17/2009,2008,4,C,1,,ASI
+WHAL,SH,"Whalers Bay, Deception Island",-62.9832,-60.5617,KEGU,2/17/2010,2009,8,C,1,,ASI
+WHAL,SH,"Whalers Bay, Deception Island",-62.9832,-60.5617,KEGU,12/11/2010,2010,4,N,2,,ASI
+FORT,SH,Fort Point,-62.5431,-59.5752,MCPE,12/13/1999,1999,1,N,1,,ASI
+HANN,SH,Hannah Point,-62.6545,-60.6134,MCPE,12/12/1995,1995,6,N,1,,ASI
+HANN,SH,Hannah Point,-62.6545,-60.6134,MCPE,1/27/1996,1995,4,C,1,,ASI
+HANN,SH,Hannah Point,-62.6545,-60.6134,MCPE,12/3/1996,1996,6,N,1,,ASI
+HANN,SH,Hannah Point,-62.6545,-60.6134,MCPE,1/30/1997,1996,0,C,1,,ASI
+HANN,SH,Hannah Point,-62.6545,-60.6134,MCPE,12/3/1997,1997,6,N,1,,ASI
+HANN,SH,Hannah Point,-62.6545,-60.6134,MCPE,12/7/1998,1998,1,N,1,,ASI
+HANN,SH,Hannah Point,-62.6545,-60.6134,MCPE,12/18/1999,1999,5,N,1,,ASI
+HANN,SH,Hannah Point,-62.6545,-60.6134,MCPE,1/14/2000,1999,7,N,1,,ASI
+HANN,SH,Hannah Point,-62.6545,-60.6134,MCPE,1/14/2000,1999,3,C,1,,ASI
+HANN,SH,Hannah Point,-62.6545,-60.6134,MCPE,12/15/2000,2000,1,N,1,,ASI
+HANN,SH,Hannah Point,-62.6545,-60.6134,MCPE,12/30/2000,2000,4,N,1,,ASI
+HANN,SH,Hannah Point,-62.6545,-60.6134,MCPE,12/23/2004,2004,4,N,1,,ASI
+HANN,SH,Hannah Point,-62.6545,-60.6134,MCPE,12/9/1994,1994,1,N,1,,ASI
+HANN,SH,Hannah Point,-62.6545,-60.6134,MCPE,1/23/1995,1994,3,C,1,,ASI
+HANN,SH,Hannah Point,-62.6545,-60.6134,MCPE,11/30/1995,1995,3,N,1,,ASI
+HANN,SH,Hannah Point,-62.6545,-60.6134,MCPE,1/10/2011,2010,2,N,1,,ASI
+HANN,SH,Hannah Point,-62.6545,-60.6134,MCPE,1/30/2011,2010,1,C,1,,ASI
+HANN,SH,Hannah Point,-62.6545,-60.6134,MCPE,1/14/2013,2012,2,N,1,,ASI
+HPSW,SH,Hall Peninsula,-62.7704,-61.2545,MCPE,12/15/2011,2011,9,N,1,,ASI
+LOOK,EI,Cape Lookout,-61.2802,-55.2047,MCPE,12/1/2012,2012,315,N,1,Includes the macaroni colony to the east of the point.,ASI
+AITC,SH,Barrientos Island,-62.3811,-59.7764,BESH,12/10/2009,2009,2,N,1,,ASI
+AITC,SH,Barrientos Island,-62.3811,-59.7764,BESH,12/21/2010,2010,1,N,1,,ASI
+ALMI,CW,(Almirante) Brown Station,-64.8833,-62.8667,BESH,1/13/1994,1993,90,N,1,,ASI
+ALMI,CW,(Almirante) Brown Station,-64.8833,-62.8667,BESH,1/24/1994,1993,103,C,1,,ASI
+ALMI,CW,(Almirante) Brown Station,-64.8833,-62.8667,BESH,12/15/1994,1994,101,N,1,,ASI
+ALMI,CW,(Almirante) Brown Station,-64.8833,-62.8667,BESH,11/19/1995,1995,80,N,1,,ASI
+ALMI,CW,(Almirante) Brown Station,-64.8833,-62.8667,BESH,11/25/1996,1996,65,N,1,,ASI
+ALMI,CW,(Almirante) Brown Station,-64.8833,-62.8667,BESH,12/4/1997,1997,55,N,1,,ASI
+ALMI,CW,(Almirante) Brown Station,-64.8833,-62.8667,BESH,1/13/2000,1999,92,C,1,,ASI
+ALMI,CW,(Almirante) Brown Station,-64.8833,-62.8667,BESH,12/14/2000,2000,48,N,1,,ASI
+ALMI,CW,(Almirante) Brown Station,-64.8833,-62.8667,BESH,12/13/2001,2001,45,N,1,,ASI
+ALMI,CW,(Almirante) Brown Station,-64.8833,-62.8667,BESH,1/27/2002,2001,70,C,1,,ASI
+ALMI,CW,(Almirante) Brown Station,-64.8833,-62.8667,BESH,1/3/2003,2002,68,N,1,,ASI
+ALMI,CW,(Almirante) Brown Station,-64.8833,-62.8667,BESH,2/6/2003,2002,125,C,1,,ASI
+ALMI,CW,(Almirante) Brown Station,-64.8833,-62.8667,BESH,12/22/2003,2003,78,N,1,,ASI
+ALMI,CW,(Almirante) Brown Station,-64.8833,-62.8667,BESH,2/5/2004,2003,76,C,1,,ASI
+ALMI,CW,(Almirante) Brown Station,-64.8833,-62.8667,BESH,12/14/2004,2004,78,N,1,,ASI
+ALMI,CW,(Almirante) Brown Station,-64.8833,-62.8667,BESH,1/14/2005,2004,104,C,1,,ASI
+ALMI,CW,(Almirante) Brown Station,-64.8833,-62.8667,BESH,1/16/2006,2005,98,C,1,,ASI
+ALMI,CW,(Almirante) Brown Station,-64.8833,-62.8667,BESH,11/22/2006,2006,75,N,1,,ASI
+ALMI,CW,(Almirante) Brown Station,-64.8833,-62.8667,BESH,12/5/2007,2007,61,N,1,,ASI
+ALMI,CW,(Almirante) Brown Station,-64.8833,-62.8667,BESH,12/8/2008,2008,74,N,1,,ASI
+ALMI,CW,(Almirante) Brown Station,-64.8833,-62.8667,BESH,1/29/2009,2008,118,C,1,,ASI
+ALMI,CW,(Almirante) Brown Station,-64.8833,-62.8667,BESH,1/6/2010,2009,66,N,1,,ASI
+ALMI,CW,(Almirante) Brown Station,-64.8833,-62.8667,BESH,2/5/2010,2009,73,C,3,,ASI
+ALMI,CW,(Almirante) Brown Station,-64.8833,-62.8667,BESH,12/15/2010,2010,70,N,1,,ASI
+ALMI,CW,(Almirante) Brown Station,-64.8833,-62.8667,BESH,2/1/2011,2010,61,C,1,,ASI
+ALMI,CW,(Almirante) Brown Station,-64.8833,-62.8667,BESH,1/22/2012,2011,70,N,1,,ASI
+ALMI,CW,(Almirante) Brown Station,-64.8833,-62.8667,BESH,2/1/2012,2011,128,C,1,,ASI
+ALMI,CW,(Almirante) Brown Station,-64.8833,-62.8667,BESH,12/12/2012,2012,76,N,1,,ASI
+ALMI,CW,(Almirante) Brown Station,-64.8833,-62.8667,BESH,1/11/2013,2012,76,N,1,,ASI
+ANDI,SW,Andresen Island Site 2,-66.6492,-66.8789,BESH,12/7/2007,2007,5,N,1,,ASI
+ANDI,SW,Andresen Island Site 2,-66.6492,-66.8789,BESH,12/24/2009,2009,15,N,1,,ASI
+ANDI,SW,Andresen Island Site 2,-66.6492,-66.8789,BESH,1/16/2013,2012,24,N,1,,ASI
+ANDR,SW,Andresen Island Site 1,-66.8852,-66.6802,BESH,12/7/2007,2007,1,N,1,,ASI
+ANDR,SW,Andresen Island Site 1,-66.8852,-66.6802,BESH,1/16/2013,2012,6,N,1,,ASI
+ASTU,CW,Cape Astrup,-64.71,-63.21,BESH,12/16/2010,2010,19,N,1,,ASI
+BAYP,CW,Bay Point,-64.77,-63.33,BESH,12/16/2010,2010,11,N,1,,ASI
+BENE,CW,Beneden Head,-64.7671,-62.701,BESH,12/26/2007,2007,23,N,1,,ASI
+BENE,CW,Beneden Head,-64.7671,-62.701,BESH,12/11/2011,2011,20,N,1,,ASI
+BENE,CW,Beneden Head,-64.7671,-62.701,BESH,1/31/2012,2011,25,C,1,,ASI
+BERT,CW,Berthelot Islands,-65.3321,-64.1165,BESH,12/25/2006,2006,96,N,1,,ASI
+BONG,SW,"Bongrain Point, Pourquoi Pas Island",-67.7222,-67.7314,BESH,2/15/2010,2009,56,C,1,,ASI
+PCHA,CW,"Port Charcot, Booth Island",-65.065,-63.9862,BESH,12/24/2001,2001,19,N,1,,ASI
+PCHA,CW,"Port Charcot, Booth Island",-65.065,-63.9862,BESH,1/4/2006,2005,33,N,1,,ASI
+PCHA,CW,"Port Charcot, Booth Island",-65.065,-63.9862,BESH,12/14/2006,2006,31,N,1,,ASI
+PCHA,CW,"Port Charcot, Booth Island",-65.065,-63.9862,BESH,2/15/2007,2006,30,C,1,,ASI
+PCHA,CW,"Port Charcot, Booth Island",-65.065,-63.9862,BESH,12/30/2007,2007,35,N,1,,ASI
+PCHA,CW,"Port Charcot, Booth Island",-65.065,-63.9862,BESH,12/10/2008,2008,27,N,1,,ASI
+PCHA,CW,"Port Charcot, Booth Island",-65.065,-63.9862,BESH,1/2/2009,2008,50,C,1,,ASI
+PCHA,CW,"Port Charcot, Booth Island",-65.065,-63.9862,BESH,11/11/2009,2009,32,N,1,,ASI
+PCHA,CW,"Port Charcot, Booth Island",-65.065,-63.9862,BESH,2/6/2010,2009,19,C,1,,ASI
+PCHA,CW,"Port Charcot, Booth Island",-65.065,-63.9862,BESH,12/4/2010,2010,22,N,1,,ASI
+PCHA,CW,"Port Charcot, Booth Island",-65.065,-63.9862,BESH,2/2/2011,2010,25,C,1,,ASI
+PCHA,CW,"Port Charcot, Booth Island",-65.065,-63.9862,BESH,12/11/2012,2012,22,N,1,,ASI
+CHPT,CW,Charles Point,-64.2386,-61.0004,BESH,12/10/2010,2010,32,N,1,,ASI
+COBA,CW,Cobalescue Island,-64.1795,-61.6499,BESH,12/13/2011,2011,3,N,1,,ASI
+COCK,NE,Cockburn Island,-64.2005,-56.8412,BESH,11/19/2006,2006,800,N,5,,ASI
+CUVE,CW,Cuverville Island,-64.6875,-62.6219,BESH,1/19/1996,1995,61,N,1,,ASI
+CUVE,CW,Cuverville Island,-64.6875,-62.6219,BESH,1/23/2001,2000,33,C,1,,ASI
+CUVE,CW,Cuverville Island,-64.6875,-62.6219,BESH,2/7/2002,2001,15,N,1,,ASI
+CUVE,CW,Cuverville Island,-64.6875,-62.6219,BESH,1/2/2003,2002,28,N,1,,ASI
+CUVE,CW,Cuverville Island,-64.6875,-62.6219,BESH,2/14/2003,2002,40,C,1,,ASI
+CUVE,CW,Cuverville Island,-64.6875,-62.6219,BESH,1/1/2004,2003,28,N,1,,ASI
+CUVE,CW,Cuverville Island,-64.6875,-62.6219,BESH,12/13/2004,2004,21,N,1,,ASI
+CUVE,CW,Cuverville Island,-64.6875,-62.6219,BESH,1/14/2005,2004,30,C,1,,ASI
+CUVE,CW,Cuverville Island,-64.6875,-62.6219,BESH,11/22/2005,2005,29,N,1,,ASI
+CUVE,CW,Cuverville Island,-64.6875,-62.6219,BESH,11/22/2006,2006,29,N,1,,ASI
+CUVE,CW,Cuverville Island,-64.6875,-62.6219,BESH,12/26/2007,2007,21,N,1,,ASI
+CUVE,CW,Cuverville Island,-64.6875,-62.6219,BESH,1/30/2008,2007,24,C,1,,ASI
+CUVE,CW,Cuverville Island,-64.6875,-62.6219,BESH,12/8/2008,2008,24,N,1,,ASI
+CUVE,CW,Cuverville Island,-64.6875,-62.6219,BESH,12/23/2009,2009,17,N,1,,ASI
+CUVE,CW,Cuverville Island,-64.6875,-62.6219,BESH,2/5/2010,2009,25,C,1,,ASI
+CUVE,CW,Cuverville Island,-64.6875,-62.6219,BESH,1/5/2013,2012,30,N,1,,ASI
+CUVE,CW,Cuverville Island,-64.6875,-62.6219,BESH,2/2/2013,2012,49,C,1,,ASI
+DELA,CW,Delaite Island,-64.5643,-62.1881,BESH,12/11/2010,2010,115,N,1,,ASI
+DETA,SW,Detaille Island,-66.8699,-66.79,BESH,1/13/2003,2002,3,C,1,,ASI
+DETA,SW,Detaille Island,-66.8699,-66.79,BESH,1/3/2004,2003,3,N,1,,ASI
+DETA,SW,Detaille Island,-66.8699,-66.79,BESH,12/29/2007,2007,4,N,1,,ASI
+DETA,SW,Detaille Island,-66.8699,-66.79,BESH,12/24/2009,2009,4,N,1,,ASI
+DETA,SW,Detaille Island,-66.8699,-66.79,BESH,1/14/2011,2010,4,N,1,,ASI
+DETA,SW,Detaille Island,-66.8699,-66.79,BESH,2/3/2011,2010,4,N,1,,ASI
+DOBE,CW,Dorian Beacon,-64.8149,-63.4968,BESH,11/30/2008,2008,1,N,1,,ASI
+ENTE,CW,Enterprise Island,-64.5385,-61.9997,BESH,1/30/2008,2007,5,N,1,,ASI
+ENTR,SH,Entrance Point,-62.9981,-60.5533,BESH,12/21/2012,2012,6,N,1,,ASI
+FISH,SW,Fish Islands,-66.0288,-65.3506,BESH,1/25/1995,1994,78,C,1,,ASI
+FISH,SW,Fish Islands,-66.0288,-65.3506,BESH,1/13/2003,2002,31,N,1,,ASI
+FISH,SW,Fish Islands,-66.0288,-65.3506,BESH,12/18/2007,2007,55,N,1,,ASI
+FISH,SW,Fish Islands,-66.0288,-65.3506,BESH,2/11/2008,2007,137,C,1,,ASI
+FISH,SW,Fish Islands,-66.0288,-65.3506,BESH,2/5/2009,2008,65,C,1,,ASI
+GAST,CW,Gaston Island,-64.4848,-61.827,BESH,12/12/2010,2010,71,N,1,,ASI
+GAST,CW,Gaston Island,-64.4848,-61.827,BESH,12/4/2012,2012,43,N,1,,ASI
+HALF,SH,Half Moon Island,-62.5901,-59.9203,BESH,12/14/2007,2007,11,N,1,,ASI
+HALF,SH,Half Moon Island,-62.5901,-59.9203,BESH,12/18/2008,2008,12,N,1,,ASI
+HALF,SH,Half Moon Island,-62.5901,-59.9203,BESH,11/11/2011,2011,14,N,1,,ASI
+HALF,SH,Half Moon Island,-62.5901,-59.9203,BESH,12/25/2011,2011,14,N,1,,ASI
+HALF,SH,Half Moon Island,-62.5901,-59.9203,BESH,1/3/2013,2012,12,N,1,,ASI
+HANN,SH,Hannah Point,-62.6545,-60.6134,BESH,12/9/1994,1994,10,N,1,,ASI
+HANN,SH,Hannah Point,-62.6545,-60.6134,BESH,11/18/1995,1995,8,N,1,,ASI
+HANN,SH,Hannah Point,-62.6545,-60.6134,BESH,12/3/1996,1996,5,N,1,,ASI
+HANN,SH,Hannah Point,-62.6545,-60.6134,BESH,12/3/1997,1997,7,N,1,,ASI
+HANN,SH,Hannah Point,-62.6545,-60.6134,BESH,12/7/1998,1998,5,N,1,,ASI
+HANN,SH,Hannah Point,-62.6545,-60.6134,BESH,1/25/2000,1999,9,C,1,,ASI
+HANN,SH,Hannah Point,-62.6545,-60.6134,BESH,12/15/2000,2000,3,N,1,,ASI
+HANN,SH,Hannah Point,-62.6545,-60.6134,BESH,12/30/2000,2000,3,N,1,,ASI
+HANN,SH,Hannah Point,-62.6545,-60.6134,BESH,12/23/2004,2004,4,N,1,,ASI
+HANN,SH,Hannah Point,-62.6545,-60.6134,BESH,1/10/2011,2010,2,N,1,,ASI
+HANN,SH,Hannah Point,-62.6545,-60.6134,BESH,1/30/2011,2010,4,C,1,,ASI
+HANN,SH,Hannah Point,-62.6545,-60.6134,BESH,2/3/2012,2011,7,C,1,,ASI
+HUNT,CW,Hunt Island,-64.333,-62.117,BESH,11/24/2010,2010,20,N,1,,ASI
+HYDR,CW,Hydrurga Rocks,-64.1454,-61.6259,BESH,11/25/1996,1996,21,N,1,,ASI
+HYDR,CW,Hydrurga Rocks,-64.1454,-61.6259,BESH,12/26/2000,2000,13,N,1,,ASI
+HYDR,CW,Hydrurga Rocks,-64.1454,-61.6259,BESH,12/23/2001,2001,10,N,1,,ASI
+HYDR,CW,Hydrurga Rocks,-64.1454,-61.6259,BESH,1/3/2002,2001,13,C,1,,ASI
+HYDR,CW,Hydrurga Rocks,-64.1454,-61.6259,BESH,1/11/2003,2002,12,N,1,,ASI
+HYDR,CW,Hydrurga Rocks,-64.1454,-61.6259,BESH,2/13/2008,2007,30,C,1,,ASI
+JACP,CW,Jacques Peak,-64.5152,-61.8342,BESH,12/12/2010,2010,36,N,1,,ASI
+JACP,CW,Jacques Peak,-64.5152,-61.8342,BESH,12/4/2012,2012,50,N,1,,ASI
+JENN,SW,Jenny Island,-67.733,-68.383,BESH,1/7/2008,2007,1,N,1,,ASI
+JOUG,CW,Jougla Point,-64.827,-63.4932,BESH,12/8/1994,1994,35,N,1,,ASI
+JOUG,CW,Jougla Point,-64.827,-63.4932,BESH,1/26/1995,1994,63,C,1,,ASI
+JOUG,CW,Jougla Point,-64.827,-63.4932,BESH,1/14/1996,1995,25,N,1,,ASI
+JOUG,CW,Jougla Point,-64.827,-63.4932,BESH,1/24/1996,1995,51,C,1,,ASI
+JOUG,CW,Jougla Point,-64.827,-63.4932,BESH,11/24/1997,1997,20,N,1,,ASI
+JOUG,CW,Jougla Point,-64.827,-63.4932,BESH,12/5/1997,1997,20,N,1,,ASI
+JOUG,CW,Jougla Point,-64.827,-63.4932,BESH,2/3/1998,1997,33,C,1,,ASI
+JOUG,CW,Jougla Point,-64.827,-63.4932,BESH,11/28/1998,1998,22,N,1,,ASI
+JOUG,CW,Jougla Point,-64.827,-63.4932,BESH,12/17/1999,1999,25,N,1,,ASI
+JOUG,CW,Jougla Point,-64.827,-63.4932,BESH,1/13/2000,1999,45,C,1,,ASI
+JOUG,CW,Jougla Point,-64.827,-63.4932,BESH,12/13/2000,2000,26,N,1,,ASI
+JOUG,CW,Jougla Point,-64.827,-63.4932,BESH,1/23/2001,2000,47,C,1,,ASI
+JOUG,CW,Jougla Point,-64.827,-63.4932,BESH,1/5/2002,2001,24,N,1,,ASI
+JOUG,CW,Jougla Point,-64.827,-63.4932,BESH,1/28/2002,2001,26,C,1,,ASI
+JOUG,CW,Jougla Point,-64.827,-63.4932,BESH,12/9/2002,2002,32,N,1,,ASI
+JOUG,CW,Jougla Point,-64.827,-63.4932,BESH,1/25/2003,2002,62,C,1,,ASI
+JOUG,CW,Jougla Point,-64.827,-63.4932,BESH,12/24/2003,2003,33,N,1,,ASI
+JOUG,CW,Jougla Point,-64.827,-63.4932,BESH,2/16/2004,2003,46,C,1,,ASI
+JOUG,CW,Jougla Point,-64.827,-63.4932,BESH,12/20/2004,2004,29,N,1,,ASI
+JOUG,CW,Jougla Point,-64.827,-63.4932,BESH,12/13/2004,2004,29,N,1,,ASI
+JOUG,CW,Jougla Point,-64.827,-63.4932,BESH,1/16/2005,2004,43,C,1,,ASI
+JOUG,CW,Jougla Point,-64.827,-63.4932,BESH,12/26/2005,2005,20,N,1,,ASI
+JOUG,CW,Jougla Point,-64.827,-63.4932,BESH,1/27/2006,2005,46,C,1,,ASI
+JOUG,CW,Jougla Point,-64.827,-63.4932,BESH,11/22/2006,2006,21,N,1,,ASI
+JOUG,CW,Jougla Point,-64.827,-63.4932,BESH,1/28/2007,2006,44,C,1,,ASI
+JOUG,CW,Jougla Point,-64.827,-63.4932,BESH,11/25/2007,2007,30,N,1,,ASI
+JOUG,CW,Jougla Point,-64.827,-63.4932,BESH,1/22/2008,2007,37,C,1,,ASI
+JOUG,CW,Jougla Point,-64.827,-63.4932,BESH,2/2/2008,2007,37,C,1,,ASI
+JOUG,CW,Jougla Point,-64.827,-63.4932,BESH,11/10/2008,2008,33,N,1,,ASI
+JOUG,CW,Jougla Point,-64.827,-63.4932,BESH,1/25/2009,2008,41,C,1,,ASI
+JOUG,CW,Jougla Point,-64.827,-63.4932,BESH,11/14/2009,2009,31,N,1,,ASI
+JOUG,CW,Jougla Point,-64.827,-63.4932,BESH,2/6/2010,2009,35,C,1,,ASI
+JOUG,CW,Jougla Point,-64.827,-63.4932,BESH,11/25/2010,2010,28,N,1,,ASI
+JOUG,CW,Jougla Point,-64.827,-63.4932,BESH,2/4/2011,2010,18,C,1,,ASI
+JOUG,CW,Jougla Point,-64.827,-63.4932,BESH,11/16/2011,2011,28,N,1,,ASI
+JOUG,CW,Jougla Point,-64.827,-63.4932,BESH,1/21/2012,2011,47,C,1,,ASI
+JOUG,CW,Jougla Point,-64.827,-63.4932,BESH,1/5/2013,2012,20,N,1,,ASI
+JOUG,CW,Jougla Point,-64.827,-63.4932,BESH,12/22/2012,2012,20,N,1,,ASI
+LECO,CW,Lecointe Island,-64.2657,-62.0502,BESH,12/23/2001,2001,7,N,1,,ASI
+LECO,CW,Lecointe Island,-64.2657,-62.0502,BESH,12/12/2002,2002,4,N,1,,ASI
+LECO,CW,Lecointe Island,-64.2657,-62.0502,BESH,12/21/2003,2003,8,N,1,,ASI
+MIDA,CW,Midas Island,-64.1677,-61.101,BESH,12/10/2010,2010,16,N,1,,ASI
+ORNE,CW,Orne Islands,-64.659,-62.6631,BESH,12/16/1994,1994,15,N,1,,ASI
+ORNE,CW,Orne Islands,-64.659,-62.6631,BESH,1/24/1995,1994,20,C,1,,ASI
+ORNE,CW,Orne Islands,-64.659,-62.6631,BESH,11/27/1995,1995,9,N,1,,ASI
+ORNE,CW,Orne Islands,-64.659,-62.6631,BESH,1/25/1996,1995,16,C,1,,ASI
+ORNE,CW,Orne Islands,-64.659,-62.6631,BESH,12/4/1996,1996,5,N,1,,ASI
+ORNE,CW,Orne Islands,-64.659,-62.6631,BESH,12/4/1997,1997,3,N,1,,ASI
+ORNE,CW,Orne Islands,-64.659,-62.6631,BESH,11/27/1998,1998,1,N,1,,ASI
+ORNE,CW,Orne Islands,-64.659,-62.6631,BESH,12/6/1998,1998,1,N,1,,ASI
+ORNE,CW,Orne Islands,-64.659,-62.6631,BESH,1/23/2000,1999,0,N,1,,ASI
+ORNE,CW,Orne Islands,-64.659,-62.6631,BESH,1/23/2001,2000,0,C,1,,ASI
+ORNE,CW,Orne Islands,-64.659,-62.6631,BESH,2/15/2002,2001,0,C,1,,ASI
+ORNE,CW,Orne Islands,-64.659,-62.6631,BESH,11/22/2005,2005,0,N,1,,ASI
+ORNE,CW,Orne Islands,-64.659,-62.6631,BESH,11/22/2006,2006,0,N,1,,ASI
+ORNE,CW,Orne Islands,-64.659,-62.6631,BESH,12/15/2007,2007,0,N,1,,ASI
+ORNE,CW,Orne Islands,-64.659,-62.6631,BESH,12/16/2008,2008,0,N,1,,ASI
+PAUL,NE,Paulet Island,-63.5801,-55.7881,BESH,11/30/1995,1995,434,N,1,,ASI
+PAUL,NE,Paulet Island,-63.5801,-55.7881,BESH,12/1/1996,1996,361,N,1,,ASI
+PAUL,NE,Paulet Island,-63.5801,-55.7881,BESH,12/25/2000,2000,291,N,1,,ASI
+PAUL,NE,Paulet Island,-63.5801,-55.7881,BESH,1/9/2001,2000,279,C,1,,ASI
+PAUL,NE,Paulet Island,-63.5801,-55.7881,BESH,12/21/2001,2001,321,N,1,,ASI
+PAUL,NE,Paulet Island,-63.5801,-55.7881,BESH,1/10/2003,2002,273,N,1,,ASI
+PAUL,NE,Paulet Island,-63.5801,-55.7881,BESH,2/1/2003,2002,284,C,1,,ASI
+PAUL,NE,Paulet Island,-63.5801,-55.7881,BESH,12/24/2004,2004,534,N,1,,ASI
+PAUL,NE,Paulet Island,-63.5801,-55.7881,BESH,11/20/2005,2005,413,N,1,,ASI
+PAUL,NE,Paulet Island,-63.5801,-55.7881,BESH,1/28/2008,2007,247,N,1,,ASI
+PAUL,NE,Paulet Island,-63.5801,-55.7881,BESH,12/22/2009,2009,317,N,1,,ASI
+PAUL,NE,Paulet Island,-63.5801,-55.7881,BESH,1/24/2010,2009,2,C,1,,ASI
+PAUL,NE,Paulet Island,-63.5801,-55.7881,BESH,12/23/2010,2010,182,N,1,,ASI
+PAUL,NE,Paulet Island,-63.5801,-55.7881,BESH,1/20/2012,2011,548,N,1,,ASI
+PELT,CW,Peltier Channel,-64.87,-63.53,BESH,1/15/2009,2008,10,C,1,,ASI
+PETE,CW,Petermann Island,-65.1721,-64.142,BESH,12/11/1994,1994,35,N,1,,ASI
+PETE,CW,Petermann Island,-65.1721,-64.142,BESH,1/26/1995,1994,67,C,1,,ASI
+PETE,CW,Petermann Island,-65.1721,-64.142,BESH,12/16/1995,1995,38,N,1,,ASI
+PETE,CW,Petermann Island,-65.1721,-64.142,BESH,2/4/1996,1995,52,C,1,,ASI
+PETE,CW,Petermann Island,-65.1721,-64.142,BESH,12/5/1996,1996,29,N,1,,ASI
+PETE,CW,Petermann Island,-65.1721,-64.142,BESH,1/9/1997,1996,29,N,1,,ASI
+PETE,CW,Petermann Island,-65.1721,-64.142,BESH,12/5/1997,1997,30,N,1,,ASI
+PETE,CW,Petermann Island,-65.1721,-64.142,BESH,1/22/1999,1998,57,C,1,,ASI
+PETE,CW,Petermann Island,-65.1721,-64.142,BESH,1/24/2000,1999,46,C,1,,ASI
+PETE,CW,Petermann Island,-65.1721,-64.142,BESH,12/13/2000,2000,23,N,1,,ASI
+PETE,CW,Petermann Island,-65.1721,-64.142,BESH,1/14/2001,2000,21,C,1,,ASI
+PETE,CW,Petermann Island,-65.1721,-64.142,BESH,12/10/2002,2002,28,N,1,,ASI
+PETE,CW,Petermann Island,-65.1721,-64.142,BESH,1/23/2003,2002,49,C,1,,ASI
+PETE,CW,Petermann Island,-65.1721,-64.142,BESH,1/1/2004,2003,13,N,1,,ASI
+PETE,CW,Petermann Island,-65.1721,-64.142,BESH,2/15/2004,2003,28,C,1,,ASI
+PETE,CW,Petermann Island,-65.1721,-64.142,BESH,11/19/2008,2008,14,N,1,,ASI
+PETE,CW,Petermann Island,-65.1721,-64.142,BESH,1/12/2009,2008,23,C,1,,ASI
+PETE,CW,Petermann Island,-65.1721,-64.142,BESH,1/18/2009,2008,22,C,1,,ASI
+PETE,CW,Petermann Island,-65.1721,-64.142,BESH,1/28/2009,2008,22,C,1,,ASI
+PETE,CW,Petermann Island,-65.1721,-64.142,BESH,12/14/2009,2009,10,N,1,,ASI
+PETE,CW,Petermann Island,-65.1721,-64.142,BESH,1/28/2010,2009,19,C,1,,ASI
+PETE,CW,Petermann Island,-65.1721,-64.142,BESH,12/5/2010,2010,8,N,1,,ASI
+PETE,CW,Petermann Island,-65.1721,-64.142,BESH,1/2/2011,2010,8,N,1,,ASI
+PETE,CW,Petermann Island,-65.1721,-64.142,BESH,2/21/2012,2011,16,N,1,,ASI
+PETE,CW,Petermann Island,-65.1721,-64.142,BESH,1/7/2013,2012,43,N,1,,ASI
+PETE,CW,Petermann Island,-65.1721,-64.142,BESH,2/3/2013,2012,87,C,2,,ASI
+PLEN,CW,Pléneau Island,-65.104,-64.0556,BESH,11/28/1999,1999,17,N,1,,ASI
+PLEN,CW,Pléneau Island,-65.104,-64.0556,BESH,12/27/2000,2000,29,N,1,,ASI
+PLEN,CW,Pléneau Island,-65.104,-64.0556,BESH,1/24/2001,2000,53,C,1,,ASI
+PLEN,CW,Pléneau Island,-65.104,-64.0556,BESH,1/4/2002,2001,18,N,1,,ASI
+PLEN,CW,Pléneau Island,-65.104,-64.0556,BESH,1/15/2002,2001,18,C,1,,ASI
+PLEN,CW,Pléneau Island,-65.104,-64.0556,BESH,1/3/2003,2002,28,N,1,,ASI
+PLEN,CW,Pléneau Island,-65.104,-64.0556,BESH,1/14/2003,2002,27,C,1,,ASI
+PLEN,CW,Pléneau Island,-65.104,-64.0556,BESH,12/22/2003,2003,38,N,1,,ASI
+PLEN,CW,Pléneau Island,-65.104,-64.0556,BESH,1/4/2005,2004,36,N,1,,ASI
+PLEN,CW,Pléneau Island,-65.104,-64.0556,BESH,12/14/2006,2006,58,N,1,,ASI
+PLEN,CW,Pléneau Island,-65.104,-64.0556,BESH,1/10/2008,2007,24,N,1,,ASI
+PLEN,CW,Pléneau Island,-65.104,-64.0556,BESH,2/1/2008,2007,65,C,1,,ASI
+PLEN,CW,Pléneau Island,-65.104,-64.0556,BESH,1/25/2009,2008,73,C,1,,ASI
+PLEN,CW,Pléneau Island,-65.104,-64.0556,BESH,11/22/2009,2009,31,N,1,,ASI
+PLEN,CW,Pléneau Island,-65.104,-64.0556,BESH,2/2/2011,2010,23,C,1,,ASI
+PLEN,CW,Pléneau Island,-65.104,-64.0556,BESH,12/21/2012,2012,28,N,1,,ASI
+PRIE,CW,Priest Island (Peltier Channel),-64.8667,-63.5167,BESH,1/23/2001,2000,4,C,1,,ASI
+PRIE,CW,Priest Island (Peltier Channel),-64.8667,-63.5167,BESH,12/14/2001,2001,8,N,1,,ASI
+PRIE,CW,Priest Island (Peltier Channel),-64.8667,-63.5167,BESH,2/6/2004,2003,1,C,1,,ASI
+PURS,CW,Pursuit Island,-64.944,-63.433,BESH,1/21/2013,2012,21,N,1,,ASI
+PELT,CW,Peltier Channel,-64.87,-63.53,BESH,1/27/2010,2009,18,C,1,,ASI
+ROBE,SH,Robert Point,-62.45,-59.383,BESH,1/9/2013,2012,7,N,1,,ASI
+RRRI,SW,Red Rock Ridge,-68.295,-67.0728,BESH,12/28/2007,2007,3,N,1,,ASI
+RRRI,SW,Red Rock Ridge,-68.295,-67.0728,BESH,2/14/2010,2009,19,C,1,,ASI
+RUGG,SH,Rugged Rocks,-62.6012,-59.8155,BESH,12/2/2011,2011,8,N,1,,ASI
+RUGG,SH,Rugged Rocks,-62.6012,-59.8155,BESH,12/21/2012,2012,6,N,1,,ASI
+SANE,CW,San Eliado Point,-64.844,-63.1166,BESH,12/13/2010,2010,16,N,1,,ASI
+SOMI,SW,South of Martin Islands,-65.3379,-65.6854,BESH,12/8/2007,2007,24,N,1,,ASI
+SPIG,CW,Spigot Peak,-64.6347,-62.5557,BESH,12/15/2007,2007,28,N,1,,ASI
+STON,SW,Stonington Island,-68.1861,-66.997,BESH,2/6/2007,2006,135,C,1,,ASI
+TETR,CW,Tetrad Islands,-63.9171,-60.7353,BESH,12/3/2012,2012,20,N,1,,ASI
+TURR,SH,Turret Point,-62.089,-57.9519,BESH,12/6/2010,2010,49,N,1,,ASI
+TURR,SH,Turret Point,-62.089,-57.9519,BESH,12/2/2012,2012,18,N,1,,ASI
+USEF,CW,Useful Island,-64.717,-62.871,BESH,1/3/2005,2004,17,N,1,,ASI
+USEF,CW,Useful Island,-64.717,-62.871,BESH,11/24/2007,2007,20,N,1,,ASI
+USEF,CW,Useful Island,-64.717,-62.871,BESH,11/20/2008,2008,21,N,1,,ASI
+USEF,CW,Useful Island,-64.717,-62.871,BESH,2/6/2009,2008,37,C,1,,ASI
+USEF,CW,Useful Island,-64.717,-62.871,BESH,2/8/2010,2009,34,C,1,,ASI
+USEF,CW,Useful Island,-64.717,-62.871,BESH,11/24/2010,2010,27,N,1,,ASI
+WATE,CW,"Waterboat Point, Paradise Bay",-64.8236,-62.8581,BESH,12/12/2011,2011,1,N,1,,ASI
+WATE,CW,"Waterboat Point, Paradise Bay",-64.8236,-62.8581,BESH,1/31/2012,2011,1,C,1,,ASI
+WHAL,SH,"Whalers Bay, Deception Island",-62.9832,-60.5617,BESH,1/11/2004,2003,10,C,1,,ASI
+WHAL,SH,"Whalers Bay, Deception Island",-62.9832,-60.5617,BESH,1/13/2005,2004,17,C,1,,ASI
+WHAL,SH,"Whalers Bay, Deception Island",-62.9832,-60.5617,BESH,12/23/2005,2005,8,N,1,,ASI
+WHAL,SH,"Whalers Bay, Deception Island",-62.9832,-60.5617,BESH,12/4/2007,2007,12,N,1,,ASI
+WHAL,SH,"Whalers Bay, Deception Island",-62.9832,-60.5617,BESH,11/17/2008,2008,11,N,1,,ASI
+WHAL,SH,"Whalers Bay, Deception Island",-62.9832,-60.5617,BESH,1/17/2009,2008,27,C,1,,ASI
+WHAL,SH,"Whalers Bay, Deception Island",-62.9832,-60.5617,BESH,12/12/2009,2009,12,N,1,,ASI
+WHAL,SH,"Whalers Bay, Deception Island",-62.9832,-60.5617,BESH,2/17/2010,2009,9,C,1,,ASI
+WHAL,SH,"Whalers Bay, Deception Island",-62.9832,-60.5617,BESH,1/30/2011,2010,20,C,1,,ASI
+WHAL,SH,"Whalers Bay, Deception Island",-62.9832,-60.5617,BESH,1/24/2012,2011,30,C,1,,ASI
+YALO,CW,Yalour Islands,-65.2421,-64.1558,BESH,1/27/2004,2003,40,C,1,,ASI
+YALO,CW,Yalour Islands,-65.2421,-64.1558,BESH,12/25/2006,2006,18,N,1,,ASI
+YALO,CW,Yalour Islands,-65.2421,-64.1558,BESH,12/6/2008,2008,16,N,1,,ASI
+YALO,CW,Yalour Islands,-65.2421,-64.1558,BESH,12/25/2009,2009,14,N,1,,ASI
