@@ -1,6 +1,13 @@
-setwd('/Users/bsevans/Desktop/core-transient-datasets/raw_datasets')
+# Eastern Wood bird community data
 
-d226 = read.csv('dataset_226.csv')
+# Set read and write directories:
+
+in_dir = 'raw_datasets'
+out_dir = 'formatted_datasets'
+
+# Get data: 
+
+d226 = read.csv(file.path(in_dir,'dataset_226.csv'))
 
 # Remove X's from the year column:
   names(d226) = gsub('X', '',names(d226))
@@ -32,6 +39,5 @@ d226 = read.csv('dataset_226.csv')
 
 # Write to the formatted data folder:
 
-setwd('/Users/bsevans/Desktop/core-transient-datasets/formatted_datasets')
+write.csv(d226, file.path(out_dir,'dataset_226.csv'), row.names = F)
 
-write.csv(d226, 'dataset_226.csv', row.names = F)
