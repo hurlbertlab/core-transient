@@ -2,10 +2,13 @@
 
 library(reshape2)
 
+# Set read and write directories:
+
 in_dir = 'raw_datasets/dataset_228RAW'
 out_dir = 'formatted_datasets'
   
 # Get data:
+# Note: each file represents one site from the Hubbard Brook study.
 
 hb = read.csv(file.path(in_dir,'hb_bird.txt'))
 mk = read.csv(file.path(in_dir,'mk_bird.txt'))
