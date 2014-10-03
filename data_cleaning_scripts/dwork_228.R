@@ -1,16 +1,16 @@
-# Install and load necessary packages:
+# Load reshape2 library:
 
-install.packages('reshape2')
 library(reshape2)
 
+in_dir = 'raw_datasets/dataset_228RAW'
+out_dir = 'formatted_datasets'
+  
 # Get data:
 
-setwd('/Users/bsevans/Desktop/core-transient-datasets/raw_datasets/dataset_228RAW')
-
-hb = read.csv('hb_bird.txt')
-mk = read.csv('mk_bird.txt')
-rp = read.csv('rp_bird.txt')
-sm = read.csv('sm_bird.txt')
+hb = read.csv(file.path(in_dir,'hb_bird.txt'))
+mk = read.csv(file.path(in_dir,'mk_bird.txt'))
+rp = read.csv(file.path(in_dir,'rp_bird.txt'))
+sm = read.csv(file.path(in_dir,'sm_bird.txt'))
 
 reshape.fun = function(sampling.site, site.code){
   # Remove X's from the year column:
@@ -43,7 +43,5 @@ reshape.fun = function(sampling.site, site.code){
 d228 = rbind(reshape.fun(hb,'hb'),reshape.fun(mk,'mk'),
       reshape.fun(rp,'rp'),reshape.fun(sm,'sm'))
 
-setwd('/Users/bsevans/Desktop/core-transient-datasets/formatted_datasets')
-
-write.csv(d228, 'dataset_228.csv', row.names = F)
+write.csv(d228, file.path(out_dir,'hb_bird.txt'))
 
