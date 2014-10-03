@@ -46,5 +46,5 @@ reshape.fun = function(sampling.site, site.code){
 d228 = rbind(reshape.fun(hb,'hb'),reshape.fun(mk,'mk'),
       reshape.fun(rp,'rp'),reshape.fun(sm,'sm'))
 
-write.csv(d228, file.path(out_dir,'hb_bird.txt'))
+write.csv(d228, file.path(out_dir,'dataset_228.csv'))
 
