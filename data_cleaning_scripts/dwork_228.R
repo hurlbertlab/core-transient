@@ -46,8 +46,17 @@ reshape.fun = function(sampling.site, site.code){
 d228 = rbind(reshape.fun(hb,'hb'),reshape.fun(mk,'mk'),
       reshape.fun(rp,'rp'),reshape.fun(sm,'sm'))
 
-write.csv(d228, file.path(out_dir,'dataset_228.csv'))
+# Add a dataset ID column for matching with metadata
 
+d228$datasetID = rep(228, length(d228[,1]))
+
+# Rearrange the columns"
+
+d228 = d228[,c(5,1:4)]
+
+# Write to file:
+
+write.csv(d228, file.path(out_dir,'dataset_228.csv'))
 
 # Remove objects from the global environment
 
