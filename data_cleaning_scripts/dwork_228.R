@@ -48,3 +48,8 @@ d228 = rbind(reshape.fun(hb,'hb'),reshape.fun(mk,'mk'),
 
 write.csv(d228, file.path(out_dir,'dataset_228.csv'))
 
+
+# Remove objects from the global environment
+
+rm(list = ls())
+
