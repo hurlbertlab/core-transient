@@ -1,6 +1,6 @@
 # Dataset 232: Sevilleta small mammals
 
-# Add libraries:
+# Load libraries:
 
 library(plyr)
 
@@ -37,5 +37,9 @@ names(d232) = c('site','species','year','count')
 # Write to file:
 
 write.csv(d232, file.path(out_dir,'dataset_232.csv'))
+
+# Remove objects from the global environment
+
+rm(list = ls())
 
 
