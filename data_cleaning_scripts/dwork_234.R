@@ -56,9 +56,17 @@ df3 = ddply(df2,.(site,year,species),
 df4 = data.frame(df3[,1],df3[,3],df3[,2],df3[,4])
 names(df4) = c('site','species','year','count')
 
+# Add a dataset ID column for matching with metadata
+
+df4$datasetID = rep(234, length(df4[,1]))
+
+# Rearrange the columns"
+
+d234 = df4[,c(5,1:4)]
+
 # Write to file:
 
-write.csv(df4, file.path(out_dir,'dataset_234.csv'), row.names = F)
+write.csv(df234, file.path(out_dir,'dataset_234.csv'), row.names = F)
 
 # Remove objects from the global environment
 
