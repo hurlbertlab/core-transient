@@ -59,3 +59,7 @@ names(df4) = c('site','species','year','count')
 # Write to file:
 
 write.csv(df4, file.path(out_dir,'dataset_234.csv'), row.names = F)
+
+# Remove objects from the global environment
+
+rm(list = ls())
