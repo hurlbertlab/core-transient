@@ -1,6 +1,6 @@
 # Dataset 232: Sevilleta small mammals
 
-# Download libraries:
+# Add libraries:
 
 library(plyr)
 
@@ -21,7 +21,6 @@ d232.1 = ddply(d232, .(location,year, season, night,species),
 
 # Create a data frame of the maximum count of individuals 
 # for a given sampling event within a season.
-
 
 d232.2 = ddply(d232.1,.(location,year,season,species),
                summarise, count = max(count))
