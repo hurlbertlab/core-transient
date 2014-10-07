@@ -34,6 +34,14 @@ year = as.numeric(paste(d232.2$year,d232.2$season, sep ='.'))
 d232 = data.frame(d232.2[,1],d232.2[,4],year,d232.2[,5])
 names(d232) = c('site','species','year','count')
 
+# Add a dataset ID column for matching with metadata
+
+d232$datasetID = rep(232, length(d232[,1]))
+
+# Rearrange the columns"
+
+d232 = d232[,c(5,1:4)]
+
 # Write to file:
 
 write.csv(d232, file.path(out_dir,'dataset_232.csv'))
