@@ -25,23 +25,30 @@ names(dClean) = c('species','year','count')
   
 dClean$year = as.numeric(gsub('X', '',dClean$year))
   
-# Add a site column (and arrange as the first column):
+# Add a site column:
 
 dClean$site = factor(rep('d226_ew', length(dClean$year)))
-dClean = dClean[,c(4,1:3)]
 
+# Add a dataset ID column for matching with metadata
+  
+dClean$datasetID = rep(226, length(dClean[,1]))
+    
+# Rearrange the columns"
+  
+dClean = dClean[,c(5,4,1:3)]
+  
 # Remove NA's:
 
 dClean = na.omit(dClean)
 
 # Remove 0's:
 
-  d226 = dClean[dClean$count>0,]
+d226 = dClean[dClean$count>0,]
 
 # Write to the formatted data folder:
 
-  write.csv(d226, file.path(out_dir,'dataset_226.csv'), row.names = F)
+write.csv(d226, file.path(out_dir,'dataset_226.csv'), row.names = F)
   
 # Remove objects from the global environment
 
-  rm(list = ls())
+rm(list = ls())
