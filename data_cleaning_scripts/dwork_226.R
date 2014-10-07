@@ -41,4 +41,7 @@ dClean = na.omit(dClean)
 # Write to the formatted data folder:
 
   write.csv(d226, file.path(out_dir,'dataset_226.csv'), row.names = F)
+  
+# Remove objects from the global environment
 
+  rm(list = ls())
