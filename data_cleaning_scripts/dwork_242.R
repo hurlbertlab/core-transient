@@ -1,4 +1,4 @@
-# Dataset 242: Adult fish in kelp forest surrounding San Nicolas Island
+# Dataset 242: Adult benthic fish in kelp forest surrounding San Nicolas Island
 
 # Set read and write directories:
 
