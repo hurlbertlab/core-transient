@@ -23,7 +23,7 @@ d246 = d246[,c(2,10,3,9)]
 
 # For abundance frame, use the maximum count for a given year, site, and species:
 
-d246.1 = aggregate(count~site + species + year, d246abund, max)
+d246.1 = aggregate(count~site + species + year, d246, max)
 
 # Add datasetID column:
 
