@@ -1,9 +1,5 @@
 # Dataset 241: Benthic organisms in kelp forest surrounding San Nicolas Island
 
-# Add libraries:
-
-library(plyr)
-
 # Set read and write directories:
 
 in_dir = 'raw_datasets'
