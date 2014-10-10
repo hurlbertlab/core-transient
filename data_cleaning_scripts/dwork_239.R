@@ -3,6 +3,7 @@
 # Add libraries:
 
 library(plyr)
+library(reshape)
 
 # Set read and write directories:
 
@@ -44,6 +45,8 @@ test.fun(1)
 # If we explore a number of resolutions above, we can see that there is only one site in which
 # the number of years is 5 or more for an incredible range of resolutions. This means that, for 
 # our purpose, only site 50-4, at one degree resolution can truly be used.
+# Note: despite previous concerns of samples from varying depths, it appears that all samples
+# within this subset are from surface waters.
 
 # Subset to only the spatial location with an adequate number of temporal samples.
 
@@ -55,63 +58,29 @@ d239t1 = d239t1[d239t1$site == '50-4',]
 
 d239t3b = d239t3[d239t3$X  %in% d239t1$SampleID == T,]
 
-# Note: despite previous concerns of samples from varying depths, it appears that all samples
-# within this subset are from surface waters.
+# Switch from wide to long format:
 
+# Melt from wide to long format:
 
-###------REFERENCE SCRIPT BELOW--------------
-# Goal is to change monthly sample to some decimal of year (breaking into quarters):
+dmelt = melt(d239t3b, id.vars = 'X')
 
-# Month is embedded within a date string (YYYYMM), extract month:
+# Remove zeros
 
-d = as.numeric(substr(as.character(d239$mo), 5,6))
+d239 = dmelt[dmelt$value>0,]
 
-# Change month to season (wint = Dec, Jan, Feb, spr = Mar, Apr, May, sum  = Jun, Jul, Aug, etc.)
+# Add year by merging based on SampleID:
 
-d1 = .1* ifelse(d >= 3 & d <=5, 1, 
-                ifelse(d >= 6 & d <= 8, 2,
-                       ifelse(d >= 9 & d <=11, 3, 4)))
+d239 = merge(d239, d239t1, by.x = 'X', by.y = 'SampleID', all = T)
 
-# Extract year from the date column:
+# Create datasetID and site fields: 
 
-y = as.numeric(substr(as.character(d239$mo), 1,4))
+datasetID = rep(239, length(d239[,1]))
+site = rep('d239_1', length(d239[,1]))
 
-# Add the decimal season to the year column:
+# Remove columns and arrange/name in keeping with other datasets:
 
-d239$year =y + d1
-
-# Create a "site" column, the sites are the 20 experimental grids
-
-site = paste('d239_',d239$gr, sep = '')
-
-# Make initial frame (necessary columns, not summarized):
-
-df1 = data.frame(site, d239$sp, d239$year, d239$mo)
-colnames(df1)[2:4] = c('species','year','date')
-
-# Create a data frame of the count of individuals for a given sampling event:
-
-df2 = ddply(df1, .(site, year, species, date), 
-            summarise, count = length(species))
-
-# Create a data frame of the maximum count of individuals 
-# for a given sampling event within a season.
-
-df3 = ddply(df2,.(site,year,species),
-            summarise, count = max(count))
-
-# Arrange the fields in the same order as other datasets:
-
-df4 = data.frame(df3[,1],df3[,3],df3[,2],df3[,4])
-names(df4) = c('site','species','year','count')
-
-# Add a dataset ID column for matching with metadata
-
-df4$datasetID = rep(239, length(df4[,1]))
-
-# Rearrange the columns"
-
-d239 = df4[,c(5,1:4)]
+d239 = data.frame(datasetID, site, d239[,2],d239[,4],d239[,3])
+colnames(d239) = c('datasetID','site','species','year','count')
 
 # Write to file:
 
