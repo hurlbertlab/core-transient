@@ -14,17 +14,23 @@ out_dir = 'formatted_datasets'
 d239t1 = read.csv(file.path(in_dir,'/dataset_239RAW/dataset_239_table1.csv'))
 d239t3 = read.csv(file.path(in_dir,'/dataset_239RAW/dataset_239_table3.csv'))
 
+# Change date to year:
+
+year = as.numeric(format(as.Date(d239t1$Date, format = '%d-%m-%Y'), '%Y'))
+d239t1[,3] = year
+
 # ************************************
 # ----- Spatial sampling data ----
 # ************************************
 
 # Extract the columns of interest:
 
-t1 = d239t1[,c(1,3,7:8)]
+t1 = d239t1[,c(1,3,6:8)]
 
 # Remove NA's
 
 t1 = na.omit(t1)
+
 
 # Create a spatial points dataframe with lat lon 
 
@@ -39,7 +45,7 @@ t1.extent = extent(extent(t1sp)@xmin-10,
 
 # Create an empty raster from the extent object with a resolution of one degree:
 
-r = raster(t1.extent, resolution = 8, crs ='+proj=longlat +datum=WGS84')
+r = raster(t1.extent, resolution = c(10,10), crs ='+proj=longlat +datum=WGS84')
 
 # Assign a unique value to each cell:
 
@@ -49,11 +55,23 @@ r = setValues(r, 1:ncell(r))
 
 t1$site = extract(r, t1sp)
 
-# Testing:
+# Testing the number of years per sample
 
-head(t1)
+tfun = function(x) length(unique(x))
 
-t1[t1$site == 94,]
+tapply(t1$Date, t1$site, tfun)
+
+t2 = t1
+
+t2$Lat = round_any(t2$Lat, 1)
+t2$Lon = round_any(t2$Lon, 1)
+
+site1 = paste(t2$Lat,t2$Lon, sep = '')
+
+tapply(t2$Date, t2$site, tfun)
+
+t2[t2$site == '500',]
+
 
 # It seems there is paired shallow and deep samples for each lat-lon, how to deal with?
 # Trade-off with resolution? Think on this ...
