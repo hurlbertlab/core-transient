@@ -19,62 +19,45 @@ d239t3 = read.csv(file.path(in_dir,'/dataset_239RAW/dataset_239_table3.csv'))
 year = as.numeric(format(as.Date(d239t1$Date, format = '%d-%m-%Y'), '%Y'))
 d239t1[,3] = year
 
-# ************************************
-# ----- Spatial sampling data ----
-# ************************************
+# Function to set the resolution for the creation of spatial sites:
 
-# Extract the columns of interest:
+res.set = function(resolution){
+  Lat = round_any(d239t1$Lat, resolution)
+  Lon = round_any(d239t1$Lon, resolution)
+  d239t1$site = paste(Lat,Lon, sep = '')
+  d239t1
+}
 
-t1 = d239t1[,c(1,3,6:8)]
-
-# Remove NA's
-
-t1 = na.omit(t1)
-
-
-# Create a spatial points dataframe with lat lon 
-
-t1sp = SpatialPoints(data.frame(t1$Lon, t1$Lat),  proj4string = CRS('+proj=longlat +datum=WGS84'))
-
-# Create an extent object from the point file (stretching the boundaries by 1 degree):
-
-t1.extent = extent(extent(t1sp)@xmin-10,
-                   extent(t1sp)@xmax+10,
-                   extent(t1sp)@ymin-10,
-                   extent(t1sp)@ymax+10)
-
-# Create an empty raster from the extent object with a resolution of one degree:
-
-r = raster(t1.extent, resolution = c(10,10), crs ='+proj=longlat +datum=WGS84')
-
-# Assign a unique value to each cell:
-
-r = setValues(r, 1:ncell(r))
-
-# Extract the cell assignment to the site table:
-
-t1$site = extract(r, t1sp)
-
-# Testing the number of years per sample
-
-tfun = function(x) length(unique(x))
-
-tapply(t1$Date, t1$site, tfun)
-
-t2 = t1
-
-t2$Lat = round_any(t2$Lat, 1)
-t2$Lon = round_any(t2$Lon, 1)
-
-site1 = paste(t2$Lat,t2$Lon, sep = '')
-
-tapply(t2$Date, t2$site, tfun)
-
-t2[t2$site == '500',]
+# Testing mechanism ... in order to satisfy the # of years condition for the analysis
+# we need to ensure that a given resolution yields a certain number of years (our limit is 5 years):
 
 
-# It seems there is paired shallow and deep samples for each lat-lon, how to deal with?
-# Trade-off with resolution? Think on this ...
+test.fun = function(resolution){
+  t = res.set(resolution)
+  num.years = function(x) length(unique(x))
+  t1 = aggregate(Date~site, data = t, num.years)
+  t1[t1[,2]>4,]
+}
+
+test.fun(1)
+
+# If we explore a number of resolutions above, we can see that there is only one site in which
+# the number of years is 5 or more for an incredible range of resolutions. This means that, for 
+# our purpose, only site 50-4, at one degree resolution can truly be used.
+
+# Subset to only the spatial location with an adequate number of temporal samples.
+
+d239t1 = res.set(1)
+
+d239t1 = d239t1[d239t1$site == '50-4',]
+
+# Subset the community data to only records from that location:
+
+d239t3b = d239t3[d239t3$X  %in% d239t1$SampleID == T,]
+
+# Note: despite previous concerns of samples from varying depths, it appears that all samples
+# within this subset are from surface waters.
+
 
 ###------REFERENCE SCRIPT BELOW--------------
 # Goal is to change monthly sample to some decimal of year (breaking into quarters):
