@@ -1,4 +1,4 @@
-"datasetID","site","species","year","adultdensity"
+"datasetID","site","species","year","count"
 242,"d242_1",1002,1981,0.02
 242,"d242_6",1002,1981,0.01
 242,"d242_1",1003,1981,0.03
