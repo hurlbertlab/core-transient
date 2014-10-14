@@ -66,8 +66,15 @@ df1 = data.frame(sp,prop.yrs)
 
 ggplot(df1, aes(x=prop.yrs)) + 
   geom_histogram(aes(y=..density..), binwidth=.1,
-    colour="black", fill="gray") + theme_bw() + 
-    geom_density(alpha=.2, fill="blue")
+    colour="black", fill="gray") + 
+    geom_density(alpha=.2, fill="blue") + 
+    labs(title= 'Proportional densities at Eastern Wood',
+         x = 'Proportion of years', y = 'Density of species/year') +
+    theme(axis.text = element_text(size=14, color = 'black'),
+          axis.title = element_text(size=18),
+          title = element_text(size=22),
+          axis.line = element_line(colour = "black"),
+          panel.background = element_blank())
 
 # Threshold:
 
@@ -92,7 +99,10 @@ prop.core = rich.core/rich.total
 
 prop.trans = rich.trans/rich.total
 
-# LOOKING AT THE CHANGE IN CORE-TRANSIENT RICHNESS OVER TIME:
+
+#################################################################
+# CALCULATE THE CORE-TRANSIENT RICHNESS COMPONENTS BY YEAR
+#################################################################
 
 # Designate species as core or trans
 
@@ -101,4 +111,31 @@ head(df1)
 df1$CT = ifelse(df1$prop.yrs>=core.thresh,'core',
                 ifelse(df1$prop.yrs<=trans.thresh,'transient',NA))
 
-# 
+# Merge the eastern wood frame with the designation of species
+
+d226a = merge(d226, df1, by.x = 'species',by.y ='sp')
+
+# Calculate the total, core, and transient richness by year
+
+year = sort(unique(d226$year))
+sp.rich = numeric()
+core.rich = numeric()
+trans.rich = numeric()
+for(i in 1:length(year)){
+  sp.rich[i] = length(unique(d226a[d226a$year == year[i],'species']))
+  core.rich[i] = length(unique(d226a[d226a$year == year[i]
+                        & d226a$CT == 'core','species']))
+  trans.rich[i] = length(unique(d226a[d226a$year == year[i]
+                          & d226a$CT == 'trans','species']))
+  }
+
+# Create a dataframe of the above and calculate the proportional
+# richness for core and transient species for each year:
+
+rich.yr.frame = data.frame(year, sp.rich,core.rich,trans.rich)
+rich.yr.frame$prop.core = core.rich/sp.rich
+rich.yr.frame$prop.trans = trans.rich/sp.rich
+
+ggplot(rich.yr.frame, aes(x = year, y = prop.core)) + geom_point()
+ggplot(rich.yr.frame, aes(x = year, y = prop.trans)) + geom_point()
+
