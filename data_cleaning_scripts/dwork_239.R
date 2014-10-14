@@ -32,7 +32,6 @@ res.set = function(resolution){
 # Testing mechanism ... in order to satisfy the # of years condition for the analysis
 # we need to ensure that a given resolution yields a certain number of years (our limit is 5 years):
 
-
 test.fun = function(resolution){
   t = res.set(resolution)
   num.years = function(x) length(unique(x))
@@ -79,7 +78,7 @@ site = rep('d239_1', length(d239[,1]))
 
 # Remove columns and arrange/name in keeping with other datasets:
 
-d239 = data.frame(datasetID, site, d239[,2],d239[,4],d239[,3])
+d239 = data.frame(datasetID, site, d239[,2],d239[,5],d239[,3])
 colnames(d239) = c('datasetID','site','species','year','count')
 
 # Write to file:
