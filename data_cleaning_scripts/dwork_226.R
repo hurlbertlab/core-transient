@@ -45,6 +45,10 @@ dClean = na.omit(dClean)
 
 d226 = dClean[dClean$count>0,]
 
+# Not all species were samples in 1949, so these records need to be excluded:
+
+d226 = d226[d226$year!=1949,]
+
 # Write to the formatted data folder:
 
 write.csv(d226, file.path(out_dir,'dataset_226.csv'), row.names = F)
