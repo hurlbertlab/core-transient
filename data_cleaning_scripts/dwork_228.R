@@ -56,7 +56,7 @@ d228 = d228[,c(5,1:4)]
 
 # Write to file:
 
-write.csv(d228, file.path(out_dir,'dataset_228.csv'))
+write.csv(d228, file.path(out_dir,'dataset_228.csv'), row.names = F)
 
 # Remove objects from the global environment
 
