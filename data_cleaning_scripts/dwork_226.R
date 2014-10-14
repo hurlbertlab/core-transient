@@ -44,6 +44,10 @@ dClean = na.omit(dClean)
 # Remove 0's:
 
 d226 = dClean[dClean$count>0,]
+  
+# Not all species were samples in 1949, so these records need to be excluded:
+  
+d226 = d226[d226$year!=1949,]
 
 # Write to the formatted data folder:
 
