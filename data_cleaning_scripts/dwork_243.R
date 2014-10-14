@@ -37,7 +37,7 @@ d243.1 = d243.1[,c(5,1:4)]
 
 # Rename site and species fields:
 
-names(d243.1)[2:3] = c('site','species')
+names(d243.1)[c(2:3,5)] = c('site','species','count')
 
 # Write to csv:
 
