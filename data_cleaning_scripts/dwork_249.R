@@ -27,6 +27,10 @@ d249.1$site = paste('d249',d249.1$lakeid, sep ='_')
 
 d249.1 = d249.1[,c(5:6,2:4)]
 
+# Change column names to standard format:
+
+names(d249.1)[3:4] = c('species','year')
+
 # Write to csv:
 
 write.csv(d249.1, file.path(out_dir,'dataset_249.csv'), row.names = F)
