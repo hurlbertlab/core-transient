@@ -38,6 +38,10 @@ names(d232) = c('site','species','year','count')
 
 d232$datasetID = rep(232, length(d232[,1]))
 
+# Change site field to naming convention across datasets:
+
+d232$site = paste('d232',d232$site, sep ='_')
+
 # Rearrange the columns"
 
 d232 = d232[,c(5,1:4)]
