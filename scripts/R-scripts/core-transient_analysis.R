@@ -159,8 +159,8 @@ coreTrans = function(dataset, site, threshold){
     sp.core = d1[d1$prop.yrs>=core.thresh,]
     sp.trans = d1[d1$prop.yrs<=trans.thresh,]
   # Assign species to core or transient status:
-    d1$CT = ifelse(df1$prop.yrs>=core.thresh,'core',
-                  ifelse(df1$prop.yrs<=trans.thresh,'transient',NA))
+    d1$CT = ifelse(d1$prop.yrs>=core.thresh,'core',
+                  ifelse(d1$prop.yrs<=trans.thresh,'transient',NA))
   # Merge with the original data frame:
     d = merge(d, d1, by.x = 'species', by.y = 'sp')[,-6]
   # Function to calculate richness indices and output it as a 1-row dataframe:
@@ -184,7 +184,7 @@ coreTrans = function(dataset, site, threshold){
   # Calculate richness indices for each year of the study:
     r.by.yr = list()
     for(i in 1:length(years)){
-      r.by.yr[[i]] = rich.indis(dataset, site, year[i], threshold)
+      r.by.yr[[i]] = rich.indis(dataset, site, years[i], threshold)
       }
     r.by.yr = rbind.fill(r.by.yr)
   # Graphical output: 
@@ -210,4 +210,19 @@ out.test = coreTrans(226,'d226_ew',.33)
 ggplot(out.test[[2]], aes(x = year, y = prop_core)) + geom_point()
 
 ggplot(out.test[[2]], aes(x = year, y = prop_trans)) + geom_point()
+
+# Run across all sites and datasets
+
+sites = unique(d$site)
+dID = numeric()
+
+out1 = list()
+
+for(i in 1:length(sites)){
+    dID[i] = unique(d[d$site == sites[i],'datasetID'])
+    out1[[i]] = coreTrans(dID[i],sites[i],.33)
+  }
+
+
+out1
 
