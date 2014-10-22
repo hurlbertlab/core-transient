@@ -99,20 +99,21 @@ coreTrans = function(dataset, site, threshold){
 }
 
 
-out.test = coreTrans(226,'d226_ew',.33)
+out.test = coreTrans(226,'d226_ew',.33)[1[]]
 
-# Run across all sites and datasets
+coreTrans(226,'d226_ew',.33)[[1]]
+
+# Run across all sites and datasets, creating summary table dataframe
 
 sites = unique(d$site)
 dID = numeric()
-
-out1 = list()
+out.frame = list()
 
 for(i in 1:length(sites)){
     dID[i] = unique(d[d$site == sites[i],'datasetID'])
-    out1[[i]] = coreTrans(dID[i],sites[i],.33)
+    out.frame[[i]] = coreTrans(dID[i],sites[i],.33)[[1]]
   }
 
+out.frame = rbind.fill(out.frame)
 
-out1
 
