@@ -20,6 +20,10 @@ library(ggplot2)
 
 in_dir = 'formatted_datasets'
 
+# Get summary table:
+
+summary.table = read.csv('data_source_table.csv')
+
 # Gather all files in directory:
 
 datasets = list.files(in_dir, pattern="*.csv", full.names=T)
@@ -71,10 +75,11 @@ coreTrans = function(dataset, site, threshold){
       rich.trans = length(unique(d[d$CT=='transient',1]))
       prop.core = rich.core/rich.total
       prop.trans = rich.trans/rich.total
-      out = data.frame(dataset, site, threshold,
+      summary.out = summary.table[summary.table[,1] == dataset,c(9,11)]
+      out = data.frame(dataset, site, threshold,summary.out[,1], summary.out[,2],
                        rich.total, rich.core, rich.trans, 
                       prop.core, prop.trans)
-      names(out) = c('datasetID','site','threshold',
+      names(out) = c('datasetID','site','threshold','system','taxa',
                      'total_richness','core_richness','trans_richness',
                      'prop_core','prop_trans')
       out
@@ -99,10 +104,6 @@ coreTrans = function(dataset, site, threshold){
 }
 
 
-out.test = coreTrans(226,'d226_ew',.33)[1[]]
-
-coreTrans(226,'d226_ew',.33)[[1]]
-
 # Run across all sites and datasets, creating summary table dataframe
 
 sites = unique(d$site)
@@ -115,5 +116,7 @@ for(i in 1:length(sites)){
   }
 
 out.frame = rbind.fill(out.frame)
+
+
 
 
