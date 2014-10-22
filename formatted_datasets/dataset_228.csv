@@ -1,1472 +1,1472 @@
-"","datasetID","site","species","year","count"
-"4",228,"d228_hb","Yellow-b.Sapsucker",1969,6
-"5",228,"d228_hb","Hairy Woodpecker",1969,2
-"6",228,"d228_hb","Downy Woodpecker",1969,6
-"7",228,"d228_hb","Least Flycatcher",1969,26
-"8",228,"d228_hb","Wood Pewee",1969,1
-"10",228,"d228_hb","Black-c. Chickadee",1969,4
-"11",228,"d228_hb","Brown Creeper",1969,2
-"12",228,"d228_hb","White-br. Nuthatch",1969,8
-"14",228,"d228_hb","Winter Wren",1969,1
-"16",228,"d228_hb","Wood Thrush",1969,7
-"17",228,"d228_hb","Hermit Thrush",1969,6
-"18",228,"d228_hb","Veery",1969,2
-"19",228,"d228_hb","Swainson's Thrush",1969,9
-"20",228,"d228_hb","Philadelphia Vireo",1969,4
-"22",228,"d228_hb","Red-eyed Vireo",1969,20
-"24",228,"d228_hb","Bk.-thr. Green Warbler",1969,8
-"25",228,"d228_hb","Bk.-thr. Blue Warbler",1969,4
-"27",228,"d228_hb","Blackburnian Warbler",1969,2
-"29",228,"d228_hb","Ovenbird",1969,6
-"30",228,"d228_hb","American Redstart",1969,12
-"32",228,"d228_hb","Scarlet Tanager",1969,4
-"33",228,"d228_hb","Rose-br. Grosbeak",1969,8
-"35",228,"d228_hb","Dark-eyed Junco",1969,8
-"36",228,"d228_hb","Purple Finch",1969,2
-"42",228,"d228_hb","Yellow-b.Sapsucker",1970,3
-"43",228,"d228_hb","Hairy Woodpecker",1970,1
-"44",228,"d228_hb","Downy Woodpecker",1970,3
-"45",228,"d228_hb","Least Flycatcher",1970,28
-"48",228,"d228_hb","Black-c. Chickadee",1970,1
-"50",228,"d228_hb","White-br. Nuthatch",1970,2
-"52",228,"d228_hb","Winter Wren",1970,0.5
-"53",228,"d228_hb","Robin",1970,0.5
-"54",228,"d228_hb","Wood Thrush",1970,6
-"55",228,"d228_hb","Hermit Thrush",1970,8
-"56",228,"d228_hb","Veery",1970,2
-"57",228,"d228_hb","Swainson's Thrush",1970,8
-"58",228,"d228_hb","Philadelphia Vireo",1970,7
-"60",228,"d228_hb","Red-eyed Vireo",1970,24
-"62",228,"d228_hb","Bk.-thr. Green Warbler",1970,9
-"63",228,"d228_hb","Bk.-thr. Blue Warbler",1970,8
-"65",228,"d228_hb","Blackburnian Warbler",1970,5.5
-"67",228,"d228_hb","Ovenbird",1970,6
-"68",228,"d228_hb","American Redstart",1970,26
-"70",228,"d228_hb","Scarlet Tanager",1970,6
-"71",228,"d228_hb","Rose-br. Grosbeak",1970,4
-"73",228,"d228_hb","Dark-eyed Junco",1970,4
-"80",228,"d228_hb","Yellow-b.Sapsucker",1971,4
-"81",228,"d228_hb","Hairy Woodpecker",1971,1
-"82",228,"d228_hb","Downy Woodpecker",1971,3
-"83",228,"d228_hb","Least Flycatcher",1971,43
-"84",228,"d228_hb","Wood Pewee",1971,1
-"86",228,"d228_hb","Black-c. Chickadee",1971,0.5
-"87",228,"d228_hb","Brown Creeper",1971,0.5
-"88",228,"d228_hb","White-br. Nuthatch",1971,2
-"90",228,"d228_hb","Winter Wren",1971,1.5
-"91",228,"d228_hb","Robin",1971,4.5
-"92",228,"d228_hb","Wood Thrush",1971,9
-"93",228,"d228_hb","Hermit Thrush",1971,7
-"94",228,"d228_hb","Veery",1971,5
-"95",228,"d228_hb","Swainson's Thrush",1971,11
-"96",228,"d228_hb","Philadelphia Vireo",1971,5
-"98",228,"d228_hb","Red-eyed Vireo",1971,29
-"100",228,"d228_hb","Bk.-thr. Green Warbler",1971,12
-"101",228,"d228_hb","Bk.-thr. Blue Warbler",1971,11
-"103",228,"d228_hb","Blackburnian Warbler",1971,4
-"105",228,"d228_hb","Ovenbird",1971,9
-"106",228,"d228_hb","American Redstart",1971,29
-"108",228,"d228_hb","Scarlet Tanager",1971,5
-"109",228,"d228_hb","Rose-br. Grosbeak",1971,6
-"111",228,"d228_hb","Dark-eyed Junco",1971,8
-"112",228,"d228_hb","Purple Finch",1971,1
-"118",228,"d228_hb","Yellow-b.Sapsucker",1972,4
-"119",228,"d228_hb","Hairy Woodpecker",1972,2
-"120",228,"d228_hb","Downy Woodpecker",1972,2
-"121",228,"d228_hb","Least Flycatcher",1972,49.5
-"124",228,"d228_hb","Black-c. Chickadee",1972,0.5
-"126",228,"d228_hb","White-br. Nuthatch",1972,2
-"128",228,"d228_hb","Winter Wren",1972,0.5
-"129",228,"d228_hb","Robin",1972,1.5
-"130",228,"d228_hb","Wood Thrush",1972,7
-"131",228,"d228_hb","Hermit Thrush",1972,7
-"132",228,"d228_hb","Veery",1972,2
-"133",228,"d228_hb","Swainson's Thrush",1972,11
-"134",228,"d228_hb","Philadelphia Vireo",1972,8
-"135",228,"d228_hb","Solitary Vireo",1972,0.5
-"136",228,"d228_hb","Red-eyed Vireo",1972,22
-"138",228,"d228_hb","Bk.-thr. Green Warbler",1972,7
-"139",228,"d228_hb","Bk.-thr. Blue Warbler",1972,9
-"140",228,"d228_hb","Yellow-r. Warbler",1972,1
-"141",228,"d228_hb","Blackburnian Warbler",1972,7
-"143",228,"d228_hb","Ovenbird",1972,9
-"144",228,"d228_hb","American Redstart",1972,29
-"146",228,"d228_hb","Scarlet Tanager",1972,8
-"147",228,"d228_hb","Rose-br. Grosbeak",1972,10
-"149",228,"d228_hb","Dark-eyed Junco",1972,8
-"150",228,"d228_hb","Purple Finch",1972,6
-"156",228,"d228_hb","Yellow-b.Sapsucker",1973,4
-"157",228,"d228_hb","Hairy Woodpecker",1973,2
-"158",228,"d228_hb","Downy Woodpecker",1973,2
-"159",228,"d228_hb","Least Flycatcher",1973,57
-"163",228,"d228_hb","Brown Creeper",1973,0.5
-"164",228,"d228_hb","White-br. Nuthatch",1973,1
-"166",228,"d228_hb","Winter Wren",1973,3
-"168",228,"d228_hb","Wood Thrush",1973,4
-"169",228,"d228_hb","Hermit Thrush",1973,4
-"170",228,"d228_hb","Veery",1973,1
-"171",228,"d228_hb","Swainson's Thrush",1973,9
-"172",228,"d228_hb","Philadelphia Vireo",1973,4
-"173",228,"d228_hb","Solitary Vireo",1973,1
-"174",228,"d228_hb","Red-eyed Vireo",1973,26
-"176",228,"d228_hb","Bk.-thr. Green Warbler",1973,6
-"177",228,"d228_hb","Bk.-thr. Blue Warbler",1973,11
-"179",228,"d228_hb","Blackburnian Warbler",1973,4
-"181",228,"d228_hb","Ovenbird",1973,11
-"182",228,"d228_hb","American Redstart",1973,26
-"184",228,"d228_hb","Scarlet Tanager",1973,7
-"185",228,"d228_hb","Rose-br. Grosbeak",1973,4.5
-"187",228,"d228_hb","Dark-eyed Junco",1973,2
-"188",228,"d228_hb","Purple Finch",1973,2
-"192",228,"d228_hb","Ruby-thr. Hummingbird",1974,3
-"194",228,"d228_hb","Yellow-b.Sapsucker",1974,3
-"195",228,"d228_hb","Hairy Woodpecker",1974,1
-"196",228,"d228_hb","Downy Woodpecker",1974,2
-"197",228,"d228_hb","Least Flycatcher",1974,26
-"200",228,"d228_hb","Black-c. Chickadee",1974,1
-"201",228,"d228_hb","Brown Creeper",1974,1
-"202",228,"d228_hb","White-br. Nuthatch",1974,1
-"204",228,"d228_hb","Winter Wren",1974,6
-"206",228,"d228_hb","Wood Thrush",1974,5
-"207",228,"d228_hb","Hermit Thrush",1974,2
-"208",228,"d228_hb","Veery",1974,0.5
-"209",228,"d228_hb","Swainson's Thrush",1974,6.5
-"210",228,"d228_hb","Philadelphia Vireo",1974,4
-"211",228,"d228_hb","Solitary Vireo",1974,1
-"212",228,"d228_hb","Red-eyed Vireo",1974,23
-"214",228,"d228_hb","Bk.-thr. Green Warbler",1974,10
-"215",228,"d228_hb","Bk.-thr. Blue Warbler",1974,11
-"217",228,"d228_hb","Blackburnian Warbler",1974,6
-"219",228,"d228_hb","Ovenbird",1974,10
-"220",228,"d228_hb","American Redstart",1974,22
-"222",228,"d228_hb","Scarlet Tanager",1974,3
-"223",228,"d228_hb","Rose-br. Grosbeak",1974,8
-"225",228,"d228_hb","Dark-eyed Junco",1974,5
-"232",228,"d228_hb","Yellow-b.Sapsucker",1975,5
-"233",228,"d228_hb","Hairy Woodpecker",1975,2
-"234",228,"d228_hb","Downy Woodpecker",1975,3
-"235",228,"d228_hb","Least Flycatcher",1975,30
-"238",228,"d228_hb","Black-c. Chickadee",1975,1
-"240",228,"d228_hb","White-br. Nuthatch",1975,1.5
-"242",228,"d228_hb","Winter Wren",1975,2
-"244",228,"d228_hb","Wood Thrush",1975,6.5
-"245",228,"d228_hb","Hermit Thrush",1975,7.5
-"246",228,"d228_hb","Veery",1975,2.5
-"247",228,"d228_hb","Swainson's Thrush",1975,8
-"248",228,"d228_hb","Philadelphia Vireo",1975,3.5
-"250",228,"d228_hb","Red-eyed Vireo",1975,31
-"252",228,"d228_hb","Bk.-thr. Green Warbler",1975,8
-"253",228,"d228_hb","Bk.-thr. Blue Warbler",1975,12
-"255",228,"d228_hb","Blackburnian Warbler",1975,6
-"257",228,"d228_hb","Ovenbird",1975,18
-"258",228,"d228_hb","American Redstart",1975,39
-"260",228,"d228_hb","Scarlet Tanager",1975,1.5
-"261",228,"d228_hb","Rose-br. Grosbeak",1975,7.5
-"263",228,"d228_hb","Dark-eyed Junco",1975,5
-"270",228,"d228_hb","Yellow-b.Sapsucker",1976,5
-"271",228,"d228_hb","Hairy Woodpecker",1976,2
-"272",228,"d228_hb","Downy Woodpecker",1976,2.5
-"273",228,"d228_hb","Least Flycatcher",1976,28
-"278",228,"d228_hb","White-br. Nuthatch",1976,1.5
-"280",228,"d228_hb","Winter Wren",1976,5
-"282",228,"d228_hb","Wood Thrush",1976,5
-"283",228,"d228_hb","Hermit Thrush",1976,5
-"284",228,"d228_hb","Veery",1976,2.5
-"285",228,"d228_hb","Swainson's Thrush",1976,7
-"286",228,"d228_hb","Philadelphia Vireo",1976,3.5
-"287",228,"d228_hb","Solitary Vireo",1976,0.5
-"288",228,"d228_hb","Red-eyed Vireo",1976,30
-"290",228,"d228_hb","Bk.-thr. Green Warbler",1976,8
-"291",228,"d228_hb","Bk.-thr. Blue Warbler",1976,11
-"293",228,"d228_hb","Blackburnian Warbler",1976,2
-"295",228,"d228_hb","Ovenbird",1976,18.5
-"296",228,"d228_hb","American Redstart",1976,42
-"298",228,"d228_hb","Scarlet Tanager",1976,1.5
-"299",228,"d228_hb","Rose-br. Grosbeak",1976,7
-"301",228,"d228_hb","Dark-eyed Junco",1976,6
-"308",228,"d228_hb","Yellow-b.Sapsucker",1977,5
-"309",228,"d228_hb","Hairy Woodpecker",1977,3
-"310",228,"d228_hb","Downy Woodpecker",1977,3
-"311",228,"d228_hb","Least Flycatcher",1977,34
-"314",228,"d228_hb","Black-c. Chickadee",1977,2
-"316",228,"d228_hb","White-br. Nuthatch",1977,3
-"318",228,"d228_hb","Winter Wren",1977,1
-"320",228,"d228_hb","Wood Thrush",1977,9
-"321",228,"d228_hb","Hermit Thrush",1977,4
-"322",228,"d228_hb","Veery",1977,3
-"323",228,"d228_hb","Swainson's Thrush",1977,4
-"324",228,"d228_hb","Philadelphia Vireo",1977,2
-"325",228,"d228_hb","Solitary Vireo",1977,4
-"326",228,"d228_hb","Red-eyed Vireo",1977,23.5
-"328",228,"d228_hb","Bk.-thr. Green Warbler",1977,7
-"329",228,"d228_hb","Bk.-thr. Blue Warbler",1977,12
-"331",228,"d228_hb","Blackburnian Warbler",1977,3
-"333",228,"d228_hb","Ovenbird",1977,9
-"334",228,"d228_hb","American Redstart",1977,44
-"336",228,"d228_hb","Scarlet Tanager",1977,4
-"337",228,"d228_hb","Rose-br. Grosbeak",1977,5
-"339",228,"d228_hb","Dark-eyed Junco",1977,2
-"346",228,"d228_hb","Yellow-b.Sapsucker",1978,3
-"347",228,"d228_hb","Hairy Woodpecker",1978,2
-"348",228,"d228_hb","Downy Woodpecker",1978,3.5
-"349",228,"d228_hb","Least Flycatcher",1978,22
-"354",228,"d228_hb","White-br. Nuthatch",1978,2.5
-"358",228,"d228_hb","Wood Thrush",1978,7
-"359",228,"d228_hb","Hermit Thrush",1978,1.5
-"360",228,"d228_hb","Veery",1978,4
-"361",228,"d228_hb","Swainson's Thrush",1978,5
-"362",228,"d228_hb","Philadelphia Vireo",1978,3
-"363",228,"d228_hb","Solitary Vireo",1978,3
-"364",228,"d228_hb","Red-eyed Vireo",1978,20
-"366",228,"d228_hb","Bk.-thr. Green Warbler",1978,7.5
-"367",228,"d228_hb","Bk.-thr. Blue Warbler",1978,10.5
-"369",228,"d228_hb","Blackburnian Warbler",1978,1
-"371",228,"d228_hb","Ovenbird",1978,13
-"372",228,"d228_hb","American Redstart",1978,32.5
-"374",228,"d228_hb","Scarlet Tanager",1978,3.5
-"375",228,"d228_hb","Rose-br. Grosbeak",1978,4
-"384",228,"d228_hb","Yellow-b.Sapsucker",1979,4
-"385",228,"d228_hb","Hairy Woodpecker",1979,3
-"386",228,"d228_hb","Downy Woodpecker",1979,2
-"387",228,"d228_hb","Least Flycatcher",1979,22
-"392",228,"d228_hb","White-br. Nuthatch",1979,1
-"396",228,"d228_hb","Wood Thrush",1979,7
-"398",228,"d228_hb","Veery",1979,3
-"399",228,"d228_hb","Swainson's Thrush",1979,7
-"400",228,"d228_hb","Philadelphia Vireo",1979,2
-"402",228,"d228_hb","Red-eyed Vireo",1979,16
-"404",228,"d228_hb","Bk.-thr. Green Warbler",1979,9
-"405",228,"d228_hb","Bk.-thr. Blue Warbler",1979,14.5
-"406",228,"d228_hb","Yellow-r. Warbler",1979,1
-"407",228,"d228_hb","Blackburnian Warbler",1979,1
-"409",228,"d228_hb","Ovenbird",1979,12
-"410",228,"d228_hb","American Redstart",1979,36
-"412",228,"d228_hb","Scarlet Tanager",1979,2
-"413",228,"d228_hb","Rose-br. Grosbeak",1979,4
-"422",228,"d228_hb","Yellow-b.Sapsucker",1980,2
-"423",228,"d228_hb","Hairy Woodpecker",1980,2
-"424",228,"d228_hb","Downy Woodpecker",1980,4
-"425",228,"d228_hb","Least Flycatcher",1980,15
-"427",228,"d228_hb","Blue Jay",1980,1
-"428",228,"d228_hb","Black-c. Chickadee",1980,2
-"429",228,"d228_hb","Brown Creeper",1980,2
-"430",228,"d228_hb","White-br. Nuthatch",1980,2
-"432",228,"d228_hb","Winter Wren",1980,1
-"434",228,"d228_hb","Wood Thrush",1980,3
-"435",228,"d228_hb","Hermit Thrush",1980,2
-"436",228,"d228_hb","Veery",1980,1
-"437",228,"d228_hb","Swainson's Thrush",1980,3
-"438",228,"d228_hb","Philadelphia Vireo",1980,3
-"440",228,"d228_hb","Red-eyed Vireo",1980,13
-"442",228,"d228_hb","Bk.-thr. Green Warbler",1980,10
-"443",228,"d228_hb","Bk.-thr. Blue Warbler",1980,8
-"445",228,"d228_hb","Blackburnian Warbler",1980,2
-"447",228,"d228_hb","Ovenbird",1980,10
-"448",228,"d228_hb","American Redstart",1980,34.5
-"450",228,"d228_hb","Scarlet Tanager",1980,4
-"451",228,"d228_hb","Rose-br. Grosbeak",1980,6
-"460",228,"d228_hb","Yellow-b.Sapsucker",1981,2.5
-"461",228,"d228_hb","Hairy Woodpecker",1981,2
-"463",228,"d228_hb","Least Flycatcher",1981,1
-"464",228,"d228_hb","Wood Pewee",1981,2
-"465",228,"d228_hb","Blue Jay",1981,1.5
-"466",228,"d228_hb","Black-c. Chickadee",1981,1
-"468",228,"d228_hb","White-br. Nuthatch",1981,3
-"470",228,"d228_hb","Winter Wren",1981,0.5
-"472",228,"d228_hb","Wood Thrush",1981,0.5
-"473",228,"d228_hb","Hermit Thrush",1981,1
-"474",228,"d228_hb","Veery",1981,2
-"475",228,"d228_hb","Swainson's Thrush",1981,2
-"476",228,"d228_hb","Philadelphia Vireo",1981,2
-"478",228,"d228_hb","Red-eyed Vireo",1981,26
-"480",228,"d228_hb","Bk.-thr. Green Warbler",1981,9
-"481",228,"d228_hb","Bk.-thr. Blue Warbler",1981,12
-"483",228,"d228_hb","Blackburnian Warbler",1981,3.5
-"485",228,"d228_hb","Ovenbird",1981,10
-"486",228,"d228_hb","American Redstart",1981,22
-"488",228,"d228_hb","Scarlet Tanager",1981,5
-"489",228,"d228_hb","Rose-br. Grosbeak",1981,8
-"498",228,"d228_hb","Yellow-b.Sapsucker",1982,2
-"499",228,"d228_hb","Hairy Woodpecker",1982,3
-"500",228,"d228_hb","Downy Woodpecker",1982,1
-"506",228,"d228_hb","White-br. Nuthatch",1982,2
-"510",228,"d228_hb","Wood Thrush",1982,2
-"511",228,"d228_hb","Hermit Thrush",1982,1
-"512",228,"d228_hb","Veery",1982,3
-"513",228,"d228_hb","Swainson's Thrush",1982,1
-"514",228,"d228_hb","Philadelphia Vireo",1982,2
-"516",228,"d228_hb","Red-eyed Vireo",1982,23
-"518",228,"d228_hb","Bk.-thr. Green Warbler",1982,8.5
-"519",228,"d228_hb","Bk.-thr. Blue Warbler",1982,14
-"520",228,"d228_hb","Yellow-r. Warbler",1982,1
-"521",228,"d228_hb","Blackburnian Warbler",1982,4.5
-"523",228,"d228_hb","Ovenbird",1982,11
-"524",228,"d228_hb","American Redstart",1982,32
-"526",228,"d228_hb","Scarlet Tanager",1982,6
-"527",228,"d228_hb","Rose-br. Grosbeak",1982,7
-"536",228,"d228_hb","Yellow-b.Sapsucker",1983,2
-"537",228,"d228_hb","Hairy Woodpecker",1983,0.5
-"538",228,"d228_hb","Downy Woodpecker",1983,3
-"544",228,"d228_hb","White-br. Nuthatch",1983,1.5
-"548",228,"d228_hb","Wood Thrush",1983,2
-"549",228,"d228_hb","Hermit Thrush",1983,2
-"550",228,"d228_hb","Veery",1983,2
-"551",228,"d228_hb","Swainson's Thrush",1983,2
-"554",228,"d228_hb","Red-eyed Vireo",1983,22
-"556",228,"d228_hb","Bk.-thr. Green Warbler",1983,11
-"557",228,"d228_hb","Bk.-thr. Blue Warbler",1983,13.5
-"559",228,"d228_hb","Blackburnian Warbler",1983,2
-"561",228,"d228_hb","Ovenbird",1983,13.5
-"562",228,"d228_hb","American Redstart",1983,30
-"564",228,"d228_hb","Scarlet Tanager",1983,7
-"565",228,"d228_hb","Rose-br. Grosbeak",1983,4
-"574",228,"d228_hb","Yellow-b.Sapsucker",1984,2
-"575",228,"d228_hb","Hairy Woodpecker",1984,1
-"576",228,"d228_hb","Downy Woodpecker",1984,1.5
-"582",228,"d228_hb","White-br. Nuthatch",1984,2.5
-"586",228,"d228_hb","Wood Thrush",1984,1
-"587",228,"d228_hb","Hermit Thrush",1984,3.5
-"588",228,"d228_hb","Veery",1984,2
-"589",228,"d228_hb","Swainson's Thrush",1984,2
-"592",228,"d228_hb","Red-eyed Vireo",1984,20.5
-"594",228,"d228_hb","Bk.-thr. Green Warbler",1984,7
-"595",228,"d228_hb","Bk.-thr. Blue Warbler",1984,9.5
-"597",228,"d228_hb","Blackburnian Warbler",1984,1
-"599",228,"d228_hb","Ovenbird",1984,11
-"600",228,"d228_hb","American Redstart",1984,14
-"602",228,"d228_hb","Scarlet Tanager",1984,4
-"603",228,"d228_hb","Rose-br. Grosbeak",1984,5
-"605",228,"d228_hb","Dark-eyed Junco",1984,1
-"610",228,"d228_hb","Ruby-thr. Hummingbird",1985,2
-"612",228,"d228_hb","Yellow-b.Sapsucker",1985,1
-"613",228,"d228_hb","Hairy Woodpecker",1985,2
-"614",228,"d228_hb","Downy Woodpecker",1985,2
-"618",228,"d228_hb","Black-c. Chickadee",1985,1
-"620",228,"d228_hb","White-br. Nuthatch",1985,2
-"624",228,"d228_hb","Wood Thrush",1985,1
-"625",228,"d228_hb","Hermit Thrush",1985,2
-"626",228,"d228_hb","Veery",1985,4.5
-"627",228,"d228_hb","Swainson's Thrush",1985,4
-"629",228,"d228_hb","Solitary Vireo",1985,0.5
-"630",228,"d228_hb","Red-eyed Vireo",1985,21.5
-"632",228,"d228_hb","Bk.-thr. Green Warbler",1985,15
-"633",228,"d228_hb","Bk.-thr. Blue Warbler",1985,8.5
-"634",228,"d228_hb","Yellow-r. Warbler",1985,3
-"635",228,"d228_hb","Blackburnian Warbler",1985,0.5
-"637",228,"d228_hb","Ovenbird",1985,10
-"638",228,"d228_hb","American Redstart",1985,27
-"640",228,"d228_hb","Scarlet Tanager",1985,3
-"641",228,"d228_hb","Rose-br. Grosbeak",1985,5.5
-"650",228,"d228_hb","Yellow-b.Sapsucker",1986,2
-"651",228,"d228_hb","Hairy Woodpecker",1986,1.5
-"657",228,"d228_hb","Brown Creeper",1986,0.5
-"658",228,"d228_hb","White-br. Nuthatch",1986,1
-"662",228,"d228_hb","Wood Thrush",1986,1.5
-"663",228,"d228_hb","Hermit Thrush",1986,2
-"664",228,"d228_hb","Veery",1986,2.5
-"665",228,"d228_hb","Swainson's Thrush",1986,1.5
-"668",228,"d228_hb","Red-eyed Vireo",1986,22
-"670",228,"d228_hb","Bk.-thr. Green Warbler",1986,8.5
-"671",228,"d228_hb","Bk.-thr. Blue Warbler",1986,10.5
-"672",228,"d228_hb","Yellow-r. Warbler",1986,1.5
-"673",228,"d228_hb","Blackburnian Warbler",1986,2
-"675",228,"d228_hb","Ovenbird",1986,16
-"676",228,"d228_hb","American Redstart",1986,13
-"678",228,"d228_hb","Scarlet Tanager",1986,2
-"679",228,"d228_hb","Rose-br. Grosbeak",1986,2.5
-"688",228,"d228_hb","Yellow-b.Sapsucker",1987,2
-"689",228,"d228_hb","Hairy Woodpecker",1987,1.5
-"696",228,"d228_hb","White-br. Nuthatch",1987,1
-"698",228,"d228_hb","Winter Wren",1987,0.5
-"701",228,"d228_hb","Hermit Thrush",1987,2
-"702",228,"d228_hb","Veery",1987,1.5
-"703",228,"d228_hb","Swainson's Thrush",1987,2
-"705",228,"d228_hb","Solitary Vireo",1987,0.5
-"706",228,"d228_hb","Red-eyed Vireo",1987,19.5
-"708",228,"d228_hb","Bk.-thr. Green Warbler",1987,12
-"709",228,"d228_hb","Bk.-thr. Blue Warbler",1987,11.5
-"713",228,"d228_hb","Ovenbird",1987,15.5
-"714",228,"d228_hb","American Redstart",1987,11
-"716",228,"d228_hb","Scarlet Tanager",1987,1.5
-"717",228,"d228_hb","Rose-br. Grosbeak",1987,2.5
-"726",228,"d228_hb","Yellow-b.Sapsucker",1988,1
-"727",228,"d228_hb","Hairy Woodpecker",1988,1.5
-"728",228,"d228_hb","Downy Woodpecker",1988,1.5
-"729",228,"d228_hb","Least Flycatcher",1988,6
-"731",228,"d228_hb","Blue Jay",1988,0.5
-"733",228,"d228_hb","Brown Creeper",1988,0.5
-"734",228,"d228_hb","White-br. Nuthatch",1988,1
-"736",228,"d228_hb","Winter Wren",1988,1
-"739",228,"d228_hb","Hermit Thrush",1988,4
-"740",228,"d228_hb","Veery",1988,1.5
-"741",228,"d228_hb","Swainson's Thrush",1988,2
-"744",228,"d228_hb","Red-eyed Vireo",1988,22
-"746",228,"d228_hb","Bk.-thr. Green Warbler",1988,17
-"747",228,"d228_hb","Bk.-thr. Blue Warbler",1988,9
-"748",228,"d228_hb","Yellow-r. Warbler",1988,2.5
-"751",228,"d228_hb","Ovenbird",1988,21.5
-"752",228,"d228_hb","American Redstart",1988,13.5
-"754",228,"d228_hb","Scarlet Tanager",1988,2
-"755",228,"d228_hb","Rose-br. Grosbeak",1988,2.5
-"757",228,"d228_hb","Dark-eyed Junco",1988,2
-"764",228,"d228_hb","Yellow-b.Sapsucker",1989,1.5
-"765",228,"d228_hb","Hairy Woodpecker",1989,1
-"766",228,"d228_hb","Downy Woodpecker",1989,2
-"770",228,"d228_hb","Black-c. Chickadee",1989,2
-"772",228,"d228_hb","White-br. Nuthatch",1989,2
-"774",228,"d228_hb","Winter Wren",1989,1
-"776",228,"d228_hb","Wood Thrush",1989,1
-"777",228,"d228_hb","Hermit Thrush",1989,4
-"778",228,"d228_hb","Veery",1989,0.5
-"779",228,"d228_hb","Swainson's Thrush",1989,2
-"782",228,"d228_hb","Red-eyed Vireo",1989,22.5
-"784",228,"d228_hb","Bk.-thr. Green Warbler",1989,15.5
-"785",228,"d228_hb","Bk.-thr. Blue Warbler",1989,15
-"786",228,"d228_hb","Yellow-r. Warbler",1989,2
-"787",228,"d228_hb","Blackburnian Warbler",1989,2
-"789",228,"d228_hb","Ovenbird",1989,16
-"790",228,"d228_hb","American Redstart",1989,5.5
-"792",228,"d228_hb","Scarlet Tanager",1989,2.5
-"793",228,"d228_hb","Rose-br. Grosbeak",1989,3
-"800",228,"d228_hb","Ruby-thr. Hummingbird",1990,1
-"802",228,"d228_hb","Yellow-b.Sapsucker",1990,3
-"803",228,"d228_hb","Hairy Woodpecker",1990,1
-"808",228,"d228_hb","Black-c. Chickadee",1990,2
-"809",228,"d228_hb","Brown Creeper",1990,2.5
-"810",228,"d228_hb","White-br. Nuthatch",1990,3
-"812",228,"d228_hb","Winter Wren",1990,2
-"814",228,"d228_hb","Wood Thrush",1990,1
-"815",228,"d228_hb","Hermit Thrush",1990,5
-"816",228,"d228_hb","Veery",1990,2
-"817",228,"d228_hb","Swainson's Thrush",1990,3.5
-"820",228,"d228_hb","Red-eyed Vireo",1990,24
-"822",228,"d228_hb","Bk.-thr. Green Warbler",1990,17.5
-"823",228,"d228_hb","Bk.-thr. Blue Warbler",1990,16
-"824",228,"d228_hb","Yellow-r. Warbler",1990,2
-"825",228,"d228_hb","Blackburnian Warbler",1990,1
-"827",228,"d228_hb","Ovenbird",1990,20
-"828",228,"d228_hb","American Redstart",1990,18.5
-"830",228,"d228_hb","Scarlet Tanager",1990,1.5
-"831",228,"d228_hb","Rose-br. Grosbeak",1990,4.5
-"833",228,"d228_hb","Dark-eyed Junco",1990,2
-"838",228,"d228_hb","Ruby-thr. Hummingbird",1991,2
-"840",228,"d228_hb","Yellow-b.Sapsucker",1991,2
-"841",228,"d228_hb","Hairy Woodpecker",1991,2
-"842",228,"d228_hb","Downy Woodpecker",1991,1.5
-"843",228,"d228_hb","Least Flycatcher",1991,1.5
-"844",228,"d228_hb","Wood Pewee",1991,1
-"846",228,"d228_hb","Black-c. Chickadee",1991,1
-"847",228,"d228_hb","Brown Creeper",1991,2
-"848",228,"d228_hb","White-br. Nuthatch",1991,1.5
-"850",228,"d228_hb","Winter Wren",1991,3
-"853",228,"d228_hb","Hermit Thrush",1991,2
-"854",228,"d228_hb","Veery",1991,2.5
-"855",228,"d228_hb","Swainson's Thrush",1991,2.5
-"857",228,"d228_hb","Solitary Vireo",1991,2.5
-"858",228,"d228_hb","Red-eyed Vireo",1991,25.5
-"860",228,"d228_hb","Bk.-thr. Green Warbler",1991,13.5
-"861",228,"d228_hb","Bk.-thr. Blue Warbler",1991,13.5
-"862",228,"d228_hb","Yellow-r. Warbler",1991,2
-"863",228,"d228_hb","Blackburnian Warbler",1991,2.5
-"865",228,"d228_hb","Ovenbird",1991,17.5
-"866",228,"d228_hb","American Redstart",1991,14
-"868",228,"d228_hb","Scarlet Tanager",1991,2.5
-"869",228,"d228_hb","Rose-br. Grosbeak",1991,2
-"878",228,"d228_hb","Yellow-b.Sapsucker",1992,3
-"879",228,"d228_hb","Hairy Woodpecker",1992,2
-"880",228,"d228_hb","Downy Woodpecker",1992,2
-"881",228,"d228_hb","Least Flycatcher",1992,1
-"882",228,"d228_hb","Wood Pewee",1992,1
-"884",228,"d228_hb","Black-c. Chickadee",1992,3
-"885",228,"d228_hb","Brown Creeper",1992,0.5
-"886",228,"d228_hb","White-br. Nuthatch",1992,2
-"888",228,"d228_hb","Winter Wren",1992,1
-"891",228,"d228_hb","Hermit Thrush",1992,5
-"892",228,"d228_hb","Veery",1992,6
-"893",228,"d228_hb","Swainson's Thrush",1992,3.5
-"895",228,"d228_hb","Solitary Vireo",1992,2
-"896",228,"d228_hb","Red-eyed Vireo",1992,15
-"898",228,"d228_hb","Bk.-thr. Green Warbler",1992,18
-"899",228,"d228_hb","Bk.-thr. Blue Warbler",1992,15
-"900",228,"d228_hb","Yellow-r. Warbler",1992,3
-"901",228,"d228_hb","Blackburnian Warbler",1992,3
-"903",228,"d228_hb","Ovenbird",1992,15.5
-"904",228,"d228_hb","American Redstart",1992,19
-"906",228,"d228_hb","Scarlet Tanager",1992,4.5
-"907",228,"d228_hb","Rose-br. Grosbeak",1992,4
-"916",228,"d228_hb","Yellow-b.Sapsucker",1993,1
-"917",228,"d228_hb","Hairy Woodpecker",1993,1
-"920",228,"d228_hb","Wood Pewee",1993,1
-"922",228,"d228_hb","Black-c. Chickadee",1993,2
-"924",228,"d228_hb","White-br. Nuthatch",1993,2
-"929",228,"d228_hb","Hermit Thrush",1993,3
-"930",228,"d228_hb","Veery",1993,3.5
-"931",228,"d228_hb","Swainson's Thrush",1993,2.5
-"933",228,"d228_hb","Solitary Vireo",1993,2
-"934",228,"d228_hb","Red-eyed Vireo",1993,16.5
-"936",228,"d228_hb","Bk.-thr. Green Warbler",1993,17.5
-"937",228,"d228_hb","Bk.-thr. Blue Warbler",1993,11
-"941",228,"d228_hb","Ovenbird",1993,13.5
-"942",228,"d228_hb","American Redstart",1993,13
-"944",228,"d228_hb","Scarlet Tanager",1993,3.5
-"945",228,"d228_hb","Rose-br. Grosbeak",1993,0.5
-"954",228,"d228_hb","Yellow-b.Sapsucker",1994,2.5
-"955",228,"d228_hb","Hairy Woodpecker",1994,1
-"956",228,"d228_hb","Downy Woodpecker",1994,2.5
-"958",228,"d228_hb","Wood Pewee",1994,1
-"960",228,"d228_hb","Black-c. Chickadee",1994,2
-"961",228,"d228_hb","Brown Creeper",1994,1.5
-"962",228,"d228_hb","White-br. Nuthatch",1994,1
-"964",228,"d228_hb","Winter Wren",1994,1
-"967",228,"d228_hb","Hermit Thrush",1994,3.5
-"968",228,"d228_hb","Veery",1994,4
-"971",228,"d228_hb","Solitary Vireo",1994,1
-"972",228,"d228_hb","Red-eyed Vireo",1994,18.5
-"974",228,"d228_hb","Bk.-thr. Green Warbler",1994,13.5
-"975",228,"d228_hb","Bk.-thr. Blue Warbler",1994,7
-"979",228,"d228_hb","Ovenbird",1994,9
-"980",228,"d228_hb","American Redstart",1994,7.5
-"982",228,"d228_hb","Scarlet Tanager",1994,3.5
-"983",228,"d228_hb","Rose-br. Grosbeak",1994,2
-"985",228,"d228_hb","Dark-eyed Junco",1994,2
-"989",228,"d228_hb","Ruffed Grouse",1995,2
-"992",228,"d228_hb","Yellow-b.Sapsucker",1995,2
-"993",228,"d228_hb","Hairy Woodpecker",1995,2
-"998",228,"d228_hb","Black-c. Chickadee",1995,2
-"1005",228,"d228_hb","Hermit Thrush",1995,2
-"1006",228,"d228_hb","Veery",1995,3
-"1010",228,"d228_hb","Red-eyed Vireo",1995,18
-"1012",228,"d228_hb","Bk.-thr. Green Warbler",1995,14
-"1013",228,"d228_hb","Bk.-thr. Blue Warbler",1995,10
-"1017",228,"d228_hb","Ovenbird",1995,11
-"1018",228,"d228_hb","American Redstart",1995,2
-"1020",228,"d228_hb","Scarlet Tanager",1995,2
-"1021",228,"d228_hb","Rose-br. Grosbeak",1995,2
-"1027",228,"d228_hb","Ruffed Grouse",1996,1
-"1030",228,"d228_hb","Yellow-b.Sapsucker",1996,2
-"1031",228,"d228_hb","Hairy Woodpecker",1996,2
-"1035",228,"d228_hb","Blue Jay",1996,1
-"1037",228,"d228_hb","Brown Creeper",1996,1
-"1038",228,"d228_hb","White-br. Nuthatch",1996,3
-"1040",228,"d228_hb","Winter Wren",1996,1.5
-"1043",228,"d228_hb","Hermit Thrush",1996,5
-"1044",228,"d228_hb","Veery",1996,3
-"1045",228,"d228_hb","Swainson's Thrush",1996,0.5
-"1048",228,"d228_hb","Red-eyed Vireo",1996,19
-"1050",228,"d228_hb","Bk.-thr. Green Warbler",1996,16
-"1051",228,"d228_hb","Bk.-thr. Blue Warbler",1996,5.5
-"1052",228,"d228_hb","Yellow-r. Warbler",1996,2
-"1053",228,"d228_hb","Blackburnian Warbler",1996,3.5
-"1055",228,"d228_hb","Ovenbird",1996,12
-"1056",228,"d228_hb","American Redstart",1996,10.5
-"1058",228,"d228_hb","Scarlet Tanager",1996,2
-"1059",228,"d228_hb","Rose-br. Grosbeak",1996,2
-"1068",228,"d228_hb","Yellow-b.Sapsucker",1997,3
-"1069",228,"d228_hb","Hairy Woodpecker",1997,1
-"1070",228,"d228_hb","Downy Woodpecker",1997,1
-"1074",228,"d228_hb","Black-c. Chickadee",1997,2
-"1076",228,"d228_hb","White-br. Nuthatch",1997,1.5
-"1081",228,"d228_hb","Hermit Thrush",1997,1
-"1082",228,"d228_hb","Veery",1997,2.5
-"1083",228,"d228_hb","Swainson's Thrush",1997,2
-"1086",228,"d228_hb","Red-eyed Vireo",1997,22
-"1088",228,"d228_hb","Bk.-thr. Green Warbler",1997,8.5
-"1089",228,"d228_hb","Bk.-thr. Blue Warbler",1997,8.5
-"1090",228,"d228_hb","Yellow-r. Warbler",1997,2.5
-"1091",228,"d228_hb","Blackburnian Warbler",1997,4
-"1093",228,"d228_hb","Ovenbird",1997,10.5
-"1094",228,"d228_hb","American Redstart",1997,10.5
-"1096",228,"d228_hb","Scarlet Tanager",1997,2
-"1097",228,"d228_hb","Rose-br. Grosbeak",1997,4
-"1106",228,"d228_hb","Yellow-b.Sapsucker",1998,2
-"1112",228,"d228_hb","Black-c. Chickadee",1998,1
-"1113",228,"d228_hb","Brown Creeper",1998,2
-"1116",228,"d228_hb","Winter Wren",1998,4
-"1119",228,"d228_hb","Hermit Thrush",1998,3
-"1120",228,"d228_hb","Veery",1998,2
-"1124",228,"d228_hb","Red-eyed Vireo",1998,17
-"1126",228,"d228_hb","Bk.-thr. Green Warbler",1998,11
-"1127",228,"d228_hb","Bk.-thr. Blue Warbler",1998,8.5
-"1131",228,"d228_hb","Ovenbird",1998,9
-"1132",228,"d228_hb","American Redstart",1998,10
-"1134",228,"d228_hb","Scarlet Tanager",1998,2
-"1144",228,"d228_hb","Yellow-b.Sapsucker",1999,1.5
-"1145",228,"d228_hb","Hairy Woodpecker",1999,2.5
-"1146",228,"d228_hb","Downy Woodpecker",1999,1
-"1150",228,"d228_hb","Black-c. Chickadee",1999,3.5
-"1152",228,"d228_hb","White-br. Nuthatch",1999,2
-"1154",228,"d228_hb","Winter Wren",1999,1
-"1157",228,"d228_hb","Hermit Thrush",1999,3
-"1158",228,"d228_hb","Veery",1999,2.5
-"1161",228,"d228_hb","Solitary Vireo",1999,3
-"1162",228,"d228_hb","Red-eyed Vireo",1999,23.5
-"1169",228,"d228_hb","Ovenbird",1999,4
-"1170",228,"d228_hb","American Redstart",1999,9.5
-"1172",228,"d228_hb","Scarlet Tanager",1999,2
-"1173",228,"d228_hb","Rose-br. Grosbeak",1999,2
-"1182",228,"d228_hb","Yellow-b.Sapsucker",2000,3
-"1183",228,"d228_hb","Hairy Woodpecker",2000,2
-"1189",228,"d228_hb","Brown Creeper",2000,2
-"1190",228,"d228_hb","White-br. Nuthatch",2000,2
-"1192",228,"d228_hb","Winter Wren",2000,1
-"1195",228,"d228_hb","Hermit Thrush",2000,3
-"1199",228,"d228_hb","Solitary Vireo",2000,1.5
-"1200",228,"d228_hb","Red-eyed Vireo",2000,28
-"1202",228,"d228_hb","Bk.-thr. Green Warbler",2000,15.5
-"1203",228,"d228_hb","Bk.-thr. Blue Warbler",2000,10.5
-"1204",228,"d228_hb","Yellow-r. Warbler",2000,2
-"1205",228,"d228_hb","Blackburnian Warbler",2000,2
-"1207",228,"d228_hb","Ovenbird",2000,7.5
-"1208",228,"d228_hb","American Redstart",2000,7.5
-"1210",228,"d228_hb","Scarlet Tanager",2000,1
-"1220",228,"d228_hb","Yellow-b.Sapsucker",2001,3
-"1221",228,"d228_hb","Hairy Woodpecker",2001,2
-"1227",228,"d228_hb","Brown Creeper",2001,2
-"1228",228,"d228_hb","White-br. Nuthatch",2001,1
-"1233",228,"d228_hb","Hermit Thrush",2001,4.5
-"1235",228,"d228_hb","Swainson's Thrush",2001,4
-"1237",228,"d228_hb","Solitary Vireo",2001,3.5
-"1238",228,"d228_hb","Red-eyed Vireo",2001,29
-"1240",228,"d228_hb","Bk.-thr. Green Warbler",2001,13.5
-"1241",228,"d228_hb","Bk.-thr. Blue Warbler",2001,9
-"1242",228,"d228_hb","Yellow-r. Warbler",2001,4
-"1243",228,"d228_hb","Blackburnian Warbler",2001,4
-"1245",228,"d228_hb","Ovenbird",2001,7
-"1246",228,"d228_hb","American Redstart",2001,4
-"1248",228,"d228_hb","Scarlet Tanager",2001,0.5
-"1258",228,"d228_hb","Yellow-b.Sapsucker",2002,2
-"1259",228,"d228_hb","Hairy Woodpecker",2002,1
-"1265",228,"d228_hb","Brown Creeper",2002,2
-"1266",228,"d228_hb","White-br. Nuthatch",2002,2
-"1268",228,"d228_hb","Winter Wren",2002,1
-"1271",228,"d228_hb","Hermit Thrush",2002,3
-"1276",228,"d228_hb","Red-eyed Vireo",2002,19
-"1278",228,"d228_hb","Bk.-thr. Green Warbler",2002,16
-"1279",228,"d228_hb","Bk.-thr. Blue Warbler",2002,9
-"1280",228,"d228_hb","Yellow-r. Warbler",2002,2
-"1281",228,"d228_hb","Blackburnian Warbler",2002,3
-"1283",228,"d228_hb","Ovenbird",2002,7.5
-"1284",228,"d228_hb","American Redstart",2002,2
-"1286",228,"d228_hb","Scarlet Tanager",2002,1
-"1296",228,"d228_hb","Yellow-b.Sapsucker",2003,4
-"1297",228,"d228_hb","Hairy Woodpecker",2003,3
-"1298",228,"d228_hb","Downy Woodpecker",2003,2
-"1302",228,"d228_hb","Black-c. Chickadee",2003,2
-"1304",228,"d228_hb","White-br. Nuthatch",2003,2
-"1309",228,"d228_hb","Hermit Thrush",2003,4.5
-"1313",228,"d228_hb","Solitary Vireo",2003,3
-"1314",228,"d228_hb","Red-eyed Vireo",2003,21
-"1316",228,"d228_hb","Bk.-thr. Green Warbler",2003,13
-"1317",228,"d228_hb","Bk.-thr. Blue Warbler",2003,7.5
-"1318",228,"d228_hb","Yellow-r. Warbler",2003,2
-"1319",228,"d228_hb","Blackburnian Warbler",2003,3
-"1321",228,"d228_hb","Ovenbird",2003,8
-"1322",228,"d228_hb","American Redstart",2003,7
-"1324",228,"d228_hb","Scarlet Tanager",2003,5
-"1325",228,"d228_hb","Rose-br. Grosbeak",2003,2
-"1334",228,"d228_hb","Yellow-b.Sapsucker",2004,4
-"1335",228,"d228_hb","Hairy Woodpecker",2004,2
-"1336",228,"d228_hb","Downy Woodpecker",2004,2
-"1340",228,"d228_hb","Black-c. Chickadee",2004,1
-"1344",228,"d228_hb","Winter Wren",2004,3
-"1347",228,"d228_hb","Hermit Thrush",2004,3
-"1352",228,"d228_hb","Red-eyed Vireo",2004,21
-"1354",228,"d228_hb","Bk.-thr. Green Warbler",2004,13.5
-"1355",228,"d228_hb","Bk.-thr. Blue Warbler",2004,6
-"1357",228,"d228_hb","Blackburnian Warbler",2004,2
-"1359",228,"d228_hb","Ovenbird",2004,8
-"1360",228,"d228_hb","American Redstart",2004,2
-"1362",228,"d228_hb","Scarlet Tanager",2004,4
-"1363",228,"d228_hb","Rose-br. Grosbeak",2004,4
-"1372",228,"d228_hb","Yellow-b.Sapsucker",2005,5
-"1373",228,"d228_hb","Hairy Woodpecker",2005,2.5
-"1374",228,"d228_hb","Downy Woodpecker",2005,1
-"1377",228,"d228_hb","Blue Jay",2005,1
-"1378",228,"d228_hb","Black-c. Chickadee",2005,2
-"1382",228,"d228_hb","Winter Wren",2005,2
-"1385",228,"d228_hb","Hermit Thrush",2005,4.5
-"1386",228,"d228_hb","Veery",2005,1
-"1390",228,"d228_hb","Red-eyed Vireo",2005,24.5
-"1392",228,"d228_hb","Bk.-thr. Green Warbler",2005,13
-"1393",228,"d228_hb","Bk.-thr. Blue Warbler",2005,8
-"1394",228,"d228_hb","Yellow-r. Warbler",2005,2
-"1395",228,"d228_hb","Blackburnian Warbler",2005,4
-"1397",228,"d228_hb","Ovenbird",2005,15.5
-"1398",228,"d228_hb","American Redstart",2005,1
-"1400",228,"d228_hb","Scarlet Tanager",2005,5.5
-"1401",228,"d228_hb","Rose-br. Grosbeak",2005,3
-"1407",228,"d228_hb","Ruffed Grouse",2006,1
-"1408",228,"d228_hb","Ruby-thr. Hummingbird",2006,1
-"1410",228,"d228_hb","Yellow-b.Sapsucker",2006,2
-"1411",228,"d228_hb","Hairy Woodpecker",2006,3
-"1412",228,"d228_hb","Downy Woodpecker",2006,2
-"1416",228,"d228_hb","Black-c. Chickadee",2006,4
-"1417",228,"d228_hb","Brown Creeper",2006,2
-"1418",228,"d228_hb","White-br. Nuthatch",2006,2
-"1420",228,"d228_hb","Winter Wren",2006,1.5
-"1423",228,"d228_hb","Hermit Thrush",2006,6.5
-"1427",228,"d228_hb","Solitary Vireo",2006,3
-"1428",228,"d228_hb","Red-eyed Vireo",2006,22
-"1430",228,"d228_hb","Bk.-thr. Green Warbler",2006,17.5
-"1431",228,"d228_hb","Bk.-thr. Blue Warbler",2006,10
-"1432",228,"d228_hb","Yellow-r. Warbler",2006,4.5
-"1433",228,"d228_hb","Blackburnian Warbler",2006,2
-"1435",228,"d228_hb","Ovenbird",2006,15
-"1436",228,"d228_hb","American Redstart",2006,2
-"1438",228,"d228_hb","Scarlet Tanager",2006,4
-"1439",228,"d228_hb","Rose-br. Grosbeak",2006,2.5
-"1445",228,"d228_hb","Ruffed Grouse",2007,1
-"1446",228,"d228_hb","Ruby-thr. Hummingbird",2007,1
-"1448",228,"d228_hb","Yellow-b.Sapsucker",2007,4
-"1449",228,"d228_hb","Hairy Woodpecker",2007,4
-"1453",228,"d228_hb","Blue Jay",2007,1
-"1454",228,"d228_hb","Black-c. Chickadee",2007,3
-"1455",228,"d228_hb","Brown Creeper",2007,1
-"1456",228,"d228_hb","White-br. Nuthatch",2007,2
-"1458",228,"d228_hb","Winter Wren",2007,1
-"1461",228,"d228_hb","Hermit Thrush",2007,4.5
-"1465",228,"d228_hb","Solitary Vireo",2007,2
-"1466",228,"d228_hb","Red-eyed Vireo",2007,19
-"1468",228,"d228_hb","Bk.-thr. Green Warbler",2007,16
-"1469",228,"d228_hb","Bk.-thr. Blue Warbler",2007,10.5
-"1470",228,"d228_hb","Yellow-r. Warbler",2007,2
-"1471",228,"d228_hb","Blackburnian Warbler",2007,2
-"1473",228,"d228_hb","Ovenbird",2007,20
-"1474",228,"d228_hb","American Redstart",2007,2
-"1476",228,"d228_hb","Scarlet Tanager",2007,1.5
-"1477",228,"d228_hb","Rose-br. Grosbeak",2007,2.5
-"1486",228,"d228_hb","Yellow-b.Sapsucker",2008,3.5
-"1487",228,"d228_hb","Hairy Woodpecker",2008,2.5
-"1496",228,"d228_hb","Winter Wren",2008,2.5
-"1499",228,"d228_hb","Hermit Thrush",2008,4.5
-"1501",228,"d228_hb","Swainson's Thrush",2008,2
-"1503",228,"d228_hb","Solitary Vireo",2008,4
-"1504",228,"d228_hb","Red-eyed Vireo",2008,19.5
-"1506",228,"d228_hb","Bk.-thr. Green Warbler",2008,15.5
-"1507",228,"d228_hb","Bk.-thr. Blue Warbler",2008,5
-"1508",228,"d228_hb","Yellow-r. Warbler",2008,0.5
-"1509",228,"d228_hb","Blackburnian Warbler",2008,2
-"1511",228,"d228_hb","Ovenbird",2008,21
-"1512",228,"d228_hb","American Redstart",2008,3
-"1514",228,"d228_hb","Scarlet Tanager",2008,3
-"1515",228,"d228_hb","Rose-br. Grosbeak",2008,3
-"1524",228,"d228_hb","Yellow-b.Sapsucker",2009,3.5
-"1525",228,"d228_hb","Hairy Woodpecker",2009,2.5
-"1530",228,"d228_hb","Black-c. Chickadee",2009,0.5
-"1532",228,"d228_hb","White-br. Nuthatch",2009,0.5
-"1537",228,"d228_hb","Hermit Thrush",2009,6.5
-"1539",228,"d228_hb","Swainson's Thrush",2009,2
-"1541",228,"d228_hb","Solitary Vireo",2009,2.5
-"1542",228,"d228_hb","Red-eyed Vireo",2009,27
-"1543",228,"d228_hb","Blk. & Wh. Warbler",2009,2
-"1544",228,"d228_hb","Bk.-thr. Green Warbler",2009,24.5
-"1545",228,"d228_hb","Bk.-thr. Blue Warbler",2009,6.5
-"1547",228,"d228_hb","Blackburnian Warbler",2009,2
-"1549",228,"d228_hb","Ovenbird",2009,21.5
-"1550",228,"d228_hb","American Redstart",2009,0.5
-"1552",228,"d228_hb","Scarlet Tanager",2009,1.5
-"1553",228,"d228_hb","Rose-br. Grosbeak",2009,2
-"1560",228,"d228_hb","Ruby-thr. Hummingbird",2010,1
-"1562",228,"d228_hb","Yellow-b.Sapsucker",2010,4.5
-"1563",228,"d228_hb","Hairy Woodpecker",2010,2.5
-"1564",228,"d228_hb","Downy Woodpecker",2010,3
-"1569",228,"d228_hb","Brown Creeper",2010,4
-"1572",228,"d228_hb","Winter Wren",2010,1
-"1575",228,"d228_hb","Hermit Thrush",2010,5.5
-"1577",228,"d228_hb","Swainson's Thrush",2010,3
-"1580",228,"d228_hb","Red-eyed Vireo",2010,23.5
-"1582",228,"d228_hb","Bk.-thr. Green Warbler",2010,20.5
-"1583",228,"d228_hb","Bk.-thr. Blue Warbler",2010,7.5
-"1584",228,"d228_hb","Yellow-r. Warbler",2010,2.5
-"1585",228,"d228_hb","Blackburnian Warbler",2010,4
-"1587",228,"d228_hb","Ovenbird",2010,17
-"1590",228,"d228_hb","Scarlet Tanager",2010,4.5
-"1591",228,"d228_hb","Rose-br. Grosbeak",2010,3.5
-"46",228,"d228_mk","Yellow-b.Sapsucker",1986,3
-"515",228,"d228_mk","Hairy Woodpecker",1986,2
-"611",228,"d228_mk","Downy Woodpecker",1986,0.5
-"15",228,"d228_mk","Wood Thrush",1986,2
-"162",228,"d228_mk","Hermit Thrush",1986,1
-"178",228,"d228_mk","Veery",1986,2
-"183",228,"d228_mk","Swainson's Thrush",1986,2
-"2010",228,"d228_mk","Red-eyed Vireo",1986,19.5
-"229",228,"d228_mk","Bk.-thr. Green Warbler",1986,8
-"23",228,"d228_mk","Bk.-thr. Blue Warbler",1986,12.5
-"2510",228,"d228_mk","Blackburnian Warbler",1986,3
-"277",228,"d228_mk","Ovenbird",1986,6.5
-"28",228,"d228_mk","American Redstart",1986,14
-"303",228,"d228_mk","Scarlet Tanager",1986,2.5
-"31",228,"d228_mk","Rose-br. Grosbeak",1986,3.5
-"40",228,"d228_mk","Yellow-b.Sapsucker",1987,2
-"41",228,"d228_mk","Hairy Woodpecker",1987,2
-"4210",228,"d228_mk","Downy Woodpecker",1987,1
-"433",228,"d228_mk","Least Flycatcher",1987,2
-"482",228,"d228_mk","White-br. Nuthatch",1987,1
-"503",228,"d228_mk","Winter Wren",1987,1
-"51",228,"d228_mk","Wood Thrush",1987,2
-"525",228,"d228_mk","Hermit Thrush",1987,1.5
-"5310",228,"d228_mk","Veery",1987,2.5
-"552",228,"d228_mk","Solitary Vireo",1987,1
-"563",228,"d228_mk","Red-eyed Vireo",1987,20
-"581",228,"d228_mk","Bk.-thr. Green Warbler",1987,7.5
-"59",228,"d228_mk","Bk.-thr. Blue Warbler",1987,15.5
-"61",228,"d228_mk","Blackburnian Warbler",1987,2
-"631",228,"d228_mk","Ovenbird",1987,8
-"64",228,"d228_mk","American Redstart",1987,17
-"66",228,"d228_mk","Scarlet Tanager",1987,4
-"674",228,"d228_mk","Rose-br. Grosbeak",1987,3.5
-"76",228,"d228_mk","Yellow-b.Sapsucker",1988,2
-"77",228,"d228_mk","Hairy Woodpecker",1988,1
-"78",228,"d228_mk","Downy Woodpecker",1988,2
-"79",228,"d228_mk","Least Flycatcher",1988,0.5
-"821",228,"d228_mk","Black-c. Chickadee",1988,0.5
-"845",228,"d228_mk","White-br. Nuthatch",1988,1
-"871",228,"d228_mk","Wood Thrush",1988,2
-"883",228,"d228_mk","Hermit Thrush",1988,2
-"89",228,"d228_mk","Veery",1988,3
-"902",228,"d228_mk","Swainson's Thrush",1988,0.5
-"921",228,"d228_mk","Red-eyed Vireo",1988,19
-"932",228,"d228_mk","Blk. & Wh. Warbler",1988,1
-"943",228,"d228_mk","Bk.-thr. Green Warbler",1988,17
-"951",228,"d228_mk","Bk.-thr. Blue Warbler",1988,16
-"97",228,"d228_mk","Blackburnian Warbler",1988,2
-"99",228,"d228_mk","Ovenbird",1988,12
-"1001",228,"d228_mk","American Redstart",1988,18.5
-"102",228,"d228_mk","Scarlet Tanager",1988,2
-"1032",228,"d228_mk","Rose-br. Grosbeak",1988,3.5
-"1054",228,"d228_mk","Dark-eyed Junco",1988,1
-"1121",228,"d228_mk","Yellow-b.Sapsucker",1989,2.5
-"113",228,"d228_mk","Hairy Woodpecker",1989,1
-"114",228,"d228_mk","Downy Woodpecker",1989,1.5
-"1181",228,"d228_mk","Black-c. Chickadee",1989,2
-"1201",228,"d228_mk","White-br. Nuthatch",1989,1
-"122",228,"d228_mk","Winter Wren",1989,2
-"123",228,"d228_mk","Wood Thrush",1989,4
-"1244",228,"d228_mk","Hermit Thrush",1989,2.5
-"125",228,"d228_mk","Veery",1989,3.5
-"1282",228,"d228_mk","Red-eyed Vireo",1989,22.5
-"1291",228,"d228_mk","Blk. & Wh. Warbler",1989,1
-"1301",228,"d228_mk","Bk.-thr. Green Warbler",1989,17.5
-"1311",228,"d228_mk","Bk.-thr. Blue Warbler",1989,16
-"1323",228,"d228_mk","Yellow-r. Warbler",1989,1
-"1331",228,"d228_mk","Blackburnian Warbler",1989,2.5
-"1351",228,"d228_mk","Ovenbird",1989,8
-"1361",228,"d228_mk","American Redstart",1989,19.5
-"1381",228,"d228_mk","Scarlet Tanager",1989,3
-"1391",228,"d228_mk","Rose-br. Grosbeak",1989,4
-"148",228,"d228_mk","Yellow-b.Sapsucker",1990,2.5
-"1491",228,"d228_mk","Hairy Woodpecker",1990,1.5
-"1502",228,"d228_mk","Downy Woodpecker",1990,3
-"154",228,"d228_mk","Black-c. Chickadee",1990,3.5
-"1561",228,"d228_mk","White-br. Nuthatch",1990,2.5
-"1581",228,"d228_mk","Winter Wren",1990,0.5
-"1592",228,"d228_mk","Wood Thrush",1990,2
-"160",228,"d228_mk","Hermit Thrush",1990,3
-"161",228,"d228_mk","Veery",1990,3.5
-"1641",228,"d228_mk","Red-eyed Vireo",1990,21.5
-"165",228,"d228_mk","Blk. & Wh. Warbler",1990,0.5
-"1661",228,"d228_mk","Bk.-thr. Green Warbler",1990,18.5
-"167",228,"d228_mk","Bk.-thr. Blue Warbler",1990,19.5
-"1681",228,"d228_mk","Yellow-r. Warbler",1990,1.5
-"1691",228,"d228_mk","Blackburnian Warbler",1990,3
-"1701",228,"d228_mk","Chestnut-sided Warbler",1990,0.5
-"1711",228,"d228_mk","Ovenbird",1990,16
-"1721",228,"d228_mk","American Redstart",1990,19
-"1731",228,"d228_mk","Canada Warbler",1990,0.5
-"1741",228,"d228_mk","Scarlet Tanager",1990,2.5
-"175",228,"d228_mk","Rose-br. Grosbeak",1990,4
-"1811",228,"d228_mk","Ruffed Grouse",1991,2
-"1841",228,"d228_mk","Yellow-b.Sapsucker",1991,3.5
-"1851",228,"d228_mk","Hairy Woodpecker",1991,2.5
-"186",228,"d228_mk","Downy Woodpecker",1991,1.5
-"190",228,"d228_mk","Black-c. Chickadee",1991,2
-"1941",228,"d228_mk","Winter Wren",1991,2.5
-"1961",228,"d228_mk","Hermit Thrush",1991,1
-"1971",228,"d228_mk","Veery",1991,5
-"2001",228,"d228_mk","Red-eyed Vireo",1991,26.5
-"2021",228,"d228_mk","Bk.-thr. Green Warbler",1991,14
-"203",228,"d228_mk","Bk.-thr. Blue Warbler",1991,13
-"205",228,"d228_mk","Blackburnian Warbler",1991,2
-"2071",228,"d228_mk","Ovenbird",1991,9
-"2081",228,"d228_mk","American Redstart",1991,8.5
-"2101",228,"d228_mk","Scarlet Tanager",1991,3.5
-"2111",228,"d228_mk","Rose-br. Grosbeak",1991,3.5
-"2201",228,"d228_mk","Yellow-b.Sapsucker",1992,4
-"221",228,"d228_mk","Hairy Woodpecker",1992,1
-"2221",228,"d228_mk","Downy Woodpecker",1992,1
-"226",228,"d228_mk","Black-c. Chickadee",1992,2
-"228",228,"d228_mk","White-br. Nuthatch",1992,1
-"231",228,"d228_mk","Wood Thrush",1992,2
-"2321",228,"d228_mk","Hermit Thrush",1992,1.5
-"2331",228,"d228_mk","Veery",1992,4
-"2351",228,"d228_mk","Solitary Vireo",1992,1.5
-"236",228,"d228_mk","Red-eyed Vireo",1992,14.5
-"2381",228,"d228_mk","Bk.-thr. Green Warbler",1992,13.5
-"239",228,"d228_mk","Bk.-thr. Blue Warbler",1992,12.5
-"241",228,"d228_mk","Blackburnian Warbler",1992,2
-"243",228,"d228_mk","Ovenbird",1992,6.5
-"2441",228,"d228_mk","American Redstart",1992,9
-"2451",228,"d228_mk","Canada Warbler",1992,2
-"2461",228,"d228_mk","Scarlet Tanager",1992,4
-"2471",228,"d228_mk","Rose-br. Grosbeak",1992,4
-"256",228,"d228_mk","Yellow-b.Sapsucker",1993,2
-"2571",228,"d228_mk","Hairy Woodpecker",1993,1
-"262",228,"d228_mk","Black-c. Chickadee",1993,1
-"264",228,"d228_mk","White-br. Nuthatch",1993,2
-"268",228,"d228_mk","Hermit Thrush",1993,3.5
-"269",228,"d228_mk","Veery",1993,6
-"2711",228,"d228_mk","Solitary Vireo",1993,0.5
-"2721",228,"d228_mk","Red-eyed Vireo",1993,19
-"274",228,"d228_mk","Bk.-thr. Green Warbler",1993,8.5
-"275",228,"d228_mk","Bk.-thr. Blue Warbler",1993,8
-"276",228,"d228_mk","Yellow-r. Warbler",1993,3
-"279",228,"d228_mk","Ovenbird",1993,7.5
-"2801",228,"d228_mk","American Redstart",1993,6.5
-"2821",228,"d228_mk","Scarlet Tanager",1993,3.5
-"2831",228,"d228_mk","Rose-br. Grosbeak",1993,2
-"292",228,"d228_mk","Yellow-b.Sapsucker",1994,2.5
-"2931",228,"d228_mk","Hairy Woodpecker",1994,1.5
-"2981",228,"d228_mk","Black-c. Chickadee",1994,2
-"2991",228,"d228_mk","Brown Creeper",1994,2
-"300",228,"d228_mk","White-br. Nuthatch",1994,0.5
-"304",228,"d228_mk","Hermit Thrush",1994,3
-"305",228,"d228_mk","Veery",1994,2.5
-"306",228,"d228_mk","Swainson's Thrush",1994,1
-"307",228,"d228_mk","Solitary Vireo",1994,0.5
-"3081",228,"d228_mk","Red-eyed Vireo",1994,14
-"3101",228,"d228_mk","Bk.-thr. Green Warbler",1994,9.5
-"3111",228,"d228_mk","Bk.-thr. Blue Warbler",1994,8.5
-"315",228,"d228_mk","Ovenbird",1994,9
-"3161",228,"d228_mk","American Redstart",1994,2
-"3181",228,"d228_mk","Scarlet Tanager",1994,3
-"319",228,"d228_mk","Rose-br. Grosbeak",1994,4
-"3251",228,"d228_mk","Ruffed Grouse",1995,1
-"3281",228,"d228_mk","Yellow-b.Sapsucker",1995,3
-"3291",228,"d228_mk","Hairy Woodpecker",1995,2
-"340",228,"d228_mk","Hermit Thrush",1995,6.5
-"341",228,"d228_mk","Veery",1995,2
-"342",228,"d228_mk","Swainson's Thrush",1995,1
-"343",228,"d228_mk","Solitary Vireo",1995,2
-"344",228,"d228_mk","Red-eyed Vireo",1995,20
-"3461",228,"d228_mk","Bk.-thr. Green Warbler",1995,12.5
-"3471",228,"d228_mk","Bk.-thr. Blue Warbler",1995,12.5
-"351",228,"d228_mk","Ovenbird",1995,7.5
-"352",228,"d228_mk","American Redstart",1995,2
-"3541",228,"d228_mk","Scarlet Tanager",1995,2
-"355",228,"d228_mk","Rose-br. Grosbeak",1995,2
-"3641",228,"d228_mk","Yellow-b.Sapsucker",1996,2
-"365",228,"d228_mk","Hairy Woodpecker",1996,2
-"3661",228,"d228_mk","Downy Woodpecker",1996,1
-"368",228,"d228_mk","Wood Pewee",1996,1
-"370",228,"d228_mk","Black-c. Chickadee",1996,2
-"376",228,"d228_mk","Hermit Thrush",1996,6
-"377",228,"d228_mk","Veery",1996,2
-"380",228,"d228_mk","Red-eyed Vireo",1996,19.5
-"381",228,"d228_mk","Blk. & Wh. Warbler",1996,1
-"382",228,"d228_mk","Bk.-thr. Green Warbler",1996,11
-"383",228,"d228_mk","Bk.-thr. Blue Warbler",1996,9
-"3851",228,"d228_mk","Blackburnian Warbler",1996,2
-"3871",228,"d228_mk","Ovenbird",1996,10
-"388",228,"d228_mk","American Redstart",1996,4
-"390",228,"d228_mk","Scarlet Tanager",1996,4
-"391",228,"d228_mk","Rose-br. Grosbeak",1996,2
-"3981",228,"d228_mk","Ruby-thr. Hummingbird",1997,1
-"4001",228,"d228_mk","Yellow-b.Sapsucker",1997,3.5
-"401",228,"d228_mk","Hairy Woodpecker",1997,1.5
-"4021",228,"d228_mk","Downy Woodpecker",1997,2
-"4061",228,"d228_mk","Black-c. Chickadee",1997,1
-"4121",228,"d228_mk","Hermit Thrush",1997,2.5
-"4131",228,"d228_mk","Veery",1997,0.5
-"414",228,"d228_mk","Swainson's Thrush",1997,3.5
-"416",228,"d228_mk","Red-eyed Vireo",1997,24
-"418",228,"d228_mk","Bk.-thr. Green Warbler",1997,12.5
-"419",228,"d228_mk","Bk.-thr. Blue Warbler",1997,9
-"420",228,"d228_mk","Yellow-r. Warbler",1997,1.5
-"421",228,"d228_mk","Blackburnian Warbler",1997,2
-"4231",228,"d228_mk","Ovenbird",1997,5
-"4241",228,"d228_mk","American Redstart",1997,3.5
-"426",228,"d228_mk","Scarlet Tanager",1997,2
-"4271",228,"d228_mk","Rose-br. Grosbeak",1997,2
-"4361",228,"d228_mk","Yellow-b.Sapsucker",1998,2
-"4381",228,"d228_mk","Downy Woodpecker",1998,2
-"4421",228,"d228_mk","Black-c. Chickadee",1998,2.5
-"446",228,"d228_mk","Winter Wren",1998,2
-"4481",228,"d228_mk","Hermit Thrush",1998,4
-"452",228,"d228_mk","Red-eyed Vireo",1998,18
-"454",228,"d228_mk","Bk.-thr. Green Warbler",1998,12.5
-"455",228,"d228_mk","Bk.-thr. Blue Warbler",1998,9.5
-"457",228,"d228_mk","Blackburnian Warbler",1998,2
-"459",228,"d228_mk","Ovenbird",1998,8
-"4601",228,"d228_mk","American Redstart",1998,2
-"462",228,"d228_mk","Scarlet Tanager",1998,2
-"4721",228,"d228_mk","Yellow-b.Sapsucker",1999,4
-"4731",228,"d228_mk","Hairy Woodpecker",1999,2
-"4741",228,"d228_mk","Downy Woodpecker",1999,1
-"4781",228,"d228_mk","Black-c. Chickadee",1999,0.5
-"484",228,"d228_mk","Hermit Thrush",1999,4
-"4851",228,"d228_mk","Veery",1999,1
-"487",228,"d228_mk","Solitary Vireo",1999,1
-"4881",228,"d228_mk","Red-eyed Vireo",1999,27.5
-"490",228,"d228_mk","Bk.-thr. Green Warbler",1999,15
-"491",228,"d228_mk","Bk.-thr. Blue Warbler",1999,14.5
-"493",228,"d228_mk","Blackburnian Warbler",1999,2
-"495",228,"d228_mk","Ovenbird",1999,5
-"496",228,"d228_mk","American Redstart",1999,4
-"4981",228,"d228_mk","Scarlet Tanager",1999,3
-"4991",228,"d228_mk","Rose-br. Grosbeak",1999,0.5
-"508",228,"d228_mk","Yellow-b.Sapsucker",2000,2.5
-"509",228,"d228_mk","Hairy Woodpecker",2000,2
-"5141",228,"d228_mk","Black-c. Chickadee",2000,3
-"5161",228,"d228_mk","White-br. Nuthatch",2000,0.5
-"5201",228,"d228_mk","Hermit Thrush",2000,5
-"5241",228,"d228_mk","Red-eyed Vireo",2000,27
-"5261",228,"d228_mk","Bk.-thr. Green Warbler",2000,17
-"5271",228,"d228_mk","Bk.-thr. Blue Warbler",2000,11.5
-"529",228,"d228_mk","Blackburnian Warbler",2000,2
-"531",228,"d228_mk","Ovenbird",2000,6
-"532",228,"d228_mk","American Redstart",2000,3
-"534",228,"d228_mk","Scarlet Tanager",2000,4.5
-"535",228,"d228_mk","Rose-br. Grosbeak",2000,1.5
-"517",228,"d228_rp","Hairy Woodpecker",1986,2
-"615",228,"d228_rp","Downy Woodpecker",1986,1
-"85",228,"d228_rp","Wood Pewee",1986,1
-"104",228,"d228_rp","Black-c. Chickadee",1986,1.5
-"127",228,"d228_rp","White-br. Nuthatch",1986,2
-"145",228,"d228_rp","Winter Wren",1986,0.5
-"1810",228,"d228_rp","Swainson's Thrush",1986,1
-"2011",228,"d228_rp","Red-eyed Vireo",1986,21
-"2210",228,"d228_rp","Bk.-thr. Green Warbler",1986,8
-"2310",228,"d228_rp","Bk.-thr. Blue Warbler",1986,2
-"249",228,"d228_rp","Yellow-r. Warbler",1986,1
-"2511",228,"d228_rp","Blackburnian Warbler",1986,0.5
-"2710",228,"d228_rp","Ovenbird",1986,10
-"281",228,"d228_rp","American Redstart",1986,15
-"3010",228,"d228_rp","Scarlet Tanager",1986,6.5
-"312",228,"d228_rp","Rose-br. Grosbeak",1986,3.5
-"415",228,"d228_rp","Hairy Woodpecker",1987,1.5
-"4211",228,"d228_rp","Downy Woodpecker",1987,2
-"444",228,"d228_rp","Wood Pewee",1987,0.5
-"4810",228,"d228_rp","White-br. Nuthatch",1987,0.5
-"5010",228,"d228_rp","Winter Wren",1987,0.5
-"5110",228,"d228_rp","Wood Thrush",1987,0.5
-"528",228,"d228_rp","Hermit Thrush",1987,2.5
-"553",228,"d228_rp","Solitary Vireo",1987,0.5
-"566",228,"d228_rp","Red-eyed Vireo",1987,15.5
-"583",228,"d228_rp","Bk.-thr. Green Warbler",1987,8.5
-"591",228,"d228_rp","Bk.-thr. Blue Warbler",1987,2
-"616",228,"d228_rp","Blackburnian Warbler",1987,1
-"636",228,"d228_rp","Ovenbird",1987,12
-"642",228,"d228_rp","American Redstart",1987,12.5
-"661",228,"d228_rp","Scarlet Tanager",1987,1.5
-"677",228,"d228_rp","Rose-br. Grosbeak",1987,3
-"761",228,"d228_rp","Yellow-b.Sapsucker",1988,0.5
-"771",228,"d228_rp","Hairy Woodpecker",1988,1
-"781",228,"d228_rp","Downy Woodpecker",1988,1
-"791",228,"d228_rp","Least Flycatcher",1988,6.5
-"801",228,"d228_rp","Wood Pewee",1988,2
-"832",228,"d228_rp","Brown Creeper",1988,1
-"849",228,"d228_rp","White-br. Nuthatch",1988,1
-"864",228,"d228_rp","Winter Wren",1988,4
-"887",228,"d228_rp","Hermit Thrush",1988,1.5
-"894",228,"d228_rp","Veery",1988,0.5
-"923",228,"d228_rp","Red-eyed Vireo",1988,21
-"946",228,"d228_rp","Bk.-thr. Green Warbler",1988,11
-"952",228,"d228_rp","Bk.-thr. Blue Warbler",1988,5
-"991",228,"d228_rp","Ovenbird",1988,21.5
-"1002",228,"d228_rp","American Redstart",1988,12
-"1022",228,"d228_rp","Scarlet Tanager",1988,3
-"1033",228,"d228_rp","Rose-br. Grosbeak",1988,3
-"1122",228,"d228_rp","Yellow-b.Sapsucker",1989,2.5
-"1133",228,"d228_rp","Hairy Woodpecker",1989,3
-"1141",228,"d228_rp","Downy Woodpecker",1989,2
-"115",228,"d228_rp","Least Flycatcher",1989,5.5
-"116",228,"d228_rp","Wood Pewee",1989,1
-"1184",228,"d228_rp","Black-c. Chickadee",1989,2.5
-"1206",228,"d228_rp","White-br. Nuthatch",1989,1.5
-"1222",228,"d228_rp","Winter Wren",1989,1.5
-"1247",228,"d228_rp","Hermit Thrush",1989,3
-"1251",228,"d228_rp","Veery",1989,3
-"1285",228,"d228_rp","Red-eyed Vireo",1989,21.5
-"1303",228,"d228_rp","Bk.-thr. Green Warbler",1989,17
-"1312",228,"d228_rp","Bk.-thr. Blue Warbler",1989,8
-"1353",228,"d228_rp","Ovenbird",1989,29
-"1364",228,"d228_rp","American Redstart",1989,13
-"1383",228,"d228_rp","Scarlet Tanager",1989,2.5
-"1396",228,"d228_rp","Rose-br. Grosbeak",1989,3
-"1481",228,"d228_rp","Yellow-b.Sapsucker",1990,1.5
-"1492",228,"d228_rp","Hairy Woodpecker",1990,1.5
-"1505",228,"d228_rp","Downy Woodpecker",1990,1.5
-"151",228,"d228_rp","Least Flycatcher",1990,6
-"152",228,"d228_rp","Wood Pewee",1990,1
-"1546",228,"d228_rp","Black-c. Chickadee",1990,2.5
-"1565",228,"d228_rp","White-br. Nuthatch",1990,1
-"1586",228,"d228_rp","Winter Wren",1990,2.5
-"1601",228,"d228_rp","Hermit Thrush",1990,2.5
-"1611",228,"d228_rp","Veery",1990,1.5
-"1642",228,"d228_rp","Red-eyed Vireo",1990,19.5
-"1662",228,"d228_rp","Bk.-thr. Green Warbler",1990,11
-"1671",228,"d228_rp","Bk.-thr. Blue Warbler",1990,8
-"1682",228,"d228_rp","Yellow-r. Warbler",1990,2
-"1692",228,"d228_rp","Blackburnian Warbler",1990,1
-"1712",228,"d228_rp","Ovenbird",1990,25.5
-"1722",228,"d228_rp","American Redstart",1990,19.5
-"1742",228,"d228_rp","Scarlet Tanager",1990,3.5
-"1751",228,"d228_rp","Rose-br. Grosbeak",1990,2.5
-"1842",228,"d228_rp","Yellow-b.Sapsucker",1991,1.5
-"1852",228,"d228_rp","Hairy Woodpecker",1991,2
-"1861",228,"d228_rp","Downy Woodpecker",1991,2
-"1881",228,"d228_rp","Wood Pewee",1991,2.5
-"1901",228,"d228_rp","Black-c. Chickadee",1991,1.5
-"1921",228,"d228_rp","White-br. Nuthatch",1991,1.5
-"1942",228,"d228_rp","Winter Wren",1991,2.5
-"1962",228,"d228_rp","Hermit Thrush",1991,1.5
-"1972",228,"d228_rp","Veery",1991,2.5
-"2002",228,"d228_rp","Red-eyed Vireo",1991,23.5
-"2022",228,"d228_rp","Bk.-thr. Green Warbler",1991,9
-"2031",228,"d228_rp","Bk.-thr. Blue Warbler",1991,6
-"2041",228,"d228_rp","Yellow-r. Warbler",1991,2
-"2051",228,"d228_rp","Blackburnian Warbler",1991,2
-"2072",228,"d228_rp","Ovenbird",1991,21
-"2082",228,"d228_rp","American Redstart",1991,9
-"2102",228,"d228_rp","Scarlet Tanager",1991,2.5
-"2112",228,"d228_rp","Rose-br. Grosbeak",1991,2
-"2202",228,"d228_rp","Yellow-b.Sapsucker",1992,1
-"2211",228,"d228_rp","Hairy Woodpecker",1992,2
-"2222",228,"d228_rp","Downy Woodpecker",1992,1
-"224",228,"d228_rp","Wood Pewee",1992,1.5
-"2261",228,"d228_rp","Black-c. Chickadee",1992,2.5
-"227",228,"d228_rp","Brown Creeper",1992,2
-"2281",228,"d228_rp","White-br. Nuthatch",1992,2
-"230",228,"d228_rp","Winter Wren",1992,1.5
-"2322",228,"d228_rp","Hermit Thrush",1992,4.5
-"2332",228,"d228_rp","Veery",1992,3.5
-"2361",228,"d228_rp","Red-eyed Vireo",1992,19.5
-"237",228,"d228_rp","Blk. & Wh. Warbler",1992,2
-"2382",228,"d228_rp","Bk.-thr. Green Warbler",1992,9.5
-"2391",228,"d228_rp","Bk.-thr. Blue Warbler",1992,4
-"2431",228,"d228_rp","Ovenbird",1992,19.5
-"2442",228,"d228_rp","American Redstart",1992,10
-"2462",228,"d228_rp","Scarlet Tanager",1992,5.5
-"2472",228,"d228_rp","Rose-br. Grosbeak",1992,2
-"2561",228,"d228_rp","Yellow-b.Sapsucker",1993,1
-"2572",228,"d228_rp","Hairy Woodpecker",1993,1.5
-"2581",228,"d228_rp","Downy Woodpecker",1993,1
-"259",228,"d228_rp","Least Flycatcher",1993,4
-"2601",228,"d228_rp","Wood Pewee",1993,1
-"2621",228,"d228_rp","Black-c. Chickadee",1993,1
-"2641",228,"d228_rp","White-br. Nuthatch",1993,2
-"266",228,"d228_rp","Winter Wren",1993,0.5
-"2681",228,"d228_rp","Hermit Thrush",1993,1
-"2691",228,"d228_rp","Veery",1993,4.5
-"2722",228,"d228_rp","Red-eyed Vireo",1993,24.5
-"2741",228,"d228_rp","Bk.-thr. Green Warbler",1993,8.5
-"2751",228,"d228_rp","Bk.-thr. Blue Warbler",1993,9
-"2791",228,"d228_rp","Ovenbird",1993,18
-"2802",228,"d228_rp","American Redstart",1993,9.5
-"2822",228,"d228_rp","Scarlet Tanager",1993,2
-"2832",228,"d228_rp","Rose-br. Grosbeak",1993,1
-"2921",228,"d228_rp","Yellow-b.Sapsucker",1994,1
-"2932",228,"d228_rp","Hairy Woodpecker",1994,0.5
-"2982",228,"d228_rp","Black-c. Chickadee",1994,2
-"3011",228,"d228_rp","Red-br. Nuthatch",1994,1
-"302",228,"d228_rp","Winter Wren",1994,1
-"3041",228,"d228_rp","Hermit Thrush",1994,0.5
-"3051",228,"d228_rp","Veery",1994,3.5
-"3071",228,"d228_rp","Solitary Vireo",1994,0.5
-"3082",228,"d228_rp","Red-eyed Vireo",1994,18
-"3102",228,"d228_rp","Bk.-thr. Green Warbler",1994,5.5
-"3112",228,"d228_rp","Bk.-thr. Blue Warbler",1994,8
-"3151",228,"d228_rp","Ovenbird",1994,12
-"3162",228,"d228_rp","American Redstart",1994,4.5
-"3182",228,"d228_rp","Scarlet Tanager",1994,3
-"3191",228,"d228_rp","Rose-br. Grosbeak",1994,2
-"3282",228,"d228_rp","Yellow-b.Sapsucker",1995,1
-"3292",228,"d228_rp","Hairy Woodpecker",1995,1.5
-"330",228,"d228_rp","Downy Woodpecker",1995,2
-"332",228,"d228_rp","Wood Pewee",1995,2
-"3341",228,"d228_rp","Black-c. Chickadee",1995,1
-"3401",228,"d228_rp","Hermit Thrush",1995,2
-"3411",228,"d228_rp","Veery",1995,3
-"3441",228,"d228_rp","Red-eyed Vireo",1995,17
-"3462",228,"d228_rp","Bk.-thr. Green Warbler",1995,8.5
-"3472",228,"d228_rp","Bk.-thr. Blue Warbler",1995,9.5
-"3511",228,"d228_rp","Ovenbird",1995,11
-"3521",228,"d228_rp","American Redstart",1995,6
-"3542",228,"d228_rp","Scarlet Tanager",1995,4
-"3551",228,"d228_rp","Rose-br. Grosbeak",1995,2
-"3642",228,"d228_rp","Yellow-b.Sapsucker",1996,1
-"3651",228,"d228_rp","Hairy Woodpecker",1996,1
-"3662",228,"d228_rp","Downy Woodpecker",1996,1
-"3681",228,"d228_rp","Wood Pewee",1996,2
-"3711",228,"d228_rp","Brown Creeper",1996,2
-"3741",228,"d228_rp","Winter Wren",1996,1
-"3761",228,"d228_rp","Hermit Thrush",1996,2
-"3771",228,"d228_rp","Veery",1996,1
-"379",228,"d228_rp","Solitary Vireo",1996,0.5
-"3801",228,"d228_rp","Red-eyed Vireo",1996,15
-"3821",228,"d228_rp","Bk.-thr. Green Warbler",1996,11
-"3831",228,"d228_rp","Bk.-thr. Blue Warbler",1996,7.5
-"3841",228,"d228_rp","Yellow-r. Warbler",1996,1
-"3852",228,"d228_rp","Blackburnian Warbler",1996,2
-"3872",228,"d228_rp","Ovenbird",1996,13
-"3881",228,"d228_rp","American Redstart",1996,8
-"3901",228,"d228_rp","Scarlet Tanager",1996,3
-"3911",228,"d228_rp","Rose-br. Grosbeak",1996,3
-"4002",228,"d228_rp","Yellow-b.Sapsucker",1997,2
-"4011",228,"d228_rp","Hairy Woodpecker",1997,1.5
-"4022",228,"d228_rp","Downy Woodpecker",1997,1
-"4062",228,"d228_rp","Black-c. Chickadee",1997,4
-"408",228,"d228_rp","White-br. Nuthatch",1997,2
-"4122",228,"d228_rp","Hermit Thrush",1997,2.5
-"4141",228,"d228_rp","Swainson's Thrush",1997,0.5
-"4161",228,"d228_rp","Red-eyed Vireo",1997,22.5
-"4181",228,"d228_rp","Bk.-thr. Green Warbler",1997,7
-"4191",228,"d228_rp","Bk.-thr. Blue Warbler",1997,10
-"4201",228,"d228_rp","Yellow-r. Warbler",1997,1
-"4212",228,"d228_rp","Blackburnian Warbler",1997,1
-"4232",228,"d228_rp","Ovenbird",1997,15
-"4242",228,"d228_rp","American Redstart",1997,4
-"4261",228,"d228_rp","Scarlet Tanager",1997,4
-"4272",228,"d228_rp","Rose-br. Grosbeak",1997,3
-"4362",228,"d228_rp","Yellow-b.Sapsucker",1998,2
-"4382",228,"d228_rp","Downy Woodpecker",1998,2
-"441",228,"d228_rp","Blue Jay",1998,1
-"4422",228,"d228_rp","Black-c. Chickadee",1998,3
-"4431",228,"d228_rp","Brown Creeper",1998,3
-"4461",228,"d228_rp","Winter Wren",1998,2
-"4471",228,"d228_rp","Wood Thrush",1998,2
-"4482",228,"d228_rp","Hermit Thrush",1998,2.5
-"4521",228,"d228_rp","Red-eyed Vireo",1998,21
-"4541",228,"d228_rp","Bk.-thr. Green Warbler",1998,6
-"4551",228,"d228_rp","Bk.-thr. Blue Warbler",1998,8
-"456",228,"d228_rp","Yellow-r. Warbler",1998,2.5
-"4591",228,"d228_rp","Ovenbird",1998,13.5
-"4602",228,"d228_rp","American Redstart",1998,5
-"4621",228,"d228_rp","Scarlet Tanager",1998,2.5
-"4631",228,"d228_rp","Rose-br. Grosbeak",1998,2.5
-"4722",228,"d228_rp","Yellow-b.Sapsucker",1999,4
-"4732",228,"d228_rp","Hairy Woodpecker",1999,1.5
-"4742",228,"d228_rp","Downy Woodpecker",1999,0.5
-"4761",228,"d228_rp","Wood Pewee",1999,3
-"477",228,"d228_rp","Blue Jay",1999,1
-"4782",228,"d228_rp","Black-c. Chickadee",1999,4
-"4801",228,"d228_rp","White-br. Nuthatch",1999,2
-"4841",228,"d228_rp","Hermit Thrush",1999,2.5
-"4871",228,"d228_rp","Solitary Vireo",1999,1
-"4882",228,"d228_rp","Red-eyed Vireo",1999,19.5
-"4901",228,"d228_rp","Bk.-thr. Green Warbler",1999,11.5
-"4911",228,"d228_rp","Bk.-thr. Blue Warbler",1999,14.5
-"4951",228,"d228_rp","Ovenbird",1999,11.5
-"4961",228,"d228_rp","American Redstart",1999,2.5
-"4982",228,"d228_rp","Scarlet Tanager",1999,2.5
-"4992",228,"d228_rp","Rose-br. Grosbeak",1999,2
-"507",228,"d228_rp","Pileated Woodpecker",2000,0.5
-"5081",228,"d228_rp","Yellow-b.Sapsucker",2000,2
-"5091",228,"d228_rp","Hairy Woodpecker",2000,2
-"5142",228,"d228_rp","Black-c. Chickadee",2000,1
-"5181",228,"d228_rp","Winter Wren",2000,2.5
-"5202",228,"d228_rp","Hermit Thrush",2000,3.5
-"5242",228,"d228_rp","Red-eyed Vireo",2000,25
-"5262",228,"d228_rp","Bk.-thr. Green Warbler",2000,12.5
-"5272",228,"d228_rp","Bk.-thr. Blue Warbler",2000,12
-"5311",228,"d228_rp","Ovenbird",2000,14
-"5321",228,"d228_rp","American Redstart",2000,6
-"5341",228,"d228_rp","Scarlet Tanager",2000,4.5
-"5351",228,"d228_rp","Rose-br. Grosbeak",2000,2
-"49",228,"d228_sm","Yellow-b.Sapsucker",1986,1.5
-"540",228,"d228_sm","Hairy Woodpecker",1986,2
-"13",228,"d228_sm","White-br. Nuthatch",1986,1
-"155",228,"d228_sm","Winter Wren",1986,0.5
-"1812",228,"d228_sm","Veery",1986,1
-"2012",228,"d228_sm","Solitary Vireo",1986,1
-"21",228,"d228_sm","Red-eyed Vireo",1986,23
-"2311",228,"d228_sm","Bk.-thr. Green Warbler",1986,7
-"2410",228,"d228_sm","Bk.-thr. Blue Warbler",1986,2
-"289",228,"d228_sm","Ovenbird",1986,9
-"294",228,"d228_sm","American Redstart",1986,12.5
-"3110",228,"d228_sm","Scarlet Tanager",1986,1
-"3210",228,"d228_sm","Rose-br. Grosbeak",1986,3
-"417",228,"d228_sm","Yellow-b.Sapsucker",1987,1
-"4213",228,"d228_sm","Hairy Woodpecker",1987,1
-"439",228,"d228_sm","Downy Woodpecker",1987,2
-"47",228,"d228_sm","Blue Jay",1987,0.5
-"4811",228,"d228_sm","Black-c. Chickadee",1987,1
-"5011",228,"d228_sm","White-br. Nuthatch",1987,2
-"5210",228,"d228_sm","Winter Wren",1987,1.5
-"543",228,"d228_sm","Hermit Thrush",1987,1.5
-"567",228,"d228_sm","Swainson's Thrush",1987,1
-"584",228,"d228_sm","Red-eyed Vireo",1987,16.5
-"601",228,"d228_sm","Bk.-thr. Green Warbler",1987,7
-"617",228,"d228_sm","Bk.-thr. Blue Warbler",1987,4
-"652",228,"d228_sm","Ovenbird",1987,15.5
-"666",228,"d228_sm","American Redstart",1987,11.5
-"681",228,"d228_sm","Scarlet Tanager",1987,3
-"69",228,"d228_sm","Rose-br. Grosbeak",1987,2.5
-"794",228,"d228_sm","Hairy Woodpecker",1988,1
-"834",228,"d228_sm","Wood Pewee",1988,1
-"8410",228,"d228_sm","Blue Jay",1988,1
-"911",228,"d228_sm","Hermit Thrush",1988,1.5
-"935",228,"d228_sm","Swainson's Thrush",1988,0.5
-"953",228,"d228_sm","Red-eyed Vireo",1988,17
-"973",228,"d228_sm","Bk.-thr. Green Warbler",1988,10.5
-"981",228,"d228_sm","Bk.-thr. Blue Warbler",1988,5.5
-"1023",228,"d228_sm","Ovenbird",1988,13.5
-"1034",228,"d228_sm","American Redstart",1988,13
-"1057",228,"d228_sm","Scarlet Tanager",1988,2.5
-"1061",228,"d228_sm","Rose-br. Grosbeak",1988,1.5
-"1151",228,"d228_sm","Yellow-b.Sapsucker",1989,2
-"1163",228,"d228_sm","Hairy Woodpecker",1989,1.5
-"117",228,"d228_sm","Downy Woodpecker",1989,2
-"1209",228,"d228_sm","Wood Pewee",1989,2
-"1223",228,"d228_sm","Black-c. Chickadee",1989,1.5
-"1249",228,"d228_sm","White-br. Nuthatch",1989,1
-"1287",228,"d228_sm","Hermit Thrush",1989,2
-"1292",228,"d228_sm","Veery",1989,3
-"1315",228,"d228_sm","Solitary Vireo",1989,2
-"1326",228,"d228_sm","Red-eyed Vireo",1989,15.5
-"1341",228,"d228_sm","Bk.-thr. Green Warbler",1989,8
-"1356",228,"d228_sm","Bk.-thr. Blue Warbler",1989,10.5
-"1399",228,"d228_sm","Ovenbird",1989,16.5
-"1402",228,"d228_sm","American Redstart",1989,14.5
-"142",228,"d228_sm","Scarlet Tanager",1989,3.5
-"1434",228,"d228_sm","Rose-br. Grosbeak",1989,2
-"153",228,"d228_sm","Hairy Woodpecker",1990,3
-"1593",228,"d228_sm","Black-c. Chickadee",1990,2
-"1612",228,"d228_sm","White-br. Nuthatch",1990,1.5
-"1631",228,"d228_sm","Winter Wren",1990,2
-"1651",228,"d228_sm","Hermit Thrush",1990,1.5
-"1663",228,"d228_sm","Veery",1990,2
-"1672",228,"d228_sm","Swainson's Thrush",1990,2
-"1693",228,"d228_sm","Red-eyed Vireo",1990,18
-"1713",228,"d228_sm","Bk.-thr. Green Warbler",1990,9
-"1723",228,"d228_sm","Bk.-thr. Blue Warbler",1990,6.5
-"1732",228,"d228_sm","Yellow-r. Warbler",1990,2
-"1761",228,"d228_sm","Ovenbird",1990,19
-"1771",228,"d228_sm","American Redstart",1990,19
-"1791",228,"d228_sm","Scarlet Tanager",1990,3
-"180",228,"d228_sm","Rose-br. Grosbeak",1990,2.5
-"189",228,"d228_sm","Yellow-b.Sapsucker",1991,2.5
-"1963",228,"d228_sm","Black-c. Chickadee",1991,1.5
-"2023",228,"d228_sm","Hermit Thrush",1991,1.5
-"2052",228,"d228_sm","Solitary Vireo",1991,1.5
-"213",228,"d228_sm","Ovenbird",1991,12.5
-"216",228,"d228_sm","Scarlet Tanager",1991,1.5
-"2262",228,"d228_sm","Yellow-b.Sapsucker",1992,2
-"2271",228,"d228_sm","Hairy Woodpecker",1992,1
-"2282",228,"d228_sm","Downy Woodpecker",1992,0.5
-"2333",228,"d228_sm","Black-c. Chickadee",1992,4
-"2352",228,"d228_sm","White-br. Nuthatch",1992,2
-"2371",228,"d228_sm","Winter Wren",1992,1.5
-"2392",228,"d228_sm","Hermit Thrush",1992,3.5
-"2401",228,"d228_sm","Veery",1992,1.5
-"2421",228,"d228_sm","Solitary Vireo",1992,2
-"2432",228,"d228_sm","Red-eyed Vireo",1992,13.5
-"2452",228,"d228_sm","Bk.-thr. Green Warbler",1992,10
-"2463",228,"d228_sm","Bk.-thr. Blue Warbler",1992,5.5
-"2473",228,"d228_sm","Yellow-r. Warbler",1992,1
-"2501",228,"d228_sm","Ovenbird",1992,19.5
-"251",228,"d228_sm","American Redstart",1992,9
-"2531",228,"d228_sm","Scarlet Tanager",1992,3
-"254",228,"d228_sm","Rose-br. Grosbeak",1992,2
-"2642",228,"d228_sm","Hairy Woodpecker",1993,2.5
-"265",228,"d228_sm","Downy Woodpecker",1993,1
-"2723",228,"d228_sm","White-br. Nuthatch",1993,1
-"2761",228,"d228_sm","Hermit Thrush",1993,2.5
-"2803",228,"d228_sm","Red-eyed Vireo",1993,16.5
-"2823",228,"d228_sm","Bk.-thr. Green Warbler",1993,12.5
-"2833",228,"d228_sm","Bk.-thr. Blue Warbler",1993,7.5
-"2871",228,"d228_sm","Ovenbird",1993,17.5
-"2881",228,"d228_sm","American Redstart",1993,6
-"2901",228,"d228_sm","Scarlet Tanager",1993,2
-"2911",228,"d228_sm","Rose-br. Grosbeak",1993,1
-"3012",228,"d228_sm","Hairy Woodpecker",1994,1.5
-"3052",228,"d228_sm","Wood Pewee",1994,1
-"3072",228,"d228_sm","Black-c. Chickadee",1994,3
-"3091",228,"d228_sm","White-br. Nuthatch",1994,0.5
-"313",228,"d228_sm","Hermit Thrush",1994,1
-"3152",228,"d228_sm","Swainson's Thrush",1994,0.5
-"317",228,"d228_sm","Red-eyed Vireo",1994,14
-"3192",228,"d228_sm","Bk.-thr. Green Warbler",1994,7
-"3201",228,"d228_sm","Bk.-thr. Blue Warbler",1994,7
-"3241",228,"d228_sm","Ovenbird",1994,9
-"327",228,"d228_sm","Scarlet Tanager",1994,4
-"3283",228,"d228_sm","Rose-br. Grosbeak",1994,2
-"338",228,"d228_sm","Hairy Woodpecker",1995,1
-"3421",228,"d228_sm","Wood Pewee",1995,2
-"350",228,"d228_sm","Hermit Thrush",1995,2
-"3543",228,"d228_sm","Red-eyed Vireo",1995,18
-"356",228,"d228_sm","Bk.-thr. Green Warbler",1995,5
-"357",228,"d228_sm","Bk.-thr. Blue Warbler",1995,8
-"3611",228,"d228_sm","Ovenbird",1995,14.5
-"3621",228,"d228_sm","American Redstart",1995,8.5
-"3643",228,"d228_sm","Scarlet Tanager",1995,1
-"3652",228,"d228_sm","Rose-br. Grosbeak",1995,2
-"3742",228,"d228_sm","Yellow-b.Sapsucker",1996,0.5
-"3751",228,"d228_sm","Hairy Woodpecker",1996,1
-"3762",228,"d228_sm","Downy Woodpecker",1996,0.5
-"3811",228,"d228_sm","Black-c. Chickadee",1996,2
-"3853",228,"d228_sm","Winter Wren",1996,2
-"3873",228,"d228_sm","Hermit Thrush",1996,1
-"3912",228,"d228_sm","Red-eyed Vireo",1996,15
-"393",228,"d228_sm","Bk.-thr. Green Warbler",1996,8
-"394",228,"d228_sm","Bk.-thr. Blue Warbler",1996,6
-"3982",228,"d228_sm","Ovenbird",1996,18
-"4012",228,"d228_sm","Scarlet Tanager",1996,1
-"411",228,"d228_sm","Yellow-b.Sapsucker",1997,1
-"4123",228,"d228_sm","Hairy Woodpecker",1997,1
-"4162",228,"d228_sm","Wood Pewee",1997,2
-"4182",228,"d228_sm","Black-c. Chickadee",1997,1.5
-"4202",228,"d228_sm","White-br. Nuthatch",1997,1
-"4221",228,"d228_sm","Winter Wren",1997,2
-"4243",228,"d228_sm","Hermit Thrush",1997,2
-"4281",228,"d228_sm","Red-eyed Vireo",1997,19.5
-"4301",228,"d228_sm","Bk.-thr. Green Warbler",1997,4.5
-"431",228,"d228_sm","Bk.-thr. Blue Warbler",1997,6
-"4321",228,"d228_sm","Yellow-r. Warbler",1997,1.5
-"4351",228,"d228_sm","Ovenbird",1997,10.5
-"4383",228,"d228_sm","Scarlet Tanager",1997,2
-"4483",228,"d228_sm","Yellow-b.Sapsucker",1998,1
-"449",228,"d228_sm","Hairy Woodpecker",1998,1.5
-"4501",228,"d228_sm","Downy Woodpecker",1998,1
-"4552",228,"d228_sm","Black-c. Chickadee",1998,2
-"4561",228,"d228_sm","Brown Creeper",1998,2
-"4592",228,"d228_sm","Winter Wren",1998,1
-"4611",228,"d228_sm","Hermit Thrush",1998,2.5
-"4651",228,"d228_sm","Red-eyed Vireo",1998,16
-"467",228,"d228_sm","Bk.-thr. Green Warbler",1998,11
-"4681",228,"d228_sm","Bk.-thr. Blue Warbler",1998,5.5
-"4723",228,"d228_sm","Ovenbird",1998,18.5
-"4733",228,"d228_sm","American Redstart",1998,6
-"4751",228,"d228_sm","Scarlet Tanager",1998,2
-"4852",228,"d228_sm","Yellow-b.Sapsucker",1999,2
-"4861",228,"d228_sm","Hairy Woodpecker",1999,2.5
-"4872",228,"d228_sm","Downy Woodpecker",1999,1.5
-"4902",228,"d228_sm","Wood Pewee",1999,0.5
-"492",228,"d228_sm","Black-c. Chickadee",1999,2.5
-"4931",228,"d228_sm","Brown Creeper",1999,1
-"4962",228,"d228_sm","Winter Wren",1999,2
-"4983",228,"d228_sm","Hermit Thrush",1999,4
-"501",228,"d228_sm","Solitary Vireo",1999,1
-"502",228,"d228_sm","Red-eyed Vireo",1999,27
-"504",228,"d228_sm","Bk.-thr. Green Warbler",1999,16.5
-"505",228,"d228_sm","Bk.-thr. Blue Warbler",1999,11.5
-"5061",228,"d228_sm","Yellow-r. Warbler",1999,1
-"5092",228,"d228_sm","Ovenbird",1999,14
-"5121",228,"d228_sm","Scarlet Tanager",1999,3.5
-"522",228,"d228_sm","Yellow-b.Sapsucker",2000,1
-"5231",228,"d228_sm","Hairy Woodpecker",2000,0.5
-"5243",228,"d228_sm","Downy Woodpecker",2000,1
-"5273",228,"d228_sm","Wood Pewee",2000,2
-"5291",228,"d228_sm","Black-c. Chickadee",2000,2
-"530",228,"d228_sm","Brown Creeper",2000,1
-"5312",228,"d228_sm","White-br. Nuthatch",2000,0.5
-"533",228,"d228_sm","Winter Wren",2000,1
-"5352",228,"d228_sm","Hermit Thrush",2000,2
-"5381",228,"d228_sm","Solitary Vireo",2000,1
-"539",228,"d228_sm","Red-eyed Vireo",2000,25
-"541",228,"d228_sm","Bk.-thr. Green Warbler",2000,20.5
-"542",228,"d228_sm","Bk.-thr. Blue Warbler",2000,15
-"546",228,"d228_sm","Ovenbird",2000,14.5
-"547",228,"d228_sm","American Redstart",2000,2
-"5491",228,"d228_sm","Scarlet Tanager",2000,3
-"5501",228,"d228_sm","Rose-br. Grosbeak",2000,0.5
+"datasetID","site","species","year","count"
+228,"d228_hb","Yellow-b.Sapsucker",1969,6
+228,"d228_hb","Hairy Woodpecker",1969,2
+228,"d228_hb","Downy Woodpecker",1969,6
+228,"d228_hb","Least Flycatcher",1969,26
+228,"d228_hb","Wood Pewee",1969,1
+228,"d228_hb","Black-c. Chickadee",1969,4
+228,"d228_hb","Brown Creeper",1969,2
+228,"d228_hb","White-br. Nuthatch",1969,8
+228,"d228_hb","Winter Wren",1969,1
+228,"d228_hb","Wood Thrush",1969,7
+228,"d228_hb","Hermit Thrush",1969,6
+228,"d228_hb","Veery",1969,2
+228,"d228_hb","Swainson's Thrush",1969,9
+228,"d228_hb","Philadelphia Vireo",1969,4
+228,"d228_hb","Red-eyed Vireo",1969,20
+228,"d228_hb","Bk.-thr. Green Warbler",1969,8
+228,"d228_hb","Bk.-thr. Blue Warbler",1969,4
+228,"d228_hb","Blackburnian Warbler",1969,2
+228,"d228_hb","Ovenbird",1969,6
+228,"d228_hb","American Redstart",1969,12
+228,"d228_hb","Scarlet Tanager",1969,4
+228,"d228_hb","Rose-br. Grosbeak",1969,8
+228,"d228_hb","Dark-eyed Junco",1969,8
+228,"d228_hb","Purple Finch",1969,2
+228,"d228_hb","Yellow-b.Sapsucker",1970,3
+228,"d228_hb","Hairy Woodpecker",1970,1
+228,"d228_hb","Downy Woodpecker",1970,3
+228,"d228_hb","Least Flycatcher",1970,28
+228,"d228_hb","Black-c. Chickadee",1970,1
+228,"d228_hb","White-br. Nuthatch",1970,2
+228,"d228_hb","Winter Wren",1970,0.5
+228,"d228_hb","Robin",1970,0.5
+228,"d228_hb","Wood Thrush",1970,6
+228,"d228_hb","Hermit Thrush",1970,8
+228,"d228_hb","Veery",1970,2
+228,"d228_hb","Swainson's Thrush",1970,8
+228,"d228_hb","Philadelphia Vireo",1970,7
+228,"d228_hb","Red-eyed Vireo",1970,24
+228,"d228_hb","Bk.-thr. Green Warbler",1970,9
+228,"d228_hb","Bk.-thr. Blue Warbler",1970,8
+228,"d228_hb","Blackburnian Warbler",1970,5.5
+228,"d228_hb","Ovenbird",1970,6
+228,"d228_hb","American Redstart",1970,26
+228,"d228_hb","Scarlet Tanager",1970,6
+228,"d228_hb","Rose-br. Grosbeak",1970,4
+228,"d228_hb","Dark-eyed Junco",1970,4
+228,"d228_hb","Yellow-b.Sapsucker",1971,4
+228,"d228_hb","Hairy Woodpecker",1971,1
+228,"d228_hb","Downy Woodpecker",1971,3
+228,"d228_hb","Least Flycatcher",1971,43
+228,"d228_hb","Wood Pewee",1971,1
+228,"d228_hb","Black-c. Chickadee",1971,0.5
+228,"d228_hb","Brown Creeper",1971,0.5
+228,"d228_hb","White-br. Nuthatch",1971,2
+228,"d228_hb","Winter Wren",1971,1.5
+228,"d228_hb","Robin",1971,4.5
+228,"d228_hb","Wood Thrush",1971,9
+228,"d228_hb","Hermit Thrush",1971,7
+228,"d228_hb","Veery",1971,5
+228,"d228_hb","Swainson's Thrush",1971,11
+228,"d228_hb","Philadelphia Vireo",1971,5
+228,"d228_hb","Red-eyed Vireo",1971,29
+228,"d228_hb","Bk.-thr. Green Warbler",1971,12
+228,"d228_hb","Bk.-thr. Blue Warbler",1971,11
+228,"d228_hb","Blackburnian Warbler",1971,4
+228,"d228_hb","Ovenbird",1971,9
+228,"d228_hb","American Redstart",1971,29
+228,"d228_hb","Scarlet Tanager",1971,5
+228,"d228_hb","Rose-br. Grosbeak",1971,6
+228,"d228_hb","Dark-eyed Junco",1971,8
+228,"d228_hb","Purple Finch",1971,1
+228,"d228_hb","Yellow-b.Sapsucker",1972,4
+228,"d228_hb","Hairy Woodpecker",1972,2
+228,"d228_hb","Downy Woodpecker",1972,2
+228,"d228_hb","Least Flycatcher",1972,49.5
+228,"d228_hb","Black-c. Chickadee",1972,0.5
+228,"d228_hb","White-br. Nuthatch",1972,2
+228,"d228_hb","Winter Wren",1972,0.5
+228,"d228_hb","Robin",1972,1.5
+228,"d228_hb","Wood Thrush",1972,7
+228,"d228_hb","Hermit Thrush",1972,7
+228,"d228_hb","Veery",1972,2
+228,"d228_hb","Swainson's Thrush",1972,11
+228,"d228_hb","Philadelphia Vireo",1972,8
+228,"d228_hb","Solitary Vireo",1972,0.5
+228,"d228_hb","Red-eyed Vireo",1972,22
+228,"d228_hb","Bk.-thr. Green Warbler",1972,7
+228,"d228_hb","Bk.-thr. Blue Warbler",1972,9
+228,"d228_hb","Yellow-r. Warbler",1972,1
+228,"d228_hb","Blackburnian Warbler",1972,7
+228,"d228_hb","Ovenbird",1972,9
+228,"d228_hb","American Redstart",1972,29
+228,"d228_hb","Scarlet Tanager",1972,8
+228,"d228_hb","Rose-br. Grosbeak",1972,10
+228,"d228_hb","Dark-eyed Junco",1972,8
+228,"d228_hb","Purple Finch",1972,6
+228,"d228_hb","Yellow-b.Sapsucker",1973,4
+228,"d228_hb","Hairy Woodpecker",1973,2
+228,"d228_hb","Downy Woodpecker",1973,2
+228,"d228_hb","Least Flycatcher",1973,57
+228,"d228_hb","Brown Creeper",1973,0.5
+228,"d228_hb","White-br. Nuthatch",1973,1
+228,"d228_hb","Winter Wren",1973,3
+228,"d228_hb","Wood Thrush",1973,4
+228,"d228_hb","Hermit Thrush",1973,4
+228,"d228_hb","Veery",1973,1
+228,"d228_hb","Swainson's Thrush",1973,9
+228,"d228_hb","Philadelphia Vireo",1973,4
+228,"d228_hb","Solitary Vireo",1973,1
+228,"d228_hb","Red-eyed Vireo",1973,26
+228,"d228_hb","Bk.-thr. Green Warbler",1973,6
+228,"d228_hb","Bk.-thr. Blue Warbler",1973,11
+228,"d228_hb","Blackburnian Warbler",1973,4
+228,"d228_hb","Ovenbird",1973,11
+228,"d228_hb","American Redstart",1973,26
+228,"d228_hb","Scarlet Tanager",1973,7
+228,"d228_hb","Rose-br. Grosbeak",1973,4.5
+228,"d228_hb","Dark-eyed Junco",1973,2
+228,"d228_hb","Purple Finch",1973,2
+228,"d228_hb","Ruby-thr. Hummingbird",1974,3
+228,"d228_hb","Yellow-b.Sapsucker",1974,3
+228,"d228_hb","Hairy Woodpecker",1974,1
+228,"d228_hb","Downy Woodpecker",1974,2
+228,"d228_hb","Least Flycatcher",1974,26
+228,"d228_hb","Black-c. Chickadee",1974,1
+228,"d228_hb","Brown Creeper",1974,1
+228,"d228_hb","White-br. Nuthatch",1974,1
+228,"d228_hb","Winter Wren",1974,6
+228,"d228_hb","Wood Thrush",1974,5
+228,"d228_hb","Hermit Thrush",1974,2
+228,"d228_hb","Veery",1974,0.5
+228,"d228_hb","Swainson's Thrush",1974,6.5
+228,"d228_hb","Philadelphia Vireo",1974,4
+228,"d228_hb","Solitary Vireo",1974,1
+228,"d228_hb","Red-eyed Vireo",1974,23
+228,"d228_hb","Bk.-thr. Green Warbler",1974,10
+228,"d228_hb","Bk.-thr. Blue Warbler",1974,11
+228,"d228_hb","Blackburnian Warbler",1974,6
+228,"d228_hb","Ovenbird",1974,10
+228,"d228_hb","American Redstart",1974,22
+228,"d228_hb","Scarlet Tanager",1974,3
+228,"d228_hb","Rose-br. Grosbeak",1974,8
+228,"d228_hb","Dark-eyed Junco",1974,5
+228,"d228_hb","Yellow-b.Sapsucker",1975,5
+228,"d228_hb","Hairy Woodpecker",1975,2
+228,"d228_hb","Downy Woodpecker",1975,3
+228,"d228_hb","Least Flycatcher",1975,30
+228,"d228_hb","Black-c. Chickadee",1975,1
+228,"d228_hb","White-br. Nuthatch",1975,1.5
+228,"d228_hb","Winter Wren",1975,2
+228,"d228_hb","Wood Thrush",1975,6.5
+228,"d228_hb","Hermit Thrush",1975,7.5
+228,"d228_hb","Veery",1975,2.5
+228,"d228_hb","Swainson's Thrush",1975,8
+228,"d228_hb","Philadelphia Vireo",1975,3.5
+228,"d228_hb","Red-eyed Vireo",1975,31
+228,"d228_hb","Bk.-thr. Green Warbler",1975,8
+228,"d228_hb","Bk.-thr. Blue Warbler",1975,12
+228,"d228_hb","Blackburnian Warbler",1975,6
+228,"d228_hb","Ovenbird",1975,18
+228,"d228_hb","American Redstart",1975,39
+228,"d228_hb","Scarlet Tanager",1975,1.5
+228,"d228_hb","Rose-br. Grosbeak",1975,7.5
+228,"d228_hb","Dark-eyed Junco",1975,5
+228,"d228_hb","Yellow-b.Sapsucker",1976,5
+228,"d228_hb","Hairy Woodpecker",1976,2
+228,"d228_hb","Downy Woodpecker",1976,2.5
+228,"d228_hb","Least Flycatcher",1976,28
+228,"d228_hb","White-br. Nuthatch",1976,1.5
+228,"d228_hb","Winter Wren",1976,5
+228,"d228_hb","Wood Thrush",1976,5
+228,"d228_hb","Hermit Thrush",1976,5
+228,"d228_hb","Veery",1976,2.5
+228,"d228_hb","Swainson's Thrush",1976,7
+228,"d228_hb","Philadelphia Vireo",1976,3.5
+228,"d228_hb","Solitary Vireo",1976,0.5
+228,"d228_hb","Red-eyed Vireo",1976,30
+228,"d228_hb","Bk.-thr. Green Warbler",1976,8
+228,"d228_hb","Bk.-thr. Blue Warbler",1976,11
+228,"d228_hb","Blackburnian Warbler",1976,2
+228,"d228_hb","Ovenbird",1976,18.5
+228,"d228_hb","American Redstart",1976,42
+228,"d228_hb","Scarlet Tanager",1976,1.5
+228,"d228_hb","Rose-br. Grosbeak",1976,7
+228,"d228_hb","Dark-eyed Junco",1976,6
+228,"d228_hb","Yellow-b.Sapsucker",1977,5
+228,"d228_hb","Hairy Woodpecker",1977,3
+228,"d228_hb","Downy Woodpecker",1977,3
+228,"d228_hb","Least Flycatcher",1977,34
+228,"d228_hb","Black-c. Chickadee",1977,2
+228,"d228_hb","White-br. Nuthatch",1977,3
+228,"d228_hb","Winter Wren",1977,1
+228,"d228_hb","Wood Thrush",1977,9
+228,"d228_hb","Hermit Thrush",1977,4
+228,"d228_hb","Veery",1977,3
+228,"d228_hb","Swainson's Thrush",1977,4
+228,"d228_hb","Philadelphia Vireo",1977,2
+228,"d228_hb","Solitary Vireo",1977,4
+228,"d228_hb","Red-eyed Vireo",1977,23.5
+228,"d228_hb","Bk.-thr. Green Warbler",1977,7
+228,"d228_hb","Bk.-thr. Blue Warbler",1977,12
+228,"d228_hb","Blackburnian Warbler",1977,3
+228,"d228_hb","Ovenbird",1977,9
+228,"d228_hb","American Redstart",1977,44
+228,"d228_hb","Scarlet Tanager",1977,4
+228,"d228_hb","Rose-br. Grosbeak",1977,5
+228,"d228_hb","Dark-eyed Junco",1977,2
+228,"d228_hb","Yellow-b.Sapsucker",1978,3
+228,"d228_hb","Hairy Woodpecker",1978,2
+228,"d228_hb","Downy Woodpecker",1978,3.5
+228,"d228_hb","Least Flycatcher",1978,22
+228,"d228_hb","White-br. Nuthatch",1978,2.5
+228,"d228_hb","Wood Thrush",1978,7
+228,"d228_hb","Hermit Thrush",1978,1.5
+228,"d228_hb","Veery",1978,4
+228,"d228_hb","Swainson's Thrush",1978,5
+228,"d228_hb","Philadelphia Vireo",1978,3
+228,"d228_hb","Solitary Vireo",1978,3
+228,"d228_hb","Red-eyed Vireo",1978,20
+228,"d228_hb","Bk.-thr. Green Warbler",1978,7.5
+228,"d228_hb","Bk.-thr. Blue Warbler",1978,10.5
+228,"d228_hb","Blackburnian Warbler",1978,1
+228,"d228_hb","Ovenbird",1978,13
+228,"d228_hb","American Redstart",1978,32.5
+228,"d228_hb","Scarlet Tanager",1978,3.5
+228,"d228_hb","Rose-br. Grosbeak",1978,4
+228,"d228_hb","Yellow-b.Sapsucker",1979,4
+228,"d228_hb","Hairy Woodpecker",1979,3
+228,"d228_hb","Downy Woodpecker",1979,2
+228,"d228_hb","Least Flycatcher",1979,22
+228,"d228_hb","White-br. Nuthatch",1979,1
+228,"d228_hb","Wood Thrush",1979,7
+228,"d228_hb","Veery",1979,3
+228,"d228_hb","Swainson's Thrush",1979,7
+228,"d228_hb","Philadelphia Vireo",1979,2
+228,"d228_hb","Red-eyed Vireo",1979,16
+228,"d228_hb","Bk.-thr. Green Warbler",1979,9
+228,"d228_hb","Bk.-thr. Blue Warbler",1979,14.5
+228,"d228_hb","Yellow-r. Warbler",1979,1
+228,"d228_hb","Blackburnian Warbler",1979,1
+228,"d228_hb","Ovenbird",1979,12
+228,"d228_hb","American Redstart",1979,36
+228,"d228_hb","Scarlet Tanager",1979,2
+228,"d228_hb","Rose-br. Grosbeak",1979,4
+228,"d228_hb","Yellow-b.Sapsucker",1980,2
+228,"d228_hb","Hairy Woodpecker",1980,2
+228,"d228_hb","Downy Woodpecker",1980,4
+228,"d228_hb","Least Flycatcher",1980,15
+228,"d228_hb","Blue Jay",1980,1
+228,"d228_hb","Black-c. Chickadee",1980,2
+228,"d228_hb","Brown Creeper",1980,2
+228,"d228_hb","White-br. Nuthatch",1980,2
+228,"d228_hb","Winter Wren",1980,1
+228,"d228_hb","Wood Thrush",1980,3
+228,"d228_hb","Hermit Thrush",1980,2
+228,"d228_hb","Veery",1980,1
+228,"d228_hb","Swainson's Thrush",1980,3
+228,"d228_hb","Philadelphia Vireo",1980,3
+228,"d228_hb","Red-eyed Vireo",1980,13
+228,"d228_hb","Bk.-thr. Green Warbler",1980,10
+228,"d228_hb","Bk.-thr. Blue Warbler",1980,8
+228,"d228_hb","Blackburnian Warbler",1980,2
+228,"d228_hb","Ovenbird",1980,10
+228,"d228_hb","American Redstart",1980,34.5
+228,"d228_hb","Scarlet Tanager",1980,4
+228,"d228_hb","Rose-br. Grosbeak",1980,6
+228,"d228_hb","Yellow-b.Sapsucker",1981,2.5
+228,"d228_hb","Hairy Woodpecker",1981,2
+228,"d228_hb","Least Flycatcher",1981,1
+228,"d228_hb","Wood Pewee",1981,2
+228,"d228_hb","Blue Jay",1981,1.5
+228,"d228_hb","Black-c. Chickadee",1981,1
+228,"d228_hb","White-br. Nuthatch",1981,3
+228,"d228_hb","Winter Wren",1981,0.5
+228,"d228_hb","Wood Thrush",1981,0.5
+228,"d228_hb","Hermit Thrush",1981,1
+228,"d228_hb","Veery",1981,2
+228,"d228_hb","Swainson's Thrush",1981,2
+228,"d228_hb","Philadelphia Vireo",1981,2
+228,"d228_hb","Red-eyed Vireo",1981,26
+228,"d228_hb","Bk.-thr. Green Warbler",1981,9
+228,"d228_hb","Bk.-thr. Blue Warbler",1981,12
+228,"d228_hb","Blackburnian Warbler",1981,3.5
+228,"d228_hb","Ovenbird",1981,10
+228,"d228_hb","American Redstart",1981,22
+228,"d228_hb","Scarlet Tanager",1981,5
+228,"d228_hb","Rose-br. Grosbeak",1981,8
+228,"d228_hb","Yellow-b.Sapsucker",1982,2
+228,"d228_hb","Hairy Woodpecker",1982,3
+228,"d228_hb","Downy Woodpecker",1982,1
+228,"d228_hb","White-br. Nuthatch",1982,2
+228,"d228_hb","Wood Thrush",1982,2
+228,"d228_hb","Hermit Thrush",1982,1
+228,"d228_hb","Veery",1982,3
+228,"d228_hb","Swainson's Thrush",1982,1
+228,"d228_hb","Philadelphia Vireo",1982,2
+228,"d228_hb","Red-eyed Vireo",1982,23
+228,"d228_hb","Bk.-thr. Green Warbler",1982,8.5
+228,"d228_hb","Bk.-thr. Blue Warbler",1982,14
+228,"d228_hb","Yellow-r. Warbler",1982,1
+228,"d228_hb","Blackburnian Warbler",1982,4.5
+228,"d228_hb","Ovenbird",1982,11
+228,"d228_hb","American Redstart",1982,32
+228,"d228_hb","Scarlet Tanager",1982,6
+228,"d228_hb","Rose-br. Grosbeak",1982,7
+228,"d228_hb","Yellow-b.Sapsucker",1983,2
+228,"d228_hb","Hairy Woodpecker",1983,0.5
+228,"d228_hb","Downy Woodpecker",1983,3
+228,"d228_hb","White-br. Nuthatch",1983,1.5
+228,"d228_hb","Wood Thrush",1983,2
+228,"d228_hb","Hermit Thrush",1983,2
+228,"d228_hb","Veery",1983,2
+228,"d228_hb","Swainson's Thrush",1983,2
+228,"d228_hb","Red-eyed Vireo",1983,22
+228,"d228_hb","Bk.-thr. Green Warbler",1983,11
+228,"d228_hb","Bk.-thr. Blue Warbler",1983,13.5
+228,"d228_hb","Blackburnian Warbler",1983,2
+228,"d228_hb","Ovenbird",1983,13.5
+228,"d228_hb","American Redstart",1983,30
+228,"d228_hb","Scarlet Tanager",1983,7
+228,"d228_hb","Rose-br. Grosbeak",1983,4
+228,"d228_hb","Yellow-b.Sapsucker",1984,2
+228,"d228_hb","Hairy Woodpecker",1984,1
+228,"d228_hb","Downy Woodpecker",1984,1.5
+228,"d228_hb","White-br. Nuthatch",1984,2.5
+228,"d228_hb","Wood Thrush",1984,1
+228,"d228_hb","Hermit Thrush",1984,3.5
+228,"d228_hb","Veery",1984,2
+228,"d228_hb","Swainson's Thrush",1984,2
+228,"d228_hb","Red-eyed Vireo",1984,20.5
+228,"d228_hb","Bk.-thr. Green Warbler",1984,7
+228,"d228_hb","Bk.-thr. Blue Warbler",1984,9.5
+228,"d228_hb","Blackburnian Warbler",1984,1
+228,"d228_hb","Ovenbird",1984,11
+228,"d228_hb","American Redstart",1984,14
+228,"d228_hb","Scarlet Tanager",1984,4
+228,"d228_hb","Rose-br. Grosbeak",1984,5
+228,"d228_hb","Dark-eyed Junco",1984,1
+228,"d228_hb","Ruby-thr. Hummingbird",1985,2
+228,"d228_hb","Yellow-b.Sapsucker",1985,1
+228,"d228_hb","Hairy Woodpecker",1985,2
+228,"d228_hb","Downy Woodpecker",1985,2
+228,"d228_hb","Black-c. Chickadee",1985,1
+228,"d228_hb","White-br. Nuthatch",1985,2
+228,"d228_hb","Wood Thrush",1985,1
+228,"d228_hb","Hermit Thrush",1985,2
+228,"d228_hb","Veery",1985,4.5
+228,"d228_hb","Swainson's Thrush",1985,4
+228,"d228_hb","Solitary Vireo",1985,0.5
+228,"d228_hb","Red-eyed Vireo",1985,21.5
+228,"d228_hb","Bk.-thr. Green Warbler",1985,15
+228,"d228_hb","Bk.-thr. Blue Warbler",1985,8.5
+228,"d228_hb","Yellow-r. Warbler",1985,3
+228,"d228_hb","Blackburnian Warbler",1985,0.5
+228,"d228_hb","Ovenbird",1985,10
+228,"d228_hb","American Redstart",1985,27
+228,"d228_hb","Scarlet Tanager",1985,3
+228,"d228_hb","Rose-br. Grosbeak",1985,5.5
+228,"d228_hb","Yellow-b.Sapsucker",1986,2
+228,"d228_hb","Hairy Woodpecker",1986,1.5
+228,"d228_hb","Brown Creeper",1986,0.5
+228,"d228_hb","White-br. Nuthatch",1986,1
+228,"d228_hb","Wood Thrush",1986,1.5
+228,"d228_hb","Hermit Thrush",1986,2
+228,"d228_hb","Veery",1986,2.5
+228,"d228_hb","Swainson's Thrush",1986,1.5
+228,"d228_hb","Red-eyed Vireo",1986,22
+228,"d228_hb","Bk.-thr. Green Warbler",1986,8.5
+228,"d228_hb","Bk.-thr. Blue Warbler",1986,10.5
+228,"d228_hb","Yellow-r. Warbler",1986,1.5
+228,"d228_hb","Blackburnian Warbler",1986,2
+228,"d228_hb","Ovenbird",1986,16
+228,"d228_hb","American Redstart",1986,13
+228,"d228_hb","Scarlet Tanager",1986,2
+228,"d228_hb","Rose-br. Grosbeak",1986,2.5
+228,"d228_hb","Yellow-b.Sapsucker",1987,2
+228,"d228_hb","Hairy Woodpecker",1987,1.5
+228,"d228_hb","White-br. Nuthatch",1987,1
+228,"d228_hb","Winter Wren",1987,0.5
+228,"d228_hb","Hermit Thrush",1987,2
+228,"d228_hb","Veery",1987,1.5
+228,"d228_hb","Swainson's Thrush",1987,2
+228,"d228_hb","Solitary Vireo",1987,0.5
+228,"d228_hb","Red-eyed Vireo",1987,19.5
+228,"d228_hb","Bk.-thr. Green Warbler",1987,12
+228,"d228_hb","Bk.-thr. Blue Warbler",1987,11.5
+228,"d228_hb","Ovenbird",1987,15.5
+228,"d228_hb","American Redstart",1987,11
+228,"d228_hb","Scarlet Tanager",1987,1.5
+228,"d228_hb","Rose-br. Grosbeak",1987,2.5
+228,"d228_hb","Yellow-b.Sapsucker",1988,1
+228,"d228_hb","Hairy Woodpecker",1988,1.5
+228,"d228_hb","Downy Woodpecker",1988,1.5
+228,"d228_hb","Least Flycatcher",1988,6
+228,"d228_hb","Blue Jay",1988,0.5
+228,"d228_hb","Brown Creeper",1988,0.5
+228,"d228_hb","White-br. Nuthatch",1988,1
+228,"d228_hb","Winter Wren",1988,1
+228,"d228_hb","Hermit Thrush",1988,4
+228,"d228_hb","Veery",1988,1.5
+228,"d228_hb","Swainson's Thrush",1988,2
+228,"d228_hb","Red-eyed Vireo",1988,22
+228,"d228_hb","Bk.-thr. Green Warbler",1988,17
+228,"d228_hb","Bk.-thr. Blue Warbler",1988,9
+228,"d228_hb","Yellow-r. Warbler",1988,2.5
+228,"d228_hb","Ovenbird",1988,21.5
+228,"d228_hb","American Redstart",1988,13.5
+228,"d228_hb","Scarlet Tanager",1988,2
+228,"d228_hb","Rose-br. Grosbeak",1988,2.5
+228,"d228_hb","Dark-eyed Junco",1988,2
+228,"d228_hb","Yellow-b.Sapsucker",1989,1.5
+228,"d228_hb","Hairy Woodpecker",1989,1
+228,"d228_hb","Downy Woodpecker",1989,2
+228,"d228_hb","Black-c. Chickadee",1989,2
+228,"d228_hb","White-br. Nuthatch",1989,2
+228,"d228_hb","Winter Wren",1989,1
+228,"d228_hb","Wood Thrush",1989,1
+228,"d228_hb","Hermit Thrush",1989,4
+228,"d228_hb","Veery",1989,0.5
+228,"d228_hb","Swainson's Thrush",1989,2
+228,"d228_hb","Red-eyed Vireo",1989,22.5
+228,"d228_hb","Bk.-thr. Green Warbler",1989,15.5
+228,"d228_hb","Bk.-thr. Blue Warbler",1989,15
+228,"d228_hb","Yellow-r. Warbler",1989,2
+228,"d228_hb","Blackburnian Warbler",1989,2
+228,"d228_hb","Ovenbird",1989,16
+228,"d228_hb","American Redstart",1989,5.5
+228,"d228_hb","Scarlet Tanager",1989,2.5
+228,"d228_hb","Rose-br. Grosbeak",1989,3
+228,"d228_hb","Ruby-thr. Hummingbird",1990,1
+228,"d228_hb","Yellow-b.Sapsucker",1990,3
+228,"d228_hb","Hairy Woodpecker",1990,1
+228,"d228_hb","Black-c. Chickadee",1990,2
+228,"d228_hb","Brown Creeper",1990,2.5
+228,"d228_hb","White-br. Nuthatch",1990,3
+228,"d228_hb","Winter Wren",1990,2
+228,"d228_hb","Wood Thrush",1990,1
+228,"d228_hb","Hermit Thrush",1990,5
+228,"d228_hb","Veery",1990,2
+228,"d228_hb","Swainson's Thrush",1990,3.5
+228,"d228_hb","Red-eyed Vireo",1990,24
+228,"d228_hb","Bk.-thr. Green Warbler",1990,17.5
+228,"d228_hb","Bk.-thr. Blue Warbler",1990,16
+228,"d228_hb","Yellow-r. Warbler",1990,2
+228,"d228_hb","Blackburnian Warbler",1990,1
+228,"d228_hb","Ovenbird",1990,20
+228,"d228_hb","American Redstart",1990,18.5
+228,"d228_hb","Scarlet Tanager",1990,1.5
+228,"d228_hb","Rose-br. Grosbeak",1990,4.5
+228,"d228_hb","Dark-eyed Junco",1990,2
+228,"d228_hb","Ruby-thr. Hummingbird",1991,2
+228,"d228_hb","Yellow-b.Sapsucker",1991,2
+228,"d228_hb","Hairy Woodpecker",1991,2
+228,"d228_hb","Downy Woodpecker",1991,1.5
+228,"d228_hb","Least Flycatcher",1991,1.5
+228,"d228_hb","Wood Pewee",1991,1
+228,"d228_hb","Black-c. Chickadee",1991,1
+228,"d228_hb","Brown Creeper",1991,2
+228,"d228_hb","White-br. Nuthatch",1991,1.5
+228,"d228_hb","Winter Wren",1991,3
+228,"d228_hb","Hermit Thrush",1991,2
+228,"d228_hb","Veery",1991,2.5
+228,"d228_hb","Swainson's Thrush",1991,2.5
+228,"d228_hb","Solitary Vireo",1991,2.5
+228,"d228_hb","Red-eyed Vireo",1991,25.5
+228,"d228_hb","Bk.-thr. Green Warbler",1991,13.5
+228,"d228_hb","Bk.-thr. Blue Warbler",1991,13.5
+228,"d228_hb","Yellow-r. Warbler",1991,2
+228,"d228_hb","Blackburnian Warbler",1991,2.5
+228,"d228_hb","Ovenbird",1991,17.5
+228,"d228_hb","American Redstart",1991,14
+228,"d228_hb","Scarlet Tanager",1991,2.5
+228,"d228_hb","Rose-br. Grosbeak",1991,2
+228,"d228_hb","Yellow-b.Sapsucker",1992,3
+228,"d228_hb","Hairy Woodpecker",1992,2
+228,"d228_hb","Downy Woodpecker",1992,2
+228,"d228_hb","Least Flycatcher",1992,1
+228,"d228_hb","Wood Pewee",1992,1
+228,"d228_hb","Black-c. Chickadee",1992,3
+228,"d228_hb","Brown Creeper",1992,0.5
+228,"d228_hb","White-br. Nuthatch",1992,2
+228,"d228_hb","Winter Wren",1992,1
+228,"d228_hb","Hermit Thrush",1992,5
+228,"d228_hb","Veery",1992,6
+228,"d228_hb","Swainson's Thrush",1992,3.5
+228,"d228_hb","Solitary Vireo",1992,2
+228,"d228_hb","Red-eyed Vireo",1992,15
+228,"d228_hb","Bk.-thr. Green Warbler",1992,18
+228,"d228_hb","Bk.-thr. Blue Warbler",1992,15
+228,"d228_hb","Yellow-r. Warbler",1992,3
+228,"d228_hb","Blackburnian Warbler",1992,3
+228,"d228_hb","Ovenbird",1992,15.5
+228,"d228_hb","American Redstart",1992,19
+228,"d228_hb","Scarlet Tanager",1992,4.5
+228,"d228_hb","Rose-br. Grosbeak",1992,4
+228,"d228_hb","Yellow-b.Sapsucker",1993,1
+228,"d228_hb","Hairy Woodpecker",1993,1
+228,"d228_hb","Wood Pewee",1993,1
+228,"d228_hb","Black-c. Chickadee",1993,2
+228,"d228_hb","White-br. Nuthatch",1993,2
+228,"d228_hb","Hermit Thrush",1993,3
+228,"d228_hb","Veery",1993,3.5
+228,"d228_hb","Swainson's Thrush",1993,2.5
+228,"d228_hb","Solitary Vireo",1993,2
+228,"d228_hb","Red-eyed Vireo",1993,16.5
+228,"d228_hb","Bk.-thr. Green Warbler",1993,17.5
+228,"d228_hb","Bk.-thr. Blue Warbler",1993,11
+228,"d228_hb","Ovenbird",1993,13.5
+228,"d228_hb","American Redstart",1993,13
+228,"d228_hb","Scarlet Tanager",1993,3.5
+228,"d228_hb","Rose-br. Grosbeak",1993,0.5
+228,"d228_hb","Yellow-b.Sapsucker",1994,2.5
+228,"d228_hb","Hairy Woodpecker",1994,1
+228,"d228_hb","Downy Woodpecker",1994,2.5
+228,"d228_hb","Wood Pewee",1994,1
+228,"d228_hb","Black-c. Chickadee",1994,2
+228,"d228_hb","Brown Creeper",1994,1.5
+228,"d228_hb","White-br. Nuthatch",1994,1
+228,"d228_hb","Winter Wren",1994,1
+228,"d228_hb","Hermit Thrush",1994,3.5
+228,"d228_hb","Veery",1994,4
+228,"d228_hb","Solitary Vireo",1994,1
+228,"d228_hb","Red-eyed Vireo",1994,18.5
+228,"d228_hb","Bk.-thr. Green Warbler",1994,13.5
+228,"d228_hb","Bk.-thr. Blue Warbler",1994,7
+228,"d228_hb","Ovenbird",1994,9
+228,"d228_hb","American Redstart",1994,7.5
+228,"d228_hb","Scarlet Tanager",1994,3.5
+228,"d228_hb","Rose-br. Grosbeak",1994,2
+228,"d228_hb","Dark-eyed Junco",1994,2
+228,"d228_hb","Ruffed Grouse",1995,2
+228,"d228_hb","Yellow-b.Sapsucker",1995,2
+228,"d228_hb","Hairy Woodpecker",1995,2
+228,"d228_hb","Black-c. Chickadee",1995,2
+228,"d228_hb","Hermit Thrush",1995,2
+228,"d228_hb","Veery",1995,3
+228,"d228_hb","Red-eyed Vireo",1995,18
+228,"d228_hb","Bk.-thr. Green Warbler",1995,14
+228,"d228_hb","Bk.-thr. Blue Warbler",1995,10
+228,"d228_hb","Ovenbird",1995,11
+228,"d228_hb","American Redstart",1995,2
+228,"d228_hb","Scarlet Tanager",1995,2
+228,"d228_hb","Rose-br. Grosbeak",1995,2
+228,"d228_hb","Ruffed Grouse",1996,1
+228,"d228_hb","Yellow-b.Sapsucker",1996,2
+228,"d228_hb","Hairy Woodpecker",1996,2
+228,"d228_hb","Blue Jay",1996,1
+228,"d228_hb","Brown Creeper",1996,1
+228,"d228_hb","White-br. Nuthatch",1996,3
+228,"d228_hb","Winter Wren",1996,1.5
+228,"d228_hb","Hermit Thrush",1996,5
+228,"d228_hb","Veery",1996,3
+228,"d228_hb","Swainson's Thrush",1996,0.5
+228,"d228_hb","Red-eyed Vireo",1996,19
+228,"d228_hb","Bk.-thr. Green Warbler",1996,16
+228,"d228_hb","Bk.-thr. Blue Warbler",1996,5.5
+228,"d228_hb","Yellow-r. Warbler",1996,2
+228,"d228_hb","Blackburnian Warbler",1996,3.5
+228,"d228_hb","Ovenbird",1996,12
+228,"d228_hb","American Redstart",1996,10.5
+228,"d228_hb","Scarlet Tanager",1996,2
+228,"d228_hb","Rose-br. Grosbeak",1996,2
+228,"d228_hb","Yellow-b.Sapsucker",1997,3
+228,"d228_hb","Hairy Woodpecker",1997,1
+228,"d228_hb","Downy Woodpecker",1997,1
+228,"d228_hb","Black-c. Chickadee",1997,2
+228,"d228_hb","White-br. Nuthatch",1997,1.5
+228,"d228_hb","Hermit Thrush",1997,1
+228,"d228_hb","Veery",1997,2.5
+228,"d228_hb","Swainson's Thrush",1997,2
+228,"d228_hb","Red-eyed Vireo",1997,22
+228,"d228_hb","Bk.-thr. Green Warbler",1997,8.5
+228,"d228_hb","Bk.-thr. Blue Warbler",1997,8.5
+228,"d228_hb","Yellow-r. Warbler",1997,2.5
+228,"d228_hb","Blackburnian Warbler",1997,4
+228,"d228_hb","Ovenbird",1997,10.5
+228,"d228_hb","American Redstart",1997,10.5
+228,"d228_hb","Scarlet Tanager",1997,2
+228,"d228_hb","Rose-br. Grosbeak",1997,4
+228,"d228_hb","Yellow-b.Sapsucker",1998,2
+228,"d228_hb","Black-c. Chickadee",1998,1
+228,"d228_hb","Brown Creeper",1998,2
+228,"d228_hb","Winter Wren",1998,4
+228,"d228_hb","Hermit Thrush",1998,3
+228,"d228_hb","Veery",1998,2
+228,"d228_hb","Red-eyed Vireo",1998,17
+228,"d228_hb","Bk.-thr. Green Warbler",1998,11
+228,"d228_hb","Bk.-thr. Blue Warbler",1998,8.5
+228,"d228_hb","Ovenbird",1998,9
+228,"d228_hb","American Redstart",1998,10
+228,"d228_hb","Scarlet Tanager",1998,2
+228,"d228_hb","Yellow-b.Sapsucker",1999,1.5
+228,"d228_hb","Hairy Woodpecker",1999,2.5
+228,"d228_hb","Downy Woodpecker",1999,1
+228,"d228_hb","Black-c. Chickadee",1999,3.5
+228,"d228_hb","White-br. Nuthatch",1999,2
+228,"d228_hb","Winter Wren",1999,1
+228,"d228_hb","Hermit Thrush",1999,3
+228,"d228_hb","Veery",1999,2.5
+228,"d228_hb","Solitary Vireo",1999,3
+228,"d228_hb","Red-eyed Vireo",1999,23.5
+228,"d228_hb","Ovenbird",1999,4
+228,"d228_hb","American Redstart",1999,9.5
+228,"d228_hb","Scarlet Tanager",1999,2
+228,"d228_hb","Rose-br. Grosbeak",1999,2
+228,"d228_hb","Yellow-b.Sapsucker",2000,3
+228,"d228_hb","Hairy Woodpecker",2000,2
+228,"d228_hb","Brown Creeper",2000,2
+228,"d228_hb","White-br. Nuthatch",2000,2
+228,"d228_hb","Winter Wren",2000,1
+228,"d228_hb","Hermit Thrush",2000,3
+228,"d228_hb","Solitary Vireo",2000,1.5
+228,"d228_hb","Red-eyed Vireo",2000,28
+228,"d228_hb","Bk.-thr. Green Warbler",2000,15.5
+228,"d228_hb","Bk.-thr. Blue Warbler",2000,10.5
+228,"d228_hb","Yellow-r. Warbler",2000,2
+228,"d228_hb","Blackburnian Warbler",2000,2
+228,"d228_hb","Ovenbird",2000,7.5
+228,"d228_hb","American Redstart",2000,7.5
+228,"d228_hb","Scarlet Tanager",2000,1
+228,"d228_hb","Yellow-b.Sapsucker",2001,3
+228,"d228_hb","Hairy Woodpecker",2001,2
+228,"d228_hb","Brown Creeper",2001,2
+228,"d228_hb","White-br. Nuthatch",2001,1
+228,"d228_hb","Hermit Thrush",2001,4.5
+228,"d228_hb","Swainson's Thrush",2001,4
+228,"d228_hb","Solitary Vireo",2001,3.5
+228,"d228_hb","Red-eyed Vireo",2001,29
+228,"d228_hb","Bk.-thr. Green Warbler",2001,13.5
+228,"d228_hb","Bk.-thr. Blue Warbler",2001,9
+228,"d228_hb","Yellow-r. Warbler",2001,4
+228,"d228_hb","Blackburnian Warbler",2001,4
+228,"d228_hb","Ovenbird",2001,7
+228,"d228_hb","American Redstart",2001,4
+228,"d228_hb","Scarlet Tanager",2001,0.5
+228,"d228_hb","Yellow-b.Sapsucker",2002,2
+228,"d228_hb","Hairy Woodpecker",2002,1
+228,"d228_hb","Brown Creeper",2002,2
+228,"d228_hb","White-br. Nuthatch",2002,2
+228,"d228_hb","Winter Wren",2002,1
+228,"d228_hb","Hermit Thrush",2002,3
+228,"d228_hb","Red-eyed Vireo",2002,19
+228,"d228_hb","Bk.-thr. Green Warbler",2002,16
+228,"d228_hb","Bk.-thr. Blue Warbler",2002,9
+228,"d228_hb","Yellow-r. Warbler",2002,2
+228,"d228_hb","Blackburnian Warbler",2002,3
+228,"d228_hb","Ovenbird",2002,7.5
+228,"d228_hb","American Redstart",2002,2
+228,"d228_hb","Scarlet Tanager",2002,1
+228,"d228_hb","Yellow-b.Sapsucker",2003,4
+228,"d228_hb","Hairy Woodpecker",2003,3
+228,"d228_hb","Downy Woodpecker",2003,2
+228,"d228_hb","Black-c. Chickadee",2003,2
+228,"d228_hb","White-br. Nuthatch",2003,2
+228,"d228_hb","Hermit Thrush",2003,4.5
+228,"d228_hb","Solitary Vireo",2003,3
+228,"d228_hb","Red-eyed Vireo",2003,21
+228,"d228_hb","Bk.-thr. Green Warbler",2003,13
+228,"d228_hb","Bk.-thr. Blue Warbler",2003,7.5
+228,"d228_hb","Yellow-r. Warbler",2003,2
+228,"d228_hb","Blackburnian Warbler",2003,3
+228,"d228_hb","Ovenbird",2003,8
+228,"d228_hb","American Redstart",2003,7
+228,"d228_hb","Scarlet Tanager",2003,5
+228,"d228_hb","Rose-br. Grosbeak",2003,2
+228,"d228_hb","Yellow-b.Sapsucker",2004,4
+228,"d228_hb","Hairy Woodpecker",2004,2
+228,"d228_hb","Downy Woodpecker",2004,2
+228,"d228_hb","Black-c. Chickadee",2004,1
+228,"d228_hb","Winter Wren",2004,3
+228,"d228_hb","Hermit Thrush",2004,3
+228,"d228_hb","Red-eyed Vireo",2004,21
+228,"d228_hb","Bk.-thr. Green Warbler",2004,13.5
+228,"d228_hb","Bk.-thr. Blue Warbler",2004,6
+228,"d228_hb","Blackburnian Warbler",2004,2
+228,"d228_hb","Ovenbird",2004,8
+228,"d228_hb","American Redstart",2004,2
+228,"d228_hb","Scarlet Tanager",2004,4
+228,"d228_hb","Rose-br. Grosbeak",2004,4
+228,"d228_hb","Yellow-b.Sapsucker",2005,5
+228,"d228_hb","Hairy Woodpecker",2005,2.5
+228,"d228_hb","Downy Woodpecker",2005,1
+228,"d228_hb","Blue Jay",2005,1
+228,"d228_hb","Black-c. Chickadee",2005,2
+228,"d228_hb","Winter Wren",2005,2
+228,"d228_hb","Hermit Thrush",2005,4.5
+228,"d228_hb","Veery",2005,1
+228,"d228_hb","Red-eyed Vireo",2005,24.5
+228,"d228_hb","Bk.-thr. Green Warbler",2005,13
+228,"d228_hb","Bk.-thr. Blue Warbler",2005,8
+228,"d228_hb","Yellow-r. Warbler",2005,2
+228,"d228_hb","Blackburnian Warbler",2005,4
+228,"d228_hb","Ovenbird",2005,15.5
+228,"d228_hb","American Redstart",2005,1
+228,"d228_hb","Scarlet Tanager",2005,5.5
+228,"d228_hb","Rose-br. Grosbeak",2005,3
+228,"d228_hb","Ruffed Grouse",2006,1
+228,"d228_hb","Ruby-thr. Hummingbird",2006,1
+228,"d228_hb","Yellow-b.Sapsucker",2006,2
+228,"d228_hb","Hairy Woodpecker",2006,3
+228,"d228_hb","Downy Woodpecker",2006,2
+228,"d228_hb","Black-c. Chickadee",2006,4
+228,"d228_hb","Brown Creeper",2006,2
+228,"d228_hb","White-br. Nuthatch",2006,2
+228,"d228_hb","Winter Wren",2006,1.5
+228,"d228_hb","Hermit Thrush",2006,6.5
+228,"d228_hb","Solitary Vireo",2006,3
+228,"d228_hb","Red-eyed Vireo",2006,22
+228,"d228_hb","Bk.-thr. Green Warbler",2006,17.5
+228,"d228_hb","Bk.-thr. Blue Warbler",2006,10
+228,"d228_hb","Yellow-r. Warbler",2006,4.5
+228,"d228_hb","Blackburnian Warbler",2006,2
+228,"d228_hb","Ovenbird",2006,15
+228,"d228_hb","American Redstart",2006,2
+228,"d228_hb","Scarlet Tanager",2006,4
+228,"d228_hb","Rose-br. Grosbeak",2006,2.5
+228,"d228_hb","Ruffed Grouse",2007,1
+228,"d228_hb","Ruby-thr. Hummingbird",2007,1
+228,"d228_hb","Yellow-b.Sapsucker",2007,4
+228,"d228_hb","Hairy Woodpecker",2007,4
+228,"d228_hb","Blue Jay",2007,1
+228,"d228_hb","Black-c. Chickadee",2007,3
+228,"d228_hb","Brown Creeper",2007,1
+228,"d228_hb","White-br. Nuthatch",2007,2
+228,"d228_hb","Winter Wren",2007,1
+228,"d228_hb","Hermit Thrush",2007,4.5
+228,"d228_hb","Solitary Vireo",2007,2
+228,"d228_hb","Red-eyed Vireo",2007,19
+228,"d228_hb","Bk.-thr. Green Warbler",2007,16
+228,"d228_hb","Bk.-thr. Blue Warbler",2007,10.5
+228,"d228_hb","Yellow-r. Warbler",2007,2
+228,"d228_hb","Blackburnian Warbler",2007,2
+228,"d228_hb","Ovenbird",2007,20
+228,"d228_hb","American Redstart",2007,2
+228,"d228_hb","Scarlet Tanager",2007,1.5
+228,"d228_hb","Rose-br. Grosbeak",2007,2.5
+228,"d228_hb","Yellow-b.Sapsucker",2008,3.5
+228,"d228_hb","Hairy Woodpecker",2008,2.5
+228,"d228_hb","Winter Wren",2008,2.5
+228,"d228_hb","Hermit Thrush",2008,4.5
+228,"d228_hb","Swainson's Thrush",2008,2
+228,"d228_hb","Solitary Vireo",2008,4
+228,"d228_hb","Red-eyed Vireo",2008,19.5
+228,"d228_hb","Bk.-thr. Green Warbler",2008,15.5
+228,"d228_hb","Bk.-thr. Blue Warbler",2008,5
+228,"d228_hb","Yellow-r. Warbler",2008,0.5
+228,"d228_hb","Blackburnian Warbler",2008,2
+228,"d228_hb","Ovenbird",2008,21
+228,"d228_hb","American Redstart",2008,3
+228,"d228_hb","Scarlet Tanager",2008,3
+228,"d228_hb","Rose-br. Grosbeak",2008,3
+228,"d228_hb","Yellow-b.Sapsucker",2009,3.5
+228,"d228_hb","Hairy Woodpecker",2009,2.5
+228,"d228_hb","Black-c. Chickadee",2009,0.5
+228,"d228_hb","White-br. Nuthatch",2009,0.5
+228,"d228_hb","Hermit Thrush",2009,6.5
+228,"d228_hb","Swainson's Thrush",2009,2
+228,"d228_hb","Solitary Vireo",2009,2.5
+228,"d228_hb","Red-eyed Vireo",2009,27
+228,"d228_hb","Blk. & Wh. Warbler",2009,2
+228,"d228_hb","Bk.-thr. Green Warbler",2009,24.5
+228,"d228_hb","Bk.-thr. Blue Warbler",2009,6.5
+228,"d228_hb","Blackburnian Warbler",2009,2
+228,"d228_hb","Ovenbird",2009,21.5
+228,"d228_hb","American Redstart",2009,0.5
+228,"d228_hb","Scarlet Tanager",2009,1.5
+228,"d228_hb","Rose-br. Grosbeak",2009,2
+228,"d228_hb","Ruby-thr. Hummingbird",2010,1
+228,"d228_hb","Yellow-b.Sapsucker",2010,4.5
+228,"d228_hb","Hairy Woodpecker",2010,2.5
+228,"d228_hb","Downy Woodpecker",2010,3
+228,"d228_hb","Brown Creeper",2010,4
+228,"d228_hb","Winter Wren",2010,1
+228,"d228_hb","Hermit Thrush",2010,5.5
+228,"d228_hb","Swainson's Thrush",2010,3
+228,"d228_hb","Red-eyed Vireo",2010,23.5
+228,"d228_hb","Bk.-thr. Green Warbler",2010,20.5
+228,"d228_hb","Bk.-thr. Blue Warbler",2010,7.5
+228,"d228_hb","Yellow-r. Warbler",2010,2.5
+228,"d228_hb","Blackburnian Warbler",2010,4
+228,"d228_hb","Ovenbird",2010,17
+228,"d228_hb","Scarlet Tanager",2010,4.5
+228,"d228_hb","Rose-br. Grosbeak",2010,3.5
+228,"d228_mk","Yellow-b.Sapsucker",1986,3
+228,"d228_mk","Hairy Woodpecker",1986,2
+228,"d228_mk","Downy Woodpecker",1986,0.5
+228,"d228_mk","Wood Thrush",1986,2
+228,"d228_mk","Hermit Thrush",1986,1
+228,"d228_mk","Veery",1986,2
+228,"d228_mk","Swainson's Thrush",1986,2
+228,"d228_mk","Red-eyed Vireo",1986,19.5
+228,"d228_mk","Bk.-thr. Green Warbler",1986,8
+228,"d228_mk","Bk.-thr. Blue Warbler",1986,12.5
+228,"d228_mk","Blackburnian Warbler",1986,3
+228,"d228_mk","Ovenbird",1986,6.5
+228,"d228_mk","American Redstart",1986,14
+228,"d228_mk","Scarlet Tanager",1986,2.5
+228,"d228_mk","Rose-br. Grosbeak",1986,3.5
+228,"d228_mk","Yellow-b.Sapsucker",1987,2
+228,"d228_mk","Hairy Woodpecker",1987,2
+228,"d228_mk","Downy Woodpecker",1987,1
+228,"d228_mk","Least Flycatcher",1987,2
+228,"d228_mk","White-br. Nuthatch",1987,1
+228,"d228_mk","Winter Wren",1987,1
+228,"d228_mk","Wood Thrush",1987,2
+228,"d228_mk","Hermit Thrush",1987,1.5
+228,"d228_mk","Veery",1987,2.5
+228,"d228_mk","Solitary Vireo",1987,1
+228,"d228_mk","Red-eyed Vireo",1987,20
+228,"d228_mk","Bk.-thr. Green Warbler",1987,7.5
+228,"d228_mk","Bk.-thr. Blue Warbler",1987,15.5
+228,"d228_mk","Blackburnian Warbler",1987,2
+228,"d228_mk","Ovenbird",1987,8
+228,"d228_mk","American Redstart",1987,17
+228,"d228_mk","Scarlet Tanager",1987,4
+228,"d228_mk","Rose-br. Grosbeak",1987,3.5
+228,"d228_mk","Yellow-b.Sapsucker",1988,2
+228,"d228_mk","Hairy Woodpecker",1988,1
+228,"d228_mk","Downy Woodpecker",1988,2
+228,"d228_mk","Least Flycatcher",1988,0.5
+228,"d228_mk","Black-c. Chickadee",1988,0.5
+228,"d228_mk","White-br. Nuthatch",1988,1
+228,"d228_mk","Wood Thrush",1988,2
+228,"d228_mk","Hermit Thrush",1988,2
+228,"d228_mk","Veery",1988,3
+228,"d228_mk","Swainson's Thrush",1988,0.5
+228,"d228_mk","Red-eyed Vireo",1988,19
+228,"d228_mk","Blk. & Wh. Warbler",1988,1
+228,"d228_mk","Bk.-thr. Green Warbler",1988,17
+228,"d228_mk","Bk.-thr. Blue Warbler",1988,16
+228,"d228_mk","Blackburnian Warbler",1988,2
+228,"d228_mk","Ovenbird",1988,12
+228,"d228_mk","American Redstart",1988,18.5
+228,"d228_mk","Scarlet Tanager",1988,2
+228,"d228_mk","Rose-br. Grosbeak",1988,3.5
+228,"d228_mk","Dark-eyed Junco",1988,1
+228,"d228_mk","Yellow-b.Sapsucker",1989,2.5
+228,"d228_mk","Hairy Woodpecker",1989,1
+228,"d228_mk","Downy Woodpecker",1989,1.5
+228,"d228_mk","Black-c. Chickadee",1989,2
+228,"d228_mk","White-br. Nuthatch",1989,1
+228,"d228_mk","Winter Wren",1989,2
+228,"d228_mk","Wood Thrush",1989,4
+228,"d228_mk","Hermit Thrush",1989,2.5
+228,"d228_mk","Veery",1989,3.5
+228,"d228_mk","Red-eyed Vireo",1989,22.5
+228,"d228_mk","Blk. & Wh. Warbler",1989,1
+228,"d228_mk","Bk.-thr. Green Warbler",1989,17.5
+228,"d228_mk","Bk.-thr. Blue Warbler",1989,16
+228,"d228_mk","Yellow-r. Warbler",1989,1
+228,"d228_mk","Blackburnian Warbler",1989,2.5
+228,"d228_mk","Ovenbird",1989,8
+228,"d228_mk","American Redstart",1989,19.5
+228,"d228_mk","Scarlet Tanager",1989,3
+228,"d228_mk","Rose-br. Grosbeak",1989,4
+228,"d228_mk","Yellow-b.Sapsucker",1990,2.5
+228,"d228_mk","Hairy Woodpecker",1990,1.5
+228,"d228_mk","Downy Woodpecker",1990,3
+228,"d228_mk","Black-c. Chickadee",1990,3.5
+228,"d228_mk","White-br. Nuthatch",1990,2.5
+228,"d228_mk","Winter Wren",1990,0.5
+228,"d228_mk","Wood Thrush",1990,2
+228,"d228_mk","Hermit Thrush",1990,3
+228,"d228_mk","Veery",1990,3.5
+228,"d228_mk","Red-eyed Vireo",1990,21.5
+228,"d228_mk","Blk. & Wh. Warbler",1990,0.5
+228,"d228_mk","Bk.-thr. Green Warbler",1990,18.5
+228,"d228_mk","Bk.-thr. Blue Warbler",1990,19.5
+228,"d228_mk","Yellow-r. Warbler",1990,1.5
+228,"d228_mk","Blackburnian Warbler",1990,3
+228,"d228_mk","Chestnut-sided Warbler",1990,0.5
+228,"d228_mk","Ovenbird",1990,16
+228,"d228_mk","American Redstart",1990,19
+228,"d228_mk","Canada Warbler",1990,0.5
+228,"d228_mk","Scarlet Tanager",1990,2.5
+228,"d228_mk","Rose-br. Grosbeak",1990,4
+228,"d228_mk","Ruffed Grouse",1991,2
+228,"d228_mk","Yellow-b.Sapsucker",1991,3.5
+228,"d228_mk","Hairy Woodpecker",1991,2.5
+228,"d228_mk","Downy Woodpecker",1991,1.5
+228,"d228_mk","Black-c. Chickadee",1991,2
+228,"d228_mk","Winter Wren",1991,2.5
+228,"d228_mk","Hermit Thrush",1991,1
+228,"d228_mk","Veery",1991,5
+228,"d228_mk","Red-eyed Vireo",1991,26.5
+228,"d228_mk","Bk.-thr. Green Warbler",1991,14
+228,"d228_mk","Bk.-thr. Blue Warbler",1991,13
+228,"d228_mk","Blackburnian Warbler",1991,2
+228,"d228_mk","Ovenbird",1991,9
+228,"d228_mk","American Redstart",1991,8.5
+228,"d228_mk","Scarlet Tanager",1991,3.5
+228,"d228_mk","Rose-br. Grosbeak",1991,3.5
+228,"d228_mk","Yellow-b.Sapsucker",1992,4
+228,"d228_mk","Hairy Woodpecker",1992,1
+228,"d228_mk","Downy Woodpecker",1992,1
+228,"d228_mk","Black-c. Chickadee",1992,2
+228,"d228_mk","White-br. Nuthatch",1992,1
+228,"d228_mk","Wood Thrush",1992,2
+228,"d228_mk","Hermit Thrush",1992,1.5
+228,"d228_mk","Veery",1992,4
+228,"d228_mk","Solitary Vireo",1992,1.5
+228,"d228_mk","Red-eyed Vireo",1992,14.5
+228,"d228_mk","Bk.-thr. Green Warbler",1992,13.5
+228,"d228_mk","Bk.-thr. Blue Warbler",1992,12.5
+228,"d228_mk","Blackburnian Warbler",1992,2
+228,"d228_mk","Ovenbird",1992,6.5
+228,"d228_mk","American Redstart",1992,9
+228,"d228_mk","Canada Warbler",1992,2
+228,"d228_mk","Scarlet Tanager",1992,4
+228,"d228_mk","Rose-br. Grosbeak",1992,4
+228,"d228_mk","Yellow-b.Sapsucker",1993,2
+228,"d228_mk","Hairy Woodpecker",1993,1
+228,"d228_mk","Black-c. Chickadee",1993,1
+228,"d228_mk","White-br. Nuthatch",1993,2
+228,"d228_mk","Hermit Thrush",1993,3.5
+228,"d228_mk","Veery",1993,6
+228,"d228_mk","Solitary Vireo",1993,0.5
+228,"d228_mk","Red-eyed Vireo",1993,19
+228,"d228_mk","Bk.-thr. Green Warbler",1993,8.5
+228,"d228_mk","Bk.-thr. Blue Warbler",1993,8
+228,"d228_mk","Yellow-r. Warbler",1993,3
+228,"d228_mk","Ovenbird",1993,7.5
+228,"d228_mk","American Redstart",1993,6.5
+228,"d228_mk","Scarlet Tanager",1993,3.5
+228,"d228_mk","Rose-br. Grosbeak",1993,2
+228,"d228_mk","Yellow-b.Sapsucker",1994,2.5
+228,"d228_mk","Hairy Woodpecker",1994,1.5
+228,"d228_mk","Black-c. Chickadee",1994,2
+228,"d228_mk","Brown Creeper",1994,2
+228,"d228_mk","White-br. Nuthatch",1994,0.5
+228,"d228_mk","Hermit Thrush",1994,3
+228,"d228_mk","Veery",1994,2.5
+228,"d228_mk","Swainson's Thrush",1994,1
+228,"d228_mk","Solitary Vireo",1994,0.5
+228,"d228_mk","Red-eyed Vireo",1994,14
+228,"d228_mk","Bk.-thr. Green Warbler",1994,9.5
+228,"d228_mk","Bk.-thr. Blue Warbler",1994,8.5
+228,"d228_mk","Ovenbird",1994,9
+228,"d228_mk","American Redstart",1994,2
+228,"d228_mk","Scarlet Tanager",1994,3
+228,"d228_mk","Rose-br. Grosbeak",1994,4
+228,"d228_mk","Ruffed Grouse",1995,1
+228,"d228_mk","Yellow-b.Sapsucker",1995,3
+228,"d228_mk","Hairy Woodpecker",1995,2
+228,"d228_mk","Hermit Thrush",1995,6.5
+228,"d228_mk","Veery",1995,2
+228,"d228_mk","Swainson's Thrush",1995,1
+228,"d228_mk","Solitary Vireo",1995,2
+228,"d228_mk","Red-eyed Vireo",1995,20
+228,"d228_mk","Bk.-thr. Green Warbler",1995,12.5
+228,"d228_mk","Bk.-thr. Blue Warbler",1995,12.5
+228,"d228_mk","Ovenbird",1995,7.5
+228,"d228_mk","American Redstart",1995,2
+228,"d228_mk","Scarlet Tanager",1995,2
+228,"d228_mk","Rose-br. Grosbeak",1995,2
+228,"d228_mk","Yellow-b.Sapsucker",1996,2
+228,"d228_mk","Hairy Woodpecker",1996,2
+228,"d228_mk","Downy Woodpecker",1996,1
+228,"d228_mk","Wood Pewee",1996,1
+228,"d228_mk","Black-c. Chickadee",1996,2
+228,"d228_mk","Hermit Thrush",1996,6
+228,"d228_mk","Veery",1996,2
+228,"d228_mk","Red-eyed Vireo",1996,19.5
+228,"d228_mk","Blk. & Wh. Warbler",1996,1
+228,"d228_mk","Bk.-thr. Green Warbler",1996,11
+228,"d228_mk","Bk.-thr. Blue Warbler",1996,9
+228,"d228_mk","Blackburnian Warbler",1996,2
+228,"d228_mk","Ovenbird",1996,10
+228,"d228_mk","American Redstart",1996,4
+228,"d228_mk","Scarlet Tanager",1996,4
+228,"d228_mk","Rose-br. Grosbeak",1996,2
+228,"d228_mk","Ruby-thr. Hummingbird",1997,1
+228,"d228_mk","Yellow-b.Sapsucker",1997,3.5
+228,"d228_mk","Hairy Woodpecker",1997,1.5
+228,"d228_mk","Downy Woodpecker",1997,2
+228,"d228_mk","Black-c. Chickadee",1997,1
+228,"d228_mk","Hermit Thrush",1997,2.5
+228,"d228_mk","Veery",1997,0.5
+228,"d228_mk","Swainson's Thrush",1997,3.5
+228,"d228_mk","Red-eyed Vireo",1997,24
+228,"d228_mk","Bk.-thr. Green Warbler",1997,12.5
+228,"d228_mk","Bk.-thr. Blue Warbler",1997,9
+228,"d228_mk","Yellow-r. Warbler",1997,1.5
+228,"d228_mk","Blackburnian Warbler",1997,2
+228,"d228_mk","Ovenbird",1997,5
+228,"d228_mk","American Redstart",1997,3.5
+228,"d228_mk","Scarlet Tanager",1997,2
+228,"d228_mk","Rose-br. Grosbeak",1997,2
+228,"d228_mk","Yellow-b.Sapsucker",1998,2
+228,"d228_mk","Downy Woodpecker",1998,2
+228,"d228_mk","Black-c. Chickadee",1998,2.5
+228,"d228_mk","Winter Wren",1998,2
+228,"d228_mk","Hermit Thrush",1998,4
+228,"d228_mk","Red-eyed Vireo",1998,18
+228,"d228_mk","Bk.-thr. Green Warbler",1998,12.5
+228,"d228_mk","Bk.-thr. Blue Warbler",1998,9.5
+228,"d228_mk","Blackburnian Warbler",1998,2
+228,"d228_mk","Ovenbird",1998,8
+228,"d228_mk","American Redstart",1998,2
+228,"d228_mk","Scarlet Tanager",1998,2
+228,"d228_mk","Yellow-b.Sapsucker",1999,4
+228,"d228_mk","Hairy Woodpecker",1999,2
+228,"d228_mk","Downy Woodpecker",1999,1
+228,"d228_mk","Black-c. Chickadee",1999,0.5
+228,"d228_mk","Hermit Thrush",1999,4
+228,"d228_mk","Veery",1999,1
+228,"d228_mk","Solitary Vireo",1999,1
+228,"d228_mk","Red-eyed Vireo",1999,27.5
+228,"d228_mk","Bk.-thr. Green Warbler",1999,15
+228,"d228_mk","Bk.-thr. Blue Warbler",1999,14.5
+228,"d228_mk","Blackburnian Warbler",1999,2
+228,"d228_mk","Ovenbird",1999,5
+228,"d228_mk","American Redstart",1999,4
+228,"d228_mk","Scarlet Tanager",1999,3
+228,"d228_mk","Rose-br. Grosbeak",1999,0.5
+228,"d228_mk","Yellow-b.Sapsucker",2000,2.5
+228,"d228_mk","Hairy Woodpecker",2000,2
+228,"d228_mk","Black-c. Chickadee",2000,3
+228,"d228_mk","White-br. Nuthatch",2000,0.5
+228,"d228_mk","Hermit Thrush",2000,5
+228,"d228_mk","Red-eyed Vireo",2000,27
+228,"d228_mk","Bk.-thr. Green Warbler",2000,17
+228,"d228_mk","Bk.-thr. Blue Warbler",2000,11.5
+228,"d228_mk","Blackburnian Warbler",2000,2
+228,"d228_mk","Ovenbird",2000,6
+228,"d228_mk","American Redstart",2000,3
+228,"d228_mk","Scarlet Tanager",2000,4.5
+228,"d228_mk","Rose-br. Grosbeak",2000,1.5
+228,"d228_rp","Hairy Woodpecker",1986,2
+228,"d228_rp","Downy Woodpecker",1986,1
+228,"d228_rp","Wood Pewee",1986,1
+228,"d228_rp","Black-c. Chickadee",1986,1.5
+228,"d228_rp","White-br. Nuthatch",1986,2
+228,"d228_rp","Winter Wren",1986,0.5
+228,"d228_rp","Swainson's Thrush",1986,1
+228,"d228_rp","Red-eyed Vireo",1986,21
+228,"d228_rp","Bk.-thr. Green Warbler",1986,8
+228,"d228_rp","Bk.-thr. Blue Warbler",1986,2
+228,"d228_rp","Yellow-r. Warbler",1986,1
+228,"d228_rp","Blackburnian Warbler",1986,0.5
+228,"d228_rp","Ovenbird",1986,10
+228,"d228_rp","American Redstart",1986,15
+228,"d228_rp","Scarlet Tanager",1986,6.5
+228,"d228_rp","Rose-br. Grosbeak",1986,3.5
+228,"d228_rp","Hairy Woodpecker",1987,1.5
+228,"d228_rp","Downy Woodpecker",1987,2
+228,"d228_rp","Wood Pewee",1987,0.5
+228,"d228_rp","White-br. Nuthatch",1987,0.5
+228,"d228_rp","Winter Wren",1987,0.5
+228,"d228_rp","Wood Thrush",1987,0.5
+228,"d228_rp","Hermit Thrush",1987,2.5
+228,"d228_rp","Solitary Vireo",1987,0.5
+228,"d228_rp","Red-eyed Vireo",1987,15.5
+228,"d228_rp","Bk.-thr. Green Warbler",1987,8.5
+228,"d228_rp","Bk.-thr. Blue Warbler",1987,2
+228,"d228_rp","Blackburnian Warbler",1987,1
+228,"d228_rp","Ovenbird",1987,12
+228,"d228_rp","American Redstart",1987,12.5
+228,"d228_rp","Scarlet Tanager",1987,1.5
+228,"d228_rp","Rose-br. Grosbeak",1987,3
+228,"d228_rp","Yellow-b.Sapsucker",1988,0.5
+228,"d228_rp","Hairy Woodpecker",1988,1
+228,"d228_rp","Downy Woodpecker",1988,1
+228,"d228_rp","Least Flycatcher",1988,6.5
+228,"d228_rp","Wood Pewee",1988,2
+228,"d228_rp","Brown Creeper",1988,1
+228,"d228_rp","White-br. Nuthatch",1988,1
+228,"d228_rp","Winter Wren",1988,4
+228,"d228_rp","Hermit Thrush",1988,1.5
+228,"d228_rp","Veery",1988,0.5
+228,"d228_rp","Red-eyed Vireo",1988,21
+228,"d228_rp","Bk.-thr. Green Warbler",1988,11
+228,"d228_rp","Bk.-thr. Blue Warbler",1988,5
+228,"d228_rp","Ovenbird",1988,21.5
+228,"d228_rp","American Redstart",1988,12
+228,"d228_rp","Scarlet Tanager",1988,3
+228,"d228_rp","Rose-br. Grosbeak",1988,3
+228,"d228_rp","Yellow-b.Sapsucker",1989,2.5
+228,"d228_rp","Hairy Woodpecker",1989,3
+228,"d228_rp","Downy Woodpecker",1989,2
+228,"d228_rp","Least Flycatcher",1989,5.5
+228,"d228_rp","Wood Pewee",1989,1
+228,"d228_rp","Black-c. Chickadee",1989,2.5
+228,"d228_rp","White-br. Nuthatch",1989,1.5
+228,"d228_rp","Winter Wren",1989,1.5
+228,"d228_rp","Hermit Thrush",1989,3
+228,"d228_rp","Veery",1989,3
+228,"d228_rp","Red-eyed Vireo",1989,21.5
+228,"d228_rp","Bk.-thr. Green Warbler",1989,17
+228,"d228_rp","Bk.-thr. Blue Warbler",1989,8
+228,"d228_rp","Ovenbird",1989,29
+228,"d228_rp","American Redstart",1989,13
+228,"d228_rp","Scarlet Tanager",1989,2.5
+228,"d228_rp","Rose-br. Grosbeak",1989,3
+228,"d228_rp","Yellow-b.Sapsucker",1990,1.5
+228,"d228_rp","Hairy Woodpecker",1990,1.5
+228,"d228_rp","Downy Woodpecker",1990,1.5
+228,"d228_rp","Least Flycatcher",1990,6
+228,"d228_rp","Wood Pewee",1990,1
+228,"d228_rp","Black-c. Chickadee",1990,2.5
+228,"d228_rp","White-br. Nuthatch",1990,1
+228,"d228_rp","Winter Wren",1990,2.5
+228,"d228_rp","Hermit Thrush",1990,2.5
+228,"d228_rp","Veery",1990,1.5
+228,"d228_rp","Red-eyed Vireo",1990,19.5
+228,"d228_rp","Bk.-thr. Green Warbler",1990,11
+228,"d228_rp","Bk.-thr. Blue Warbler",1990,8
+228,"d228_rp","Yellow-r. Warbler",1990,2
+228,"d228_rp","Blackburnian Warbler",1990,1
+228,"d228_rp","Ovenbird",1990,25.5
+228,"d228_rp","American Redstart",1990,19.5
+228,"d228_rp","Scarlet Tanager",1990,3.5
+228,"d228_rp","Rose-br. Grosbeak",1990,2.5
+228,"d228_rp","Yellow-b.Sapsucker",1991,1.5
+228,"d228_rp","Hairy Woodpecker",1991,2
+228,"d228_rp","Downy Woodpecker",1991,2
+228,"d228_rp","Wood Pewee",1991,2.5
+228,"d228_rp","Black-c. Chickadee",1991,1.5
+228,"d228_rp","White-br. Nuthatch",1991,1.5
+228,"d228_rp","Winter Wren",1991,2.5
+228,"d228_rp","Hermit Thrush",1991,1.5
+228,"d228_rp","Veery",1991,2.5
+228,"d228_rp","Red-eyed Vireo",1991,23.5
+228,"d228_rp","Bk.-thr. Green Warbler",1991,9
+228,"d228_rp","Bk.-thr. Blue Warbler",1991,6
+228,"d228_rp","Yellow-r. Warbler",1991,2
+228,"d228_rp","Blackburnian Warbler",1991,2
+228,"d228_rp","Ovenbird",1991,21
+228,"d228_rp","American Redstart",1991,9
+228,"d228_rp","Scarlet Tanager",1991,2.5
+228,"d228_rp","Rose-br. Grosbeak",1991,2
+228,"d228_rp","Yellow-b.Sapsucker",1992,1
+228,"d228_rp","Hairy Woodpecker",1992,2
+228,"d228_rp","Downy Woodpecker",1992,1
+228,"d228_rp","Wood Pewee",1992,1.5
+228,"d228_rp","Black-c. Chickadee",1992,2.5
+228,"d228_rp","Brown Creeper",1992,2
+228,"d228_rp","White-br. Nuthatch",1992,2
+228,"d228_rp","Winter Wren",1992,1.5
+228,"d228_rp","Hermit Thrush",1992,4.5
+228,"d228_rp","Veery",1992,3.5
+228,"d228_rp","Red-eyed Vireo",1992,19.5
+228,"d228_rp","Blk. & Wh. Warbler",1992,2
+228,"d228_rp","Bk.-thr. Green Warbler",1992,9.5
+228,"d228_rp","Bk.-thr. Blue Warbler",1992,4
+228,"d228_rp","Ovenbird",1992,19.5
+228,"d228_rp","American Redstart",1992,10
+228,"d228_rp","Scarlet Tanager",1992,5.5
+228,"d228_rp","Rose-br. Grosbeak",1992,2
+228,"d228_rp","Yellow-b.Sapsucker",1993,1
+228,"d228_rp","Hairy Woodpecker",1993,1.5
+228,"d228_rp","Downy Woodpecker",1993,1
+228,"d228_rp","Least Flycatcher",1993,4
+228,"d228_rp","Wood Pewee",1993,1
+228,"d228_rp","Black-c. Chickadee",1993,1
+228,"d228_rp","White-br. Nuthatch",1993,2
+228,"d228_rp","Winter Wren",1993,0.5
+228,"d228_rp","Hermit Thrush",1993,1
+228,"d228_rp","Veery",1993,4.5
+228,"d228_rp","Red-eyed Vireo",1993,24.5
+228,"d228_rp","Bk.-thr. Green Warbler",1993,8.5
+228,"d228_rp","Bk.-thr. Blue Warbler",1993,9
+228,"d228_rp","Ovenbird",1993,18
+228,"d228_rp","American Redstart",1993,9.5
+228,"d228_rp","Scarlet Tanager",1993,2
+228,"d228_rp","Rose-br. Grosbeak",1993,1
+228,"d228_rp","Yellow-b.Sapsucker",1994,1
+228,"d228_rp","Hairy Woodpecker",1994,0.5
+228,"d228_rp","Black-c. Chickadee",1994,2
+228,"d228_rp","Red-br. Nuthatch",1994,1
+228,"d228_rp","Winter Wren",1994,1
+228,"d228_rp","Hermit Thrush",1994,0.5
+228,"d228_rp","Veery",1994,3.5
+228,"d228_rp","Solitary Vireo",1994,0.5
+228,"d228_rp","Red-eyed Vireo",1994,18
+228,"d228_rp","Bk.-thr. Green Warbler",1994,5.5
+228,"d228_rp","Bk.-thr. Blue Warbler",1994,8
+228,"d228_rp","Ovenbird",1994,12
+228,"d228_rp","American Redstart",1994,4.5
+228,"d228_rp","Scarlet Tanager",1994,3
+228,"d228_rp","Rose-br. Grosbeak",1994,2
+228,"d228_rp","Yellow-b.Sapsucker",1995,1
+228,"d228_rp","Hairy Woodpecker",1995,1.5
+228,"d228_rp","Downy Woodpecker",1995,2
+228,"d228_rp","Wood Pewee",1995,2
+228,"d228_rp","Black-c. Chickadee",1995,1
+228,"d228_rp","Hermit Thrush",1995,2
+228,"d228_rp","Veery",1995,3
+228,"d228_rp","Red-eyed Vireo",1995,17
+228,"d228_rp","Bk.-thr. Green Warbler",1995,8.5
+228,"d228_rp","Bk.-thr. Blue Warbler",1995,9.5
+228,"d228_rp","Ovenbird",1995,11
+228,"d228_rp","American Redstart",1995,6
+228,"d228_rp","Scarlet Tanager",1995,4
+228,"d228_rp","Rose-br. Grosbeak",1995,2
+228,"d228_rp","Yellow-b.Sapsucker",1996,1
+228,"d228_rp","Hairy Woodpecker",1996,1
+228,"d228_rp","Downy Woodpecker",1996,1
+228,"d228_rp","Wood Pewee",1996,2
+228,"d228_rp","Brown Creeper",1996,2
+228,"d228_rp","Winter Wren",1996,1
+228,"d228_rp","Hermit Thrush",1996,2
+228,"d228_rp","Veery",1996,1
+228,"d228_rp","Solitary Vireo",1996,0.5
+228,"d228_rp","Red-eyed Vireo",1996,15
+228,"d228_rp","Bk.-thr. Green Warbler",1996,11
+228,"d228_rp","Bk.-thr. Blue Warbler",1996,7.5
+228,"d228_rp","Yellow-r. Warbler",1996,1
+228,"d228_rp","Blackburnian Warbler",1996,2
+228,"d228_rp","Ovenbird",1996,13
+228,"d228_rp","American Redstart",1996,8
+228,"d228_rp","Scarlet Tanager",1996,3
+228,"d228_rp","Rose-br. Grosbeak",1996,3
+228,"d228_rp","Yellow-b.Sapsucker",1997,2
+228,"d228_rp","Hairy Woodpecker",1997,1.5
+228,"d228_rp","Downy Woodpecker",1997,1
+228,"d228_rp","Black-c. Chickadee",1997,4
+228,"d228_rp","White-br. Nuthatch",1997,2
+228,"d228_rp","Hermit Thrush",1997,2.5
+228,"d228_rp","Swainson's Thrush",1997,0.5
+228,"d228_rp","Red-eyed Vireo",1997,22.5
+228,"d228_rp","Bk.-thr. Green Warbler",1997,7
+228,"d228_rp","Bk.-thr. Blue Warbler",1997,10
+228,"d228_rp","Yellow-r. Warbler",1997,1
+228,"d228_rp","Blackburnian Warbler",1997,1
+228,"d228_rp","Ovenbird",1997,15
+228,"d228_rp","American Redstart",1997,4
+228,"d228_rp","Scarlet Tanager",1997,4
+228,"d228_rp","Rose-br. Grosbeak",1997,3
+228,"d228_rp","Yellow-b.Sapsucker",1998,2
+228,"d228_rp","Downy Woodpecker",1998,2
+228,"d228_rp","Blue Jay",1998,1
+228,"d228_rp","Black-c. Chickadee",1998,3
+228,"d228_rp","Brown Creeper",1998,3
+228,"d228_rp","Winter Wren",1998,2
+228,"d228_rp","Wood Thrush",1998,2
+228,"d228_rp","Hermit Thrush",1998,2.5
+228,"d228_rp","Red-eyed Vireo",1998,21
+228,"d228_rp","Bk.-thr. Green Warbler",1998,6
+228,"d228_rp","Bk.-thr. Blue Warbler",1998,8
+228,"d228_rp","Yellow-r. Warbler",1998,2.5
+228,"d228_rp","Ovenbird",1998,13.5
+228,"d228_rp","American Redstart",1998,5
+228,"d228_rp","Scarlet Tanager",1998,2.5
+228,"d228_rp","Rose-br. Grosbeak",1998,2.5
+228,"d228_rp","Yellow-b.Sapsucker",1999,4
+228,"d228_rp","Hairy Woodpecker",1999,1.5
+228,"d228_rp","Downy Woodpecker",1999,0.5
+228,"d228_rp","Wood Pewee",1999,3
+228,"d228_rp","Blue Jay",1999,1
+228,"d228_rp","Black-c. Chickadee",1999,4
+228,"d228_rp","White-br. Nuthatch",1999,2
+228,"d228_rp","Hermit Thrush",1999,2.5
+228,"d228_rp","Solitary Vireo",1999,1
+228,"d228_rp","Red-eyed Vireo",1999,19.5
+228,"d228_rp","Bk.-thr. Green Warbler",1999,11.5
+228,"d228_rp","Bk.-thr. Blue Warbler",1999,14.5
+228,"d228_rp","Ovenbird",1999,11.5
+228,"d228_rp","American Redstart",1999,2.5
+228,"d228_rp","Scarlet Tanager",1999,2.5
+228,"d228_rp","Rose-br. Grosbeak",1999,2
+228,"d228_rp","Pileated Woodpecker",2000,0.5
+228,"d228_rp","Yellow-b.Sapsucker",2000,2
+228,"d228_rp","Hairy Woodpecker",2000,2
+228,"d228_rp","Black-c. Chickadee",2000,1
+228,"d228_rp","Winter Wren",2000,2.5
+228,"d228_rp","Hermit Thrush",2000,3.5
+228,"d228_rp","Red-eyed Vireo",2000,25
+228,"d228_rp","Bk.-thr. Green Warbler",2000,12.5
+228,"d228_rp","Bk.-thr. Blue Warbler",2000,12
+228,"d228_rp","Ovenbird",2000,14
+228,"d228_rp","American Redstart",2000,6
+228,"d228_rp","Scarlet Tanager",2000,4.5
+228,"d228_rp","Rose-br. Grosbeak",2000,2
+228,"d228_sm","Yellow-b.Sapsucker",1986,1.5
+228,"d228_sm","Hairy Woodpecker",1986,2
+228,"d228_sm","White-br. Nuthatch",1986,1
+228,"d228_sm","Winter Wren",1986,0.5
+228,"d228_sm","Veery",1986,1
+228,"d228_sm","Solitary Vireo",1986,1
+228,"d228_sm","Red-eyed Vireo",1986,23
+228,"d228_sm","Bk.-thr. Green Warbler",1986,7
+228,"d228_sm","Bk.-thr. Blue Warbler",1986,2
+228,"d228_sm","Ovenbird",1986,9
+228,"d228_sm","American Redstart",1986,12.5
+228,"d228_sm","Scarlet Tanager",1986,1
+228,"d228_sm","Rose-br. Grosbeak",1986,3
+228,"d228_sm","Yellow-b.Sapsucker",1987,1
+228,"d228_sm","Hairy Woodpecker",1987,1
+228,"d228_sm","Downy Woodpecker",1987,2
+228,"d228_sm","Blue Jay",1987,0.5
+228,"d228_sm","Black-c. Chickadee",1987,1
+228,"d228_sm","White-br. Nuthatch",1987,2
+228,"d228_sm","Winter Wren",1987,1.5
+228,"d228_sm","Hermit Thrush",1987,1.5
+228,"d228_sm","Swainson's Thrush",1987,1
+228,"d228_sm","Red-eyed Vireo",1987,16.5
+228,"d228_sm","Bk.-thr. Green Warbler",1987,7
+228,"d228_sm","Bk.-thr. Blue Warbler",1987,4
+228,"d228_sm","Ovenbird",1987,15.5
+228,"d228_sm","American Redstart",1987,11.5
+228,"d228_sm","Scarlet Tanager",1987,3
+228,"d228_sm","Rose-br. Grosbeak",1987,2.5
+228,"d228_sm","Hairy Woodpecker",1988,1
+228,"d228_sm","Wood Pewee",1988,1
+228,"d228_sm","Blue Jay",1988,1
+228,"d228_sm","Hermit Thrush",1988,1.5
+228,"d228_sm","Swainson's Thrush",1988,0.5
+228,"d228_sm","Red-eyed Vireo",1988,17
+228,"d228_sm","Bk.-thr. Green Warbler",1988,10.5
+228,"d228_sm","Bk.-thr. Blue Warbler",1988,5.5
+228,"d228_sm","Ovenbird",1988,13.5
+228,"d228_sm","American Redstart",1988,13
+228,"d228_sm","Scarlet Tanager",1988,2.5
+228,"d228_sm","Rose-br. Grosbeak",1988,1.5
+228,"d228_sm","Yellow-b.Sapsucker",1989,2
+228,"d228_sm","Hairy Woodpecker",1989,1.5
+228,"d228_sm","Downy Woodpecker",1989,2
+228,"d228_sm","Wood Pewee",1989,2
+228,"d228_sm","Black-c. Chickadee",1989,1.5
+228,"d228_sm","White-br. Nuthatch",1989,1
+228,"d228_sm","Hermit Thrush",1989,2
+228,"d228_sm","Veery",1989,3
+228,"d228_sm","Solitary Vireo",1989,2
+228,"d228_sm","Red-eyed Vireo",1989,15.5
+228,"d228_sm","Bk.-thr. Green Warbler",1989,8
+228,"d228_sm","Bk.-thr. Blue Warbler",1989,10.5
+228,"d228_sm","Ovenbird",1989,16.5
+228,"d228_sm","American Redstart",1989,14.5
+228,"d228_sm","Scarlet Tanager",1989,3.5
+228,"d228_sm","Rose-br. Grosbeak",1989,2
+228,"d228_sm","Hairy Woodpecker",1990,3
+228,"d228_sm","Black-c. Chickadee",1990,2
+228,"d228_sm","White-br. Nuthatch",1990,1.5
+228,"d228_sm","Winter Wren",1990,2
+228,"d228_sm","Hermit Thrush",1990,1.5
+228,"d228_sm","Veery",1990,2
+228,"d228_sm","Swainson's Thrush",1990,2
+228,"d228_sm","Red-eyed Vireo",1990,18
+228,"d228_sm","Bk.-thr. Green Warbler",1990,9
+228,"d228_sm","Bk.-thr. Blue Warbler",1990,6.5
+228,"d228_sm","Yellow-r. Warbler",1990,2
+228,"d228_sm","Ovenbird",1990,19
+228,"d228_sm","American Redstart",1990,19
+228,"d228_sm","Scarlet Tanager",1990,3
+228,"d228_sm","Rose-br. Grosbeak",1990,2.5
+228,"d228_sm","Yellow-b.Sapsucker",1991,2.5
+228,"d228_sm","Black-c. Chickadee",1991,1.5
+228,"d228_sm","Hermit Thrush",1991,1.5
+228,"d228_sm","Solitary Vireo",1991,1.5
+228,"d228_sm","Ovenbird",1991,12.5
+228,"d228_sm","Scarlet Tanager",1991,1.5
+228,"d228_sm","Yellow-b.Sapsucker",1992,2
+228,"d228_sm","Hairy Woodpecker",1992,1
+228,"d228_sm","Downy Woodpecker",1992,0.5
+228,"d228_sm","Black-c. Chickadee",1992,4
+228,"d228_sm","White-br. Nuthatch",1992,2
+228,"d228_sm","Winter Wren",1992,1.5
+228,"d228_sm","Hermit Thrush",1992,3.5
+228,"d228_sm","Veery",1992,1.5
+228,"d228_sm","Solitary Vireo",1992,2
+228,"d228_sm","Red-eyed Vireo",1992,13.5
+228,"d228_sm","Bk.-thr. Green Warbler",1992,10
+228,"d228_sm","Bk.-thr. Blue Warbler",1992,5.5
+228,"d228_sm","Yellow-r. Warbler",1992,1
+228,"d228_sm","Ovenbird",1992,19.5
+228,"d228_sm","American Redstart",1992,9
+228,"d228_sm","Scarlet Tanager",1992,3
+228,"d228_sm","Rose-br. Grosbeak",1992,2
+228,"d228_sm","Hairy Woodpecker",1993,2.5
+228,"d228_sm","Downy Woodpecker",1993,1
+228,"d228_sm","White-br. Nuthatch",1993,1
+228,"d228_sm","Hermit Thrush",1993,2.5
+228,"d228_sm","Red-eyed Vireo",1993,16.5
+228,"d228_sm","Bk.-thr. Green Warbler",1993,12.5
+228,"d228_sm","Bk.-thr. Blue Warbler",1993,7.5
+228,"d228_sm","Ovenbird",1993,17.5
+228,"d228_sm","American Redstart",1993,6
+228,"d228_sm","Scarlet Tanager",1993,2
+228,"d228_sm","Rose-br. Grosbeak",1993,1
+228,"d228_sm","Hairy Woodpecker",1994,1.5
+228,"d228_sm","Wood Pewee",1994,1
+228,"d228_sm","Black-c. Chickadee",1994,3
+228,"d228_sm","White-br. Nuthatch",1994,0.5
+228,"d228_sm","Hermit Thrush",1994,1
+228,"d228_sm","Swainson's Thrush",1994,0.5
+228,"d228_sm","Red-eyed Vireo",1994,14
+228,"d228_sm","Bk.-thr. Green Warbler",1994,7
+228,"d228_sm","Bk.-thr. Blue Warbler",1994,7
+228,"d228_sm","Ovenbird",1994,9
+228,"d228_sm","Scarlet Tanager",1994,4
+228,"d228_sm","Rose-br. Grosbeak",1994,2
+228,"d228_sm","Hairy Woodpecker",1995,1
+228,"d228_sm","Wood Pewee",1995,2
+228,"d228_sm","Hermit Thrush",1995,2
+228,"d228_sm","Red-eyed Vireo",1995,18
+228,"d228_sm","Bk.-thr. Green Warbler",1995,5
+228,"d228_sm","Bk.-thr. Blue Warbler",1995,8
+228,"d228_sm","Ovenbird",1995,14.5
+228,"d228_sm","American Redstart",1995,8.5
+228,"d228_sm","Scarlet Tanager",1995,1
+228,"d228_sm","Rose-br. Grosbeak",1995,2
+228,"d228_sm","Yellow-b.Sapsucker",1996,0.5
+228,"d228_sm","Hairy Woodpecker",1996,1
+228,"d228_sm","Downy Woodpecker",1996,0.5
+228,"d228_sm","Black-c. Chickadee",1996,2
+228,"d228_sm","Winter Wren",1996,2
+228,"d228_sm","Hermit Thrush",1996,1
+228,"d228_sm","Red-eyed Vireo",1996,15
+228,"d228_sm","Bk.-thr. Green Warbler",1996,8
+228,"d228_sm","Bk.-thr. Blue Warbler",1996,6
+228,"d228_sm","Ovenbird",1996,18
+228,"d228_sm","Scarlet Tanager",1996,1
+228,"d228_sm","Yellow-b.Sapsucker",1997,1
+228,"d228_sm","Hairy Woodpecker",1997,1
+228,"d228_sm","Wood Pewee",1997,2
+228,"d228_sm","Black-c. Chickadee",1997,1.5
+228,"d228_sm","White-br. Nuthatch",1997,1
+228,"d228_sm","Winter Wren",1997,2
+228,"d228_sm","Hermit Thrush",1997,2
+228,"d228_sm","Red-eyed Vireo",1997,19.5
+228,"d228_sm","Bk.-thr. Green Warbler",1997,4.5
+228,"d228_sm","Bk.-thr. Blue Warbler",1997,6
+228,"d228_sm","Yellow-r. Warbler",1997,1.5
+228,"d228_sm","Ovenbird",1997,10.5
+228,"d228_sm","Scarlet Tanager",1997,2
+228,"d228_sm","Yellow-b.Sapsucker",1998,1
+228,"d228_sm","Hairy Woodpecker",1998,1.5
+228,"d228_sm","Downy Woodpecker",1998,1
+228,"d228_sm","Black-c. Chickadee",1998,2
+228,"d228_sm","Brown Creeper",1998,2
+228,"d228_sm","Winter Wren",1998,1
+228,"d228_sm","Hermit Thrush",1998,2.5
+228,"d228_sm","Red-eyed Vireo",1998,16
+228,"d228_sm","Bk.-thr. Green Warbler",1998,11
+228,"d228_sm","Bk.-thr. Blue Warbler",1998,5.5
+228,"d228_sm","Ovenbird",1998,18.5
+228,"d228_sm","American Redstart",1998,6
+228,"d228_sm","Scarlet Tanager",1998,2
+228,"d228_sm","Yellow-b.Sapsucker",1999,2
+228,"d228_sm","Hairy Woodpecker",1999,2.5
+228,"d228_sm","Downy Woodpecker",1999,1.5
+228,"d228_sm","Wood Pewee",1999,0.5
+228,"d228_sm","Black-c. Chickadee",1999,2.5
+228,"d228_sm","Brown Creeper",1999,1
+228,"d228_sm","Winter Wren",1999,2
+228,"d228_sm","Hermit Thrush",1999,4
+228,"d228_sm","Solitary Vireo",1999,1
+228,"d228_sm","Red-eyed Vireo",1999,27
+228,"d228_sm","Bk.-thr. Green Warbler",1999,16.5
+228,"d228_sm","Bk.-thr. Blue Warbler",1999,11.5
+228,"d228_sm","Yellow-r. Warbler",1999,1
+228,"d228_sm","Ovenbird",1999,14
+228,"d228_sm","Scarlet Tanager",1999,3.5
+228,"d228_sm","Yellow-b.Sapsucker",2000,1
+228,"d228_sm","Hairy Woodpecker",2000,0.5
+228,"d228_sm","Downy Woodpecker",2000,1
+228,"d228_sm","Wood Pewee",2000,2
+228,"d228_sm","Black-c. Chickadee",2000,2
+228,"d228_sm","Brown Creeper",2000,1
+228,"d228_sm","White-br. Nuthatch",2000,0.5
+228,"d228_sm","Winter Wren",2000,1
+228,"d228_sm","Hermit Thrush",2000,2
+228,"d228_sm","Solitary Vireo",2000,1
+228,"d228_sm","Red-eyed Vireo",2000,25
+228,"d228_sm","Bk.-thr. Green Warbler",2000,20.5
+228,"d228_sm","Bk.-thr. Blue Warbler",2000,15
+228,"d228_sm","Ovenbird",2000,14.5
+228,"d228_sm","American Redstart",2000,2
+228,"d228_sm","Scarlet Tanager",2000,3
+228,"d228_sm","Rose-br. Grosbeak",2000,0.5
