@@ -92,7 +92,7 @@ coreTrans = function(dataset, site, threshold){
         geom_histogram(aes(y=..density..), binwidth=.1,
                        colour="black", fill="gray") + 
         geom_density(alpha=.2, fill="blue") + 
-        labs(title= 'Proportional density',
+        labs(title= paste('Proportional density:',site),
              x = 'Proportion of years', y = 'Density of species/year') +
         theme(axis.text = element_text(size=14, color = 'black'),
               axis.title = element_text(size=18),
