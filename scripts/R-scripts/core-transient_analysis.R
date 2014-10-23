@@ -44,6 +44,22 @@ data.list = lapply(data.list, name.changer)
 d = rbind.fill(data.list)
 
 #----------------------------------------------------------------------------------*
+# ---- Functions for calculating bimodality ----
+#==================================================================================*
+# Note: bimodality is the fraction of species occurring at either end of occupancy
+# distribution
+
+bimod = function(occs,lo=1/3, hi=2/3) {
+  return(sum(occs <= lo | occs>hi)/length(occs))
+  }
+
+bimodality = function(occs) {
+  maxvar = var(c(rep(min(occs),floor(length(occs)/2)),
+                 rep(max(occs),ceiling(length(occs)/2))))
+  return(var(occs)/maxvar)
+}
+
+#----------------------------------------------------------------------------------*
 # ---- Function to return core-transient summary analysis ----
 #==================================================================================*
 
