@@ -74,6 +74,8 @@ coreTrans = function(dataset, site, threshold){
       prop.yrs[i] = length(unique(d[d$species == sp[i],'year']))/yrs
     }
     d1 = data.frame(sp,prop.yrs)  # Dataframe of species and proportion of years
+  # Calculate bimodality of the dataset and site:
+    bimodal = bimodality(prop.yrs)
   # Subset into core and transient:
     core.thresh = 1 - threshold   # Threshold for core species
     trans.thresh = threshold      # Threshold for transient species
@@ -94,10 +96,10 @@ coreTrans = function(dataset, site, threshold){
       summary.out = summary.table[summary.table[,1] == dataset,c(9,11)]
       out = data.frame(dataset, site, threshold,summary.out[,1], summary.out[,2],
                        rich.total, rich.core, rich.trans, 
-                      prop.core, prop.trans)
+                      prop.core, prop.trans, bimodal)
       names(out) = c('datasetID','site','threshold','system','taxa',
                      'total_richness','core_richness','trans_richness',
-                     'prop_core','prop_trans')
+                     'prop_core','prop_trans', 'bimodality')
       out
       }
   # Calculate richness indices across years for the study:
