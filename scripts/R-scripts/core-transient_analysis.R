@@ -104,7 +104,7 @@ coreTrans = function(dataset, site, threshold){
 }
 
 
-# Run across all sites and datasets, creating summary table dataframe
+# Summary table across all sites and datasets:
 
 sites = unique(d$site)
 dID = numeric()
@@ -117,13 +117,27 @@ for(i in 1:length(sites)){
 
 out.frame = rbind.fill(out.frame)
 
-# Exploring summarizing by dataset
+# Graphical output across all sites and datasets:
+
+out.plots = list()
+
+for(i in 1:length(sites)){
+  dID[i] = unique(d[d$site == sites[i],'datasetID'])
+  out.plots[[i]] = coreTrans(dID[i],sites[i],.33)[[2]]
+}
+
+
+# Summary data by dataset:
 
 out.by.datasets = ddply(out.frame, .(datasetID), summarize, 
       mean.prop.core = mean(prop_core), 
       se.prop.core = sd(prop_core)/sqrt(length(prop_core)),
       mean.prop.core = mean(prop_trans), 
       se.prop.core = sd(prop_trans)/sqrt(length(prop_trans)))
+
+# Output:
+
+out.frame
 
 out.by.datasets
 
