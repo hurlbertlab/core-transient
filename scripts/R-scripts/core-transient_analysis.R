@@ -96,10 +96,10 @@ coreTrans = function(dataset, site, threshold){
       summary.out = summary.table[summary.table[,1] == dataset,c(9,11)]
       out = data.frame(dataset, site, threshold,summary.out[,1], summary.out[,2],
                        rich.total, rich.core, rich.trans, 
-                      prop.core, prop.trans, bimodal)
+                      prop.core, prop.trans, bimodal, mean(prop.yrs))
       names(out) = c('datasetID','site','threshold','system','taxa',
                      'total_richness','core_richness','trans_richness',
-                     'prop_core','prop_trans', 'bimodality')
+                     'prop_core','prop_trans', 'bimodality','mean')
       out
       }
   # Calculate richness indices across years for the study:
@@ -112,8 +112,10 @@ coreTrans = function(dataset, site, threshold){
         geom_density(alpha=.2, fill="blue") + 
         labs(title= paste('Proportional density:',site,'\n',
                     paste(r.across.years[,4], r.across.years[,5], sep = ': '),
-                    '\n \n b = ', round(bimodal, 2)),
-             x = 'Proportion of years', y = 'Density of species/year') +
+                    '\n \n b = ', round(bimodal, 2),
+                    '\n', paste('mean = ', round(r.across.years[,12],2))),
+             x = 'Proportion of years',
+             y = 'Density of species/year') +
         theme(axis.text = element_text(size=14, color = 'black'),
               axis.title = element_text(size=20),
               title = element_text(size=22),
@@ -145,7 +147,6 @@ for(i in 1:length(sites)){
   dID[i] = unique(d[d$site == sites[i],'datasetID'])
   out.plots[[i]] = coreTrans(dID[i],sites[i],.33)[[2]]
 }
-
 
 # Summary data by dataset:
 
