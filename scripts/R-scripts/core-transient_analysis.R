@@ -113,7 +113,7 @@ coreTrans = function(dataset, site, threshold){
         labs(title= paste('Proportional density:',site,'\n',
                     paste(r.across.years[,4], r.across.years[,5], sep = ': '),
                     '\n \n b = ', round(bimodal, 2),
-                    '\n', paste('mean = ', round(r.across.years[,12],2))),
+                    '\n', expression(paste(mu, ' = ', round(r.across.years[,12],2)))),
              x = 'Proportion of years',
              y = 'Density of species/year') +
         theme(axis.text = element_text(size=14, color = 'black'),
@@ -122,31 +122,36 @@ coreTrans = function(dataset, site, threshold){
               axis.line = element_line(colour = "black"),
               panel.background = element_blank())
   # Output
-    list(r.across.years, site.histogram)
+    list(d1,r.across.years, site.histogram)
 }
 
+#----------------------------------------------------------------------------------*
+# ---- Generate output across sites  ----
+#==================================================================================*
 
-# Summary table across all sites and datasets:
+# Generate output lists across sites + datasets:
 
 sites = unique(d$site)
 dID = numeric()
+out.raw = list()  # dataframe of 
 out.frame = list()
-
-for(i in 1:length(sites)){
-    dID[i] = unique(d[d$site == sites[i],'datasetID'])
-    out.frame[[i]] = coreTrans(dID[i],sites[i],.33)[[1]]
-  }
-
-out.frame = rbind.fill(out.frame)
-
-# Graphical output across all sites and datasets:
-
 out.plots = list()
 
 for(i in 1:length(sites)){
   dID[i] = unique(d[d$site == sites[i],'datasetID'])
-  out.plots[[i]] = coreTrans(dID[i],sites[i],.33)[[2]]
+  out.raw[[i]] = coreTrans(dID[i],sites[i],.33)[[1]]
+  out.frame[[i]] = coreTrans(dID[i],sites[i],.33)[[2]]
+  out.plots[[i]] = coreTrans(dID[i],sites[i],.33)[[3]]
 }
+
+# Make the output summary frame into a single dataframe:
+
+out.frame = rbind.fill(out.frame)
+
+# Bind outputs into a single list:
+
+out.list = list(out.raw, out.frame, out.plots)
+  names(out.list) = c('raw_output', 'summary_output','plots')
 
 # Summary data by dataset:
 
