@@ -94,10 +94,10 @@ coreTrans = function(dataset, site, threshold){
       prop.core = rich.core/rich.total
       prop.trans = rich.trans/rich.total
       summary.out = summary.table[summary.table[,1] == dataset,c(9,11)]
-      out = data.frame(dataset, site, threshold,summary.out[,1], summary.out[,2],
+      out = data.frame(dataset, site, threshold,summary.out[,1], summary.out[,2], yrs,
                        rich.total, rich.core, rich.trans, 
                       prop.core, prop.trans, bimodal, mean(prop.yrs))
-      names(out) = c('datasetID','site','threshold','system','taxa',
+      names(out) = c('datasetID','site','threshold','system','taxa', 'yrs',
                      'total_richness','core_richness','trans_richness',
                      'prop_core','prop_trans', 'bimodality','mean')
       out
