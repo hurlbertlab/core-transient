@@ -11,6 +11,7 @@
 
 library(plyr)
 library(ggplot2)
+library(grid)
 
 #----------------------------------------------------------------------------------*
 # ---- Get data ----
@@ -60,10 +61,60 @@ bimodality = function(occs) {
 }
 
 #----------------------------------------------------------------------------------*
+# ---- Function to make core-transient histogram  ----
+#==================================================================================*
+# Note: To be run within the core-transient function to output a histogram for each
+# site. Because this plotting function is to be universal, no additional are 
+# required.
+
+ct.hist = function(d1, r.across.years) {
+  # Set breaks and band width for the histogram:
+    bw = (max(d1$prop.yrs)-min(d1$prop.yrs))/10
+    brks = seq(min(d1$prop.yrs), max(d1$prop.yrs),bw)
+  # Plot labels:
+    main = paste('Proportional density: ', r.across.years[,2])
+    t.lab = grobTree(textGrob(paste('Time intervals = ', r.across.years[,6]),
+                              x=0.05,  y=.9, hjust=0,
+                              gp=gpar(col="blue", fontsize=17)))
+    b.lab = grobTree(textGrob(paste('b = ', round(r.across.years[,12], 2)),
+                              x=0.05,  y=.83, hjust=0,
+                              gp=gpar(col="blue", fontsize=17)))
+    mu.lab = grobTree(textGrob(bquote(mu == .(round(r.across.years[,13],2))),
+                               x=0.05,  y=.76, hjust=0,
+                               gp=gpar(col="blue", fontsize=17)))
+  # Plot data: 
+    ggplot(d1, aes(x=prop.yrs)) +
+      # Add histogram:
+      geom_histogram(aes(y = ..density..), breaks = brks, right = F,
+                     fill = 'gray', color = 1) +
+      # Add density:
+      geom_density(alpha=.2, fill="blue") + 
+      # Add titles and labels:
+      ylab('Density') +
+      xlab('Proportion of temporal samples') +
+      ggtitle(main) +
+      annotation_custom(t.lab) +
+      annotation_custom(b.lab) +
+      annotation_custom(mu.lab) +
+      # Add themes:
+      theme(axis.text = element_text(size=14, color = 1),
+            axis.title = element_text(size=20),
+            axis.title.x = element_text(vjust = -1),
+            axis.title.y = element_text(vjust = 2),
+            title = element_text(size=22),
+            axis.line = element_line(colour = "black"),
+            panel.background = element_blank(),
+            plot.margin = unit(c(1,.5,1.5,1), "lines"))
+  }
+
+ct.hist(d1, r.across.years)
+
+#----------------------------------------------------------------------------------*
 # ---- Function to return core-transient summary analysis ----
 #==================================================================================*
 
 coreTrans = function(dataset, site, threshold){
+  site = site
   d = d[d$datasetID == dataset & d$site == site,] # Subsets data by dataset & site
   sp = unique(d$species)        # Generates a species list
   years = sort(unique(d$year))
@@ -105,22 +156,7 @@ coreTrans = function(dataset, site, threshold){
   # Calculate richness indices across years for the study:
     r.across.years = rich.indis(dataset, site, threshold)
   # Graphical output: 
-    # Histogram across years
-      site.histogram = ggplot(d1, aes(x=prop.yrs)) + 
-        geom_histogram(aes(y=..density..), binwidth=.1,
-                       colour="black", fill="gray") + 
-        geom_density(alpha=.2, fill="blue") + 
-        labs(title= paste('Proportional density:',site,'\n',
-                    paste(r.across.years[,4], r.across.years[,5], sep = ': '),
-                    '\n \n b = ', round(bimodal, 2),
-                    '\n', expression(paste(mu, ' = ', round(r.across.years[,12],2)))),
-             x = 'Proportion of years',
-             y = 'Density of species/year') +
-        theme(axis.text = element_text(size=14, color = 'black'),
-              axis.title = element_text(size=20),
-              title = element_text(size=22),
-              axis.line = element_line(colour = "black"),
-              panel.background = element_blank())
+    site.histogram = ct.hist(d1, r.across.years)
   # Output
     list(d1,r.across.years, site.histogram)
 }
