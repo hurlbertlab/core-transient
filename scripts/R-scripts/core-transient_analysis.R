@@ -45,23 +45,10 @@ data.list = lapply(data.list, name.changer)
 d = rbind.fill(data.list)
 
 #----------------------------------------------------------------------------------*
-# ---- Functions for calculating bimodality ----
-#==================================================================================*
-# Note: bimodality is the fraction of species occurring at either end of occupancy
-# distribution
-
-bimodality = function(occs, yrs) {
-  maxvar = var(c(rep(1/yrs,floor(length(occs)/2)),
-                 rep(1,ceiling(length(occs)/2))))
-  return(var(occs)/maxvar)
-}
-
-#----------------------------------------------------------------------------------*
 # ---- Function create proportion of years by species data frame ----
 #==================================================================================*
 
-prop.by.year = function(dataset, site, threshold){
-  site = site
+prop.by.year = function(dataset, site){
   d = d[d$datasetID == dataset & d$site == site,] # Subsets data by dataset & site
   sp = unique(d$species)        # Generates a species list
   years = sort(unique(d$year))
@@ -72,7 +59,22 @@ prop.by.year = function(dataset, site, threshold){
     prop.yrs[i] = length(unique(d[d$species == sp[i],'year']))/yrs
   }
   d1 = data.frame(sp,prop.yrs)  # Dataframe of species and proportion of years
-  list.out = c(years, )
+    list.out = list(d1,yrs)
+      names(list.out) = c('prop.data','years')
+  return(list.out)
+  }
+
+t = prop.by.year(226, 'd226_ew')
+#----------------------------------------------------------------------------------*
+# ---- Functions for calculating bimodality ----
+#==================================================================================*
+# Note: bimodality is the fraction of species occurring at either end of occupancy
+# distribution
+
+bimodality = function(occs, yrs) {
+  maxvar = var(c(rep(1/yrs,floor(length(occs)/2)),
+                 rep(1,ceiling(length(occs)/2))))
+  return(var(occs)/maxvar)
   }
 
 #----------------------------------------------------------------------------------*
@@ -129,9 +131,11 @@ ct.hist(d1, r.across.years)
 #==================================================================================*
 
 coreTrans = function(dataset, site, threshold){
-    d1 = prop.by.year(dataset, site, threshold)
+    prop.data = prop.by.year(dataset, site, threshold)[['prop.data']]
+    yrs = prop.by.year(dataset, site, threshold)[['years']]
+    
   # Calculate bimodality of the dataset and site:
-    bimodal = bimodality(prop.yrs)
+    bimodal = bimodality(prop.yrs, yrs)
   # Subset into core and transient:
     core.thresh = 1 - threshold   # Threshold for core species
     trans.thresh = threshold      # Threshold for transient species
