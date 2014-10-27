@@ -111,7 +111,6 @@ ctSummary = function(dataset, site, prop.df, threshold){
     return(out)
     }
 
-
 #----------------------------------------------------------------------------------*
 # ---- Function to make core-transient histogram  ----
 #==================================================================================*
@@ -119,23 +118,23 @@ ctSummary = function(dataset, site, prop.df, threshold){
 # site. Because this plotting function is to be universal, no additional are 
 # required.
 
-ct.hist = function(d1, r.across.years) {
+ct.hist = function(prop.df, outSummary) {
   # Set breaks and band width for the histogram:
-    bw = (max(d1$prop.yrs)-min(d1$prop.yrs))/10
-    brks = seq(min(d1$prop.yrs), max(d1$prop.yrs),bw)
+    bw = (max(prop.df$prop.yrs)-min(prop.df$prop.yrs))/10
+    brks = seq(min(prop.df$prop.yrs), max(prop.df$prop.yrs),bw)
   # Plot labels:
-    main = paste('Proportional density: ', r.across.years[,2])
-    t.lab = grobTree(textGrob(paste('Time intervals = ', r.across.years[,6]),
+    main = paste('Proportional density: ', outSummary[,2])
+    t.lab = grobTree(textGrob(paste('Time intervals = ', outSummary[,6]),
                               x=0.05,  y=.9, hjust=0,
                               gp=gpar(col="blue", fontsize=17)))
-    b.lab = grobTree(textGrob(paste('b = ', round(r.across.years[,12], 2)),
+    b.lab = grobTree(textGrob(paste('b = ', round(outSummary[,12], 2)),
                               x=0.05,  y=.83, hjust=0,
                               gp=gpar(col="blue", fontsize=17)))
-    mu.lab = grobTree(textGrob(bquote(mu == .(round(r.across.years[,13],2))),
+    mu.lab = grobTree(textGrob(bquote(mu == .(round(outSummary[,13],2))),
                                x=0.05,  y=.76, hjust=0,
                                gp=gpar(col="blue", fontsize=17)))
   # Plot data: 
-    ggplot(d1, aes(x=prop.yrs)) +
+    ggplot(prop.df, aes(x=prop.yrs)) +
       # Add histogram:
       geom_histogram(aes(y = ..density..), breaks = brks, right = F,
                      fill = 'gray', color = 1) +
@@ -159,7 +158,7 @@ ct.hist = function(d1, r.across.years) {
             plot.margin = unit(c(1,.5,1.5,1), "lines"))
   }
 
-ct.hist(d1, r.across.years)
+ct.hist(prop.df, outSummary)
 
 #----------------------------------------------------------------------------------*
 # ---- Function to return core-transient summary analysis ----
@@ -175,7 +174,7 @@ coreTrans = function(dataset, site, threshold){
   # Graphical output: 
     siteHistogram = ct.hist(prop.df, outSummary)
   # Output
-    list(prop.df,outSummary) #, siteHistogram)
+    list(prop.df,outSummary, siteHistogram)
   }
 
 #----------------------------------------------------------------------------------*
