@@ -58,13 +58,12 @@ prop.by.year = function(dataset, site){
   for (i in 1:length(sp)){                        
     prop.yrs[i] = length(unique(d[d$species == sp[i],'year']))/yrs
   }
-  d1 = data.frame(sp,prop.yrs)  # Dataframe of species and proportion of years
-    list.out = list(d1,yrs)
-      names(list.out) = c('prop.data','years')
+  prop.df = data.frame(sp,prop.yrs)  # Dataframe of species and proportion of years
+    list.out = list(prop.df,yrs)
+      names(list.out) = c('prop.df','years')
   return(list.out)
   }
 
-t = prop.by.year(226, 'd226_ew')
 #----------------------------------------------------------------------------------*
 # ---- Functions for calculating bimodality ----
 #==================================================================================*
@@ -76,6 +75,47 @@ bimodality = function(occs, yrs) {
                  rep(1,ceiling(length(occs)/2))))
   return(var(occs)/maxvar)
   }
+
+#----------------------------------------------------------------------------------*
+# ---- Function to generate output summary dataset ----
+#==================================================================================*
+# Note the output of this function is a one line data frame.
+
+ctSummary(226,'d226_ew', .33)
+
+ctSummary = function(dataset, site, threshold){
+  # Extract proportional data frame and number of years:
+    prop.list = prop.by.year(dataset, site)
+    prop.df = prop.list[['prop.df']]
+    yrs = prop.list[['years']]
+  # Calculate bimodality of the dataset and site:
+    bimodal = bimodality(prop.df$prop.yrs, yrs)
+  # Subset into core and transient:
+    core.thresh = 1 - threshold   # Threshold for core species
+    trans.thresh = threshold      # Threshold for transient species
+    sp.core = prop.df[prop.df$prop.yrs>=core.thresh,]
+    sp.trans = prop.df[prop.df$prop.yrs<=trans.thresh,]
+  # Assign species to core or transient status:
+    prop.df$CT = ifelse(prop.df$prop.yrs>=core.thresh,'core',
+                 ifelse(prop.df$prop.yrs<=trans.thresh,'transient',NA))
+  # Merge with the original data frame:
+    d = merge(d, prop.df, by.x = 'species', by.y = 'sp')[,-6]
+  # Calculate richness indices:
+    rich.total = length(unique(d[,1]))  
+    rich.core = length(unique(d[d$CT=='core',1]))
+    rich.trans = length(unique(d[d$CT=='transient',1]))
+    prop.core = rich.core/rich.total
+    prop.trans = rich.trans/rich.total
+    summary.out = summary.table[summary.table[,1] == dataset,c(9,11)]
+  # Output
+    out = data.frame(dataset, site, threshold,summary.out[,1], summary.out[,2], yrs,
+              rich.total, rich.core, rich.trans, 
+              prop.core, prop.trans, bimodal, mean(prop.df$prop.yrs))
+    names(out) = c('datasetID','site','threshold','system','taxa', 'yrs',
+                    'total_richness','core_richness','trans_richness',
+                    'prop_core','prop_trans', 'bimodality','mean')
+    return(out)
+    }
 
 #----------------------------------------------------------------------------------*
 # ---- Function to make core-transient histogram  ----
@@ -131,11 +171,12 @@ ct.hist(d1, r.across.years)
 #==================================================================================*
 
 coreTrans = function(dataset, site, threshold){
-    prop.data = prop.by.year(dataset, site, threshold)[['prop.data']]
-    yrs = prop.by.year(dataset, site, threshold)[['years']]
-    
+  # Extract proportional data frame:
+    prop.list = prop.by.year(dataset, site, threshold)[['prop.df']]
+    prop.df = prop.list[['prop.df']]
+    yrs = prop.list[['years']]
   # Calculate bimodality of the dataset and site:
-    bimodal = bimodality(prop.yrs, yrs)
+    bimodal = bimodality(prop.df[,'prop.yrs'], yrs)
   # Subset into core and transient:
     core.thresh = 1 - threshold   # Threshold for core species
     trans.thresh = threshold      # Threshold for transient species
