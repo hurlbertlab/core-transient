@@ -162,9 +162,6 @@ coreTrans = function(dataset, site, threshold){
     list(prop.df,outSummary, siteHistogram)
   }
 
-prop.df = coreTrans(226, 'd226_ew',.33)[[1]]
-outSummary = coreTrans(226, 'd226_ew',.33)[[2]]
-
 #----------------------------------------------------------------------------------*
 # ---- Generate output across sites  ----
 #==================================================================================*
