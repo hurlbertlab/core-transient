@@ -12,6 +12,7 @@
 library(plyr)
 library(ggplot2)
 library(grid)
+library(gridExtra)
 
 #----------------------------------------------------------------------------------*
 # ---- Get data ----
@@ -81,7 +82,7 @@ bimodality = function(occs, yrs) {
 #==================================================================================*
 # Note the output of this function is a one line data frame.
 
-ctSummary = function(dataset, site, prop.df, threshold){
+ctSummary = function(dataset, site, prop.df, yrs, threshold){
   # Calculate bimodality of the dataset and site:
     bimodal = bimodality(prop.df$prop.yrs, yrs)
   # Subset into core and transient:
@@ -114,51 +115,35 @@ ctSummary = function(dataset, site, prop.df, threshold){
 #----------------------------------------------------------------------------------*
 # ---- Function to make core-transient histogram  ----
 #==================================================================================*
-# Note: To be run within the core-transient function to output a histogram for each
-# site. Because this plotting function is to be universal, no additional are 
-# required.
 
 ct.hist = function(prop.df, outSummary) {
   # Set breaks and band width for the histogram:
-    bw = (max(prop.df$prop.yrs)-min(prop.df$prop.yrs))/10
-    brks = seq(min(prop.df$prop.yrs), max(prop.df$prop.yrs),bw)
+  bw = (max(prop.df$prop.yrs)-min(prop.df$prop.yrs))/10
+  brks = seq(min(prop.df$prop.yrs), max(prop.df$prop.yrs),bw)
   # Plot labels:
-    main = paste('Proportional density: ', outSummary[,2])
-    t.lab = grobTree(textGrob(paste('Time intervals = ', outSummary[,6]),
-                              x=0.05,  y=.9, hjust=0,
-                              gp=gpar(col="blue", fontsize=17)))
-    b.lab = grobTree(textGrob(paste('b = ', round(outSummary[,12], 2)),
-                              x=0.05,  y=.83, hjust=0,
-                              gp=gpar(col="blue", fontsize=17)))
-    mu.lab = grobTree(textGrob(bquote(mu == .(round(outSummary[,13],2))),
-                               x=0.05,  y=.76, hjust=0,
-                               gp=gpar(col="blue", fontsize=17)))
+  main = paste('Site ', outSummary[,2], paste('(', outSummary[,4],', ', outSummary[,5],')', sep = ''))
+  sub = bquote(b == .(round(outSummary[,12], 2)) ~ '    '~
+                 mu == .(round(outSummary[,13],2)) ~ '    '~
+                 t == .(outSummary[,6]))
   # Plot data: 
-    ggplot(prop.df, aes(x=prop.yrs)) +
-      # Add histogram:
-      geom_histogram(aes(y = ..density..), breaks = brks, right = F,
-                     fill = 'gray', color = 1) +
-      # Add density:
-      geom_density(alpha=.2, fill="blue") + 
-      # Add titles and labels:
-      ylab('Density') +
-      xlab('Proportion of temporal samples') +
-      ggtitle(main) +
-      annotation_custom(t.lab) +
-      annotation_custom(b.lab) +
-      annotation_custom(mu.lab) +
-      # Add themes:
-      theme(axis.text = element_text(size=14, color = 1),
-            axis.title = element_text(size=20),
-            axis.title.x = element_text(vjust = -1),
-            axis.title.y = element_text(vjust = 2),
-            title = element_text(size=22),
-            axis.line = element_line(colour = "black"),
-            panel.background = element_blank(),
-            plot.margin = unit(c(1,.5,1.5,1), "lines"))
-  }
-
-ct.hist(prop.df, outSummary)
+  ggplot(prop.df, aes(x=prop.yrs)) +
+    # Add histogram:
+    geom_histogram(aes(y = ..density..), breaks = brks, right = F,
+                   fill = 'gray', color = 1) +
+    # Add density:
+    geom_density(alpha=.2, fill="blue") + 
+    # Add labels:
+    xlab('Proportion of temporal samples') + ylab('Density') + 
+    ggtitle(bquote(atop(.(main), atop(.(sub))))) +
+    # Add themes:
+    theme(axis.text = element_text(size=14, color = 1),
+          axis.title.x = element_text(vjust = -1),
+          axis.title.y = element_text(vjust = 2),
+          title = element_text(size=24, vjust = 0),
+          axis.line = element_line(colour = "black"),
+          panel.background = element_blank(),
+          plot.margin = unit(c(.5,.5,1.5,1), "lines"))
+}
 
 #----------------------------------------------------------------------------------*
 # ---- Function to return core-transient summary analysis ----
@@ -176,6 +161,9 @@ coreTrans = function(dataset, site, threshold){
   # Output
     list(prop.df,outSummary, siteHistogram)
   }
+
+prop.df = coreTrans(226, 'd226_ew',.33)[[1]]
+outSummary = coreTrans(226, 'd226_ew',.33)[[2]]
 
 #----------------------------------------------------------------------------------*
 # ---- Generate output across sites  ----
