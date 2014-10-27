@@ -81,13 +81,7 @@ bimodality = function(occs, yrs) {
 #==================================================================================*
 # Note the output of this function is a one line data frame.
 
-ctSummary(226,'d226_ew', .33)
-
-ctSummary = function(dataset, site, threshold){
-  # Extract proportional data frame and number of years:
-    prop.list = prop.by.year(dataset, site)
-    prop.df = prop.list[['prop.df']]
-    yrs = prop.list[['years']]
+ctSummary = function(dataset, site, prop.df, threshold){
   # Calculate bimodality of the dataset and site:
     bimodal = bimodality(prop.df$prop.yrs, yrs)
   # Subset into core and transient:
@@ -116,6 +110,7 @@ ctSummary = function(dataset, site, threshold){
                     'prop_core','prop_trans', 'bimodality','mean')
     return(out)
     }
+
 
 #----------------------------------------------------------------------------------*
 # ---- Function to make core-transient histogram  ----
@@ -172,44 +167,16 @@ ct.hist(d1, r.across.years)
 
 coreTrans = function(dataset, site, threshold){
   # Extract proportional data frame:
-    prop.list = prop.by.year(dataset, site, threshold)[['prop.df']]
+    prop.list = prop.by.year(dataset, site)
     prop.df = prop.list[['prop.df']]
     yrs = prop.list[['years']]
-  # Calculate bimodality of the dataset and site:
-    bimodal = bimodality(prop.df[,'prop.yrs'], yrs)
-  # Subset into core and transient:
-    core.thresh = 1 - threshold   # Threshold for core species
-    trans.thresh = threshold      # Threshold for transient species
-    sp.core = d1[d1$prop.yrs>=core.thresh,]
-    sp.trans = d1[d1$prop.yrs<=trans.thresh,]
-  # Assign species to core or transient status:
-    d1$CT = ifelse(d1$prop.yrs>=core.thresh,'core',
-                  ifelse(d1$prop.yrs<=trans.thresh,'transient',NA))
-  # Merge with the original data frame:
-    d = merge(d, d1, by.x = 'species', by.y = 'sp')[,-6]
-  # Function to calculate richness indices and output it as a 1-row dataframe:
-    rich.indis = function(dataset, site, threshold){
-      rich.total = length(unique(d[,1]))  
-      rich.core = length(unique(d[d$CT=='core',1]))
-      rich.trans = length(unique(d[d$CT=='transient',1]))
-      prop.core = rich.core/rich.total
-      prop.trans = rich.trans/rich.total
-      summary.out = summary.table[summary.table[,1] == dataset,c(9,11)]
-      out = data.frame(dataset, site, threshold,summary.out[,1], summary.out[,2], yrs,
-                       rich.total, rich.core, rich.trans, 
-                      prop.core, prop.trans, bimodal, mean(prop.yrs))
-      names(out) = c('datasetID','site','threshold','system','taxa', 'yrs',
-                     'total_richness','core_richness','trans_richness',
-                     'prop_core','prop_trans', 'bimodality','mean')
-      out
-      }
-  # Calculate richness indices across years for the study:
-    r.across.years = rich.indis(dataset, site, threshold)
+  # Summary table output:
+    outSummary = ctSummary(dataset, site, prop.df, yrs, threshold)
   # Graphical output: 
-    site.histogram = ct.hist(d1, r.across.years)
+    siteHistogram = ct.hist(prop.df, outSummary)
   # Output
-    list(d1,r.across.years, site.histogram)
-}
+    list(prop.df,outSummary) #, siteHistogram)
+  }
 
 #----------------------------------------------------------------------------------*
 # ---- Generate output across sites  ----
