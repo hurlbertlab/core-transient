@@ -139,7 +139,7 @@ ct.hist = function(prop.df, outSummary) {
     theme(axis.text = element_text(size=14, color = 1),
           axis.title.x = element_text(vjust = -1),
           axis.title.y = element_text(vjust = 2),
-          title = element_text(size=24, vjust = 0),
+          title = element_text(size=18, vjust = -1),
           axis.line = element_line(colour = "black"),
           panel.background = element_blank(),
           plot.margin = unit(c(.5,.5,1.5,1), "lines"))
