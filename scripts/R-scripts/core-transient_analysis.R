@@ -21,6 +21,7 @@ library(gridExtra)
 # Set read and write directories:
 
 in_dir = 'formatted_datasets'
+out_dir = 'output'
 
 # Get summary table:
 
@@ -212,9 +213,8 @@ out.by.datasets = ddply(out.frame, .(datasetID), summarize,
 
 # Output:
 
-out.frame
+write.csv(out.frame, paste(out_dir,'/tabular_data/out_frame.csv', sep = ''), row.names = F)
 
-out.by.datasets
 
 
 
