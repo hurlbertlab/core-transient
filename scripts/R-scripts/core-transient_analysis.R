@@ -227,17 +227,16 @@ write.csv(out.frame, paste(out_dir,'/tabular_data/out_frame.csv', sep = ''), row
 
 
 plot.fun = function(i){
-  out_name = paste('plots/histogram_',out.frame$site[i],'.pdf', sep ='')
+  out_name = paste('/plots/histogram_',out.frame$site[i],'.pdf', sep ='')
   out = paste(out_dir, out_name, sep = '')
   pdf(out, width = 7.68, height = 4.8)
-  plot.outs(out.list[[3]][[i]])
+    plot(out.list[[3]][[i]])
   dev.off()
 }
 
 for (i in 1:length(out.list[[3]])){
   plot.fun(i)
 }
-
 
 
 
