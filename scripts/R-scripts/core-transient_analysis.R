@@ -78,6 +78,18 @@ bimodality = function(occs, yrs) {
   }
 
 #----------------------------------------------------------------------------------*
+# ---- Function for fitting the beta distribution ----
+#==================================================================================*
+# Note: From meeting with Allen, 10/30/14, not currently tested within this script.
+
+fitbeta = function(dataID, not1) {
+  occs = out.list[[1]][[dataID]]$prop.yrs
+  occs[occs == 1] = not1
+  shape.params = fitdistr(occs, "beta", list(shape1 = 2, shape2 = 2))
+  return(as.vector(shape.params$estimate))
+  }
+
+#----------------------------------------------------------------------------------*
 # ---- Function to generate output summary dataset ----
 #==================================================================================*
 # Note the output of this function is a one line data frame.
