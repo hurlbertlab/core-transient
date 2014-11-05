@@ -229,7 +229,7 @@ write.csv(out.frame, paste(out_dir,'/tabular_data/out_frame.csv', sep = ''), row
 plot.fun = function(i){
   out_name = paste('/plots/histogram_',out.frame$site[i],'.pdf', sep ='')
   out = paste(out_dir, out_name, sep = '')
-  pdf(out, width = 7.68, height = 4.8)
+  pdf(out, width = 6.5, height = 5.5)
     plot(out.list[[3]][[i]])
   dev.off()
 }
