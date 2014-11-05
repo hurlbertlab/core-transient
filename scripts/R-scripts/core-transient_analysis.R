@@ -202,6 +202,12 @@ out.frame = rbind.fill(out.frame)
 
 out.list = list(out.raw, out.frame, out.plots)
   names(out.list) = c('raw_output', 'summary_output','plots')
+  
+# Add site names to the plot outs
+
+names(out.list[[3]]) = out.frame$site
+
+out.frame$site[1]
 
 # Summary data by dataset:
 
@@ -213,7 +219,24 @@ out.by.datasets = ddply(out.frame, .(datasetID), summarize,
 
 # Output:
 
+# Write the tabular summary data output:
+
 write.csv(out.frame, paste(out_dir,'/tabular_data/out_frame.csv', sep = ''), row.names = F)
+
+# Write all of the plot outs:
+
+
+plot.fun = function(i){
+  out_name = paste('plots/histogram_',out.frame$site[i],'.pdf', sep ='')
+  out = paste(out_dir, out_name, sep = '')
+  pdf(out, width = 7.68, height = 4.8)
+  plot.outs(out.list[[3]][[i]])
+  dev.off()
+}
+
+for (i in 1:length(out.list[[3]])){
+  plot.fun(i)
+}
 
 
 
