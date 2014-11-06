@@ -1,18 +1,10 @@
 #This script calculates occupancy distributions and core and occasional species richness
 
-
-###################################################################################*
-# ---- SET-UP ----
-###################################################################################*
-
 #----------------------------------------------------------------------------------*
 # ---- Libraries ----
 #==================================================================================*
 
 library(plyr)
-library(ggplot2)
-library(grid)
-library(gridExtra)
 
 #----------------------------------------------------------------------------------*
 # ---- Get data ----
@@ -166,13 +158,6 @@ out.frame = rbind.fill(out.frame)
 out.list = list(out.raw, out.frame)
   names(out.list) = c('raw_output', 'summary_output')
   
-# Summary data by dataset:
-
-out.by.datasets = ddply(out.frame, .(datasetID), summarize, 
-      mean.prop.core = mean(prop_core), 
-      se.prop.core = sd(prop_core)/sqrt(length(prop_core)),
-      mean.prop.core = mean(prop_trans), 
-      se.prop.core = sd(prop_trans)/sqrt(length(prop_trans)))
 
 # Write the tabular summary data output:
 
