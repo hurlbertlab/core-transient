@@ -126,39 +126,6 @@ ctSummary = function(dataset, site, prop.df, yrs, threshold){
     }
 
 #----------------------------------------------------------------------------------*
-# ---- Function to make core-transient histogram  ----
-#==================================================================================*
-
-ct.hist = function(prop.df, outSummary) {
-  # Set breaks and band width for the histogram:
-  bw = (max(prop.df$prop.yrs)-min(prop.df$prop.yrs))/10
-  brks = seq(min(prop.df$prop.yrs), max(prop.df$prop.yrs),bw)
-  # Plot labels:
-  main = paste('Site ', outSummary[,2], paste('(', outSummary[,4],', ', outSummary[,5],')', sep = ''))
-  sub = bquote(b == .(round(outSummary[,12], 2)) ~ '    '~
-                 mu == .(round(outSummary[,13],2)) ~ '    '~
-                 t == .(outSummary[,6]))
-  # Plot data: 
-  ggplot(prop.df, aes(x=prop.yrs)) +
-    # Add histogram:
-    geom_histogram(aes(y = ..density..), breaks = brks, right = F,
-                   fill = 'gray', color = 1) +
-    # Add density:
-    geom_density(alpha=.2, fill="blue") + 
-    # Add labels:
-    xlab('Proportion of temporal samples') + ylab('Density') + 
-    ggtitle(bquote(atop(.(main), atop(.(sub))))) +
-    # Add themes:
-    theme(axis.text = element_text(size=14, color = 1),
-          axis.title.x = element_text(vjust = -1),
-          axis.title.y = element_text(vjust = 2),
-          title = element_text(size=18, vjust = -1),
-          axis.line = element_line(colour = "black"),
-          panel.background = element_blank(),
-          plot.margin = unit(c(.5,.5,1.5,1), "lines"))
-}
-
-#----------------------------------------------------------------------------------*
 # ---- Function to return core-transient summary analysis ----
 #==================================================================================*
 
@@ -169,10 +136,8 @@ coreTrans = function(dataset, site, threshold){
     yrs = prop.list[['years']]
   # Summary table output:
     outSummary = ctSummary(dataset, site, prop.df, yrs, threshold)
-  # Graphical output: 
-    siteHistogram = ct.hist(prop.df, outSummary)
   # Output
-    list(prop.df,outSummary, siteHistogram)
+    list(prop.df,outSummary)
   }
 
 #----------------------------------------------------------------------------------*
@@ -185,13 +150,11 @@ sites = unique(d$site)
 dID = numeric()
 out.raw = list()  # dataframe of 
 out.frame = list()
-out.plots = list()
 
 for(i in 1:length(sites)){
   dID[i] = unique(d[d$site == sites[i],'datasetID'])
   out.raw[[i]] = coreTrans(dID[i],sites[i],.33)[[1]]
   out.frame[[i]] = coreTrans(dID[i],sites[i],.33)[[2]]
-  out.plots[[i]] = coreTrans(dID[i],sites[i],.33)[[3]]
 }
 
 # Make the output summary frame into a single dataframe:
@@ -200,15 +163,9 @@ out.frame = rbind.fill(out.frame)
 
 # Bind outputs into a single list:
 
-out.list = list(out.raw, out.frame, out.plots)
-  names(out.list) = c('raw_output', 'summary_output','plots')
+out.list = list(out.raw, out.frame)
+  names(out.list) = c('raw_output', 'summary_output')
   
-# Add site names to the plot outs
-
-names(out.list[[3]]) = out.frame$site
-
-out.frame$site[1]
-
 # Summary data by dataset:
 
 out.by.datasets = ddply(out.frame, .(datasetID), summarize, 
@@ -217,26 +174,9 @@ out.by.datasets = ddply(out.frame, .(datasetID), summarize,
       mean.prop.core = mean(prop_trans), 
       se.prop.core = sd(prop_trans)/sqrt(length(prop_trans)))
 
-# Output:
-
 # Write the tabular summary data output:
 
 write.csv(out.frame, paste(out_dir,'/tabular_data/out_frame.csv', sep = ''), row.names = F)
-
-# Write all of the plot outs:
-
-
-plot.fun = function(i){
-  out_name = paste('/plots/histogram_',out.frame$site[i],'.pdf', sep ='')
-  out = paste(out_dir, out_name, sep = '')
-  pdf(out, width = 6.5, height = 5.5)
-    plot(out.list[[3]][[i]])
-  dev.off()
-}
-
-for (i in 1:length(out.list[[3]])){
-  plot.fun(i)
-}
 
 
 
