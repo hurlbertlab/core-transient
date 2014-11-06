@@ -58,18 +58,14 @@ n.timeFun = function(dataset, site){
 prop.yrs.fun = function(dataset, site){
   d = d[d$datasetID == dataset & d$site == site,] # Subsets data by dataset & site
   sp = unique(d$species)        # Generates a species list
-  years = sort(unique(d$year))
-  yrs = length(years)  # Generates a list of years
+  yrs = n.timeFun(dataset, site)[2]
   # For loop to calculate the proportion of years a species has been observed:
   prop.yrs = numeric()
   for (i in 1:length(sp)){                        
     prop.yrs[i] = length(unique(d[d$species == sp[i],'year']))/yrs
   }
   prop.df = data.frame(sp,prop.yrs)  # Dataframe of species and proportion of years
-  years.df = data.frame(site = site, years = yrs)
-  list.out = list(prop.df,years.df)
-  names(list.out) = c('prop.df','years.df')
-  return(list.out)
+  return(prop.df)
 }
 
 sites = unique(d$site)
@@ -79,8 +75,8 @@ years.df = list()
 
 for(i in 1:length(sites)){
   dID[i] = unique(d[d$site == sites[i],'datasetID'])
-  props.df[[i]] = prop.yrs.fun(dID[i],sites[i])[[1]]
-  years.df[[i]] = prop.yrs.fun(dID[i],sites[i])[[2]]
+  props.df[[i]] = prop.yrs.fun(dID[i],sites[i])
+  years.df[[i]] = n.timeFun(dID[i],sites[i])
 }
 
 n.time =  rbind.fill(years.df)
