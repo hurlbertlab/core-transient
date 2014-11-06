@@ -1,15 +1,17 @@
-# Add date (from the core-transient_analysis script ... avoid plotting if you run the script for the test data)
+# Add date (from the core-transient_analysis script ... avoid plotting if you run the script for the prop.df data)
 
-test = out.raw[[1]]
+source('scripts/R-scripts/ct_proportion_frame.R')
+
+test.df = prop.df[[1]]
 
 # Inputs:
 
-N = length(test[,1])               # The total number of species
-nr = length(test[test[,2]>=.66,1]) # The number of species in the upper class
-nl = length(test[test[,2]<=.33,1]) # The number of species in the lower class
+N = length(prop.df[,1])               # The total number of species
+nr = length(prop.df[prop.df[,2]>=.66,1]) # The number of species in the upper class
+nl = length(prop.df[prop.df[,2]<=.33,1]) # The number of species in the lower class
 h = .33333333                      # The frequency interval
 
-# Test to determine if there is a greater number of individuals in a bin than random chance (F>f):
+# prop.df to determine if there is a greater number of individuals in a bin than random chance (F>f):
 
 tokeshi.fun = function(df, N, right.or.left, h){
   outs = NULL
@@ -20,7 +22,7 @@ tokeshi.fun = function(df, N, right.or.left, h){
   return(sum(na.omit(outs)))
 }
 
-tokeshi.fun(test, N,nl, h) 
+tokeshi.fun(prop.df, N,nl, h) 
 
 # Plotting Tokeshi function to look at # of species per bin:
 # The .05 cut-off signifies a strong mode, .25 a mode, and .5 a weak mode
@@ -30,7 +32,7 @@ h = .3333
 x = 1:45
 y = numeric()
 for(i in x){
-  y[i] = tokeshi.fun(test, N, i, h)
+  y[i] = tokeshi.fun(prop.df, N, i, h)
 }
 
 plot.new()
@@ -56,4 +58,12 @@ tokeshi.u.fun = function(N, nr, nl, h){
 
 tokeshi.u.fun(N, nr, nl, h)
 
+ins.i
+ins.j
+out1 = NULL
 
+for(i in ins.i){
+  for(j in ins.j){
+    print(sum(i,j))
+  }
+}
