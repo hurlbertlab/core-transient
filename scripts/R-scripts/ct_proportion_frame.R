@@ -1,5 +1,7 @@
-# This script calculates the proportional occupancy of species across years. It will
-# be sourced by other scripts.
+# This script calculates the proportional occupancy of species across time units
+# in the study. The output is a list of dataframes with each containing the 
+# proportional occupancy by site (name = props.df) and a dataframe containing the
+# number of time units per site. These dataframes will be sourced by other scripts.
 
 #----------------------------------------------------------------------------------*
 # ---- Libraries ----
@@ -43,7 +45,7 @@ d = rbind.fill(data.list)
 # ---- Function create proportion of years by species data frame ----
 #==================================================================================*
 
-prop.by.year = function(dataset, site){
+prop.yrs.fun = function(dataset, site){
   d = d[d$datasetID == dataset & d$site == site,] # Subsets data by dataset & site
   sp = unique(d$species)        # Generates a species list
   years = sort(unique(d$year))
@@ -54,9 +56,25 @@ prop.by.year = function(dataset, site){
     prop.yrs[i] = length(unique(d[d$species == sp[i],'year']))/yrs
   }
   prop.df = data.frame(sp,prop.yrs)  # Dataframe of species and proportion of years
-  list.out = list(prop.df,yrs)
-  names(list.out) = c('prop.df','years')
+  years.df = data.frame(site = site, years = yrs)
+  list.out = list(prop.df,years.df)
+  names(list.out) = c('prop.df','years.df')
   return(list.out)
 }
+
+sites = unique(d$site)
+dID = numeric()
+props.df = list()  # dataframe of 
+years.df = list()
+
+for(i in 1:length(sites)){
+  dID[i] = unique(d[d$site == sites[i],'datasetID'])
+  props.df[[i]] = prop.yrs.fun(dID[i],sites[i])[[1]]
+  years.df[[i]] = prop.yrs.fun(dID[i],sites[i])[[2]]
+}
+
+n.time =  rbind.fill(years.df)
+
+
 
 
