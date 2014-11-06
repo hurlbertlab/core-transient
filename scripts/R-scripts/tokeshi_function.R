@@ -14,8 +14,8 @@ h = .33333333                      # The frequency interval
 tokeshi.fun = function(df, N, right.or.left, h){
   outs = numeric()
   ins = right.or.left:N
-  for(i in 1:length(ins)){
-    outs[i] = (factorial(N)/(factorial(ins[i])*factorial(N-ins[i])))*h^ins[i]*(1-h)^(N-ins[i])
+  for(i in ins){
+    outs[i] = (factorial(N)/(factorial(i)*factorial(N-i)))*h^i*(1-h)^(N-i)
   }
   prob = sum(outs)
   return(prob)
