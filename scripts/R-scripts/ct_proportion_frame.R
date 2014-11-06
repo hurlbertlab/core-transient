@@ -58,7 +58,7 @@ n.timeFun = function(dataset, site){
 prop.yrs.fun = function(dataset, site){
   d = d[d$datasetID == dataset & d$site == site,] # Subsets data by dataset & site
   sp = unique(d$species)        # Generates a species list
-  yrs = n.timeFun(dataset, site)[2]
+  yrs = n.timeFun(dataset, site)[,2]
   # For loop to calculate the proportion of years a species has been observed:
   prop.yrs = numeric()
   for (i in 1:length(sp)){                        
