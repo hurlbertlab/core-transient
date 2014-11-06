@@ -70,5 +70,12 @@ for(i in sites){
 
 tokeshi.outs = rbind.fill(out.list)
 
+tokeshi.outs$bimodality = ifelse(tokeshi.outs$Pl<=0.05&tokeshi.outs$Pr<=0.05, 'strongly bimodal',
+                            ifelse(tokeshi.outs$Pl<0.25&tokeshi.outs$Pr<0.25, 'bimodal',
+                            ifelse(tokeshi.outs$Pl<0.5&tokeshi.outs$Pr<0.5, 'weakly bimodal',
+                            ifelse(tokeshi.outs$Pl<=0.05&tokeshi.outs$Pr<=0.5, 'weakly bimodal',
+                            ifelse(tokeshi.outs$Pl<=0.5&tokeshi.outs$Pr<=0.05, 'weakly bimodal',
+                            'not bimodal')))))
+
 tokeshi.outs
 
