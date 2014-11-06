@@ -17,9 +17,10 @@ tokeshi.fun = function(df, N, right.or.left, h){
   outs = NULL
   ins = right.or.left:N
   for(i in ins){
-    outs[i] = (factorial(N)/(factorial(i)*factorial(N-i)))*h^i*(1-h)^(N-i)
+    o = (factorial(N)/(factorial(i)*factorial(N-i)))*h^i*(1-h)^(N-i)
+    outs = c(outs, o)
   }
-  return(sum(na.omit(outs)))
+  return(sum(outs))
 }
 
 tokeshi.fun(prop.df, N,nl, h) 
@@ -45,16 +46,16 @@ abline(h = .5,lty =3)
 # Note: Function is currently not finished ... needs to run in a nested for loop (sum of sums)
 
 tokeshi.u.fun = function(N, nr, nl, h){
-  ins.i = nl:N 
-  ins.j = nr:N
   outs = NULL
-  for (i in ins.i){
-    for(j in ins.j){
-      outs[j] = (factorial(N)*h^(i + j)*(1-2*h)^(N-i-j))/
-            (factorial(i)*factorial(j)*factorial(S-i-j))
-      }} 
-  sum(na.rm(outs)
-  }
+  for (i in nl:(N - nr)){
+    for(j in nr:(N - i)){
+      o = (factorial(N)*h^(i + j)*(1-2*h)^(N-i-j))/
+            (factorial(i)*factorial(j)*factorial(N-i-j))
+      outs = c(outs, o)
+    }
+  } 
+  sum(outs)
+}
 
 tokeshi.u.fun(N, nr, nl, h)
 
