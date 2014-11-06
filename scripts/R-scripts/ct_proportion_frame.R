@@ -42,6 +42,16 @@ data.list = lapply(data.list, name.changer)
 d = rbind.fill(data.list)
 
 #----------------------------------------------------------------------------------*
+# ---- Calculate the number of time samples per site ----
+#==================================================================================*
+
+n.timeFun = function(dataset, site){
+  d = d[d$datasetID == dataset & d$site == site,] # Subsets data by dataset & site
+  years = length(unique(d$year))
+  data.frame(site = site, nt = years)
+} 
+
+#----------------------------------------------------------------------------------*
 # ---- Function create proportion of years by species data frame ----
 #==================================================================================*
 
