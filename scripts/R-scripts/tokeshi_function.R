@@ -9,7 +9,7 @@ nr = length(test[test[,2]>=.66,1]) # The number of species in the upper class
 nl = length(test[test[,2]<=.33,1]) # The number of species in the lower class
 h = .33333333                      # The frequency interval
 
-# Test to determine if there is a greater number of individuals in a bin than random chance:
+# Test to determine if there is a greater number of individuals in a bin than random chance (F>f):
 
 tokeshi.fun = function(df, N, right.or.left, h){
   outs = NULL
@@ -35,12 +35,9 @@ for(i in x){
 
 plot.new()
 plot(x,y, xlab = '# of species', ylab = 'P(F>f)', type = 'l', lwd = 2)
-# abline(v = h*N,lty =2)
 abline(h = .05,lty =4)
 abline(h = .25,lty =2)
 abline(h = .5,lty =3)
-
-
 
 # Tokeshi's function to determine if the distribution is different than uniform:
 # Note: Function is currently not finished ... needs to run in a nested for loop (sum of sums)
@@ -48,13 +45,13 @@ abline(h = .5,lty =3)
 tokeshi.u.fun = function(N, nr, nl, h){
   ins.i = nl:N 
   ins.j = nr:N
-  outs = 0
+  outs = NULL
   for (i in ins.i){
     for(j in ins.j){
-      outs = outs + (factorial(N)*h^(ins.i[i] + ins.j[j])*(1-2*h)^(N-ins.i[i]-ins.j[j]))/
-            (factorial(ins.i[i])*factorial(ins.j[j])*factorial(S-ins.i[i]-ins.j[j]))
-      }}
-    outs
+      outs[j] = (factorial(N)*h^(i + j)*(1-2*h)^(N-i-j))/
+            (factorial(i)*factorial(j)*factorial(S-i-j))
+      }} 
+  sum(na.rm(outs)
   }
 
 tokeshi.u.fun(N, nr, nl, h)
