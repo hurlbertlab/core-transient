@@ -1,19 +1,15 @@
-# Add date (from the core-transient_analysis script ... avoid plotting if you run the script for the prop.df data)
+###################################################################################*
+# ---- TOKESHI BIMODALITY TEST ----
+###################################################################################*
 
-source('scripts/R-scripts/ct_proportion_frame.R')
+#----------------------------------------------------------------------------------*
+# ---- Tokeshi functions ----
+#==================================================================================*
 
-prop.df = props.df[[1]]
+# Tokeshi's function to determine if there is a greater number of individuals in a
+# bin than random chance (F>f):
 
-# Inputs:
-
-N = length(prop.df[,1])               # The total number of species
-nr = length(prop.df[prop.df[,2]>=.66,1]) # The number of species in the upper class
-nl = length(prop.df[prop.df[,2]<=.33,1]) # The number of species in the lower class
-h = .33333333                      # The frequency interval
-
-# prop.df to determine if there is a greater number of individuals in a bin than random chance (F>f):
-
-tokeshi.fun = function(df, N, right.or.left, h){
+tokeshi.rl.fun = function(N, right.or.left, h){
   outs = NULL
   ins = right.or.left:N
   for(i in ins){
@@ -23,9 +19,8 @@ tokeshi.fun = function(df, N, right.or.left, h){
   return(sum(outs))
 }
 
-
-# Tokeshi's function to determine if there are left or right modes that are greater than
-# expected under a null distribution:
+# Tokeshi's function to determine if there are left or right modes that are
+# greater than expected under a null distribution:
 
 tokeshi.c.fun = function(N, nr, nl, h){
   outs = NULL
@@ -39,26 +34,41 @@ tokeshi.c.fun = function(N, nr, nl, h){
   sum(outs)
 }
 
+# Function to run Tokeshi's bimodality test for a given site:
 
-tokeshi.fun(prop.df, N,nl, h) 
-
-
-tokeshi.u.fun(N, nr, nl, h)
-
-# Plotting Tokeshi function to look at # of species per bin:
-# The .05 cut-off signifies a strong mode, .25 a mode, and .5 a weak mode
-# For bimodality both modes must be at least weak:
-
-h = .3333
-x = 1:45
-y = numeric()
-for(i in x){
-  y[i] = tokeshi.fun(prop.df, N, i, h)
+tokeshiFun = function(site, h){
+  df = prop.df[prop.df$site == site, ]  # Subset to a given site
+  N = length(df[,1])              # The total number of species at the site
+  h = h                           # The frequency interval 
+  nr = length(df[df[,4]>=1-h,1])  # The number of species in the upper class
+  nl = length(df[df[,4]<=h,1])    # The number of species in the lower class
+  Pc = tokeshi.c.fun(N, nr, nl, h)    # Probability of left-or-right skew
+  Pr = tokeshi.rl.fun(N, nr, h)       # Right mode probability
+  Pl = tokeshi.rl.fun(N, nl, h)       # Left mode probability
+  out.df = data.frame(site, N, h, nr, nl, Pc, Pr, Pl)
+  return(out.df)
 }
 
-plot.new()
-plot(x,y, xlab = '# of species', ylab = 'P(F>f)', type = 'l', lwd = 2)
-abline(h = .05,lty =4)
-abline(h = .25,lty =2)
-abline(h = .5,lty =3)
+#----------------------------------------------------------------------------------*
+# ---- Get and run data ----
+#==================================================================================*
+
+# Set-up
+
+library(plyr)
+
+prop.df = read.csv('output/prop.df.csv')
+
+# For loop to return Tokeshi P's for each site:
+
+sites = unique(prop.df$site)
+out.list = list()
+
+for(i in sites){
+  out.list[[i]] = tokeshiFun(i, 1/3)
+}
+
+tokeshi.outs = rbind.fill(out.list)
+
+tokeshi.outs
 
