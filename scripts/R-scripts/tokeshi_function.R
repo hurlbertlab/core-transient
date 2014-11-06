@@ -23,7 +23,27 @@ tokeshi.fun = function(df, N, right.or.left, h){
   return(sum(outs))
 }
 
+
+# Tokeshi's function to determine if there are left or right modes that are greater than
+# expected under a null distribution:
+
+tokeshi.c.fun = function(N, nr, nl, h){
+  outs = NULL
+  for (i in nl:(N - nr)){
+    for(j in nr:(N - i)){
+      o = (factorial(N)*h^(i + j)*(1-2*h)^(N-i-j))/
+            (factorial(i)*factorial(j)*factorial(N-i-j))
+      outs = c(outs, o)
+    }
+  } 
+  sum(outs)
+}
+
+
 tokeshi.fun(prop.df, N,nl, h) 
+
+
+tokeshi.u.fun(N, nr, nl, h)
 
 # Plotting Tokeshi function to look at # of species per bin:
 # The .05 cut-off signifies a strong mode, .25 a mode, and .5 a weak mode
@@ -42,29 +62,3 @@ abline(h = .05,lty =4)
 abline(h = .25,lty =2)
 abline(h = .5,lty =3)
 
-# Tokeshi's function to determine if the distribution is different than uniform:
-# Note: Function is currently not finished ... needs to run in a nested for loop (sum of sums)
-
-tokeshi.u.fun = function(N, nr, nl, h){
-  outs = NULL
-  for (i in nl:(N - nr)){
-    for(j in nr:(N - i)){
-      o = (factorial(N)*h^(i + j)*(1-2*h)^(N-i-j))/
-            (factorial(i)*factorial(j)*factorial(N-i-j))
-      outs = c(outs, o)
-    }
-  } 
-  sum(outs)
-}
-
-tokeshi.u.fun(N, nr, nl, h)
-
-ins.i
-ins.j
-out1 = NULL
-
-for(i in ins.i){
-  for(j in ins.j){
-    print(sum(i,j))
-  }
-}

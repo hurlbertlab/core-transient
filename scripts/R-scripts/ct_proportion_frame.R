@@ -48,7 +48,7 @@ d = rbind.fill(data.list)
 n.timeFun = function(dataset, site){
   d = d[d$datasetID == dataset & d$site == site,] # Subsets data by dataset & site
   years = length(unique(d$year))
-  data.frame(site = site, nt = years)
+  data.frame(dataset, site = site, nt = years)
 } 
 
 #----------------------------------------------------------------------------------*
@@ -58,13 +58,13 @@ n.timeFun = function(dataset, site){
 prop.yrs.fun = function(dataset, site){
   d = d[d$datasetID == dataset & d$site == site,] # Subsets data by dataset & site
   sp = unique(d$species)        # Generates a species list
-  yrs = n.timeFun(dataset, site)[,2]
+  n.t = n.timeFun(dataset, site)[,3]
   # For loop to calculate the proportion of years a species has been observed:
   prop.yrs = numeric()
   for (i in 1:length(sp)){                        
-    prop.yrs[i] = length(unique(d[d$species == sp[i],'year']))/yrs
+    prop.yrs[i] = length(unique(d[d$species == sp[i],'year']))/n.t
   }
-  prop.df = data.frame(sp,prop.yrs)  # Dataframe of species and proportion of years
+  prop.df = data.frame(dataset, site, sp,prop.yrs)  # Dataframe of species and proportion of years
   return(prop.df)
 }
 
@@ -79,7 +79,16 @@ for(i in 1:length(sites)){
   years.df[[i]] = n.timeFun(dID[i],sites[i])
 }
 
+# Turn lists into data frames:
+
+prop.df = rbind.fill(props.df)
 n.time =  rbind.fill(years.df)
+
+# Write files
+
+write.csv(prop.df, 'output/prop.df.csv')
+write.csv(n.time.df, 'output/Ntime.df.csv')
+
 
 
 
