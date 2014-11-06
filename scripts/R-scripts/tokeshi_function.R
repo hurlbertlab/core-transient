@@ -2,7 +2,7 @@
 
 source('scripts/R-scripts/ct_proportion_frame.R')
 
-test.df = prop.df[[1]]
+prop.df = props.df[[1]]
 
 # Inputs:
 
