@@ -87,7 +87,7 @@ n.time =  rbind.fill(years.df)
 # Write files
 
 write.csv(prop.df, 'output/prop.df.csv')
-write.csv(n.time.df, 'output/Ntime.df.csv')
+write.csv(n.time, 'output/Ntime.df.csv')
 
 
 
