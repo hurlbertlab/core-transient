@@ -74,29 +74,16 @@ ct.hist('d226_ew', .33)
 # Generate output lists across sites + datasets:
 
 sites = unique(prop.df$site)
+
+# Plot across sites, output as one pdf: 
+
 out.plots = list()
-
 for(i in 1:length(sites)){
-  out.plots[[i]] = return.ct.hist(dID[i],sites[i],.33)
+  out.plots[[i]] = ct.hist(sites[i],.33)
 }
 
-# Add site names to the plot outs
-
-names(out.plots) = out.frame$site
-
-
-# Write all of the plot outs:
-
-plot.fun = function(i){
-  out_name = paste('/plots/histogram_',out.frame$site[i],'.pdf', sep ='')
-  out = paste(out_dir, out_name, sep = '')
-  pdf(out, width = 6.5, height = 5.5)
-  plot(out.plots[[i]])
-  dev.off()
-}
-
-for (i in 1:length(out.plots)){
-  plot.fun(i)
-}
-
+pdf('output/plots/CT_histograms.pdf', 
+    width = 6.5, height = 5.5, onefile = T)
+  out.plots
+dev.off()
 
