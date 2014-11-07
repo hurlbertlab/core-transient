@@ -5,14 +5,12 @@
 # scripts.
 
 #----------------------------------------------------------------------------------*
-# ---- Libraries ----
+# ---- Set-up ----
 #==================================================================================*
+
+# Libraries:
 
 library(plyr)
-
-#----------------------------------------------------------------------------------*
-# ---- Get data ----
-#==================================================================================*
 
 # Set read and write directories:
 
@@ -70,7 +68,7 @@ prop.t.fun = function(dataset, site){
 
 sites = unique(d$site)
 dID = numeric()
-props.df = list()  # dataframe of 
+props.df = list()  
 nTime.df = list()
 
 for(i in 1:length(sites)){
@@ -88,8 +86,3 @@ n.time =  rbind.fill(nTime.df)
 
 write.csv(prop.df, 'output/prop.df.csv', row.names = F)
 write.csv(n.time, 'output/Ntime.df.csv', row.names = F)
-
-
-
-
-
