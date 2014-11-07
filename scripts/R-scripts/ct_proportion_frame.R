@@ -1,7 +1,8 @@
 # This script calculates the proportional occupancy of species across time units
-# in the study. The output is a list of dataframes with each containing the 
-# proportional occupancy by site (name = props.df) and a dataframe containing the
-# number of time units per site. These dataframes will be sourced by other scripts.
+# in the study. The output is a dataframe that contains the proportional occupancy
+# by species and site (name = prop.df) and a dataframe containing the number of 
+# time units per site (name = Ntime.df). These dataframes will be sourced by other 
+# scripts.
 
 #----------------------------------------------------------------------------------*
 # ---- Libraries ----
