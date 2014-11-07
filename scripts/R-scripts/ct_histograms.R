@@ -64,10 +64,10 @@ ct.hist = function(site,h) {
 }
 
 #----------------------------------------------------------------------------------*
-# ---- Generate plot output across sites  ----
+# ---- Dashboard: Generate plot output  ----
 #==================================================================================*
 
-# Histogram for a given dataset, site, and threshold:
+# Histogram for a given site, and threshold:
 
 ct.hist('d226_ew', .33)
 
