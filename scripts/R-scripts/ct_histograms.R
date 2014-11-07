@@ -5,9 +5,15 @@
 # ---- Set-up ----
 #==================================================================================*
 
-# Set read and write directories:
+# Get files:
 
-source('scripts/R-scripts/core-transient_analysis.R')
+prop.df = read.csv('output/prop.df.csv')
+nTime = read.csv('output/Ntime.df.csv')
+outSummary = read.csv('data_source_table.csv')
+
+# Source Tokeshi function for output:
+
+source('scripts/R-scripts/tokeshi_function.R')
 
 library(plyr)
 library(ggplot2)
@@ -18,27 +24,37 @@ library(gridExtra)
 # ---- Function to make core-transient histogram  ----
 #==================================================================================*
 
-ct.hist = function(prop.df, outSummary) {
-  # Set breaks and band width for the histogram:
-  bw = (max(prop.df$prop.yrs)-min(prop.df$prop.yrs))/10
-  brks = seq(min(prop.df$prop.yrs), max(prop.df$prop.yrs),bw)
+ct.hist = function(site,h) {
+  # Get data, subset to a given site:
+    prop.df = prop.df[prop.df$site == site,]
+    outSummary = outSummary[outSummary$dataset_ID == unique(prop.df$dataset),]
+    nTime = nTime[nTime$site == site,]
+  # Get summary stats for subtitle:
+    system = as.character(outSummary$system)
+    taxa = as.character(outSummary$taxa)
+    bimod.parm = round(bimodality(prop.df$occ, nTime$nt),2)
+    mu = round(mean(prop.df$occ))
+    tokeshi = tokeshiFun(site, h)
   # Plot labels:
-  main = paste('Site ', outSummary[,2], paste('(', outSummary[,4],', ', outSummary[,5],')', sep = ''))
-  sub = bquote(b == .(round(outSummary[,12], 2)) ~ '    '~
-                 mu == .(round(outSummary[,13],2)) ~ '    '~
-                 t == .(outSummary[,6]))
+    main = paste('Site ', site, paste('(', system,', ', taxa,')', sep = ''))
+    sub = bquote(b ~ '=' ~ .(bimod.parm) ~ '    '~
+            mu ~ '=' ~ .(mu) ~ '    '~
+            t ~ '=' ~ .(nTime$nt) ~ '    '~
+            P['core'] ~ '=' ~ .(round(tokeshi$Pr,3)) ~ '    '~
+            P['trans'] ~ '=' ~ .(round(tokeshi$Pl,3)))
+  # Set breaks and band width for the histogram:
+    bw = (max(prop.df$occ)-min(prop.df$occ))/10
+    brks = seq(min(prop.df$occ), max(prop.df$occ),bw)
   # Plot data: 
-  ggplot(prop.df, aes(x=prop.yrs)) +
-    # Add histogram:
-    geom_histogram(aes(y = ..density..), breaks = brks, right = F,
+    ggplot(prop.df, aes(x=occ)) +
+      geom_histogram(aes(y = ..density..), breaks = brks, right = F,
                    fill = 'gray', color = 1) +
-    # Add density:
-    geom_density(alpha=.2, fill="blue") + 
-    # Add labels:
-    xlab('Proportion of temporal samples') + ylab('Density') + 
-    ggtitle(bquote(atop(.(main), atop(.(sub))))) +
-    # Add themes:
-    theme(axis.text = element_text(size=14, color = 1),
+      geom_density(alpha=.2, fill="blue") + 
+      # Add labels:
+        xlab('Proportion of temporal samples') + ylab('Density') + 
+        ggtitle(bquote(atop(.(main), atop(.(sub))))) +
+      # Add themes:
+        theme(axis.text = element_text(size=14, color = 1),
           axis.title.x = element_text(vjust = -1),
           axis.title.y = element_text(vjust = 2),
           title = element_text(size=18, vjust = -1),
@@ -48,33 +64,16 @@ ct.hist = function(prop.df, outSummary) {
 }
 
 #----------------------------------------------------------------------------------*
-# ---- Function to return core-transient summary analysis ----
-#==================================================================================*
-
-return.ct.hist = function(dataset, site, threshold){
-  # Extract proportional data frame:
-  prop.list = prop.by.year(dataset, site)
-  prop.df = prop.list[['prop.df']]
-  yrs = prop.list[['years']]
-  # Summary table output:
-  outSummary = ctSummary(dataset, site, prop.df, yrs, threshold)
-  # Graphical output: 
-  siteHistogram = ct.hist(prop.df, outSummary)
-  # Output
-  return(siteHistogram)
-}
-
-#----------------------------------------------------------------------------------*
-# ---- Generate output across sites  ----
+# ---- Generate plot output across sites  ----
 #==================================================================================*
 
 # Histogram for a given dataset, site, and threshold:
 
-return.ct.hist(236, 'd236_ew', .33)
+ct.hist('d226_ew', .33)
 
 # Generate output lists across sites + datasets:
 
-sites = unique(d$site)
+sites = unique(prop.df$site)
 out.plots = list()
 
 for(i in 1:length(sites)){
