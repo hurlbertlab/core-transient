@@ -17,7 +17,6 @@ library(plyr)
 # Set read and write directories:
 
 in_dir = 'formatted_datasets'
-out_dir = 'output'
 
 # Get summary table:
 
@@ -53,37 +52,37 @@ n.timeFun = function(dataset, site){
 } 
 
 #----------------------------------------------------------------------------------*
-# ---- Function create proportion of years by species data frame ----
+# ---- Function to create proportion of occurences species and time data frame ----
 #==================================================================================*
 
-prop.yrs.fun = function(dataset, site){
+prop.t.fun = function(dataset, site){
   d = d[d$datasetID == dataset & d$site == site,] # Subsets data by dataset & site
   sp = unique(d$species)        # Generates a species list
   n.t = n.timeFun(dataset, site)[,3]
   # For loop to calculate the proportion of years a species has been observed:
-  prop.yrs = numeric()
+  occ = numeric()
   for (i in 1:length(sp)){                        
-    prop.yrs[i] = length(unique(d[d$species == sp[i],'year']))/n.t
+    occ[i] = length(unique(d[d$species == sp[i],'year']))/n.t
   }
-  prop.df = data.frame(dataset, site, sp,prop.yrs)  # Dataframe of species and proportion of years
+  prop.df = data.frame(dataset, site, sp,occ)  # Dataframe of species and proportion of years
   return(prop.df)
 }
 
 sites = unique(d$site)
 dID = numeric()
 props.df = list()  # dataframe of 
-years.df = list()
+nTime.df = list()
 
 for(i in 1:length(sites)){
   dID[i] = unique(d[d$site == sites[i],'datasetID'])
-  props.df[[i]] = prop.yrs.fun(dID[i],sites[i])
-  years.df[[i]] = n.timeFun(dID[i],sites[i])
+  props.df[[i]] = prop.t.fun(dID[i],sites[i])
+  nTime.df[[i]] = n.timeFun(dID[i],sites[i])
 }
 
 # Turn lists into data frames:
 
 prop.df = rbind.fill(props.df)
-n.time =  rbind.fill(years.df)
+n.time =  rbind.fill(nTime.df)
 
 # Write files
 
