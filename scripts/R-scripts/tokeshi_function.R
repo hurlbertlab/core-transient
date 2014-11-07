@@ -84,14 +84,14 @@ tokeshi.outs
 # Plot output:
 
 ggplot(tokeshi.outs, aes(x = Pr, y = Pl,col = bimodality)) +geom_point() +
-  xlab('P(F > f), right')+
-  ylab('P(F > f), left')+
-  geom_segment(aes(x = .05, y = 0, xend = .05, yend = .05), color = 1, size = .5, linetype  = 1) +
-  geom_segment(aes(x = 0, y = .05, xend = .05, yend = .05), color = 1, size = .5, linetype = 1) +
-  geom_segment(aes(x = .25, y = 0, xend = .25, yend = .25), color = 1, size = .5, linetype  = 2) +
-  geom_segment(aes(x = 0, y = .25, xend = .25, yend = .25), color = 1, size = .5, linetype =2) +
-  geom_segment(aes(x = .5, y = 0, xend = .5, yend = .5), color = 1, size = .5, linetype  = 3) +
-  geom_segment(aes(x = 0, y = .5, xend = .5, yend = .5), color = 1, size = .5, linetype = 3) +
+  xlab('P(F > f), core species')+
+  ylab('P(F > f), transient species')+
+  geom_segment(aes(x = .05, y = 0, xend = .05, yend = 1), color = 1, size = .5, linetype  = 1) +
+  geom_segment(aes(x = 0, y = .05, xend = 1, yend = .05), color = 1, size = .5, linetype = 1) +
+  geom_segment(aes(x = .25, y = 0, xend = .25, yend = 1), color = 1, size = .5, linetype  = 2) +
+  geom_segment(aes(x = 0, y = .25, xend = 1, yend = .25), color = 1, size = .5, linetype =2) +
+  geom_segment(aes(x = .5, y = 0, xend = .5, yend = 1), color = 1, size = .5, linetype  = 3) +
+  geom_segment(aes(x = 0, y = .5, xend = 1, yend = .5), color = 1, size = .5, linetype = 3) +
   ggtitle('Tokeshi bimodality test across sites')+
   # Add themes:
    theme(axis.text = element_text(size=14, color = 1),
