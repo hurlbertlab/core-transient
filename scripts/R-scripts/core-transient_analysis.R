@@ -1,71 +1,19 @@
-#This script calculates occupancy distributions and core and occasional species richness
+# This script creates a table of core-transient summary statistics by site.
 
 #----------------------------------------------------------------------------------*
-# ---- Libraries ----
+# ---- Set-up ----
 #==================================================================================*
 
-library(plyr)
+source('scripts/R-scripts/ct_proportion_frame.R')
 
 #----------------------------------------------------------------------------------*
-# ---- Get data ----
-#==================================================================================*
-
-# Set read and write directories:
-
-in_dir = 'formatted_datasets'
-out_dir = 'output'
-
-# Get summary table:
-
-summary.table = read.csv('data_source_table.csv')
-
-# Gather all files in directory:
-
-datasets = list.files(in_dir, pattern="*.csv", full.names=T)
-data.list = lapply(datasets, read.csv)
-
-# The following function and line of code will change field names from density
-# to count to ensure equivalent names (for rbinding):
-
-name.changer = function(x){
-  if (names(x)[5] == 'density') names(x)[5] = 'count'
-  x
-}
-
-data.list = lapply(data.list, name.changer)
-
-# Bind the list into a single dataframe that includes all datasets:
-
-d = rbind.fill(data.list)
-
-#----------------------------------------------------------------------------------*
-# ---- Function create proportion of years by species data frame ----
-#==================================================================================*
-
-prop.by.year = function(dataset, site){
-  d = d[d$datasetID == dataset & d$site == site,] # Subsets data by dataset & site
-  sp = unique(d$species)        # Generates a species list
-  years = sort(unique(d$year))
-  yrs = length(years)  # Generates a list of years
-  # For loop to calculate the proportion of years a species has been observed:
-  prop.yrs = numeric()
-  for (i in 1:length(sp)){                        
-    prop.yrs[i] = length(unique(d[d$species == sp[i],'year']))/yrs
-  }
-  prop.df = data.frame(sp,prop.yrs)  # Dataframe of species and proportion of years
-    list.out = list(prop.df,yrs)
-      names(list.out) = c('prop.df','years')
-  return(list.out)
-  }
-
-#----------------------------------------------------------------------------------*
-# ---- Functions for calculating bimodality ----
+# ---- Function for calculating bimodality ----
 #==================================================================================*
 # Note: bimodality is the fraction of species occurring at either end of occupancy
 # distribution
 
-bimodality = function(occs, yrs) {
-  maxvar = var(c(rep(1/yrs,floor(length(occs)/2)),
+bimodality = function(occs, n.time) {
+  maxvar = var(c(rep(1/n.time,floor(length(occs)/2)),
                  rep(1,ceiling(length(occs)/2))))
   return(var(occs)/maxvar)
   }
@@ -81,6 +29,53 @@ fitbeta = function(dataID, not1) {
   shape.params = fitdistr(occs, "beta", list(shape1 = 2, shape2 = 2))
   return(as.vector(shape.params$estimate))
   }
+
+#----------------------------------------------------------------------------------*
+# ---- Tokeshi functions ----
+#==================================================================================*
+
+# Tokeshi's function to determine if there is a greater number of individuals in a
+# bin than random chance (F>f):
+
+tokeshi.rl.fun = function(N, right.or.left, h){
+  outs = NULL
+  ins = right.or.left:N
+  for(i in ins){
+    o = (factorial(N)/(factorial(i)*factorial(N-i)))*h^i*(1-h)^(N-i)
+    outs = c(outs, o)
+  }
+  return(sum(outs))
+}
+
+# Tokeshi's function to determine if there are left or right modes that are
+# greater than expected under a null distribution:
+
+tokeshi.c.fun = function(N, nr, nl, h){
+  outs = NULL
+  for (i in nl:(N - nr)){
+    for(j in nr:(N - i)){
+      o = (factorial(N)*h^(i + j)*(1-2*h)^(N-i-j))/
+        (factorial(i)*factorial(j)*factorial(N-i-j))
+      outs = c(outs, o)
+    }
+  } 
+  sum(outs)
+}
+
+# Function to run Tokeshi's bimodality test for a given site:
+
+tokeshiFun = function(site, h){
+  df = prop.df[prop.df$site == site, ]  # Subset to a given site
+  N = length(df[,1])              # The total number of species at the site
+  h = h                           # The frequency interval 
+  nr = length(df[df[,4]>=1-h,1])  # The number of species in the upper class
+  nl = length(df[df[,4]<=h,1])    # The number of species in the lower class
+  Pc = tokeshi.c.fun(N, nr, nl, h)    # Probability of left-or-right skew
+  Pr = tokeshi.rl.fun(N, nr, h)       # Right mode probability
+  Pl = tokeshi.rl.fun(N, nl, h)       # Left mode probability
+  out.df = data.frame(site, N, h, nr, nl, Pc, Pr, Pl)
+  return(out.df)
+}
 
 #----------------------------------------------------------------------------------*
 # ---- Function to generate output summary dataset ----
