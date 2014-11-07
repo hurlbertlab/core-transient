@@ -13,7 +13,7 @@ outSummary = read.csv('data_source_table.csv')
 
 # Source core-transient functions:
 
-source('scripts/R-scripts/tokeshi_function.R')
+source('scripts/R-scripts/core-transient_functions.R')
 
 library(plyr)
 library(ggplot2)
