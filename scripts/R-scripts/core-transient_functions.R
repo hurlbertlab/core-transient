@@ -188,7 +188,6 @@ coreTrans = function(threshold){
 
 ct.hist = function(site,h) {
   # Get data, subset to a given site:
-  prop.df = read.csv('output/prop.df.csv')
   prop.df = prop.df[prop.df$site == site,]
   outSummary = outSummary[outSummary$dataset_ID == unique(prop.df$dataset),]
   nTime = nTime[nTime$site == site,]
