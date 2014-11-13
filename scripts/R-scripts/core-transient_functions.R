@@ -1,5 +1,11 @@
-# This script contains the functions used in the analyses that summarize
-# core-transient data by site.
+###################################################################################*
+# ---- CORE-TRANSIENT FUNCTIONS ----
+###################################################################################*
+# This script contains all of the functions used in the analyses that summarize
+# core-transient data by site (and across sites). It is divided in 3 parts:
+#   1. Bimodality summary statistics
+#   2. Summary output tables for a given site and across sites
+#   3. Plot output
 
 #==================================================================================*
 # ---- BIMODALILITY ----
@@ -245,6 +251,23 @@ ct.hist = function(site,h) {
             axis.line = element_line(colour = "black"),
             panel.background = element_blank(),
             plot.margin = unit(c(.5,.5,1.5,1), "lines"))
+  }
+
+#----------------------------------------------------------------------------------*
+# ---- Function to write core-transient histograms across sites  ----
+#==================================================================================*
+
+write.ctHist = function(h){
+  prop.df = read.csv('output/prop.df.csv')
+  sites = unique(prop.df$site)
+  out.plots = list()
+  for(i in 1:length(sites)){
+    out.plots[[i]] = ct.hist(sites[i],h)
+  }
+  pdf('output/plots/CT_histograms.pdf', 
+    width = 6.5, height = 5.5, onefile = T)
+  out.plots
+  dev.off()
   }
 
 #----------------------------------------------------------------------------------*
