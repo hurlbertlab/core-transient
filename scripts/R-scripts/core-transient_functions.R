@@ -53,13 +53,25 @@ bimodality = function(occs, n.time) {
 #----------------------------------------------------------------------------------*
 # ---- Function for fitting the beta distribution ----
 #==================================================================================*
-# Note: From meeting with Allen, 10/30/14, not currently tested within this script.
+# Required packages = MASS
 
-fitbeta = function(dataID, not1) {
-  occs = out.list[[1]][[dataID]]$prop.yrs
-  occs[occs == 1] = not1
-  shape.params = fitdistr(occs, "beta", list(shape1 = 2, shape2 = 2))
-  return(as.vector(shape.params$estimate))
+# Scale occupancy from [0,1] to (0,1) following Smithson and Verkuilen 2006
+# Note: See supplemental at
+# http://supp.apa.org/psycarticles/supplemental/met_11_1_54/met_11_1_54_supp.html
+
+occs.scaled = function(site){
+  x = prop.df[prop.df$site == site,'occ']
+  n = length(x)
+  s = .5
+  (x*(n-1)+s)/n
+}
+
+# Fit beta distribution:
+
+fitBeta = function(site) {
+  occs  = occs.scaled(site)
+  shape.params = suppressWarnings(fitdistr(occs, "beta", list(shape1 = 2, shape2 = 2)))
+  return(as.vector(shape.params$estimate)) 
 }
 
 #----------------------------------------------------------------------------------*
