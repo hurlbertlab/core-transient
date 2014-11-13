@@ -162,6 +162,9 @@ ctSummary = function(d, dst, nt, site, threshold){
 # ---- Function to return core-transient summary analysis for all sites ----
 #==================================================================================*
 
+# Wrapper function that outputs a dataframe with core-transient summary data
+# across sites:
+
 coreTrans = function(threshold){
   # Get data:
     d = read.csv('output/prop.df.csv')
@@ -186,41 +189,70 @@ coreTrans = function(threshold){
 
 ct.hist = function(site,h) {
   # Get data, subset to a given site:
-  prop.df = prop.df[prop.df$site == site,]
-  outSummary = outSummary[outSummary$dataset_ID == unique(prop.df$dataset),]
-  nTime = nTime[nTime$site == site,]
+    prop.df = read.csv('output/prop.df.csv')
+    prop.df = prop.df[prop.df$site == site,]
+    outSummary = outSummary[outSummary$dataset_ID == unique(prop.df$dataset),]
+    nTime = nTime[nTime$site == site,]
   # Get summary stats for subtitle:
-  system = as.character(outSummary$system)
-  taxa = as.character(outSummary$taxa)
-  bimod.parm = round(bimodality(prop.df$occ, nTime$nt),2)
-  mu = round(mean(prop.df$occ))
-  tokeshi = tokeshiFun(site, h)
+    system = as.character(outSummary$system)
+    taxa = as.character(outSummary$taxa)
+    bimod.parm = round(bimodality(prop.df$occ, nTime$nt),2)
+    mu = round(mean(prop.df$occ))
+    tokeshi = tokeshiFun(site, h)
   # Plot labels:
-  main = paste('Site ', site, paste('(', system,', ', taxa,')', sep = ''))
-  sub = bquote(b ~ '=' ~ .(bimod.parm) ~ '    '~
-                 mu ~ '=' ~ .(mu) ~ '    '~
-                 t ~ '=' ~ .(nTime$nt) ~ '    '~
-                 P['core'] ~ '=' ~ .(round(tokeshi$Pr,3)) ~ '    '~
-                 P['trans'] ~ '=' ~ .(round(tokeshi$Pl,3)))
+    main = paste('Site ', site, paste('(', system,', ', taxa,')', sep = ''))
+    sub = bquote(b ~ '=' ~ .(bimod.parm) ~ '    '~
+                   mu ~ '=' ~ .(mu) ~ '    '~
+                   t ~ '=' ~ .(nTime$nt) ~ '    '~
+                   P['core'] ~ '=' ~ .(round(tokeshi$Pr,3)) ~ '    '~
+                   P['trans'] ~ '=' ~ .(round(tokeshi$Pl,3)))
   # Set breaks and band width for the histogram:
-  bw = (max(prop.df$occ)-min(prop.df$occ))/10
-  brks = seq(min(prop.df$occ), max(prop.df$occ),bw)
+    bw = (max(prop.df$occ)-min(prop.df$occ))/10
+    brks = seq(min(prop.df$occ), max(prop.df$occ),bw)
   # Plot data: 
-  ggplot(prop.df, aes(x=occ)) +
-    geom_histogram(aes(y = ..density..), breaks = brks, right = F,
-                   fill = 'gray', color = 1) +
-    geom_density(alpha=.2, fill="blue") + 
-    # Add labels:
-    xlab('Proportion of temporal samples') + ylab('Density') + 
-    ggtitle(bquote(atop(.(main), atop(.(sub))))) +
-    # Add themes:
-    theme(axis.text = element_text(size=14, color = 1),
-          axis.title.x = element_text(vjust = -1),
-          axis.title.y = element_text(vjust = 2),
-          title = element_text(size=18, vjust = -1),
-          axis.line = element_line(colour = "black"),
-          panel.background = element_blank(),
-          plot.margin = unit(c(.5,.5,1.5,1), "lines"))
-}
+    ggplot(prop.df, aes(x=occ)) +
+      geom_histogram(aes(y = ..density..), breaks = brks, right = F,
+                     fill = 'gray', color = 1) +
+      geom_density(alpha=.2, fill="blue") + 
+      # Add labels:
+      xlab('Proportion of temporal samples') + ylab('Density') + 
+      ggtitle(bquote(atop(.(main), atop(.(sub))))) +
+      # Add themes:
+      theme(axis.text = element_text(size=14, color = 1),
+            axis.title.x = element_text(vjust = -1),
+            axis.title.y = element_text(vjust = 2),
+            title = element_text(size=18, vjust = -1),
+            axis.line = element_line(colour = "black"),
+            panel.background = element_blank(),
+            plot.margin = unit(c(.5,.5,1.5,1), "lines"))
+  }
+
+# Plot output:
+
+ggplot(tokeshi.outs, aes(x = Pr, y = Pl,col = bimodality)) +
+  geom_point() +
+  xlab('P(F > f), core species')+
+  ylab('P(F > f), transient species')+
+  geom_segment(aes(x = .05, y = 0, xend = .05, yend = 1), 
+               color = 1, size = .5, linetype  = 1) +
+  geom_segment(aes(x = 0, y = .05, xend = 1, yend = .05), 
+               color = 1, size = .5, linetype = 1) +
+  geom_segment(aes(x = .25, y = 0, xend = .25, yend = 1), 
+               color = 1, size = .5, linetype  = 2) +
+  geom_segment(aes(x = 0, y = .25, xend = 1, yend = .25), 
+               color = 1, size = .5, linetype =2) +
+  geom_segment(aes(x = .5, y = 0, xend = .5, yend = 1), 
+               color = 1, size = .5, linetype  = 3) +
+  geom_segment(aes(x = 0, y = .5, xend = 1, yend = .5), 
+               color = 1, size = .5, linetype = 3) +
+  ggtitle('Tokeshi bimodality test across sites')+
+  # Add themes:
+  theme(axis.text = element_text(size=14, color = 1),
+        axis.title.x = element_text(vjust = -1),
+        axis.title.y = element_text(vjust = 2),
+        title = element_text(size=18, vjust = 2, face = 'bold'),
+        axis.line = element_line(colour = "black"),
+        panel.background = element_blank(),
+        plot.margin = unit(c(2,2,2,2), "lines"))
 
 
