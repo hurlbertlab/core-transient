@@ -85,7 +85,7 @@ p.bimodal = function(site, reps){
   }
   # Calculate the p-value (proportion of sites with higher bimodality than the
   # actual bimodality value):
-  sum(r.bimod >= actual.bimod)/1000
+  sum(r.bimod >= actual.bimod)/reps
 }
 
 #----------------------------------------------------------------------------------*
@@ -136,7 +136,7 @@ fitBeta = function(site) {
 #==================================================================================*
 # Note the output of this function is a one line data frame.
 
-ctSummary = function(d, dst, nt, site, threshold){
+ctSummary = function(d, dst, nt, site, threshold, reps){
   # Note: d = proportional data frame, dst = data source table, 
   # nt = # of temporal samples data frame. Each of these are
   # defined in the wrapper function below.
@@ -156,14 +156,13 @@ ctSummary = function(d, dst, nt, site, threshold){
     mu = mean(d$occ)
   # Calculate bimodality of the dataset and site:
     bimodal = bimodality(d$occ, nt)
-    t.out = tokeshiFun(site, threshold)
+    bimodal.p = p.bimodal(site, reps)
   # Output
     return(data.frame(dataset, site, threshold, system = dst$system,
               taxa = dst$taxa, N.time = nt,
               rich.total, rich.core, rich.trans, 
               prop.core, prop.trans, mu, bimodal,
-              P.ct = t.out$Pc, P.core = t.out$Pr,
-              P.trans = t.out$Pl))
+              bimodal.p))
   }
 
 #----------------------------------------------------------------------------------*
@@ -173,7 +172,7 @@ ctSummary = function(d, dst, nt, site, threshold){
 # Wrapper function that outputs a dataframe with core-transient summary data
 # across sites:
 
-coreTrans = function(threshold){
+coreTrans = function(threshold, reps){
   # Get data:
     d = read.csv('output/prop.df.csv')
     dst = read.csv('data_source_table.csv')
@@ -182,7 +181,7 @@ coreTrans = function(threshold){
   site = unique(d$site)
   out.list = list()
   for(i in site){
-    out.list[[i]] = ctSummary(d, dst , nt, i, threshold)
+    out.list[[i]] = ctSummary(d, dst , nt, i, threshold, reps)
   }
   rbind.fill(out.list)
 }
@@ -192,11 +191,25 @@ coreTrans = function(threshold){
 #==================================================================================*
 
 #----------------------------------------------------------------------------------*
+# ---- Function that adds the beta line to the histogram plot  ----
+#==================================================================================*
+
+plotBeta = function(site) {
+  shape.params =fitbeta(site)
+  par(new=T)
+  beta.dist = rbeta(10000, shape1 = shape.params[1], shape2 = shape.params[2])
+  #out.list[[3]][[dataID]]
+  plot(density(beta.dist), bty = 'n',
+       xlim = c(0,1), yaxt="n", xaxt="n", 
+       ylab="", xlab="", main="", lwd = 3)
+}
+
+#----------------------------------------------------------------------------------*
 # ---- Function to make core-transient histogram  ----
 #==================================================================================*
 # This function creates a ct histogram for one site:
 
-ct.hist = function(site,h) {
+ct.hist = function(site,h, reps) {
   # Get data, subset to a given site:
     prop.df = read.csv('output/prop.df.csv')
     prop.df = prop.df[prop.df$site == site,]
@@ -206,15 +219,18 @@ ct.hist = function(site,h) {
     system = as.character(outSummary$system)
     taxa = as.character(outSummary$taxa)
     bimod.parm = round(bimodality(prop.df$occ, nTime$nt),2)
+    bimod.p = round(p.bimodal(site, reps),3)
     mu = round(mean(prop.df$occ))
-    tokeshi = tokeshiFun(site, h)
+    b.a = round(fitBeta(site)[1],3)
+    b.b = round(fitBeta(site)[2],3)
   # Plot labels:
     main = paste('Site ', site, paste('(', system,', ', taxa,')', sep = ''))
     sub = bquote(b ~ '=' ~ .(bimod.parm) ~ '    '~
+                   P['b'] ~ '=' ~ .(bimod.p) ~ '    '~
                    mu ~ '=' ~ .(mu) ~ '    '~
-                   t ~ '=' ~ .(nTime$nt) ~ '    '~
-                   P['core'] ~ '=' ~ .(round(tokeshi$Pr,3)) ~ '    '~
-                   P['trans'] ~ '=' ~ .(round(tokeshi$Pl,3)))
+                   t ~ '=' ~ .(nTime$nt))
+    sub2 = bquote(beta['a'] ~ '=' ~ .(b.a) ~ '    '~
+                   beta['b'] ~ '=' ~ .(b.b))
   # Set breaks and band width for the histogram:
     bw = (max(prop.df$occ)-min(prop.df$occ))/10
     brks = seq(min(prop.df$occ), max(prop.df$occ),bw)
@@ -222,10 +238,10 @@ ct.hist = function(site,h) {
     ggplot(prop.df, aes(x=occ)) +
       geom_histogram(aes(y = ..density..), breaks = brks, right = F,
                      fill = 'gray', color = 1) +
-      geom_density(alpha=.2, fill="blue") + 
+#       geom_density(alpha=.2, fill="blue") + 
       # Add labels:
       xlab('Proportion of temporal samples') + ylab('Density') + 
-      ggtitle(bquote(atop(.(main), atop(.(sub))))) +
+      ggtitle(bquote(atop(.(main), atop(.(sub), atop(.(sub2)))))) +
       # Add themes:
       theme(axis.text = element_text(size=14, color = 1),
             axis.title.x = element_text(vjust = -1),
@@ -234,15 +250,9 @@ ct.hist = function(site,h) {
             axis.line = element_line(colour = "black"),
             panel.background = element_blank(),
             plot.margin = unit(c(.5,.5,1.5,1), "lines"))
+    # Add beta distribution line:
+      plotBeta(site)
   }
 
-plotBeta = function(site, color) {
-  shape.params =fitbeta(site)
-  par(new=T)
-  beta.dist = rbeta(10000, shape1 = shape.params[1], shape2 = shape.params[2])
-  #out.list[[3]][[dataID]]
-  plot(density(beta.dist), bty = 'n',
-       xlim = c(0,1), yaxt="n", xaxt="n", 
-       ylab="", xlab="", main="", col = 1)
-}
+
 
