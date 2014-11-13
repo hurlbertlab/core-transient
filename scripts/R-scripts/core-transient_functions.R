@@ -114,7 +114,13 @@ tokeshiWrapper = function(h){
   for(i in site){
     list.out[[i]] = tokeshiFun(i, h)
   }
-  rbind.fill(list.out)
+  t1 = na.omit(rbind.fill(list.out))
+  t1$bimodality = ifelse(t1$Pl<=0.05 & t1$Pr<=0.05, 'strongly bimodal',
+         ifelse(t1$Pl<0.25&t1$Pr<0.25, 'bimodal',
+         ifelse(t1$Pl<0.5&t1$Pr<0.5, 'weakly bimodal',
+         ifelse(t1$Pl<=0.05&t1$Pr<=0.5, 'weakly bimodal',
+         ifelse(t1$Pl<=0.5&t1$Pr<=0.05, 'weakly bimodal', 'not bimodal')))))
+  return(t1)
 }
 
 #==================================================================================*
@@ -199,6 +205,7 @@ coreTrans = function(threshold){
 #----------------------------------------------------------------------------------*
 # ---- Function to make core-transient histogram  ----
 #==================================================================================*
+# This function creates a ct histogram for one site:
 
 ct.hist = function(site,h) {
   # Get data, subset to a given site:
@@ -240,32 +247,40 @@ ct.hist = function(site,h) {
             plot.margin = unit(c(.5,.5,1.5,1), "lines"))
   }
 
-# Plot output:
+#----------------------------------------------------------------------------------*
+# ---- Function to make Tokeshi plot  ----
+#==================================================================================*
 
-ggplot(tokeshi.outs, aes(x = Pr, y = Pl,col = bimodality)) +
-  geom_point() +
-  xlab('P(F > f), core species')+
-  ylab('P(F > f), transient species')+
-  geom_segment(aes(x = .05, y = 0, xend = .05, yend = 1), 
-               color = 1, size = .5, linetype  = 1) +
-  geom_segment(aes(x = 0, y = .05, xend = 1, yend = .05), 
-               color = 1, size = .5, linetype = 1) +
-  geom_segment(aes(x = .25, y = 0, xend = .25, yend = 1), 
-               color = 1, size = .5, linetype  = 2) +
-  geom_segment(aes(x = 0, y = .25, xend = 1, yend = .25), 
-               color = 1, size = .5, linetype =2) +
-  geom_segment(aes(x = .5, y = 0, xend = .5, yend = 1), 
-               color = 1, size = .5, linetype  = 3) +
-  geom_segment(aes(x = 0, y = .5, xend = 1, yend = .5), 
-               color = 1, size = .5, linetype = 3) +
-  ggtitle('Tokeshi bimodality test across sites')+
-  # Add themes:
-  theme(axis.text = element_text(size=14, color = 1),
-        axis.title.x = element_text(vjust = -1),
-        axis.title.y = element_text(vjust = 2),
-        title = element_text(size=18, vjust = 2, face = 'bold'),
-        axis.line = element_line(colour = "black"),
-        panel.background = element_blank(),
-        plot.margin = unit(c(2,2,2,2), "lines"))
+tokeshiPlot = function(h){
+  tokeshi.outs = tokeshiWrapper(h)
+  tokeshi.outs = na.omit(tokeshi.outs)
+    ggplot(tokeshi.outs, aes(x = Pr, y = Pl,col = bimodality)) +
+      geom_point() +
+      xlab('P(F > f), core species')+
+      ylab('P(F > f), transient species')+
+      geom_segment(aes(x = .05, y = 0, xend = .05, yend = 1), 
+                   color = 1, size = .5, linetype  = 1) +
+      geom_segment(aes(x = 0, y = .05, xend = 1, yend = .05), 
+                   color = 1, size = .5, linetype = 1) +
+      geom_segment(aes(x = .25, y = 0, xend = .25, yend = 1), 
+                   color = 1, size = .5, linetype  = 2) +
+      geom_segment(aes(x = 0, y = .25, xend = 1, yend = .25), 
+                   color = 1, size = .5, linetype =2) +
+      geom_segment(aes(x = .5, y = 0, xend = .5, yend = 1), 
+                   color = 1, size = .5, linetype  = 3) +
+      geom_segment(aes(x = 0, y = .5, xend = 1, yend = .5), 
+                   color = 1, size = .5, linetype = 3) +
+      ggtitle('Tokeshi bimodality test across sites')+
+      # Add themes:
+      theme(axis.text = element_text(size=14, color = 1),
+            axis.title.x = element_text(vjust = -1),
+            axis.title.y = element_text(vjust = 2),
+            title = element_text(size=18, vjust = 2, face = 'bold'),
+            axis.line = element_line(colour = "black"),
+            panel.background = element_blank(),
+            plot.margin = unit(c(2,2,2,2), "lines"))
+  }
+
+tokeshiPlot(.33)
 
 
