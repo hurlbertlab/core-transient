@@ -104,6 +104,19 @@ tokeshiFun = function(site, h){
   return(out.df)
 }
 
+# Wrapper function to run Tokeshi's bimodality test across sites. This is used
+# in the construction of the Tokeshi plot:
+
+tokeshiWrapper = function(h){
+  d = read.csv('output/prop.df.csv')
+  site = unique(d$site)
+  list.out = list()
+  for(i in site){
+    list.out[[i]] = tokeshiFun(i, h)
+  }
+  rbind.fill(list.out)
+}
+
 #==================================================================================*
 # ---- DATASET SUMMARY FUNCTIONS ----
 #==================================================================================*
