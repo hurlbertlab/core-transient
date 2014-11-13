@@ -40,21 +40,12 @@ ct = coreTrans(1/3)
 
 write.csv(ct, 'output/tabular_data/core-transient_summary.csv', row.names = F)
 
-# ---- Tokeshi output table ----
-# Input is the cut-ff for core- and transient designation
-
-tokeshi = tokeshiWrapper(1/3)
-
-# ---- Write Tokeshi output table to file ----
-
-write.csv(tokeshi, 'output/tabular_data/tokeshi.table.csv', row.names = F)
 
 #----------------------------------------------------------------------------------*
 # ---- PLOTS ----
 #==================================================================================*
 # Plot outputs include:
 # 1. Core-transient histogram
-# 2. Tokeshi scatterplot
 
 #----------------------------------------------------------------------------------*
 # ---- Core-transient histogram  ----
@@ -83,17 +74,3 @@ pdf('output/plots/CT_histograms.pdf',
 out.plots
 dev.off()
 
-#----------------------------------------------------------------------------------*
-# ---- Tokeshi plot  ----
-#----------------------------------------------------------------------------------*
-
-# Plot output:
-# NOTE! THERE ARE WARNINGS HERE ... EXPLORE WHY!!!
-
-tokeshiPlot(1/3)
-
-# Write plot to file:
-
-pdf('output/plots/tokeshi.pdf', width = 8, height = 6)
-tokeshiPlot(1/3)
-dev.off() 
