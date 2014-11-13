@@ -209,7 +209,7 @@ plotBeta = function(site) {
 #==================================================================================*
 # This function creates a ct histogram for one site:
 
-ct.hist = function(site,h, reps) {
+ct.hist = function(site,reps) {
   # Get data, subset to a given site:
     prop.df = read.csv('output/prop.df.csv')
     prop.df = prop.df[prop.df$site == site,]
