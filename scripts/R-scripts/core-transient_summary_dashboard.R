@@ -1,0 +1,98 @@
+###################################################################################*
+# ---- CORE-TRANSIENT SUMMARY DASHBOARD ----
+###################################################################################*
+# This file is used as a dashboard to observe / produce summary output from core-
+# transient analyses. Output includes summary tables and plots. Functions are
+# located in the core-transient_functions.R source file.
+
+#----------------------------------------------------------------------------------*
+# ---- Set-up ----
+#==================================================================================*
+
+# Get files:
+
+prop.df = read.csv('output/prop.df.csv')
+nTime = read.csv('output/Ntime.df.csv')
+outSummary = read.csv('data_source_table.csv')
+
+# Source core-transient functions:
+
+source('scripts/R-scripts/core-transient_functions.R')
+
+# Load libraries:
+
+library(plyr)
+library(ggplot2)
+library(grid)
+library(gridExtra)
+
+#----------------------------------------------------------------------------------*
+#  ---- SUMMARY TABLE OUTPUT ----
+#==================================================================================*
+
+# ---- Core-transient summary table ----
+# Input is the cut-ff for core- and transient designation
+
+ct = coreTrans(1/3)
+
+# ---- Write core-transient summary table to file ----
+
+write.csv(ct, 'output/tabular_data/core-transient_summary.csv', row.names = F)
+
+# ---- Tokeshi output table ----
+# Input is the cut-ff for core- and transient designation
+
+tokeshi = tokeshiWrapper(1/3)
+
+# ---- Write Tokeshi output table to file ----
+
+write.csv(tokeshi, 'output/tabular_data/tokeshi.table.csv', row.names = F)
+
+#----------------------------------------------------------------------------------*
+# ---- PLOTS ----
+#==================================================================================*
+# Plot outputs include:
+# 1. Core-transient histogram
+# 2. Tokeshi scatterplot
+
+#----------------------------------------------------------------------------------*
+# ---- Core-transient histogram  ----
+#----------------------------------------------------------------------------------*
+
+# Create a vector of sites:
+
+sites = unique(prop.df$site)
+
+# Core-transient histogram for a given site and cut-off (example is Eastern Wood):
+
+ct.hist('d226_ew',.33)
+
+# Run a for loop to create plots for each site (output as list):
+# NOTE! THERE ARE WARNINGS HERE ... EXPLORE WHY!!!
+
+out.plots = list()
+  for(i in 1:length(sites)){
+    out.plots[[i]] = ct.hist(sites[i],.33)
+  }
+
+# Write plots to file:
+
+pdf('output/plots/CT_histograms.pdf', 
+    width = 6.5, height = 5.5, onefile = T)
+out.plots
+dev.off()
+
+#----------------------------------------------------------------------------------*
+# ---- Tokeshi plot  ----
+#----------------------------------------------------------------------------------*
+
+# Plot output:
+# NOTE! THERE ARE WARNINGS HERE ... EXPLORE WHY!!!
+
+tokeshiPlot(1/3)
+
+# Write plot to file:
+
+pdf('output/plots/tokeshi.pdf', width = 8, height = 6)
+tokeshiPlot(1/3)
+dev.off() 
