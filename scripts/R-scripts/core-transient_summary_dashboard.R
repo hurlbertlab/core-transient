@@ -71,8 +71,8 @@ ct.hist('d226_ew',.33)
 # NOTE! THERE ARE WARNINGS HERE ... EXPLORE WHY!!!
 
 out.plots = list()
-  for(i in 1:length(sites)){
-    out.plots[[i]] = ct.hist(sites[i],.33)
+  for(i in sites){
+    out.plots[[i]] = ct.hist(i,.33)
   }
 
 # Write plots to file:
