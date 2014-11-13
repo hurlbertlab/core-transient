@@ -31,6 +31,8 @@ library(MASS)
 #  ---- SUMMARY TABLE OUTPUT ----
 #==================================================================================*
 
+#p.bimodal('d246_25',1000)
+
 # ---- Core-transient summary table ----
 # Input is the cut-ff for core- and transient designation
 
@@ -56,7 +58,7 @@ sites = unique(prop.df$site)
 
 # Core-transient histogram for a given site and cut-off (example is Eastern Wood):
 
-ct.hist('d226_ew',.33)
+ct.hist('d226_ew',10)
 
 # Run a for loop to create plots for each site (output as list):
 # NOTE! THERE ARE WARNINGS HERE ... EXPLORE WHY!!!
