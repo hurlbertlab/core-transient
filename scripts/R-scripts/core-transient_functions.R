@@ -253,7 +253,6 @@ ct.hist = function(site,h) {
 
 tokeshiPlot = function(h){
   tokeshi.outs = tokeshiWrapper(h)
-  tokeshi.outs = na.omit(tokeshi.outs)
     ggplot(tokeshi.outs, aes(x = Pr, y = Pl,col = bimodality)) +
       geom_point() +
       xlab('P(F > f), core species')+
