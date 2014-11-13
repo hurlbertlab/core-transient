@@ -254,23 +254,6 @@ ct.hist = function(site,h) {
   }
 
 #----------------------------------------------------------------------------------*
-# ---- Function to write core-transient histograms across sites  ----
-#==================================================================================*
-
-write.ctHist = function(h){
-  prop.df = read.csv('output/prop.df.csv')
-  sites = unique(prop.df$site)
-  out.plots = list()
-  for(i in 1:length(sites)){
-    out.plots[[i]] = ct.hist(sites[i],h)
-  }
-  pdf('output/plots/CT_histograms.pdf', 
-    width = 6.5, height = 5.5, onefile = T)
-  out.plots
-  dev.off()
-  }
-
-#----------------------------------------------------------------------------------*
 # ---- Function to make Tokeshi plot  ----
 #==================================================================================*
 
@@ -302,7 +285,3 @@ tokeshiPlot = function(h){
             panel.background = element_blank(),
             plot.margin = unit(c(2,2,2,2), "lines"))
   }
-
-tokeshiPlot(.33)
-
-
