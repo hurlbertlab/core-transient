@@ -25,6 +25,7 @@ library(plyr)
 library(ggplot2)
 library(grid)
 library(gridExtra)
+library(MASS)
 
 #----------------------------------------------------------------------------------*
 #  ---- SUMMARY TABLE OUTPUT ----
