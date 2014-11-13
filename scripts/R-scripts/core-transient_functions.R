@@ -42,12 +42,50 @@
 # ---- Function for calculating bimodality ----
 #==================================================================================*
 # Note: bimodality is the fraction of species occurring at either end of occupancy
-# distribution
+# distribution. We use a randomization approach to test whether the distribution
+# is significantly bimodal.
+
+# True bimodality for a given site:
 
 bimodality = function(occs, n.time) {
   maxvar = var(c(rep(1/n.time,floor(length(occs)/2)),
                  rep(1,ceiling(length(occs)/2))))
   return(var(occs)/maxvar)
+}
+
+# Random bimodalility for a given site (to be used in randomization, below):
+
+random.bimodality = function(site){
+  # Set-up:
+  df = prop.df[prop.df$site == site,]               # Get occurence data for site
+  nt = nTime[nTime$site == site,'nt']               # Get # of years for site
+  t1 = data.frame(table(df$occ))                    # Occurence proportion and frequency
+  occ = data.frame(occ = seq(1/nt, 1, length = nt)) # Possible occurence proportions
+  t2 = merge(occ, t1, by.x = 'occ',by.y = 'Var1', all.x = T)  # Occurence by possible proportions
+  t2[is.na(t2[,2]),2]<-0                            # Replace NA's with zeros
+  # Reassign bin values randomly and add to frame:
+  new.freq = sample(t2$Freq, length(t2[,1]))
+  t3 = data.frame(t2[,1], new.freq)
+  # Create new occurence vector:
+  new.occs=unlist(apply(t3, 1, function(x) rep(x[1], x[2])))
+  new.occs = as.vector(new.occs)
+  # Calculate bimodality:
+  bimodality(new.occs, nt)
+}
+
+# Randomization test for bimodality:
+
+p.bimodal = function(site, reps){
+  nt = nTime[nTime$site == site,'nt']               
+  actual.bimod = bimodality(prop.df[prop.df$site == site,'occ'],nt)
+  # For loop to get random bimodality values
+  r.bimod = numeric()
+  for (i in 1:reps){
+    r.bimod[i] = random.bimodality('d226_ew')
+  }
+  # Calculate the p-value (proportion of sites with higher bimodality than the
+  # actual bimodality value):
+  sum(r.bimod >= actual.bimod)/1000
 }
 
 #----------------------------------------------------------------------------------*
