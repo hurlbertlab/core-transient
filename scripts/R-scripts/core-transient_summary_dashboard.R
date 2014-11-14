@@ -34,7 +34,8 @@ library(MASS)
 #p.bimodal('d246_25',1000)
 
 # ---- Core-transient summary table ----
-# Input is the cut-ff for core- and transient designation
+# Input is the cut-ff for core- and transient designation and the number of reps
+# used to calculate the p-value.
 
 ct = coreTrans(1/3, 10000)
 
@@ -58,14 +59,14 @@ sites = unique(prop.df$site)
 
 # Core-transient histogram for a given site and cut-off (example is Eastern Wood):
 
-ct.hist('d226_ew',10)
+ct.hist('d226_ew')
 
 # Run a for loop to create plots for each site (output as list):
 # NOTE! THERE ARE WARNINGS HERE ... EXPLORE WHY!!!
 
 out.plots = list()
   for(i in sites){
-    out.plots[[i]] = ct.hist(i,10000)
+    out.plots[[i]] = ct.hist(i)
   }
 
 # Write plots to file:
