@@ -200,37 +200,26 @@ coreTrans = function(threshold, reps){
 #==================================================================================*
 # This function creates a ct histogram for one site:
 
-# FOR TOMORROW: CHECK OUT THIS DENSITY FUNCTION -- SEE WHAT PLOTTING JUST THE
-# MODELED BETA DISTRIBUTION GETS YOU ... THERE MUST BE SOME WAY!!!
-
 ct.hist = function(site,reps) {
   # Get data, subset to a given site:
     prop.df = read.csv('output/prop.df.csv')
-    prop.df = prop.df[prop.df$site == site,]
-    outSummary = outSummary[outSummary$dataset_ID == unique(prop.df$dataset),]
-    nTime = nTime[nTime$site == site,]
+      prop.df = prop.df[prop.df$site == site,]
+    outSummary = read.csv('output/tabular_data/core-transient_summary.csv')
+      outSummary = outSummary[outSummary$site == site,]
   # Extract beta distribution data:
-    shape.params =fitbeta(site)
-    fb = fitbeta(site)
-    beta.dist = data.frame(x = rbeta(10000, 
-          shape1 = shape.params[1], shape2 = shape.params[2]))
-  # Get summary stats for subtitle:
+    fB = fitbeta(site)
+  # Getlabels for subtitle subtitle:
     system = as.character(outSummary$system)
     taxa = as.character(outSummary$taxa)
-    bimod.parm = round(bimodality(site),2)
-    bimod.p = round(p.bimodal(site, reps),3)
-    mu = round(mean(prop.df$occ))
-    b.a = round(shape.params[1],3)
-    b.b = round(shape.params[2],3)
   # Plot labels:
     main = paste('Site ', site, paste('(', system,', ', taxa,')', sep = ''))
-    sub = bquote(b ~ '=' ~ .(bimod.parm) ~ '    '~
-                   P['b'] ~ '=' ~ .(bimod.p) ~ '    '~
-                   mu ~ '=' ~ .(mu) ~ '    '~
-                   t ~ '=' ~ .(nTime$nt))
-    sub2 = bquote(alpha ~ '=' ~ .(b.a) ~ '    '~
-                   beta ~ '=' ~ .(b.b))
-  # Set breaks and band width for the histogram:
+    sub = bquote(b ~ '=' ~ .(round(outSummary$bimodal, 2)) ~ '    '~
+                   P['b'] ~ '=' ~ .(round(outSummary$bimodal.p, 3)) ~ '    '~
+                   mu ~ '=' ~ .(round(outSummary$mu, 2)) ~ '    '~
+                   t ~ '=' ~ .(outSummary$N.time))
+    sub2 = bquote(alpha ~ '=' ~ .(round(fB[1], 3)) ~ '    '~
+                   beta ~ '=' ~ .(round(fB[2], 3)))
+  # Set band width, breaks and possible values of x for the histogram:
     bw = (max(prop.df$occ)-min(prop.df$occ))/10
     brks = seq(min(prop.df$occ), max(prop.df$occ),bw)
     x = seq(0.01,.99, .01)
@@ -239,7 +228,7 @@ ct.hist = function(site,reps) {
       geom_histogram(aes(y = ..density..), breaks = brks, right = F,
                      fill = 'gray', color = 1) +
       geom_density(alpha=.2, fill="blue") +  
-      stat_function(fun = function(x) dbeta(x, fb[1], fb[2]), color = 'red')+
+      stat_function(fun = function(x) dbeta(x, fB[1], fB[2]), color = 'red') +
       # Add labels:
       xlab('Proportion of temporal samples') + ylab('Density') + 
       ggtitle(bquote(atop(.(main), atop(.(sub), atop(.(sub2)))))) +
