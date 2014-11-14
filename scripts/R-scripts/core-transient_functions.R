@@ -196,30 +196,6 @@ coreTrans = function(threshold, reps){
 #==================================================================================*
 
 #----------------------------------------------------------------------------------*
-# ---- Function that adds the beta line to the histogram plot  ----
-#==================================================================================*
-
-plotBeta = function(site) {
-  shape.params =fitbeta(site)
-  par(new=T)
-  beta.dist = rbeta(10000, shape1 = shape.params[1], shape2 = shape.params[2])
-  beta.dist
-}
-
-fitbeta('d236_4')
-
-pb2 = function(site){
-  occs = prop.df[prop.df$site == site,'occ']          # Get occurence data for site
-  nt = nTime[nTime$site == site,'nt']               # Get # of years for site
-  fb = fitbeta(site)
-  ggplot(data.frame(occs),aes(x = occs)) + 
-    geom_histogram(aes(y = ..density..), binwidth =1/nt)+
-    stat_function(fun = function(x) dbeta(x, fb[1], fb[2]), color = 'red')
-  }
-
-
-
-#----------------------------------------------------------------------------------*
 # ---- Function to make core-transient histogram  ----
 #==================================================================================*
 # This function creates a ct histogram for one site:
@@ -252,8 +228,8 @@ ct.hist = function(site,reps) {
                    P['b'] ~ '=' ~ .(bimod.p) ~ '    '~
                    mu ~ '=' ~ .(mu) ~ '    '~
                    t ~ '=' ~ .(nTime$nt))
-    sub2 = bquote(beta['a'] ~ '=' ~ .(b.a) ~ '    '~
-                   beta['b'] ~ '=' ~ .(b.b))
+    sub2 = bquote(alpha ~ '=' ~ .(b.a) ~ '    '~
+                   beta ~ '=' ~ .(b.b))
   # Set breaks and band width for the histogram:
     bw = (max(prop.df$occ)-min(prop.df$occ))/10
     brks = seq(min(prop.df$occ), max(prop.df$occ),bw)
@@ -276,18 +252,3 @@ ct.hist = function(site,reps) {
             panel.background = element_blank(),
             plot.margin = unit(c(.5,.5,1.5,1), "lines"))
   }
-
-ct.hist('d226_ew', 1000)
-
-ct.hist('d236_2', 1000)
-
-ct.hist('d236_3', 1000)
-
-ct.hist('d236_5', 1000)
-
-ct.hist('d236_4', 1000)
-
-ct.hist('d236_20', 1000)
-
-
-
