@@ -1,5 +1,5 @@
 ###################################################################################*
-# ---- CORE-TRANSIENT FUNCTIONS ----
+# CORE-TRANSIENT FUNCTIONS                                                         *
 ###################################################################################*
 # This script contains all of the functions used in the analyses that summarize
 # core-transient data by site (and across sites). It is divided in 3 parts:
@@ -47,7 +47,10 @@
 
 # True bimodality for a given site:
 
-bimodality = function(occs, n.time) {
+bimodality = function(site) {
+  df = prop.df[prop.df$site == site,'occs']             # Get occurence data for site
+  n.time = nTime[nTime$site == site,'nt']               # Get # of years for site
+  occs = df$occs
   maxvar = var(c(rep(1/n.time,floor(length(occs)/2)),
                  rep(1,ceiling(length(occs)/2))))
   return(var(occs)/maxvar)
@@ -67,25 +70,27 @@ random.bimodality = function(site){
   new.freq = sample(t2$Freq, length(t2[,1]))
   t3 = data.frame(t2[,1], new.freq)
   # Create new occurence vector:
-  new.occs=unlist(apply(t3, 1, function(x) rep(x[1], x[2])))
-  new.occs = as.vector(new.occs)
+  occs=unlist(apply(t3, 1, function(x) rep(x[1], x[2])))
+  occs = as.vector(occs)
   # Calculate bimodality:
-  bimodality(new.occs, nt)
+  maxvar = var(c(rep(1/nt,floor(length(occs)/2)),
+                 rep(1,ceiling(length(occs)/2))))
+  return(var(occs)/maxvar)
 }
 
 # Randomization test for bimodality:
 
 p.bimodal = function(site, reps){
   nt = nTime[nTime$site == site,'nt']               
-  actual.bimod = bimodality(prop.df[prop.df$site == site,'occ'],nt)
+  actual.bimod = bimodality(site)
   # For loop to get random bimodality values
   r.bimod = numeric()
   for (i in 1:reps){
-    r.bimod[i] = random.bimodality('d226_ew')
+    r.bimod[i] = random.bimodality(site)
   }
   # Calculate the p-value (proportion of sites with higher bimodality than the
   # actual bimodality value):
-  sum(r.bimod >= actual.bimod)/reps
+  sum(r.bimod >= actual.bimod)/(reps + 1)
 }
 
 #----------------------------------------------------------------------------------*
@@ -201,10 +206,21 @@ plotBeta = function(site) {
   beta.dist
 }
 
+fitbeta('d246_4')
+
+plot(seq(0.00001, .99999))
+
+x = seq(0.001, .999, length = 100)
+y = dbeta(x, fitbeta('d246_4')[1],fitbeta('d246_4')[2])
+plot(x,y, type = 'l')
+
 #----------------------------------------------------------------------------------*
 # ---- Function to make core-transient histogram  ----
 #==================================================================================*
 # This function creates a ct histogram for one site:
+
+# FOR TOMORROW: CHECK OUT THIS DENSITY FUNCTION -- SEE WHAT PLOTTING JUST THE
+# MODELED BETA DISTRIBUTION GETS YOU ... THERE MUST BE SOME WAY!!!
 
 ct.hist = function(site,reps) {
   # Get data, subset to a given site:
