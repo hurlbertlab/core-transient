@@ -162,12 +162,14 @@ ctSummary = function(d, dst, nt, site, threshold, reps){
   # Calculate bimodality of the dataset and site:
     bimodal = bimodality(site)
     bimodal.p = p.bimodal(site, reps)
+  # Calculate the alpha and beta shape parameters for the beta disatribution:
+    fB = fitBeta(site)
   # Output
     return(data.frame(dataset, site, threshold, system = dst$system,
               taxa = dst$taxa, N.time = nt,
               rich.total, rich.core, rich.trans, 
               prop.core, prop.trans, mu, bimodal,
-              bimodal.p))
+              bimodal.p, alpha = fB[1], beta = fb[2]))
   }
 
 #----------------------------------------------------------------------------------*
@@ -188,7 +190,7 @@ coreTrans = function(threshold, reps){
   for(i in site){
     out.list[[i]] = ctSummary(d, dst , nt, i, threshold, reps)
   }
-  rbind.fill(out.list)
+  return(rbind.fill(out.list))
 }
 
 #==================================================================================*
@@ -206,29 +208,26 @@ ct.hist = function(site,reps) {
       prop.df = prop.df[prop.df$site == site,]
     outSummary = read.csv('output/tabular_data/core-transient_summary.csv')
       outSummary = outSummary[outSummary$site == site,]
-  # Extract beta distribution data:
-    fB = fitbeta(site)
-  # Getlabels for subtitle subtitle:
-    system = as.character(outSummary$system)
-    taxa = as.character(outSummary$taxa)
+      attach(outSummary)
   # Plot labels:
-    main = paste('Site ', site, paste('(', system,', ', taxa,')', sep = ''))
-    sub = bquote(b ~ '=' ~ .(round(outSummary$bimodal, 2)) ~ '    '~
-                   P['b'] ~ '=' ~ .(round(outSummary$bimodal.p, 3)) ~ '    '~
-                   mu ~ '=' ~ .(round(outSummary$mu, 2)) ~ '    '~
-                   t ~ '=' ~ .(outSummary$N.time))
-    sub2 = bquote(alpha ~ '=' ~ .(round(fB[1], 3)) ~ '    '~
-                   beta ~ '=' ~ .(round(fB[2], 3)))
+    main = paste('Site ', site, paste('(',  as.character(system),
+                   ', ', as.character(taxa),')', sep = ''))
+    sub = bquote(b ~ '=' ~ .(round(bimodal, 2)) ~ '    '~
+                   P['b'] ~ '=' ~ .(round(bimodal.p, 3)) ~ '    '~
+                   mu ~ '=' ~ .(round(mu, 2)) ~ '    '~
+                   t ~ '=' ~ .(N.time))
+    sub2 = bquote(alpha ~ '=' ~ .(round(alpha, 3)) ~ '    '~
+                   beta ~ '=' ~ .(round(beta, 3)))
   # Set band width, breaks and possible values of x for the histogram:
     bw = (max(prop.df$occ)-min(prop.df$occ))/10
     brks = seq(min(prop.df$occ), max(prop.df$occ),bw)
     x = seq(0.01,.99, .01)
   # Plot data: 
-    ggplot(prop.df, aes(x=occ)) +
+    out.plot = ggplot(prop.df, aes(x=occ)) +
       geom_histogram(aes(y = ..density..), breaks = brks, right = F,
                      fill = 'gray', color = 1) +
       geom_density(alpha=.2, fill="blue") +  
-      stat_function(fun = function(x) dbeta(x, fB[1], fB[2]), color = 'red') +
+      stat_function(fun = function(x) dbeta(x, alpha, beta), color = 'red') +
       # Add labels:
       xlab('Proportion of temporal samples') + ylab('Density') + 
       ggtitle(bquote(atop(.(main), atop(.(sub), atop(.(sub2)))))) +
@@ -240,4 +239,6 @@ ct.hist = function(site,reps) {
             axis.line = element_line(colour = "black"),
             panel.background = element_blank(),
             plot.margin = unit(c(.5,.5,1.5,1), "lines"))
+    detach(outSummary)
+    return(out.plot)
   }
