@@ -36,7 +36,7 @@ library(MASS)
 # ---- Core-transient summary table ----
 # Input is the cut-ff for core- and transient designation
 
-ct = coreTrans(1/3)
+ct = coreTrans(1/3, 10000)
 
 # ---- Write core-transient summary table to file ----
 
