@@ -160,7 +160,7 @@ ctSummary = function(d, dst, nt, site, threshold, reps){
     prop.trans = rich.trans/rich.total
     mu = mean(d$occ)
   # Calculate bimodality of the dataset and site:
-    bimodal = bimodality(d$occ, nt)
+    bimodal = bimodality(site)
     bimodal.p = p.bimodal(site, reps)
   # Output
     return(data.frame(dataset, site, threshold, system = dst$system,
@@ -206,13 +206,18 @@ plotBeta = function(site) {
   beta.dist
 }
 
-fitbeta('d246_4')
+fitbeta('d236_4')
 
-plot(seq(0.00001, .99999))
+pb2 = function(site){
+  occs = prop.df[prop.df$site == site,'occ']          # Get occurence data for site
+  nt = nTime[nTime$site == site,'nt']               # Get # of years for site
+  fb = fitbeta(site)
+  ggplot(data.frame(occs),aes(x = occs)) + 
+    geom_histogram(aes(y = ..density..), binwidth =1/nt)+
+    stat_function(fun = function(x) dbeta(x, fb[1], fb[2]), color = 'red')
+  }
 
-x = seq(0.001, .999, length = 100)
-y = dbeta(x, fitbeta('d246_4')[1],fitbeta('d246_4')[2])
-plot(x,y, type = 'l')
+
 
 #----------------------------------------------------------------------------------*
 # ---- Function to make core-transient histogram  ----
@@ -230,12 +235,13 @@ ct.hist = function(site,reps) {
     nTime = nTime[nTime$site == site,]
   # Extract beta distribution data:
     shape.params =fitbeta(site)
+    fb = fitbeta(site)
     beta.dist = data.frame(x = rbeta(10000, 
           shape1 = shape.params[1], shape2 = shape.params[2]))
   # Get summary stats for subtitle:
     system = as.character(outSummary$system)
     taxa = as.character(outSummary$taxa)
-    bimod.parm = round(bimodality(prop.df$occ, nTime$nt),2)
+    bimod.parm = round(bimodality(site),2)
     bimod.p = round(p.bimodal(site, reps),3)
     mu = round(mean(prop.df$occ))
     b.a = round(shape.params[1],3)
@@ -251,12 +257,13 @@ ct.hist = function(site,reps) {
   # Set breaks and band width for the histogram:
     bw = (max(prop.df$occ)-min(prop.df$occ))/10
     brks = seq(min(prop.df$occ), max(prop.df$occ),bw)
+    x = seq(0.01,.99, .01)
   # Plot data: 
     ggplot(prop.df, aes(x=occ)) +
       geom_histogram(aes(y = ..density..), breaks = brks, right = F,
                      fill = 'gray', color = 1) +
-      geom_density(aes(x = x, trim = T), data = beta.dist,
-                   alpha=.2, fill="blue") +  
+      geom_density(alpha=.2, fill="blue") +  
+      stat_function(fun = function(x) dbeta(x, fb[1], fb[2]), color = 'red')+
       # Add labels:
       xlab('Proportion of temporal samples') + ylab('Density') + 
       ggtitle(bquote(atop(.(main), atop(.(sub), atop(.(sub2)))))) +
@@ -270,7 +277,17 @@ ct.hist = function(site,reps) {
             plot.margin = unit(c(.5,.5,1.5,1), "lines"))
   }
 
-ct.hist('d226_ew', 10)
+ct.hist('d226_ew', 1000)
+
+ct.hist('d236_2', 1000)
+
+ct.hist('d236_3', 1000)
+
+ct.hist('d236_5', 1000)
+
+ct.hist('d236_4', 1000)
+
+ct.hist('d236_20', 1000)
 
 
 
