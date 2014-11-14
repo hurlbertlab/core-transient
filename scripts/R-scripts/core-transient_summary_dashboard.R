@@ -65,7 +65,7 @@ ct.hist('d226_ew',10)
 
 out.plots = list()
   for(i in sites){
-    out.plots[[i]] = ct.hist(i,.33)
+    out.plots[[i]] = ct.hist(i,10000)
   }
 
 # Write plots to file:
