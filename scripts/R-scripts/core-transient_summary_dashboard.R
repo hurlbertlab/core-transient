@@ -106,7 +106,7 @@ ct.hist('d226_ew')
 
 # Create a vector of sites with < 1 proportion of core species:
 
-site = ct[ct$prop.core < 1,]
+site = ct[ct$prop.core < 1,'site']
 
 out.plots = list()
   for(i in site){
