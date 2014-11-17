@@ -203,20 +203,17 @@ ctSummary = function(site, threshold, reps){
 
 ct.hist = function(site) {
   # Get data, subset to a given site:
-    prop.df = read.csv('output/prop.df.csv')
       prop.df = prop.df[prop.df$site == site,]
-    outSummary = read.csv('output/tabular_data/core-transient_summary.csv')
-      outSummary = outSummary[outSummary$site == site,]
-      attach(outSummary)
+      ct = ct[ct$site == site, ]
   # Plot labels:
-    main = paste('Site ', site, paste('(',  as.character(system),
-                   ', ', as.character(taxa),')', sep = ''))
-    sub = bquote(b ~ '=' ~ .(round(bimodal, 2)) ~ '    '~
-                   P['b'] ~ '=' ~ .(round(bimodal.p, 3)) ~ '    '~
-                   mu ~ '=' ~ .(round(mu, 2)) ~ '    '~
-                   t ~ '=' ~ .(N.time))
-    sub2 = bquote(alpha ~ '=' ~ .(round(alpha, 3)) ~ '    '~
-                   beta ~ '=' ~ .(round(beta, 3)))
+    main = paste('Site ', site, paste('(',  as.character(ct$system),
+                   ', ', as.character(ct$taxa),')', sep = ''))
+    sub = bquote(b ~ '=' ~ .(round(ct$bimodal, 2)) ~ '    '~
+                   P['b'] ~ '=' ~ .(round(ct$bimodal.p, 3)) ~ '    '~
+                   mu ~ '=' ~ .(round(ct$mu, 2)) ~ '    '~
+                   t ~ '=' ~ .(ct$nTime))
+    sub2 = bquote(alpha ~ '=' ~ .(round(ct$alpha, 3)) ~ '    '~
+                   beta ~ '=' ~ .(round(ct$beta, 3)))
   # Set band width, breaks and possible values of x for the histogram:
     bw = (max(prop.df$occ)-min(prop.df$occ))/10
     brks = seq(min(prop.df$occ), max(prop.df$occ),bw)
@@ -226,7 +223,7 @@ ct.hist = function(site) {
       geom_histogram(aes(y = ..density..), breaks = brks, right = F,
                      fill = 'gray', color = 1) +
       geom_density(alpha=.2, fill="blue") +  
-      stat_function(fun = function(x) dbeta(x, alpha, beta), color = 'red') +
+      stat_function(fun = function(x) dbeta(x, ct$alpha, ct$beta), color = 'red') +
       # Add labels:
       xlab('Proportion of temporal samples') + ylab('Density') + 
       ggtitle(bquote(atop(.(main), atop(.(sub), atop(.(sub2)))))) +
@@ -238,6 +235,5 @@ ct.hist = function(site) {
             axis.line = element_line(colour = "black"),
             panel.background = element_blank(),
             plot.margin = unit(c(.5,.5,1.5,1), "lines"))
-    detach(outSummary)
     return(out.plot)
   }
