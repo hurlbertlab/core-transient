@@ -192,27 +192,6 @@ ctSummary = function(site, threshold, reps){
     return(cbind(samplingSummary, bimodality.df))
   }
 
-#----------------------------------------------------------------------------------*
-# ---- Function to return core-transient summary analysis for all sites ----
-#==================================================================================*
-
-# Wrapper function that outputs a dataframe with core-transient summary data
-# across sites:
-
-coreTrans = function(threshold, reps){
-  # Get data:
-    d = read.csv('output/prop.df.csv')
-    dst = read.csv('data_source_table.csv')
-    nt = read.csv('output/Ntime.df.csv')
-  # For loop inputs
-  site = unique(d$site)
-  out.list = list()
-  for(i in site){
-    out.list[[i]] = ctSummary(d, dst , nt, i, threshold, reps)
-  }
-  return(rbind.fill(out.list))
-}
-
 #==================================================================================*
 # ---- PLOT FUNCTIONS ----
 #==================================================================================*
