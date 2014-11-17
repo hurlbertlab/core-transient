@@ -36,8 +36,6 @@ sampling = function(site, threshold){
             rich.total, rich.core, rich.trans, prop.core, prop.trans, mu))
 }
 
-sampling('d226_ew', 1/3)
-
 #==================================================================================*
 # ---- BIMODALILITY ----
 #==================================================================================*
@@ -171,35 +169,24 @@ fitBeta = function(site) {
 #==================================================================================*
 # Note the output of this function is a one line data frame.
 
-ctSummary = function(d, dst, nt, site, threshold, reps){
-  # Note: d = proportional data frame, dst = data source table, 
-  # nt = # of temporal samples data frame. Each of these are
-  # defined in the wrapper function below.
+ctSummary = function(site, threshold, reps){
   # Get data:
     dataset = as.numeric(substr(site, 2, 4))
   # Subset to the site of interest:
     d = prop.df[prop.df$site == site,]
     nt = nTime[nTime$site == site,'nt']
     dst = outSummary[outSummary$dataset_ID == dataset,]
-  # Calculate richness indices:
-    rich.total = length(d[,1])
-    rich.core = length(d[d$occ>=1-threshold,1])
-    rich.trans = length(d[d$occ<=threshold,1])
-  # Calculate proportional occurrences:
-    prop.core = rich.core/rich.total
-    prop.trans = rich.trans/rich.total
-    mu = mean(d$occ)
+  # Sampling summary for site:
+    samplingSummary = sampling(site, threshold)
   # Calculate bimodality of the dataset and site:
     bimodal = bimodality(site)
     bimodal.p = p.bimodal(site, reps)
   # Calculate the alpha and beta shape parameters for the beta disatribution:
     fB = fitBeta(site)
+  # Make a bimodality dataframe:
+    bimodality.df = data.frame(bimodal, bimodal.p, alpha = fB[1], beta = fB[2])
   # Output
-    return(data.frame(dataset, site, threshold, system = dst$system,
-              taxa = dst$taxa, N.time = nt,
-              rich.total, rich.core, rich.trans, 
-              prop.core, prop.trans, mu, bimodal,
-              bimodal.p, alpha = fB[1], beta = fB[2]))
+    return(cbind(samplingSummary, bimodality.df))
   }
 
 #----------------------------------------------------------------------------------*
