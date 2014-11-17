@@ -45,47 +45,40 @@
 # distribution. We use a randomization approach to test whether the distribution
 # is significantly bimodal.
 
-# True bimodality for a given site:
+# True bimodality for a given site (or random sample of occurrences at a site)
 
-bimodality = function(site) {
-  occs = prop.df[prop.df$site == site,'occ']             # Get occurence data for site
-  n.time = nTime[nTime$site == site,'nt']               # Get # of years for site
-  maxvar = var(c(rep(1/n.time,floor(length(occs)/2)),
+bimodality = function(occs, nt) {
+  maxvar = var(c(rep(1/nt,floor(length(occs)/2)),
                  rep(1,ceiling(length(occs)/2))))
   return(var(occs)/maxvar)
 }
 
-# Random bimodalility for a given site (to be used in randomization, below):
+# Random sample of occurences for a given site (to be used in randomization, below):
 
-random.bimodality = function(site){
-  # Set-up:
-  df = prop.df[prop.df$site == site,]               # Get occurence data for site
-  nt = nTime[nTime$site == site,'nt']               # Get # of years for site
-  t1 = data.frame(table(df$occ))                    # Occurence proportion and frequency
-  occ = data.frame(occ = seq(1/nt, 1, length = nt)) # Possible occurence proportions
-  t2 = merge(occ, t1, by.x = 'occ',by.y = 'Var1', all.x = T)  # Occurence by possible proportions
+random.occs = function(occs, nt){
+  t1 = data.frame(table(occs))                      # Occurence proportion and frequency
+  occ = data.frame(occs = seq(1/nt, 1, length = nt)) # Possible occurence proportions
+  t2 = merge(occ, t1, all.x = T)  # Occurence by possible proportions
   t2[is.na(t2[,2]),2]<-0                            # Replace NA's with zeros
   # Reassign bin values randomly and add to frame:
   new.freq = sample(t2$Freq, length(t2[,1]))
   t3 = data.frame(t2[,1], new.freq)
   # Create new occurence vector:
   occs=unlist(apply(t3, 1, function(x) rep(x[1], x[2])))
-  occs = as.vector(occs)
-  # Calculate bimodality:
-  maxvar = var(c(rep(1/nt,floor(length(occs)/2)),
-                 rep(1,ceiling(length(occs)/2))))
-  return(var(occs)/maxvar)
+  return(as.vector(occs))
+t1
 }
 
 # Randomization test for bimodality:
 
 p.bimodal = function(site, reps){
-  nt = nTime[nTime$site == site,'nt']               
-  actual.bimod = bimodality(site)
+  nt = nTime[nTime$site == site,'nt']
+  occs = prop.df[prop.df$site == site,'occ']
+  actual.bimod = bimodality(occs, nt)
   # For loop to get random bimodality values
   r.bimod = numeric()
   for (i in 1:reps){
-    r.bimod[i] = random.bimodality(site)
+    r.bimod[i] = bimodality(random.occs(occs, nt), nt)
   }
   # Calculate the p-value (proportion of sites with higher bimodality than the
   # actual bimodality value):
@@ -118,6 +111,53 @@ fitBeta = function(site) {
   return(as.vector(shape.params$estimate))
   } else c(NA, NA)
 }
+
+#==================================================================================*
+# ---- CORE-TRANSIENT MODE STATISTICS ----
+#==================================================================================*
+
+# True bimodality for a given site:
+
+mode.prop = function(occs, threshold, mode) {
+  if (mode == 'core') length(occs[occs >= threshold])
+    else length(occs[occs <= threshold])
+}
+
+# Random mode proportion for a given site:
+
+random.bimodality = function(site, threshold, mode){
+  # Set-up:
+  df = prop.df[prop.df$site == site,]               # Get occurence data for site
+  nt = nTime[nTime$site == site,'nt']               # Get # of years for site
+  t1 = data.frame(table(df$occ))                    # Occurence proportion and frequency
+  occ = data.frame(occ = seq(1/nt, 1, length = nt)) # Possible occurence proportions
+  t2 = merge(occ, t1, by.x = 'occ',by.y = 'Var1', all.x = T)  # Occurence by possible proportions
+  t2[is.na(t2[,2]),2]<-0                            # Replace NA's with zeros
+  # Reassign bin values randomly and add to frame:
+  new.freq = sample(t2$Freq, length(t2[,1]))
+  t3 = data.frame(t2[,1], new.freq)
+  # Create new occurence vector:
+  occs=unlist(apply(t3, 1, function(x) rep(x[1], x[2])))
+  occs = as.vector(occs)
+  # Calculate bimodality:
+  mode.prop(occs, threshold, mode)
+}
+
+# Randomization test for bimodality:
+
+p.bimodal = function(site, reps){
+  nt = nTime[nTime$site == site,'nt']               
+  actual.bimod = bimodality(site)
+  # For loop to get random bimodality values
+  r.bimod = numeric()
+  for (i in 1:reps){
+    r.bimod[i] = random.bimodality(site)
+  }
+  # Calculate the p-value (proportion of sites with higher bimodality than the
+  # actual bimodality value):
+  sum(r.bimod >= actual.bimod)/(reps + 1)
+}
+
 
 #==================================================================================*
 # ---- DATASET SUMMARY FUNCTIONS ----
