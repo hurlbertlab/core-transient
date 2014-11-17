@@ -140,9 +140,12 @@ occs.scaled = function(site){
 # Fit beta distribution:
 
 fitBeta = function(site) {
+  if (bimodality(site)!= 0) {
   occs  = occs.scaled(site)
-  shape.params = suppressWarnings(fitdistr(occs, "beta", list(shape1 = 2, shape2 = 2)))
-  return(as.vector(shape.params$estimate)) 
+  shape.params = suppressWarnings(fitdistr(occs, "beta",
+                                  list(shape1 = 2, shape2 = 2)))
+  return(as.vector(shape.params$estimate))
+  } else c(NA, NA)
 }
 
 #==================================================================================*
