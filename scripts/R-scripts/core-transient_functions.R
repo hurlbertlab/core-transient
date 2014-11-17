@@ -8,7 +8,7 @@
 #   3. Plot output
 
 #==================================================================================*
-# ---- EXTRACT SAMPLING DATA ----
+# ---- EXTRACT SAMPLING SUMMARY DATA ----
 #==================================================================================*
 # The following function provides the sampling summary data for a given site
 # and threshold. It requires that prop.df, nTime, and the outSummary tables
@@ -41,31 +41,27 @@ sampling = function(site, threshold){
 #==================================================================================*
 # Functions:
 # - bimodality: Calculates the bimodality metric developed by Allen and Ethan. 
-#     Inputs: The occurances (prop by time) and # of time samples. 
+#     Inputs: Site
 #     Outputs: A single numeric bimodality value
 #
-# - fitbeta: Calculates the shape parameters for a fitted beta distribution for a
-#   given site. 
-#     Inputs: *** Inputs must be changed to run under the new data structure! 
-#     Outputs: A vector of shape parameters.
+# - random.bimodality: The bimodality for a random sample of the dataset.
+#     Inputs: Site
+#     Outputs: A single numeric bimodality value
 #
-# - tokeshi.rl.fun: Calculates the probability that a given mode (core or 
-#   transient) is signficantly different than a null distribution. 
-#     Inputs: N (# of species), the # of species in core or transient bins, 
-#       and the frequency interval. 
-#     Outputs: A single numeric p-value (P(F<f)).
+# - p.bimodal: Randomization test for bimodality. Runs n-reps of the random.bimodality 
+#     function and compares the actual bimodality with the distribution of random 
+#     values.
+#     Inputs: Site, number of reps
+#     Outputs: A single numeric p-value.
 #
-# - tokeshi.c.fun: Calculates the probability that the modes of the core and 
-#   transient bins are significantly different than a null distribution. 
-#     Inputs: N (# of species), the # of species in the core and transient bins, 
-#       and the frequency interval.
-#     Outputs: A single numeric p-value (P(F<f))
+# - occs.scaled: Scales occupancy from [0,1] to (0,1) -- because beta distribution
+#     inputs must not contain 0's or 1's.
+#     Inputs: Site
+#     Outputs: A numeric vector of scaled occupancy values.
 # 
-# - tokeshiFun: A wrapper function that calculates the tokeshi p-values for the core
-#   and transient modes separately and combined.
-#     Inputs: A site and the frequency interval
-#     Outputs: A dataframe that includes the site, # of species, frequency interval,
-#       # of core and transient species, P(core+trans), P(core), P(trans)
+# - fitbeta: Calculates the shape parameters for a fitted beta distribution.
+#     Inputs: Site
+#     Outputs: A vector of shape parameters (alpha and beta).
 # 
 #----------------------------------------------------------------------------------*
 # ---- Function for calculating bimodality ----
