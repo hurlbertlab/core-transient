@@ -8,6 +8,37 @@
 #   3. Plot output
 
 #==================================================================================*
+# ---- EXTRACT SAMPLING DATA ----
+#==================================================================================*
+# The following function provides the sampling summary data for a given site
+# and threshold. It requires that prop.df, nTime, and the outSummary tables
+# have already been loaded prior to running the function.
+
+sampling = function(site, threshold){
+  # Get data:
+    dataset = as.numeric(substr(site, 2, 4))
+    d = prop.df[prop.df$site == site,]
+    nTime = nTime[nTime$site == site,'nt']
+    dst = outSummary[outSummary$dataset_ID == dataset,]
+  # Subset to the site of interest:
+    d = d[d$site == site,]
+    dst = dst[dst$dataset_ID == dataset,]
+  # Calculate richness indices:
+    rich.total = length(d[,1])
+    rich.core = length(d[d$occ>=1-threshold,1])
+    rich.trans = length(d[d$occ<=threshold,1])
+  # Calculate proportional occurrences:
+    prop.core = rich.core/rich.total
+    prop.trans = rich.trans/rich.total
+    mu = mean(d$occ)
+  # Output 1-row dataset:
+   return(data.frame(dataset, site, system = dst$system, taxa = dst$taxa, nTime,
+            rich.total, rich.core, rich.trans, prop.core, prop.trans, mu))
+}
+
+sampling('d226_ew', 1/3)
+
+#==================================================================================*
 # ---- BIMODALILITY ----
 #==================================================================================*
 # Functions:
@@ -147,9 +178,9 @@ ctSummary = function(d, dst, nt, site, threshold, reps){
   # Get data:
     dataset = as.numeric(substr(site, 2, 4))
   # Subset to the site of interest:
-    d = d[d$site == site,]
-    nt = nt[nt$site == site,'nt']
-    dst = dst[dst$dataset_ID == dataset,]
+    d = prop.df[prop.df$site == site,]
+    nt = nTime[nTime$site == site,'nt']
+    dst = outSummary[outSummary$dataset_ID == dataset,]
   # Calculate richness indices:
     rich.total = length(d[,1])
     rich.core = length(d[d$occ>=1-threshold,1])
