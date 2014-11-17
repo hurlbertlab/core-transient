@@ -8,37 +8,12 @@
 #   3. Plot output
 
 #==================================================================================*
-# ---- EXTRACT SAMPLING SUMMARY DATA ----
-#==================================================================================*
-# The following function provides the sampling summary data for a given site
-# and threshold. It requires that prop.df, nTime, and the outSummary tables
-# have already been loaded prior to running the function.
-
-sampling = function(site, threshold){
-  # Get data:
-    dataset = as.numeric(substr(site, 2, 4))
-    d = prop.df[prop.df$site == site,]
-    nTime = nTime[nTime$site == site,'nt']
-    dst = outSummary[outSummary$dataset_ID == dataset,]
-  # Subset to the site of interest:
-    d = d[d$site == site,]
-    dst = dst[dst$dataset_ID == dataset,]
-  # Calculate richness indices:
-    rich.total = length(d[,1])
-    rich.core = length(d[d$occ>=1-threshold,1])
-    rich.trans = length(d[d$occ<=threshold,1])
-  # Calculate proportional occurrences:
-    prop.core = rich.core/rich.total
-    prop.trans = rich.trans/rich.total
-    mu = mean(d$occ)
-  # Output 1-row dataset:
-   return(data.frame(dataset, site, system = dst$system, taxa = dst$taxa, nTime,
-            rich.total, rich.core, rich.trans, prop.core, prop.trans, mu))
-}
-
-#==================================================================================*
 # ---- BIMODALILITY ----
 #==================================================================================*
+# NOTE: For these functions to run, prop.df, Ntime, and outSummary frames must
+# already be loaded and the "Sampling summary" lines of code MUST be run in the 
+# dashboard!
+#
 # Functions:
 # - bimodality: Calculates the bimodality metric developed by Allen and Ethan. 
 #     Inputs: Site
@@ -147,26 +122,53 @@ fitBeta = function(site) {
 #==================================================================================*
 # ---- DATASET SUMMARY FUNCTIONS ----
 #==================================================================================*
+# NOTE: For these functions to run, prop.df, Ntime, and outSummary frames must
+# already be loaded!
+#
 # Functions:
-# - ctSummary: Produces summary data for one site. 
-#     Inputs: Site and the threshold value for core and transient designation are
-#       directly input. d (proportional occurence df), dst (data source table),
-#       and nt (temporal samples df) are defined in the wrapper function. This is
-#       to reduce the time it takes for the function to run.
+# - sampling: Produces summary sampling data for one site. 
+#     Inputs: Site and the threshold value for core and transient designation.
 #     Outputs: A one-row dataframe with dataset ID, site ID, threshold used,
 #       the system, taxa, # of time samples, total, core, and transient richness
-#       proportion of core and transient species,  the average proportion of 
-#       occurance across species, bimodality (Allen + Ethan formula), and Tokeshi's
-#       p-values for core-trans, core, and transient modes.
+#       proportion of core and transient species, and the average proportion of 
+#       occurance across species.
 #
-# - coreTrans: Wrapper function for the above:
-#     Inputs: threshold for core- and trans- designation.
-#     Outputs: Dataframe that includes all sites (rows) with fields as above.
+# - ctSummary: A partial-wrapper function that runs and compiles bimodality test
+#     statistics across sites and adds it to the sampling summary frame above.
+#     Inputs: Site and the threshold value for core and transient designation.
+#     Outputs: A one-row dataframe with the summary output above and bimodality
+#     (Allen + Ethan formula), randomization-derived p-value, and the alpha and
+#     beta shape parameters for the beta distibution.
+#
+#----------------------------------------------------------------------------------*
+# ---- Function to generate summary of sampling ----
+#==================================================================================*
+
+sampling = function(site, threshold){
+  # Get data:
+  dataset = as.numeric(substr(site, 2, 4))
+  d = prop.df[prop.df$site == site,]
+  nTime = nTime[nTime$site == site,'nt']
+  dst = outSummary[outSummary$dataset_ID == dataset,]
+  # Subset to the site of interest:
+  d = d[d$site == site,]
+  dst = dst[dst$dataset_ID == dataset,]
+  # Calculate richness indices:
+  rich.total = length(d[,1])
+  rich.core = length(d[d$occ>=1-threshold,1])
+  rich.trans = length(d[d$occ<=threshold,1])
+  # Calculate proportional occurrences:
+  prop.core = rich.core/rich.total
+  prop.trans = rich.trans/rich.total
+  mu = mean(d$occ)
+  # Output 1-row dataset:
+  return(data.frame(dataset, site, system = dst$system, taxa = dst$taxa, nTime,
+                    rich.total, rich.core, rich.trans, prop.core, prop.trans, mu))
+}
 
 #----------------------------------------------------------------------------------*
 # ---- Function to generate output summary dataset ----
 #==================================================================================*
-# Note the output of this function is a one line data frame.
 
 ctSummary = function(site, threshold, reps){
   # Get data:
@@ -191,7 +193,9 @@ ctSummary = function(site, threshold, reps){
 #==================================================================================*
 # ---- PLOT FUNCTIONS ----
 #==================================================================================*
-
+# NOTE: For these functions to run, prop.df, Ntime, and outSummary frames must
+# already be loaded!
+#
 #----------------------------------------------------------------------------------*
 # ---- Function to make core-transient histogram  ----
 #==================================================================================*
