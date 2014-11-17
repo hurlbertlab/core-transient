@@ -48,9 +48,8 @@
 # True bimodality for a given site:
 
 bimodality = function(site) {
-  df = prop.df[prop.df$site == site,'occs']             # Get occurence data for site
+  occs = prop.df[prop.df$site == site,'occ']             # Get occurence data for site
   n.time = nTime[nTime$site == site,'nt']               # Get # of years for site
-  occs = df$occs
   maxvar = var(c(rep(1/n.time,floor(length(occs)/2)),
                  rep(1,ceiling(length(occs)/2))))
   return(var(occs)/maxvar)
