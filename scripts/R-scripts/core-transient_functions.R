@@ -168,7 +168,7 @@ ctSummary = function(d, dst, nt, site, threshold, reps){
               taxa = dst$taxa, N.time = nt,
               rich.total, rich.core, rich.trans, 
               prop.core, prop.trans, mu, bimodal,
-              bimodal.p, alpha = fB[1], beta = fb[2]))
+              bimodal.p, alpha = fB[1], beta = fB[2]))
   }
 
 #----------------------------------------------------------------------------------*
