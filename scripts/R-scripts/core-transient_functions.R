@@ -146,7 +146,7 @@ mode.summary = function(site, threshold, reps){
     trans.prop = p.mode(occs, threshold, 'trans', reps)
  # Bind output into dataframe:
     df.out = data.frame(site, threshold, cbind(core.prop, trans.prop))
-    names(df.out)[3:6] = c('core.prop', 'p.core','trans.prop','p.trans')
+    names(df.out)[3:6] = c('core.prop', 'coreP','trans.prop','transP')
     return(df.out)
 }
 
