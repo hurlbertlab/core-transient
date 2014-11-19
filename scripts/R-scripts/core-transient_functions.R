@@ -121,19 +121,19 @@ fitBeta = function(site) {
 
 # True bimodality for a given site:
 
-mode.prop = function(occs, threshold, mode) {
+mode.prop = function(occs, mode) {
   if (mode == 'core') length(occs[occs >= 1-threshold])/length(occs)
     else length(occs[occs <= threshold])/length(occs)
 }
 
 # Randomization test for a given mode:
 
-p.mode = function(occs, threshold, mode, reps){
-    actual.prop = mode.prop(occs, threshold, mode)
+p.mode = function(site, mode, reps){
+    actual.prop = mode.prop(prop.df[prop.df$site == site,'occ'], mode)
   # For loop to get random frequncies in the mode:
     r.props = numeric()
     for (i in 1:reps){
-      r.props[i] = mode.prop(random.occs(occs, nt), threshold, mode)
+      r.props[i] = mode.prop(random.occs(site), mode)
     }
   # Calculate the p-value (proportion of sites with higher frequency than the
   # actual bimodality value):
@@ -141,13 +141,10 @@ p.mode = function(occs, threshold, mode, reps){
   return(data.frame(actual.prop, p.mode))
 }
 
-mode.summary = function(site, threshold, reps){
-  # Get values:
-    nt = nTime[nTime$site == site,'nt']               
-    occs = prop.df[prop.df$site == site,'occ']
+mode.summary = function(site, reps){
   # Summary stats for core and transient modes:
-    core.prop = p.mode(occs, threshold, 'core', reps)
-    trans.prop = p.mode(occs, threshold, 'trans', reps)
+    core.prop = p.mode(site, 'core', reps)
+    trans.prop = p.mode(site, 'trans', reps)
  # Bind output into dataframe:
     df.out = data.frame(site, threshold, cbind(core.prop, trans.prop))
     names(df.out)[3:6] = c('core.prop', 'coreP','trans.prop','transP')
