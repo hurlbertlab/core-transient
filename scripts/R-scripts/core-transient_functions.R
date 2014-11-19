@@ -57,7 +57,9 @@ bimodality = function(occs) {
 
 # Random sample of occurences for a given site (to be used in randomization, below):
 
-random.occs = function(occs){
+random.occs = function(site){
+  nt = nTime[nTime$site == site,'nt']
+  occs = prop.df[prop.df$site == site,'occ']
   t1 = data.frame(table(occs))                      # Occurence proportion and frequency
   occ = data.frame(occs = seq(1/nt, 1, length = nt)) # Possible occurence proportions
   t2 = merge(occ, t1, all.x = T)  # Occurence by possible proportions
@@ -66,20 +68,20 @@ random.occs = function(occs){
   new.freq = sample(t2$Freq, length(t2[,1]))
   t3 = data.frame(t2[,1], new.freq)
   # Create new occurence vector:
-  occs=unlist(apply(t3, 1, function(x) rep(x[1], x[2])))
-  return(as.vector(occs))
+  r.occs=unlist(apply(t3, 1, function(x) rep(x[1], x[2])))
+  return(as.vector(r.occs))
 }
 
 # Randomization test for bimodality:
 
 p.bimodal = function(site, reps){
 #   nt = nTime[nTime$site == site,'nt']
-  occs = prop.df[prop.df$site == site,'occ']
-  actual.bimod = bimodality(occs)
+#   occs = prop.df[prop.df$site == site,'occ']
+  actual.bimod = bimodality(prop.df[prop.df$site == site,'occ'])
   # For loop to get random bimodality values
   r.bimod = numeric()
   for (i in 1:reps){
-    r.bimod[i] = bimodality(random.occs(occs))
+    r.bimod[i] = bimodality(random.occs(site))
   }
   # Calculate the p-value (proportion of sites with higher bimodality than the
   # actual bimodality value):
@@ -112,8 +114,6 @@ fitBeta = function(site) {
   return(as.vector(shape.params$estimate))
   } else c(NA, NA)
 }
-
-bimodality(prop.df[prop.df$site == 'd226_ew','occ'])
 
 #==================================================================================*
 # ---- CORE-TRANSIENT MODE STATISTICS ----
@@ -215,8 +215,7 @@ ctSummary = function(site, threshold, reps){
   # Sampling summary for site:
     samplingSummary = sampling(site, threshold)
   # Calculate bimodality of the dataset and site:
-    occs = prop.df[prop.df$site == site,'occ']
-    bimodal = bimodality(occs)
+    bimodal = bimodality(prop.df[prop.df$site == site,'occ'])
     bimodal.p = p.bimodal(site, reps)
   # Calculate the alpha and beta shape parameters for the beta disatribution:
     fB = fitBeta(site)
