@@ -88,17 +88,17 @@ write.csv(ct, 'output/tabular_data/core-transient_summary.csv', row.names = F)
 
 site = factor(samplingSummary$site)
 threshold = 1/3
-reps = 10
+reps = 1000
 
 out.list = list()
 
 for (i in site){
-  out.list[[i]] =  mode.summary(i, threshold, reps)
+  out.list[[i]] =  mode.summary(i, reps)
 }
 
 modeSummary = rbind.fill(out.list)
 
-write.csv(ct, 'output/tabular_data/ct_mode_summary.csv', row.names = F)
+write.csv(modeSummary, 'output/tabular_data/ct_mode_summary.csv', row.names = F)
 
 #==================================================================================*
 # ---- PLOTS ----
