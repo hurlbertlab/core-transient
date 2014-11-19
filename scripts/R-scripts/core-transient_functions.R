@@ -113,6 +113,8 @@ fitBeta = function(site) {
   } else c(NA, NA)
 }
 
+bimodality(prop.df[prop.df$site == 'd226_ew','occ'])
+
 #==================================================================================*
 # ---- CORE-TRANSIENT MODE STATISTICS ----
 #==================================================================================*
@@ -213,7 +215,8 @@ ctSummary = function(site, threshold, reps){
   # Sampling summary for site:
     samplingSummary = sampling(site, threshold)
   # Calculate bimodality of the dataset and site:
-    bimodal = bimodality(site)
+    occs = prop.df[prop.df$site == site,'occ']
+    bimodal = bimodality(occs)
     bimodal.p = p.bimodal(site, reps)
   # Calculate the alpha and beta shape parameters for the beta disatribution:
     fB = fitBeta(site)
