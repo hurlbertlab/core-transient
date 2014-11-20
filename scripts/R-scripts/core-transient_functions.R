@@ -108,7 +108,7 @@ occs.scaled = function(site){
 # Fit beta distribution:
 
 fitBeta = function(site) {
-  if (bimodality(prop.df[prop.df$site == site,'occ'])!= 0)
+  if (bimodality(prop.df[prop.df$site == site,'occ'], site)!= 0)
   {occs  = occs.scaled(site)
   shape.params = suppressWarnings(fitdistr(occs, "beta",
                                   list(shape1 = 2, shape2 = 2)))
@@ -208,12 +208,11 @@ ctSummary = function(site, threshold, reps){
     dataset = as.numeric(substr(site, 2, 4))
   # Subset to the site of interest:
     d = prop.df[prop.df$site == site,]
-    nt = nTime[nTime$site == site,'nt']
-    dst = outSummary[outSummary$dataset_ID == dataset,]
   # Sampling summary for site:
     samplingSummary = sampling(site, threshold)
+    nt = samplingSummary[samplingSummary$site == site,'nTime']  
   # Calculate bimodality of the dataset and site:
-    bimodal = bimodality(prop.df[prop.df$site == site,'occ'])
+    bimodal = bimodality(prop.df[prop.df$site == site,'occ'], site)
     bimodal.p = p.bimodal(site, reps)
   # Calculate the alpha and beta shape parameters for the beta disatribution:
     fB = fitBeta(site)
