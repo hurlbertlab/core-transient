@@ -50,6 +50,10 @@ d213.1$datasetID = rep(213,1, length(d213.1[,1]))
 
 d213.1 = d213.1[,c(5,1:4)]
 
+# Change site naming convention:
+
+d213.1$plot = paste('d',d213.1$datasetID, '_',d213.1$plot, sep = '')
+
 # Make names equivalent to other datasets:
 
 names(d213.1) = c('datasetID','site','species','year','count')
