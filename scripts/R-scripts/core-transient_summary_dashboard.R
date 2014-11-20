@@ -9,6 +9,11 @@
 # ---- Set-up ----
 #==================================================================================*
 
+# If a dataset was changed or added, the script that creates the proportional and
+# nTime dataframes must be rerun:
+
+source('scripts/R-scripts/ct_proportion_frame.R')
+
 # Get files:
 
 prop.df = read.csv('output/prop.df.csv')
@@ -26,6 +31,8 @@ library(ggplot2)
 library(grid)
 library(gridExtra)
 library(MASS)
+
+
 
 #==================================================================================*
 #  ---- SUMMARY TABLE OUTPUT ----
