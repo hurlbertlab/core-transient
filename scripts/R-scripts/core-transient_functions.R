@@ -49,7 +49,8 @@
 
 # True bimodality for a given site (or random sample of occurrences at a site)
 
-bimodality = function(occs) {
+bimodality = function(occs, site) {
+  nt = nTime[nTime$site == site,'nt']
   maxvar = var(c(rep(1/nt,floor(length(occs)/2)),
                  rep(1,ceiling(length(occs)/2))))
   return(var(occs)/maxvar)
@@ -75,13 +76,13 @@ random.occs = function(site){
 # Randomization test for bimodality:
 
 p.bimodal = function(site, reps){
-#   nt = nTime[nTime$site == site,'nt']
+  nt = nTime[nTime$site == site,'nt']
 #   occs = prop.df[prop.df$site == site,'occ']
-  actual.bimod = bimodality(prop.df[prop.df$site == site,'occ'])
+  actual.bimod = bimodality(prop.df[prop.df$site == site,'occ'], site)
   # For loop to get random bimodality values
   r.bimod = numeric()
   for (i in 1:reps){
-    r.bimod[i] = bimodality(random.occs(site))
+    r.bimod[i] = bimodality(random.occs(site), site)
   }
   # Calculate the p-value (proportion of sites with higher bimodality than the
   # actual bimodality value):
