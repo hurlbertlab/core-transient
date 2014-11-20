@@ -13,7 +13,9 @@ d252 = read.csv(file.path(in_dir,'dataset_252.csv'))
 
 # Data were collected every two months. Including month as a decimal to year
 
-d252$year = d252$year + .1*d252$month
+# d252$year = d252$year + .1*d252$month
+
+# Note on the above, I lumped the data to annual samples because almost all of the species showed up as transient at this temporal grain.
 
 # NA's are coded as -888, remove these values (using species field)
 
