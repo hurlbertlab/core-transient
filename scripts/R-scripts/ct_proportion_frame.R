@@ -39,6 +39,10 @@ data.list = lapply(data.list, name.changer)
 
 d = rbind.fill(data.list)
 
+# To avoid memory problems, remove the data list:
+
+rm(data.list)
+
 #----------------------------------------------------------------------------------*
 # ---- Calculate the number of time samples per site ----
 #==================================================================================*
