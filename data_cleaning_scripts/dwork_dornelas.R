@@ -28,5 +28,5 @@ dornelas.formatter = function(i){
                       '.csv', sep = ''), row.names =F)
 }
 
-for (i in 1:length(data.list)) dornelas.fomatter(i)
+for (i in 1:length(data.list)) dornelas.formatter(i)
 

@@ -32,8 +32,6 @@ library(grid)
 library(gridExtra)
 library(MASS)
 
-
-
 #==================================================================================*
 #  ---- SUMMARY TABLE OUTPUT ----
 #==================================================================================*
@@ -113,7 +111,6 @@ write.csv(modeSummary, 'output/tabular_data/ct_mode_summary.csv', row.names = F)
 # Plot outputs include:
 # 1. Core-transient histogram
 
-
 #----------------------------------------------------------------------------------*
 # ---- Core-transient histogram  ----
 #----------------------------------------------------------------------------------*
@@ -148,4 +145,3 @@ pdf('output/plots/CT_histograms.pdf',
     width = 6.5, height = 5.5, onefile = T)
 out.plots
 dev.off()
-
