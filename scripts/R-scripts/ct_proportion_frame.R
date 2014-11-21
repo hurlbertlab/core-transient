@@ -5,25 +5,9 @@
 # scripts.
 
 #----------------------------------------------------------------------------------*
-# ---- Set-up ----
+# ---- FUNCTIONS ----
 #==================================================================================*
 
-# Libraries:
-
-library(plyr)
-
-# Set read and write directories:
-
-in_dir = 'formatted_datasets'
-
-# Get summary table:
-
-summary.table = read.csv('data_source_table.csv')
-
-# Gather all files in directory:
-
-datasets = list.files(in_dir, pattern="*.csv", full.names=T)
-data.list = lapply(datasets, read.csv)
 
 # The following function and line of code will change field names from density
 # to count to ensure equivalent names (for rbinding):
@@ -33,19 +17,7 @@ name.changer = function(x){
   x
 }
 
-data.list = lapply(data.list, name.changer)
-
-# Bind the list into a single dataframe that includes all datasets:
-
-d = rbind.fill(data.list)
-
-# To avoid memory problems, remove the data list:
-
-rm(data.list)
-
-#----------------------------------------------------------------------------------*
 # ---- Calculate the number of time samples per site ----
-#==================================================================================*
 
 n.timeFun = function(dataset, site){
   d = d[d$datasetID == dataset & d$site == site,] # Subsets data by dataset & site
@@ -53,9 +25,7 @@ n.timeFun = function(dataset, site){
   data.frame(dataset, site = site, nt = years)
 } 
 
-#----------------------------------------------------------------------------------*
 # ---- Function to create proportion of occurences species and time data frame ----
-#==================================================================================*
 
 prop.t.fun = function(dataset, site){
   d = d[d$datasetID == dataset & d$site == site,] # Subsets data by dataset & site
@@ -70,21 +40,55 @@ prop.t.fun = function(dataset, site){
   return(prop.df)
 }
 
-sites = unique(d$site)
-dID = numeric()
-props.df = list()  
-nTime.df = list()
+# ---- Wrapper function to output data ----
 
-for(i in 1:length(sites)){
-  dID[i] = unique(d[d$site == sites[i],'datasetID'])
-  props.df[[i]] = prop.t.fun(dID[i],sites[i])
-  nTime.df[[i]] = n.timeFun(dID[i],sites[i])
+data.prep.wrapper = function(i){
+  d = read.csv(datasets[[i]])
+  d = name.changer(d)
+  sites = unique(d$site)
+  dID = numeric()
+  props.df = list()  
+  nTime.df = list()
+  for(i in 1:length(sites)){
+    dID[i] = unique(d[d$site == sites[i],'datasetID'])
+    props.df[[i]] = prop.t.fun(dID[i],sites[i])
+    nTime.df[[i]] = n.timeFun(dID[i],sites[i])
+  }
+  rm(d)
+  props.df = rbind.fill(props.df)
+  nTime.df = rbind.fill(nTime.df)
+  return(list(props.df, nTime.df))
 }
+
+#----------------------------------------------------------------------------------*
+# ---- Set-up ----
+#==================================================================================*
+
+# Libraries:
+
+library(plyr)
+
+# Set read and write directories:
+
+in_dir = 'formatted_datasets'
+
+# Gather all files in directory:
+
+datasets = list.files(in_dir, pattern="*.csv", full.names=T)
+
+out.list = list()  
+for(i in 1:length(datasets)) out.list[[i]] = data.prep.wrapper(i)
+
+prop.list = list()
+n.time.list = list()
+
+for(i in 1:length(datasets)) prop.list[[i]] = out.list[[i]][[1]]
+for(i in 1:length(datasets)) n.time.list[[i]] = out.list[[i]][[2]]
 
 # Turn lists into data frames:
 
-prop.df = rbind.fill(props.df)
-n.time =  rbind.fill(nTime.df)
+prop.df = rbind.fill(prop.list)
+n.time =  rbind.fill(n.time.list)
 
 # Write files
 
