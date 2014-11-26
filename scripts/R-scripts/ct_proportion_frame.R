@@ -27,8 +27,8 @@ n.timeFun = function(dataset, site){
 
 # ---- Function to create proportion of occurences species and time data frame ----
 
-prop.t.fun = function(dataset, site){
-  d = d[d$datasetID == dataset & d$site == site,] # Subsets data by dataset & site
+prop.t.fun = function(site){
+  d = d[d$site == site,] # Subsets data by dataset & site
   sp = unique(d$species)        # Generates a species list
   n.t = n.timeFun(dataset, site)[,3]
   # For loop to calculate the proportion of years a species has been observed:
@@ -43,22 +43,25 @@ prop.t.fun = function(dataset, site){
 # ---- Wrapper function to output data ----
 
 data.prep.wrapper = function(i){
-  d = read.csv(datasets[[i]])
+  d = read.csv(datasets[i])
   d = name.changer(d)
   sites = unique(d$site)
   dID = numeric()
   props.df = list()  
   nTime.df = list()
-  for(i in 1:length(sites)){
-    dID[i] = unique(d[d$site == sites[i],'datasetID'])
-    props.df[[i]] = prop.t.fun(dID[i],sites[i])
-    nTime.df[[i]] = n.timeFun(dID[i],sites[i])
+  for(j in 1:length(sites)){
+    dID[j] = unique(d[d$site == sites[j],'datasetID'])
+#     props.df[[j]] = prop.t.fun(sites[j])
+#     nTime.df[[j]] = n.timeFun(dID[j],sites[j])
   }
-  rm(d)
-  props.df = rbind.fill(props.df)
-  nTime.df = rbind.fill(nTime.df)
-  return(list(props.df, nTime.df))
+#   rm(d)
+#   props.df = rbind.fill(props.df)
+#   nTime.df = rbind.fill(nTime.df)
+#   return(list(props.df, nTime.df))
+  return(dID)
 }
+
+test = data.prep.wrapper(1)
 
 #----------------------------------------------------------------------------------*
 # ---- Set-up ----
