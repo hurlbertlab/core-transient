@@ -4,6 +4,8 @@
 # time units per site (name = Ntime.df). These dataframes will be sourced by other 
 # scripts.
 
+library(plyr)
+
 #----------------------------------------------------------------------------------*
 # ---- FUNCTIONS ----
 #==================================================================================*
@@ -19,18 +21,20 @@ name.changer = function(x){
 
 # ---- Calculate the number of time samples per site ----
 
-n.timeFun = function(dataset, site){
-  d = d[d$datasetID == dataset & d$site == site,] # Subsets data by dataset & site
+n.timeFun = function(d, site){
+  d = d[d$site == site,] # Subsets data by site
   years = length(unique(d$year))
+  dataset = rep(unique(d$datasetID), length(years))
   data.frame(dataset, site = site, nt = years)
 } 
 
 # ---- Function to create proportion of occurences species and time data frame ----
 
-prop.t.fun = function(site){
-  d = d[d$site == site,] # Subsets data by dataset & site
+prop.t.fun = function(d, site){
+  d = d[d$site == site,] # Subsets data by site
   sp = unique(d$species)        # Generates a species list
-  n.t = n.timeFun(dataset, site)[,3]
+  dataset = rep(unique(d$datasetID), length(sp))
+  n.t = n.timeFun(d, site)[,3]
   # For loop to calculate the proportion of years a species has been observed:
   occ = numeric()
   for (i in 1:length(sp)){                        
@@ -51,14 +55,15 @@ data.prep.wrapper = function(i){
   nTime.df = list()
   for(j in 1:length(sites)){
     dID[j] = unique(d[d$site == sites[j],'datasetID'])
-#     props.df[[j]] = prop.t.fun(sites[j])
-#     nTime.df[[j]] = n.timeFun(dID[j],sites[j])
+    props.df[[j]] = prop.t.fun(d, sites[j])
+    nTime.df[[j]] = n.timeFun(d,sites[j])
   }
-#   rm(d)
-#   props.df = rbind.fill(props.df)
-#   nTime.df = rbind.fill(nTime.df)
-#   return(list(props.df, nTime.df))
-  return(dID)
+  rm(d)
+  props.df = rbind.fill(props.df)
+  nTime.df = rbind.fill(nTime.df)
+  out.list = list(props.df, nTime.df)
+  names(out.list) = c('prop.df', 'nTime.df')
+  return(out.list)
 }
 
 test = data.prep.wrapper(1)
