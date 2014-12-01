@@ -47,8 +47,8 @@ prop.t.fun = function(d, site){
 data.prep.wrapper = function(i){
   d = read.csv(datasets[i])
   d = name.changer(d)
+  d = d[d$count > 0,]
   sites = unique(d$site)
-  dID = numeric()
   d1 = list()
   props.df = list()  
   nTime.df = list()
@@ -65,7 +65,7 @@ data.prep.wrapper = function(i){
   return(out.list)
 }
 
-test = data.prep.wrapper(49)
+test = head(data.prep.wrapper(50)[[1]])
 
 #----------------------------------------------------------------------------------*
 # ---- Set-up ----
