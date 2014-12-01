@@ -22,7 +22,6 @@ name.changer = function(x){
 # ---- Calculate the number of time samples per site ----
 
 n.timeFun = function(d, site){
-  d = d[d$site == site,] # Subsets data by site
   years = length(unique(d$year))
   dataset = rep(unique(d$datasetID), length(years))
   data.frame(dataset, site = site, nt = years)
@@ -31,7 +30,6 @@ n.timeFun = function(d, site){
 # ---- Function to create proportion of occurences species and time data frame ----
 
 prop.t.fun = function(d, site){
-  d = d[d$site == site,] # Subsets data by site
   sp = unique(d$species)        # Generates a species list
   dataset = rep(unique(d$datasetID), length(sp))
   n.t = n.timeFun(d, site)[,3]
@@ -51,14 +49,15 @@ data.prep.wrapper = function(i){
   d = name.changer(d)
   sites = unique(d$site)
   dID = numeric()
+  d1 = list()
   props.df = list()  
   nTime.df = list()
   for(j in 1:length(sites)){
-    dID[j] = unique(d[d$site == sites[j],'datasetID'])
-    props.df[[j]] = prop.t.fun(d, sites[j])
-    nTime.df[[j]] = n.timeFun(d,sites[j])
-  }
-  rm(d)
+    d1[[j]] =  d[d$site == sites[j],] #unique(d[d$site == sites[j],'datasetID'])
+    props.df[[j]] = prop.t.fun(d1[[j]], sites[j])
+    nTime.df[[j]] = n.timeFun(d1[[j]],sites[j])
+  } 
+  rm(list =  c('d','d1'))
   props.df = rbind.fill(props.df)
   nTime.df = rbind.fill(nTime.df)
   out.list = list(props.df, nTime.df)
@@ -66,7 +65,7 @@ data.prep.wrapper = function(i){
   return(out.list)
 }
 
-test = data.prep.wrapper(1)
+test = data.prep.wrapper(49)
 
 #----------------------------------------------------------------------------------*
 # ---- Set-up ----
