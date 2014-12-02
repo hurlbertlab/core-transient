@@ -42,7 +42,7 @@ prop.t.fun = function(d, site){
   return(prop.df)
 }
 
-# ---- Wrapper function to output data ----
+# ---- Wrapper function to output prop.df ----
 
 prop.df.maker = function(i){
   d = read.csv(datasets[i])
@@ -59,6 +59,8 @@ prop.df.maker = function(i){
   return(rbind.fill(prop.list))
 }
 
+# ---- Wrapper function to output nTime.df ----
+
 nTime.maker = function(i){
   d = read.csv(datasets[i])
   d = name.changer(d)
@@ -72,9 +74,8 @@ nTime.maker = function(i){
     nTime.list[[j]] = n.timeFun(d1[[j]],sites[j])
   } 
   rm(list =  c('d','d1'))
-  return(rbind.fill(nTime..list))
+  return(rbind.fill(nTime.list))
 }
-
 
 #----------------------------------------------------------------------------------*
 # ---- Set-up ----
@@ -92,21 +93,19 @@ in_dir = 'formatted_datasets'
 
 datasets = list.files(in_dir, pattern="*.csv", full.names=T)
 
-out.list = list()  
-for(i in 1:length(datasets)) out.list[[i]] = data.prep.wrapper(i)
+prop.list = list()  
+nTime.list = list()
 
-prop.list = list()
-n.time.list = list()
+for(i in 1:length(datasets)) prop.list[[i]] = prop.df.maker(i)
 
-for(i in 1:length(datasets)) prop.list[[i]] = out.list[[i]][[1]]
-for(i in 1:length(datasets)) n.time.list[[i]] = out.list[[i]][[2]]
+for(i in 1:length(datasets)) nTime.list[[i]] =nTime.maker(i)
 
 # Turn lists into data frames:
 
 prop.df = rbind.fill(prop.list)
-n.time =  rbind.fill(n.time.list)
+nTime =  rbind.fill(nTime.list)
 
 # Write files
 
 write.csv(prop.df, 'output/prop.df.csv', row.names = F)
-write.csv(n.time, 'output/Ntime.df.csv', row.names = F)
+write.csv(n.time, 'output/nTime.df.csv', row.names = F)
