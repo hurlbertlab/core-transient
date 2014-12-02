@@ -44,28 +44,37 @@ prop.t.fun = function(d, site){
 
 # ---- Wrapper function to output data ----
 
-data.prep.wrapper = function(i){
+prop.df.maker = function(i){
+  d = read.csv(datasets[i])
+  d = name.changer(d)
+  d = d[d$count > 0,]
+  sites = unique(d$site)
+  d1 = list()
+  prop.list = list()  
+  for(j in 1:length(sites)){
+    d1[[j]] =  d[d$site == sites[j],]
+    prop.list[[j]] = prop.t.fun(d1[[j]], sites[j])
+  } 
+  rm(list =  c('d','d1'))
+  return(rbind.fill(prop.list))
+}
+
+nTime.maker = function(i){
   d = read.csv(datasets[i])
   d = name.changer(d)
   d = d[d$count > 0,]
   sites = unique(d$site)
   d1 = list()
   props.df = list()  
-  nTime.df = list()
+  nTime.list = list()
   for(j in 1:length(sites)){
-    d1[[j]] =  d[d$site == sites[j],] #unique(d[d$site == sites[j],'datasetID'])
-    props.df[[j]] = prop.t.fun(d1[[j]], sites[j])
-    nTime.df[[j]] = n.timeFun(d1[[j]],sites[j])
+    d1[[j]] =  d[d$site == sites[j],] 
+    nTime.list[[j]] = n.timeFun(d1[[j]],sites[j])
   } 
   rm(list =  c('d','d1'))
-  props.df = rbind.fill(props.df)
-  nTime.df = rbind.fill(nTime.df)
-  out.list = list(props.df, nTime.df)
-  names(out.list) = c('prop.df', 'nTime.df')
-  return(out.list)
+  return(rbind.fill(nTime..list))
 }
 
-test = head(data.prep.wrapper(50)[[1]])
 
 #----------------------------------------------------------------------------------*
 # ---- Set-up ----
