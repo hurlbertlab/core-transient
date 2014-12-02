@@ -9,8 +9,8 @@ library(reshape)
 
 # Set read and write directories:
 
-in_dir = 'dornelas_unformat'
-out_dir = 'dornelas_cleaned'
+in_dir = 'formatted_datasets/dornelas_unformat'
+out_dir = 'formatted_datasets/dornelas_cleaned'
 
 
 # Gather all files in directory:
@@ -25,7 +25,6 @@ t = read.csv(datasets[1])
 
 t1 = t$site
 
-df <- data.frame(ID=11:13, FOO=c('a|b','b|c','x|y'))
 t2 = transform(t1, site = colsplit(t1, split = "\\_", names = c('dataset', 'location1','location2','location3','x','y')))
 
 # Round site x and y locations to 2 degree blocks and paste:
@@ -43,6 +42,46 @@ t$site = t2$site
 # Sum counts to the new sites:
 
 t2 = ddply(t,.(site,species,year), summarise, count = sum(count))
+
+# Write file:
+
+write.csv(t2, paste(out_dir, 'dataset_108.csv', sep = '/'), row.names = F)
+
+#----------------------------------------------------------------------------------*
+# Dataset 110
+#----------------------------------------------------------------------------------*
+# Note: This one may be a problem. Lat's and Lon's may be required here.
+
+t = read.csv(datasets[2])
+
+t1 = t$site
+
+t2 = transform(t1, site = colsplit(t1, split = "\\(", names = c('dataset')))
+
+t3 = t2$site.dataset
+
+t4 = transform(t3, site = colsplit(t1, split = "\\_", names = c('dataset')))
+
+t5 = paste(t4[,2],t4[,5], sep = '_')
+
+# Change site column in the original dataset:
+
+t$site = t5
+
+# Sum counts to the new sites:
+
+t2 = ddply(t,.(site,species,year), summarise, count = sum(count))
+
+# Write file:
+
+write.csv(t2, paste(out_dir, 'dataset_110.csv', sep = '/'), row.names = F)
+
+#----------------------------------------------------------------------------------*
+# Dataset 112
+#----------------------------------------------------------------------------------*
+
+t = read.csv(datasets[3])
+
 
 
 
