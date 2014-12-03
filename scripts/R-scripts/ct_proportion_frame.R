@@ -86,7 +86,7 @@ nTime.list = list()
 
 for(i in 1:length(datasets)) prop.list[[i]] = prop.df.maker(datasets, i)
 
-for(i in 1:length(datasets)) nTime.list[[i]] =nTime.maker(datasets, i)
+for(i in 1:length(datasets)) nTime.list[[i]] = nTime.maker(datasets, i)
 
 # Turn lists into data frames:
 
@@ -96,4 +96,4 @@ nTime =  rbind.fill(nTime.list)
 # Write files
 
 write.csv(prop.df, 'output/prop.df.csv', row.names = F)
-write.csv(n.time, 'output/nTime.df.csv', row.names = F)
+write.csv(nTime, 'output/nTime.df.csv', row.names = F)
