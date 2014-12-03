@@ -17,15 +17,6 @@ prep.fun = function(datasets, i){
     return(d)
   }
 
-
-# ---- Calculate the number of time samples per site ----
-
-n.timeFun = function(d, site){
-  years = length(unique(d$year))
-  dataset = rep(unique(d$datasetID), length(years))
-  data.frame(dataset, site = site, nt = years)
-} 
-
 # ---- Calculate proportion of occurences for a given species ----
 
 occfun = function(sp) length(unique(d[d$species == sp,4]))/length(unique(d$year))
@@ -66,16 +57,15 @@ prop.df.maker = function(datasets, i){
 nTime.maker = function(i){
   d = prep.fun(datasets, i)
   sites = unique(d$site)
-  d1 = list()
-  props.df = list()  
+  years = numeric()
   nTime.list = list()
   for(j in 1:length(sites)){
-    d1[[j]] =  d[d$site == sites[j],] 
-    nTime.list[[j]] = n.timeFun(d1[[j]],sites[j])
+    years[j] =  length(unique(d[d$site == sites[j],4])) 
   } 
-  rm(list =  c('d','d1'))
-  return(rbind.fill(nTime.list))
-}
+  return(data.frame(datasetID = rep(unique(d$datasetID), length(years)),
+                    site = sites, years))
+  }
+
 
 #----------------------------------------------------------------------------------*
 # ---- Set-up ----
