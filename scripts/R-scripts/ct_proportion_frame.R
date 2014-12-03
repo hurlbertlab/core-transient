@@ -4,8 +4,6 @@
 # time units per site (name = Ntime.df). These dataframes will be sourced by other 
 # scripts.
 
-library(plyr)
-
 #----------------------------------------------------------------------------------*
 # ---- FUNCTIONS ----
 #==================================================================================*
@@ -19,6 +17,16 @@ name.changer = function(x){
   x
 }
 
+# ---- Function to prepare data for analysis ----
+
+prep.fun = function(i){
+    d = read.csv(datasets[i])
+    d = name.changer(d)
+    d = d[d$count > 0,]
+    return(d)
+  }
+}
+
 # ---- Calculate the number of time samples per site ----
 
 n.timeFun = function(d, site){
@@ -26,6 +34,11 @@ n.timeFun = function(d, site){
   dataset = rep(unique(d$datasetID), length(years))
   data.frame(dataset, site = site, nt = years)
 } 
+
+# ---- Calculate proportion of occurences for a given species ----
+
+occfun = function(sp) length(unique(d[d$species == sp,4]))/length(unique(d$year))
+
 
 # ---- Function to create proportion of occurences species and time data frame ----
 
@@ -38,13 +51,13 @@ prop.t.fun = function(d, site){
   for (i in 1:length(sp)){                        
     occ[i] = length(unique(d[d$species == sp[i],'year']))/n.t
   }
-  prop.df = data.frame(dataset, site, sp,occ)  # Dataframe of species and proportion of years
+  prop.df = data.frame(dataset, site, sp,occ, row.names = NULL) 
   return(prop.df)
 }
 
 # ---- Wrapper function to output prop.df ----
 
-prop.df.maker = function(i){
+prop.df.maker = function(datasets, i){
   d = read.csv(datasets[i])
   d = name.changer(d)
   d = d[d$count > 0,]

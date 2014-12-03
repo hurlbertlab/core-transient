@@ -1,0 +1,9 @@
+line profiling: sample.interval=20000
+#File 1: 
+"names" "names" "[.data.frame" "[" "unique" 1#8 "prop.t.fun" 1#12 "pdm3" 
+"[.factor" "[" "[.data.frame" "[" "unique" 1#8 "prop.t.fun" 1#12 "pdm3" 
+"Ops.factor" "==" "[.data.frame" 1#11 "[" 1#11 "pdm3" 
+"is.na" "is.na" "Ops.factor" "==" "[.data.frame" "[" "unique" 1#8 "prop.t.fun" 1#12 "pdm3" 
+"noNA.levels" "Ops.factor" "==" "[.data.frame" "[" "unique" 1#8 "prop.t.fun" 1#12 "pdm3" 
+"levels" "nlevels" "unique.default" "unique" 1#2 "prop.t.fun" 1#12 "pdm3" 
+"print.default" "print" "print.data.frame" "print" 
