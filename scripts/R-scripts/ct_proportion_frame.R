@@ -8,24 +8,15 @@
 # ---- FUNCTIONS ----
 #==================================================================================*
 
-
-# The following function and line of code will change field names from density
-# to count to ensure equivalent names (for rbinding):
-
-name.changer = function(x){
-  if (names(x)[5] == 'density') names(x)[5] = 'count'
-  x
-}
-
 # ---- Function to prepare data for analysis ----
 
 prep.fun = function(datasets, i){
     d = read.csv(datasets[i])
-    d = name.changer(d)
+    if (names(d)[5] == 'density') names(d)[5] = 'count'
     d = d[d$count > 0,]
     return(d)
   }
-}
+
 
 # ---- Calculate the number of time samples per site ----
 
