@@ -21,7 +21,6 @@ prep.fun = function(datasets, i){
 
 occfun = function(sp) length(unique(d[d$species == sp,4]))/length(unique(d$year))
 
-
 # ---- Function to create proportion of occurences species and time data frame ----
 
 prop.t.fun = function(d, site){
@@ -54,7 +53,7 @@ prop.df.maker = function(datasets, i){
 
 # ---- Wrapper function to output nTime.df ----
 
-nTime.maker = function(i){
+nTime.maker = function(datasets, i){
   d = prep.fun(datasets, i)
   sites = unique(d$site)
   years = numeric()
@@ -65,7 +64,6 @@ nTime.maker = function(i){
   return(data.frame(datasetID = rep(unique(d$datasetID), length(years)),
                     site = sites, years))
   }
-
 
 #----------------------------------------------------------------------------------*
 # ---- Set-up ----
@@ -86,9 +84,9 @@ datasets = list.files(in_dir, pattern="*.csv", full.names=T)
 prop.list = list()  
 nTime.list = list()
 
-for(i in 1:length(datasets)) prop.list[[i]] = prop.df.maker(i)
+for(i in 1:length(datasets)) prop.list[[i]] = prop.df.maker(datasets, i)
 
-for(i in 1:length(datasets)) nTime.list[[i]] =nTime.maker(i)
+for(i in 1:length(datasets)) nTime.list[[i]] =nTime.maker(datasets, i)
 
 # Turn lists into data frames:
 
