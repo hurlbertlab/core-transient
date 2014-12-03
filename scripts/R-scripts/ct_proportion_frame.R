@@ -19,7 +19,7 @@ name.changer = function(x){
 
 # ---- Function to prepare data for analysis ----
 
-prep.fun = function(i){
+prep.fun = function(datasets, i){
     d = read.csv(datasets[i])
     d = name.changer(d)
     d = d[d$count > 0,]
@@ -58,9 +58,7 @@ prop.t.fun = function(d, site){
 # ---- Wrapper function to output prop.df ----
 
 prop.df.maker = function(datasets, i){
-  d = read.csv(datasets[i])
-  d = name.changer(d)
-  d = d[d$count > 0,]
+  d = prep.fun(datasets, i)
   sites = unique(d$site)
   d1 = list()
   prop.list = list()  
@@ -75,9 +73,7 @@ prop.df.maker = function(datasets, i){
 # ---- Wrapper function to output nTime.df ----
 
 nTime.maker = function(i){
-  d = read.csv(datasets[i])
-  d = name.changer(d)
-  d = d[d$count > 0,]
+  d = prep.fun(datasets, i)
   sites = unique(d$site)
   d1 = list()
   props.df = list()  
