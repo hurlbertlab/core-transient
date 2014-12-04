@@ -65,13 +65,63 @@ nTime.maker = function(datasets, i){
                     site = sites, years))
   }
 
+# ---- Write function ----
+# Runs functions to create prop.df and nTime .csv files:
+
+get.outsFun = function(datasets){
+  require(plyr)
+  # For loops run proportional and nTime functions:
+    prop.list = list()  
+    nTime.list = list() 
+    for(i in 1:length(datasets)) prop.list[[i]] = prop.df.maker(datasets, i)  
+    for(i in 1:length(datasets)) nTime.list[[i]] = nTime.maker(datasets, i) 
+  # Turn lists into data frames:
+    prop.df = rbind.fill(prop.list)
+    nTime =  rbind.fill(nTime.list)
+  # Return list with prop.df and nTime frames:
+    out.list = list(prop.df, nTime)
+    names(out.list) = c('prop.df','nTime')
+    return(out.list)
+}
+
+# ---- Switch function ----
+# Writes the proportional and nTime frames for data not already in the 
+# prop.df file.
+
+proc.newFun = function(){
+  # Get the dataset names in the formatted files directory:
+  datasets = list.files(in_dir, pattern="*.csv", full.names=T)
+  # Get existing data:
+  prop.df = read.csv('output/prop.df.csv')
+  prop.df = prop.df[-1,]
+  nTime = read.csv('output/nTime.df.csv')
+  # Extract the dataset paths for the existing data:
+  y0 = unique(as.character(prop.df$dataset))
+  y = paste('formatted_datasets/dataset_',y0, '.csv', sep = '')
+  # Find datasets not in the prop.df file:
+    datasets = datasets[!datasets %in% y]
+  # Return datasets to run or print up-to-date message:
+    if (length(datasets[!datasets %in% y]) == 0) {
+    print("Up-to-date")} else {
+      # Get new processed data:
+        new.dfs = get.outsFun(datasets)
+      # Bind with previously processed data:
+        prop.df = rbind(prop.df, new.dfs[[1]])
+        nTime = rbind(nTime, new.dfs[[2]])
+      # Write to file:
+        write.csv(prop.df, 'output/prop.df.csv', row.names = F)
+        write.csv(nTime, 'output/nTime.df.csv', row.names = F)
+      # Return list with prop.df and nTime frames:
+        out.list = list(prop.df, nTime)
+        names(out.list) = c('prop.df','nTime')
+        return(out.list)}
+  }
+
 #----------------------------------------------------------------------------------*
-# ---- Set-up ----
+# ---- Make prop.df and nTime csv files ----
 #==================================================================================*
-
-# Libraries:
-
-library(plyr)
+# WARNING! This is if you are writing the prop.df and nTime files for the first 
+# time only!
 
 # Set read and write directories:
 
@@ -81,19 +131,20 @@ in_dir = 'formatted_datasets'
 
 datasets = list.files(in_dir, pattern="*.csv", full.names=T)
 
-prop.list = list()  
-nTime.list = list()
+# !!! IF this is the first run (no existing prop.df or nTime frames, run writeFun).
+# Be careful! This might take awhile!
 
-for(i in 1:length(datasets)) prop.list[[i]] = prop.df.maker(datasets, i)
-
-for(i in 1:length(datasets)) nTime.list[[i]] = nTime.maker(datasets, i)
-
-# Turn lists into data frames:
-
-prop.df = rbind.fill(prop.list)
-nTime =  rbind.fill(nTime.list)
+outs = get.outsFun(datasets)
 
 # Write files
 
-write.csv(prop.df, 'output/prop.df.csv', row.names = F)
-write.csv(nTime, 'output/nTime.df.csv', row.names = F)
+write.csv(outs[[1]], 'output/prop.df.csv', row.names = F)
+write.csv(outs[[2]], 'output/nTime.df.csv', row.names = F)
+
+#----------------------------------------------------------------------------------*
+# ---- Append prop.df and nTime csv files with new data ----
+#==================================================================================*
+
+outs = proc.newFun()
+
+
