@@ -8,9 +8,8 @@
 #----------------------------------------------------------------------------------*
 # ---- Set-up ----
 #==================================================================================*
-
-# If a dataset was changed or added, the script that creates the proportional and
-# nTime dataframes must be rerun:
+# The source script that checks for new datasets and adds/writes them to the prop 
+# and nTime frames if necessary:
 
 source('scripts/R-scripts/ct_proportion_frame.R')
 
