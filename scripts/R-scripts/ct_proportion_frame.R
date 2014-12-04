@@ -93,11 +93,10 @@ proc.newFun = function(){
   datasets = list.files(in_dir, pattern="*.csv", full.names=T)
   # Get existing data:
   prop.df = read.csv('output/prop.df.csv')
-  prop.df = prop.df[-1,]
   nTime = read.csv('output/nTime.df.csv')
   # Extract the dataset paths for the existing data:
   y0 = unique(as.character(prop.df$dataset))
-  y = paste('formatted_datasets/dataset_',y0, '.csv', sep = '')
+  y = paste('formatted_datasets/dataset_',y0,'.csv', sep = '')
   # Find datasets not in the prop.df file:
     datasets = datasets[!datasets %in% y]
   # Return datasets to run or print up-to-date message:
@@ -108,6 +107,9 @@ proc.newFun = function(){
       # Bind with previously processed data:
         prop.df = rbind(prop.df, new.dfs[[1]])
         nTime = rbind(nTime, new.dfs[[2]])
+      # Sort by dataset
+        prop.df = prop.df[order(prop.df$dataset),]
+        nTime = nTime[order(nTime$datasetID),]
       # Write to file:
         write.csv(prop.df, 'output/prop.df.csv', row.names = F)
         write.csv(nTime, 'output/nTime.df.csv', row.names = F)
@@ -146,5 +148,4 @@ write.csv(outs[[2]], 'output/nTime.df.csv', row.names = F)
 #==================================================================================*
 
 outs = proc.newFun()
-
 
