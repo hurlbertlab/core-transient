@@ -90,13 +90,13 @@ get.outsFun = function(datasets){
 
 proc.newFun = function(){
   # Get the dataset names in the formatted files directory:
-  datasets = list.files(in_dir, pattern="*.csv", full.names=T)
+    datasets = list.files(in_dir, pattern="*.csv", full.names=T)
   # Get existing data:
-  prop.df = read.csv('output/prop.df.csv')
-  nTime = read.csv('output/nTime.df.csv')
+    prop.df = read.csv('output/prop.df.csv')
+    nTime = read.csv('output/nTime.df.csv')
   # Extract the dataset paths for the existing data:
-  y0 = unique(as.character(prop.df$dataset))
-  y = paste('formatted_datasets/dataset_',y0,'.csv', sep = '')
+    y0 = unique(as.character(prop.df$dataset))
+    y = paste('formatted_datasets/dataset_',y0,'.csv', sep = '')
   # Find datasets not in the prop.df file:
     datasets = datasets[!datasets %in% y]
   # Return datasets to run or print up-to-date message:
@@ -122,26 +122,24 @@ proc.newFun = function(){
 #----------------------------------------------------------------------------------*
 # ---- Make prop.df and nTime csv files ----
 #==================================================================================*
-# WARNING! This is if you are writing the prop.df and nTime files for the first 
-# time only!
-
-# Set read and write directories:
-
-in_dir = 'formatted_datasets'
-
-# Gather all files in directory:
-
-datasets = list.files(in_dir, pattern="*.csv", full.names=T)
-
-# !!! IF this is the first run (no existing prop.df or nTime frames, run writeFun).
-# Be careful! This might take awhile!
-
-outs = get.outsFun(datasets)
-
-# Write files
-
-write.csv(outs[[1]], 'output/prop.df.csv', row.names = F)
-write.csv(outs[[2]], 'output/nTime.df.csv', row.names = F)
+# THIS SECTION IS COMMENTED OUT SO THIS FILE CAN BE SOURCED WITHOUT RUNNING
+# THESE LINES!!! This is to be run only if writing the prop.df and nTime files for
+# the first time!
+# 
+# # Set read and write directories:
+# 
+# in_dir = 'formatted_datasets'
+# 
+# # Gather all files in directory:
+# 
+# datasets = list.files(in_dir, pattern="*.csv", full.names=T)
+# 
+# outs = get.outsFun(datasets)
+# 
+# # Write files
+# 
+# write.csv(outs[[1]], 'output/prop.df.csv', row.names = F)
+# write.csv(outs[[2]], 'output/nTime.df.csv', row.names = F)
 
 #----------------------------------------------------------------------------------*
 # ---- Append prop.df and nTime csv files with new data ----
