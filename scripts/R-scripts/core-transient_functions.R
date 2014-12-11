@@ -181,11 +181,8 @@ sampling = function(site, threshold){
   # Get data:
   dataset = as.numeric(gsub('_','',substr(site,2,4)))
   d = occProp[occProp$site == site,]
-  nTime = nTime[nTime$site == site,'nt']
+  nTime = nTime[as.character(nTime$site) == site,'nt']
   dst = outSummary[outSummary$dataset_ID == dataset,]
-  # Subset to the site of interest:
-  d = d[d$site == site,]
-  dst = dst[dst$dataset_ID == dataset,]
   # Calculate richness indices:
   rich.total = length(d[,1])
   rich.core = length(d[d$occ>=1-threshold,1])
