@@ -45,14 +45,17 @@ library(MASS)
 # environment above.
 
 site = unique(occProp$site)
+# site = site[50:51]
 threshold = 1/3
 out.list = list()
 
-for (i in site){
-  out.list[[i]] = sampling(i, threshold)
+for (i in 1:length(site)){
+  out.list[[i]] = sampling(site[i], threshold)
 }
 
 ss = rbind.fill(out.list)
+
+ss2  = ss[ss$mu == 1,c(1,2)]
 
 # Remove sites with < 10 species and < 5 time intervals:
 
