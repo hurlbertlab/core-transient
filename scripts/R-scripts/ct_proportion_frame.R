@@ -1,7 +1,7 @@
 # This script calculates the proportional occupancy of species across time units
 # in the study. The output is a dataframe that contains the proportional occupancy
-# by species and site (name = prop.df) and a dataframe containing the number of 
-# time units per site (name = Ntime.df). These dataframes will be sourced by other 
+# by species and site (name = occProp) and a dataframe containing the number of 
+# time units per site (name = Ntime). These dataframes will be sourced by other 
 # scripts.
 
 #----------------------------------------------------------------------------------*
@@ -33,13 +33,13 @@ prop.t.fun = function(d, site){
   for (i in 1:length(sp)){                        
     occ[i] = length(unique(d[d$species == sp[i],'year']))/n.t
   }
-  prop.df = data.frame(dataset, site, sp,occ, row.names = NULL) 
-  return(prop.df)
+  occProp = data.frame(dataset, site, sp,occ, row.names = NULL) 
+  return(occProp)
 }
 
-# ---- Wrapper function to output prop.df ----
+# ---- Wrapper function to output occProp ----
 
-prop.df.maker = function(datasets, i){
+occProp.maker = function(datasets, i){
   d = prep.fun(datasets, i)
   sites = unique(d$site)
   d1 = list()
@@ -67,39 +67,39 @@ nTime.maker = function(datasets, i){
   }
 
 # ---- Write function ----
-# Runs functions to create prop.df and nTime .csv files:
+# Runs functions to create occProp and nTime .csv files:
 
 get.outsFun = function(datasets){
   require(plyr)
   # For loops run proportional and nTime functions:
     prop.list = list()  
     nTime.list = list() 
-    for(i in 1:length(datasets)) prop.list[[i]] = prop.df.maker(datasets, i)  
+    for(i in 1:length(datasets)) prop.list[[i]] = occProp.maker(datasets, i)  
     for(i in 1:length(datasets)) nTime.list[[i]] = nTime.maker(datasets, i) 
   # Turn lists into data frames:
-    prop.df = rbind.fill(prop.list)
+    occProp = rbind.fill(prop.list)
     nTime =  rbind.fill(nTime.list)
-  # Return list with prop.df and nTime frames:
-    out.list = list(prop.df, nTime)
-    names(out.list) = c('prop.df','nTime')
+  # Return list with occProp and nTime frames:
+    out.list = list(occProp, nTime)
+    names(out.list) = c('occProp','nTime')
     return(out.list)
 }
 
 # ---- Switch function ----
 # Writes the proportional and nTime frames for data not already in the 
-# prop.df file.
+# occProp file.
 
 proc.newFun = function(){
   # Get the dataset names in the formatted files directory:
     in_dir = 'formatted_datasets'
     datasets = list.files(in_dir, pattern="*.csv", full.names=T)
   # Get existing data:
-    prop.df = read.csv('output/prop.df.csv')
-    nTime = read.csv('output/nTime.df.csv')
+    occProp = read.csv('output/occProp.csv')
+    nTime = read.csv('output/nTime.csv')
   # Extract the dataset paths for the existing data:
-    y0 = unique(as.character(prop.df$dataset))
+    y0 = unique(as.character(occProp$dataset))
     y = paste('formatted_datasets/dataset_',y0,'.csv', sep = '')
-  # Find datasets not in the prop.df file:
+  # Find datasets not in the occProp file:
     datasets = datasets[!datasets %in% y]
   # Return datasets to run or print up-to-date message:
     if (length(datasets[!datasets %in% y]) == 0) {
@@ -107,22 +107,22 @@ proc.newFun = function(){
       # Get new processed data:
         new.dfs = get.outsFun(datasets)
       # Bind with previously processed data:
-        prop.df = rbind(prop.df, new.dfs[[1]])
+        occProp = rbind(occProp, new.dfs[[1]])
         nTime = rbind(nTime, new.dfs[[2]])
       # Sort by dataset
-        prop.df = prop.df[order(prop.df$dataset),]
+        occProp = occProp[order(occProp$dataset),]
         nTime = nTime[order(nTime$datasetID),]
       # Write to file:
-        write.csv(prop.df, 'output/prop.df.csv', row.names = F)
-        write.csv(nTime, 'output/nTime.df.csv', row.names = F)
+        write.csv(occProp, 'output/occProp.csv', row.names = F)
+        write.csv(nTime, 'output/nTime.csv', row.names = F)
       }
 }
 
 #----------------------------------------------------------------------------------*
-# ---- Make prop.df and nTime csv files ----
+# ---- Make occProp and nTime csv files ----
 #==================================================================================*
 # THIS SECTION IS COMMENTED OUT SO THIS FILE CAN BE SOURCED WITHOUT RUNNING
-# THESE LINES!!! This is to be run only if writing the prop.df and nTime files for
+# THESE LINES!!! This is to be run only if writing the occProp and nTime files for
 # the first time!
 # 
 # # Set read and write directories:
@@ -137,12 +137,12 @@ proc.newFun = function(){
 # 
 # # Write files
 # 
-# write.csv(outs[[1]], 'output/prop.df.csv', row.names = F)
-# write.csv(outs[[2]], 'output/nTime.df.csv', row.names = F)
+# write.csv(outs[[1]], 'output/occProp.csv', row.names = F)
+# write.csv(outs[[2]], 'output/nTime.csv', row.names = F)
 
 #----------------------------------------------------------------------------------*
-# ---- Append prop.df and nTime csv files with new data ----
+# ---- Append occProp and nTime csv files with new data ----
 #==================================================================================*
 
-outs = proc.newFun()
+proc.newFun()
 
