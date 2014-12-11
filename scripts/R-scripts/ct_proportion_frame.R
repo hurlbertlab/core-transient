@@ -90,6 +90,7 @@ get.outsFun = function(datasets){
 
 proc.newFun = function(){
   # Get the dataset names in the formatted files directory:
+    in_dir = 'formatted_datasets'
     datasets = list.files(in_dir, pattern="*.csv", full.names=T)
   # Get existing data:
     prop.df = read.csv('output/prop.df.csv')
