@@ -63,7 +63,7 @@ nTime.maker = function(datasets, i){
     years[j] =  length(unique(d[d$site == sites[j],4])) 
   } 
   return(data.frame(datasetID = rep(unique(d$datasetID), length(years)),
-                    site = sites, years))
+                    site = sites, nt = years))
   }
 
 # ---- Write function ----
