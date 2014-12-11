@@ -254,7 +254,6 @@ ct.hist = function(site) {
     out.plot = ggplot(prop.df, aes(x=occ)) +
       geom_histogram(aes(y = ..density..), breaks = brks, right = F,
                      fill = 'gray', color = 1) +
-      geom_density(alpha=.2, fill="blue") +  
       stat_function(fun = function(x) dbeta(x, ct$alpha, ct$beta), color = 'red') +
       # Add labels:
       xlab('Proportion of temporal samples') + ylab('Density') + 
