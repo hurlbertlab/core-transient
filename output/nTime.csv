@@ -1,701 +1,194 @@
-datasetID,site,nt
-70,d70_ Belgium ,14
-76,d76_CelticSea_14_14_51.5_0.97,1
-76,d76_CelticSea_14_14_54.21_8.39,1
-76,d76_CelticSea_17_17_50.65_-0.84,1
-76,d76_CelticSea_17_17_53.61_6.28,1
-76,d76_CelticSea_19_19_54.99_-1.37,1
-76,d76_CelticSea_24_24_53.33_0.59,1
-76,d76_CelticSea_25_25_52.48_3.79,1
-76,d76_CelticSea_25_25_52.98_0.34,1
-76,d76_CelticSea_28_28_53.45_5.1,1
-76,d76_CelticSea_30_30_50.93_1.28,1
-76,d76_CelticSea_30_30_51.72_3.11,1
-76,d76_CelticSea_30_30_54_6.25,1
-76,d76_CelticSea_30_30_55.17_3.16,1
-76,d76_CelticSea_31_31_54.84_1.33,1
-76,d76_CelticSea_33_33_53.97_7.84,1
-76,d76_CelticSea_34_34_52.83_2.83,1
-76,d76_CelticSea_42_42_53.92_4.49,1
-76,d76_CelticSea_48_48_54.15_4.34,1
-76,d76_CelticSea_52_52_54.92_-1.18,1
-76,d76_CelticSea_53_53_50.27_-4.26,1
-76,d76_CelticSea_64_64_50.08_-3,1
-76,d76_CelticSea_72_72_56.62_2.5,1
-76,d76_CelticSea_74_74_54_2,1
-76,d76_CelticSea_74_74_56.5_-0.5,1
-76,d76_CelticSea_76_76_50.03_-4.37,1
-76,d76_CelticSea_81_81_56.13_1.17,1
-76,d76_CelticSea_9_9_51.63_0.97,1
-76,d76_CelticSea_17_17_51.76_1.51,1
-76,d76_CelticSea_18_18_53.48_-3.33,1
-76,d76_CelticSea_19_19_53.97_-3.33,1
-76,d76_CelticSea_20_20_53.54_0.39,1
-76,d76_CelticSea_21_21_53.91_-3.22,1
-76,d76_CelticSea_22_22_51.73_1.63,1
-76,d76_CelticSea_25_25_52.36_-4.18,1
-76,d76_CelticSea_26_26_51.75_1.41,1
-76,d76_CelticSea_26_26_54.66_4.11,1
-76,d76_CelticSea_37_37_53.54_-3.55,1
-76,d76_CelticSea_40_40_53.5_-3.69,1
-76,d76_CelticSea_40_40_54.79_6.5,1
-76,d76_CelticSea_46_46_52_2.34,1
-76,d76_CelticSea_60_60_50.55_-5.39,1
-76,d76_CelticSea_65_65_51.34_-4.93,1
-76,d76_CelticSea_79_79_52.5_-5,1
-76,d76_CelticSea_94_94_51.25_-6,1
-76,d76_CelticSea_36_36_54.74_-5.63,1
-76,d76_CelticSea_49_49_55.5_6,1
-76,d76_CelticSea_54_54_55.5_6,1
-76,d76_CelticSea_61_61_58_-3.01,1
-76,d76_CelticSea_90_90_55.33_-6.58,1
-76,d76_CelticSea_27_27_53.04_1.53,1
-76,d76_CelticSea_29_29_50.66_-0.17,1
-76,d76_CelticSea_39_39_54.25_2.5,1
-76,d76_CelticSea_55_55_54.29_0.16,1
-76,d76_CelticSea_58_58_50.24_-2.16,1
-76,d76_CelticSea_74_74_55.33_0,1
-76,d76_CelticSea_21_21_54.75_-4.01,1
-76,d76_CelticSea_32_32_56.5_-2.5,1
-76,d76_CelticSea_55_55_55.33_-5.09,1
-76,d76_CelticSea_64_64_53.07_-5,1
-84,d84_Cape_Fiolent_Black_Sea_44.4971_33.4891,3
-84,d84_Cape_Fiolent_Black_Sea_44.4974_33.489,3
-84,d84_Cape_Fiolent_Black_Sea_44.4978_33.4889,3
-84,d84_Kazachiya_Bay_Cape_Kosa_Black_Sea_44.5777_33.4083,3
-84,d84_Kazachiya_Bay_Cape_Kosa_Black_Sea_44.5794_33.4082,3
-84,d84_Kazachiya_Bay_Cape_Kosa_Black_Sea_44.5819_33.4084,3
-84,d84_Kazachiya_Bay_small_bridge_Black_Sea_44.571_33.4097,3
-84,d84_Cape_Fiolent_Black_Sea_44.4969_33.4892,1
-84,d84_Cape_Hersones_Black_Sea_44.5833_33.3771,3
-84,d84_Cape_Hersones_Black_Sea_44.5834_33.3776,4
-84,d84_Cape_Hersones_Black_Sea_44.5835_33.3785,4
-84,d84_Cape_Hersones_Black_Sea_44.5835_33.378,4
-84,d84_Cottage_near_Golubaya_Bay_Black_Sea_44.5592_33.4006,1
-84,d84_Golubaya_Bay_Black_Sea_44.5549_33.4088,4
-84,d84_Golubaya_Bay_Black_Sea_44.5552_33.409,4
-84,d84_Golubaya_Bay_Black_Sea_44.5554_33.4092,3
-84,d84_Kazachiya_Bay_Cape_Kosa_Black_Sea_44.5922_33.4095,2
-84,d84_Kazachiya_Bay_eastern_shoreline_Black_Sea_44.5752_33.4135,1
-84,d84_Kazachiya_Bay_eastern_shoreline_Black_Sea_44.5755_33.4145,2
-84,d84_Kazachiya_Bay_small_bridge_Black_Sea_44.571_33.4103,2
-84,d84_Kazachiya_Bay_small_bridge_Black_Sea_44.5752_33.4117,2
-84,d84_Kazachiya_Bay_small_bridge_Black_Sea_44.5922_33.4095,1
-84,d84_Kazachiya_Bay_the_top_of_the_bay_Black_Sea_44.5684_33.4131,1
-84,d84_Kazachiya_Bay_the_top_of_the_bay_Black_Sea_44.5685_33.4125,1
-84,d84_Kazachiya_Bay_the_top_of_the_bay_Black_Sea_44.569_33.4114,2
-84,d84_Coast_near_Fortification_?35_(Second_War_period)_Black_Sea_44.5689_33.3923,1
-84,d84_Cottage_near_Golubaya_Bay_Black_Sea_44.5593_33.4007,1
-84,d84_Golubaya_Bay_Black_Sea_44.5543_33.4059,1
-84,d84_Cape_Kosa_Severnaya_Black_Sea_44.6313_33.5099,1
-84,d84_Cape_Kosa_Severnaya_Black_Sea_44.6313_33.5101,1
-84,d84_Cape_Kosa_Severnaya_Black_Sea_44.6313_33.5103,1
-84,d84_Cape_Kosa_Severnaya_Black_Sea_44.6314_33.5099,1
-84,d84_Kruglaya_Bay_Cape_Vostochniy_Black_Sea_44.6074_33.4476,1
-84,d84_Kruglaya_Bay_Cape_Vostochniy_Black_Sea_44.6074_33.448,1
-84,d84_Kruglaya_Bay_Cape_Vostochniy_Black_Sea_44.6075_33.4471,1
-84,d84_Kruglaya_Bay_Cape_Zapadniy_Black_Sea_44.6039_33.4411,1
-84,d84_Kruglaya_Bay_Cape_Zapadniy_Black_Sea_44.604_33.4418,1
-84,d84_Kruglaya_Bay_Cape_Zapadniy_Black_Sea_44.6042_33.4424,1
-84,d84_Tauric_Hersonesos_Reserve_anchient_wall_Black_Sea_44.6108_33.4849,1
-84,d84_Tauric_Hersonesos_Reserve_anchient_wall_Black_Sea_44.6109_33.4847,1
-84,d84_Tauric_Hersonesos_Reserve_anchient_wall_Black_Sea_44.6111_33.4844,1
-84,d84_Cape_Sarych_Black_Sea_44.3868_33.7417,1
-84,d84_Cape_Sarych_Black_Sea_44.387_33.7415,1
-84,d84_Cape_Sarych_Black_Sea_44.3871_33.7414,1
-84,d84_Cape_Sarych_Black_Sea_44.3872_33.7414,1
-84,d84_Laspi_Bay_at_the_Batiliman_Black_Sea_44.4182_33.6963,1
-84,d84_Laspi_Bay_at_the_Batiliman_Black_Sea_44.4185_33.6959,1
-84,d84_Laspi_Bay_at_the_Batiliman_Black_Sea_44.4187_33.6957,1
-84,d84_Laspi_Bay_at_the_Batiliman_Black_Sea_44.4188_33.6954,1
-84,d84_Laspi_Bay_recreational_complex_ﾫLaspiﾻ_Black_Sea_44.4166_33.7068,1
-84,d84_Laspi_Bay_recreational_complex_ﾫLaspiﾻ_Black_Sea_44.4166_33.7077,1
-84,d84_Laspi_Bay_recreational_complex_ﾫLaspiﾻ_Black_Sea_44.4167_33.7082,1
-84,d84_Laspi_Bay_recreational_complex_ﾫLaspiﾻ_Black_Sea_44.4167_33.7087,1
-84,d84_Laspi_Bay_the_top_of_the_bay_Black_Sea_44.4182_33.6963,1
-84,d84_Laspi_Bay_the_top_of_the_bay_Black_Sea_44.4213_33.705,1
-84,d84_Laspi_Bay_the_top_of_the_bay_Black_Sea_44.4215_33.7049,1
-84,d84_Laspi_Bay_the_top_of_the_bay_Black_Sea_44.4217_33.7049,1
-84,d84_Golubaya_Bay_Black_Sea_44.5544_33.4083,1
-84,d84_Goluboy_Gulf_Aquapark_near_domestic_waste_water_sewer_Black_Sea_44.3996_33.9872,1
-84,d84_Goluboy_Gulf_Aquapark_near_domestic_waste_water_sewer_Black_Sea_44.3999_33.9868,1
-84,d84_Goluboy_Gulf_Aquapark_near_domestic_waste_water_sewer_Black_Sea_44.4002_33.9864,1
-84,d84_Goluboy_Gulf_near_Katsiveli_village_domestic_waste_water_sewer_Black_Sea_44.3942_33.9805,1
-84,d84_Goluboy_Gulf_near_Katsiveli_village_domestic_waste_water_sewer_Black_Sea_44.3945_33.9802,1
-84,d84_Goluboy_Gulf_near_Katsiveli_village_domestic_waste_water_sewer_Black_Sea_44.3947_33.9798,1
-84,d84_Goluboy_Gulf_near_Mt_Koshka_and_rock_Diva_Black_Sea_44.3999_33.9999,1
-84,d84_Goluboy_Gulf_near_Mt_Koshka_and_rock_Diva_Black_Sea_44.4003_33.9998,1
-84,d84_Goluboy_Gulf_near_Mt_Koshka_and_rock_Diva_Black_Sea_44.4007_33.9999,1
-84,d84_Goluboy_Gulf_rock_Pribornaya_Black_Sea_44.3931_33.9769,1
-84,d84_Goluboy_Gulf_rock_Pribornaya_Black_Sea_44.3933_33.9765,1
-84,d84_Goluboy_Gulf_rock_Pribornaya_Black_Sea_44.3936_33.9762,1
-84,d84_Cape_Balaklavskiy_Black_Sea_44.4925_33.5977,1
-84,d84_Cape_Balaklavskiy_Black_Sea_44.493_33.5975,1
-84,d84_Cape_Balaklavskiy_Black_Sea_44.493_33.5976,1
-84,d84_Cape_Balaklavskiy_Black_Sea_44.4933_33.5975,1
-84,d84_Cape_Balaklavskiy_Black_Sea_44.4936_33.5974,1
-84,d84_Cape_Balaklavsky_Black_Sea_44.4925_33.5977,1
-84,d84_Cape_Balaklavsky_Black_Sea_44.493_33.5975,1
-84,d84_Cape_Kaya-Bash_Black_Sea_44.4882_33.5953,1
-84,d84_Cape_Kaya-Bash_Black_Sea_44.4884_33.5651,1
-84,d84_Cape_Kaya-Bash_Black_Sea_44.4887_33.5648,1
-84,d84_Cape_Kaya-Bash_Black_Sea_44.4891_33.5646,1
-84,d84_Karantinnaya_Bay_Cape_Vostochniy_Black_Sea_44.6151_33.5017,1
-84,d84_Karantinnaya_Bay_Cape_Vostochniy_Black_Sea_44.6152_33.5017,1
-84,d84_Karantinnaya_Bay_Cape_Vostochniy_Black_Sea_44.6153_33.5006,1
-84,d84_Kruglaya_Bay_Cape_Vostochniy_Black_Sea_44.6069_33.4473,1
-84,d84_Kruglaya_Bay_Cape_Vostochniy_Black_Sea_44.607_33.4473,1
-84,d84_Kruglaya_Bay_Cape_Vostochniy_Black_Sea_44.6073_33.4441,1
-84,d84_Karadagskiy_Nature_Zapovednik_Kuzmichev_rock_Black_Sea_44.9101_35.2139,1
-84,d84_Karadagskiy_Nature_Zapovednik_Kuzmichev_rock_Black_Sea_44.9107_35.2138,1
-84,d84_Karadagskiy_Nature_Zapovednik_Kuzmichev_rock_Black_Sea_44.9114_35.2138,1
-84,d84_Karadagskiy_Nature_Zapovednik_near_Biological_Station_Black_Sea_44.9099_35.2028,1
-84,d84_Karadagskiy_Nature_Zapovednik_near_Biological_Station_Black_Sea_44.9108_35.2024,1
-84,d84_Karadagskiy_Nature_Zapovednik_Pogranichnaya_Bay__Black_Sea_44.9322_35.2498,1
-84,d84_Karadagskiy_Nature_Zapovednik_Pogranichnaya_Bay__Black_Sea_44.9323_35.2492,1
-84,d84_Karadagskiy_Nature_Zapovednik_Pogranichnaya_Bay__Black_Sea_44.9324_35.2485,1
-84,d84_Karadagskiy_Nature_Zapovednik_Serdolikovaya_Bay_Black_Sea_44.9234_35.2453,1
-84,d84_Karadagskiy_Nature_Zapovednik_Serdolikovaya_Bay_Black_Sea_44.9237_35.2443,1
-84,d84_Karadagskiy_Nature_Zapovednik_Serdolikovaya_Bay_Black_Sea_44.9239_35.2437,1
-84,d84_Tarkhankut_Peninsula_at_the_natural_boundary_Atlesh_Black_Sea_45.3333_32.558,1
-84,d84_Tarkhankut_Peninsula_at_the_natural_boundary_Atlesh_Black_Sea_45.3338_32.558,1
-84,d84_Tarkhankut_Peninsula_at_the_natural_boundary_Atlesh_Black_Sea_45.3343_32.558,1
-84,d84_Tarkhankut_Peninsula_at_the_natural_boundary_Atlesh_Black_Sea_45.3346_32.538,1
-84,d84_Tarkhankut_Peninsula_Bolshoy_Kastel_Bay_Black_Sea_45.4572_32.5455,1
-84,d84_Tarkhankut_Peninsula_Bolshoy_Kastel_Bay_Black_Sea_45.4575_32.5449,1
-84,d84_Tarkhankut_Peninsula_Bolshoy_Kastel_Bay_Black_Sea_45.458_32.5442,1
-84,d84_Tarkhankut_Peninsula_Cape_Priboiniy_Black_Sea_45.3504_32.4966,1
-84,d84_Tarkhankut_Peninsula_Cape_Priboiniy_Black_Sea_45.3891_32.4558,1
-84,d84_Tarkhankut_Peninsula_Cape_Priboiniy_Black_Sea_45.3898_32.479,1
-84,d84_Tarkhankut_Peninsula_Cape_Priboiniy_Black_Sea_45.3901_32.4636,1
-84,d84_Tarkhankut_Peninsula_Cape_Tarkhankut_Black_Sea_45.3503_32.4967,1
-84,d84_Tarkhankut_Peninsula_Cape_Tarkhankut_Black_Sea_45.3504_32.4966,1
-84,d84_Tarkhankut_Peninsula_Cape_Tarkhankut_Black_Sea_45.3506_32.4963,1
-84,d84_Tarkhankut_Peninsula_northern_entrance_point_of_Chernomorskaya_Bay_Black_Sea_45.5286_32.7113,1
-84,d84_Tarkhankut_Peninsula_northern_entrance_point_of_Chernomorskaya_Bay_Black_Sea_45.5287_32.7112,1
-84,d84_Tarkhankut_Peninsula_northern_entrance_point_of_Chernomorskaya_Bay_Black_Sea_45.529_32.7112,1
-84,d84_Tarkhankut_Peninsula_Cape_Priboiniy_Black_Sea_45.3897_32.4716,1
-84,d84_Cape_Hersones_Black_Sea_44.5834_33.3771,1
-85,d85_ Netherlands_28_28 ,8
-85,d85_ Netherlands_38_38 ,7
-85,d85_ Netherlands_12_12 ,4
-85,d85_ Netherlands_13_13 ,7
-85,d85_ Netherlands_14_14 ,2
-85,d85_ Netherlands_16_16 ,1
-85,d85_ Netherlands_18_18 ,6
-85,d85_ Netherlands_20_20 ,5
-85,d85_ Netherlands_22_22 ,5
-85,d85_ Netherlands_23_23 ,8
-85,d85_ Netherlands_26_26 ,6
-85,d85_ Netherlands_27_27 ,8
-85,d85_ Netherlands_30_30 ,10
-85,d85_ Netherlands_31_31 ,11
-85,d85_ Netherlands_32_32 ,8
-85,d85_ Netherlands_33_33 ,8
-85,d85_ Netherlands_40_40 ,6
-85,d85_ Netherlands_41_41 ,8
-85,d85_ Netherlands_45_45 ,7
-85,d85_ Netherlands_46_46 ,5
-85,d85_ Netherlands_49_49 ,7
-85,d85_ Netherlands_5_5 ,3
-85,d85_ Netherlands_19.3_19.3 ,1
-85,d85_ Netherlands_25.5_25.5 ,4
-85,d85_ Netherlands_26.1_26.1 ,1
-85,d85_ Netherlands_26.6_26.6 ,1
-85,d85_ Netherlands_26.7_26.7 ,5
-85,d85_ Netherlands_27.4_27.4 ,1
-85,d85_ Netherlands_27.6_27.6 ,2
-85,d85_ Netherlands_28.1_28.1 ,8
-85,d85_ Netherlands_28.2_28.2 ,3
-85,d85_ Netherlands_28.3_28.3 ,2
-85,d85_ Netherlands_28.4_28.4 ,5
-85,d85_ Netherlands_29.7_29.7 ,5
-85,d85_ Netherlands_29.8_29.8 ,6
-85,d85_ Netherlands_30.4_30.4 ,6
-85,d85_ Netherlands_31.2_31.2 ,1
-85,d85_ Netherlands_31.4_31.4 ,6
-85,d85_ Netherlands_33.3_33.3 ,6
-85,d85_ Netherlands_34.7_34.7 ,1
-85,d85_ Netherlands_34_34 ,5
-85,d85_ Netherlands_35.1_35.1 ,6
-85,d85_ Netherlands_37.4_37.4 ,1
-85,d85_ Netherlands_41.2_41.2 ,2
-85,d85_ Netherlands_25.4_25.4 ,1
-85,d85_ Netherlands_26.9_26.9 ,1
-85,d85_ Netherlands_27.9_27.9 ,2
-85,d85_ Netherlands_29.5_29.5 ,5
-85,d85_ Netherlands_30.9_30.9 ,2
-85,d85_ Netherlands_32.4_32.4 ,1
-85,d85_ Netherlands_32.5_32.5 ,5
-85,d85_ Netherlands_32.6_32.6 ,2
-85,d85_ Netherlands_32.8_32.8 ,6
-85,d85_ Netherlands_33.4_33.4 ,3
-85,d85_ Netherlands_33.5_33.5 ,5
-85,d85_ Netherlands_33.6_33.6 ,2
-85,d85_ Netherlands_33.7_33.7 ,2
-85,d85_ Netherlands_34.2_34.2 ,2
-85,d85_ Netherlands_34.4_34.4 ,4
-85,d85_ Netherlands_34.5_34.5 ,1
-85,d85_ Netherlands_34.6_34.6 ,2
-85,d85_ Netherlands_40.5_40.5 ,2
-85,d85_ Netherlands_41.3_41.3 ,3
-85,d85_ Netherlands_31.7_31.7 ,3
-85,d85_ Netherlands_10_10 ,3
-85,d85_ Netherlands_11_11 ,3
-85,d85_ Netherlands_25_25 ,7
-85,d85_ Netherlands_39_39 ,7
-85,d85_ Netherlands_4_4 ,3
-85,d85_ Netherlands_42_42 ,8
-85,d85_ Netherlands_44_44 ,7
-85,d85_ Netherlands_29.2_29.2 ,3
-85,d85_ Netherlands_30.8_30.8 ,4
-85,d85_ Netherlands_32.7_32.7 ,6
-85,d85_ Netherlands_34.1_34.1 ,1
-85,d85_ Netherlands_34.3_34.3 ,2
-85,d85_ Netherlands_37.2_37.2 ,3
-85,d85_ Netherlands_37.6_37.6 ,4
-85,d85_ Netherlands_37.9_37.9 ,2
-85,d85_ Netherlands_37_37 ,9
-85,d85_ Netherlands_39.1_39.1 ,1
-85,d85_ Netherlands_39.2_39.2 ,3
-85,d85_ Netherlands_39.9_39.9 ,1
-85,d85_ Netherlands_40.9_40.9 ,2
-85,d85_ Netherlands_42.3_42.3 ,2
-85,d85_ Netherlands_43.2_43.2 ,1
-85,d85_ Netherlands_43.4_43.4 ,2
-85,d85_ Netherlands_44.5_44.5 ,5
-85,d85_ Netherlands_46.5_46.5 ,2
-85,d85_ Netherlands_53.2_53.2 ,1
-85,d85_ Netherlands_35_35 ,8
-85,d85_ Netherlands_29_29 ,6
-85,d85_ Netherlands_43_43 ,7
-85,d85_ Netherlands_19_19 ,2
-85,d85_ Netherlands_21_21 ,4
-85,d85_ Netherlands_24_24 ,4
-85,d85_ Netherlands_11.5_11.5 ,6
-85,d85_ Netherlands_12.5_12.5 ,5
-85,d85_ Netherlands_14.5_14.5 ,4
-85,d85_ Netherlands_20.5_20.5 ,2
-85,d85_ Netherlands_21.5_21.5 ,3
-85,d85_ Netherlands_22.5_22.5 ,4
-85,d85_ Netherlands_11.7_11.7 ,1
-85,d85_ Netherlands_12.8_12.8 ,1
-85,d85_ Netherlands_17_17 ,2
-85,d85_ Netherlands_21.1_21.1 ,1
-85,d85_ Netherlands_21.9_21.9 ,1
-85,d85_ Netherlands_23.9_23.9 ,1
-85,d85_ Netherlands_27.7_27.7 ,4
-85,d85_ Netherlands_29.3_29.3 ,2
-85,d85_ Netherlands_29.6_29.6 ,2
-85,d85_ Netherlands_3.3_3.3 ,1
-85,d85_ Netherlands_33.2_33.2 ,5
-85,d85_ Netherlands_34.8_34.8 ,1
-85,d85_ Netherlands_36.4_36.4 ,1
-85,d85_ Netherlands_36_36 ,6
-85,d85_ Netherlands_38.1_38.1 ,2
-85,d85_ Netherlands_38.4_38.4 ,1
-85,d85_ Netherlands_38.5_38.5 ,1
-85,d85_ Netherlands_4.6_4.6 ,1
-85,d85_ Netherlands_41.7_41.7 ,2
-85,d85_ Netherlands_41.8_41.8 ,1
-85,d85_ Netherlands_43.3_43.3 ,2
-85,d85_ Netherlands_43.5_43.5 ,2
-85,d85_ Netherlands_44.3_44.3 ,7
-85,d85_ Netherlands_44.9_44.9 ,1
-85,d85_ Netherlands_45.2_45.2 ,1
-85,d85_ Netherlands_45.6_45.6 ,1
-85,d85_ Netherlands_46.4_46.4 ,1
-85,d85_ Netherlands_47.8_47.8 ,6
-85,d85_ Netherlands_48.6_48.6 ,4
-85,d85_ Netherlands_48.9_48.9 ,1
-85,d85_ Netherlands_48_48 ,2
-85,d85_ Netherlands_50.1_50.1 ,5
-85,d85_ Netherlands_50.2_50.2 ,1
-85,d85_ Netherlands_51.5_51.5 ,4
-85,d85_ Netherlands_19.5_19.5 ,2
-85,d85_ Netherlands_15.5_15.5 ,2
-85,d85_ Netherlands_12.7_12.7 ,1
-85,d85_ Netherlands_14.4_14.4 ,1
-85,d85_ Netherlands_16.7_16.7 ,2
-85,d85_ Netherlands_18.3_18.3 ,4
-85,d85_ Netherlands_2.1_2.1 ,1
-85,d85_ Netherlands_21.2_21.2 ,5
-85,d85_ Netherlands_22.3_22.3 ,1
-85,d85_ Netherlands_23.7_23.7 ,2
-85,d85_ Netherlands_24.5_24.5 ,2
-85,d85_ Netherlands_24.6_24.6 ,1
-85,d85_ Netherlands_25.6_25.6 ,1
-85,d85_ Netherlands_26.3_26.3 ,2
-85,d85_ Netherlands_27.2_27.2 ,1
-85,d85_ Netherlands_27.3_27.3 ,2
-85,d85_ Netherlands_27.5_27.5 ,1
-85,d85_ Netherlands_29.9_29.9 ,4
-85,d85_ Netherlands_3.5_3.5 ,1
-85,d85_ Netherlands_30.1_30.1 ,7
-85,d85_ Netherlands_30.3_30.3 ,4
-85,d85_ Netherlands_30.5_30.5 ,4
-85,d85_ Netherlands_30.6_30.6 ,2
-85,d85_ Netherlands_31.5_31.5 ,2
-85,d85_ Netherlands_31.8_31.8 ,2
-85,d85_ Netherlands_31.9_31.9 ,1
-85,d85_ Netherlands_35.3_35.3 ,1
-85,d85_ Netherlands_35.4_35.4 ,1
-85,d85_ Netherlands_35.5_35.5 ,2
-85,d85_ Netherlands_36.2_36.2 ,4
-85,d85_ Netherlands_36.7_36.7 ,4
-85,d85_ Netherlands_36.9_36.9 ,1
-85,d85_ Netherlands_37.3_37.3 ,1
-85,d85_ Netherlands_38.3_38.3 ,4
-85,d85_ Netherlands_38.7_38.7 ,1
-85,d85_ Netherlands_38.8_38.8 ,2
-85,d85_ Netherlands_39.5_39.5 ,2
-85,d85_ Netherlands_40.7_40.7 ,1
-85,d85_ Netherlands_41.5_41.5 ,4
-85,d85_ Netherlands_41.6_41.6 ,3
-85,d85_ Netherlands_42.8_42.8 ,3
-85,d85_ Netherlands_43.1_43.1 ,1
-85,d85_ Netherlands_43.8_43.8 ,2
-85,d85_ Netherlands_43.9_43.9 ,2
-85,d85_ Netherlands_44.2_44.2 ,3
-85,d85_ Netherlands_44.8_44.8 ,1
-85,d85_ Netherlands_45.1_45.1 ,1
-85,d85_ Netherlands_46.2_46.2 ,1
-85,d85_ Netherlands_46.7_46.7 ,2
-85,d85_ Netherlands_46.8_46.8 ,3
-85,d85_ Netherlands_48.1_48.1 ,1
-85,d85_ Netherlands_48.2_48.2 ,6
-85,d85_ Netherlands_48.3_48.3 ,1
-85,d85_ Netherlands_49.4_49.4 ,2
-85,d85_ Netherlands_49.6_49.6 ,4
-85,d85_ Netherlands_50.5_50.5 ,2
-85,d85_ Netherlands_50.7_50.7 ,1
-85,d85_ Netherlands_11.2_11.2 ,2
-85,d85_ Netherlands_16.5_16.5 ,2
-85,d85_ Netherlands_8.5_8.5 ,1
-85,d85_ Netherlands_9_9 ,3
-85,d85_ Netherlands_18.4_18.4 ,1
-85,d85_ Netherlands_10.4_10.4 ,2
-85,d85_ Netherlands_18.5_18.5 ,4
-85,d85_ Netherlands_10.9_10.9 ,1
-85,d85_ Netherlands_12.3_12.3 ,3
-85,d85_ Netherlands_12.6_12.6 ,1
-85,d85_ Netherlands_13.2_13.2 ,1
-85,d85_ Netherlands_17.8_17.8 ,1
-85,d85_ Netherlands_20.8_20.8 ,1
-85,d85_ Netherlands_22.1_22.1 ,1
-85,d85_ Netherlands_24.9_24.9 ,3
-85,d85_ Netherlands_25.2_25.2 ,1
-85,d85_ Netherlands_26.5_26.5 ,5
-85,d85_ Netherlands_28.5_28.5 ,3
-85,d85_ Netherlands_28.9_28.9 ,2
-85,d85_ Netherlands_31.1_31.1 ,2
-85,d85_ Netherlands_31.3_31.3 ,4
-85,d85_ Netherlands_31.6_31.6 ,3
-85,d85_ Netherlands_33.1_33.1 ,1
-85,d85_ Netherlands_33.9_33.9 ,1
-85,d85_ Netherlands_35.8_35.8 ,1
-85,d85_ Netherlands_36.5_36.5 ,3
-85,d85_ Netherlands_38.6_38.6 ,2
-85,d85_ Netherlands_40.6_40.6 ,1
-85,d85_ Netherlands_42.1_42.1 ,1
-85,d85_ Netherlands_44.7_44.7 ,4
-85,d85_ Netherlands_45.3_45.3 ,1
-85,d85_ Netherlands_47.2_47.2 ,1
-85,d85_ Netherlands_47.9_47.9 ,1
-85,d85_ Netherlands_47_47 ,4
-85,d85_ Netherlands_50_50 ,4
-85,d85_ Netherlands_51_51 ,2
-85,d85_ Netherlands_8_8 ,1
-85,d85_ Netherlands_12.1_12.1 ,2
-85,d85_ Netherlands_15.15_15.15 ,1
-85,d85_ Netherlands_15.7_15.7 ,1
-85,d85_ Netherlands_19.95_19.95 ,1
-85,d85_ Netherlands_20.35_20.35 ,1
-85,d85_ Netherlands_20.65_20.65 ,1
-85,d85_ Netherlands_20.95_20.95 ,1
-85,d85_ Netherlands_10.5_10.5 ,1
-85,d85_ Netherlands_15_15 ,1
-85,d85_ Netherlands_22.2_22.2 ,2
-85,d85_ Netherlands_22.7_22.7 ,3
-85,d85_ Netherlands_23.6_23.6 ,1
-85,d85_ Netherlands_24.4_24.4 ,1
-85,d85_ Netherlands_25.7_25.7 ,1
-85,d85_ Netherlands_26.4_26.4 ,2
-85,d85_ Netherlands_28.8_28.8 ,6
-85,d85_ Netherlands_29.1_29.1 ,2
-85,d85_ Netherlands_30.2_30.2 ,1
-85,d85_ Netherlands_36.6_36.6 ,1
-85,d85_ Netherlands_36.8_36.8 ,3
-85,d85_ Netherlands_38.2_38.2 ,1
-85,d85_ Netherlands_38.9_38.9 ,1
-85,d85_ Netherlands_39.3_39.3 ,4
-85,d85_ Netherlands_39.8_39.8 ,1
-85,d85_ Netherlands_4.8_4.8 ,1
-85,d85_ Netherlands_41.1_41.1 ,3
-85,d85_ Netherlands_41.4_41.4 ,2
-85,d85_ Netherlands_42.5_42.5 ,1
-85,d85_ Netherlands_45.8_45.8 ,1
-85,d85_ Netherlands_46.1_46.1 ,3
-85,d85_ Netherlands_48.5_48.5 ,1
-85,d85_ Netherlands_49.5_49.5 ,3
-85,d85_ Netherlands_51.4_51.4 ,1
-85,d85_ Netherlands_8.8_8.8 ,2
-85,d85_ Netherlands_9.6_9.6 ,1
-85,d85_ Netherlands_9.8_9.8 ,1
-85,d85_ Netherlands_19.2_19.2 ,2
-85,d85_ Netherlands_13.7_13.7 ,1
-85,d85_ Netherlands_19.8_19.8 ,1
-85,d85_ Netherlands_11.9_11.9 ,1
-85,d85_ Netherlands_15.4_15.4 ,1
-85,d85_ Netherlands_15.6_15.6 ,1
-85,d85_ Netherlands_20.2_20.2 ,1
-85,d85_ Netherlands_20.7_20.7 ,1
-85,d85_ Netherlands_21.6_21.6 ,1
-85,d85_ Netherlands_10.1_10.1 ,2
-85,d85_ Netherlands_11.4_11.4 ,5
-85,d85_ Netherlands_14.8_14.8 ,2
-85,d85_ Netherlands_18.7_18.7 ,1
-85,d85_ Netherlands_20.1_20.1 ,2
-85,d85_ Netherlands_22.4_22.4 ,1
-85,d85_ Netherlands_24.3_24.3 ,1
-85,d85_ Netherlands_24.7_24.7 ,2
-85,d85_ Netherlands_26.2_26.2 ,5
-85,d85_ Netherlands_3.4_3.4 ,2
-85,d85_ Netherlands_35.6_35.6 ,2
-85,d85_ Netherlands_37.5_37.5 ,5
-85,d85_ Netherlands_37.7_37.7 ,2
-85,d85_ Netherlands_39.6_39.6 ,2
-85,d85_ Netherlands_40.4_40.4 ,2
-85,d85_ Netherlands_45.9_45.9 ,2
-85,d85_ Netherlands_46.3_46.3 ,2
-85,d85_ Netherlands_50.9_50.9 ,2
-85,d85_ Netherlands_12.9_12.9 ,1
-85,d85_ Netherlands_13.1_13.1 ,2
-85,d85_ Netherlands_16.4_16.4 ,1
-85,d85_ Netherlands_48.4_48.4 ,2
-85,d85_ Netherlands_49.2_49.2 ,2
-85,d85_ Netherlands_50.6_50.6 ,2
-85,d85_ Netherlands_10.3_10.3 ,1
-85,d85_ Netherlands_14.1_14.1 ,1
-85,d85_ Netherlands_17.5_17.5 ,1
-85,d85_ Netherlands_19.7_19.7 ,1
-85,d85_ Netherlands_23.3_23.3 ,4
-85,d85_ Netherlands_23.5_23.5 ,1
-85,d85_ Netherlands_23.8_23.8 ,1
-85,d85_ Netherlands_18.1_18.1 ,1
-85,d85_ Netherlands_21.4_21.4 ,1
-85,d85_ Netherlands_26.8_26.8 ,1
-85,d85_ Netherlands_28.6_28.6 ,1
-85,d85_ Netherlands_29.4_29.4 ,3
-85,d85_ Netherlands_35.7_35.7 ,3
-85,d85_ Netherlands_36.1_36.1 ,1
-85,d85_ Netherlands_37.1_37.1 ,1
-85,d85_ Netherlands_43.7_43.7 ,3
-85,d85_ Netherlands_45.5_45.5 ,3
-85,d85_ Netherlands_47.6_47.6 ,3
-85,d85_ Netherlands_49.3_49.3 ,3
-85,d85_ Netherlands_50.3_50.3 ,3
-85,d85_ Netherlands_7.2_7.2 ,3
-85,d85_ Netherlands_9.4_9.4 ,1
-85,d85_ Netherlands_40.2_40.2 ,1
-85,d85_ Netherlands_9.1_9.1 ,1
-85,d85_ Netherlands_11.3_11.3 ,3
-85,d85_ Netherlands_3.6_3.6 ,3
-85,d85_ Netherlands_18.2_18.2 ,2
-85,d85_ Netherlands_27.1_27.1 ,2
-85,d85_ Netherlands_5.1_5.1 ,2
-85,d85_ Netherlands_51.8_51.8 ,2
-85,d85_ Netherlands_8.9_8.9 ,2
-85,d85_ Netherlands_7.7_7.7 ,2
-87,d87_Oosterschelde_Netherlands_51.4926_4.1275,9
-87,d87_Oosterschelde_Netherlands_51.6059_3.6966,6
-213,d213_e1q1-1,38
-213,d213_e1q1-2,37
-213,d213_e1q1-3,39
-213,d213_e1q1a-1,5
-213,d213_e1q1a-2,5
-213,d213_e1q1a-3,5
-213,d213_e1q2-1,29
-213,d213_e1q2-2,30
-213,d213_e1q2-3,30
-213,d213_e1q2-4,30
-213,d213_e1q2-5,30
-213,d213_e1q2-6,30
-213,d213_e1q2-7,28
-213,d213_e1q2-8,30
-213,d213_e1q3-1,40
-213,d213_e1q3-2,39
-213,d213_e1q3-3,40
-213,d213_e1q3a-1,5
-213,d213_e1q3a-2,5
-213,d213_e1q3a-3,5
-213,d213_e1q4-1,38
-213,d213_e1q4-2,38
-213,d213_e1q4a-1,5
-213,d213_e1q4a-2,5
-213,d213_e1q5-1,39
-213,d213_e1q5-2,38
-213,d213_e1q5-3,39
-213,d213_e1q5-4,38
-213,d213_e2q2-1,37
-213,d213_e2q2-2,38
-213,d213_e2q2-3,38
-213,d213_e2q2-4,40
-213,d213_e2q3-1,39
-213,d213_e2q3-2,39
-213,d213_e2q3a-1,5
-213,d213_e2q3a-2,5
-213,d213_e2qa-1,38
-213,d213_e2qa-2,36
-213,d213_e2qa-3,37
-213,d213_e2qa-4,33
-213,d213_e2qa-5,33
-213,d213_e2qo-1,10
-213,d213_e2qo-10,5
-213,d213_e2qo-2,21
-213,d213_e2qo-3,38
-213,d213_e2qo-4,35
-213,d213_e2qo-5,32
-213,d213_e2qo-6,35
-213,d213_e2qo-7,38
-213,d213_e2qo-8,37
-213,d213_e2qo-9,35
-226,d226_ew,30
-228,d228_hb,42
-228,d228_mk,15
-228,d228_rp,15
-228,d228_sm,15
-232,d232_5pgrass,49
-232,d232_5plarrea,50
-232,d232_blugrama,5
-232,d232_goatdraw,29
-232,d232_rsgrass,20
-232,d232_rslarrea,41
-232,d232_savanna,7
-232,d232_two22,20
-234,d234_pm,82
-236,d236_1,17
-236,d236_10,17
-236,d236_11,17
-236,d236_12,17
-236,d236_13,17
-236,d236_14,17
-236,d236_15,17
-236,d236_16,17
-236,d236_17,6
-236,d236_18,6
-236,d236_19,6
-236,d236_2,17
-236,d236_20,6
-236,d236_3,17
-236,d236_4,17
-236,d236_5,17
-236,d236_6,17
-236,d236_7,17
-236,d236_8,17
-236,d236_9,17
-241,d241_1,31
-241,d241_2,30
-241,d241_3,30
-241,d241_4,31
-241,d241_5,31
-241,d241_6,31
-241,d241_7,23
-242,d242_1,30
-242,d242_6,30
-242,d242_2,29
-242,d242_3,29
-242,d242_4,29
-242,d242_5,29
-242,d242_7,21
-243,d243_1,30
-243,d243_2,29
-243,d243_3,29
-243,d243_5,29
-243,d243_6,30
-243,d243_4,29
-243,d243_7,19
-244,d244_2,30
-244,d244_6,30
-244,d244_7,30
-244,d244_8,30
-244,d244_9,30
-244,d244_11,30
-244,d244_12,30
-244,d244_13,30
-244,d244_15,30
-244,d244_1,30
-244,d244_3,30
-244,d244_4,30
-244,d244_14,30
-244,d244_5,29
-244,d244_10,26
-244,d244_16,26
-244,d244_21,11
-244,d244_22,7
-244,d244_23,7
-244,d244_24,7
-244,d244_25,7
-244,d244_31,7
-244,d244_34,7
-244,d244_37,7
-244,d244_26,7
-244,d244_27,7
-244,d244_28,7
-244,d244_29,7
-244,d244_30,7
-244,d244_32,7
-244,d244_33,7
-244,d244_35,7
-244,d244_36,7
-246,d246_2,9
-246,d246_4,9
-246,d246_8,9
-246,d246_9,9
-246,d246_10,9
-246,d246_11,9
-246,d246_12,9
-246,d246_13,9
-246,d246_14,9
-246,d246_15,9
-246,d246_16,9
-246,d246_5,9
-246,d246_6,9
-246,d246_7,9
-246,d246_1,9
-246,d246_3,9
-246,d246_26,7
-246,d246_27,7
-246,d246_28,7
-246,d246_29,7
-246,d246_30,7
-246,d246_31,7
-246,d246_32,7
-246,d246_33,7
-246,d246_34,7
-246,d246_35,7
-246,d246_36,7
-246,d246_37,7
-246,d246_22,7
-246,d246_23,7
-246,d246_24,7
-246,d246_25,7
-246,d246_21,5
-249,d249_ME,32
-249,d249_TB,32
-249,d249_TR,32
-249,d249_AL,32
-249,d249_BM,32
-249,d249_SP,32
-249,d249_CR,32
-249,d249_CB,32
-249,d249_FI,18
-249,d249_MO,18
-249,d249_WI,18
-250,d250_BCA,24
-250,d250_BCB,24
-250,d250_CC,24
-252,d252_B,2
-252,d252_C,12
-252,d252_G,13
-252,d252_P,10
+"datasetID","site","nt"
+70,"d70_ Belgium ",14
+87,"d87_Oosterschelde_Netherlands_51.4926_4.1275",9
+87,"d87_Oosterschelde_Netherlands_51.6059_3.6966",6
+213,"d213_e1q1-1",38
+213,"d213_e1q1-2",37
+213,"d213_e1q1-3",39
+213,"d213_e1q1a-1",5
+213,"d213_e1q1a-2",5
+213,"d213_e1q1a-3",5
+213,"d213_e1q2-1",29
+213,"d213_e1q2-2",30
+213,"d213_e1q2-3",30
+213,"d213_e1q2-4",30
+213,"d213_e1q2-5",30
+213,"d213_e1q2-6",30
+213,"d213_e1q2-7",28
+213,"d213_e1q2-8",30
+213,"d213_e1q3-1",40
+213,"d213_e1q3-2",39
+213,"d213_e1q3-3",40
+213,"d213_e1q3a-1",5
+213,"d213_e1q3a-2",5
+213,"d213_e1q3a-3",5
+213,"d213_e1q4-1",38
+213,"d213_e1q4-2",38
+213,"d213_e1q4a-1",5
+213,"d213_e1q4a-2",5
+213,"d213_e1q5-1",39
+213,"d213_e1q5-2",38
+213,"d213_e1q5-3",39
+213,"d213_e1q5-4",38
+213,"d213_e2q2-1",37
+213,"d213_e2q2-2",38
+213,"d213_e2q2-3",38
+213,"d213_e2q2-4",40
+213,"d213_e2q3-1",39
+213,"d213_e2q3-2",39
+213,"d213_e2q3a-1",5
+213,"d213_e2q3a-2",5
+213,"d213_e2qa-1",38
+213,"d213_e2qa-2",36
+213,"d213_e2qa-3",37
+213,"d213_e2qa-4",33
+213,"d213_e2qa-5",33
+213,"d213_e2qo-1",10
+213,"d213_e2qo-10",5
+213,"d213_e2qo-2",21
+213,"d213_e2qo-3",38
+213,"d213_e2qo-4",35
+213,"d213_e2qo-5",32
+213,"d213_e2qo-6",35
+213,"d213_e2qo-7",38
+213,"d213_e2qo-8",37
+213,"d213_e2qo-9",35
+226,"d226_ew",30
+228,"d228_hb",42
+228,"d228_mk",15
+228,"d228_rp",15
+228,"d228_sm",15
+232,"d232_5pgrass",49
+232,"d232_5plarrea",50
+232,"d232_blugrama",5
+232,"d232_goatdraw",29
+232,"d232_rsgrass",20
+232,"d232_rslarrea",41
+232,"d232_savanna",7
+232,"d232_two22",20
+234,"d234_pm",82
+236,"d236_1",17
+236,"d236_10",17
+236,"d236_11",17
+236,"d236_12",17
+236,"d236_13",17
+236,"d236_14",17
+236,"d236_15",17
+236,"d236_16",17
+236,"d236_17",6
+236,"d236_18",6
+236,"d236_19",6
+236,"d236_2",17
+236,"d236_20",6
+236,"d236_3",17
+236,"d236_4",17
+236,"d236_5",17
+236,"d236_6",17
+236,"d236_7",17
+236,"d236_8",17
+236,"d236_9",17
+241,"d241_1",31
+241,"d241_2",30
+241,"d241_3",30
+241,"d241_4",31
+241,"d241_5",31
+241,"d241_6",31
+241,"d241_7",23
+242,"d242_1",30
+242,"d242_6",30
+242,"d242_2",29
+242,"d242_3",29
+242,"d242_4",29
+242,"d242_5",29
+242,"d242_7",21
+243,"d243_1",30
+243,"d243_2",29
+243,"d243_3",29
+243,"d243_5",29
+243,"d243_6",30
+243,"d243_4",29
+243,"d243_7",19
+244,"d244_2",30
+244,"d244_6",30
+244,"d244_7",30
+244,"d244_8",30
+244,"d244_9",30
+244,"d244_11",30
+244,"d244_12",30
+244,"d244_13",30
+244,"d244_15",30
+244,"d244_1",30
+244,"d244_3",30
+244,"d244_4",30
+244,"d244_14",30
+244,"d244_5",29
+244,"d244_10",26
+244,"d244_16",26
+244,"d244_21",11
+244,"d244_22",7
+244,"d244_23",7
+244,"d244_24",7
+244,"d244_25",7
+244,"d244_31",7
+244,"d244_34",7
+244,"d244_37",7
+244,"d244_26",7
+244,"d244_27",7
+244,"d244_28",7
+244,"d244_29",7
+244,"d244_30",7
+244,"d244_32",7
+244,"d244_33",7
+244,"d244_35",7
+244,"d244_36",7
+246,"d246_2",9
+246,"d246_4",9
+246,"d246_8",9
+246,"d246_9",9
+246,"d246_10",9
+246,"d246_11",9
+246,"d246_12",9
+246,"d246_13",9
+246,"d246_14",9
+246,"d246_15",9
+246,"d246_16",9
+246,"d246_5",9
+246,"d246_6",9
+246,"d246_7",9
+246,"d246_1",9
+246,"d246_3",9
+246,"d246_26",7
+246,"d246_27",7
+246,"d246_28",7
+246,"d246_29",7
+246,"d246_30",7
+246,"d246_31",7
+246,"d246_32",7
+246,"d246_33",7
+246,"d246_34",7
+246,"d246_35",7
+246,"d246_36",7
+246,"d246_37",7
+246,"d246_22",7
+246,"d246_23",7
+246,"d246_24",7
+246,"d246_25",7
+246,"d246_21",5
+249,"d249_ME",32
+249,"d249_TB",32
+249,"d249_TR",32
+249,"d249_AL",32
+249,"d249_BM",32
+249,"d249_SP",32
+249,"d249_CR",32
+249,"d249_CB",32
+249,"d249_FI",18
+249,"d249_MO",18
+249,"d249_WI",18
+250,"d250_BCA",24
+250,"d250_BCB",24
+250,"d250_CC",24
+252,"d252_B",2
+252,"d252_C",12
+252,"d252_G",13
+252,"d252_P",10
