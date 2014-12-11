@@ -10,7 +10,7 @@
 #==================================================================================*
 # ---- BIMODALILITY ----
 #==================================================================================*
-# NOTE: For these functions to run, prop.df, Ntime, and outSummary frames must
+# NOTE: For these functions to run, occProp, Ntime, and outSummary frames must
 # already be loaded and the "Sampling summary" lines of code MUST be run in the 
 # dashboard!
 #
@@ -60,7 +60,7 @@ bimodality = function(occs, site) {
 
 random.occs = function(site){
   nt = nTime[nTime$site == site,'nt']
-  occs = prop.df[prop.df$site == site,'occ']
+  occs = occProp[occProp$site == site,'occ']
   t1 = data.frame(table(occs))                      # Occurence proportion and frequency
   occ = data.frame(occs = seq(1/nt, 1, length = nt)) # Possible occurence proportions
   t2 = merge(occ, t1, all.x = T)  # Occurence by possible proportions
@@ -77,8 +77,8 @@ random.occs = function(site){
 
 p.bimodal = function(site, reps){
   nt = nTime[nTime$site == site,'nt']
-#   occs = prop.df[prop.df$site == site,'occ']
-  actual.bimod = bimodality(prop.df[prop.df$site == site,'occ'], site)
+#   occs = occProp[occProp$site == site,'occ']
+  actual.bimod = bimodality(occProp[occProp$site == site,'occ'], site)
   # For loop to get random bimodality values
   r.bimod = numeric()
   for (i in 1:reps){
@@ -99,7 +99,7 @@ p.bimodal = function(site, reps){
 # http://supp.apa.org/psycarticles/supplemental/met_11_1_54/met_11_1_54_supp.html
 
 occs.scaled = function(site){
-  x = prop.df[prop.df$site == site,'occ']
+  x = occProp[occProp$site == site,'occ']
   n = length(x)
   s = .5
   (x*(n-1)+s)/n
@@ -108,7 +108,7 @@ occs.scaled = function(site){
 # Fit beta distribution:
 
 fitBeta = function(site) {
-  if (bimodality(prop.df[prop.df$site == site,'occ'], site)!= 0)
+  if (bimodality(occProp[occProp$site == site,'occ'], site)!= 0)
   {occs  = occs.scaled(site)
   shape.params = suppressWarnings(fitdistr(occs, "beta",
                                   list(shape1 = 2, shape2 = 2)))
@@ -130,7 +130,7 @@ mode.prop = function(occs, mode) {
 # Randomization test for a given mode:
 
 p.mode = function(site, mode, reps){
-    actual.prop = mode.prop(prop.df[prop.df$site == site,'occ'], mode)
+    actual.prop = mode.prop(occProp[occProp$site == site,'occ'], mode)
   # For loop to get random frequncies in the mode:
     r.props = numeric()
     for (i in 1:reps){
@@ -155,7 +155,7 @@ mode.summary = function(site, reps){
 #==================================================================================*
 # ---- DATASET SUMMARY FUNCTIONS ----
 #==================================================================================*
-# NOTE: For these functions to run, prop.df, Ntime, and outSummary frames must
+# NOTE: For these functions to run, occProp, Ntime, and outSummary frames must
 # already be loaded!
 #
 # Functions:
@@ -180,7 +180,7 @@ mode.summary = function(site, reps){
 sampling = function(site, threshold){
   # Get data:
   dataset = as.numeric(substr(site, 2, 4))
-  d = prop.df[prop.df$site == site,]
+  d = occProp[occProp$site == site,]
   nTime = nTime[nTime$site == site,'nt']
   dst = outSummary[outSummary$dataset_ID == dataset,]
   # Subset to the site of interest:
@@ -207,12 +207,12 @@ ctSummary = function(site, threshold, reps){
   # Get data:
     dataset = as.numeric(substr(site, 2, 4))
   # Subset to the site of interest:
-    d = prop.df[prop.df$site == site,]
+    d = occProp[occProp$site == site,]
   # Sampling summary for site:
     samplingSummary = sampling(site, threshold)
     nt = samplingSummary[samplingSummary$site == site,'nTime']  
   # Calculate bimodality of the dataset and site:
-    bimodal = bimodality(prop.df[prop.df$site == site,'occ'], site)
+    bimodal = bimodality(occProp[occProp$site == site,'occ'], site)
     bimodal.p = p.bimodal(site, reps)
   # Calculate the alpha and beta shape parameters for the beta disatribution:
     fB = fitBeta(site)
@@ -225,7 +225,7 @@ ctSummary = function(site, threshold, reps){
 #==================================================================================*
 # ---- PLOT FUNCTIONS ----
 #==================================================================================*
-# NOTE: For these functions to run, prop.df, Ntime, and outSummary frames must
+# NOTE: For these functions to run, occProp, Ntime, and outSummary frames must
 # already be loaded!
 #
 #----------------------------------------------------------------------------------*
@@ -235,7 +235,7 @@ ctSummary = function(site, threshold, reps){
 
 ct.hist = function(site) {
   # Get data, subset to a given site:
-      prop.df = prop.df[prop.df$site == site,]
+      occProp = occProp[occProp$site == site,]
       ct = ct[ct$site == site, ]
   # Plot labels:
     main = paste('Site ', site, paste('(',  as.character(ct$system),
@@ -247,11 +247,11 @@ ct.hist = function(site) {
     sub2 = bquote(alpha ~ '=' ~ .(round(ct$alpha, 3)) ~ '    '~
                    beta ~ '=' ~ .(round(ct$beta, 3)))
   # Set band width, breaks and possible values of x for the histogram:
-    bw = (max(prop.df$occ)-min(prop.df$occ))/10
-    brks = seq(min(prop.df$occ), max(prop.df$occ),bw)
+    bw = (max(occProp$occ)-min(occProp$occ))/10
+    brks = seq(min(occProp$occ), max(occProp$occ),bw)
     x = seq(0.01,.99, .01)
   # Plot data: 
-    out.plot = ggplot(prop.df, aes(x=occ)) +
+    out.plot = ggplot(occProp, aes(x=occ)) +
       geom_histogram(aes(y = ..density..), breaks = brks, right = F,
                      fill = 'gray', color = 1) +
       stat_function(fun = function(x) dbeta(x, ct$alpha, ct$beta), color = 'red') +
