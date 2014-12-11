@@ -15,8 +15,8 @@ source('scripts/R-scripts/ct_proportion_frame.R')
 
 # Get files:
 
-prop.df = read.csv('output/prop.df.csv')
-nTime = read.csv('output/Ntime.df.csv')
+occProp = read.csv('output/occProp.csv')
+nTime = read.csv('output/nTime.csv')
 outSummary = read.csv('data_source_table.csv')
 
 # Source core-transient functions:
@@ -44,7 +44,7 @@ library(MASS)
 # the core-transient threshold. The proportional dataframe must be loaded into the
 # environment above.
 
-site = unique(prop.df$site)
+site = unique(occProp$site)
 threshold = 1/3
 out.list = list()
 
