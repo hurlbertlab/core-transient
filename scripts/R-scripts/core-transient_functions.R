@@ -179,7 +179,7 @@ mode.summary = function(site, reps){
 
 sampling = function(site, threshold){
   # Get data:
-  dataset = as.numeric(substr(site, 2, 4))
+  dataset = as.numeric(gsub('_','',substr(site,2,4)))
   d = occProp[occProp$site == site,]
   nTime = nTime[nTime$site == site,'nt']
   dst = outSummary[outSummary$dataset_ID == dataset,]
