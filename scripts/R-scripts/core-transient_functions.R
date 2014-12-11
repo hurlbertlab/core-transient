@@ -180,7 +180,7 @@ mode.summary = function(site, reps){
 sampling = function(site, threshold){
   # Get data:
   dataset = as.numeric(gsub('_','',substr(site,2,4)))
-  d = occProp[occProp$site == site,]
+  d = occProp[as.character(occProp$site) == site,]
   nTime = nTime[as.character(nTime$site) == site,'nt']
   dst = outSummary[outSummary$dataset_ID == dataset,]
   # Calculate richness indices:
