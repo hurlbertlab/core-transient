@@ -85,6 +85,41 @@ get.outsFun = function(datasets){
     return(out.list)
 }
 
+# ---- Replace function ----
+
+# ---- Switch function ----
+# Writes the proportional and nTime frames for data not already in the 
+# occProp file.
+
+proc.replaceFun = function(dataset){
+  # Get the dataset names in the formatted files directory:
+  dataset = paste('formatted_datasets/dataset_',dataset,'.csv', sep ='')
+  data = read.csv(dataset)
+  # Get existing data:
+    occProp = read.csv('output/occProp.csv')
+    nTime = read.csv('output/nTime.csv')
+  # Remove the data for that value:
+    occProp = occProp[occProp$dataset!=dataset,]
+    nTime = nTime[nTime$datasetID!=dataset,]
+  # Extract the dataset paths for the existing data:
+    y0 = unique(as.character(occProp$dataset))
+    y = paste('formatted_datasets/dataset_',y0,'.csv', sep = '')
+  # Find datasets not in the occProp file:
+  datasets = datasets[!datasets %in% y]
+  # Return datasets to run or print up-to-date message:
+      # Get new processed data:
+      new.dfs = get.outsFun(dataset)
+      # Bind with previously processed data:
+      occProp = rbind(occProp, new.dfs[[1]])
+      nTime = rbind(nTime, new.dfs[[2]])
+      # Sort by dataset
+      occProp = occProp[order(occProp$dataset),]
+      nTime = nTime[order(nTime$datasetID),]
+      # Write to file:
+      write.csv(occProp, 'output/occProp.csv', row.names = F)
+      write.csv(nTime, 'output/nTime.csv', row.names = F)
+}
+
 # ---- Switch function ----
 # Writes the proportional and nTime frames for data not already in the 
 # occProp file.
