@@ -24,9 +24,10 @@ occfun = function(sp) length(unique(d[d$species == sp,4]))/length(unique(d$year)
 # ---- Function to create proportion of occurences species and time data frame ----
 
 prop.t.fun = function(d, site){
+  d = d[d$site == site,]        # Subset data to a given site
   sp = unique(d$species)        # Generates a species list
+  n.t = length(unique(d$year))  # Number of years
   dataset = rep(unique(d$datasetID), length(sp))
-  n.t = nTime.maker(d, site)[,3]
   # For loop to calculate the proportion of years a species has been observed:
   occ = numeric()
   for (i in 1:length(sp)){                        
@@ -114,11 +115,8 @@ proc.newFun = function(){
       # Write to file:
         write.csv(prop.df, 'output/prop.df.csv', row.names = F)
         write.csv(nTime, 'output/nTime.df.csv', row.names = F)
-      # Return list with prop.df and nTime frames:
-        out.list = list(prop.df, nTime)
-        names(out.list) = c('prop.df','nTime')
-        return(out.list)}
-  }
+      }
+}
 
 #----------------------------------------------------------------------------------*
 # ---- Make prop.df and nTime csv files ----
