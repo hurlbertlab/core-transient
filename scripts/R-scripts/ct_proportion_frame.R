@@ -26,7 +26,7 @@ occfun = function(sp) length(unique(d[d$species == sp,4]))/length(unique(d$year)
 prop.t.fun = function(d, site){
   sp = unique(d$species)        # Generates a species list
   dataset = rep(unique(d$datasetID), length(sp))
-  n.t = n.timeFun(d, site)[,3]
+  n.t = nTime.maker(d, site)[,3]
   # For loop to calculate the proportion of years a species has been observed:
   occ = numeric()
   for (i in 1:length(sp)){                        
