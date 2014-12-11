@@ -18,6 +18,41 @@ out_dir = 'formatted_datasets/dornelas_cleaned'
 datasets = list.files(in_dir, pattern="*.csv", full.names=T)
 
 #----------------------------------------------------------------------------------*
+# Dataset 46
+#----------------------------------------------------------------------------------*
+
+d = read.csv("formatted_datasets/dataset_46.csv")
+d$site = substr(d$site,1,3)
+
+write.csv(d, "formatted_datasets/dataset_46.csv", row.names = F)
+
+#----------------------------------------------------------------------------------*
+# Dataset 47
+#----------------------------------------------------------------------------------*
+
+d = read.csv("formatted_datasets/dataset_47.csv")
+d$site = substr(d$site,1,nchar(as.character(d$site))-6)
+
+write.csv(d, "formatted_datasets/dataset_47.csv", row.names = F)
+
+#----------------------------------------------------------------------------------*
+# Dataset 76
+#----------------------------------------------------------------------------------*
+
+d = read.csv("formatted_datasets/dataset_76.csv")
+
+site1 = read.table(text = as.character(d$site), sep = "_", colClasses = "character")
+
+lat = round_any(as.numeric(site1$V5),1)
+lon = round_any(as.numeric(site1$V6),1)
+
+d$site = paste(site1$V1, lat, lon, sep = '_')
+
+write.csv(d, "formatted_datasets/dataset_76.csv", row.names = F)
+
+
+
+#----------------------------------------------------------------------------------*
 # Dataset 108
 #----------------------------------------------------------------------------------*
 
