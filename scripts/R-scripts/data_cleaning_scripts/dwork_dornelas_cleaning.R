@@ -75,7 +75,7 @@ t$site = t2$site
 
 # Sum counts to the new sites:
 
-t2 = ddply(t,.(site,species,year), summarise, count = sum(count))
+t2 = ddply(t,.(datasetID, site,species,year), summarise, count = sum(count))
 
 # Write file:
 
