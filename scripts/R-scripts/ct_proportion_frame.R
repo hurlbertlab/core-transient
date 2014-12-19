@@ -87,9 +87,8 @@ get.outsFun = function(datasets){
 
 # ---- Replace function ----
 
-# ---- Switch function ----
-# Writes the proportional and nTime frames for data not already in the 
-# occProp file.
+# Writes the proportional and nTime frames for data for datasets
+# that are already in the proportional dataframe file.
 
 proc.replaceFun = function(dataset){
   # Get the dataset names in the formatted files directory:
