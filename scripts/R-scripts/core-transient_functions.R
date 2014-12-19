@@ -177,7 +177,7 @@ mode.summary = function(site, reps){
 # ---- Function to generate summary of sampling ----
 #==================================================================================*
 
-sampling = function(site, threshold){
+summaryStats = function(site, threshold){
   # Get data:
   dataset = as.numeric(gsub('_','',substr(site,2,4)))
   d = occProp[as.character(occProp$site) == site,]
@@ -206,7 +206,7 @@ ctSummary = function(site, threshold, reps){
   # Subset to the site of interest:
     d = occProp[occProp$site == site,]
   # Sampling summary for site:
-    samplingSummary = sampling(site, threshold)
+    samplingSummary = summaryStats(site, threshold)
     nt = samplingSummary[samplingSummary$site == site,'nTime']  
   # Calculate bimodality of the dataset and site:
     bimodal = bimodality(occProp[occProp$site == site,'occ'], site)
