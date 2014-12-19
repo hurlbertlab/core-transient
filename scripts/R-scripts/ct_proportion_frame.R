@@ -92,19 +92,14 @@ get.outsFun = function(datasets){
 
 proc.replaceFun = function(dataset){
   # Get the dataset names in the formatted files directory:
-  dataset = paste('formatted_datasets/dataset_',dataset,'.csv', sep ='')
-  data = read.csv(dataset)
+    dataset = paste('formatted_datasets/dataset_',dataset,'.csv', sep ='')
+    data = read.csv(dataset)
   # Get existing data:
     occProp = read.csv('output/occProp.csv')
     nTime = read.csv('output/nTime.csv')
-  # Remove the data for that value:
+  # Remove the data for that datasetID:
     occProp = occProp[occProp$dataset!=dataset,]
     nTime = nTime[nTime$datasetID!=dataset,]
-  # Extract the dataset paths for the existing data:
-    y0 = unique(as.character(occProp$dataset))
-    y = paste('formatted_datasets/dataset_',y0,'.csv', sep = '')
-  # Find datasets not in the occProp file:
-  datasets = datasets[!datasets %in% y]
   # Return datasets to run or print up-to-date message:
       # Get new processed data:
       new.dfs = get.outsFun(dataset)
