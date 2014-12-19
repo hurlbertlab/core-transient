@@ -39,14 +39,16 @@ write.csv(d, "formatted_datasets/dataset_47.csv", row.names = F)
 # Dataset 76
 #----------------------------------------------------------------------------------*
 
-d = read.csv("formatted_datasets/dataset_76.csv")
+d = read.csv("formatted_datasets/dornelas_unformat/dataset_76.csv")
 
 site1 = read.table(text = as.character(d$site), sep = "_", colClasses = "character")
 
-lat = round_any(as.numeric(site1$V5),1)
-lon = round_any(as.numeric(site1$V6),1)
+lat = round_any(as.numeric(site1$V5),2)
+lon = round_any(as.numeric(site1$V6),2)
 
 d$site = paste(site1$V1, lat, lon, sep = '_')
+
+d2 = ddply(d,.(datasetID, site,species,year), summarise, count = sum(count))
 
 write.csv(d, "formatted_datasets/dataset_76.csv", row.names = F)
 
