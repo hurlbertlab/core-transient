@@ -90,16 +90,16 @@ get.outsFun = function(datasets){
 # Writes the proportional and nTime frames for data for datasets
 # that are already in the proportional dataframe file.
 
-proc.replaceFun = function(dataset){
+proc.replaceFun = function(datasetID){
   # Get the dataset names in the formatted files directory:
-    dataset = paste('formatted_datasets/dataset_',dataset,'.csv', sep ='')
+    dataset = paste('formatted_datasets/dataset_',datasetID,'.csv', sep ='')
     data = read.csv(dataset)
   # Get existing data:
     occProp = read.csv('output/occProp.csv')
     nTime = read.csv('output/nTime.csv')
   # Remove the data for that datasetID:
-    occProp = occProp[occProp$dataset!=dataset,]
-    nTime = nTime[nTime$datasetID!=dataset,]
+    occProp = occProp[occProp$dataset!=datasetID,]
+    nTime = nTime[nTime$datasetID!=datasetID,]
   # Return datasets to run or print up-to-date message:
       # Get new processed data:
       new.dfs = get.outsFun(dataset)
