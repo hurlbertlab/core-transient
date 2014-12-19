@@ -146,6 +146,106 @@ t2 = ddply(t,.(datasetID, site,species,year), summarise, count = sum(count))
 write.csv(t2, 'formatted_datasets/dataset_133.csv', row.names = F)
 
 #----------------------------------------------------------------------------------*
+# Dataset 143
+#----------------------------------------------------------------------------------*
+# There is a major problem somewhere here, summary stats aren't working and I can't
+# yet figure out why.
+
+t = read.csv("formatted_datasets/dornelas_unformat/dataset_143.csv")
+
+t1 = t$site
+
+t2 = transform(t1, site = colsplit(t1, split = "\\_", 
+                                   names = c('dataset', 'l1','l2','l3','x','y')))
+
+# Paste site location columns 1:3
+
+t2$site = paste(t2$site.l1, t2$site.l2, t2$site.l3, sep = '_')
+
+# Change site column in the original dataset:
+
+t$site = t2$site
+
+# Sum counts to the new sites:
+
+t2 = ddply(t,.(datasetID, site,species,year), summarise, count = sum(count))
+
+# Write file:
+
+write.csv(t2, 'formatted_datasets/dataset_143.csv', row.names = F)
+
+t1 = read.csv('formatted_datasets/dataset_143.csv')
+
+#----------------------------------------------------------------------------------*
+# Dataset 150
+#----------------------------------------------------------------------------------*
+# There is a major problem somewhere here, summary stats aren't working and I can't
+# yet figure out why.
+
+t = read.csv("formatted_datasets/dornelas_unformat/dataset_150.csv")
+
+t1 = t$site
+
+t2 = transform(t1, site = colsplit(t1, split = "\\_", 
+              names = c('dataset', 'l1','l2','l3','x','y')))
+
+# Round site x and y locations to 2 degree blocks and paste:
+
+t2$site.x = round_any(t2$site.x, 2)
+
+t2$site.y = round_any(t2$site.y, 2)
+
+t2$site = paste(t2$site.dataset, t2$site.x, t2$site.y, sep = '_')
+
+# Change site column in the original dataset:
+
+t$site = t2$site
+
+# Sum counts to the new sites:
+
+t2 = ddply(t,.(datasetID, site,species,year), summarise, count = sum(count))
+
+# Write file:
+
+write.csv(t2, 'formatted_datasets/dataset_150.csv', row.names = F)
+
+#----------------------------------------------------------------------------------*
+# Dataset 152
+#----------------------------------------------------------------------------------*
+# There is a major problem somewhere here, summary stats aren't working and I can't
+# yet figure out why.
+
+t = read.csv("formatted_datasets/dornelas_unformat/dataset_152.csv")
+
+t1 = t$site
+
+t2 = transform(t1, site = colsplit(t1, split = "\\_", 
+                                   names = c('dataset', 'l1','l2','x','y')))
+
+# Round site x and y locations to 2 degree blocks and paste:
+
+t2$site.x = round_any(t2$site.x, 2)
+
+t2$site.y = round_any(t2$site.y, 2)
+
+t2$site = paste(t2$site.dataset, t2$site.x, t2$site.y, sep = '_')
+
+# Change site column in the original dataset:
+
+t$site = t2$site
+
+# Sum counts to the new sites:
+
+t2 = ddply(t,.(datasetID, site,species,year), summarise, count = sum(count))
+
+# Write file:
+
+write.csv(t2, 'formatted_datasets/dataset_152.csv', row.names = F)
+
+
+###################################################################################*
+
+#----------------------------------------------------------------------------------*
 # Dataset 110
 #----------------------------------------------------------------------------------*
 # Note: This one may be a problem. Lat's and Lon's may be required here.
