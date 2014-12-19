@@ -50,16 +50,20 @@ threshold = 1/3
 out.list = list()
 
 for (i in 1:length(site)){
-  out.list[[i]] = sampling(site[i], threshold)
+  out.list[[i]] = summaryStats(site[i], threshold)
 }
 
 ss = rbind.fill(out.list)
 
-ss2  = ss[ss$mu == 1,c(1,2)]
-
 # Remove sites with < 10 species and < 5 time intervals:
 
 samplingSummary = ss[ss$rich.total > 10 & ss$nTime > 5,]
+
+samplingSummary = na.omit(samplingSummary)
+
+# Something is wrong here! showing lots of NA's. Not sure the cause, will have to
+# explore this tomorrow (it is an improvement over the last summary file -- which
+# contained only 157 records -- this one contains 474 records)
 
 #----------------------------------------------------------------------------------*
 # ---- Core-transient summary table ----
