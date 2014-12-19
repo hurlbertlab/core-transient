@@ -56,7 +56,7 @@ write.csv(d, "formatted_datasets/dataset_76.csv", row.names = F)
 # Dataset 108
 #----------------------------------------------------------------------------------*
 
-t = read.csv(datasets[1])
+t = read.csv('formatted_datasets/dornelas_unformat/dataset_108.csv')
 
 t1 = t$site
 
@@ -82,6 +82,68 @@ t2 = ddply(t,.(datasetID, site,species,year), summarise, count = sum(count))
 # Write file:
 
 write.csv(t2, 'formatted_datasets/dataset_108.csv', row.names = F)
+
+#----------------------------------------------------------------------------------*
+# Dataset 117
+#----------------------------------------------------------------------------------*
+
+t = read.csv("formatted_datasets/dornelas_unformat/dataset_117.csv")
+
+t1 = t$site
+
+t2 = transform(t1, site = colsplit(t1, split = "\\_", 
+                        names = c('dataset', 'location1','location2','x','y')))
+
+# Round site x and y locations to 2 degree blocks and paste:
+
+t2$site.x = round_any(t2$site.x, 2)
+
+t2$site.y = round_any(t2$site.y, 2)
+
+t2$site = paste(t2$site.dataset, t2$site.x, t2$site.y, sep = '_')
+
+# Change site column in the original dataset:
+
+t$site = t2$site
+
+# Sum counts to the new sites:
+
+t2 = ddply(t,.(datasetID, site,species,year), summarise, count = sum(count))
+
+# Write file:
+
+write.csv(t2, 'formatted_datasets/dataset_117.csv', row.names = F)
+
+#----------------------------------------------------------------------------------*
+# Dataset 133
+#----------------------------------------------------------------------------------*
+
+t = read.csv("formatted_datasets/dornelas_unformat/dataset_133.csv")
+
+t1 = t$site
+
+t2 = transform(t1, site = colsplit(t1, split = "\\_", 
+                  names = c('dataset', 'l1','l2','l3','x','y')))
+
+# Round site x and y locations to 2 degree blocks and paste:
+
+t2$site.x = round_any(t2$site.x, 2)
+
+t2$site.y = round_any(t2$site.y, 2)
+
+t2$site = paste(t2$site.dataset, t2$site.x, t2$site.y, sep = '_')
+
+# Change site column in the original dataset:
+
+t$site = t2$site
+
+# Sum counts to the new sites:
+
+t2 = ddply(t,.(datasetID, site,species,year), summarise, count = sum(count))
+
+# Write file:
+
+write.csv(t2, 'formatted_datasets/dataset_133.csv', row.names = F)
 
 #----------------------------------------------------------------------------------*
 # Dataset 110
