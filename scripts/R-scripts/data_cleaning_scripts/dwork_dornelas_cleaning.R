@@ -50,8 +50,6 @@ d$site = paste(site1$V1, lat, lon, sep = '_')
 
 write.csv(d, "formatted_datasets/dataset_76.csv", row.names = F)
 
-
-
 #----------------------------------------------------------------------------------*
 # Dataset 108
 #----------------------------------------------------------------------------------*
@@ -60,7 +58,8 @@ t = read.csv(datasets[1])
 
 t1 = t$site
 
-t2 = transform(t1, site = colsplit(t1, split = "\\_", names = c('dataset', 'location1','location2','location3','x','y')))
+t2 = transform(t1, site = colsplit(t1, split = "\\_", 
+            names = c('dataset', 'location1','location2','location3','x','y')))
 
 # Round site x and y locations to 2 degree blocks and paste:
 
@@ -80,7 +79,7 @@ t2 = ddply(t,.(site,species,year), summarise, count = sum(count))
 
 # Write file:
 
-write.csv(t2, paste(out_dir, 'dataset_108.csv', sep = '/'), row.names = F)
+write.csv(t2, 'formatted_datasets/dataset_108.csv', row.names = F)
 
 #----------------------------------------------------------------------------------*
 # Dataset 110
