@@ -5,6 +5,8 @@
 # transient analyses. Output includes summary tables and plots. Functions are
 # located in the core-transient_functions.R source file.
 
+proc.replaceFun(78)
+
 #----------------------------------------------------------------------------------*
 # ---- Set-up ----
 #==================================================================================*
@@ -57,13 +59,19 @@ ss = rbind.fill(out.list)
 
 # Remove sites with < 10 species and < 5 time intervals:
 
-samplingSummary = ss[ss$rich.total > 10 & ss$nTime > 5,]
+samplingSummary  = ss[ss$rich.total >= 10 & ss$nTime >= 5,]
 
 samplingSummary = na.omit(samplingSummary)
 
 # Something is wrong here! showing lots of NA's. Not sure the cause, will have to
 # explore this tomorrow (it is an improvement over the last summary file -- which
 # contained only 157 records -- this one contains 474 records)
+
+# Subset the nTime frame to include just the appropriate samples:
+
+sites2 = data.frame(site = samplingSummary$site)
+nTime = merge(nTime, sites2, all = F)
+nTime$site = factor(nTime$site)
 
 #----------------------------------------------------------------------------------*
 # ---- Core-transient summary table ----
@@ -84,6 +92,8 @@ for (i in site){
 }
 
 ct = rbind.fill(out.list)
+
+# Optimization failed for many of the above ... explore .. 
 
 # ---- Write core-transient summary table to file ----
 
