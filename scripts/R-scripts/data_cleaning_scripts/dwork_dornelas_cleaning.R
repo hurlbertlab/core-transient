@@ -53,6 +53,24 @@ d2 = ddply(d,.(datasetID, site,species,year), summarise, count = sum(count))
 write.csv(d, "formatted_datasets/dataset_76.csv", row.names = F)
 
 #----------------------------------------------------------------------------------*
+# Dataset 78
+#----------------------------------------------------------------------------------*
+
+d = read.csv("formatted_datasets/dornelas_unformat/dataset_78.csv")
+
+s_name = character()
+
+for(i in 1:dim(d)[1]){
+  readFun = function(i) read.table(text = as.character(d[i,2]), sep ='_')
+  s_name[i] = paste(readFun(i)[1,1],readFun(i)[1,2],readFun(i)[1,3],sep ='_')
+  s_name[i] = gsub(' ','', s_name[i])
+}
+
+d$site = s_name
+
+write.csv(d, "formatted_datasets/dataset_78.csv", row.names = F)
+
+#----------------------------------------------------------------------------------*
 # Dataset 108
 #----------------------------------------------------------------------------------*
 
