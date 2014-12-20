@@ -50,7 +50,7 @@
 # True bimodality for a given site (or random sample of occurrences at a site)
 
 bimodality = function(occs, site) {
-  nt = nTime[nTime$site == site,'nt']
+  nt = nTime[as.character(nTime$site) == site,'nt']
   maxvar = var(c(rep(1/nt,floor(length(occs)/2)),
                  rep(1,ceiling(length(occs)/2))))
   return(var(occs)/maxvar)
@@ -59,8 +59,8 @@ bimodality = function(occs, site) {
 # Random sample of occurences for a given site (to be used in randomization, below):
 
 random.occs = function(site){
-  nt = nTime[nTime$site == site,'nt']
-  occs = occProp[occProp$site == site,'occ']
+  nt = nTime[as.character(nTime$site) == site,'nt']
+  occs = occProp[as.character(occProp$site) == site,'occ']
   t1 = data.frame(table(occs))                      # Occurence proportion and frequency
   occ = data.frame(occs = seq(1/nt, 1, length = nt)) # Possible occurence proportions
   t2 = merge(occ, t1, all.x = T)  # Occurence by possible proportions
@@ -76,9 +76,9 @@ random.occs = function(site){
 # Randomization test for bimodality:
 
 p.bimodal = function(site, reps){
-  nt = nTime[nTime$site == site,'nt']
+  nt = nTime[as.character(nTime$site) == site,'nt']
 #   occs = occProp[occProp$site == site,'occ']
-  actual.bimod = bimodality(occProp[occProp$site == site,'occ'], site)
+  actual.bimod = bimodality(occProp[as.character(occProp$site) == site,'occ'], site)
   # For loop to get random bimodality values
   r.bimod = numeric()
   for (i in 1:reps){
@@ -201,15 +201,13 @@ summaryStats = function(site, threshold){
 #==================================================================================*
 
 ctSummary = function(site, threshold, reps){
-  # Get data:
-    dataset = as.numeric(substr(site, 2, 4))
-  # Subset to the site of interest:
-    d = occProp[occProp$site == site,]
+  # Get data for a given site:
+    d = occProp[as.character(occProp$site) == site,]
   # Sampling summary for site:
     samplingSummary = summaryStats(site, threshold)
-    nt = samplingSummary[samplingSummary$site == site,'nTime']  
+    nt = samplingSummary[as.character(samplingSummary$site) == site,'nTime']  
   # Calculate bimodality of the dataset and site:
-    bimodal = bimodality(occProp[occProp$site == site,'occ'], site)
+    bimodal = bimodality(d$occ, site)
     bimodal.p = p.bimodal(site, reps)
   # Calculate the alpha and beta shape parameters for the beta disatribution:
     fB = fitBeta(site)
