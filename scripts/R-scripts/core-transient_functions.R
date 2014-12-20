@@ -8,6 +8,21 @@
 #   3. Plot output
 
 #==================================================================================*
+# ---- BASIC FUNCTIONS ----
+#==================================================================================*
+
+# Subset function for factors that first converts to a character:
+
+subFactor = function(out, df, column.in, sub){
+  sub1 = df[as.character(df[,column.in]) == sub,]
+  if (out != 'df') return(sub1[,out]) else return(sub1)
+}
+
+# Standard error:
+
+se = function(x) sd(x)/sqrt(length(x))
+
+#==================================================================================*
 # ---- BIMODALILITY ----
 #==================================================================================*
 # NOTE: For these functions to run, occProp, Ntime, and outSummary frames must
@@ -77,7 +92,6 @@ random.occs = function(site){
 
 p.bimodal = function(site, reps){
   nt = nTime[as.character(nTime$site) == site,'nt']
-#   occs = occProp[occProp$site == site,'occ']
   actual.bimod = bimodality(occProp[as.character(occProp$site) == site,'occ'], site)
   # For loop to get random bimodality values
   r.bimod = numeric()
@@ -99,7 +113,7 @@ p.bimodal = function(site, reps){
 # http://supp.apa.org/psycarticles/supplemental/met_11_1_54/met_11_1_54_supp.html
 
 occs.scaled = function(site){
-  x = occProp[occProp$site == site,'occ']
+  x = occProp[as.character(occProp$site) == site,'occ']
   n = length(x)
   s = .5
   (x*(n-1)+s)/n
@@ -108,7 +122,7 @@ occs.scaled = function(site){
 # Fit beta distribution:
 
 fitBeta = function(site) {
-  if (bimodality(occProp[occProp$site == site,'occ'], site)!= 0)
+  if (bimodality(occProp[as.character(occProp$site) == site,'occ'], site)!= 0)
   {occs  = occs.scaled(site)
   shape.params = suppressWarnings(fitdistr(occs, "beta",
                                   list(shape1 = 2, shape2 = 2)))
@@ -130,7 +144,7 @@ mode.prop = function(occs, mode) {
 # Randomization test for a given mode:
 
 p.mode = function(site, mode, reps){
-    actual.prop = mode.prop(occProp[occProp$site == site,'occ'], mode)
+    actual.prop = mode.prop(occProp[as.character(occProp$site) == site,'occ'], mode)
   # For loop to get random frequncies in the mode:
     r.props = numeric()
     for (i in 1:reps){
