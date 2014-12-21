@@ -116,7 +116,11 @@ reps = 1000
 out.list = list()
 
 for (i in site){
+  tryCatch({
   out.list[[i]] =  mode.summary(i, reps)
+  }, error = function(e){
+    cat('ERROR for site',site[i],':', conditionMessage(e), '\n')
+  })
 }
 
 modeSummary = rbind.fill(out.list)
