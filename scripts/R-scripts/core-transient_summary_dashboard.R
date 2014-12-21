@@ -90,7 +90,9 @@ out.list = list()
 for (i in 1:length(site)){
   tryCatch({
     out.list[[i]] =  ctSummary(site[i], threshold, reps)
-  }, error=function(e){cat("ERROR :",conditionMessage(e), "\n")})
+  }, error=function(e){
+    cat('ERROR for site',site[i],':', conditionMessage(e), '\n')
+    })
 }
 
 ct = rbind.fill(out.list)
