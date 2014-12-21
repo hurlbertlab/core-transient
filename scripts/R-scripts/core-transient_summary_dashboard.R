@@ -83,17 +83,17 @@ nTime$site = factor(nTime$site)
 
 site = factor(samplingSummary$site)
 threshold = 1/3
-reps = 1000
+reps = 100
 
 out.list = list()
 
 for (i in 1:length(site)){
-  out.list[[i]] =  ctSummary(site[i], threshold, reps)
+  tryCatch({
+    out.list[[i]] =  ctSummary(site[i], threshold, reps)
+  }, error=function(e){cat("ERROR :",conditionMessage(e), "\n")})
 }
 
 ct = rbind.fill(out.list)
-
-# Optimization failed for many of the above ... explore ... hmmm ... all #'s greater than 117???
 
 # ---- Write core-transient summary table to file ----
 
