@@ -83,7 +83,7 @@ nTime$site = factor(nTime$site)
 
 site = factor(samplingSummary$site)
 threshold = 1/3
-reps = 100
+reps = 1000
 
 out.list = list()
 
