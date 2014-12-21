@@ -87,13 +87,13 @@ reps = 1000
 
 out.list = list()
 
-for (i in site){
-  out.list[[i]] =  ctSummary(i, threshold, reps)
+for (i in 1:length(site)){
+  out.list[[i]] =  ctSummary(site[i], threshold, reps)
 }
 
 ct = rbind.fill(out.list)
 
-# Optimization failed for many of the above ... explore .. 
+# Optimization failed for many of the above ... explore ... hmmm ... all #'s greater than 117???
 
 # ---- Write core-transient summary table to file ----
 
