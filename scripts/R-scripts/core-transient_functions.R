@@ -134,14 +134,15 @@ fitBeta = function(site) {
 # ---- CORE-TRANSIENT MODE STATISTICS ----
 #==================================================================================*
 
-# True bimodality for a given site:
+# Proportion of samples that are core or transient:
 
 mode.prop = function(occs, mode) {
   if (mode == 'core') length(occs[occs >= 1-threshold])/length(occs)
     else length(occs[occs <= threshold])/length(occs)
 }
 
-# Randomization test for a given mode:
+# Randomization test for a given mode (is the proportion of samples in core or
+# transient greater than we would expect by random chance):
 
 p.mode = function(site, mode, reps){
     actual.prop = mode.prop(occProp[as.character(occProp$site) == site,'occ'], mode)
