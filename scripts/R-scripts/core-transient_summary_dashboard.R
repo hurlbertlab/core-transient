@@ -106,15 +106,14 @@ write.csv(ct, 'output/tabular_data/core-transient_summary.csv', row.names = F)
 #----------------------------------------------------------------------------------*
 # Input is the cut-ff for core- and transient designation and the number of reps
 # used to calculate the p-value. The proportional dataframe must be loaded into the
-# environment above and the sampling summary code above must be run prior to 
-# running this script.
+# environment and the sampling summary code must be run prior to running this script.
 
 site = factor(samplingSummary$site)
 threshold = 1/3
 reps = 1000
 
 out.list = list()
-
+   
 for (i in site){
   tryCatch({
   out.list[[i]] =  mode.summary(i, reps)
