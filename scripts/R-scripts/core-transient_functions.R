@@ -8,21 +8,6 @@
 #   3. Plot output
 
 #==================================================================================*
-# ---- BASIC FUNCTIONS ----
-#==================================================================================*
-
-# Subset function for factors that first converts to a character:
-
-subFactor = function(out, df, column.in, sub){
-  sub1 = df[as.character(df[,column.in]) == sub,]
-  if (out != 'df') return(sub1[,out]) else return(sub1)
-}
-
-# Standard error:
-
-se = function(x) sd(x)/sqrt(length(x))
-
-#==================================================================================*
 # ---- BIMODALILITY ----
 #==================================================================================*
 # NOTE: For these functions to run, occProp, Ntime, and outSummary frames must
