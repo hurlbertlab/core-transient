@@ -242,7 +242,7 @@ ct.hist = function(site) {
     sub2 = bquote(alpha ~ '=' ~ .(round(ct$alpha, 3)) ~ '    '~
                    beta ~ '=' ~ .(round(ct$beta, 3)))
   # Set band width, breaks and possible values of x for the histogram:
-    bw = 1/(nTime)#(max(occProp$occ)-min(occProp$occ))/10
+    bw = 1/nTime#(max(occProp$occ)-min(occProp$occ))/10
     brks = seq(min(occProp$occ), max(occProp$occ),bw)
     x = seq(1/ct$nTime,1-1/ct$nTime, .01)
     beta.df = data.frame(x = x, y = dbeta(x, ct$alpha, ct$beta))
@@ -250,7 +250,7 @@ ct.hist = function(site) {
     out.plot = ggplot(occProp, aes(x=occ)) +
       geom_histogram(aes(y = ..density..), binwidth = bw, breaks = brks, right = F,
                      fill = 'gray', color = 1) +
-      xlim(0, 1) +
+      xlim(1/nTime, 1) +
       geom_line(data = beta.df, aes(x = x, y = y), color = 'red') +
       # stat_function(fun = function(x) dbeta(x, ct$alpha, ct$beta), color = 'red') +
       # Add labels:
