@@ -158,7 +158,11 @@ site = ct[ct$prop.core < 1,'site']
 
 out.plots = list()
   for(i in site){
-    out.plots[[i]] = ct.hist(i)
+    tryCatch({
+      out.plots[[i]] = ct.hist(i)},
+      error = function(e){
+        cat('ERROR for site',site[i],':', conditionMessage(e), '\n')
+      })
   }
 
 # Write plots to file:
