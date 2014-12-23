@@ -250,6 +250,7 @@ ct.hist = function(site) {
     out.plot = ggplot(occProp, aes(x=occ)) +
       geom_histogram(aes(y = ..density..), binwidth = bw, breaks = brks, right = F,
                      fill = 'gray', color = 1) +
+      xlim(0, 1) +
       geom_line(data = beta.df, aes(x = x, y = y), color = 'red') +
       # stat_function(fun = function(x) dbeta(x, ct$alpha, ct$beta), color = 'red') +
       # Add labels:
@@ -259,7 +260,7 @@ ct.hist = function(site) {
       theme(axis.text = element_text(size=14, color = 1),
             axis.title.x = element_text(vjust = -1),
             axis.title.y = element_text(vjust = 2),
-            title = element_text(size=18, vjust = -1),
+            title = element_text(size=16, vjust = -1),
             axis.line = element_line(colour = "black"),
             panel.background = element_blank(),
             plot.margin = unit(c(.5,.5,1.5,1), "lines"))
