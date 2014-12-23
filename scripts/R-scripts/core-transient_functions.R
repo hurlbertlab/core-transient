@@ -23,9 +23,9 @@
 #     Inputs: Site
 #     Outputs: A single numeric bimodality value
 #
-# - p.bimodal: Randomization test for bimodality. Runs n-reps of the random.bimodality 
-#     function and compares the actual bimodality with the distribution of random 
-#     values.
+# - p.bimodal: Randomization test for bimodality. Runs n-reps of the random.
+#     bimodality function and compares the actual bimodality with the 
+#     distribution of random values.
 #     Inputs: Site, number of reps
 #     Outputs: A single numeric p-value.
 #
@@ -61,8 +61,8 @@ bimodality = function(occs, site) {
 random.occs = function(site){
   nt = nTime[as.character(nTime$site) == site,'nt']
   occs = occProp[as.character(occProp$site) == site,'occ']
-  t1 = data.frame(table(occs))                      # Occurence proportion and frequency
-  occ = data.frame(occs = seq(1/nt, 1, length = nt)) # Possible occurence proportions
+  t1 = data.frame(table(occs))                      # Occurence prop and frequency
+  occ = data.frame(occs = seq(1/nt, 1, length = nt)) # Possible occurence props
   t2 = merge(occ, t1, all.x = T)  # Occurence by possible proportions
   t2[is.na(t2[,2]),2]<-0                            # Replace NA's with zeros
   # Reassign bin values randomly and add to frame:
@@ -159,7 +159,7 @@ mode.summary = function(site, reps){
 # already be loaded!
 #
 # Functions:
-# - sampling: Produces summary sampling data for one site. 
+# - summaryStats: Produces summary sampling data for one site. 
 #     Inputs: Site and the threshold value for core and transient designation.
 #     Outputs: A one-row dataframe with dataset ID, site ID, threshold used,
 #       the system, taxa, # of time samples, total, core, and transient richness
@@ -230,8 +230,8 @@ ctSummary = function(site, threshold, reps){
 
 ct.hist = function(site) {
   # Get data, subset to a given site:
-      occProp = occProp[occProp$site == site,]
-      ct = ct[ct$site == site, ]
+      occProp = occProp[as.character(occProp$site) == site,]
+      ct = ct[as.character(ct$site) == site, ]
   # Plot labels:
     main = paste('Site ', site, paste('(',  as.character(ct$system),
                    ', ', as.character(ct$taxa),')', sep = ''))
