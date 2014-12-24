@@ -215,6 +215,8 @@ propCoreTaxa = cbind(variable = rep('taxa', length(propCoreTaxa[,1])),
                                    group = propCoreTaxa[,1],
                     propCoreTaxa[,2:length(propCoreTaxa)])
 
+summary_SysTaxa = rbind(propCoreSys, propCoreTaxa)
+
 write.csv(rbind(propCoreSys, propCoreTaxa),
           'output/tabular_data/summary_by_SysTaxa.csv', row.names = F)
 
@@ -227,3 +229,79 @@ ct = read.csv('output/tabular_data/core-transient_summary.csv')
 ctSub = ct[,c(1:5)]
 
 occSysTaxa = merge(ctSub, occProp, by = 'site',all = T)
+occSysTaxa = na.omit(occSysTaxa)
+
+#----------------------------------------------------------------------------------*
+# A little bit of exploration ... time effect?
+#----------------------------------------------------------------------------------*
+# Plot of species occurence by the number of time intervals
+
+ggplot(occSysTaxa, aes(x = nTime, y = occ, color = taxa, shape = system)) +
+  geom_point()+
+  scale_shape_manual(values=c(15,16,17))+
+  xlab('Number of time intervals')+
+  ylab('Proportion of occurences')+
+  ggtitle('Occurences by time\n(points = species at a given site, n = 16303)')+
+  theme(axis.text = element_text(size=14, color = 1),
+        axis.title.x = element_text(vjust = -1),
+        axis.title.y = element_text(vjust = 1),
+        title = element_text(size=16, vjust = 3),
+        axis.line = element_line(colour = "black"),
+        panel.background = element_blank(),
+        plot.margin = unit(c(1.5,.5,1.5,1), "lines"))
+
+# How much of the variation at a given site is explained by time (i.e., do sp occurences
+# become more dispersed with increased time samples?)?
+
+ost2 = ddply(occSysTaxa, .(site, system, taxa, nTime), 
+             summarize, dOcc = mean(abs(.5-occ)))
+
+ggplot(ost2, aes(x = nTime, y = dOcc, color = taxa, shape = system)) +
+  geom_point()+
+  scale_shape_manual(values=c(15,16,17))+
+  xlab('Number of time intervals')+
+  ylab('Site-level bimodality')+
+  ggtitle('Bimodality by time\n(points = sites, n = 539)')+
+  theme(axis.text = element_text(size=14, color = 1),
+        axis.title.x = element_text(vjust = -1),
+        axis.title.y = element_text(vjust = 1),
+        title = element_text(size=16, vjust = 3),
+        axis.line = element_line(colour = "black"),
+        panel.background = element_blank(),
+        plot.margin = unit(c(1.5,.5,1.5,1), "lines"))
+
+# How much can the existence of core or transient species be explained by the
+# number of time intervals?
+
+coreOrTransFun = function(x) length(x)/length(x)
+
+ostCT = ddply(occSysTaxa, .(site, system, taxa, nTime), summarize, 
+      ct = length(occ[occ>=2/3|occ<=1/3])/length(occ))
+
+ostC = ddply(occSysTaxa, .(site, system, taxa, nTime), summarize, 
+              ct = length(occ[occ>=2/3])/length(occ))
+
+ostT = ddply(occSysTaxa, .(site, system, taxa, nTime), summarize, 
+              ct = length(occ[occ<=1/3])/length(occ))
+
+# How much can bimodality  be explained by the
+# number of time intervals?
+
+bimodSysTax = ddply(ct, .(site, system, taxa, nTime), 
+                    summarize, bm = mean(bimodal))
+
+plot(bimodal~nTime, data = ct)
+
+ggplot(ct, aes(x = nTime, y = bimodal, color = taxa, shape = system)) +
+  geom_point()+
+  scale_shape_manual(values=c(15,16,17))+
+  xlab('Number of time intervals')+
+  ylab('Mean absolute difference between\n0.5 and proportional occurence')+
+  ggtitle('Variation in occurences by time\n(points = sites, n = 539)')+
+  theme(axis.text = element_text(size=14, color = 1),
+        axis.title.x = element_text(vjust = -1),
+        axis.title.y = element_text(vjust = 1),
+        title = element_text(size=16, vjust = 3),
+        axis.line = element_line(colour = "black"),
+        panel.background = element_blank(),
+        plot.margin = unit(c(1.5,.5,1.5,1), "lines"))
