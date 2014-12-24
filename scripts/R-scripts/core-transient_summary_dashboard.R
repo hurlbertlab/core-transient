@@ -207,6 +207,17 @@ propCoreTaxa = ddply(ct, .(taxa), summarize,
                     meanAlpha = mean(alpha), seAlpha = se(alpha),
                     meanBeta = mean(beta), seBeta = se(beta))
 
+propCoreSys = cbind(variable = rep('system', length(propCoreSys[,1])),
+                    group = propCoreSys[,1],
+                    propCoreSys[,2:length(propCoreSys)])
+
+propCoreTaxa = cbind(variable = rep('taxa', length(propCoreTaxa[,1])),
+                                   group = propCoreTaxa[,1],
+                    propCoreTaxa[,2:length(propCoreTaxa)])
+
+write.csv(rbind(propCoreSys, propCoreTaxa),
+          'output/tabular_data/summary_by_SysTaxa.csv', row.names = F)
+
 #----------------------------------------------------------------------------------*
 # Method 2: Considering species observations as the sampling unit
 #==================================================================================*
