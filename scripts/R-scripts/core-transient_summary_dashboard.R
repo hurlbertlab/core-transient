@@ -199,6 +199,14 @@ propCoreSys = ddply(ct, .(system), summarize,
               meanAlpha = mean(alpha), seAlpha = se(alpha),
               meanBeta = mean(beta), seBeta = se(beta))
 
+propCoreTaxa = ddply(ct, .(taxa), summarize, 
+                    meanPropCore = mean(prop.core), sePropCore = se(prop.core),
+                    meanPropTrans = mean(prop.trans), sePropTrans = se(prop.trans),
+                    meanMu = mean(mu), seMu = se(mu),
+                    meanBimodal = mean(bimodal), seBimodal = se(bimodal),
+                    meanAlpha = mean(alpha), seAlpha = se(alpha),
+                    meanBeta = mean(beta), seBeta = se(beta))
 
 
-)
+
+propCoreTaxa
