@@ -188,7 +188,7 @@ ct$site = seq(1, length(ct$site),1)
 se = function(x) sd(x)/sqrt(length(x))
 
 #----------------------------------------------------------------------------------*
-# By system
+# Method 1: Considering site as the sampling unit
 #==================================================================================*
 
 propCoreSys = ddply(ct, .(system), summarize, 
@@ -207,6 +207,12 @@ propCoreTaxa = ddply(ct, .(taxa), summarize,
                     meanAlpha = mean(alpha), seAlpha = se(alpha),
                     meanBeta = mean(beta), seBeta = se(beta))
 
+#----------------------------------------------------------------------------------*
+# Method 2: Considering species observations as the sampling unit
+#==================================================================================*
 
+ct = read.csv('output/tabular_data/core-transient_summary.csv')
 
-propCoreTaxa
+ctSub = ct[,c(1:5)]
+
+occSysTaxa = merge(ctSub, occProp, by = 'site',all = T)
