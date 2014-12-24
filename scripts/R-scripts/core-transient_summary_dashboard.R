@@ -172,3 +172,33 @@ pdf('output/plots/CT_histograms.pdf',
     width = 6.5, height = 5.5, onefile = T)
 out.plots
 dev.off()
+
+#==================================================================================*
+# ---- SUMMARIZING BY TAXA AND SYSTEM (TERRESTRIAL, AQUATIC, MARINE)  ----
+#==================================================================================*
+
+# Get ct file, replacing site with a numeric vector (just for simplifying):
+
+ct = read.csv('output/tabular_data/core-transient_summary.csv')
+
+ct$site = seq(1, length(ct$site),1)
+
+# Some functions:
+
+se = function(x) sd(x)/sqrt(length(x))
+
+#----------------------------------------------------------------------------------*
+# By system
+#==================================================================================*
+
+propCoreSys = ddply(ct, .(system), summarize, 
+              meanPropCore = mean(prop.core), sePropCore = se(prop.core),
+              meanPropTrans = mean(prop.trans), sePropTrans = se(prop.trans),
+              meanMu = mean(mu), seMu = se(mu),
+              meanBimodal = mean(bimodal), seBimodal = se(bimodal),
+              meanAlpha = mean(alpha), seAlpha = se(alpha),
+              meanBeta = mean(beta), seBeta = se(beta))
+
+
+
+)
