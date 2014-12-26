@@ -188,7 +188,7 @@ ct$site = seq(1, length(ct$site),1)
 se = function(x) sd(x)/sqrt(length(x))
 
 #----------------------------------------------------------------------------------*
-# Method 1: Considering site as the sampling unit
+# ----  Method 1: Considering site as the sampling unit ----
 #==================================================================================*
 
 propCoreSys = ddply(ct, .(system), summarize, 
@@ -221,7 +221,7 @@ write.csv(rbind(propCoreSys, propCoreTaxa),
           'output/tabular_data/summary_by_SysTaxa.csv', row.names = F)
 
 #----------------------------------------------------------------------------------*
-# Method 2: Considering species observations as the sampling unit
+# ---- Method 2: Considering species observations as the sampling unit ----
 #==================================================================================*
 
 ct = read.csv('output/tabular_data/core-transient_summary.csv')
@@ -232,7 +232,7 @@ occSysTaxa = merge(ctSub, occProp, by = 'site',all = T)
 occSysTaxa = na.omit(occSysTaxa)
 
 #----------------------------------------------------------------------------------*
-# A little bit of exploration ... time effect?
+# ---- A little bit of exploration ... time effect? ----
 #----------------------------------------------------------------------------------*
 # Plot of species occurence by the number of time intervals
 
@@ -308,6 +308,10 @@ ggplot(ct, aes(x = nTime, y = bimodal, color = taxa, shape = system)) +
 
 summary(lm(bimodal~nTime, data = ct))
 
+#----------------------------------------------------------------------------------*
+# ---- Plotting bimodality by system and taxa ----
+#----------------------------------------------------------------------------------*
+
 # Bimodality by system:
 
 bimodSys = ddply(ct, .(system), summarize, 
@@ -327,18 +331,23 @@ bimodTaxa = ddply(ct, .(taxa), summarize,
 # Plot bimodality by system
 
 ggplot(bimodSys, aes(x = system, y = mean_bimod)) +
-  geom_point()+
-  ylim(0,.7)+
+  geom_point(size = 5)+
+  geom_errorbar(aes(ymin = mean_bimod - se_bimod,
+                    ymax = mean_bimod + se_bimod),
+                    width = .15) + 
+  ylim(0.2,.65)+
   xlab('System')+
   ylab('Bimodality')+
-  ggtitle(paste('Bimodality by system\n',
-          'Sites: Aquatic = 11 Marine = 444 Terrestrial = 84'))+
+  ggtitle(bquote(atop('Bimodality by system',
+          'Sites: Aquatic = 11 Marine = 444 Terrestrial = 84')))+
   theme(axis.text = element_text(size=14, color = 1),
         axis.title.x = element_text(vjust = -1),
         axis.title.y = element_text(vjust = 1),
         title = element_text(size=14, vjust = 3),
         axis.line = element_line(colour = "black"),
         panel.background = element_blank(),
+        panel.grid.major = element_line(size = .5, color = 'gray90'),
+        panel.grid.minor = element_line(size = .25, color = 'gray90'),
         plot.margin = unit(c(1.5,.5,1.5,1), "lines"))
 
 
