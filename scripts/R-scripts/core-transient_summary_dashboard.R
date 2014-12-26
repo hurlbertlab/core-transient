@@ -324,5 +324,22 @@ bimodTaxa = ddply(ct, .(taxa), summarize,
                  se_bimod = se(bimodal),
                  n_sites = length(bimodal))
 
+# Plot bimodality by system
+
+ggplot(bimodSys, aes(x = system, y = mean_bimod)) +
+  geom_point()+
+  ylim(0,.7)+
+  xlab('System')+
+  ylab('Bimodality')+
+  ggtitle(paste('Bimodality by system\n',
+          'Sites: Aquatic = 11 Marine = 444 Terrestrial = 84'))+
+  theme(axis.text = element_text(size=14, color = 1),
+        axis.title.x = element_text(vjust = -1),
+        axis.title.y = element_text(vjust = 1),
+        title = element_text(size=14, vjust = 3),
+        axis.line = element_line(colour = "black"),
+        panel.background = element_blank(),
+        plot.margin = unit(c(1.5,.5,1.5,1), "lines"))
+
 
 
