@@ -330,20 +330,21 @@ bimodTaxa = ddply(ct, .(taxa), summarize,
 
 # Plot bimodality by system
 
+ymin = bimodSys$mean_bimod - bimodSys$se_bimod
+ymax = bimodSys$mean_bimod + bimodSys$se_bimod
+
 bimodSys_plot = ggplot(bimodSys, aes(x = system, y = mean_bimod)) +
   geom_point(size = 3)+
-  geom_errorbar(aes(ymin = mean_bimod - se_bimod,
-        ymax = mean_bimod + se_bimod),
-        width = .1) + 
-  ylim(0.2,.65)+
+  geom_errorbar(aes(ymin = ymin, ymax = ymax), width = .1) + 
+  geom_text(aes(system, ymax+.03),label = as.character(bimodSys$n_sites)) +
+  ylim(0.2,.7)+
   xlab('System')+
   ylab('Bimodality')+
-  ggtitle(bquote(atop(bold('Bimodality by system'),
-          atop('Sites: Aquatic = 11 Marine = 444 Terrestrial = 84'))))+
+  ggtitle(bquote(atop(bold('Bimodality by system')))) +
   theme(axis.text = element_text(size=14, color = 1),
         axis.title.x = element_text(size = 18, vjust = -1),
         axis.title.y = element_text(size = 18, vjust = 1),
-        title = element_text(size=18, vjust = 0.5),
+        title = element_text(size=18, vjust = -0.5),
         axis.line = element_line(colour = "black"),
         panel.background = element_blank(),
         panel.grid.major = element_line(size = .5, color = 'gray90'),
