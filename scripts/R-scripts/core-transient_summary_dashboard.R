@@ -444,8 +444,8 @@ ctSys_plot = ggplot(propCTSys, aes(x = system, y = mean, color = ct)) +
   ylim(0,.7) +
   xlab('System')+
   ylab('Proportion of species')+
-  ggtitle(bquote(bold('Proportion of core and transients
-                    by system')))+
+  ggtitle(bquote(bold('Proportion of core and transient
+              species by system')))+
   theme(axis.text.x = element_text(size=14, color = 1, 
                                    vjust = 1, hjust = 1),
         axis.text.y = element_text(size=12, color = 1, hjust = 1),
@@ -459,7 +459,7 @@ ctSys_plot = ggplot(propCTSys, aes(x = system, y = mean, color = ct)) +
         plot.margin = unit(c(2.5,.5,1.5,.5), "lines"))
 
 pdf('output/plots/ct_by_system.pdf', width = 7, height = 6.5)
-bimodTaxa_plot
+ctSys_plot
 dev.off()
 
 # Taxa plot:
