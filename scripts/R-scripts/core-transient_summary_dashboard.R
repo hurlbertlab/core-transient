@@ -422,7 +422,7 @@ propTransTaxa = ddply(ct, .(taxa), summarize,
   se = se(prop.trans),
   n_sites = length(prop.trans))
   propTransTaxa = na.omit(propTransTaxa)
-  propTransTaxa$ct = rep('Core', length(propTransTaxa[,1]))
+  propTransTaxa$ct = rep('Trans', length(propTransTaxa[,1]))
 
 # Bind frames:
 
@@ -437,7 +437,7 @@ limits =  aes(ymax = mean + se, ymin = mean - se)
 ctSys_plot = ggplot(propCTSys, aes(x = system, y = mean, color = ct)) +
   geom_point(size = 2) + 
   geom_errorbar(limits,width = .15) + 
-  scale_x_discrete(breaks=c('Aquatic','Marine','Terrestrial'), 
+  scale_x_discrete(breaks= c('Aquatic','Marine','Terrestrial'), 
     labels=c(bquote(atop('Aquatic','n = 11')),
       bquote(atop('Marine','n = 444')),
       bquote(atop('Terrestrial','n = 84')))) +
@@ -458,23 +458,32 @@ ctSys_plot = ggplot(propCTSys, aes(x = system, y = mean, color = ct)) +
         panel.grid.minor = element_line(size = .25, color = 'gray90'),
         plot.margin = unit(c(2.5,.5,1.5,.5), "lines"))
 
-pdf('output/plots/ct_by_system.pdf', width = 7, height = 6.5)
+pdf('output/plots/ct_by_system.pdf', width = 7, height = 7)
 ctSys_plot
 dev.off()
 
 # Taxa plot:
 
-bimodTaxa_plot = ggplot(bimodTaxa, aes(x = taxa, y = mean)) +
+ctTaxa_plot = ggplot(propCTTaxa, aes(x = taxa, y = mean, color = ct)) +
   geom_point(size = 2) + 
-  geom_errorbar(aes(ymin = ymin,
-                    ymax = ymax),
-                width = .15) + 
-  geom_text(aes(taxa, ymax+.03),label = as.character(bimodTaxa$n_sites)) +
-  ylim(0,.65) +
+  geom_errorbar(limits,width = .15) + 
+  scale_x_discrete(breaks= c('Arthropod','Benthos','Bird',
+                             'Fish','Invertebrate','Mammal',
+                             'Plankton','Plant'),
+                   labels=c(bquote(atop('Arthropod','n = 3')),
+                            bquote(atop('Benthos','n = 81')),
+                            bquote(atop('Bird','n = 312')),
+                            bquote(atop('Fish','n = 63')),
+                            bquote(atop('Invertebrate','n = 2')),
+                            bquote(atop('Mammal','n = 19')),
+                            bquote(atop('Plankton','n = 8')), 
+                            bquote(atop('Plant','n = 51')))) +
+#   ylim(0,1) +
   xlab('Taxonomic group')+
-  ylab('Bimodality')+
-  ggtitle(bquote(bold('Bimodality by taxanomic group')))+
-  theme(axis.text.x = element_text(size=14, color = 1, 
+  ylab('Proportion of species')+
+  ggtitle(bquote(bold('Proportion of core and transient
+species by taxonomic group')))+
+  theme(axis.text.x = element_text(size=10, color = 1, 
                                    angle = 45, vjust = 1, hjust = 1),
         axis.text.y = element_text(size=12, color = 1, hjust = 1),
         axis.title.x = element_text(size = 18, vjust = -1),
@@ -484,10 +493,10 @@ bimodTaxa_plot = ggplot(bimodTaxa, aes(x = taxa, y = mean)) +
         panel.background = element_blank(),
         panel.grid.major = element_line(size = .5, color = 'gray90'),
         panel.grid.minor = element_line(size = .25, color = 'gray90'),
-        plot.margin = unit(c(1,.5,1.5,.5), "lines"))
+        plot.margin = unit(c(3.5,.5,1.5,.5), "lines"))
 
-pdf('output/plots/bimodality_by_taxa.pdf', width = 7, height = 6.5)
-bimodTaxa_plot
+pdf('output/plots/ct_by_taxa.pdf', width = 8, height = 8)
+ctTaxa_plot
 dev.off()
 
 # Plot data:
