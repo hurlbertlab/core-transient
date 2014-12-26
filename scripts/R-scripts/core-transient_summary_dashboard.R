@@ -386,4 +386,48 @@ pdf('output/plots/bimodality_by_taxa.pdf', width = 7, height = 6.5)
 bimodTaxa_plot
 dev.off()
 
+#----------------------------------------------------------------------------------*
+# ---- Plotting proportion core and transient by system and taxa ----
+#----------------------------------------------------------------------------------*
+
+# Create frames summarizing core and transient by system and taxa:
+
+propCoreSys = ddply(ct, .(system), summarize, 
+  mean_bimod = mean(prop.core),
+  sd_bimod = sd(prop.core),
+  se_bimod = se(prop.core),
+  n_sites = length(prop.core))
+  propCoreSys = na.omit(propCoreSys)
+  propCoreSys$ct = rep('Core', length(propCoreSys[,1]))
+
+propTransSys = ddply(ct, .(system), summarize, 
+  mean_bimod = mean(prop.trans),
+  sd_bimod = sd(prop.trans),
+  se_bimod = se(prop.trans),
+  n_sites = length(prop.trans))
+  proTransSys = na.omit(propTransSys)
+  propTransSys$ct = rep('Transient', length(propTransSys[,1]))
+
+propCoreTaxa = ddply(ct, .(taxa), summarize, 
+  mean_bimod = mean(prop.core),
+  sd_bimod = sd(prop.core),
+  se_bimod = se(prop.core),
+  n_sites = length(prop.core))
+  propCoreTaxa = na.omit(propCoreTaxa)
+  propCoreTaxa$ct = rep('Core', length(propCoreTaxa[,1]))
+
+propTransTaxa = ddply(ct, .(taxa), summarize, 
+  mean_bimod = mean(prop.trans),
+  sd_bimod = sd(prop.trans),
+  se_bimod = se(prop.trans),
+  n_sites = length(prop.trans))
+  propTransTaxa = na.omit(propTransTaxa)
+  propTransTaxa$ct = rep('Core', length(propTransTaxa[,1]))
+
+# Bind frames:
+
+propCTSys = rbind(propCoreSys, propTransSys)
+
+propCTTaxa = rbind(propCoreTaxa, propTransTaxa)
+
 
