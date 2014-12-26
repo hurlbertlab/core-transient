@@ -393,33 +393,33 @@ dev.off()
 # Create frames summarizing core and transient by system and taxa:
 
 propCoreSys = ddply(ct, .(system), summarize, 
-  mean_bimod = mean(prop.core),
-  sd_bimod = sd(prop.core),
-  se_bimod = se(prop.core),
+  mean = mean(prop.core),
+  sd = sd(prop.core),
+  se = se(prop.core),
   n_sites = length(prop.core))
   propCoreSys = na.omit(propCoreSys)
   propCoreSys$ct = rep('Core', length(propCoreSys[,1]))
 
 propTransSys = ddply(ct, .(system), summarize, 
-  mean_bimod = mean(prop.trans),
-  sd_bimod = sd(prop.trans),
-  se_bimod = se(prop.trans),
+  mean = mean(prop.trans),
+  sd = sd(prop.trans),
+  se = se(prop.trans),
   n_sites = length(prop.trans))
   proTransSys = na.omit(propTransSys)
   propTransSys$ct = rep('Transient', length(propTransSys[,1]))
 
 propCoreTaxa = ddply(ct, .(taxa), summarize, 
-  mean_bimod = mean(prop.core),
-  sd_bimod = sd(prop.core),
-  se_bimod = se(prop.core),
+  mean = mean(prop.core),
+  sd = sd(prop.core),
+  se = se(prop.core),
   n_sites = length(prop.core))
   propCoreTaxa = na.omit(propCoreTaxa)
   propCoreTaxa$ct = rep('Core', length(propCoreTaxa[,1]))
 
 propTransTaxa = ddply(ct, .(taxa), summarize, 
-  mean_bimod = mean(prop.trans),
-  sd_bimod = sd(prop.trans),
-  se_bimod = se(prop.trans),
+  mean = mean(prop.trans),
+  sd = sd(prop.trans),
+  se = se(prop.trans),
   n_sites = length(prop.trans))
   propTransTaxa = na.omit(propTransTaxa)
   propTransTaxa$ct = rep('Core', length(propTransTaxa[,1]))
@@ -430,4 +430,65 @@ propCTSys = rbind(propCoreSys, propTransSys)
 
 propCTTaxa = rbind(propCoreTaxa, propTransTaxa)
 
+# System plot:
+
+limits =  aes(ymax = mean + se, ymin = mean - se)
+
+ctSys_plot = ggplot(propCTSys, aes(x = system, y = mean, color = ct)) +
+  geom_point(size = 2) + 
+  geom_errorbar(limits,width = .15) + 
+  scale_x_discrete(breaks=c('Aquatic','Marine','Terrestrial'), 
+    labels=c(bquote(atop('Aquatic','n = 11')),
+      bquote(atop('Marine','n = 444')),
+      bquote(atop('Terrestrial','n = 84')))) +
+  ylim(0,.7) +
+  xlab('System')+
+  ylab('Proportion of species')+
+  ggtitle(bquote(bold('Proportion of core and transients
+                    by system')))+
+  theme(axis.text.x = element_text(size=14, color = 1, 
+                                   vjust = 1, hjust = 1),
+        axis.text.y = element_text(size=12, color = 1, hjust = 1),
+        axis.title.x = element_text(size = 18, vjust = -1),
+        axis.title.y = element_text(size = 18, vjust = 1.5),
+        title = element_text(size=18, vjust = 2.5),
+        axis.line = element_line(colour = "black"),
+        panel.background = element_blank(),
+        panel.grid.major = element_line(size = .5, color = 'gray90'),
+        panel.grid.minor = element_line(size = .25, color = 'gray90'),
+        plot.margin = unit(c(2.5,.5,1.5,.5), "lines"))
+
+pdf('output/plots/ct_by_system.pdf', width = 7, height = 6.5)
+bimodTaxa_plot
+dev.off()
+
+# Taxa plot:
+
+bimodTaxa_plot = ggplot(bimodTaxa, aes(x = taxa, y = mean)) +
+  geom_point(size = 2) + 
+  geom_errorbar(aes(ymin = ymin,
+                    ymax = ymax),
+                width = .15) + 
+  geom_text(aes(taxa, ymax+.03),label = as.character(bimodTaxa$n_sites)) +
+  ylim(0,.65) +
+  xlab('Taxonomic group')+
+  ylab('Bimodality')+
+  ggtitle(bquote(bold('Bimodality by taxanomic group')))+
+  theme(axis.text.x = element_text(size=14, color = 1, 
+                                   angle = 45, vjust = 1, hjust = 1),
+        axis.text.y = element_text(size=12, color = 1, hjust = 1),
+        axis.title.x = element_text(size = 18, vjust = -1),
+        axis.title.y = element_text(size = 18, vjust = 1.5),
+        title = element_text(size=18, vjust = 2.5),
+        axis.line = element_line(colour = "black"),
+        panel.background = element_blank(),
+        panel.grid.major = element_line(size = .5, color = 'gray90'),
+        panel.grid.minor = element_line(size = .25, color = 'gray90'),
+        plot.margin = unit(c(1,.5,1.5,.5), "lines"))
+
+pdf('output/plots/bimodality_by_taxa.pdf', width = 7, height = 6.5)
+bimodTaxa_plot
+dev.off()
+
+# Plot data:
 
