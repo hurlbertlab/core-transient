@@ -374,17 +374,15 @@ bimodTaxa_plot = ggplot(bimodTaxa, aes(x = taxa, y = mean_bimod)) +
         axis.text.y = element_text(size=12, color = 1, hjust = 1),
         axis.title.x = element_text(size = 18, vjust = -1),
         axis.title.y = element_text(size = 18, vjust = 1.5),
-        title = element_text(size=18, vjust = 2),
+        title = element_text(size=18, vjust = 2.5),
         axis.line = element_line(colour = "black"),
         panel.background = element_blank(),
         panel.grid.major = element_line(size = .5, color = 'gray90'),
         panel.grid.minor = element_line(size = .25, color = 'gray90'),
         plot.margin = unit(c(1,.5,1.5,.5), "lines"))
 
+pdf('output/plots/bimodality_by_taxa.pdf', width = 7, height = 6.5)
 bimodTaxa_plot
-
-pdf('output/plots/bimodality_by_taxa.pdf', width = 7, height = 6)
-bimodSys_plot
 dev.off()
 
 
