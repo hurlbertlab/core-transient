@@ -330,7 +330,7 @@ bimodTaxa = ddply(ct, .(taxa), summarize,
 
 # Plot bimodality by system
 
-ggplot(bimodSys, aes(x = system, y = mean_bimod)) +
+bimodSys_plot = ggplot(bimodSys, aes(x = system, y = mean_bimod)) +
   geom_point(size = 3)+
   geom_errorbar(aes(ymin = mean_bimod - se_bimod,
         ymax = mean_bimod + se_bimod),
@@ -349,6 +349,10 @@ ggplot(bimodSys, aes(x = system, y = mean_bimod)) +
         panel.grid.major = element_line(size = .5, color = 'gray90'),
         panel.grid.minor = element_line(size = .25, color = 'gray90'),
         plot.margin = unit(c(0,.5,1.5,.5), "lines"))
+
+pdf('output/plots/bimodality_by_system.pdf', width = 7, height = 6)
+bimodSys_plot
+dev.off()
 
 
 
