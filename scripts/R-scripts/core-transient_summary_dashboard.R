@@ -356,24 +356,25 @@ dev.off()
 
 # Plot bimodality by taxanomic class
 
+ymin = bimodTaxa$mean_bimod - bimodTaxa$se_bimod
+ymax = bimodTaxa$mean_bimod + bimodTaxa$se_bimod
+
 bimodTaxa_plot = ggplot(bimodTaxa, aes(x = taxa, y = mean_bimod)) +
-  geom_point(size = 3)+
-  geom_errorbar(aes(ymin = mean_bimod - se_bimod,
-                    ymax = mean_bimod + se_bimod),
-                width = .1) + 
-  ylim(0.2,.65)+
-  xlab('System')+
+  geom_point(size = 2) + 
+  geom_errorbar(aes(ymin = ymin,
+                    ymax = ymax),
+                width = .15) + 
+  geom_text(aes(taxa, ymax+.03),label = as.character(bimodTaxa$n_sites)) +
+  ylim(0,.65) +
+  xlab('Taxonomic group')+
   ylab('Bimodality')+
-  ggtitle(bquote(atop(bold('Bimodality by taxa'),
-                      atop('Sites: Aquatic = 11 Marine = 444 Terrestrial = 84'))))+
-#   ggtitle(bquote(atop(bold('Bimodality by taxa'),
-#                       'Sites: Arthropod = 3 Benthos = 81 Bird = 312\nFish = 63, Invertebrate = 2, Mammal = 19\nPlankton = 8, Plant = 51')))+
+  ggtitle(bquote(bold('Bimodality by taxanomic group')))+
   theme(axis.text.x = element_text(size=14, color = 1, 
                         angle = 45, vjust = 1, hjust = 1),
         axis.text.y = element_text(size=12, color = 1, hjust = 1),
         axis.title.x = element_text(size = 18, vjust = -1),
         axis.title.y = element_text(size = 18, vjust = 1.5),
-        title = element_text(size=18, vjust = 0.5),
+        title = element_text(size=18, vjust = 2),
         axis.line = element_line(colour = "black"),
         panel.background = element_blank(),
         panel.grid.major = element_line(size = .5, color = 'gray90'),
@@ -382,7 +383,7 @@ bimodTaxa_plot = ggplot(bimodTaxa, aes(x = taxa, y = mean_bimod)) +
 
 bimodTaxa_plot
 
-pdf('output/plots/bimodality_by_system.pdf', width = 7, height = 6)
+pdf('output/plots/bimodality_by_taxa.pdf', width = 7, height = 6)
 bimodSys_plot
 dev.off()
 
