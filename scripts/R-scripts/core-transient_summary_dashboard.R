@@ -331,10 +331,10 @@ bimodTaxa = ddply(ct, .(taxa), summarize,
 # Plot bimodality by system
 
 ggplot(bimodSys, aes(x = system, y = mean_bimod)) +
-  geom_point(size = 5)+
+  geom_point(size = 3)+
   geom_errorbar(aes(ymin = mean_bimod - se_bimod,
         ymax = mean_bimod + se_bimod),
-        width = .15) + 
+        width = .1) + 
   ylim(0.2,.65)+
   xlab('System')+
   ylab('Bimodality')+
