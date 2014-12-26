@@ -305,3 +305,24 @@ ggplot(ct, aes(x = nTime, y = bimodal, color = taxa, shape = system)) +
         axis.line = element_line(colour = "black"),
         panel.background = element_blank(),
         plot.margin = unit(c(1.5,.5,1.5,1), "lines"))
+
+summary(lm(bimodal~nTime, data = ct))
+
+# Bimodality by system:
+
+bimodSys = ddply(ct, .(system), summarize, 
+                 mean_bimod = mean(bimodal),
+                 sd_bimod = sd(bimodal),
+                 se_bimod = se(bimodal),
+                 n_sites = length(bimodal))
+
+# Bimodality by taxa:
+
+bimodTaxa = ddply(ct, .(taxa), summarize, 
+                 mean_bimod = mean(bimodal),
+                 sd_bimod = sd(bimodal),
+                 se_bimod = se(bimodal),
+                 n_sites = length(bimodal))
+
+
+
