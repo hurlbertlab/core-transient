@@ -46,12 +46,31 @@ ctPropTaxa = ddply(ctProp,.(taxa, variable),summarise,mean(value))
 
 # Plot proportions by system:
 
-ggplot(data=ctPropSystem, aes(x=system, y=prop, fill=class)) +
-  geom_bar(stat="identity")
+ctPropSystemPlot = ggplot(data=ctPropSystem, aes(x=system, y=prop, fill=class)) +
+  geom_bar(stat="identity") +
+  geom_bar(stat="identity") +
+  scale_fill_manual(values = palette(wes.palette(5,'FantasticFox')),
+                    labels = c('Core','Transient','Other'))+
+  xlab('Environmental System')+
+  ylab('Proportion of sample')+
+  ggtitle(bquote(bold('Proportional distribution of core
+and transient species by system')))+
+  theme(axis.text.x = element_text(size=14, color = 'black', 
+                                   vjust = 1, hjust = .5),
+        axis.text.y = element_text(size=12, color = 'black', hjust = 1),
+        axis.title.x = element_text(size = 18, vjust = -1),
+        axis.title.y = element_text(size = 18, vjust = 1.5),
+        title = element_text(size=16, vjust = 1),
+        legend.title=element_blank(),
+        axis.line = element_line(colour = "black"),
+        panel.background = element_blank(),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        plot.margin = unit(c(2,.5,1.5,.5), "lines"))
 
 # Plot proportions by taxa:
 
-ggplot(data=ctPropTaxa, aes(x=taxa, y=prop, fill=class)) +
+ctPropTaxaPlot = ggplot(data=ctPropTaxa, aes(x=taxa, y=prop, fill=class)) +
   geom_bar(stat="identity") +
   scale_fill_manual(values = palette(wes.palette(5,'FantasticFox')),
                     labels = c('Core','Transient','Other'))+
@@ -72,7 +91,13 @@ transient species by taxanomic group')))+
         panel.grid.minor = element_blank(),
         plot.margin = unit(c(2,.5,1.5,.5), "lines"))
 
- 
+pdf('output/plots/ctPropSystem.pdf', width = 8, height = 8)
+ctPropSystemPlot
+dev.off()
+
+pdf('output/plots/ctPropTaxa.pdf', width = 8, height = 8)
+ctPropTaxaPlot
+dev.off()
 
 
 
