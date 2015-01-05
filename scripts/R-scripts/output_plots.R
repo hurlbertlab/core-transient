@@ -53,21 +53,24 @@ ggplot(data=ctPropSystem, aes(x=system, y=prop, fill=class)) +
 
 ggplot(data=ctPropTaxa, aes(x=taxa, y=prop, fill=class)) +
   geom_bar(stat="identity") +
-  scale_fill_manual(values = palette(wes.palette(5,'FantasticFox')))+
+  scale_fill_manual(values = palette(wes.palette(5,'FantasticFox')),
+                    labels = c('Core','Transient','Other'))+
   xlab('Taxonomic group')+
   ylab('Proportion of sample')+
-  ggtitle(bquote(bold('Proportional distribution of core and transient\nspecies by taxanomic group')))+
-  theme(axis.text.x = element_text(size=14, color = 1, 
+  ggtitle(bquote(bold('Proportional distribution of core and
+transient species by taxanomic group')))+
+  theme(axis.text.x = element_text(size=14, color = 'black', 
                                    angle = 45, vjust = 1, hjust = 1),
-        axis.text.y = element_text(size=12, color = 1, hjust = 1),
+        axis.text.y = element_text(size=12, color = 'black', hjust = 1),
         axis.title.x = element_text(size = 18, vjust = -1),
         axis.title.y = element_text(size = 18, vjust = 1.5),
-        title = element_text(size=18, vjust = 2.5),
+        title = element_text(size=16, vjust = 1),
+        legend.title=element_blank(),
         axis.line = element_line(colour = "black"),
         panel.background = element_blank(),
         panel.grid.major = element_blank(),
         panel.grid.minor = element_blank(),
-        plot.margin = unit(c(1,.5,1.5,.5), "lines"))
+        plot.margin = unit(c(2,.5,1.5,.5), "lines"))
 
  
 
