@@ -1,6 +1,7 @@
 # Libraries:
 
 library(reshape2)
+library(plyr)
 library(ggplot2)
 library(wesanderson)
 
@@ -31,8 +32,19 @@ ct.prop$other = 1 - ct$prop.core - ct$prop.trans
 
 ct.prop = melt(ct.prop, id.vars=c('system','taxa'))
 
-names(ct.prop)[3] = 'class'
+# Calculate the average proportions across sites for system and taxa:
 
+ctPropSystem = ddply(ct.prop,.(system, variable),summarise,mean(value))
+
+  names(ctPropSystem) = c('system','class','prop')
+
+ctPropTaxa = ddply(ct.prop,.(taxa, variable),summarise,mean(value))
+
+  names(ctPropTaxa) = c('taxa','class','prop')
+
+# Plot data:
+
+ggplot(data=ct.prop, aes(x=taxa, y=value, fill=class)) + geom_bar(stat="identity")
 
 
 
