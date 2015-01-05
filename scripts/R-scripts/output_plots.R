@@ -25,26 +25,34 @@ head(modeSummary)
 # Make prop data frame with an "other" field representing neither core nor 
 # transient species:
 
-ct.prop = ctSummary[,c(3:4,9:10)]
-ct.prop$other = 1 - ct$prop.core - ct$prop.trans
+ctProp = ctSummary[,c(3:4,9:10)]
+ctProp$other = 1 - ct$prop.core - ct$prop.trans
 
 # Convert from a wide to long formatted data frame:
 
-ct.prop = melt(ct.prop, id.vars=c('system','taxa'))
+ctProp = melt(ctProp, id.vars=c('system','taxa'))
 
 # Calculate the average proportions across sites for system and taxa:
 
-ctPropSystem = ddply(ct.prop,.(system, variable),summarise,mean(value))
+ctPropSystem = ddply(ctProp,.(system, variable),summarise,mean(value))
 
   names(ctPropSystem) = c('system','class','prop')
 
-ctPropTaxa = ddply(ct.prop,.(taxa, variable),summarise,mean(value))
+ctPropTaxa = ddply(ctProp,.(taxa, variable),summarise,mean(value))
 
   names(ctPropTaxa) = c('taxa','class','prop')
 
-# Plot data:
+# Plot proportions by system:
 
-ggplot(data=ct.prop, aes(x=taxa, y=value, fill=class)) + geom_bar(stat="identity")
+ggplot(data=ctPropSystem, aes(x=system, y=prop, fill=class)) +
+  geom_bar(stat="identity")
+
+# Plot proportions by taxa:
+
+ggplot(data=ctPropTaxa, aes(x=taxa, y=prop, fill=class)) +
+  geom_bar(stat="identity")
+
+
 
 
 
