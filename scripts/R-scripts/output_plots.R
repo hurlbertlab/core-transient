@@ -17,8 +17,33 @@ modeSummary = read.csv('output/tabular_data/ct_mode_summary.csv')
 head(modeSummary)
 
 #----------------------------------------------------------------------------------*
-# ---- Stacked barplot ----
+# ---- Custom themes ----
 #==================================================================================*
+
+# Theme for plot with no background grid:
+
+theme_CT_NoGrid = function(base_size = 12) {
+    theme(
+    axis.text.x = element_text(size=14, color = 'black',vjust = 1, hjust = .5),
+    axis.text.y = element_text(size=12, color = 'black', hjust = 1),
+    axis.title.x = element_text(size = 18, vjust = -1),
+    axis.title.y = element_text(size = 18, vjust = 1.5),
+    title = element_text(size=16, vjust = 1),
+    legend.title=element_blank(),
+    axis.line = element_line(color = 'black'),
+    panel.background = element_blank(),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    plot.margin = unit(c(2,.5,1.5,.5), 'lines'))
+}
+
+#----------------------------------------------------------------------------------*
+# ---- Stacked barplots ----
+#==================================================================================*
+
+#----------------------------------------------------------------------------------*
+# Set-up
+#----------------------------------------------------------------------------------*
 
 #----------------------------------------------------------------------------------*
 # Using proportions at a given site
@@ -55,19 +80,8 @@ ctPropSystemPlot = ggplot(data=ctPropSystem, aes(x=system, y=prop, fill=class)) 
   ylab('Proportion of species')+
   ggtitle(bquote(bold('Proportional distribution of core
 and transient species by system')))+
-  theme(axis.text.x = element_text(size=14, color = 'black', 
-                                   vjust = 1, hjust = .5),
-        axis.text.y = element_text(size=12, color = 'black', hjust = 1),
-        axis.title.x = element_text(size = 18, vjust = -1),
-        axis.title.y = element_text(size = 18, vjust = 1.5),
-        title = element_text(size=16, vjust = 1),
-        legend.title=element_blank(),
-        axis.line = element_line(colour = "black"),
-        panel.background = element_blank(),
-        panel.grid.major = element_blank(),
-        panel.grid.minor = element_blank(),
-        plot.margin = unit(c(2,.5,1.5,.5), "lines"))
-
+  theme_CT_NoGrid() 
+  
 # Plot proportions by taxa:
 
 ctPropTaxaPlot = ggplot(data=ctPropTaxa, aes(x=taxa, y=prop, fill=class)) +
@@ -78,18 +92,8 @@ ctPropTaxaPlot = ggplot(data=ctPropTaxa, aes(x=taxa, y=prop, fill=class)) +
   ylab('Proportion of species')+
   ggtitle(bquote(bold('Proportional distribution of core and
 transient species by taxonomic group')))+
-  theme(axis.text.x = element_text(size=14, color = 'black', 
-                                   angle = 45, vjust = 1, hjust = 1),
-        axis.text.y = element_text(size=12, color = 'black', hjust = 1),
-        axis.title.x = element_text(size = 18, vjust = -1),
-        axis.title.y = element_text(size = 18, vjust = 1.5),
-        title = element_text(size=16, vjust = 1),
-        legend.title=element_blank(),
-        axis.line = element_line(colour = "black"),
-        panel.background = element_blank(),
-        panel.grid.major = element_blank(),
-        panel.grid.minor = element_blank(),
-        plot.margin = unit(c(2,.5,1.5,.5), "lines"))
+  theme_CT_NoGrid() + 
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
 ctPropTaxaPlot
 
@@ -102,17 +106,6 @@ ctPropTaxaPlot
 dev.off()
 
 
-
-
-
-
-
-#----------------------------------------------------------------------------------*
-# Using richness across sites
-#----------------------------------------------------------------------------------*
-
-ct.rich = ctSummary[,c(3:4,7:8)]
-ct.rich$rich.nct = ct$rich.total - ct$rich.core - ct$rich.trans
 
 
 
