@@ -52,7 +52,7 @@ ctPropSystemPlot = ggplot(data=ctPropSystem, aes(x=system, y=prop, fill=class)) 
   scale_fill_manual(values = palette(wes.palette(5,'FantasticFox')),
                     labels = c('Core','Transient','Other'))+
   xlab('Environmental System')+
-  ylab('Proportion of sample')+
+  ylab('Proportion of species')+
   ggtitle(bquote(bold('Proportional distribution of core
 and transient species by system')))+
   theme(axis.text.x = element_text(size=14, color = 'black', 
@@ -75,9 +75,9 @@ ctPropTaxaPlot = ggplot(data=ctPropTaxa, aes(x=taxa, y=prop, fill=class)) +
   scale_fill_manual(values = palette(wes.palette(5,'FantasticFox')),
                     labels = c('Core','Transient','Other'))+
   xlab('Taxonomic group')+
-  ylab('Proportion of sample')+
+  ylab('Proportion of species')+
   ggtitle(bquote(bold('Proportional distribution of core and
-transient species by taxanomic group')))+
+transient species by taxonomic group')))+
   theme(axis.text.x = element_text(size=14, color = 'black', 
                                    angle = 45, vjust = 1, hjust = 1),
         axis.text.y = element_text(size=12, color = 'black', hjust = 1),
@@ -90,6 +90,8 @@ transient species by taxanomic group')))+
         panel.grid.major = element_blank(),
         panel.grid.minor = element_blank(),
         plot.margin = unit(c(2,.5,1.5,.5), "lines"))
+
+ctPropTaxaPlot
 
 pdf('output/plots/ctPropSystem.pdf', width = 8, height = 8)
 ctPropSystemPlot
