@@ -1,9 +1,9 @@
 ###################################################################################*
-# ---- CORE-TRANSIENT SUMMARY DASHBOARD ----
+  # ---- CORE-TRANSIENT TABULAR SUMMARY OUTPUT ----
 ###################################################################################*
-# This file is used as a "dashboard" to observe / produce summary output from core-
-# transient analyses. Output includes summary tables and plots. Functions are
-# located in the core-transient_functions.R source file.
+# This file is used as a "dashboard" to observe / produce tabular summary output 
+# from core-transient analyses. Functions are located in the 
+# core-transient_functions.R source file.
 
 proc.replaceFun(78)
 
