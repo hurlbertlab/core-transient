@@ -131,9 +131,14 @@ write.csv(modeSummary, 'output/tabular_data/ct_mode_summary.csv', row.names = F)
 # ----  Counting the number of individuals per site ----
 #==================================================================================*
 
+# Get summary table file and collect dataset names within the formatted dataset
+# directory:
+
 ct = read.csv('output/tabular_data/core-transient_summary.csv')
-  
+
 filenames <- list.files('formatted_datasets', pattern="*.csv", full.names=TRUE)
+  
+# Function to get the number of individuals for sites in a given dataset:
   
 getCounts = function(i){
     d = read.csv(filenames[i])
@@ -143,6 +148,8 @@ getCounts = function(i){
     return(out)
 }
 
+# Function to calculate individuals per site across datasets:
+  
 countsFun = function(){
   outList = list()
     for(i in 1:length(datasets)){
@@ -151,11 +158,11 @@ countsFun = function(){
   rbind.fill(outList)
 }
   
-nIndividuals = countsFun()
+# Modify the ct table to include count-per-site data:
   
-ct = merge(ct, nIndividuals, all = F)
+ct = merge(ct, countsFun(), all = F)
 
-# ---- Write modified core-transient summary table to file ----
+# Write modified core-transient summary table:
   
 write.csv(ct, 'output/tabular_data/core-transient_summary.csv', row.names = F)
 
