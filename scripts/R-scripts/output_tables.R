@@ -132,54 +132,32 @@ write.csv(modeSummary, 'output/tabular_data/ct_mode_summary.csv', row.names = F)
 #==================================================================================*
 
 ct = read.csv('output/tabular_data/core-transient_summary.csv')
-datasets = unique(ct$dataset)
+  
+filenames <- list.files('formatted_datasets', pattern="*.csv", full.names=TRUE)
   
 getCounts = function(i){
-    dataset = paste('formatted_datasets/dataset_',datasets[i],'.csv', sep ='')
-    d = read.csv(dataset)
+    d = read.csv(filenames[i])
     if (names(d)[5] == 'density') names(d)[5] = 'count'
     d = d[d$count > 0,]
     out = ddply(d, .(site), summarize, nIndividuals = sum(count))
     return(out)
 }
-    
 
+countsFun = function(){
+  outList = list()
+    for(i in 1:length(datasets)){
+        outList[[i]] = getCounts(i)
+    }
+  rbind.fill(outList)
+}
+  
+nIndividuals = countsFun()
+  
+ct = merge(ct, nIndividuals, all = F)
 
-get.outsFun = function(datasets){
-    require(plyr)
-    # For loops run proportional and nTime functions:
-    prop.list = list()  
-    nTime.list = list() 
-    for(i in 1:length(datasets)) prop.list[[i]] = occProp.maker(datasets, i)  
-    for(i in 1:length(datasets)) nTime.list[[i]] = nTime.maker(datasets, i) 
-    # Turn lists into data frames:
-    occProp = rbind.fill(prop.list)
-    nTime =  rbind.fill(nTime.list)
-    # Return list with occProp and nTime frames:
-    out.list = list(occProp, nTime)
-    names(out.list) = c('occProp','nTime')
-    return(out.list)
-  }
-
+# ---- Write modified core-transient summary table to file ----
   
-proc.countsDatasetFun = function(datasetID){
-    # Get the dataset names in the formatted files directory:
-    dataset = paste('formatted_datasets/dataset_',datasetID,'.csv', sep ='')
-    data = read.csv(dataset)
-    # Get new processed data:
-    new.dfs = get.outsFun(dataset)
-    # Bind with previously processed data:
-    occProp = rbind(occProp, new.dfs[[1]])
-    nTime = rbind(nTime, new.dfs[[2]])
-    # Sort by dataset
-    occProp = occProp[order(occProp$dataset),]
-    nTime = nTime[order(nTime$datasetID),]
-    # Write to file:
-    write.csv(occProp, 'output/occProp.csv', row.names = F)
-    write.csv(nTime, 'output/nTime.csv', row.names = F)
-  }
-  
-  
+write.csv(ct, 'output/tabular_data/core-transient_summary.csv', row.names = F)
 
 #----------------------------------------------------------------------------------*
 # ----  Summarizing outputs with site as the sampling unit ----
