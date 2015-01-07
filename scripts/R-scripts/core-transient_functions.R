@@ -230,7 +230,40 @@ ctSummary = function(site, threshold, reps){
 #==================================================================================*
 # NOTE: For these functions to run, occProp, Ntime, and outSummary frames must
 # already be loaded!
-#
+
+#----------------------------------------------------------------------------------*
+# ---- Custom themes ----
+#==================================================================================*
+
+# Theme for plot with no background grid:
+
+theme_CT_NoGrid = function(base_size = 12) {
+  theme(
+    axis.text.x = element_text(size=14, color = 'black',vjust = 1, hjust = .5),
+    axis.text.y = element_text(size=12, color = 'black', hjust = 1),
+    axis.title.x = element_text(size = 18, vjust = -1),
+    axis.title.y = element_text(size = 18, vjust = 1.5),
+    title = element_text(size=16, vjust = 1),
+    legend.title=element_blank(),
+    axis.line = element_line(color = 'black'),
+    panel.background = element_blank(),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    plot.margin = unit(c(2,.5,1.5,.5), 'lines'))
+}
+
+theme_CT_Grid = function(base_size = 12) {
+  theme(axis.text = element_text(size=14, color = 1),
+        axis.title.x = element_text(size = 18, vjust = -1),
+        axis.title.y = element_text(size = 18, vjust = 1),
+        title = element_text(size=18, vjust = -0.5),
+        axis.line = element_line(colour = "black"),
+        panel.background = element_blank(),
+        panel.grid.major = element_line(size = .5, color = 'gray90'),
+        panel.grid.minor = element_line(size = .25, color = 'gray90'),
+        plot.margin = unit(c(0,.5,1.5,.5), "lines"))
+}
+
 #----------------------------------------------------------------------------------*
 # ---- Function to make core-transient histogram  ----
 #==================================================================================*
