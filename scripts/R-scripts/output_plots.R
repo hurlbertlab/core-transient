@@ -347,11 +347,12 @@ dev.off()
 ct = read.csv('output/tabular_data/core-transient_summary.csv')
 ct = ct[ct$taxa!='Plankton'&ct$nIndividual<5E4,]
 
-bimod_by_indiv = ggplot(ct, aes(x = log(nIndividuals), y = bimodal, color = taxa, shape = system)) +
-  ggtitle(bquote(bold('Bimodality of a site by the number of individuals,
-                      taxonomic group, and system'))) +
+bimod_by_indiv = ggplot(ct, aes(x = I(log(nIndividuals)), y = bimodal, color = taxa, shape = system)) +
+  ylab('Bimodality') +
+  xlab('log(Count of individuals)') +
+  ggtitle(bquote(bold('Bimodality of a site by the number of\nindividuals, taxonomic group, and system'))) +
   geom_point(size = 2) + theme_CT_Grid() +
-  theme(title = element_text(size=18, vjust = 2.5),
+  theme(plot.title = element_text(size=18, vjust = 2.5, hjust = .25),
   plot.margin = unit(c(3.5,.5,1.5,.5), "lines"))
 
 pdf('output/plots/bimod_by_indiv.pdf', width = 8, height = 8)
