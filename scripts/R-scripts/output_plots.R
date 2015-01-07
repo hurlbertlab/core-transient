@@ -29,25 +29,17 @@ source('scripts/R-Scripts/core-transient_functions.R')
 # ---- Set-up ----
 #----------------------------------------------------------------------------------*
 
-# Make prop data frame with an "other" field representing neither core nor 
-# transient species:
+props = read.csv('output/tabular_data/summary_by_SysTaxa.csv')
+props = props[,c(1,2,3,5)]
+names(props)[3:4] = c('core','trans')
 
-ctProp = ctSummary[,c(3:4,9:10)]
-ctProp$other = 1 - ct$prop.core - ct$prop.trans
+props$other = 1 - props$core - props$trans
 
-# Convert from a wide to long formatted data frame:
+props = melt(props, id.vars = c('variable','group'))
 
-ctProp = melt(ctProp, id.vars=c('system','taxa'))
+ctPropSystem = props[props$variable == 'system',]
 
-# Calculate the average proportions across sites for system and taxa:
-
-ctPropSystem = ddply(ctProp,.(system, variable),summarise,mean(value))
-
-  names(ctPropSystem) = c('system','class','prop')
-
-ctPropTaxa = ddply(ctProp,.(taxa, variable),summarise,mean(value))
-
-  names(ctPropTaxa) = c('taxa','class','prop')
+ctPropTaxa = props[props$variable == 'taxa',]
 
 #----------------------------------------------------------------------------------*
 # ---- Plotting ----
