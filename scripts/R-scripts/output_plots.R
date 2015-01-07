@@ -1,3 +1,7 @@
+#----------------------------------------------------------------------------------*
+# ---- SET-UP ----
+#==================================================================================*
+
 # Libraries:
 
 library(reshape2)
@@ -13,49 +17,8 @@ nTime = read.csv('output/nTime.csv')
 outSummary = read.csv('data_source_table.csv')
 ctSummary = read.csv('output/tabular_data/core-transient_summary.csv')
 modeSummary = read.csv('output/tabular_data/ct_mode_summary.csv')
-head(modeSummary)
 
-#----------------------------------------------------------------------------------*
-# ---- Functions ----
-#==================================================================================*
-
-# Standard error:
-
-se = function(x) sd(x)/sqrt(length(x))
-
-
-#----------------------------------------------------------------------------------*
-# ---- Custom themes ----
-#==================================================================================*
-
-# Theme for plot with no background grid:
-
-theme_CT_NoGrid = function(base_size = 12) {
-    theme(
-    axis.text.x = element_text(size=14, color = 'black',vjust = 1, hjust = .5),
-    axis.text.y = element_text(size=12, color = 'black', hjust = 1),
-    axis.title.x = element_text(size = 18, vjust = -1),
-    axis.title.y = element_text(size = 18, vjust = 1.5),
-    title = element_text(size=16, vjust = 1),
-    legend.title=element_blank(),
-    axis.line = element_line(color = 'black'),
-    panel.background = element_blank(),
-    panel.grid.major = element_blank(),
-    panel.grid.minor = element_blank(),
-    plot.margin = unit(c(2,.5,1.5,.5), 'lines'))
-}
-
-theme_CT_Grid = function(base_size = 12) {
-theme(axis.text = element_text(size=14, color = 1),
-      axis.title.x = element_text(size = 18, vjust = -1),
-      axis.title.y = element_text(size = 18, vjust = 1),
-      title = element_text(size=18, vjust = -0.5),
-      axis.line = element_line(colour = "black"),
-      panel.background = element_blank(),
-      panel.grid.major = element_line(size = .5, color = 'gray90'),
-      panel.grid.minor = element_line(size = .25, color = 'gray90'),
-      plot.margin = unit(c(0,.5,1.5,.5), "lines"))
-}
+source('scripts/R-Scripts/core-transient_functions.R')
 
 #----------------------------------------------------------------------------------*
 # ---- Stacked barplots ----
