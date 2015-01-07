@@ -82,28 +82,15 @@ dev.off()
 #----------------------------------------------------------------------------------*
 # ---- Core-transient histograms  ----
 #==================================================================================*
-# This script creates a single pdf with all histograms of sites in 
-# which the number of samples is adequate for core-transient analyses. The
-# data loading code at the head of this document must be run prior to executing 
-# this script. It is NOT necessary to to run dataset summary table codes.
-
-# Get core-transient summary table (if not already in environment):
+# This script creates a single pdf with all histograms.
 
 ct = read.csv('output/tabular_data/core-transient_summary.csv')
 
-# Core-transient histogram for a given site and cut-off (example is Eastern Wood):
+# Run a for loop to create plots for each site:
 
-ctHist('d226_ew')
-
-# Run a for loop to create plots for each site (output as list, only runs
-# when the proportion of core sites are < 1):
-
-# Create a vector of sites with < 1 proportion of core species:
-
-# site = ct[ct$prop.core < 1,'site']
 site = ct[,'site']
-
 outPlots = list()
+
 for(i in site){
   tryCatch({
     outPlots[[i]] = ctHist(i)},
