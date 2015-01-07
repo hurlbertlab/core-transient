@@ -25,15 +25,18 @@ source('scripts/R-Scripts/core-transient_functions.R')
 #==================================================================================*
 # Note: Uses the average of the proportions at a given site.
 
-#----------------------------------------------------------------------------------*
-# ---- Set-up ----
-#----------------------------------------------------------------------------------*
-
 props = read.csv('output/tabular_data/summary_by_SysTaxa.csv')
+
+# Get the necessary columns and rename:
+
 props = props[,c(1,2,3,5)]
 names(props)[3:4] = c('core','trans')
 
+# Make an "other" column representing neither core nor transient species: 
+
 props$other = 1 - props$core - props$trans
+
+# Change to long format and rename:
 
 props = melt(props, id.vars = c('variable','group'))
 names(props)[3:4] = c('class','prop')
