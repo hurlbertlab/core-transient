@@ -1,6 +1,9 @@
 ###################################################################################*
-  # ---- CORE-TRANSIENT TABULAR SUMMARY OUTPUT ----
+# ---- CORE-TRANSIENT TABULAR SUMMARY OUTPUT ----
 ###################################################################################*
+  
+source('scripts/R-Scripts/core-transient_functions.R')
+  
 # This file is used as a "dashboard" to observe / produce tabular summary output 
 # from core-transient analyses. Functions are located in the 
 # core-transient_functions.R source file.
@@ -33,13 +36,14 @@ library(grid)
 library(gridExtra)
 library(MASS)
 
-#==================================================================================*
+#----------------------------------------------------------------------------------*
 #  ---- SUMMARY TABLE OUTPUT ----
 #==================================================================================*
 
 #----------------------------------------------------------------------------------*
 # ---- Sampling summary ----
-#----------------------------------------------------------------------------------*
+#==================================================================================*
+  
 
 # Calculate the summary statistics (all summary data with the exception of
 # bimodality across sites for sites that meet our sampling criteria). Input is 
@@ -170,6 +174,8 @@ write.csv(ct, 'output/tabular_data/core-transient_summary.csv', row.names = F)
 # ----  Summarizing outputs with site as the sampling unit ----
 #==================================================================================*
 
+ct = read.csv('output/tabular_data/core-transient_summary.csv')
+  
 propCoreSys = ddply(ct, .(system), summarize, 
                     meanPropCore = mean(prop.core), sePropCore = se(prop.core),
                     meanPropTrans = mean(prop.trans), sePropTrans = se(prop.trans),
