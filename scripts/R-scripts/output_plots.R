@@ -6,7 +6,6 @@ library(ggplot2)
 library(gridExtra)
 library(wesanderson)
 
-
 # Get files:
 
 occProp = read.csv('output/occProp.csv')
@@ -44,6 +43,18 @@ theme_CT_NoGrid = function(base_size = 12) {
     panel.grid.major = element_blank(),
     panel.grid.minor = element_blank(),
     plot.margin = unit(c(2,.5,1.5,.5), 'lines'))
+}
+
+theme_CT_Grid = function(base_size = 12) {
+theme(axis.text = element_text(size=14, color = 1),
+      axis.title.x = element_text(size = 18, vjust = -1),
+      axis.title.y = element_text(size = 18, vjust = 1),
+      title = element_text(size=18, vjust = -0.5),
+      axis.line = element_line(colour = "black"),
+      panel.background = element_blank(),
+      panel.grid.major = element_line(size = .5, color = 'gray90'),
+      panel.grid.minor = element_line(size = .25, color = 'gray90'),
+      plot.margin = unit(c(0,.5,1.5,.5), "lines"))
 }
 
 #----------------------------------------------------------------------------------*
@@ -118,7 +129,7 @@ dev.off()
 #----------------------------------------------------------------------------------*
 # ---- Core-transient histograms  ----
 #==================================================================================*
-# This script (ultimately) creates a single pdf with all histograms of sites in 
+# This script creates a single pdf with all histograms of sites in 
 # which the number of samples is adequate for core-transient analyses. The
 # data loading code at the head of this document must be run prior to executing 
 # this script. It is NOT necessary to to run dataset summary table codes.
@@ -129,7 +140,7 @@ ct = read.csv('output/tabular_data/core-transient_summary.csv')
 
 # Core-transient histogram for a given site and cut-off (example is Eastern Wood):
 
-ct.hist('d226_ew')
+ctHist('d226_ew')
 
 # Run a for loop to create plots for each site (output as list, only runs
 # when the proportion of core sites are < 1):
@@ -139,10 +150,10 @@ ct.hist('d226_ew')
 # site = ct[ct$prop.core < 1,'site']
 site = ct[,'site']
 
-out.plots = list()
+outPlots = list()
 for(i in site){
   tryCatch({
-    out.plots[[i]] = ct.hist(i)},
+    outPlots[[i]] = ctHist(i)},
     error = function(e){
       cat('ERROR for site',site[i],':', conditionMessage(e), '\n')
     })
@@ -152,25 +163,14 @@ for(i in site){
 
 pdf('output/plots/CT_histograms.pdf', 
     width = 6.5, height = 5.5, onefile = T)
-out.plots
+outPlots
 dev.off()
 
-#==================================================================================*
+#----------------------------------------------------------------------------------*
 # ---- SUMMARIZING BY TAXA AND SYSTEM (TERRESTRIAL, AQUATIC, MARINE)  ----
 #==================================================================================*
 
-# Get ct file, replacing site with a numeric vector (just for simplifying):
-
-ct = read.csv('output/tabular_data/core-transient_summary.csv')
-
-ct$site = seq(1, length(ct$site),1)
-
-# Some functions:
-
-
-#----------------------------------------------------------------------------------*
-# ---- Method 2: Considering species observations as the sampling unit ----
-#==================================================================================*
+# Set-up
 
 ct = read.csv('output/tabular_data/core-transient_summary.csv')
 
@@ -190,13 +190,8 @@ ggplot(occSysTaxa, aes(x = nTime, y = occ, color = taxa, shape = system)) +
   xlab('Number of time intervals')+
   ylab('Proportion of occurences')+
   ggtitle('Occurences by time\n(points = species at a given site, n = 16303)')+
-  theme(axis.text = element_text(size=14, color = 1),
-        axis.title.x = element_text(vjust = -1),
-        axis.title.y = element_text(vjust = 1),
-        title = element_text(size=16, vjust = 3),
-        axis.line = element_line(colour = "black"),
-        panel.background = element_blank(),
-        plot.margin = unit(c(1.5,.5,1.5,1), "lines"))
+  theme_CT_NoGrid() + 
+  theme(title = element_text(size=16, vjust = 3))
 
 # How much of the variation at a given site is explained by time (i.e., do sp occurences
 # become more dispersed with increased time samples?)?
@@ -210,13 +205,8 @@ ggplot(ost2, aes(x = nTime, y = dOcc, color = taxa, shape = system)) +
   xlab('Number of time intervals')+
   ylab('Site-level bimodality')+
   ggtitle('Bimodality by time\n(points = sites, n = 539)')+
-  theme(axis.text = element_text(size=14, color = 1),
-        axis.title.x = element_text(vjust = -1),
-        axis.title.y = element_text(vjust = 1),
-        title = element_text(size=16, vjust = 3),
-        axis.line = element_line(colour = "black"),
-        panel.background = element_blank(),
-        plot.margin = unit(c(1.5,.5,1.5,1), "lines"))
+  theme_CT_NoGrid() + 
+  theme(title = element_text(size=16, vjust = 3))
 
 # How much can the existence of core or transient species be explained by the
 # number of time intervals?
@@ -244,13 +234,8 @@ ggplot(ct, aes(x = nTime, y = bimodal, color = taxa, shape = system)) +
   xlab('Number of time intervals')+
   ylab('Mean absolute difference between\n0.5 and proportional occurence')+
   ggtitle('Variation in occurences by time\n(points = sites, n = 539)')+
-  theme(axis.text = element_text(size=14, color = 1),
-        axis.title.x = element_text(vjust = -1),
-        axis.title.y = element_text(vjust = 1),
-        title = element_text(size=16, vjust = 3),
-        axis.line = element_line(colour = "black"),
-        panel.background = element_blank(),
-        plot.margin = unit(c(1.5,.5,1.5,1), "lines"))
+  theme_CT_NoGrid() + 
+  theme(title = element_text(size=16, vjust = 3))
 
 #----------------------------------------------------------------------------------*
 # ---- Plotting bimodality by system and taxa ----
@@ -285,15 +270,7 @@ bimodSys_plot = ggplot(bimodSys, aes(x = system, y = mean_bimod)) +
   xlab('System')+
   ylab('Bimodality')+
   ggtitle(bquote(atop(bold('Bimodality by system')))) +
-  theme(axis.text = element_text(size=14, color = 1),
-        axis.title.x = element_text(size = 18, vjust = -1),
-        axis.title.y = element_text(size = 18, vjust = 1),
-        title = element_text(size=18, vjust = -0.5),
-        axis.line = element_line(colour = "black"),
-        panel.background = element_blank(),
-        panel.grid.major = element_line(size = .5, color = 'gray90'),
-        panel.grid.minor = element_line(size = .25, color = 'gray90'),
-        plot.margin = unit(c(0,.5,1.5,.5), "lines"))
+  theme_CT_Grid()
 
 pdf('output/plots/bimodality_by_system.pdf', width = 7, height = 6)
 bimodSys_plot
@@ -314,18 +291,8 @@ bimodTaxa_plot = ggplot(bimodTaxa, aes(x = taxa, y = mean_bimod)) +
   xlab('Taxonomic group')+
   ylab('Bimodality')+
   ggtitle(bquote(bold('Bimodality by taxanomic group')))+
-  theme(axis.text.x = element_text(size=14, color = 1, 
-                                   angle = 45, vjust = 1, hjust = 1),
-        axis.text.y = element_text(size=12, color = 1, hjust = 1),
-        axis.title.x = element_text(size = 18, vjust = -1),
-        axis.title.y = element_text(size = 18, vjust = 1.5),
-        title = element_text(size=18, vjust = 2.5),
-        axis.line = element_line(colour = "black"),
-        panel.background = element_blank(),
-        panel.grid.major = element_line(size = .5, color = 'gray90'),
-        panel.grid.minor = element_line(size = .25, color = 'gray90'),
-        plot.margin = unit(c(1,.5,1.5,.5), "lines"))
-
+  theme_CT_Grid()
+  
 pdf('output/plots/bimodality_by_taxa.pdf', width = 7, height = 6.5)
 bimodTaxa_plot
 dev.off()
@@ -390,16 +357,10 @@ ctSys_plot = ggplot(propCTSys, aes(x = system, y = mean, color = ct)) +
   ylab('Proportion of species')+
   ggtitle(bquote(bold('Proportion of core and transient
                       species by system')))+
-  theme(axis.text.x = element_text(size=14, color = 1, 
-                                   vjust = 1, hjust = 1),
+  theme_CT_Grid()+
+  theme(axis.text.x = element_text(size=14, color = 1, vjust = 1, hjust = 1),
         axis.text.y = element_text(size=12, color = 1, hjust = 1),
-        axis.title.x = element_text(size = 18, vjust = -1),
-        axis.title.y = element_text(size = 18, vjust = 1.5),
-        title = element_text(size=18, vjust = 2.5),
-        axis.line = element_line(colour = "black"),
-        panel.background = element_blank(),
-        panel.grid.major = element_line(size = .5, color = 'gray90'),
-        panel.grid.minor = element_line(size = .25, color = 'gray90'),
+        title = element_text(vjust = 2.5),
         plot.margin = unit(c(2.5,.5,1.5,.5), "lines"))
 
 pdf('output/plots/ct_by_system.pdf', width = 7, height = 7)
@@ -422,30 +383,19 @@ ctTaxa_plot = ggplot(propCTTaxa, aes(x = taxa, y = mean, color = ct)) +
                             bquote(atop('Mammal','n = 19')),
                             bquote(atop('Plankton','n = 8')), 
                             bquote(atop('Plant','n = 51')))) +
-  #   ylim(0,1) +
   xlab('Taxonomic group')+
   ylab('Proportion of species')+
   ggtitle(bquote(bold('Proportion of core and transient
                       species by taxonomic group')))+
+  theme_CT_Grid()+
   theme(axis.text.x = element_text(size=10, color = 1, 
                                    angle = 45, vjust = 1, hjust = 1),
         axis.text.y = element_text(size=12, color = 1, hjust = 1),
         axis.title.x = element_text(size = 18, vjust = -1),
         axis.title.y = element_text(size = 18, vjust = 1.5),
         title = element_text(size=18, vjust = 2.5),
-        axis.line = element_line(colour = "black"),
-        panel.background = element_blank(),
-        panel.grid.major = element_line(size = .5, color = 'gray90'),
-        panel.grid.minor = element_line(size = .25, color = 'gray90'),
         plot.margin = unit(c(3.5,.5,1.5,.5), "lines"))
 
 pdf('output/plots/ct_by_taxa.pdf', width = 8, height = 8)
 ctTaxa_plot
 dev.off()
-
-
-
-
-
-
-
