@@ -36,18 +36,12 @@ names(props)[3:4] = c('core','trans')
 props$other = 1 - props$core - props$trans
 
 props = melt(props, id.vars = c('variable','group'))
+names(props)[3:4] = c('class','prop')
 
-ctPropSystem = props[props$variable == 'system',]
+# Plot by system:
 
-ctPropTaxa = props[props$variable == 'taxa',]
-
-#----------------------------------------------------------------------------------*
-# ---- Plotting ----
-#----------------------------------------------------------------------------------*
-
-# By system:
-
-ctPropSystemPlot = ggplot(data=ctPropSystem, aes(x=system, y=prop, fill=class)) +
+ctPropSystemPlot = ggplot(data=props[props$variable == 'system',],
+  aes(x=group, y=prop, fill=class)) +
   geom_bar(stat="identity") +
   geom_bar(stat="identity") +
   scale_fill_manual(values = palette(wes.palette(5,'FantasticFox')),
@@ -58,9 +52,10 @@ ctPropSystemPlot = ggplot(data=ctPropSystem, aes(x=system, y=prop, fill=class)) 
 and transient species by system')))+
   theme_CT_NoGrid() 
   
-# By taxa:
+# Plot by taxa:
 
-ctPropTaxaPlot = ggplot(data=ctPropTaxa, aes(x=taxa, y=prop, fill=class)) +
+ctPropTaxaPlot = ggplot(data=props[props$variable == 'taxa',],
+  aes(x=group, y=prop, fill=class)) +
   geom_bar(stat="identity") +
   scale_fill_manual(values = palette(wes.palette(5,'FantasticFox')),
                     labels = c('Core','Transient','Other'))+
