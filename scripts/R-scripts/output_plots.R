@@ -339,3 +339,24 @@ ctTaxa_plot = ggplot(propCTTaxa, aes(x = taxa, y = mean, color = ct)) +
 pdf('output/plots/ct_by_taxa.pdf', width = 8, height = 8)
 ctTaxa_plot
 dev.off()
+
+#----------------------------------------------------------------------------------*
+# ---- Plotting bimodality by the number of individuals at a site ----
+#----------------------------------------------------------------------------------*
+
+ct = read.csv('output/tabular_data/core-transient_summary.csv')
+ct = ct[ct$taxa!='Plankton'&ct$nIndividual<5E4,]
+
+ggplot(ct, aes(x = nIndividuals, y = bimodal, color = taxa, shape = system)) +
+  geom_point(size = 2) + theme_CT_Grid()
+
+summary(lm(bimodal~nIndividuals, data = ct))
+
+summary(lm(bimodal~nIndividuals*taxa, data = ct))
+
+summary(lm(bimodal~nIndividuals+taxa+system, data = ct))
+
+summary(lm(bimodal~nIndividuals*taxa+system, data = ct))
+
+
+
