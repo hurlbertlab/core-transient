@@ -87,3 +87,8 @@ head(d1)
 d210 = d1[,c(5,1,3,2,4)]
 head(d210)
 str(d210)
+
+# Write cleaned dataset to main file
+setwd('C:/Users/auriemma/core-transient//formatted_datasets')
+
+write.csv(d210, 'dataset_210.csv', row.names = F)
