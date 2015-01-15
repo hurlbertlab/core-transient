@@ -13,27 +13,30 @@ str(d)
 
 # Site data
 site = d$SampleID
+unique(site)
 summary(site)
 length(site)
 table(site)
+length(unique(site))
 
-#Remove samples with sample sizes less than 30
-  # NEED to do this
-site.df= data.frame(table(site))
-site.df1 = data.frame(table(d$SampleID))
-head(site.df1)
+# Listing sites by number of rows present in dataset
 
-head(d)
-head(site.df)
-site1 = subset(site,?????
-               
+library(plyr)
+ex = ddply(d, .(SampleID), 'nrow')
+head(ex)
+ex2 = ex[order(ex$nrow),]
+head(ex2)
+head(ex2, 40)
+summary(ex2)
+
+
 # Species check
 
 species = d$Species
 length(species)              
 unique(species)
 
-# Remove unspecified species (Low taxonomic resolution, lowest accepted is Family)
+# Remove unspecified species (Ones of low taxonomic resolution, lowest accepted is Family)
 remove_spp = c('Copepoda','Gastropoda','Decapoda','Amphipoda','Ostracoda','Cnidaria','Anthozoa','Echinodermata','Nematoda','Hydrozoa','Nudibranchia','Bryozoa','Mollusca','Crustacea','Cephalopoda','Scyphozoa','Pisces','Porifera','Annelida','Chaetognatha','Bivalvia','Octopoda','Isopoda','Ctenophora','Insecta','Scaphopoda','Zoanthidea','Ophiurida')
 length(remove_spp)
 species = species[!species%in%remove_spp]
