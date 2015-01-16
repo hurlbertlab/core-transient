@@ -86,8 +86,8 @@ length(unique(d$site))
 ddply(d, .(site), nrow)
 
 # Hmmmm ... it seems the scale of site is off (and a conversation with
-# Sevilleta confirmed this). What if we merged all of the site columns?
-# Use paste to merge:
+# Sevilleta confirmed this). What if we concatenated all of the site columns?
+# Use paste to concatenate:
 
 site = paste(d$site, d$block, d$treatment, d$plot, d$quad, sep = '')
 
@@ -109,6 +109,35 @@ head(siteTable[order(siteTable$V1),],10)
 # Lot's of sites with few records! Let's explore further:
 
 summary(siteTable)
+
+# Let's try concatenating all but the quad field and explore the output:
+
+site = paste(d$site, d$block, d$treatment, d$plot, sep = '')
+
+length(unique(site))
+
+siteTable = ddply(data.frame(site), .(site), nrow)
+
+head(siteTable[order(siteTable$V1),],10)
+
+summary(siteTable)
+
+# For all but the first and second sites, these sample sizes are adequate.
+# Add to reduced dataframe:
+
+d1 = d[,-c(2:5)]
+
+d1$site = site
+
+head(d1)
+
+d = d1
+
+#-------------------------------------------------------------------------------*
+# ---- EXPLORE AND FORMAT SPECIES DATA ----
+#===============================================================================*
+
+
 
 # Subset to records > 0
 
