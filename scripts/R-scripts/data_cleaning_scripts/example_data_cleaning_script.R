@@ -224,53 +224,73 @@ head(d)
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT TIME DATA ----
 #===============================================================================*
+# Here, we need to modify the dates of sampling to decimal years. To do so, we 
+# we need to be aware of the temporal grain of the analysis.
 
-# Explore site data:
+# Let's look at how the seasons are distributed by extracting just the 
+# season (not year data):
 
-site = paste(d$site, d$block, d$treatment, d$plot, d$quad, sep ='')
-length(site)
-length(unique(site))
-table(site)
-# Coarser scale sites removing d$quad
-site = paste(d$site, d$block, d$treatment, d$plot, sep ='')
-
-# Subsetting data for removing 'NA' and site C3C1 due to lack of sample size
-
-site = subset(site, site!= 'C3C1' & site != 'NANANANA')
-length(site)
-table(site)
-
-# Add site column to dataset
-
-d$site = paste(d$site, d$block, d$treatment, d$plot, sep ='')
-d1 = subset(d, site!= 'C3C1' & site != 'NANANANA')
-head(d1)
-
-#Remove unnecessary columns
-
-d = d1[,c(3,9,10,12,15)]
 head(d)
 
-# Explore species
+season = str_sub(d$season, end = -5)
 
-length(unique(d$species))
-unique(d$species)
+levels(factor(season))
 
-# Subset out unwanted species
+# Okay we can see that the sampling is divided into fall and spring. Let's 
+# just turn those into decimal years:
 
-species = d$species
-badspec = c('DEAD', 'seed', '<NA>', 'seeds2', 'seeds1')
-species = species[!species%in%badspec]
-#instead of long way:
-species = subset(species, species!= 'DEAD' & species!= 'seed'& species!= '<NA>' & species!= 'seeds2', species!= 'seeds1')
-length(species)
-d1 = d[!d$species%in%badspec,]
-dim(d1)
-head(d1)
-unique(d1$species)
-d = na.omit(d1)
-dim(d)
+season = ifelse(season == 'SPRING',.25, .75)
+
+summary(season)
+
+# Now, let's extract year from the date (we could easily do this using
+# the str_sub method as well, but this is more universal).
+# First, make the date into an R date object:
+
+class(d$record_record_date)
+
+date = strptime(d$record_record_date, '%m/%d/%Y')
+
+class(date)
+
+head(date)
+
+# It worked! Now extract year:
+
+year = as.numeric(format(date, '%Y'))
+
+# Add the decimal year and year vectors:
+
+d$year = year + season 
+
 head(d)
+
+# Now let's clean up by removing the other date columns:
+
+d1 = d[,-c(2,5)]
+
+head(d1)
+
+summary(d1)
+
+# A couple of years are listed as NA. Let's remove them:
+
+d1 = na.omit(d1)
+
+summary(d1)
+
+# Everything looks good, so let's call it d again
+
+d = d1
+
+# !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE DATA WERE MODIFIED!
+
+#-------------------------------------------------------------------------------*
+# ---- MAKE DATA FRAME OF COUNT BY SITES, SPECIES, AND YEAR ----
+#===============================================================================*
+
+head(date)
+year2 = as.numeric(format(date, '%Y'))
 
 # Time assignment
 
@@ -284,7 +304,7 @@ substr('hello_world',1,5)
 str_sub('hello_world',-5)
 ?str_sub
 
-year = str_sub(d$season, -4)
+year = str_sub(d$season, end = -4)
 head(year)
 year = as.numeric(year)
 head(year)
