@@ -122,8 +122,8 @@ head(siteTable[order(siteTable$V1),],10)
 
 summary(siteTable)
 
-# For all but the first and second sites, these sample sizes are adequate.
-# Add to reduced dataframe:
+# For all but the first site (and perhaps the second), these sample sizes are 
+# adequate. Add to reduced dataframe:
 
 d1 = d[,-c(2:5)]
 
@@ -131,13 +131,73 @@ d1$site = site
 
 head(d1)
 
+# Now let's remove the site with the very low sample size:
+
+head(siteTable[order(siteTable$V1),],10)
+
+d1 = d1[!d1$site %in% 'C3C1',]
+
+head(d1)
+
 d = d1
+
+# !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE DATA WERE MODIFIED!
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SPECIES DATA ----
 #===============================================================================*
+# Here, your primary goal is to ensure that all of your species are valid. To do
+# so, you need to look at the list of unique species very carefully. Avoid being
+# too liberal in interpretation, if you notice an entry that MIGHT be a problem, 
+# but you can't say with certainty, create an issue on GitHub.
 
+sp = d$species
 
+levels(sp) # Note: You can also use unique(sp) here.
+
+# There first thing that I notice is that there are lower and upper case
+# entries. Because R is case-sensitive, this will be coded as separate species.
+# Modify this prior to continuing:
+
+d$species = toupper(d$species)
+
+# Let's explore whether there was a difference:
+
+length(unique(d$species))
+
+length(unique(sp))
+
+# We see that almost 70 species were the result of upper and lower case!
+# Make a new species vector (factor ensures that it is coded as a factor
+# rather than character and removes any unused levels) 
+# and continue exploring:
+
+sp = factor(d$species)
+
+levels(sp)
+
+# There are a number of records that can be removed. There are actually more than
+# this in the example dataset, this should be posted as an issue on GitHub, but
+# we will continue with the example:
+
+bad_sp = c('', 'DEAD','SEED','SEED1','SEED2')
+
+d1 = d[!d$species %in% bad_sp,]
+
+head(d1)
+
+summary(d1)
+
+# Having checked through the results, we can now reassign the dataset as d:
+
+d = d1
+
+# !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE DATA WERE MODIFIED!
+
+#-------------------------------------------------------------------------------*
+# ---- EXPLORE AND FORMAT COUNT DATA ----
+#===============================================================================*
+# 
 
 # Subset to records > 0
 
