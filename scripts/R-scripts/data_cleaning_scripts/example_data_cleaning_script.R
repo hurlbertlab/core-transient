@@ -46,13 +46,17 @@ head(d)
 
 head(d, 10)
 
-# Here, we can see that there are some fields that we won't use. Remove them:
+# Here, we can see that there are some fields that we won't use. Let's remove
+# them, note that I've given a new name here "d1", this is to ensure that
+# we don't have to go back to square 1 if we've miscoded anything.
 
 names(d)
 
 d1 = d[,-c(1,2,8,11,13,14)]
 
 head(d1)
+
+# Because all (and only) the fields we want are present, we can re-assign d1:
 
 d = d1
 
@@ -65,6 +69,46 @@ summary(d)
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SITE DATA ----
 #===============================================================================*
+
+# Reminder of the dataset:
+
+head(d)
+
+# We can see that sites are broken up into (potentially) 5 fields. Let's explore
+# whether the "site" field itself suffices:
+
+# How many sites are there?
+
+length(unique(d$site))
+
+# How many records are there per site?
+
+ddply(d, .(site), nrow)
+
+# Hmmmm ... it seems the scale of site is off (and a conversation with
+# Sevilleta confirmed this). What if we merged all of the site columns?
+# Use paste to merge:
+
+site = paste(d$site, d$block, d$treatment, d$plot, d$quad, sep = '')
+
+head(site)
+
+length(unique(site))
+
+# Now we have quite a few sites, how many records are there per site?
+# Assign a name, because it's going to be super long:
+
+siteTable = ddply(data.frame(site), .(site), nrow)
+
+head(siteTable)
+
+# Sort the table to see the fewest number of records per site:
+
+head(siteTable[order(siteTable$V1),],10)
+
+# Lot's of sites with few records! Let's explore further:
+
+summary(siteTable)
 
 # Subset to records > 0
 
