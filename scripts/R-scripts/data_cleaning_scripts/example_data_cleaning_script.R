@@ -197,11 +197,33 @@ d = d1
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT COUNT DATA ----
 #===============================================================================*
-# 
+# Next, we need to explore the count records. A good first pass is to remove 
+# zero counts and NA's:
+
+summary(d)
 
 # Subset to records > 0
 
-d = d[d$cover>0,]
+d1 = d[d$cover>0,]
+
+summary(d1)
+
+# Remove NA's:
+
+d = na.omit(d1)
+
+# Let's change the cover column to count. Make sure to write in the data summary
+# table the type of observed count.
+
+names(d)[4] = 'count'
+
+head(d)
+
+# !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE DATA WERE MODIFIED!
+
+#-------------------------------------------------------------------------------*
+# ---- EXPLORE AND FORMAT TIME DATA ----
+#===============================================================================*
 
 # Explore site data:
 
