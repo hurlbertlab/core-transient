@@ -22,6 +22,9 @@ d = read.csv('raw_datasets/dataset_223.csv')
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE THE DATASET ----
 #===============================================================================*
+# Here, you are predominantly interested in getting to know the dataset,
+# what the fields represent and determining which fields are relavent. Do 
+# this carefully, making notes on a piece of scratch paper.
 
 # View field names:
 
@@ -57,8 +60,11 @@ d = d1
 
 summary(d)
 
+# !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE DATA WERE MODIFIED!
 
-
+#-------------------------------------------------------------------------------*
+# ---- EXPLORE AND FORMAT SITE DATA ----
+#===============================================================================*
 
 # Subset to records > 0
 
