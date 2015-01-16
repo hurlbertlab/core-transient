@@ -288,76 +288,60 @@ d = d1
 #-------------------------------------------------------------------------------*
 # ---- MAKE DATA FRAME OF COUNT BY SITES, SPECIES, AND YEAR ----
 #===============================================================================*
+# Now we will make the final formatted dataset, add a datasetID field, check for
+# errors, and remove records that can't be used for our purposes.
 
-head(date)
-year2 = as.numeric(format(date, '%Y'))
+# First, lets add the datasetID:
 
-# Time assignment
+d$datasetID = rep(223,nrow(d))
 
-str(d)
-unique(d$season)
+d1 = ddply(d,.(datasetID, site, year, species), summarize, count = max(count))
 
-#Substringing year
-
-library(stringr)
-substr('hello_world',1,5)
-str_sub('hello_world',-5)
-?str_sub
-
-year = str_sub(d$season, end = -4)
-head(year)
-year = as.numeric(year)
-head(year)
-
-# For FALL and SPRING vectors
-
-season = str_sub(d$season, end = -5)
-head(season)
-tail(season)
-
-# Putting year + season together
-
-season1 = ifelse(season == 'SPRING',.25,.75)
-str(season1)
-summary(season1)
-year = year + season1
-head(year)
-
-# Extracting date METHOD 2 making date objects
-
-head(d)
-date = strptime(d$record_record_date, '%m/%d/%Y')
-head(date)
-year2 = as.numeric(format(date, '%Y'))
-head(year2)
-month = as.numeric(format(date, '%m'))
-head(month)
-unique(month)
-quarter = ifelse(month >= 9,.75,.25)
-summary(quarter)
-head(quarter)
-
-d$year = year
-head(d)
-d1 = d[,-c(2,5)]
 head(d1)
+dim(d1)
+summary(d1)
 
-# Count 
+# Let's change site to a factor, so we can explore it further:
 
-library(plyr)
-d = ddply(d1,.(site, year, species), summarize, count = max(cover))
+d1$site = factor(d1$site)
+
+summary(d1)
+
+# Now let's check and make sure each site has at least 10 species:
+
+t1 = ddply(d1, .(site), summarize,richness = length(unique(species)))
+
+head(t1[order(t1$richness),])
+
+# All of our sites pass the richness test!
+
+# Now let's check whether each site has at least 5 time samples.
+
+t1 = ddply(d1, .(site), summarize, nT = length(unique(factor(year))))
+
+head(t1[order(t1$nT),])
+
+# Three sites need to be removed!
+
+bad_sites = c('G1C1','G1R4','G2C2')
+
+d = d1[!d1$site %in% bad_sites,]
+
+# Look at summaries again:
+
 head(d)
-dim(d)
+
 summary(d)
 
-# Dataset ID assignment
-dim(d)
-d$datasetID = rep(223,length(d[,1]))
-head(d)
-d = d[,c(5,1,3,2,4)]
-head(d)
-names(d)[1] = 'datasetID'
+# Everything looks great!
 
-# Writing dataframe to main file
+# !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE DATA WERE MODIFIED!
 
-write.csv(d, "formatted_datasets/dataset_223.csv",row.names = F)
+#-------------------------------------------------------------------------------*
+# ---- WRITE DATA FRAME TO FORMATTED DATASETS ----
+#===============================================================================*
+
+write.csv(d, "formatted_datasets/dataset_223.csv", row.names = F)
+
+# !GIT-ADD-COMMIT-PUSH BOTH YOUR COMPLETED SCRIPT AND THE NEW FORMATTED DATASET!
+
