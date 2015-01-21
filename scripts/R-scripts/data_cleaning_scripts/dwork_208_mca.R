@@ -1,10 +1,12 @@
 # Formatting dataset 208: Landis long-term insect database
 
-# Get data
+# Get data and open packages
 
 getwd()
 setwd('c:/Users/auriemma/core-transient/raw_datasets')
 d = read.csv('dataset_208.csv')
+library(plyr)
+library(stringr)
 
 # Exploring dataset
 
@@ -24,8 +26,10 @@ head(d1,10)
 d = d1
 summary(d)
 
+#==============================================================================
 # SPECIES column
 
+  #Uppercase all species to remove any capitalization errors
 d$species = toupper(d$species)
 sp = d$species
 unique(sp)
@@ -38,7 +42,9 @@ unique(d1$species)
 head(d1)
 d = d1
 
+#=============================================================================
 # COUNT column
+
 head(d)
 summary(d)
 str(d$adults)
@@ -77,5 +83,35 @@ d$count = as.numeric(d$count1)
 str(d)
 d = d[,-c(7,8)]
 head(d)
+
+#==============================================================================
+# YEAR column
+
+year = d$sample_record_date
+head(year)
+class(year)
+
+  # Make into date object
+year1 = strptime(d$sample_record_date, '%Y-%m-%d')
+class(year1)
+head(year1)
+
+  # Extract year
+year = as.numeric(format(year1,'%Y'))
+head(year)
+tail(year)
+class(year)
+
+  # Add year column to dataset and remove old date column
+d$year = year
+head(d)
+tail(d)
+unique(d$sample_record_date)
+d = d[,-c(1)]
+head(d)
+
+#================================================================================
+# 
+
 
 
