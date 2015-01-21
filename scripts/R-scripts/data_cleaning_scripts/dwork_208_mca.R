@@ -42,10 +42,40 @@ d = d1
 head(d)
 summary(d)
 str(d$adults)
+  
+  # Create separate count vector
+count = d$adults
+head(count)
+str(count)
+  
+  # Make all values of 0 and blanks 'NA'
+count[count == 0] = NA
+head(count)
+summary(count)
+count[count == ""] = NA
+summary(count)
 
-  # Change adults row to numeric
-d1 = d
+  # Add column to dataset and check if all data lines up correctly
+d1$count = count
+tail(d1,100)
+d1[500:700,]
+d1[1300:1600,]
+d1[12334:12563,]
+
+  # Remove NA's and 'adults' column
+str(d1)
+d1 = na.omit(d1)
 head(d1)
+d = d1[,-c(6)]
+head(d,100)
 
-# Removing rows with count of 0
-d1 = d[d$adults>0,]
+  # Make count column numeric values
+d$count1 = as.character(d$count)
+head(d)
+str(d)
+d$count = as.numeric(d$count1)
+str(d)
+d = d[,-c(7,8)]
+head(d)
+
+
