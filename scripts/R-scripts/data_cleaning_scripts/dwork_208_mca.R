@@ -148,4 +148,10 @@ d1$date = str_sub(d1$date, end = -4)
 head(d1)
 
   #Check number of records per month
+monthly = ddply(d1, .(date), nrow)
+head(monthly[order(monthly$V1),], 10)
+  
+  #Sufficient sample size for each month, lowest is 24 records in one month
+  #Need to convert to decimal years
+
 
