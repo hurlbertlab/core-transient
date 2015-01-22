@@ -219,4 +219,7 @@ head(d)
 
 #===========================================================================
 # SAVE and WRITE FILE
-
+getwd()
+setwd('C:/Users/auriemma/core-transient/')
+list.files()
+write.csv(d, 'formatted_datasets/dataset_208.csv', row.names = F)
