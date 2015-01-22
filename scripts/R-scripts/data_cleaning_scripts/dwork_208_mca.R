@@ -103,7 +103,7 @@ d1[12334:12563,]
 str(d1)
 d1 = na.omit(d1)
 head(d1)
-d = d1[,-c(6)]
+d = d[,-c(2)]
 head(d,100)
 
   # Make count column numeric values
@@ -112,8 +112,6 @@ head(d)
 str(d)
 d$count = as.numeric(d$count1)
 str(d)
-d = d[,-c(6)]
-head(d)
 
 #==============================================================================
 # YEAR column
@@ -153,5 +151,72 @@ head(monthly[order(monthly$V1),], 10)
   
   #Sufficient sample size for each month, lowest is 24 records in one month
   #Need to convert to decimal years
+  #Separate year and month
+head(date)
+month = str_sub(date, -2)
+head(month)
+year = str_sub(date, end = 4)
+head(year)
+month = as.numeric(month)
+year = as.numeric(year)
 
+  #Decimal year conversion
+month = month/12
+unique(month)
+
+  #Paste together month and year to give decimal year column
+head(d)
+head(d1)
+d1$year_month = year+month
+
+  #Check to see if all lined up
+head(d1)
+summary(d1)
+d1$year_month[12333:12452]
+
+  #switch dataset d1 back to d
+d = d1
+head(d)
+
+  #Remove old date column
+d = d[,-c(5)]
+head(d)
+names(d)[4] = 'year'
+#=================================================================================
+# Finalization of data cleaning, adding of Dataset ID, and checking for error
+  # Add datasetID column
+d$datasetID = rep(208, nrow(d))
+head(d)  
+
+  # Maximum count per site per time period
+d1 = ddply(d, .(datasetID, site, year, species), summarize, count = max(count))
+head(d1)
+dim(d1)
+class(d1$site)  
+  
+  # Change site to factor
+d1$site = factor(d1$site)
+head(d1)
+
+  # Test for each site to have at least 10 different species
+test1 = ddply(d1, .(site), summarize, richness = length(unique(species)))
+head(test1[order(test1$richness),],20)
+
+  # Good, all sites have at least 17 species
+  # Test for sites that have at sufficient number time samples
+test2 = ddply(d1, .(site), summarize, ntime = length(unique(factor(year))))
+head(test2[order(test2$ntime),],20)
+
+  # Passed this test, all sites have at least 92 time samples
+  # No sites removed
+
+head(d1)
+summary(d1)
+
+  # Organize columns
+d = d1[,c(1,2,4,3,5)]
+head(d)
+
+#===========================================================================
+# SAVE and WRITE FILE
 
