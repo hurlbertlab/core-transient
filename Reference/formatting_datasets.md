@@ -65,11 +65,11 @@ Below are the steps that you should take when exploring and formatting datasets.
 
 ### datasetID:
 
-	Goal: Add a column that repeats the name of the dataset.
+	* Goal: Add a column that repeats the name of the dataset.
 
-	DatasetID’s are available from the dataset_summary_table. This must be the first column of your formatted dataset. To do so, you simply use the rep command in the base package and tell it to repeat the value for the number of rows of the data frame. Note: example_df is the unformatted dataset being prepared for analysis.
+	* DatasetID’s are available from the dataset_summary_table. This must be the first column of your formatted dataset. To do so, you simply use the rep command in the base package and tell it to repeat the value for the number of rows of the data frame. Note: example_df is the unformatted dataset being prepared for analysis.
 
-	datasetID = rep(01, nrow(example_df))
+	* datasetID = rep(01, nrow(example_df))
 
 ### site:
 
