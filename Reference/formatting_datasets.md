@@ -83,7 +83,9 @@ Below are the steps that you should take when exploring and formatting datasets.
 
 *  1. Substring the plot information by from the first to the last plot character. The following code extracts all characters from the first to the 15th within the site field. This is ONLY to be used is the plot information contains the same number of characters!
 
-	`site1 = substr(example_df$site, 1, 15)`
+	```
+	site1 = substr(example_df$site, 1, 15)
+	```
 
 Note: If the field is not a character field, you can convert it on the fly using:
 
@@ -91,7 +93,8 @@ Note: If the field is not a character field, you can convert it on the fly using
 
 *  2. Substring the plot information by removing the last characters in a field. This method is valid if the number characters that make up the true site field are not the same across sites but there is an equal number of characters that need to be removed. To do so, the easiest way is to use the str_sub function in Hadley Wickham’s **stringr** package (though this can be easily accomplished by writing your own function in base).
 
-	```require(stringr)
+	```
+	require(stringr)
 	
 	x = “hello world”
 	
@@ -102,7 +105,8 @@ Note: If the field is not a character field, you can convert it on the fly using
 
 _**Separating a field to extract site information:**_ It is also often necessary to separate the site field by some common character (such as, in the example below “_”). This is done using the transform and colsplit functions. Colsplit is located in Hadley Wickham’s package **reshape2**. The output of this function is a multiple field dataset containing the original data (field 1) and a column for each split. In this case, the second column contains the site information, so using “[,2]” returns a vector with just the relevant site information.
 
-	```require(reshape2)
+	```
+	require(reshape2)
 
 	x = 'Treatment1PlotB_1927'
 
@@ -126,7 +130,6 @@ Goal: Subset dataset to unique species records. It is occasionally necessary to 
 _**Subsetting a dataset to valid species observations:**_ There are several methods for removing problem records; here are a few examples.
 
 	```
-
 	# Removing NA’s:
 
 	example_df1 = na.omit(example_df)
@@ -144,7 +147,6 @@ _**Subsetting a dataset to valid species observations:**_ There are several meth
 	bad_recs = c('Bare_Ground', 'bad2', 'bad3')
 	
 	example_df1 = example_df[!example_df$species %in% bad_recs]
-	
 	```
 
 ### year:
@@ -154,7 +156,6 @@ Goal: Create a time column. The two challenges that may be associated with this 
 _**Extracting year from a date object:**_ Convert the date column to an R formatted date (in this case pretending that our unformatted dataset contains a column called record_date):
 
 	```
-
 	date = strptime(example_df $record_date, '%m/ %d/ %y')
 	
 	Add a sampling year line (summarize by year):
