@@ -173,19 +173,19 @@ _**Extracting year from a date object:**_ Convert the date column to an R format
 
 ## SECTION THREE: R CODE CHEATSHEET
 
-Removing records:
+####  Removing records:
 
-Remove NA's (method 1): na.omit(df)
-Remove NA's (method 2): df[!is.na(df$species),]
-Remove bad record (method 1): df[df!='bad_record',]
-Remove bad record (method 2): subset(df, species!= 'bad_record')
-Remove multiple bad records: df[!df$species %in% c('bad1', 'bad2', 'bad3'),]
+	Remove NA's (method 1): `na.omit(df)`
+	Remove NA's (method 2): `df[!is.na(df$species),]`
+	Remove bad record (method 1): `df[df!='bad_record',]`
+	Remove bad record (method 2): `subset(df, species!= 'bad_record')`
+	Remove multiple bad records: `df[!df$species %in% c('bad1', 'bad2', 'bad3'),]`
 
-Round numeric vector (x) to a given accuracy:
+#### Round numeric vector (x) to a given accuracy:
 
-round_any(x, accuracy, f = round)
+	`round_any(x, accuracy, f = round)`
 
-Working with character strings:
+#### Working with character strings:
 
 Split a column: colsplit(string, pattern, names)
 Extract a substring (stringr): str_sub(string, start = 1L, end = -1L)
