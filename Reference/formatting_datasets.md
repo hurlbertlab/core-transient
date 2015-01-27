@@ -63,23 +63,23 @@ Below are the steps that you should take when exploring and formatting datasets.
  
 ## SECTION TWO: MODIFYING FIELDS
 
-datasetID:
+### datasetID:
 
 Goal: Add a column that repeats the name of the dataset.
 
 DatasetID’s are available from the dataset_summary_table. This must be the first column of your formatted dataset. To do so, you simply use the rep command in the base package and tell it to repeat the value for the number of rows of the data frame. Note: example_df is the unformatted dataset being prepared for analysis.
 
-datasetID = rep(01, nrow(example_df))
+### datasetID = rep(01, nrow(example_df))
 
 site:
 
 Goal: Add a column that provides a unique site ID for each site. Determining sites can sometimes be challenging the steps required to create unique site ID’s depends on how researchers have coded their site data. The examples below provide the most common solutions to create unique site ID’s
 
-Concatenating multiple site columns into a single site: In the example above, the sites were broken down into different treatments and plots. To construct the sites field, we paste the datasetID as well as any site information provided. If the above example were constructed from a data frame with the fields “Treatment” and “Plot”, the site column would be made using the following code:
+_**Concatenating multiple site columns into a single site:**_ In the example above, the sites were broken down into different treatments and plots. To construct the sites field, we paste the datasetID as well as any site information provided. If the above example were constructed from a data frame with the fields “Treatment” and “Plot”, the site column would be made using the following code:
 
 site = paste(‘d’, datasetID, example_df$Treatment, example_df$Plot, sep = ‘’)
 
-Removing site information: Some data sources include information in the site field that are problematic for analysis. For example, some sites include the time that a sample was collected as a part of the site field. Consider a column named “site” where year is included in the field, such that the first entry might be “Treatment1PlotA1928”. You can extract the plot information easily in one of two ways:
+_**Removing site information:**_ Some data sources include information in the site field that are problematic for analysis. For example, some sites include the time that a sample was collected as a part of the site field. Consider a column named “site” where year is included in the field, such that the first entry might be “Treatment1PlotA1928”. You can extract the plot information easily in one of two ways:
 
 1) Substring the plot information by from the first to the last plot character. The following code extracts all characters from the first to the 15th within the site field. This is ONLY to be used is the plot information contains the same number of characters!
 
@@ -89,7 +89,7 @@ Note: If the field is not a character field, you can convert it on the fly using
 
 site1 = substr(as.character(example_df$site) , 1, 15)
 
-2) Substring the plot information by removing the last characters in a field. This method is valid if the number characters that make up the true site field are not the same across sites but there is an equal number of characters that need to be removed. To do so, the easiest way is to use the str_sub function in Hadley Wickham’s stringr package (though this can be easily accomplished by writing your own function in base).
+2) Substring the plot information by removing the last characters in a field. This method is valid if the number characters that make up the true site field are not the same across sites but there is an equal number of characters that need to be removed. To do so, the easiest way is to use the str_sub function in Hadley Wickham’s **stringr** package (though this can be easily accomplished by writing your own function in base).
 
 require(stringr)
 
@@ -99,7 +99,7 @@ str_sub(x, 1, -7)
 
 [1] "hello"
 
-Separating a field to extract site information: It is also often necessary to separate the site field by some common character (such as, in the example below “_”). This is done using the transform and colsplit functions. Colsplit is located in Hadley Wickham’s package reshape2. The output of this function is a multiple field dataset containing the original data (field 1) and a column for each split. In this case, the second column contains the site information, so using “[,2]” returns a vector with just the relevant site information.
+_**Separating a field to extract site information:**_ It is also often necessary to separate the site field by some common character (such as, in the example below “_”). This is done using the transform and colsplit functions. Colsplit is located in Hadley Wickham’s package **reshape2**. The output of this function is a multiple field dataset containing the original data (field 1) and a column for each split. In this case, the second column contains the site information, so using “[,2]” returns a vector with just the relevant site information.
 
 require(reshape2)
 
@@ -107,18 +107,18 @@ x = 'Treatment1PlotB_1927'
 
 site1a = transform(x, site = colsplit(x, pattern = '\\_', names = c('site','year')))[,2]
 
-Using latitude and longitude to define sites: It is sometimes necessary to define sites using latitude and longitude if this is the only site information provided. While making decisions for the appropriate scale to analyze the data requires an understanding of the taxa and method of collection, the process of creating the site information is relatively straitforward. Here we will use the “round_any” function in Hadley Wickham’s plyr package to turn decimal latitude and longitude data sites composed of 2 degree lat-lon blocks.
+_**Using latitude and longitude to define sites:**_ It is sometimes necessary to define sites using latitude and longitude if this is the only site information provided. While making decisions for the appropriate scale to analyze the data requires an understanding of the taxa and method of collection, the process of creating the site information is relatively straitforward. Here we will use the “round_any” function in Hadley Wickham’s **plyr** package to turn decimal latitude and longitude data sites composed of 2 degree lat-lon blocks.
 
 x = 13.35679
 y = 46.87
 
 site1 = paste(round_any(x, 2), round_any(y, 2))
 
-species:
+### species:
 
 Goal: Subset dataset to unique species records. It is occasionally necessary to modify species records, such as if genus and species are provided in separate fields (in which case you would concatenate the two fields as above) and remove records that are not valid species. 
 
-Subsetting a dataset to valid species observations: There are several methods for removing problem records; here are a few examples.
+_**Subsetting a dataset to valid species observations:**_ There are several methods for removing problem records; here are a few examples.
 
 Removing NA’s:
 
@@ -138,11 +138,11 @@ Removing multiple species records (example is a set of bad records):
 	
 	example_df1 = example_df[!example_df$species %in% bad_recs]
 
-year:
+### year:
 
 Goal: Create a time column. The two challenges that may be associated with this are if the date is provided as a date formatted object (example 01/01/2015) or if there are multiple samples per year. If the latter is the issue, the appropriate temporal scale must be determined prior to formatting the dataset (see Allen, Ethan, or myself). Once the time scale is determined, data are reported as a decimal year and simply requires a bit of math (for example, if sampling was done monthly and a sample was taken on 1 Mar 2015, the time of the sample would be 2015 + 3/12 as March is the third month of the year).
 
-Extracting year from a date object: Convert the date column to an R formatted date (in this case pretending that our unformatted dataset contains a column called record_date):
+_**Extracting year from a date object:**_ Convert the date column to an R formatted date (in this case pretending that our unformatted dataset contains a column called record_date):
 
 date = strptime(example_df $record_date, '%m/ %d/ %y')
 
@@ -150,7 +150,7 @@ Add a sampling year line (summarize by year):
 
 example_df $year = as.numeric(format(date, '%Y'))
 
-count:
+### count:
 
 Goal: Summarize the dataset to the count of individuals per species, site, and year for a given dataset. To do so, we will use Hadley Wickham’s “ddply” function in the plyr package. Below is an example in which there is a count column that must be summarized.
 
