@@ -2,36 +2,13 @@
 
 In this project, we evaluate the proportion of core and transient species at a given site using data collected across a wide range of taxa, regions, and environmental systems. A challenge that we face is that ecological data are collected at highly variable spatial, temporal, and biological scales and it is necessary to consistently format the data in preparation for analysis. Here we provide instructions associated with formatting datasets. The goal is to format a dataset as follows:
 
-datasetID
-site
-species
-year
-count
-01
-d01_Treatment1PlotA
-A._schoenobaenus
-1928
-1
-01
-d01_Treatment1PlotA
-Buteo_buteo
-1928
-3
-01
-d01_Treatment1PlotB
-Corvus_corax
-1929
-7
-01
-d01_Treatment2PlotA
-Cuculus_canorus
-1929
-1
-01
-d01_Treatment2PlotB
-Gallinula_chloropus
-1928
-2
+datasetID | site | species | year | count
+--------- | ---- | ------- | ---- | -----
+01 | d01_Treatment1PlotA | A._schoenobaenus | 1928 | 1
+01 | d01_Treatment1PlotA | Buteo_buteo | 1928 | 3
+01 | d01_Treatment1PlotB | Corvus_corax | 1929 | 7
+01 | d01_Treatment2PlotA | Cuculus_canorus | 1929 | 1
+01 | d01_Treatment2PlotB | Gallinula_chloropus | 1928 | 2
 
 This document is written in three parts. Section One describes typical workflow one should follow when formatting a dataset. Section Two describes the typical steps required to modify a given field in the dataset. Section Three provides an R cheatsheet for data exploration and formatting.
 
