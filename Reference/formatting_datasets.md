@@ -197,37 +197,67 @@ Remove multiple bad records:
 
 #### Working with character strings:
 
-Split a column: colsplit(string, pattern, names)
-Extract a substring (stringr): str_sub(string, start = 1L, end = -1L)
-Concatenate: paste(‘w’, 'o', 'r', 'l', 'd', sep = '')
+Split a column:
+`colsplit(string, pattern, names)`
 
-Conversions:
+Extract a substring (stringr):
+`str_sub(string, start = 1L, end = -1L)`
 
-Convert to a character vector: as.character(example_df$site)
-Convert to a factor: factor(example_df$site)
-Convert factor to numeric: as.numeric(as.character(example_df$DatasetID))
-Create data object: strptime(df $record_date, '%m/ %d/ %y')
-Extract year from date object: as.numeric(format(date, '%Y'))
+Concatenate:
+`paste(‘w’, 'o', 'r', 'l', 'd', sep = '')`
 
-Combine:
+#### Conversions:
 
-c(‘w’, 'o', 'r', 'l', 'd', sep = '')
+Convert to a character vector:
+`as.character(example_df$site)`
 
-Repeat a value the length of a dataset:
+Convert to a factor:
+`factor(example_df$site)`
 
-rep(value, nrow(df))
+Convert factor to numeric:
+`as.numeric(as.character(example_df$DatasetID))`
 
-Summary data:
+Create data object:
+`strptime(df $record_date, '%m/ %d/ %y')`
 
-Number of rows: nrow(df)
-Length of vector: length(df$site)
-Number of unique elements: length(unique(df$site))
-Minimum value: min(df$year)
-Maximum value: max(df$year)
+Extract year from date object:
+`as.numeric(format(date, '%Y'))`
+
+#### Combine:
+
+`c(‘w’, 'o', 'r', 'l', 'd', sep = '')`
+
+#### Repeat a value the length of a dataset:
+
+`rep(value, nrow(df))`
+
+#### Summary data:
+
+Number of rows:
+`nrow(df)`
+
+Length of vector:
+`length(df$site)`
+
+Number of unique elements:
+`length(unique(df$site))`
+
+Minimum value:
+`min(df$year)`
+
+Maximum value:
+`max(df$year)`
 
 Data summary tables:
 
-Tabulate: table(df$site)
-Data frame of table (base): data.frame(table(df$site))
-Data frame of table (plyr): ddply(df, .(site), summarize, 'nrow')
-Summarizing with multiple factors: ddply(df, .(site, year, species), summarize, count = sum(count))
+Tabulate:
+`table(df$site)`
+
+Data frame of table (base):
+`data.frame(table(df$site))`
+
+Data frame of table (plyr):
+`ddply(df, .(site), summarize, 'nrow')`
+
+Summarizing with multiple factors:
+`ddply(df, .(site, year, species), summarize, count = sum(count))`
