@@ -16,12 +16,6 @@ This document is written in three parts. Section One describes typical workflow 
 
 Below are the steps that you should take when exploring and formatting datasets. These steps should be followed in the order that they’re presented. I also suggest using the example_cleaning_script in the scripts/R-scripts/data_cleaning_scripts folder as a guide. Following and modifying this script will also ensure that all of our scripts are in similar format and are thus easier to follow. _**IMPORTANT**: throughout this process, if there are any problems that keep you from successfully formatting a dataset, add an asterisk to the “flag” column of the data_source_table, git-add-commit-pull the data_source_table, and **add an issue to GitHub** (assigning the issue to me)._
 
-1. Item 1
-2. Item 2
-3. Item 3
-   * Item 3a
-   * Item 3b
-
 1. Git pull! Before you begin to work on a dataset, make sure to do a **git pull** to ensure that you’re working on the most up-to-date version of the core-transient folder. Taking a few seconds to do this may end up saving you minutes in trying to figure out how to deal with git conflicts if they arise.
 
 2. Scratch paper! I suggest always working with a piece of scrap paper to keep track of various issues with the dataset you’re working with. 
