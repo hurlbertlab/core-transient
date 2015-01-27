@@ -81,7 +81,7 @@ Below are the steps that you should take when exploring and formatting datasets.
 
 * _**Removing site information:**_ Some data sources include information in the site field that are problematic for analysis. For example, some sites include the time that a sample was collected as a part of the site field. Consider a column named “site” where year is included in the field, such that the first entry might be “Treatment1PlotA1928”. You can extract the plot information easily in one of two ways:
 
-*  1. Substring the plot information by from the first to the last plot character. The following code extracts all characters from the first to the 15th within the site field. This is ONLY to be used is the plot information contains the same number of characters!
+1. Substring the plot information by from the first to the last plot character. The following code extracts all characters from the first to the 15th within the site field. This is ONLY to be used is the plot information contains the same number of characters!
 
 ```
 	site1 = substr(example_df$site, 1, 15)
@@ -91,7 +91,7 @@ Below are the steps that you should take when exploring and formatting datasets.
 	site1 = substr(as.character(example_df$site), 1, 15)
 ```
 
-*  2. Substring the plot information by removing the last characters in a field. This method is valid if the number characters that make up the true site field are not the same across sites but there is an equal number of characters that need to be removed. To do so, the easiest way is to use the str_sub function in Hadley Wickham’s **stringr** package (though this can be easily accomplished by writing your own function in base).
+2. Substring the plot information by removing the last characters in a field. This method is valid if the number characters that make up the true site field are not the same across sites but there is an equal number of characters that need to be removed. To do so, the easiest way is to use the str_sub function in Hadley Wickham’s **stringr** package (though this can be easily accomplished by writing your own function in base).
 
 ```
 	require(stringr)
