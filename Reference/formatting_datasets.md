@@ -24,18 +24,18 @@ Below are the steps that you should take when exploring and formatting datasets.
 
 4. Explore! When you first load a dataset into R, take some time to explore the data. Common R commands that should be used whenever you start formatting a new dataset include: 
 
-a. names(example_df): Used to observer the field names of the data frame. This is great first look at how you can modify the fields of a data frame to fit the core-transient format.
-b. dim(example_df): Used to observe the number of rows and columns of the data frame. To observe just the number of rows, you could always look at the length of the first column of data using: length(example_df[,1])
-c. str(example_df): Used to observe the structure of the data frame, including how each of the fields are formatted and the fields. Some fields may require to be changed from one format to another. This can be done using: as.character(example_field), as.numeric(example_field), and factor(example_field). Warning! If you are changing a factor to numeric and want to maintain the field values, you need to use: as.numeric(as.character(example_field)).
-d. head(example_df): Used to observe the first few rows of the data frame. Note that it may sometimes be necessary to observe more rows than the default. You can specify this; for example, if you’d like to view the first 10 rows, type head(example_df, 10). You can also look at the last few rows of data using tail(example_df) and modify the number of rows shown as above.
-e. summary(example_df): Provide summary data of the data frame. This can be especially useful, for example, to find out if there are zeros in the count data that need to be removed.
+	* a. names(example_df): Used to observer the field names of the data frame. This is great first look at how you can modify the fields of a data frame to fit the core-transient format.
+	* b. dim(example_df): Used to observe the number of rows and columns of the data frame. To observe just the number of rows, you could always look at the length of the first column of data using: length(example_df[,1])
+	* c. str(example_df): Used to observe the structure of the data frame, including how each of the fields are formatted and the fields. Some fields may require to be changed from one format to another. This can be done using: as.character(example_field), as.numeric(example_field), and factor(example_field). Warning! If you are changing a factor to numeric and want to maintain the field values, you need to use: as.numeric(as.character(example_field)).
+	* d. head(example_df): Used to observe the first few rows of the data frame. Note that it may sometimes be necessary to observe more rows than the default. You can specify this; for example, if you’d like to view the first 10 rows, type head(example_df, 10). You can also look at the last few rows of data using tail(example_df) and modify the number of rows shown as above.
+	* e. summary(example_df): Provide summary data of the data frame. This can be especially useful, for example, to find out if there are zeros in the count data that need to be removed.
 
 5. Once you are done with the exploration of the larger dataset, save your script and git-add-commit-push.
 
 6. Explore and format site data. Prior to formatting sites (see Section Two) take a moment to explore how sites are coded. Of importance are:
 
-a. How many sites are there? You need to ensure that there are a reasonable number of sites. To determine the number of sites, use: length(unique(example_df$site)). There have been instances in which the number of sites comes close to the number of records in the data frame. This sort of situation is most likely due to miscoding of the site field. Try to find out how the sites are miscoded. If you can find the problem, see the site section below in how the site data can be modified. Make sure to provide a comment in your data cleaning script that tells exactly what you’ve changed and why. Also, after the modification make sure to git add-commit-push and provide a message that details the modification. If the problem is not clear to you, add an issue to the core-transient git hub repository, describe the problem in detail and assign the issue to me.
-b. How many records are there per site? Sites that are mis-defined can also be determined by observing the number of records across sites. If sites are mis-defined, this can be identified if a large proportion of sites have very few records. There are many ways to determine this. To observe the number of records per site using the table function in base R, use either table(example_df$site) to observe the records in wide format or data.frame(table(example_df$site)) to observe the records in long format. The latter can also be done in Hadley Wickham’s plyr package using: ddply(example_df,.(site),'nrow'). If there are a large number of sites, it can be cumbersome to search through them all. You can avoid this by ordering from the smallest to largest number of records per site. First, assign a name to your site table: xy <- data.frame(table(example_df$site)). Next, order by frequency: xy2[order(xy2$Freq),]. Modify as necessary (see Section Two), providing descriptive comments in your script for your modification, and add-commit-push to GitHub. Again, if the problem is not clear to you, add an issue to the core-transient git hub repository, describe the problem in detail and assign the issue to me.
+	* a. How many sites are there? You need to ensure that there are a reasonable number of sites. To determine the number of sites, use: length(unique(example_df$site)). There have been instances in which the number of sites comes close to the number of records in the data frame. This sort of situation is most likely due to miscoding of the site field. Try to find out how the sites are miscoded. If you can find the problem, see the site section below in how the site data can be modified. Make sure to provide a comment in your data cleaning script that tells exactly what you’ve changed and why. Also, after the modification make sure to git add-commit-push and provide a message that details the modification. If the problem is not clear to you, add an issue to the core-transient git hub repository, describe the problem in detail and assign the issue to me.
+	* b. How many records are there per site? Sites that are mis-defined can also be determined by observing the number of records across sites. If sites are mis-defined, this can be identified if a large proportion of sites have very few records. There are many ways to determine this. To observe the number of records per site using the table function in base R, use either table(example_df$site) to observe the records in wide format or data.frame(table(example_df$site)) to observe the records in long format. The latter can also be done in Hadley Wickham’s plyr package using: ddply(example_df,.(site),'nrow'). If there are a large number of sites, it can be cumbersome to search through them all. You can avoid this by ordering from the smallest to largest number of records per site. First, assign a name to your site table: xy <- data.frame(table(example_df$site)). Next, order by frequency: xy2[order(xy2$Freq),]. Modify as necessary (see Section Two), providing descriptive comments in your script for your modification, and add-commit-push to GitHub. Again, if the problem is not clear to you, add an issue to the core-transient git hub repository, describe the problem in detail and assign the issue to me.
 
 7. Once you are done with site exploration and formatting, save your script and git-add-commit-push.
 
@@ -54,11 +54,11 @@ b. How many records are there per site? Sites that are mis-defined can also be d
 14. You now have a reduced dataset and are ready to add the datasetID field. Follow the steps in Section Two for doing so and git-add-commit-push.
 
 15. As a final step, you will compare a summary of your dataset with the data_source_table. Adjust the data_source_table as necessary. With every adjustment, git-add-commit-push and explain what you have done and why.
-a. Nrecs: nrow(example_df)
-b. nSites: length(unique(example_df$site))
-c. nSpecies: length(unique(example_df$species))
-d. start_year: min(example_df$year)
-e. end_year: max(example_df$year)
+	* a. Nrecs: nrow(example_df)
+	* b. nSites: length(unique(example_df$site))
+	* c. nSpecies: length(unique(example_df$species))
+	* d. start_year: min(example_df$year)
+	* e. end_year: max(example_df$year)
 
  
 ## SECTION TWO: MODIFYING FIELDS
