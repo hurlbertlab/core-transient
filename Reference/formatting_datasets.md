@@ -85,11 +85,9 @@ Below are the steps that you should take when exploring and formatting datasets.
 
 ```
 	site1 = substr(example_df$site, 1, 15)
-```
 
-	Note: If the field is not a character field, you can convert it on the fly using:
+# Note: If the field is not a character field, you can convert it on the fly using:
 
-```
 	site1 = substr(as.character(example_df$site), 1, 15)
 ```
 
@@ -132,19 +130,19 @@ Goal: Subset dataset to unique species records. It is occasionally necessary to 
 _**Subsetting a dataset to valid species observations:**_ There are several methods for removing problem records; here are a few examples.
 
 ```
-	# Removing NA’s:
+# Removing NA’s:
 
 	example_df1 = na.omit(example_df)
 
 	example_df1 = example_df[!is.na(example_df$species),]
 
-	# Removing a given species record (example is records called “Bare Ground”):
+# Removing a given species record (example is records called “Bare Ground”):
 
 	example_df1 = example_df[example_df!='Bare Ground',]
 
 	example_df1 = subset(example_df1, species!= 'Bare Ground')
 
-	# Removing multiple species records (example is a set of bad records):
+# Removing multiple species records (example is a set of bad records):
 
 	bad_recs = c('Bare_Ground', 'bad2', 'bad3')
 	
@@ -158,9 +156,11 @@ Goal: Create a time column. The two challenges that may be associated with this 
 _**Extracting year from a date object:**_ Convert the date column to an R formatted date (in this case pretending that our unformatted dataset contains a column called record_date):
 
 ```
+# Convert to a date object:
+
 	date = strptime(example_df $record_date, '%m/ %d/ %y')
 	
-	Add a sampling year line (summarize by year):
+# Extracting year from a date object:
 	
 	example_df $year = as.numeric(format(date, '%Y'))
 ```
