@@ -87,7 +87,7 @@ Below are the steps that you should take when exploring and formatting datasets.
 	site1 = substr(example_df$site, 1, 15)
 ```
 
-Note: If the field is not a character field, you can convert it on the fly using:
+	Note: If the field is not a character field, you can convert it on the fly using:
 
 ```
 	site1 = substr(as.character(example_df$site), 1, 15)
@@ -157,13 +157,13 @@ Goal: Create a time column. The two challenges that may be associated with this 
 
 _**Extracting year from a date object:**_ Convert the date column to an R formatted date (in this case pretending that our unformatted dataset contains a column called record_date):
 
-	```
+```
 	date = strptime(example_df $record_date, '%m/ %d/ %y')
 	
 	Add a sampling year line (summarize by year):
 	
 	example_df $year = as.numeric(format(date, '%Y'))
-	```
+```
 
 ### count:
 
