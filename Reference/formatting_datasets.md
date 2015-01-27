@@ -12,7 +12,7 @@ datasetID | site | species | year | count
 
 This document is written in three parts. Section One describes typical workflow one should follow when formatting a dataset. Section Two describes the typical steps required to modify a given field in the dataset. Section Three provides an R cheatsheet for data exploration and formatting.
 
- # SECTION ONE: WORKFLOW
+## SECTION ONE: WORKFLOW
 
 Below are the steps that you should take when exploring and formatting datasets. These steps should be followed in the order that they’re presented. I also suggest using the example_cleaning_script in the scripts/R-scripts/data_cleaning_scripts folder as a guide. Following and modifying this script will also ensure that all of our scripts are in similar format and are thus easier to follow. IMPORTANT: throughout this process, if there are any problems that keep you from successfully formatting a dataset, add an asterisk to the “flag” column of the data_source_table, git-add-commit-pull the data_source_table, and add an issue to GitHub (assigning the issue to me).
 
@@ -61,7 +61,7 @@ d. start_year: min(example_df$year)
 e. end_year: max(example_df$year)
 
  
-# SECTION TWO: MODIFYING FIELDS
+## SECTION TWO: MODIFYING FIELDS
 
 datasetID:
 
@@ -156,7 +156,7 @@ Goal: Summarize the dataset to the count of individuals per species, site, and y
 
 example_df2 = ddply(example_df, .(site, year, species), summarize, count = sum(count))
 
-# SECTION THREE: R CODE CHEATSHEET
+## SECTION THREE: R CODE CHEATSHEET
 
 Removing records:
 
