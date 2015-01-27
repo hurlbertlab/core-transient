@@ -24,8 +24,8 @@ Below are the steps that you should take when exploring and formatting datasets.
 
 4. Explore! When you first load a dataset into R, take some time to explore the data. Common R commands that should be used whenever you start formatting a new dataset include: 
 
-	* a. names(example_df): Used to observer the field names of the data frame. This is great first look at how you can modify the fields of a data frame to fit the core-transient format.
-	* b. dim(example_df): Used to observe the number of rows and columns of the data frame. To observe just the number of rows, you could always look at the length of the first column of data using: length(example_df[,1])
+	* 4a. names(example_df): Used to observer the field names of the data frame. This is great first look at how you can modify the fields of a data frame to fit the core-transient format.
+	* 4b. dim(example_df): Used to observe the number of rows and columns of the data frame. To observe just the number of rows, you could always look at the length of the first column of data using: length(example_df[,1])
 	* c. str(example_df): Used to observe the structure of the data frame, including how each of the fields are formatted and the fields. Some fields may require to be changed from one format to another. This can be done using: as.character(example_field), as.numeric(example_field), and factor(example_field). Warning! If you are changing a factor to numeric and want to maintain the field values, you need to use: as.numeric(as.character(example_field)).
 	* d. head(example_df): Used to observe the first few rows of the data frame. Note that it may sometimes be necessary to observe more rows than the default. You can specify this; for example, if you’d like to view the first 10 rows, type head(example_df, 10). You can also look at the last few rows of data using tail(example_df) and modify the number of rows shown as above.
 	* e. summary(example_df): Provide summary data of the data frame. This can be especially useful, for example, to find out if there are zeros in the count data that need to be removed.
