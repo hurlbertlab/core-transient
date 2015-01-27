@@ -90,12 +90,12 @@ Below are the steps that you should take when exploring and formatting datasets.
 Note: If the field is not a character field, you can convert it on the fly using:
 
 	```
-	site1 = substr(as.character(example_df$site) , 1, 15)
+	site1 = substr(as.character(example_df$site), 1, 15)
 	```
 
 *  2. Substring the plot information by removing the last characters in a field. This method is valid if the number characters that make up the true site field are not the same across sites but there is an equal number of characters that need to be removed. To do so, the easiest way is to use the str_sub function in Hadley Wickham’s **stringr** package (though this can be easily accomplished by writing your own function in base).
 
-```
+	```
 	require(stringr)
 	
 	x = “hello world”
@@ -103,7 +103,7 @@ Note: If the field is not a character field, you can convert it on the fly using
 	str_sub(x, 1, -7)
 	
 	[1] "hello"
-```
+	```
 
 _**Separating a field to extract site information:**_ It is also often necessary to separate the site field by some common character (such as, in the example below “_”). This is done using the transform and colsplit functions. Colsplit is located in Hadley Wickham’s package **reshape2**. The output of this function is a multiple field dataset containing the original data (field 1) and a column for each split. In this case, the second column contains the site information, so using “[,2]” returns a vector with just the relevant site information.
 
