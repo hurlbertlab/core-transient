@@ -107,23 +107,23 @@ Note: If the field is not a character field, you can convert it on the fly using
 
 _**Separating a field to extract site information:**_ It is also often necessary to separate the site field by some common character (such as, in the example below “_”). This is done using the transform and colsplit functions. Colsplit is located in Hadley Wickham’s package **reshape2**. The output of this function is a multiple field dataset containing the original data (field 1) and a column for each split. In this case, the second column contains the site information, so using “[,2]” returns a vector with just the relevant site information.
 
-```
+	```
 	require(reshape2)
 
 	x = 'Treatment1PlotB_1927'
 
 	site1a = transform(x, site = colsplit(x, pattern = '\\_', names = c('site','year')))[,2]
-```
+	```
 
 _**Using latitude and longitude to define sites:**_ It is sometimes necessary to define sites using latitude and longitude if this is the only site information provided. While making decisions for the appropriate scale to analyze the data requires an understanding of the taxa and method of collection, the process of creating the site information is relatively straitforward. Here we will use the “round_any” function in Hadley Wickham’s **plyr** package to turn decimal latitude and longitude data sites composed of 2 degree lat-lon blocks.
 
-```
+	```
 	x = 13.35679
 	
 	y = 46.87
 
 	site1 = paste(round_any(x, 2), round_any(y, 2))
-```
+	```
 	
 ### species:
 
@@ -131,7 +131,7 @@ Goal: Subset dataset to unique species records. It is occasionally necessary to 
 
 _**Subsetting a dataset to valid species observations:**_ There are several methods for removing problem records; here are a few examples.
 
-```
+	```
 	# Removing NA’s:
 
 	example_df1 = na.omit(example_df)
@@ -149,7 +149,7 @@ _**Subsetting a dataset to valid species observations:**_ There are several meth
 	bad_recs = c('Bare_Ground', 'bad2', 'bad3')
 	
 	example_df1 = example_df[!example_df$species %in% bad_recs]
-```
+	```
 
 ### year:
 
@@ -157,13 +157,13 @@ Goal: Create a time column. The two challenges that may be associated with this 
 
 _**Extracting year from a date object:**_ Convert the date column to an R formatted date (in this case pretending that our unformatted dataset contains a column called record_date):
 
-```
+	```
 	date = strptime(example_df $record_date, '%m/ %d/ %y')
 	
 	Add a sampling year line (summarize by year):
 	
 	example_df $year = as.numeric(format(date, '%Y'))
-```
+	```
 
 ### count:
 
