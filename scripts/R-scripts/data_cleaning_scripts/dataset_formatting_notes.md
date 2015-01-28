@@ -26,6 +26,7 @@ Here, we will provide information describing the steps taken in formatting a dat
 * **Count notes:** Here, describe any modifications that were made to the count field. For example, perhaps the "count" column is actually proportional cover or density. As a more complicated example, perhaps the count was provided as the number of individuals within a sampling bottle and the bottles were of different sizes (in which case, you would adjust the by the size of the bottle). There are some instances in which there are no count data available. If this is the case, be sure to enter that information here.
 
 * **Did you update any information in the datasource table? If so, what was updated?** Provide information here.
+* **Additional notes:** Provide any additional notes here.
 
 ---------------------------------------
 
