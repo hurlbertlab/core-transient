@@ -184,7 +184,6 @@ Remove NA's (method 2):
 Remove bad record (method 1):
 `df[df!='bad_record',]`
 
-
 Remove bad record (method 2):
 `subset(df, species!= 'bad_record')`
 
