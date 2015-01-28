@@ -7,62 +7,56 @@ setwd('C:/Users/auriemma/core-transient/')
 d = read.csv('raw_datasets/dataset_200.csv')
 dim(d)
 head(d)
-tail(d)
 str(d)
 
+#=========================================================
+# SITE data
 
-# Site data
-site = d$SampleID
-unique(site)
-summary(site)
-length(site)
-table(site)
-length(unique(site))
-
-# Listing sites by number of rows present in dataset
-
-library(plyr)
-ex = ddply(d, .(SampleID), 'nrow')
-head(ex)
-ex2 = ex[order(ex$nrow),]
-head(ex2)
-head(ex2, 40)
-summary(ex2)
+# Data for sites is listed by lat-longs....
+#.........
 
 
-# Species check
 
-species = d$Species
-length(species)              
-unique(species)
+#=========================================================
+# SPECIES data
 
-# Remove unspecified species (Ones of low taxonomic resolution, lowest accepted is Family)
-remove_spp = c('Copepoda','Gastropoda','Decapoda','Amphipoda','Ostracoda','Cnidaria','Anthozoa','Echinodermata','Nematoda','Hydrozoa','Nudibranchia','Bryozoa','Mollusca','Crustacea','Cephalopoda','Scyphozoa','Pisces','Porifera','Annelida','Chaetognatha','Bivalvia','Octopoda','Isopoda','Ctenophora','Insecta','Scaphopoda','Zoanthidea','Ophiurida')
-length(remove_spp)
-species = species[!species%in%remove_spp]
-length(species)
-unique(species)
+# Create species vector
+sp = d$sname
+length(unique(sp))
 
-# Add fixed species column
-d1 = d[!d$Species%in%remove_spp,]
-dim(d1)
-length(species)
-head(d1)
+# Capitalize all to remove letter case error
+d$species = toupper(d$sname)
+head(d$species)
 
-#Remove unwanted columns
+  # Compare with original
+length(unique(sp))
+length(unique(d$species))
+  # No difference, no error in capitalization
 
-d = d1[,-c(1)]
-head(d)
-dim(d)
-length(d$ID)
+# Search for species to remove
+unique(d$species)
+remove_sp = c('UNIDENTIFIED FISH','')
 
-# Year
+  # Species listed as common name:
+  common = c('EEL UNCL','SHRIMP UNCL','LONGFIN HAKE','THORNY SKATE','LUMPFISH SNAILFISH UNCL','ROUGH SCAD','BLUE HAKE',
+             'BUTTERFISH','BOBTAIL UNCL','BARNDOOR SKATE','WITCH FLOUNDER','CRUSTACEA SHRIMP','GOOSEFISH','CRAB BRACHYURAN UNCL',
+             'NORTHERN STONE CRAB','JELLYFISH UNCL')
+             
+  
+  # Listed unspecific taxonomy
+  tax = c('CEPHALOPODA','RAJIFORMES','VAMPYROMORPHIDA','OCTOPODA','ANGUILLIFORMES','PLEURONECTIFORMES','GASTROPODA','STOMATOPODA',
+          'LOPHIIFORMES','MOLLUSCA')
+          
+  #Several FAMILY names listed
+  
+  # Others in question
+  other = c('CANCER BOREALIS MALE','HOMARUS AMERICANUS FEMALE','LOLIGO PEALEII EGG MOPS','HOMARUS AMERICANUS MALE',
+            'GALATHEID UNCL','CANCER BOREALIS FEMALE','ILLEX ILLECEBROSUS EGG MOPS')
 
-year = as.numeric(d$Year)
-d$year = year
-head(d)
+head(d)        
+  
+#===========================================================================
+# COUNT data
 
-# Remove non-numeric year column
-
-d = d[,-c(2)]
-head(d)
+length(unique(d$count))
+summary(d)
