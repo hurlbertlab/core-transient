@@ -31,7 +31,9 @@ head(d$species)
   # Compare with original
 length(unique(sp))
 length(unique(d$species))
-  # No difference, no error in capitalization
+  # No difference, no error in capitalization, so remove old species column
+d = d[,-c(5)]
+head(d)
 
 # Search for species to remove
 unique(d$species)
@@ -60,3 +62,25 @@ head(d)
 
 length(unique(d$count))
 summary(d)
+class(d$count)
+
+# Change data to numeric
+d1 = d
+d1$count = as.numeric(d1$count)
+head(d1)
+head(d)
+summary(d1)
+class(d1$count)
+str(d1)
+str(d)
+
+# Remove zeros and NAs
+
+d = d1[d1$count>0,]
+length(unique(d$count))
+length(unique(d1$count))
+d = na.omit(d)
+dim(d)
+length(unique(d$count))
+
+# 
