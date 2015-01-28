@@ -26,8 +26,36 @@ Here, we will provide information describing the steps taken in formatting a dat
 * **Count notes:** Here, describe any modifications that were made to the count field. For example, perhaps the "count" column is actually proportional cover or density. As a more complicated example, perhaps the count was provided as the number of individuals within a sampling bottle and the bottles were of different sizes (in which case, you would adjust the by the size of the bottle). There are some instances in which there are no count data available. If this is the case, be sure to enter that information here.
 
 * **Did you update any information in the datasource table? If so, what was updated?** Provide information here.
+* **Additional notes:** Provide any additional notes here.
 
 ---------------------------------------
 
+---------------------------------------
+
+## Dataset_239
+
+* **Dataset formatted on, by**: 1/28/15, bse
+
+* **Formatting completed?** No
+  * **If no, what problems did you run into?** This is pre-formatting. The data are provided in 3 separate csv files. I'm consolidating the data into a single file that can be further formatted as necessary. The script for this is stored as **preFormat239.R** in the folder *core-transient/scripts/R-scripts/data_cleaning_scripts*
+
+* **Site notes:** Sites are coded as "SampleID" in table 1. This is a bit unclear, however, as the number of sites differ somewhat from the value presented in the [metadata](http://esapubs.org/archive/ecol/E094/149/metadata.php) (1048 SampleID's rather than 788 as stated in the metadata).
+  * **LatLon sites?** No
+  *  **If LatLon, spatial grain?** NA
+  *  **Are the LatLons of the sites available?** Yes
+  *  **Can the data be used to assess the effects of spatial grain** Yes
+
+* **Time notes** Data are provided to the year, month, and day (format = dd-mm-yyyy). For now, I will leave the date field as is, but imagine the temporal grain should be year. 
+  * **Temporal grain less than or greater than one year?** Yes
+  * **If < or > one year, temporal grain?** To be determined.
+
+* **Species notes:** Species were provided in wide format. I converted this to long (`melt(wide_dataframe, id.vars = c('site_column'))`) and merged with the site data. For this phase, I have made no changes to the species list. See the [metadata](http://esapubs.org/archive/ecol/E094/149/metadata.php) for more details on the species observed. 
+
+* **Count notes:** Because of the large sample size, I subset the data to counts greater than 0. See [metadata](http://esapubs.org/archive/ecol/E094/149/metadata.php) to see how count data are recorded (as this may be phytoplankton density). 
+
+* **Did you update any information in the datasource table? If so, what was updated?** No
+* **Additional notes:** Tables 1 and 3 were merged. All columns were maintained. The file was written to the data/raw_datasets folder, overwriting the previuos dataset_239.csv.
+
+---------------------------------------
 
 
