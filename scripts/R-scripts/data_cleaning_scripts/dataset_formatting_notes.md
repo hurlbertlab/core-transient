@@ -57,7 +57,7 @@ Here, we will provide information describing the steps taken in formatting a dat
 * **Additional notes:** Tables 1 and 3 were merged. All columns were maintained. The file was written to the data/raw_datasets folder, overwriting the previuos dataset_239.csv.
 
 ---------------------------------------
-## Dataset 200
+## Dataset_200
 * **Dataset formatted on, by**: 1/29/15, mca
 
 * **Formatting completed?** Yes
