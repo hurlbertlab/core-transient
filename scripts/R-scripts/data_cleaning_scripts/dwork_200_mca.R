@@ -38,7 +38,7 @@ dim(d1)
 dim(d)
 
 # Species listed as common names, low level taxonomy, or others
-# Did not remove any of these listed, but made note of each
+# Did not remove any of these listed, but make note of them in markdown file
 
   # Species listed as common name:
   common = c('EEL UNCL','SHRIMP UNCL','LONGFIN HAKE','THORNY SKATE','LUMPFISH SNAILFISH UNCL','ROUGH SCAD','BLUE HAKE',
@@ -128,8 +128,24 @@ head(d)
 # SITE data
 
 # Data for sites is listed by lat-longs
-# USE 'ROUND_ANY' Wickham package, then paste together and look for uniques
-      # Ideal number is about 50 or more sites
-      # If too many, then reduce to 2-degree lat-long blocks and see if ~50 sites
+# USE 'ROUND_ANY' Wickham package to round lat-longs to nearest 2
+library('plyr')
+?round_any
+d$lat = round_any(d$latitude, 1, f = round)
+d$long = round_any(d$longitude, 1, f = round)
+head(d)
+
+# Paste together lat longs and look for uniques
+d$lat_long = paste(d$lat, d$long, sep = '_')
+head(d)
+length(unique(d$lat_long))
+unique(d$lat_long)      
+ 
+  # There are 80 unique sites
+  # Check for frequency of each site
+site.df = data.frame(table(d$lat_long))
+site.df[order(site.df$Freq),]
+
+
 
 
