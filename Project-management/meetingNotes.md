@@ -1,4 +1,4 @@
----
+***
 
 ## Meeting notes: Meeting with Allen, 10/2/14
 * make ~30 commits per day, each commit should contain only one chunk of information (i.e. refer to a change in only one file)
@@ -12,7 +12,7 @@
 * We need to come up with a way to prioritize dataset so that we are ensuring that we get an adequate grab of taxa and regions in the preliminary analyses.
 * For d228, add a comment in the script that says that each text file is representative of one of 4 hubbard brook sites
 
----
+***
 
 ## Meeting on 10/9 with Ethan and Allen
 * We've switched from https to ssh. See help on github for generating ssh keys (was thankfully easy on Mint!)
@@ -28,7 +28,7 @@ git add data
 git commit -m "daily update of the data file"
 _**Note:** this allows the changes to be known across machines_
 
----
+***
 
 ## Meeting notes, Ethan and Allen 10/23
 
