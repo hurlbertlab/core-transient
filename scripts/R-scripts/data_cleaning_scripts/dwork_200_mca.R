@@ -146,6 +146,44 @@ unique(d$lat_long)
 site.df = data.frame(table(d$lat_long))
 site.df[order(site.df$Freq),]
 
+# Remove old lat long columns
+d = d[,-c(1,2,6,7)]
+head(d)
+#=================================================================
+# Arrange data by SITE, SPECIES, YEAR
 
+# Create datasetID file
+d$datasetID = rep(200, nrow(d))
+head(d)
+d1 = ddply(d,.(datasetID, lat_long, dec_year, species), summarize, count = max(count))
+dim(d1)
+head(d1, 100)
+d1[3000:3100,]
 
+# Change site to factor
+d1$lat_long = factor(d1$lat_long)
+head(d1)
+summary(d1)
 
+# Check for adequate species number at given site
+test = ddply(d1, .(lat_long), summarize,richness = length(unique(species)))
+head(test[order(test$richness),])
+
+# All sites passed test with at least 10 species
+
+# Test for adequate times (at least 5 time samples per site)
+test = ddply(d1, .(lat_long), summarize, ntime = length(unique(dec_year)))
+head(test[order(test$ntime),], 20)
+
+# Several (17) sites had less than 5 time samples, so need to remove
+bad_sites = c('29_-74','29_-80','29_-81','30_-80','31_-80','32_-79','34_-75','39_-70','30_-81','31_-81','32_-78','32_-80','32_-81','34_-79','33_-79','33_-80','44_-63')
+length(bad_sites)
+
+# reformat dataset without bad sites
+d = d1[!d1$lat_long %in% bad_sites,]
+head(d)
+dim(d)
+summary(d)
+length(unique(d$lat_long))
+
+# Finished
