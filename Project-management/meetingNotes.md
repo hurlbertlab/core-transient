@@ -1,3 +1,7 @@
+# Meeting notes
+
+***
+
 ## Meeting notes: Allen, 7/15/14 
 
 * Overall purpose: To lay out short term goals for the coming few weeks and determine how to deal with some problems in datasets.
@@ -74,3 +78,46 @@ Include biome ... to do this, probably a gis extraction based on point data for 
 * There will have to be some sort of "if" statement for extracting data, as marine and terrestrial will have different data needs
 * Look into MODIS package (Allen sent email regarding this).
 * We will cover thinking through environmental datasets during our next meeting (10/30)
+
+***
+## Meeting notes: Ethan and Allen, 1/26/15
+
+* Convert the dataset processing instructions from the current .docx to markdown
+* Tell Michael to include comments at the end of the script that describes any extraordinary steps taken or modifications outside of the regular template file
+* Continue to chip away at the data_source table
+* Finish the metadata table this sweek
+* Email Zach re dataset 200 (OBIS) ... _Ethan will put us in email contact_
+* Figure out the problem with the sub-repository.
+ * Step 1: go through and look at the folders and contents of the repositories -- are they different? Are they split between the two?
+ * See what I can do to ensure things are in the right place and not duplicated. Problems should be assigned to Ethan as an issue.
+ * The data repository should contain NO scripts, just data
+ * Likewise, the public repository should contain no data!
+ * **IMPORTANT!!!** If there are private data outside of the data folder, these MUST be put in the data folder immediately and moved from the public repository!!!
+* Clean the repository making sure to remove the junk
+* Change the format priority
+ * remove the # of time series from the ranking
+ * change the time threshold to 9
+ * 0, 1, or 2: datasets with one site (0), datasets with between 2 and 19 sites (1), datasets with 20 or more sites(1)
+ * _Note: the number of sites can be a rough estimate for now._
+* * Fix the NA's associated with the number of sites (likely change to FILL for now, then fill them!)
+* Hold off on obtaining or formatting more OBIS data -- this will be Zach's realm
+* Kellog dataset -- get the data associated with it.
+* Working with the ct_prop_frame 
+ * Move the functions in ct_prop_frame to core-transient functions
+ * Change the function ct_prop_maker to make it run more efficiently:
+ * d1 does not need to be assigned (this will cut the RAM usage by 50%!)
+  * just stick the subsetting right into the expression
+  * by allocating the length of the list in advance it will save another 50% of RAM usage
+  `list(length = length(sites))`
+ * change the name "d" to focal dataset
+ * look through code to find what I might be able to simplify
+* try to make the code more readable by using common words for variable names and datasets -- the closer it reads to english the easier it is to understand!
+* the subset function is more readable than `d[d$variable == value,]`
+
+### LOOKING AHEAD (long term) -> the 1st paper
+* Address spatial and temporal scale (Note: geographic and latitudinal variation will not be addressed here, it will be a latter paper)k
+* What figures do we want?
+ 1. Summary figs (we should address what these are in our next meeting
+ 2. Strength of evidence for bimodality
+ 3. Course groups and addressing the # of individuals (Note: we should discuss this further, I think my brain shut off here)
+
