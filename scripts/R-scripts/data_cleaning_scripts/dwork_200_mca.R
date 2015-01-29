@@ -186,4 +186,14 @@ dim(d)
 summary(d)
 length(unique(d$lat_long))
 
+# Correct names and order of columns
+d = d[,c(1,2,4,3,5)]
+names(d)[2] = 'site'
+names(d)[4] = 'year'
+head(d)
+
 # Finished
+#=====================================================================
+# Write csv file to data
+getwd()
+write.csv(d,'C:/Users/auriemma/personal core-transient r work/dataset_200_mca.csv', row.names = F)
