@@ -99,7 +99,7 @@ Include biome ... to do this, probably a gis extraction based on point data for 
  * change the time threshold to 9
  * 0, 1, or 2: datasets with one site (0), datasets with between 2 and 19 sites (1), datasets with 20 or more sites(1)
  * _Note: the number of sites can be a rough estimate for now._
-* * Fix the NA's associated with the number of sites (likely change to FILL for now, then fill them!)
+* Fix the NA's associated with the number of sites (likely change to FILL for now, then fill them!)
 * Hold off on obtaining or formatting more OBIS data -- this will be Zach's realm
 * Kellog dataset -- get the data associated with it.
 * Working with the ct_prop_frame 
@@ -114,7 +114,7 @@ Include biome ... to do this, probably a gis extraction based on point data for 
 * try to make the code more readable by using common words for variable names and datasets -- the closer it reads to english the easier it is to understand!
 * the subset function is more readable than `d[d$variable == value,]`
 
-### LOOKING AHEAD (long term) -> the 1st paper
+#### LOOKING AHEAD (long term) -> the 1st paper
 * Address spatial and temporal scale (Note: geographic and latitudinal variation will not be addressed here, it will be a latter paper)k
 * What figures do we want?
  1. Summary figs (we should address what these are in our next meeting
