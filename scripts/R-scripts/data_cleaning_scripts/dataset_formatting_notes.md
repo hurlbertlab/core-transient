@@ -73,10 +73,15 @@ Here, we will provide information describing the steps taken in formatting a dat
   * **Temporal grain less than or greater than one year?** Yes
   * **If < or > one year, temporal grain?** Grain was narrowed to decimal year and decimal month format.  Numeric month was divided by 12 and added to numeric year.
 
-* **Species notes:** Searched for NAs, unidentifieds, etc.  Found some unidentified species and removed from dataset.  *Several species were listed as common names: 'EEL UNCL','SHRIMP UNCL','LONGFIN HAKE','THORNY SKATE','LUMPFISH SNAILFISH UNCL','ROUGH SCAD','BLUE HAKE','BUTTERFISH','BOBTAIL UNCL','BARNDOOR SKATE','WITCH FLOUNDER','CRUSTACEA SHRIMP','GOOSEFISH','CRAB BRACHYURAN UNCL','NORTHERN STONE CRAB','JELLYFISH UNCL'.
- *Several species were listed with varying or low taxonomic resolutions: 'CEPHALOPODA','RAJIFORMES','VAMPYROMORPHIDA', 'OCTOPODA','ANGUILLIFORMES','PLEURONECTIFORMES','GASTROPODA','STOMATOPODA','LOPHIIFORMES','MOLLUSCA'
- *Several species species also in question: 'CANCER BOREALIS MALE','HOMARUS AMERICANUS FEMALE','LOLIGO PEALEII EGG MOPS','HOMARUS AMERICANUS MALE','GALATHEID UNCL','CANCER BOREALIS FEMALE','ILLEX ILLECEBROSUS EGG MOPS'.
- *Additionally, many of the species were listed as FAMILY and GENUS names.
+* **Species notes:** Searched for NAs, unidentifieds, etc.  Found some unidentified species and removed from dataset.
+
+*   *Several species were listed as common names: 'EEL UNCL','SHRIMP UNCL','LONGFIN HAKE','THORNY SKATE','LUMPFISH SNAILFISH UNCL','ROUGH SCAD','BLUE HAKE','BUTTERFISH','BOBTAIL UNCL','BARNDOOR SKATE','WITCH FLOUNDER','CRUSTACEA SHRIMP','GOOSEFISH','CRAB BRACHYURAN UNCL','NORTHERN STONE CRAB','JELLYFISH UNCL'.
+
+*   *Several species were listed with varying or low taxonomic resolutions: 'CEPHALOPODA','RAJIFORMES','VAMPYROMORPHIDA', 'OCTOPODA','ANGUILLIFORMES','PLEURONECTIFORMES','GASTROPODA','STOMATOPODA','LOPHIIFORMES','MOLLUSCA' 
+
+*   *Several species species also in question: 'CANCER BOREALIS MALE','HOMARUS AMERICANUS FEMALE','LOLIGO PEALEII EGG MOPS','HOMARUS AMERICANUS MALE','GALATHEID UNCL','CANCER BOREALIS FEMALE','ILLEX ILLECEBROSUS EGG MOPS'.
+
+*   *Additionally, many of the species were listed as FAMILY and GENUS names.
 
 * **Count notes:** No significant changes made to count column.  Original data had count numeric observations for each species at each site
 
