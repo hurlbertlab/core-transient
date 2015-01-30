@@ -8,9 +8,9 @@ occFun = function(dataSite, sp){
   return(propOcc)
   }
 
-propOccFun = function(dataset, siteName){
+propOccFun = function(dataset){
   siteNames = unique(dataset$site)
-  outList = list(length = length(siteNames))
+  occPropOutList = list(length = length(siteNames))
   for(i in 1:length(siteNames)){
     # Data subsets for calculate occupancy by site:
       dataSite = subset(d, site == siteNames[i])        
@@ -21,7 +21,12 @@ propOccFun = function(dataset, siteName){
       for (j in 1:length(sp)){                        
         occPropSp[j] = occFun(dataSite, as.character(sp[j]))
       }
-    occProp = data.frame(datasetNum, site, sp, occPropSp, row.names = NULL)
+    occPropOutList[[i]] = data.frame(datasetNum, siteNames[i], sp, occPropSp, row.names = NULL)
   }
-    return(occProp)
+  occPropDf = rbind.fill(occPropOutList)
+    return(occPropDf)
+}
+
+siteEliminatorFun = function(occPropDf){
+  occPropDfSubSp = 
 }
