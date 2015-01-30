@@ -11,13 +11,17 @@
 library(stringr)
 library(plyr)
 
+# Source the functions file:
+
+source('scripts/R-scripts/core-transient_functions.R')
+
 # Get data:
 
 getwd()
 
 list.files('raw_datasets')
 
-d = read.csv('raw_datasets/dataset_223.csv')
+d = read.csv('data/raw_datasets/dataset_223.csv')
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE THE DATASET ----
@@ -295,53 +299,55 @@ d = d1
 
 d$datasetID = rep(223,nrow(d))
 
-d1 = ddply(d,.(datasetID, site, year, species), summarize, count = max(count))
+# Now make the data frame
 
-head(d1)
-dim(d1)
-summary(d1)
+dataset = ddply(d,.(datasetID, site, year, species), summarize, count = max(count))
 
-# Let's change site to a factor, so we can explore it further:
+# Give a quick look: 
 
-d1$site = factor(d1$site)
+head(dataset)
+dim(dataset)
+summary(dataset)
 
-summary(d1)
+# Now let's check and make sure each site has at least 10 species and 5 time
+# samples:
 
-# Now let's check and make sure each site has at least 10 species:
+siteTable = siteSummaryFun(dataset)
 
-t1 = ddply(d1, .(site), summarize,richness = length(unique(species)))
+head(siteTable)
+dim(siteTable)
+summary(siteTable)
 
-head(t1[order(t1$richness),])
+# How many sites failed to pass the richness and time test?
 
-# All of our sites pass the richness test!
+badSites = badSiteFun(dataset)
 
-# Now let's check whether each site has at least 5 time samples.
-
-t1 = ddply(d1, .(site), summarize, nT = length(unique(factor(year))))
-
-head(t1[order(t1$nT),])
-
-# Three sites need to be removed!
-
-bad_sites = c('G1C1','G1R4','G2C2')
-
-d = d1[!d1$site %in% bad_sites,]
-
-# Look at summaries again:
-
-head(d)
-
-summary(d)
-
-# Everything looks great!
+head(badSites)
+dim(badSites)
+summary(badSites)
 
 # !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE DATA WERE MODIFIED!
 
 #-------------------------------------------------------------------------------*
-# ---- WRITE DATA FRAME TO FORMATTED DATASETS ----
+# ---- WRITE OUTPUT DATA FRAMES  ----
 #===============================================================================*
 
-write.csv(d, "formatted_datasets/dataset_223.csv", row.names = F)
+# If everything is looks okay (e.g., almost all, or at least most, sites have
+# adequate), we're ready make and write formatted data frame:
+
+dataset = dataset[!dataset$site %in% badSiteFun(dataset)$site,]
+
+write.csv(dataset, "formatted_datasets/dataset_223.csv", row.names = F)
 
 # !GIT-ADD-COMMIT-PUSH BOTH YOUR COMPLETED SCRIPT AND THE NEW FORMATTED DATASET!
+
+# And make our proportional occurence data frame:
+
+write.csv(propOccFun(dataset), "propOcc_datasets/dataset_223.csv", row.names = F)
+
+# !GIT-ADD-COMMIT-PUSH THE PROPOCC!
+
+# And make and write site summary dataset:
+
+write.csv(siteSummaryFun(dataset), 'siteSummaries/siteSummary_223.csv', row.names = F)
 
