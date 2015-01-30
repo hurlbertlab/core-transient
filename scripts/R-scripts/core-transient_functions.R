@@ -20,7 +20,7 @@ se = function(x) sd(x)/sqrt(length(x))
 #==================================================================================*
 
 # The following function is used to create and explore and extract the species 
-# richness and number of time samples for a site.
+# richness and number of time samples across datasets.
 
 datasetSummaryFun = function(dataset){
   ddply(dataset, .(datasetID), summarize, 
