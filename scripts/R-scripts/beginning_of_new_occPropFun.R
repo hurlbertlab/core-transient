@@ -1,13 +1,5 @@
 d = read.csv('data/formatted_datasets/dataset_249.csv')
 
-occFun = function(dataSite, sp){
-  dataSiteSp = subset(dataSite, species == sp)
-  numSpYrs = length(unique(dataSiteSp$year))
-  numSiteYrs = length(unique(dataSite$year))
-  propOcc = numSpYrs/numSiteYrs
-  return(propOcc)
-  }
-
 propOccFun = function(dataset){
   siteNames = unique(dataset$site)
   occPropOutList = list(length = length(siteNames))
@@ -18,14 +10,17 @@ propOccFun = function(dataset){
       datasetNum = rep(unique(dataSite$datasetID), length(sp))
     # For loop to calculate the proportion of years a species has been observed:
       occPropSp = numeric(length = length(sp))
-      for (j in 1:length(sp)){                        
-        occPropSp[j] = occFun(dataSite, as.character(sp[j]))
+      for (j in 1:length(sp)){
+        dataSiteSp = subset(dataSite, species == as.character(sp[j]))
+        occPropSp[j] = length(unique(dataSiteSp$year))/length(unique(dataSite$year))
       }
     occPropOutList[[i]] = data.frame(datasetNum, siteNames[i], sp, occPropSp, row.names = NULL)
   }
   occPropDf = rbind.fill(occPropOutList)
     return(occPropDf)
 }
+
+t2 = propOccFun(d)
 
 siteEliminatorFun = function(occPropDf){
   occPropDfSubSp = 
