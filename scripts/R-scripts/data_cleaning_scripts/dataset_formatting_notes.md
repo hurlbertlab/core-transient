@@ -57,5 +57,34 @@ Here, we will provide information describing the steps taken in formatting a dat
 * **Additional notes:** Tables 1 and 3 were merged. All columns were maintained. The file was written to the data/raw_datasets folder, overwriting the previuos dataset_239.csv.
 
 ---------------------------------------
+## Dataset_200
+* **Dataset formatted on, by**: 1/29/15, mca
 
+* **Formatting completed?** Yes
+  * **If no, what problems did you run into?** NA 
+
+* **Site notes:** Sites are lat long
+  * **LatLon sites?** Yes
+  *  **If LatLon, spatial grain?** Rounded lat and long columns to nearest 1 using round_any in plyr package.  Pasted the rounded lat longs together to create site column
+  *  **Are the LatLons of the sites available?** Yes
+  *  **Can the data be used to assess the effects of spatial grain** Yes or No. We want to look at the influence of spatial grain on core-transient designation. We may be able to do this if the sites are nested (e.g., quadrats within a plot) or they can be scaled using Lats and Lons.
+
+* **Time notes** Time data listed as numeric year, month, julianday.  
+  * **Temporal grain less than or greater than one year?** Yes
+  * **If < or > one year, temporal grain?** Grain was narrowed to decimal year and decimal month format.  Numeric month was divided by 12 and added to numeric year.
+
+* **Species notes:** Searched for NAs, unidentifieds, etc.  Found some unidentified species and removed from dataset.
+
+  * *Several species that were kept listed as common names:* 'EEL UNCL','SHRIMP UNCL','LONGFIN HAKE','THORNY SKATE','LUMPFISH SNAILFISH UNCL','ROUGH SCAD','BLUE HAKE','BUTTERFISH','BOBTAIL UNCL','BARNDOOR SKATE','WITCH FLOUNDER','CRUSTACEA SHRIMP','GOOSEFISH','CRAB BRACHYURAN UNCL','NORTHERN STONE CRAB','JELLYFISH UNCL'.
+
+  * *Species listed with varying or low taxonomic resolutions:* 'CEPHALOPODA','RAJIFORMES','VAMPYROMORPHIDA','OCTOPODA','ANGUILLIFORMES','PLEURONECTIFORMES','GASTROPODA','STOMATOPODA','LOPHIIFORMES','MOLLUSCA' 
+
+  * *Species also in question:* 'CANCER BOREALIS MALE','HOMARUS AMERICANUS FEMALE','LOLIGO PEALEII EGG MOPS','HOMARUS AMERICANUS MALE','GALATHEID UNCL','CANCER BOREALIS FEMALE','ILLEX ILLECEBROSUS EGG MOPS'.
+
+  *Additionally, many of the species were listed as FAMILY and GENUS names.*
+
+* **Count notes:** No significant changes made to count column.  Original data had count numeric observations for each species at each site
+
+* **Did you update any information in the datasource table? If so, what was updated?** No
+* **Additional notes:** Data was saved temporarily to personal file on Michael's computer because I did not have access to data git submodule. 
 
