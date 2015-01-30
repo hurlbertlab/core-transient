@@ -200,7 +200,7 @@ mode.prop = function(occs, mode) {
 p.mode = function(site, mode, reps){
     actual.prop = mode.prop(occProp[as.character(occProp$site) == site,'occ'], mode)
   # For loop to get random frequncies in the mode:
-    r.props = numeric()
+    r.props = numeric(length = reps)
     for (i in 1:reps){
       r.props[i] = mode.prop(random.occs(site), mode)
     }
