@@ -16,6 +16,66 @@
 se = function(x) sd(x)/sqrt(length(x))
 
 #==================================================================================*
+# ---- FUNCTIONS to be run when making proportional Occurance dataframe  ----
+#==================================================================================*
+
+# The following function is used to create and explore and extract the species 
+# richness and number of time samples for a site.
+
+datasetSummaryFun = function(dataset){
+  ddply(dataset, .(datasetID), summarize, 
+        spRich = length(unique(species)), 
+        nTime = length(unique(year)),
+        nSite = length(unique(site)))
+}
+
+# The following function is used to create and explore and extract the species 
+# richness and number of time samples for a site.
+
+siteSummaryFun = function(dataset){
+  ddply(dataset, .(site), summarize, 
+        spRich = length(unique(species)), 
+        nTime = length(unique(year)))
+}
+
+# The following function is used to show a subset of a dataset in which the
+# number of time samples or species richness is not adequate:
+
+badSiteFun = function(dataset){
+  subset(siteSummaryFun(dataset), spRich < 10 | nTime < 5)
+}
+
+# The following function writes the proportional occurence data
+# frame on sites in which there is an adequate number of time
+# samples and species richness. 
+
+propOccFun = function(dataset){
+  dataset = dataset[!dataset$site %in% badSiteFun(dataset)$site,]
+  siteNames = unique(dataset$site)
+  occPropOutList = list(length = length(siteNames))
+  # For each of the sites in the dataset ...
+  for(i in 1:length(siteNames)){
+    # Subset to calculate occupancy by site:
+    dataSite = subset(d, site == siteNames[i])        
+    sp = factor(unique(dataSite$species))
+    datasetNum = rep(unique(dataSite$datasetID), length(sp))
+    # For each species ...
+    # Calculate the proportion of years a species has been observed:
+    occPropSp = numeric(length = length(sp))
+    for (j in 1:length(sp)){
+      dataSiteSp = subset(dataSite, species == as.character(sp[j]))
+      occPropSp[j] = length(unique(dataSiteSp$year))/
+        length(unique(dataSite$year))
+    }
+    occPropOutList[[i]] = data.frame(datasetID = datasetNum, 
+                                     site =  siteNames[i], species = sp, 
+                                     occProp = occPropSp)
+  }
+  occPropDf = rbind.fill(occPropOutList)
+  return(occPropDf)
+}
+
+#==================================================================================*
 # ---- BIMODALILITY ----
 #==================================================================================*
 # NOTE: For these functions to run, occProp, Ntime, and outSummary frames must
@@ -87,7 +147,7 @@ p.bimodal = function(site, reps){
   nt = nTime[as.character(nTime$site) == site,'nt']
   actual.bimod = bimodality(occProp[as.character(occProp$site) == site,'occ'], site)
   # For loop to get random bimodality values
-  r.bimod = numeric()
+  r.bimod = numeric(length = reps)
   for (i in 1:reps){
     r.bimod[i] = bimodality(random.occs(site), site)
   }
