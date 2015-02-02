@@ -2,7 +2,7 @@
 Data and code for NSF funded research on core vs transient species
 
 ## How to generate and use an ssh key on a Windows machine
-This takes you through the steps necessary to generate an ssh key to work with the core-transient/data submodule. Most of this information is from this [tutorial] https://help.github.com/articles/generating-ssh-keys
+This takes you through the steps necessary to generate an ssh key to work with the core-transient/data submodule. Most of this information is from this [tutorial](https://help.github.com/articles/generating-ssh-keys)
 
 1. Open **git bash** 
 2. You may as well delete your old core-transient directory now, because we're going to be replacing it (make sure you don't need to push anything prior to!).
@@ -28,7 +28,7 @@ This takes you through the steps necessary to generate an ssh key to work with t
   * Click the "Add SSH key".
   * Provide a title for the key (e.g., "Allens laptop").
   * Paste the **entire** contents of your clipboard in the "key" field and click the "Add key" button.
-11. Navigate to the online core-transient [folder] https://github.com/hurlbertlab/core-transient
+11. Navigate to the core-transient [folder](https://github.com/hurlbertlab/core-transient) online.
 12. In the lower right you will see a 
 11. Navigate back to your **git bash** window. 
 12. Test out whether you've successfully connected the key by typing (don't worry if there's a warning):
