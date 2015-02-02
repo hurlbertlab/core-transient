@@ -8,16 +8,16 @@ This takes you through the steps necessary to generate an ssh key to work with t
 2. You may as well delete your old core-transient directory now, because we're going to be replacing it (make sure you don't need to push anything prior to!).
 
  ```
- rm -rf ~/core-transient
+ $ rm -rf ~/core-transient
  ```
 
 3. Generate a new ssh key by typing:
 
  ```
- ssh-keygen -t rsa -C "your_email@example.com"
+ $ ssh-keygen -t rsa -C "your_email@example.com"
  ```
 
-4. You'll be asked to enter your ssh directory and a passphrase. Just leave these blank and hit enter for each select ion. The location of your ssh key and the key fingerprint are printed. The location should be in your home directory.
+4. You'll be asked to enter your ssh directory and a passphrase. Just leave these blank and hit enter for each selection. The location of your ssh key and the key fingerprint are printed. The location should be in your home directory.
 5. Type `ls .ssh` to be shown the ssh files. _Note: You can type_ `pwd` _to print the working directory location.
 7. Navigate to the location of the ssh key in **Windows Explorer** (should be in the home folder of your user name).
 8. Open the ssh file, *id_rsa.pub* (There will be two id_rsa files, if you cannot see the extension, it is the one listed as a Microsoft Publisher Document), in **notepad**.
@@ -53,18 +53,18 @@ This takes you through the steps necessary to generate an ssh key to work with t
 ## Priority rankings for obtaining and/or formatting data, on a scale of 0-5, are currently based on summing:
 
 ### Taxa (based on current representation): 
-  0 birds
-  1 Benthos, Fish, Plants
-  2 Arthropod, Invertevrate, Plankton, Mammal
+  0 birds  
+  1 Benthos, Fish, Plants  
+  2 Arthropod, Invertebrate, Plankton, Mammal  
   
 ### System (based on current representation):
-  0 marine
-  1 terrestrial or aquatic
+  0 marine  
+  1 terrestrial or aquatic  
 
 ### Number of sites:
-  0 less than 10 or unknown
-  1 >= 10
+  0 less than 10 or unknown  
+  1 >= 10  
 
 ### Number of time intervals:
-  0 less than 15 or unknown
-  1 greater than 15
+  0 less than 15 or unknown  
+  1 greater than 15  
