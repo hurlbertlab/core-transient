@@ -27,14 +27,8 @@ ssh-keygen -t rsa -C "your_email@example.com"
 11. Navigate to the online core-transient [folder] https://github.com/hurlbertlab/core-transient
 12. In the lower right you will see a 
 11. Navigate back to your **git bash** window. 
-12. Test out whether you've successfully connected the key by typing (don't worry if there's a warning):
-```
-ssh -T git@github.com
-```
-13. Clone the core-transient folder by typing:
-```
-git clone git@github.com:hurlbertlab/core-transient.git
-```
+12. Test out whether you've successfully connected the key by typing (don't worry if there's a warning):```ssh -T git@github.com```
+13. Clone the core-transient folder by typing:```git clone git@github.com:hurlbertlab/core-transient.git```
 14. Type `cd core-transient` to navigate to the core-transient folder.
 15. Add the submodule folder by typing:
 ```
@@ -42,6 +36,7 @@ git submodule init
 git submodule update
 ```
 14. Explore the data folder a bit to find out if you were successful! 
+
 
 ## Priority rankings for obtaining and/or formatting data, on a scale of 0-5, are currently based on summing:
 
