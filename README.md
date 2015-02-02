@@ -6,13 +6,17 @@ This takes you through the steps necessary to generate an ssh key to work with t
 
 1. Open **git bash** 
 2. You may as well delete your old core-transient directory now, because we're going to be replacing it (make sure you don't need to push anything prior to!).
+
 ```
 rm -rf ~/core-transient
 ```
+
 3. Generate a new ssh key by typing:
+
 ```
 ssh-keygen -t rsa -C "your_email@example.com"
 ```
+
 4. You'll be asked to enter your ssh directory and a passphrase. Just leave these blank and hit enter for each select ion. The location of your ssh key and the key fingerprint are printed. The location should be in your home directory.
 5. Type `ls .ssh` to be shown the ssh files. _Note: You can type_ `pwd` _to print the working directory location.
 7. Navigate to the location of the ssh key in **Windows Explorer** (should be in the home folder of your user name).
@@ -27,14 +31,22 @@ ssh-keygen -t rsa -C "your_email@example.com"
 11. Navigate to the online core-transient [folder] https://github.com/hurlbertlab/core-transient
 12. In the lower right you will see a 
 11. Navigate back to your **git bash** window. 
-12. Test out whether you've successfully connected the key by typing (don't worry if there's a warning):```ssh -T git@github.com```
-13. Clone the core-transient folder by typing:```git clone git@github.com:hurlbertlab/core-transient.git```
+12. Test out whether you've successfully connected the key by typing (don't worry if there's a warning):
+
+```ssh -T git@github.com```
+
+13. Clone the core-transient folder by typing:
+ 
+```git clone git@github.com:hurlbertlab/core-transient.git```
+
 14. Type `cd core-transient` to navigate to the core-transient folder.
 15. Add the submodule folder by typing:
+
 ```
 git submodule init
 git submodule update
 ```
+
 14. Explore the data folder a bit to find out if you were successful! 
 
 
