@@ -42,7 +42,7 @@ siteSummaryFun = function(dataset){
 # number of time samples or species richness is not adequate:
 
 badSiteFun = function(dataset){
-  subset(siteSummaryFun(dataset), spRich <= 10 | nTime <= 5)
+  subset(siteSummaryFun(dataset), spRich < 10 | nTime < 5)
 }
 
 # The following function writes the proportional occurence data
