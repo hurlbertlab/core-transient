@@ -28,8 +28,6 @@ This takes you through the steps necessary to generate an ssh key to work with t
   * Click the "Add SSH key".
   * Provide a title for the key (e.g., "Allens laptop").
   * Paste the **entire** contents of your clipboard in the "key" field and click the "Add key" button.
-10. Navigate to the core-transient [folder](https://github.com/hurlbertlab/core-transient) online.
-11. In the lower right you will see a 
 12. Navigate back to your **git bash** window. 
 13. Test out whether you've successfully connected the key by typing (don't worry if there's a warning):
 
