@@ -30,8 +30,6 @@ Here, we will provide information describing the steps taken in formatting a dat
 
 ---------------------------------------
 
----------------------------------------
-
 ## Dataset_239
 
 * **Dataset formatted on, by**: 1/28/15, bse
@@ -87,4 +85,36 @@ Here, we will provide information describing the steps taken in formatting a dat
 
 * **Did you update any information in the datasource table? If so, what was updated?** No
 * **Additional notes:** Data was saved temporarily to personal file on Michael's computer because I did not have access to data git submodule. 
+
+---------------------------------------
+
+## Dataset_250
+
+* **Dataset formatted on, by**: 2/3/15, bse
+
+* **Formatting completed?** Yes 
+  * **If no, what problems did you run into?** NA
+
+* **Site notes:** Three sites were provided, one had to be removed due to low species richness (5)
+  * **LatLon sites?** No
+  *  **If LatLon, spatial grain?** NA
+  *  **Are the LatLons of the sites available?** THIS NEEDS TO BE CHECKED
+  *  **Can the data be used to assess the effects of spatial grain** No
+
+* **Time notes** Time was provided as year, month, day.
+  * **Temporal grain less than or greater than one year?** Yes
+  * **If < or > one year, temporal grain?** Temporal grain was evaluated as annual.
+
+* **Species notes:** All species maintained.
+
+* **Count notes:** Count field had to be created, because each record represented an individual. This was done using:
+```
+dataset1 = ddply(dataset, .(creek_location,year, fish_species),summarize,
+                 count = length(fish_species))
+```
+
+* **Did you update any information in the datasource table? If so, what was updated?** Number of sites due to the removal of the site with low species richness, temporal grain was changed to annual, change in nRecs due to removal of site and changed temporal grain.
+* **Additional notes:** Sampling was bimonthly, so this temporal grain may be reduced!
+
+---------------------------------------
 
