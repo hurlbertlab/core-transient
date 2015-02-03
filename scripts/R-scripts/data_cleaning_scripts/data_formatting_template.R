@@ -19,7 +19,7 @@ source('scripts/R-scripts/core-transient_functions.R')
 
 getwd()
 
-list.files('raw_datasets')
+list.files('data/raw_datasets')
 
 dataset = read.csv('data/raw_datasets/dataset_223.csv')
 
@@ -343,17 +343,17 @@ dataset1 = dataset1[!dataset1$site %in% badSiteFun(dataset)$site,]
 
 dataset = dataset1
 
-write.csv(dataset, "formatted_datasets/dataset_223.csv", row.names = F)
+write.csv(dataset, "data/formatted_datasets/dataset_223.csv", row.names = F)
 
 # !GIT-ADD-COMMIT-PUSH BOTH YOUR COMPLETED SCRIPT AND THE NEW FORMATTED DATASET!
 
 # And make our proportional occurence data frame:
 
-write.csv(propOccFun(dataset), "propOcc_datasets/propOcc_223.csv", row.names = F)
+write.csv(propOccFun(dataset), "data/propOcc_datasets/propOcc_223.csv", row.names = F)
 
 # !GIT-ADD-COMMIT-PUSH propOcc!
 
 # And make and write site summary dataset:
 
-write.csv(siteSummaryFun(dataset), 'siteSummaries/siteSummary_223.csv', row.names = F)
+write.csv(siteSummaryFun(dataset), 'data/siteSummaries/siteSummary_223.csv', row.names = F)
 
