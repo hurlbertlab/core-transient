@@ -40,8 +40,11 @@
 ### Working with the submodule
 * Added submodule "data" which contains the core-transient datasets folder.
 * Make sure to use the following commands to work with the submodule on a new machine:
-* git submodule init
-* git submodule update
+```
+git submodule init
+git submodule update
+```
+
 * From now on, work with data within the submodule rather than the core-transient-datasets folder
 * add-commit-pull will now have an additional step, once per day you have to commit and push the submodule:
 ```
