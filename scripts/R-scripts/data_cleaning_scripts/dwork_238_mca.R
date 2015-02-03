@@ -177,3 +177,6 @@ unique(d2$year)
 head(d2, 100)
 tail(d2, 100)
 
+# Add decimal month to year (But dec = 1 so it's going to add 1 to the year??)
+  # Do I set it to .99??
+
