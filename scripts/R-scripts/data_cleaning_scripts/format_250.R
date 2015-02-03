@@ -19,9 +19,9 @@ source('scripts/R-scripts/core-transient_functions.R')
 
 getwd()
 
-list.files('raw_datasets')
+list.files('data/raw_datasets')
 
-dataset = read.csv('data/raw_datasets/dataset_223.csv')
+dataset = read.csv('data/raw_datasets/dataset_250.csv')
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE THE DATASET ----
@@ -56,7 +56,7 @@ head(dataset, 10)
 
 names(dataset)
 
-dataset1 = dataset[,-c(1,2,8,11,13,14)]
+dataset1 = dataset[,-c(1,3,4,7:9)]
 
 head(dataset1)
 
@@ -78,74 +78,15 @@ summary(dataset)
 
 head(dataset)
 
-# We can see that sites are broken up into (potentially) 5 fields. Let's explore
-# whether the "site" field itself suffices:
-
 # How many sites are there?
 
-length(unique(dataset$site))
+length(unique(dataset$creek_location))
 
 # How many records are there per site?
 
-ddply(dataset, .(site), nrow)
+ddply(dataset, .(creek_location), nrow)
 
-# Hmmmm ... it seems the scale of site is off (and a conversation with
-# Sevilleta confirmed this). What if we concatenated all of the site columns?
-# Use paste to concatenate:
-
-site = paste(dataset$site, dataset$block, dataset$treatment, 
-             dataset$plot, dataset$quad, sep = '')
-
-head(site)
-
-length(unique(site))
-
-# Now we have quite a few sites, how many records are there per site?
-# Assign a name, because it's going to be super long:
-
-siteTable = ddply(data.frame(site), .(site), nrow)
-
-head(siteTable)
-
-# Sort the table to see the fewest number of records per site:
-
-head(siteTable[order(siteTable$V1),],10)
-
-# Lot's of sites with few records! Let's explore further:
-
-summary(siteTable)
-
-# Let's try concatenating all but the quad field and explore the output:
-
-site = paste(dataset$site, dataset$block, 
-             dataset$treatment, dataset$plot, sep = '')
-
-length(unique(site))
-
-siteTable = ddply(data.frame(site), .(site), nrow)
-
-head(siteTable[order(siteTable$V1),],10)
-
-summary(siteTable)
-
-# For all but the first site (and perhaps the second), these sample sizes are 
-# adequate. Add to reduced dataframe:
-
-dataset1 = dataset[,-c(2:5)]
-
-dataset1$site = site
-
-head(dataset1)
-
-# Now let's remove the site with the very low sample size:
-
-head(siteTable[order(siteTable$V1),],10)
-
-dataset1 = dataset1[!dataset1$site %in% 'C3C1',]
-
-head(dataset1)
-
-dataset = dataset1
+# Sites look fine, moving on to species.
 
 # !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE DATA WERE MODIFIED!
 
@@ -157,46 +98,11 @@ dataset = dataset1
 # too liberal in interpretation, if you notice an entry that MIGHT be a problem, 
 # but you can't say with certainty, create an issue on GitHub.
 
-sp = dataset$species
+sp = dataset$fish_species
 
 levels(sp) # Note: You can also use unique(sp) here.
 
-# There first thing that I notice is that there are lower and upper case
-# entries. Because R is case-sensitive, this will be coded as separate species.
-# Modify this prior to continuing:
-
-dataset$species = toupper(dataset$species)
-
-# Let's explore whether there was a difference:
-
-length(unique(dataset$species))
-
-length(unique(sp))
-
-# We see that almost 70 species were the result of upper and lower case!
-# Make a new species vector (factor ensures that it is coded as a factor
-# rather than character and removes any unused levels) 
-# and continue exploring:
-
-sp = factor(dataset$species)
-
-levels(sp)
-
-# There are a number of records that can be removed. There are actually more than
-# this in the example dataset, this should be posted as an issue on GitHub, but
-# we will continue with the example:
-
-bad_sp = c('', 'DEAD','SEED','SEED1','SEED2')
-
-dataset1 = dataset[!dataset$species %in% bad_sp,]
-
-head(dataset1)
-
-summary(dataset1)
-
-# Having checked through the results, we can now reassign the dataset as d:
-
-dataset = dataset1
+# All looks fine, moving on to counts.
 
 # !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE DATA WERE MODIFIED!
 
@@ -208,88 +114,29 @@ dataset = dataset1
 
 summary(dataset)
 
-# Subset to records > 0
+head(dataset)
 
-dataset1 = dataset[dataset$cover>0,]
+# In this case, each record is an individual. We want to summarize to count the
+# number of individuals at each site for a given species.
+
+dataset1 = ddply(dataset, .(creek_location,year, fish_species),summarize,
+                 count = length(fish_species))
 
 summary(dataset1)
 
-# Remove NA's:
+head(dataset1)
 
-dataset = na.omit(dataset1)
+# All looks good, renaming to dataset:
 
-# Let's change the cover column to count. Make sure to write in the data summary
-# table the type of observed count.
-
-names(dataset)[4] = 'count'
-
-head(dataset)
+dataset = dataset1
 
 # !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE DATA WERE MODIFIED!
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT TIME DATA ----
 #===============================================================================*
-# Here, we need to modify the dates of sampling to decimal years. To do so, we 
-# we need to be aware of the temporal grain of the analysis.
-
-# Let's look at how the seasons are distributed by extracting just the 
-# season (not year data):
-
-head(dataset)
-
-season = str_sub(dataset$season, end = -5)
-
-levels(factor(season))
-
-# Okay we can see that the sampling is divided into fall and spring. Let's 
-# just turn those into decimal years:
-
-season = ifelse(season == 'SPRING',.25, .75)
-
-summary(season)
-
-# Now, let's extract year from the date (we could easily do this using
-# the str_sub method as well, but this is more universal).
-# First, make the date into an R date object:
-
-class(dataset$record_record_date)
-
-date = strptime(dataset$record_record_date, '%m/%d/%Y')
-
-class(date)
-
-head(date)
-
-# It worked! Now extract year:
-
-year = as.numeric(format(date, '%Y'))
-
-# Add the decimal year and year vectors:
-
-dataset$year = year + season 
-
-head(dataset)
-
-# Now let's clean up by removing the other date columns:
-
-dataset1 = dataset[,-c(2,5)]
-
-head(dataset1)
-
-summary(dataset1)
-
-# A couple of years are listed as NA. Let's remove them:
-
-dataset1 = na.omit(dataset1)
-
-summary(dataset1)
-
-# Everything looks good, so let's call it d again
-
-dataset = dataset1
-
-# !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE DATA WERE MODIFIED!
+# Time samples, at an annual grain, are fine for our needs. This study can,
+# however, be used to look at changing temporal grain.
 
 #-------------------------------------------------------------------------------*
 # ---- MAKE DATA FRAME OF COUNT BY SITES, SPECIES, AND YEAR ----
@@ -299,11 +146,15 @@ dataset = dataset1
 
 # First, lets add the datasetID:
 
-dataset$datasetID = rep(223,nrow(dataset))
+dataset$datasetID = rep(250,nrow(dataset))
 
 # Now make the data frame
 
-dataset1 = ddply(dataset,.(datasetID, site, year, species), summarize, count = max(count))
+head(dataset)
+
+dataset1 = dataset[,c(5,1:4)]
+
+names(dataset1) = c('datasetID', 'site','year','species','count')
 
 # Give a quick look: 
 
@@ -330,7 +181,7 @@ summary(badSites)
 
 # Remove bad sites
 
-dataset1 = dataset1[!dataset1$site %in% badSiteFun(dataset)$site,]
+dataset1 = dataset1[!dataset1$site %in% badSiteFun(dataset1)$site,]
 
 # !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE DATA WERE MODIFIED!
 
@@ -343,17 +194,33 @@ dataset1 = dataset1[!dataset1$site %in% badSiteFun(dataset)$site,]
 
 dataset = dataset1
 
-write.csv(dataset, "formatted_datasets/dataset_223.csv", row.names = F)
+write.csv(dataset, "data/formatted_datasets/dataset_250.csv", row.names = F)
 
 # !GIT-ADD-COMMIT-PUSH BOTH YOUR COMPLETED SCRIPT AND THE NEW FORMATTED DATASET!
 
 # And make our proportional occurence data frame:
 
-write.csv(propOccFun(dataset), "propOcc_datasets/propOcc_223.csv", row.names = F)
+write.csv(propOccFun(dataset), "data/propOcc_datasets/propOcc_250.csv", row.names = F)
 
 # !GIT-ADD-COMMIT-PUSH propOcc!
 
 # And make and write site summary dataset:
 
-write.csv(siteSummaryFun(dataset), 'siteSummaries/siteSummary_223.csv', row.names = F)
+write.csv(siteSummaryFun(dataset), 'data/siteSummaries/siteSummary_250.csv', row.names = F)
+
+#-------------------------------------------------------------------------------*
+# ---- EXPLORE YOUR DATASET SUMMARY INFO AND UPDATE THE DATA SOURCE TABLE  ----
+#===============================================================================*
+
+dim(dataset)
+
+length(unique(dataset$site))
+
+length(unique(dataset$year))
+
+length(unique(dataset$species))
+
+
+
+
 
