@@ -357,3 +357,15 @@ write.csv(propOccFun(dataset), "data/propOcc_datasets/propOcc_223.csv", row.name
 
 write.csv(siteSummaryFun(dataset), 'data/siteSummaries/siteSummary_223.csv', row.names = F)
 
+#-------------------------------------------------------------------------------*
+# ---- EXPLORE YOUR DATASET SUMMARY INFO AND UPDATE THE DATA SOURCE TABLE  ----
+#===============================================================================*
+
+dim(dataset)
+
+length(unique(dataset$site))
+
+length(unique(dataset$year))
+
+length(unique(dataset$species))
+
