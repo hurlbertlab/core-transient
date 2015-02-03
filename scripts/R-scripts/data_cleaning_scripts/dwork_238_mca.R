@@ -95,4 +95,19 @@ class(d$value)
  
 # Change to numeric
 d$count = as.numeric(d$value)
-  # Warning message: 'NAs introduced by coercion'??
+  # Warning message: 'NAs introduced by coercion'
+unique(d$value)
+unique(d$count)
+
+  # Automatically removed character "ND" in value column and kept NAs
+  # Confirmed by checking old vs new column 
+length(unique(d$value))
+length(unique(d$count))
+
+# Remove old column
+d = d[,-c(3)]
+head(d)
+
+#-------------------------------------------------------------------------------*
+# ---- EXPLORE AND FORMAT TIME DATA ----
+#===============================================================================*
