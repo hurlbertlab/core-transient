@@ -44,8 +44,11 @@
 * git submodule update
 * From now on, work with data within the submodule rather than the core-transient-datasets folder
 * add-commit-pull will now have an additional step, once per day you have to commit and push the submodule:
+```
 git add data
 git commit -m "daily update of the data file"
+```
+
 _**Note:** this allows the changes to be known across machines_
 
 ***
