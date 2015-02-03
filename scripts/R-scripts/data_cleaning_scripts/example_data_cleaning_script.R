@@ -21,7 +21,7 @@ getwd()
 
 list.files('raw_datasets')
 
-d = read.csv('data/raw_datasets/dataset_223.csv')
+dataset = read.csv('data/raw_datasets/dataset_223.csv')
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE THE DATASET ----
@@ -32,41 +32,41 @@ d = read.csv('data/raw_datasets/dataset_223.csv')
 
 # View field names:
 
-names(d)
+names(dataset)
 
 # View how many records and fields:
 
-dim(d)
+dim(dataset)
 
 # View the structure of the dataset:
 
-str(d)
+str(dataset)
 
 # View first 6 rows of the dataset:
 
-head(d)
+head(dataset)
 
 # View the first 10 rows of the dataset:
 
-head(d, 10)
+head(dataset, 10)
 
 # Here, we can see that there are some fields that we won't use. Let's remove
 # them, note that I've given a new name here "d1", this is to ensure that
 # we don't have to go back to square 1 if we've miscoded anything.
 
-names(d)
+names(dataset)
 
-d1 = d[,-c(1,2,8,11,13,14)]
+dataset1 = dataset[,-c(1,2,8,11,13,14)]
 
-head(d1)
+head(dataset1)
 
 # Because all (and only) the fields we want are present, we can re-assign d1:
 
-d = d1
+dataset = dataset1
 
 # View summary of fields in the dataset:
 
-summary(d)
+summary(dataset)
 
 # !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE DATA WERE MODIFIED!
 
@@ -76,24 +76,25 @@ summary(d)
 
 # Reminder of the dataset:
 
-head(d)
+head(dataset)
 
 # We can see that sites are broken up into (potentially) 5 fields. Let's explore
 # whether the "site" field itself suffices:
 
 # How many sites are there?
 
-length(unique(d$site))
+length(unique(dataset$site))
 
 # How many records are there per site?
 
-ddply(d, .(site), nrow)
+ddply(dataset, .(site), nrow)
 
 # Hmmmm ... it seems the scale of site is off (and a conversation with
 # Sevilleta confirmed this). What if we concatenated all of the site columns?
 # Use paste to concatenate:
 
-site = paste(d$site, d$block, d$treatment, d$plot, d$quad, sep = '')
+site = paste(dataset$site, dataset$block, dataset$treatment, 
+             dataset$plot, dataset$quad, sep = '')
 
 head(site)
 
@@ -116,7 +117,8 @@ summary(siteTable)
 
 # Let's try concatenating all but the quad field and explore the output:
 
-site = paste(d$site, d$block, d$treatment, d$plot, sep = '')
+site = paste(dataset$site, dataset$block, 
+             dataset$treatment, dataset$plot, sep = '')
 
 length(unique(site))
 
@@ -129,21 +131,21 @@ summary(siteTable)
 # For all but the first site (and perhaps the second), these sample sizes are 
 # adequate. Add to reduced dataframe:
 
-d1 = d[,-c(2:5)]
+dataset1 = dataset[,-c(2:5)]
 
-d1$site = site
+dataset1$site = site
 
-head(d1)
+head(dataset1)
 
 # Now let's remove the site with the very low sample size:
 
 head(siteTable[order(siteTable$V1),],10)
 
-d1 = d1[!d1$site %in% 'C3C1',]
+dataset1 = dataset1[!dataset1$site %in% 'C3C1',]
 
-head(d1)
+head(dataset1)
 
-d = d1
+dataset = dataset1
 
 # !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE DATA WERE MODIFIED!
 
@@ -155,7 +157,7 @@ d = d1
 # too liberal in interpretation, if you notice an entry that MIGHT be a problem, 
 # but you can't say with certainty, create an issue on GitHub.
 
-sp = d$species
+sp = dataset$species
 
 levels(sp) # Note: You can also use unique(sp) here.
 
@@ -163,11 +165,11 @@ levels(sp) # Note: You can also use unique(sp) here.
 # entries. Because R is case-sensitive, this will be coded as separate species.
 # Modify this prior to continuing:
 
-d$species = toupper(d$species)
+dataset$species = toupper(dataset$species)
 
 # Let's explore whether there was a difference:
 
-length(unique(d$species))
+length(unique(dataset$species))
 
 length(unique(sp))
 
@@ -176,7 +178,7 @@ length(unique(sp))
 # rather than character and removes any unused levels) 
 # and continue exploring:
 
-sp = factor(d$species)
+sp = factor(dataset$species)
 
 levels(sp)
 
@@ -186,15 +188,15 @@ levels(sp)
 
 bad_sp = c('', 'DEAD','SEED','SEED1','SEED2')
 
-d1 = d[!d$species %in% bad_sp,]
+dataset1 = dataset[!dataset$species %in% bad_sp,]
 
-head(d1)
+head(dataset1)
 
-summary(d1)
+summary(dataset1)
 
 # Having checked through the results, we can now reassign the dataset as d:
 
-d = d1
+dataset = dataset1
 
 # !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE DATA WERE MODIFIED!
 
@@ -204,24 +206,24 @@ d = d1
 # Next, we need to explore the count records. A good first pass is to remove 
 # zero counts and NA's:
 
-summary(d)
+summary(dataset)
 
 # Subset to records > 0
 
-d1 = d[d$cover>0,]
+dataset1 = dataset[dataset$cover>0,]
 
-summary(d1)
+summary(dataset1)
 
 # Remove NA's:
 
-d = na.omit(d1)
+dataset = na.omit(dataset1)
 
 # Let's change the cover column to count. Make sure to write in the data summary
 # table the type of observed count.
 
-names(d)[4] = 'count'
+names(dataset)[4] = 'count'
 
-head(d)
+head(dataset)
 
 # !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE DATA WERE MODIFIED!
 
@@ -234,9 +236,9 @@ head(d)
 # Let's look at how the seasons are distributed by extracting just the 
 # season (not year data):
 
-head(d)
+head(dataset)
 
-season = str_sub(d$season, end = -5)
+season = str_sub(dataset$season, end = -5)
 
 levels(factor(season))
 
@@ -251,9 +253,9 @@ summary(season)
 # the str_sub method as well, but this is more universal).
 # First, make the date into an R date object:
 
-class(d$record_record_date)
+class(dataset$record_record_date)
 
-date = strptime(d$record_record_date, '%m/%d/%Y')
+date = strptime(dataset$record_record_date, '%m/%d/%Y')
 
 class(date)
 
@@ -265,27 +267,27 @@ year = as.numeric(format(date, '%Y'))
 
 # Add the decimal year and year vectors:
 
-d$year = year + season 
+dataset$year = year + season 
 
-head(d)
+head(dataset)
 
 # Now let's clean up by removing the other date columns:
 
-d1 = d[,-c(2,5)]
+dataset1 = dataset[,-c(2,5)]
 
-head(d1)
+head(dataset1)
 
-summary(d1)
+summary(dataset1)
 
 # A couple of years are listed as NA. Let's remove them:
 
-d1 = na.omit(d1)
+dataset1 = na.omit(dataset1)
 
-summary(d1)
+summary(dataset1)
 
 # Everything looks good, so let's call it d again
 
-d = d1
+dataset = dataset1
 
 # !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE DATA WERE MODIFIED!
 
@@ -297,22 +299,22 @@ d = d1
 
 # First, lets add the datasetID:
 
-d$datasetID = rep(223,nrow(d))
+dataset$datasetID = rep(223,nrow(dataset))
 
 # Now make the data frame
 
-dataset = ddply(d,.(datasetID, site, year, species), summarize, count = max(count))
+dataset1 = ddply(dataset,.(datasetID, site, year, species), summarize, count = max(count))
 
 # Give a quick look: 
 
-head(dataset)
-dim(dataset)
-summary(dataset)
+head(dataset1)
+dim(dataset1)
+summary(dataset1)
 
 # Now let's check and make sure each site has at least 10 species and 5 time
 # samples:
 
-siteTable = siteSummaryFun(dataset)
+siteTable = siteSummaryFun(dataset1)
 
 head(siteTable)
 dim(siteTable)
@@ -320,11 +322,15 @@ summary(siteTable)
 
 # How many sites failed to pass the richness and time test?
 
-badSites = badSiteFun(dataset)
+badSites = badSiteFun(dataset1)
 
 head(badSites)
 dim(badSites)
 summary(badSites)
+
+# Remove bad sites
+
+dataset1 = dataset1[!dataset1$site %in% badSiteFun(dataset)$site,]
 
 # !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE DATA WERE MODIFIED!
 
@@ -335,7 +341,7 @@ summary(badSites)
 # If everything is looks okay (e.g., almost all, or at least most, sites have
 # adequate), we're ready make and write formatted data frame:
 
-dataset = dataset[!dataset$site %in% badSiteFun(dataset)$site,]
+dataset = dataset1
 
 write.csv(dataset, "formatted_datasets/dataset_223.csv", row.names = F)
 
@@ -343,9 +349,9 @@ write.csv(dataset, "formatted_datasets/dataset_223.csv", row.names = F)
 
 # And make our proportional occurence data frame:
 
-write.csv(propOccFun(dataset), "propOcc_datasets/dataset_223.csv", row.names = F)
+write.csv(propOccFun(dataset), "propOcc_datasets/propOcc_223.csv", row.names = F)
 
-# !GIT-ADD-COMMIT-PUSH THE PROPOCC!
+# !GIT-ADD-COMMIT-PUSH propOcc!
 
 # And make and write site summary dataset:
 
