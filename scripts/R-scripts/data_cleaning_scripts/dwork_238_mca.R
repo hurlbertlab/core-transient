@@ -95,6 +95,7 @@ class(d$value)
  
 # Change to numeric
 d$count = as.numeric(d$value)
+class(d$count)
   # Warning message: 'NAs introduced by coercion'
 unique(d$value)
 unique(d$count)
@@ -108,6 +109,39 @@ length(unique(d$count))
 d = d[,-c(3)]
 head(d)
 
+# Remove zeros and NAs
+d1 = d[d$count>0,]
+length(unique(d1$count))
+unique(d1$count)
+
+    # Change back to d and omit NAs
+d = na.omit(d1)
+length(unique(d$count))
+summary(d$count)
+
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT TIME DATA ----
 #===============================================================================*
+# Explore
+length(unique(d$date))
+unique(d$date)
+class(d$date)
+
+# Separate month from year
+?str_sub
+d$month = str_sub(d$date, end = 3)
+unique(d$month)
+d$year = str_sub(d$date, start = -2, end = -1)
+head(d)
+class(d$year)
+class(d$month)
+
+# Change month to factor
+d$month = factor(d$month)
+head(d)
+str(d)
+
+# Turning into decimal years
+d1 = d
+head(d1)
+?ifelse
