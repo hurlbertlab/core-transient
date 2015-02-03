@@ -145,3 +145,35 @@ str(d)
 d1 = d
 head(d1)
 ?ifelse
+d1$month = ifelse(d1$month == "apr",4,ifelse(d1$month == "aug",8,12))
+unique(d1$month)
+
+# Other much more efficient and better way of converting to decimal years
+d1 = d
+levels(d1$month)
+levels(d1$month) = c(4,8,12)
+head(d1)
+
+  #Need to change to character from factor before converting to numeric
+d1$month = as.character(d1$month)
+head(d1)
+  # Change to numeric
+d1$month = as.numeric(d1$month)
+str(d1)
+d1$month = d1$month/12
+head(d1)
+unique(d1$month)
+
+# Change year to full year number
+  #Change levels
+d2 = d1
+head(d2)
+levels(factor(d2$year))
+d2$year = factor(d2$year)
+head(d2$year)
+levels(d2$year)
+levels(d2$year) = c(2002,1989,1990,1991,1992,1993,1994,1995,1996,1997,1998,1999)
+unique(d2$year)
+head(d2, 100)
+tail(d2, 100)
+
