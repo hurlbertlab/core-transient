@@ -189,5 +189,30 @@ summary(d2)
 
 # Remove old date columns a revert back to 'd'
 d = d2[,-c(3,5,6)]
+names(d)[4] = 'year'
 head(d)
+
+#-------------------------------------------------------------------------------*
+# ---- MAKE DATA FRAME OF COUNT BY SITES, SPECIES, AND YEAR ----
+#===============================================================================*
+
+# Add datasetID column
+d$datasetID = rep(238, nrow(d))
+head(d)
+
+# Organize count by site, species, date
+d1 = ddply(d,.(datasetID, site, year, species), summarize, count = max(count))
+dim(d1)
+head(d1)
+summary(d1)
+
+# Testing for minimum 5 time samples and 10 species per site
+site_table = siteSummaryFun(d1)
+summary(site_table)
+head(site_table)
+dim(site_table)
+site_table
+
+  #All sites have equal time samples (31) and sufficient sp richness
+  #No sites or observations to remove
 
