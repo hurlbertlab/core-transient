@@ -216,3 +216,12 @@ site_table
   #All sites have equal time samples (31) and sufficient sp richness
   #No sites or observations to remove
 
+# Arrange columns in correct order
+head(d1)
+d1 = d1[,c(1,2,4,3,5)]
+
+#-------------------------------------------------------------------------------*
+# ---- WRITE OUTPUT DATA FRAMES  ----
+#===============================================================================*
+
+d = d1
