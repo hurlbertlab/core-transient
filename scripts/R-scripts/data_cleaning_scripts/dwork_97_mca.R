@@ -32,3 +32,44 @@ head(d1)
   # Change d1 back to d
 d = d1
 summary(d)
+
+#-------------------------------------------------------------------------------*
+# ---- EXPLORE AND FORMAT SITE DATA ----
+#===============================================================================*
+# Sites are recorded as collection method with lat_longs
+  # Explore
+length(unique(d$SampleID))
+class(d$SampleID)
+  # Total of 835 unique sites
+
+# Find number of records per site
+siteTable = ddply(data.frame(d$SampleID),.(d$SampleID), nrow)
+tail(siteTable[order(siteTable$V1),],150)
+summary(siteTable)
+
+# Hundreds of sites have very low sample sizes
+  ## Need to find a way to broaden site data
+
+
+
+#-------------------------------------------------------------------------------*
+# ---- EXPLORE AND FORMAT SPECIES DATA ----
+#===============================================================================*
+# Explore
+length(unique(d$Species))
+  # 419 unique species
+class(d$Species)
+head(d$Species)
+
+# Capitalize all to remove capitalization error
+d$species = factor(toupper(d$Species))
+length(unique(d$species))
+    # No capitalization errors, none to remove
+
+# Explore unique species
+levels(d$species)
+  # Wide variation in taxonomic resolution
+  # No questionable species recorded, so none removed
+
+
+
