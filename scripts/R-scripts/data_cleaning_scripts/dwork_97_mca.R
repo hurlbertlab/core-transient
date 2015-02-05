@@ -50,7 +50,9 @@ summary(siteTable)
 
 # Hundreds of sites have very low sample sizes
   ## Need to find a way to broaden site data
-
+badSites = siteTable[siteTable$V1<5,]
+dim(badSites)
+badSites
 
 
 #-------------------------------------------------------------------------------*
@@ -70,6 +72,7 @@ length(unique(d$species))
 levels(d$species)
   # Wide variation in taxonomic resolution
   # No questionable species recorded, so none removed
+names(d)[3] = 'species'
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT COUNT DATA ----
@@ -91,3 +94,16 @@ d = d1
 names(d)[4] = 'count'
 head(d)
 
+#-------------------------------------------------------------------------------*
+# ---- EXPLORE AND FORMAT TIME DATA ----
+#===============================================================================*
+# Explore
+length(unique(d$Year))
+class(d$Year)
+unique(d$Year)
+
+# Change to numeric
+d$Year = as.character(d$Year)
+d$Year = as.numeric(d$Year)
+head(d)
+names(d)[1] = 'year'
