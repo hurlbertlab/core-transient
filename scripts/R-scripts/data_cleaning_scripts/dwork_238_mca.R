@@ -11,7 +11,7 @@ setwd("C:/Users/auriemma/core-transient")
 source('scripts/R-scripts/core-transient_functions.R')
 
 # Get data
-d = read.csv('raw_datasets/dataset_238.csv')
+d = read.csv('data/raw_datasets/dataset_238.csv')
 
 # Explore
 dim(d)
@@ -160,8 +160,9 @@ head(d1)
   # Change to numeric
 d1$month = as.numeric(d1$month)
 str(d1)
-d1$month = d1$month/12
+d1$month = (d1$month - 1)/12
 head(d1)
+tail(d1)
 unique(d1$month)
 
 # Change year to full year number
@@ -225,3 +226,4 @@ d1 = d1[,c(1,2,4,3,5)]
 #===============================================================================*
 
 d = d1
+head(d)
