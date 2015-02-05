@@ -44,6 +44,7 @@ class(d$SampleID)
 
 # Find number of records per site
 siteTable = ddply(data.frame(d$SampleID),.(d$SampleID), nrow)
+head(siteTable[order(siteTable$V1),],150)
 tail(siteTable[order(siteTable$V1),],150)
 summary(siteTable)
 
@@ -59,7 +60,6 @@ summary(siteTable)
 length(unique(d$Species))
   # 419 unique species
 class(d$Species)
-head(d$Species)
 
 # Capitalize all to remove capitalization error
 d$species = factor(toupper(d$Species))
@@ -71,5 +71,23 @@ levels(d$species)
   # Wide variation in taxonomic resolution
   # No questionable species recorded, so none removed
 
+#-------------------------------------------------------------------------------*
+# ---- EXPLORE AND FORMAT COUNT DATA ----
+#===============================================================================*
+# Explore
+head(d)
+length(unique(d$Abundance))
+class(d$Abundance)
+summary(d$Abundance)
 
+# Already numeric, so remove zeros
+d1 = d
+d1 = d[d$Abundance>0,]
+head(d1)
+unique(d1$Abundance)
+
+# No numbers to remove, name Abundance column 'count'
+d = d1
+names(d)[4] = 'count'
+head(d)
 
