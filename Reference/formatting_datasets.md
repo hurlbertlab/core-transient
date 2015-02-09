@@ -243,10 +243,6 @@ Create data object:
 Extract year from date object:
 `as.numeric(format(date, '%Y'))`
 
-#### Combine:
-
-`c(‘w’, 'o', 'r', 'l', 'd', sep = '')`
-
 #### Repeat a value the length of a dataset:
 
 `rep(value, nrow(df))`
