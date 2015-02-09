@@ -20,7 +20,9 @@ Below are the steps that you should take when exploring and formatting datasets.
 
 2. Scratch paper! I suggest always working with a piece of scrap paper to keep track of various issues with the dataset you’re working with. 
 
-3. Open up the _data_formatting_template.R_ (located in _~core-transient/scripts/R-scripts/data_cleaning_scripts_) script in RStudio. Save your script with the naming convention dwork_[datasetID]_[your initials].R and **git add-commit-push**.
+3. Open up the _data_formatting_template.R_ (located in _/~core-transient/scripts/R-scripts/data_cleaning_scripts_) script in RStudio. Save your script with the naming convention dwork_[datasetID]_[your initials].R and **git add-commit-push**.
+
+4. Read in a raw data file, for example: `read.csv('data/raw_datasets/dataset_208.csv`
 
 4. Item 4 Explore! When you first load a dataset into R, take some time to explore the data. Common R commands that should be used whenever you start formatting a new dataset include: 
 
@@ -52,6 +54,25 @@ Below are the steps that you should take when exploring and formatting datasets.
 13. Once you are done with count data exploration and formatting, save your script and git-add-commit-push.
 
 14. You now have a reduced dataset and are ready to add the datasetID field. Follow the steps in Section Two for doing so and git-add-commit-push.
+
+15. Write your formatted dataset to the formatted datasets folder, for example:
+
+```
+write.csv(dataset, 'formatted_datasets/dataset_208.csv', row.names = F)
+```
+
+16. Use the following steps in Git Bash to ensure that the data submodule is updated across users, for example:
+
+```
+cd data
+git add formatted_datasets/dataset_208.csv
+git commit -m "added formatted dataset"
+git push
+cd ..
+git add data
+git commit -m "updated submodule with formatted dataset 208"
+git push
+```
 
 15. As a final step, you will compare a summary of your dataset with the data_source_table. Adjust the data_source_table as necessary. With every adjustment, git-add-commit-push and explain what you have done and why.
   15. Nrecs: `nrow(example_df)`
