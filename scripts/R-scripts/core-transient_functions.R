@@ -56,7 +56,7 @@ propOccFun = function(dataset){
   # For each of the sites in the dataset ...
   for(i in 1:length(siteNames)){
     # Subset to calculate occupancy by site:
-    dataSite = subset(d, site == siteNames[i])        
+    dataSite = subset(dataset, site == siteNames[i])        
     sp = factor(unique(dataSite$species))
     datasetNum = rep(unique(dataSite$datasetID), length(sp))
     # For each species ...
