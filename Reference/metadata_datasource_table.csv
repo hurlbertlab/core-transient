@@ -1,1 +1,49 @@
-Field,Field_type,Field_notesdataset_ID,numeric,dataset ID's that are 200 and below are from Dornelas et al.data_obtained,factor,describes whether datasets have been downloaded and placed in the raw_datasets folderdata_formatted,factor,describes whether datasets have been reduced to the necessary columnsobtain_priority,numeric,"priority is valued between 0-5 and is based on current representation of the system (terrestrial, aquatic, marine) and taxa as well as the number of years and sites in the study"format_priority,factor,flag_code,numeric,"0 = not currently worked on, 1 = formatting complete, 2 = formatting in process, 3 = formatting halted, issue "spatial_summarizing,,dataset_name,,retriever_code,,Availability,,data_source,,ll_based_site,,system,,climate,,taxa,,organism,,location,,CentralLatitude,,CentralLongitude,,spatial_grain_value,numeric,reported minimum sampling size consistent across samplesspatial_grain_unit,character,the units of the sampling grainspatial_grain_analysis_value,numeric,the grain at which core-transient analyses are conductedspatial_grain_analysis_unit,character,the units of the analysis grainspatial_sampling_method,character,the way the data were collectedspatial_sampling_notes,character,any additional information on the grain of the samplesspatial_extent,numeric,extent of study. Note that this column is not currently numeric and must be edited.spatial_exent_units,character,Units of extentspatial_scale_variable,character,Y or N. Whether or not the dataset can be used to explore the effects of spatial scaling on core-transient designation.count_type,,nRecs,,nSites,,nTime,,nSpecies,,Temporal_grain,,analysis_grain_temporal,,start_year,,end_year,,study_type,,notes,,Citation1,,Citation2,,Citation3,,Citation4,,Citation5,,Citation6,,Citation7,,
+Field,Field_type,Field_notes
+dataset_ID,numeric,dataset ID's that are 200 and below are from Dornelas et al.
+data_obtained,factor,describes whether datasets have been downloaded and placed in the raw_datasets folder
+data_formatted,factor,describes whether datasets have been reduced to the necessary columns
+obtain_priority,numeric,"priority is valued between 0-5 and is based on current representation of the system (terrestrial, aquatic, marine) and taxa as well as the number of years and sites in the study"
+format_priority,numeric,"0 = Low priority: common system and taxa, less than 20 sites; 1 = Minor priority: common system and taxa, more than 20 sites -OR- uncommon system OR taxa less than 20 sites; 2 = Medium priority: Uncommon system OR taxa, more than 20 sites -OR- uncommon system AND taxa, less than 20 sites; 3 = high priority: Uncommon system AND taxa, more than 20 sites  "
+flag_code,numeric,"0 = not currently worked on, 1 = formatting complete, 2 = formatting in process, 3 = formatting halted, issue "
+spatial_sites,factor,Y or N. Whether sites are determined by lat and lon
+dataset_name,character,Name provided for the dataset
+retriever_code,factor,Whether the dataset was obtained using EcoData Retriever
+Availability,factor,Whether the data are publicly available or private
+data_source,character,The source from which the data were obtained
+system,factor,"Terrestrial, marine, or aquatic system – may be a combination."
+climate,character,"The climatic zone in which the sample was taken (tropical, temperate, polar, or some combination of each. "
+taxa,character,The taxonomic group being studied (e.g. plankton or birds)
+organism,character,Sub-class of the taxonomic group if a more specific grouping is available.
+location,character,"Describes the spatial location of the data (e.g., Channel Islands, CA)"
+CentralLatitude,numeric,"The mean latitude of the samples – if lat lon data are not available, this may be estimated from the spatial location of the sampling location (e.g., Channel Islands)"
+CentralLongitude,numeric,The mean longitude of the samples
+LatLon_FLAG,numeric,"0 or 1; 0 = central lat and lon derived from provided lat lons associated with sites, 1 = central lat and lon estimated from the sampling location"
+spatial_grain_value,numeric,reported minimum sampling size consistent across samples
+spatial_grain_unit,character,the units of the sampling grain
+spatial_grain_analysis_value,numeric,the grain at which core-transient analyses are conducted
+spatial_grain_analysis_unit,character,the units of the analysis grain
+spatial_sampling_method,character,the way the data were collected
+spatial_sampling_notes,character,any additional information on the grain of the samples
+spatial_extent,numeric,extent of study. Note that this column is not currently numeric and must be edited.
+spatial_exent_units,character,Units of extent
+spatial_scale_variable,character,Y or N. Whether or not the dataset can be used to explore the effects of spatial scaling on core-transient designation.
+count_type,factor,"Density, cover, or count."
+nRecs,numeric,The number of records in the formatted dataset
+nSites,numeric,The number of sites in the formatted dataset
+nTime,numeric,"The number of time samples in the formatted dataset (if this varies by site, it will be the maximum number of time samples)"
+nSpecies,numeric,The number of species in the formatted dataset
+Temporal_grain,numeric,The temporal grain at which data were collected
+Temporal_grain_unit,factor,Units of Temporal_grain
+Analysis_grain_temporal,numeric,The temporal grain at which data were grouped for this study
+analysis_grain_temporal_unit,factor,Units of Analysis_grain_temporal
+start_year,numeric,First year a sample was collected
+end_year,numeric,Last year a sample was collected
+study_type,factor,Observational or Manipulative study
+notes,character,Any additional information necessary for understanding the data
+Citation1,character,data citation (may be for the dataset -OR- a published journal article
+Citation2,character,data citation (may be for the dataset -OR- a published journal article
+Citation3,character,data citation (may be for the dataset -OR- a published journal article
+Citation4,character,data citation (may be for the dataset -OR- a published journal article
+Citation5,character,data citation (may be for the dataset -OR- a published journal article
+Citation6,character,data citation (may be for the dataset -OR- a published journal article
+Citation7,character,data citation (may be for the dataset -OR- a published journal article
