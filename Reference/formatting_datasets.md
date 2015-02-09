@@ -224,7 +224,7 @@ Extract a substring (stringr):
 `str_sub(string, start = 1L, end = -1L)`
 
 Concatenate:
-`paste(‘w’, 'o', 'r', 'l', 'd', sep = '')`
+`paste('w', 'o', 'r', 'l', 'd', sep = '')`
 
 #### Conversions:
 
