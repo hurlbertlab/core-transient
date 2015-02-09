@@ -213,7 +213,7 @@ Remove multiple bad records:
 
 #### Round numeric vector (x) to a given accuracy:
 
-	`round_any(x, accuracy, f = round)`
+`round_any(x, accuracy, f = round)`
 
 #### Working with character strings:
 
