@@ -20,7 +20,7 @@ Below are the steps that you should take when exploring and formatting datasets.
 
 2. Scratch paper! I suggest always working with a piece of scrap paper to keep track of various issues with the dataset you’re working with. 
 
-3. Open a new script in RStudio. Save your script with the naming convention dwork[datasetID].R and git add-commit-push.
+3. Open up the _data_formatting_template.R_ (located in _~core-transient/scripts/R-scripts/data_cleaning_scripts_) script in RStudio. Save your script with the naming convention dwork_[datasetID]_[your initials].R and **git add-commit-push**.
 
 4. Item 4 Explore! When you first load a dataset into R, take some time to explore the data. Common R commands that should be used whenever you start formatting a new dataset include: 
 
