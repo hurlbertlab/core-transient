@@ -228,3 +228,29 @@ d1 = d1[,c(1,2,4,3,5)]
 d = d1
 head(d)
 write.csv(d, "data/formatted_datasets/dataset_238.csv", row.names = F)
+
+# Read cleaned dataset
+getwd()
+setwd("C:/Users/auriemma/core-transient")
+list.files()
+setwd('data/formatted_datasets')
+d = read.csv('dataset_238.csv')
+
+# Make PropOcc dataframe
+write.csv(propOccFun(d), "data/propOcc_datasets/propOcc_238.csv", row.names = F)
+
+# Write and make summary
+
+write.csv(siteSummaryFun(d), 'data/siteSummaries/siteSummary_238.csv', row.names = F)
+
+#-------------------------------------------------------------------------------*
+# ---- EXPLORE DATASET SUMMARY INFO AND UPDATE THE DATA SOURCE TABLE  ----
+#===============================================================================*
+
+dim(d)
+
+length(unique(d$site))
+
+length(unique(d$year))
+
+length(unique(d$species))
