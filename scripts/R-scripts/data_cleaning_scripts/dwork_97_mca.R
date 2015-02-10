@@ -5,11 +5,13 @@
 #===============================================================================*
 # Load libraries:
 
-library(stringr)
+install.packages('stringr')
+library('stringr')
+install.packages('plyr')
 library(plyr)
 
 # Source the functions file:
-
+getwd()
 setwd('C:/Users/auriemma/core-transient/')
 source('scripts/R-scripts/core-transient_functions.R')
 
@@ -50,10 +52,13 @@ summary(siteTable)
 
 # Hundreds of sites have very low sample sizes
   ## Need to find a way to broaden site data
-badSites = siteTable[siteTable$V1<5,]
-dim(badSites)
-badSites
-
+  # Use substring to get just lat_lons for each site sample???
+class(d$SampleID)
+site = d$SampleID
+head(site)
+site = str_sub(site, start = -20, end = -1)
+head(site)
+tail(site)
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SPECIES DATA ----
@@ -107,3 +112,5 @@ d$Year = as.character(d$Year)
 d$Year = as.numeric(d$Year)
 head(d)
 names(d)[1] = 'year'
+
+unique(d$year)
