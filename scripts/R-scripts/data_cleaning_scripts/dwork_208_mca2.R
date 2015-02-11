@@ -64,6 +64,7 @@ unique(d$Adults)
 # Change name from adults to count
 names(d)[4] = "count"
 head(d)
+unique(d$count)
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT TIME DATA ----
@@ -73,21 +74,50 @@ length(unique(d$Sample_Date))
 tail(d$Sample_Date)
 class(d$Sample_Date)
 
-# Dates are listed by year-month-day
-# Substring to remove day
-d$year_mon = str_sub(d$Sample_Date, end = 7)
-  # Check to see if it worked for all records
-head(d, 40)
-d[300:400,]
+# Dates are listed WEEKLY in summer months in format YYYY-MM-DD
+levels(d$Sample_Date)
 
-# Better way of separating month and year
+# Separate the year, month, day
+d$year= str_sub(d$Sample_Date, end = 4)
 d$month = str_sub(d$Sample_Date, start = 6, end = 7)
-head(d,30)
-d$year = str_sub(d$Sample_Date, end = 4)
+d$day= str_sub(d$Sample_Date, start = -2, end =-1)
 head(d)
+str(d)
 
-# delete year_mon column and old sample_date column
-d1 = d[,-c(1,8)]
-head(d1)
-str(d1)
+# Change name
+names(d)[1] = "date"
+
+# Convert all to numeric
+d$year = as.numeric(d$year)
+d$month = as.numeric(d$month)
+d$day = as.numeric(d$day)
+
+# Turn months into day of year by month
+d$dayofyear = d$month*28
+head(d, 30)
+tail(d, 20)
+
+
+#-------------------------------------------------------------------------------*
+# ---- EXPLORE AND FORMAT SITE DATA ----
+#===============================================================================*
+# Explore
+length(unique(d$Replicate_Station))
+# 30 unique sites
+  # Change name to site
+names(d)[2] = "site"
+
+unique(d$site)
+
+# No bad sites
+
+# Check number of records for each site
+siteTable = ddply(d, .(site), nrow)
+siteTable
+head(siteTable[order(siteTable$V1),],10)
+  # Sufficient sample size for each site (>1300 for each)
+
+
+
+
 
