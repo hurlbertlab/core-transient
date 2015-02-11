@@ -2,7 +2,7 @@
 
 # set correct directory
 getwd()
-setwd('C:/git/core-transient')
+setwd('C:/Users/auriemma/core-transient')
 
 # Library packages and source functions
 library(plyr)
@@ -19,23 +19,47 @@ d = read.csv('data/raw_datasets/dataset_208.csv')
 names(d)
 str(d)
 head(d)
+
 # Remove unwanted columns
-d = d[,-c(1,7,8,11)]
-head(d)
+d = d[,-c(5,6,9)]
+head(d, 10)
+summary(d)
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SPECIES DATA ----
 #===============================================================================*
 # Find number unique species
-length(unique(d$species))
-unique(d$species)
+length(unique(d$Species))
+unique(d$Species)
 
-# Remove blanks and other bad species
+# Remove unwanted species
 d1 = d
-badspp = c('something else','')
-d1 = d1[!d1$species %in% badspp,]
+badspp = c('something else')
+d1 = d1[!d1$Species %in% badspp,]
 dim(d1)
 dim(d)
-unique(d1$species)
+unique(d1$Species)
 
 d = d1
+
+# Change name
+names(d)[4] = "species"
+
+#-------------------------------------------------------------------------------*
+# ---- EXPLORE AND FORMAT COUNT DATA ----
+#===============================================================================*
+str(d)
+summary(d)
+unique(d$Adults)
+
+# Change to numeric
+d$Adult = as.character(d$Adult)
+d$Adult = as.numeric(d$Adult)
+
+# Remove NAs
+d = na.omit(d)
+unique(d$Adults)
+
+# Change name from adults to count
+names(d)[5] = "count"
+head(d)
