@@ -117,6 +117,12 @@ d1$year = d1$year+d1$dec_week
 head(d1 ,20)
 tail(d1, 20)
 
+d = d1
+
+# Remove other time columns (d1 will still have them)
+d = d[,c(2,3,4,5)]
+head(d)
+
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SITE DATA ----
 #===============================================================================*
@@ -136,7 +142,28 @@ siteTable
 head(siteTable[order(siteTable$V1),],10)
   # Sufficient sample size for each site (>1300 for each)
 
+#-------------------------------------------------------------------------------*
+# ---- MAKE DATA FRAME OF COUNT BY SITES, SPECIES, AND YEAR ----
+#===============================================================================*
 
+# Add datasetID number
+d$datasetID = rep(208, nrow(d))
+head(d)
 
+# Make the dataframe
+d.df = ddply(d,.(datasetID, site, year, species), summarize, count = max(count))
+head(d.df,20)
+summary(d.df)
 
+# Check sites for enough time samples and richness
+siteTable = siteSummaryFun(d.df)
+head(siteTable)
+dim(siteTable)
+siteTable
+
+badSites = badSiteFun(d.df)
+dim(badSites)
+  # No sites to remove
+head(d.df, 50)
+tail(d.df, 50)
 
