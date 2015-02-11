@@ -21,7 +21,7 @@ str(d)
 head(d)
 
 # Remove unwanted columns
-d = d[,-c(5,6,9)]
+d = d[,-c(2,5,6,8,9)]
 head(d, 10)
 summary(d)
 
@@ -43,8 +43,8 @@ unique(d1$Species)
 d = d1
 
 # Change name
-names(d)[4] = "species"
-
+names(d)[3] = "species"
+names(d)
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT COUNT DATA ----
 #===============================================================================*
@@ -53,13 +53,41 @@ summary(d)
 unique(d$Adults)
 
 # Change to numeric
-d$Adult = as.character(d$Adult)
-d$Adult = as.numeric(d$Adult)
+d$Adults = as.character(d$Adults)
+d$Adults = as.numeric(d$Adults)
+str(d)
 
 # Remove NAs
 d = na.omit(d)
 unique(d$Adults)
 
 # Change name from adults to count
-names(d)[5] = "count"
+names(d)[4] = "count"
 head(d)
+
+#-------------------------------------------------------------------------------*
+# ---- EXPLORE AND FORMAT TIME DATA ----
+#===============================================================================*
+# Explore
+length(unique(d$Sample_Date))
+tail(d$Sample_Date)
+class(d$Sample_Date)
+
+# Dates are listed by year-month-day
+# Substring to remove day
+d$year_mon = str_sub(d$Sample_Date, end = 7)
+  # Check to see if it worked for all records
+head(d, 40)
+d[300:400,]
+
+# Better way of separating month and year
+d$month = str_sub(d$Sample_Date, start = 6, end = 7)
+head(d,30)
+d$year = str_sub(d$Sample_Date, end = 4)
+head(d)
+
+# delete year_mon column and old sample_date column
+d1 = d[,-c(1,8)]
+head(d1)
+str(d1)
+
