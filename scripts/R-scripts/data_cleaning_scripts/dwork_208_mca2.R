@@ -93,10 +93,29 @@ d$month = as.numeric(d$month)
 d$day = as.numeric(d$day)
 
 # Turn months into day of year by month
-d$dayofyear = d$month*28
-head(d, 30)
+d$dayofyear = ((d$month-1)*30)+d$day
+head(d, 20)
 tail(d, 20)
 
+# Convert day of year to decimal
+d$dec_day = d$dayofyear/365
+head(d, 20)
+tail(d, 20)
+
+# Get week of the year
+d$weekofyear = d$dayofyear/7
+head(d)
+
+# Convert to decimal week
+d$dec_week = d$weekofyear/52
+head(d)
+
+# Convert to decimal-year by adding decimal week to year
+d1 = d
+head(d1)
+d1$year = d1$year+d1$dec_week
+head(d1 ,20)
+tail(d1, 20)
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SITE DATA ----
