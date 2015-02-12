@@ -1,5 +1,5 @@
 ################################################################################*
-# EXAMPLE DATA CLEANING SCRIPT
+#  DATA CLEANING TEMPLATE
 ################################################################################*
 
 #-------------------------------------------------------------------------------*
@@ -22,6 +22,14 @@ getwd()
 list.files('data/raw_datasets')
 
 dataset = read.csv('data/raw_datasets/dataset_223.csv')
+
+#===============================================================================*
+# MAKE FORMATTED DATASET
+#===============================================================================*
+# The goal is: 
+# 1) To create a dataset of the columns of interest at the smallest spatial
+#  and temporal sampling grain available.
+# 2) To eliminate "bad" species data.
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE THE DATASET ----
@@ -46,9 +54,6 @@ str(dataset)
 
 head(dataset)
 
-# View the first 10 rows of the dataset:
-
-head(dataset, 10)
 
 # Here, we can see that there are some fields that we won't use. Let's remove
 # them, note that I've given a new name here "d1", this is to ensure that
@@ -64,22 +69,63 @@ head(dataset1)
 
 dataset = dataset1
 
-# View summary of fields in the dataset:
-
-summary(dataset)
-
 # !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE DATA WERE MODIFIED!
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SITE DATA ----
 #===============================================================================*
 
+# View summary of fields in the dataset:
+
+summary(dataset)
+
 # Reminder of the dataset:
 
 head(dataset)
 
-# We can see that sites are broken up into (potentially) 5 fields. Let's explore
-# whether the "site" field itself suffices:
+# We can see that sites are broken up into (potentially) 5 fields. Find the 
+# metadata link in the data source table use that link to determine how
+# sites are characterized.
+#  -- If sampling is nested (e.g., site, block, treatment, plot, quad as in 
+# this study), use each of the identifying fields and separate each field with
+# an underscore.
+# -- If sites are listed as lats and longs, use the finest available grain 
+# and separate lat and long fields with an underscore.
+# -- If the site definition is clear, make a new site column as necessary.
+
+# Here, we will concatenate all of the potential fields that describe the 
+# site:
+
+head(dataset)
+
+site = paste(dataset$site, dataset$block, dataset$treatment, 
+             dataset$plot, dataset$quad, sep = '_')
+
+# Do some quality control by comparing the site fields in the dataset with the 
+# new vector of sites:
+
+head(site)
+
+# All looks correct, so replace the site column in the dataset and remove the 
+# unnecessary fields, start by renaming the dataset in case you make a mistake:
+
+dataset1 = dataset
+
+dataset1$site = site
+
+dataset1 = dataset1[,-c(2:5)]
+
+# Check the new dataset (are the columns as they should be?):
+
+head(dataset1)
+
+# All looks good, so overwrite the dataset file:
+
+dataset = dataset1
+
+# !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE SITE DATA WERE MODIFIED!
+
+
 
 # How many sites are there?
 
@@ -357,9 +403,32 @@ write.csv(propOccFun(dataset), "data/propOcc_datasets/propOcc_223.csv", row.name
 
 write.csv(siteSummaryFun(dataset), 'data/siteSummaries/siteSummary_223.csv', row.names = F)
 
+# Note: Both the submodule and core-transient folder need to be pushed to, 
+# in git bash:
+
+# cd data
+# git add formatted_datasets/dataset_208.csv
+# git commit -m "added formatted dataset"
+# git push
+# cd ..
+# git add data
+# git commit -m "updated submodule with formatted dataset 208"
+# git push
+
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE YOUR DATASET SUMMARY INFO AND UPDATE THE DATA SOURCE TABLE  ----
 #===============================================================================*
+
+# !!!At this point, go to the data source table and provide:
+#   -central lat and lon (if available, if so, LatLonFLAG = 0, if you couldn't do
+#    it, add a flag of 1)
+#   -spatial_grain columns (T through W)
+#   -nRecs, nSites, nTime, nSpecies
+#   -temporal_grain columns (AH to AK)
+#   -Start and end year
+#   -Any necessary notes
+#   -flag any issues and put issue on github
+#   -git-add-commit-push data_source_table.csv
 
 dim(dataset)
 
