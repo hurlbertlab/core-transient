@@ -236,6 +236,58 @@ dataset = dataset1
 
 # !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE DATE DATA WERE MODIFIED!
 
+#-------------------------------------------------------------------------------*
+# ---- EXPLORE AND FORMAT COUNT DATA ----
+#===============================================================================*
+# Next, we need to explore the count records. A good first pass is to remove 
+# zero counts and NA's:
+
+summary(dataset)
+
+# Subset to records > 0
+
+dataset1 = subset(dataset, cover > 0) 
+
+summary(dataset1)
+
+# Remove NA's:
+
+dataset1 = na.omit(dataset1)
+
+# Make sure to write in the data summary table the type of observed count (here,
+# it represents % cover)
+
+# How does it look? If you approve,  assign changes to dataset:
+
+summary(dataset)
+summary(dataset1)
+
+dataset = dataset1
+
+# !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE COUNT DATA WERE MODIFIED!
+
+#-------------------------------------------------------------------------------*
+# ---- MAKE DATA FRAME OF COUNT BY SITES, SPECIES, AND YEAR ----
+#===============================================================================*
+# Now we will make the final formatted dataset, add a datasetID field, check for
+# errors, and remove records that can't be used for our purposes.
+
+# First, lets add the datasetID:
+
+dataset$datasetID = rep(223,nrow(dataset))
+
+# Now make the compiled dataframe:
+
+dataset1 = ddply(dataset,.(datasetID, site, factor(as.character(date)), species), 
+                 summarize, count = max(cover))
+
+# Give a quick look: 
+
+head(dataset1)
+dim(dataset1)
+summary(dataset1)
+
+
 #################################################################################
 # ENDED CODING UPDATE HERE
 #################################################################################
