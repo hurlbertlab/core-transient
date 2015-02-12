@@ -130,7 +130,8 @@ head(d)
 length(unique(d$Replicate_Station))
 # 30 unique sites
   # Change name to site
-names(d)[2] = "site"
+names(d)[1] = "site"
+head(d)
 
 unique(d$site)
 
@@ -166,4 +167,23 @@ dim(badSites)
   # No sites to remove
 head(d.df, 50)
 tail(d.df, 50)
+
+d = d.df
+
+head(d, 20)
+
+#-------------------------------------------------------------------------------*
+# ---- WRITE OUTPUT DATA FRAMES  ----
+#===============================================================================*
+
+# Write dataset csv to data submodule
+write.csv(d, "data/formatted_datasets/dataset_208_new.csv", row.names = F)
+
+# Make proportional occurence data frame:
+
+write.csv(propOccFun(d), "data/propOcc_datasets/propOcc_208.csv", row.names = F)
+
+# write site summary dataset:
+
+write.csv(siteSummaryFun(d), 'data/siteSummaries/siteSummary_208.csv', row.names = F)
 
