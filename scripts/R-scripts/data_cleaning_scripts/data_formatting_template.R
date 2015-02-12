@@ -54,7 +54,6 @@ str(dataset)
 
 head(dataset)
 
-
 # Here, we can see that there are some fields that we won't use. Let's remove
 # them, note that I've given a new name here "d1", this is to ensure that
 # we don't have to go back to square 1 if we've miscoded anything.
@@ -70,7 +69,6 @@ head(dataset1)
 dataset = dataset1
 
 # !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE DATA WERE MODIFIED!
-<<<<<<< HEAD
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SITE DATA ----
@@ -125,26 +123,19 @@ head(dataset1)
 dataset = dataset1
 
 # !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE SITE DATA WERE MODIFIED!
-=======
->>>>>>> 84a78071ed26c109d79542eb774fc9432ad8ef49
 
 #-------------------------------------------------------------------------------*
-# ---- EXPLORE AND FORMAT SITE DATA ----
+# ---- EXPLORE AND FORMAT SPECIES DATA ----
 #===============================================================================*
 # Here, your primary goal is to ensure that all of your species are valid. To do
 # so, you need to look at the list of unique species very carefully. Avoid being
 # too liberal in interpretation, if you notice an entry that MIGHT be a problem, 
 # but you can't say with certainty, create an issue on GitHub.
 
-<<<<<<< HEAD
+
+# Look at the individual species present:
+
 sp = dataset$species
-=======
-# View summary of fields in the dataset:
-
-summary(dataset)
-
-# Reminder of the dataset:
->>>>>>> 84a78071ed26c109d79542eb774fc9432ad8ef49
 
 levels(sp) # Note: You can also use unique(sp) here.
 
@@ -169,7 +160,6 @@ sp = factor(dataset$species)
 
 levels(sp)
 
-<<<<<<< HEAD
 # Now explore the listed species themselves. To do so, you should go back to study's 
 # metadata. A quick look at the metadata is not informative, unfortunately. Because of
 # this, you should really stop here and post an issue on GitHub. With some more thorough
@@ -207,7 +197,7 @@ dataset = dataset1
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SITE DATA ----
 #===============================================================================*
-=======
+
 # We can see that sites are broken up into (potentially) 5 fields. Find the 
 # metadata link in the data source table use that link to determine how
 # sites are characterized.
