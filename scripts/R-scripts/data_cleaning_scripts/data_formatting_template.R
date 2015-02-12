@@ -70,6 +70,7 @@ head(dataset1)
 dataset = dataset1
 
 # !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE DATA WERE MODIFIED!
+<<<<<<< HEAD
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SITE DATA ----
@@ -124,6 +125,8 @@ head(dataset1)
 dataset = dataset1
 
 # !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE SITE DATA WERE MODIFIED!
+=======
+>>>>>>> 84a78071ed26c109d79542eb774fc9432ad8ef49
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SITE DATA ----
@@ -133,7 +136,15 @@ dataset = dataset1
 # too liberal in interpretation, if you notice an entry that MIGHT be a problem, 
 # but you can't say with certainty, create an issue on GitHub.
 
+<<<<<<< HEAD
 sp = dataset$species
+=======
+# View summary of fields in the dataset:
+
+summary(dataset)
+
+# Reminder of the dataset:
+>>>>>>> 84a78071ed26c109d79542eb774fc9432ad8ef49
 
 levels(sp) # Note: You can also use unique(sp) here.
 
@@ -158,6 +169,7 @@ sp = factor(dataset$species)
 
 levels(sp)
 
+<<<<<<< HEAD
 # Now explore the listed species themselves. To do so, you should go back to study's 
 # metadata. A quick look at the metadata is not informative, unfortunately. Because of
 # this, you should really stop here and post an issue on GitHub. With some more thorough
@@ -195,6 +207,51 @@ dataset = dataset1
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SITE DATA ----
 #===============================================================================*
+=======
+# We can see that sites are broken up into (potentially) 5 fields. Find the 
+# metadata link in the data source table use that link to determine how
+# sites are characterized.
+#  -- If sampling is nested (e.g., site, block, treatment, plot, quad as in 
+# this study), use each of the identifying fields and separate each field with
+# an underscore.
+# -- If sites are listed as lats and longs, use the finest available grain 
+# and separate lat and long fields with an underscore.
+# -- If the site definition is clear, make a new site column as necessary.
+
+# Here, we will concatenate all of the potential fields that describe the 
+# site:
+
+head(dataset)
+
+site = paste(dataset$site, dataset$block, dataset$treatment, 
+             dataset$plot, dataset$quad, sep = '_')
+
+# Do some quality control by comparing the site fields in the dataset with the 
+# new vector of sites:
+
+head(site)
+
+# All looks correct, so replace the site column in the dataset and remove the 
+# unnecessary fields, start by renaming the dataset in case you make a mistake:
+
+dataset1 = dataset
+
+dataset1$site = site
+
+dataset1 = dataset1[,-c(2:5)]
+
+# Check the new dataset (are the columns as they should be?):
+
+head(dataset1)
+
+# All looks good, so overwrite the dataset file:
+
+dataset = dataset1
+
+# !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE SITE DATA WERE MODIFIED!
+
+
+>>>>>>> 84a78071ed26c109d79542eb774fc9432ad8ef49
 
 # How many sites are there?
 
