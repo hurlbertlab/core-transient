@@ -30,3 +30,34 @@ head(d, 15)
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SITE DATA ----
 #===============================================================================*
+# Explore
+length(unique(d$site))
+
+  # 758 individual sites
+class(d$site)
+
+# View unique sites for any unwanted site names (NAs, undefined, etc)
+levels(d$site)
+
+  # No unwanted site names
+
+#-------------------------------------------------------------------------------*
+# ---- EXPLORE AND FORMAT SPECIES DATA ----
+#===============================================================================*
+# Explore species
+length(unique(d$species))
+  # 678 different species accounted for
+
+# Capitalize all species to eliminate errors
+d$sp = toupper(d$species)
+length(unique(d$sp))
+  # Still 678 unique spp names, so no errors
+  #Remove sp column
+head(d)
+d = d[,-c(6)]
+
+# Look for unidentifieds or other unwanted species
+levels(d$species)
+  # No questionable species or unidentifieds
+  # wide variety in taxonomic resolution
+
