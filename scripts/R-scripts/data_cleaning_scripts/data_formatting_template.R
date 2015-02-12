@@ -132,7 +132,6 @@ dataset = dataset1
 # too liberal in interpretation, if you notice an entry that MIGHT be a problem, 
 # but you can't say with certainty, create an issue on GitHub.
 
-
 # Look at the individual species present:
 
 sp = dataset$species
@@ -187,12 +186,148 @@ nrow(dataset1)
 
 head(dataset1)
 
-
 # Having checked through the results, we can now reassign the dataset:
 
 dataset = dataset1
 
+# !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE SPECIES DATA WERE MODIFIED!
+
+#-------------------------------------------------------------------------------*
+# ---- EXPLORE AND FORMAT TIME DATA ----
+#===============================================================================*
+# Here, we need to extract the sampling dates. 
+
+# For starters, let's change the date column to a true date (and give the darned
+# column a better name:
+
+head(dataset)
+
+date = strptime(dataset$record_record_date, '%m/%d/%Y')
+
+# A check on the structure lets you know that date field is now a date object:
+
+class(dataset$record_record_date)
+
+class(date)
+
+# Give a double-check, if everything looks okay, then replace the column:
+
+head(dataset$record_record_date)
+
+head(date)
+
+dataset1 = dataset
+
+dataset1$record_record_date = date
+
+names(dataset1)[5] = 'date'
+
+# Let's remove the season field (for now):
+
+dataset1 = dataset1[,-2]
+  
+# After a check of dataset1, you can rename it dataset:
+  
+head(dataset)
+
+head(dataset1)
+
+dataset = dataset1
+
+# !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE DATE DATA WERE MODIFIED!
+
+#################################################################################
+# ENDED CODING UPDATE HERE
+#################################################################################
+#######################################################################
+
+# Our next task is to determine the temporal sampling grain. To do so
+# we return to the online metadata. We see from the description of the 
+# sampling design that quadrats were visited twice a year. 
+
+# What was the temporal distribution of the two sampling periods?
+
+months = months(date)
+
+table(months)
+
+# We can see that samples were collected in the spring and fall. We want
+# these seasons. Of course we already knew that from the second column.
+
+# Our next goal is to extract year from the date object:
+
+year = as.numeric(format(date, '%Y'))
+
+# We could pull seasonal data from months, but season is already 
+# provided (albeit with year). Lets extract fall and spring from that
+# field and change to numeric values of 0.25 (spring) and 0.75 (fall).
+
+season = str_sub(dataset$season, end = -5)
+
+season = ifelse(season == 'SPRING',.25, .75)
+
+# Add year and season together and you have a date column provided in
+# decimal years:
+
+dataset$year = year + season 
+
+# Check it out and if all looks okay, we'll remove the season and 
+# date columns:
+
+head(dataset)
+
+# Okay we can see that the sampling is divided into fall and spring. Let's 
+# just turn those into decimal years:
+
+season = ifelse(season == 'SPRING',.25, .75)
+
+summary(season)
+
+# Now, let's extract year from the date (we could easily do this using
+# the str_sub method as well, but this is more universal).
+# First, make the date into an R date object:
+
+class(dataset$record_record_date)
+
+date = strptime(dataset$record_record_date, '%m/%d/%Y')
+
+class(date)
+
+head(date)
+
+# It worked! Now extract year:
+
+year = as.numeric(format(date, '%Y'))
+
+# Add the decimal year and year vectors:
+
+dataset$year = year + season 
+
+head(dataset)
+
+# Now let's clean up by removing the other date columns:
+
+dataset1 = dataset[,-c(2,5)]
+
+head(dataset1)
+
+summary(dataset1)
+
+# A couple of years are listed as NA. Let's remove them:
+
+dataset1 = na.omit(dataset1)
+
+summary(dataset1)
+
+# Everything looks good, so let's call it d again
+
+dataset = dataset1
+
 # !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE DATA WERE MODIFIED!
+
+
+
+
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SITE DATA ----
@@ -239,9 +374,6 @@ head(dataset1)
 dataset = dataset1
 
 # !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE SITE DATA WERE MODIFIED!
-
-
->>>>>>> 84a78071ed26c109d79542eb774fc9432ad8ef49
 
 # How many sites are there?
 
