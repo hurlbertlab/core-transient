@@ -281,6 +281,11 @@ dataset$datasetID = rep(223,nrow(dataset))
 dataset1 = ddply(dataset,.(datasetID, site, factor(as.character(date)), species), 
                  summarize, count = max(cover))
 
+# NOT WORKING CURRENTLY
+#################################################################################
+# ENDED CODING UPDATE HERE
+#################################################################################
+
 # Give a quick look: 
 
 head(dataset1)
