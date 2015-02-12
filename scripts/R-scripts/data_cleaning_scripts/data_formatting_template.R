@@ -1,5 +1,5 @@
 ################################################################################*
-# EXAMPLE DATA CLEANING SCRIPT
+#  DATA CLEANING TEMPLATE
 ################################################################################*
 
 #-------------------------------------------------------------------------------*
@@ -22,6 +22,14 @@ getwd()
 list.files('data/raw_datasets')
 
 dataset = read.csv('data/raw_datasets/dataset_223.csv')
+
+#===============================================================================*
+# MAKE FORMATTED DATASET
+#===============================================================================*
+# The goal is: 
+# 1) To create a dataset of the columns of interest at the smallest spatial
+#  and temporal sampling grain available.
+# 2) To eliminate "bad" species data.
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE THE DATASET ----
@@ -46,9 +54,6 @@ str(dataset)
 
 head(dataset)
 
-# View the first 10 rows of the dataset:
-
-head(dataset, 10)
 
 # Here, we can see that there are some fields that we won't use. Let's remove
 # them, note that I've given a new name here "d1", this is to ensure that
@@ -64,22 +69,132 @@ head(dataset1)
 
 dataset = dataset1
 
-# View summary of fields in the dataset:
-
-summary(dataset)
-
 # !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE DATA WERE MODIFIED!
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SITE DATA ----
 #===============================================================================*
 
+# View summary of fields in the dataset:
+
+summary(dataset)
+
 # Reminder of the dataset:
 
 head(dataset)
 
-# We can see that sites are broken up into (potentially) 5 fields. Let's explore
-# whether the "site" field itself suffices:
+# We can see that sites are broken up into (potentially) 5 fields. Find the 
+# metadata link in the data source table use that link to determine how
+# sites are characterized.
+#  -- If sampling is nested (e.g., site, block, treatment, plot, quad as in 
+# this study), use each of the identifying fields and separate each field with
+# an underscore.
+# -- If sites are listed as lats and longs, use the finest available grain 
+# and separate lat and long fields with an underscore.
+# -- If the site definition is clear, make a new site column as necessary.
+
+# Here, we will concatenate all of the potential fields that describe the 
+# site:
+
+head(dataset)
+
+site = paste(dataset$site, dataset$block, dataset$treatment, 
+             dataset$plot, dataset$quad, sep = '_')
+
+# Do some quality control by comparing the site fields in the dataset with the 
+# new vector of sites:
+
+head(site)
+
+# All looks correct, so replace the site column in the dataset and remove the 
+# unnecessary fields, start by renaming the dataset in case you make a mistake:
+
+dataset1 = dataset
+
+dataset1$site = site
+
+dataset1 = dataset1[,-c(2:5)]
+
+# Check the new dataset (are the columns as they should be?):
+
+head(dataset1)
+
+# All looks good, so overwrite the dataset file:
+
+dataset = dataset1
+
+# !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE SITE DATA WERE MODIFIED!
+
+#-------------------------------------------------------------------------------*
+# ---- EXPLORE AND FORMAT SITE DATA ----
+#===============================================================================*
+# Here, your primary goal is to ensure that all of your species are valid. To do
+# so, you need to look at the list of unique species very carefully. Avoid being
+# too liberal in interpretation, if you notice an entry that MIGHT be a problem, 
+# but you can't say with certainty, create an issue on GitHub.
+
+sp = dataset$species
+
+levels(sp) # Note: You can also use unique(sp) here.
+
+# The first thing that I notice is that there are lower and upper case
+# entries. Because R is case-sensitive, this will be coded as separate species.
+# Modify this prior to continuing:
+
+dataset$species = toupper(dataset$species)
+
+# Let's explore whether there was a difference:
+
+length(unique(dataset$species))
+
+length(unique(sp))
+
+# We see that almost 70 species were the result of upper and lower case!
+# Make a new species vector (factor ensures that it is coded as a factor
+# rather than character and removes any unused levels) 
+# and continue exploring:
+
+sp = factor(dataset$species)
+
+levels(sp)
+
+# Now explore the listed species themselves. To do so, you should go back to study's 
+# metadata. A quick look at the metadata is not informative, unfortunately. Because of
+# this, you should really stop here and post an issue on GitHub. With some more thorough
+# digging, however, I've found the names represent "Kartez codes". Several species can
+# be removed (double-checked with USDA plant codes at plants.usda.gov and another Sevilleta
+# study (dataset 254) that provides species names for some codes). Some codes were identified
+# with this pdf from White Sands: 
+# https://nhnm.unm.edu/sites/default/files/nonsensitive/publications/nhnm/U00MUL02NMUS.pdf
+
+bad_sp = c('', 'NONE','UK1','UKFO1','UNK1','UNK2','UNK3','LAMIA', 'UNGR1','CACT1','UNK','NONE',
+  'UNK2','UNK3', 'UNK1','FORB7', 'MISSING', '-888', 'DEAD','ERRO2', 'FORB1','FSEED', 'GSEED',
+  'MOSQ', 'SEED','SEEDS1','SEEDS2', 'SEFLF','SESPM','SPOR1')
+
+dataset1 = dataset[!dataset$species %in% bad_sp,]
+
+dataset1$species = factor(dataset1$species)
+
+# Let's look at how the removal of bad species altered the length of the dataset:
+
+nrow(dataset)
+
+nrow(dataset1)
+
+# Look at the head of the dataset to ensure everything is correct:
+
+head(dataset1)
+
+
+# Having checked through the results, we can now reassign the dataset:
+
+dataset = dataset1
+
+# !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE DATA WERE MODIFIED!
+
+#-------------------------------------------------------------------------------*
+# ---- EXPLORE AND FORMAT SITE DATA ----
+#===============================================================================*
 
 # How many sites are there?
 
@@ -152,53 +267,7 @@ dataset = dataset1
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SPECIES DATA ----
 #===============================================================================*
-# Here, your primary goal is to ensure that all of your species are valid. To do
-# so, you need to look at the list of unique species very carefully. Avoid being
-# too liberal in interpretation, if you notice an entry that MIGHT be a problem, 
-# but you can't say with certainty, create an issue on GitHub.
 
-sp = dataset$species
-
-levels(sp) # Note: You can also use unique(sp) here.
-
-# There first thing that I notice is that there are lower and upper case
-# entries. Because R is case-sensitive, this will be coded as separate species.
-# Modify this prior to continuing:
-
-dataset$species = toupper(dataset$species)
-
-# Let's explore whether there was a difference:
-
-length(unique(dataset$species))
-
-length(unique(sp))
-
-# We see that almost 70 species were the result of upper and lower case!
-# Make a new species vector (factor ensures that it is coded as a factor
-# rather than character and removes any unused levels) 
-# and continue exploring:
-
-sp = factor(dataset$species)
-
-levels(sp)
-
-# There are a number of records that can be removed. There are actually more than
-# this in the example dataset, this should be posted as an issue on GitHub, but
-# we will continue with the example:
-
-bad_sp = c('', 'DEAD','SEED','SEED1','SEED2')
-
-dataset1 = dataset[!dataset$species %in% bad_sp,]
-
-head(dataset1)
-
-summary(dataset1)
-
-# Having checked through the results, we can now reassign the dataset as d:
-
-dataset = dataset1
-
-# !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE DATA WERE MODIFIED!
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT COUNT DATA ----
@@ -357,9 +426,32 @@ write.csv(propOccFun(dataset), "data/propOcc_datasets/propOcc_223.csv", row.name
 
 write.csv(siteSummaryFun(dataset), 'data/siteSummaries/siteSummary_223.csv', row.names = F)
 
+# Note: Both the submodule and core-transient folder need to be pushed to, 
+# in git bash:
+
+# cd data
+# git add formatted_datasets/dataset_208.csv
+# git commit -m "added formatted dataset"
+# git push
+# cd ..
+# git add data
+# git commit -m "updated submodule with formatted dataset 208"
+# git push
+
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE YOUR DATASET SUMMARY INFO AND UPDATE THE DATA SOURCE TABLE  ----
 #===============================================================================*
+
+# !!!At this point, go to the data source table and provide:
+#   -central lat and lon (if available, if so, LatLonFLAG = 0, if you couldn't do
+#    it, add a flag of 1)
+#   -spatial_grain columns (T through W)
+#   -nRecs, nSites, nTime, nSpecies
+#   -temporal_grain columns (AH to AK)
+#   -Start and end year
+#   -Any necessary notes
+#   -flag any issues and put issue on github
+#   -git-add-commit-push data_source_table.csv
 
 dim(dataset)
 
