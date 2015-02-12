@@ -117,4 +117,28 @@ dataset1 = ddply(dataset, .(creek_location,year, fish_species),summarize,
 * **Additional notes:** Sampling was bimonthly, so this temporal grain may be reduced!
 
 ---------------------------------------
+## Dataset_208
+
+* **Dataset formatted on, by**: 2/12/15, mca
+
+* **Formatting completed?** Yes
+  * **If no, what problems did you run into?** NA
+
+* **Site notes:** Sites were organized by replicate and specific station within replicate.  No changes were made to site data since all individual sites had over 1300 records each.
+  * **LatLon sites?** No
+  *  **If LatLon, spatial grain?** NA
+  *  **Are the LatLons of the sites available?** No?
+  *  **Can the data be used to assess the effects of spatial grain** No?
+
+* **Time notes** Data for dates of records was provided by in the format YYYY-MM-DD.  Records were taken weekly during the months of May thru August/September from 1989 thru 2013.  Date was formatted by converting each date to decimal year, indicating the decimal-week and adding it to the year.  In other words, I converted the date to the number day of the year, divided by 7 (days/week) to get the number week of the year, and then divided that number by 52 (weeks/year) to get the decimal week.  That decimal was added to the numeric year. (See script for details)
+  * **Temporal grain less than or greater than one year?** Yes
+  * **If < or > one year, temporal grain?** Weekly
+
+* **Species notes:** Individuals were originally provided by species, family, and order, but were reduced to just species.  Unwanted species names ('something else') were removed from the list of 21 species. 
+
+* **Count notes:** Count was recorded as 'adults', which included a few 'NA' values.  All NAs were omitted from the dataset.
+
+* **Did you update any information in the datasource table? If so, what was updated?** Yes, updated nRecs, nTime, nSpecies, nSites, flagged 1 for lat-lons, and start and end year columns.
+ 
+* **Additional notes:** Second edit of the dataset 208, so new script was saved as 'dwork_208_mca2' and formatted dataset was saved as 'dataset_208_new'.
 
