@@ -173,8 +173,7 @@ dataset = dataset1
 #===============================================================================*
 # Here, we need to extract the sampling dates. 
 
-# For starters, let's change the date column to a true date (and give the darned
-# column a better name:
+# change the date column to a true date and replace name
 
 head(dataset)
 
