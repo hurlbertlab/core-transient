@@ -1,14 +1,14 @@
 # Preparing datasets for analysis 
 
-In this project, we evaluate the proportion of core and transient species at a given site using data collected across a wide range of taxa, regions, and environmental systems. A challenge that we face is that ecological data are collected at highly variable spatial, temporal, and biological scales and it is necessary to consistently format the data in preparation for analysis. Here we provide instructions associated with formatting datasets and then creating a proportional occurrence and dataset summary files. This document is divided into three parts. **Section One** provides instructions on how to format a dataset to the finest available spatial and temporal grain. **Section Two** provides instructions on how to make a proportional occurrence data frame after summarizing the data at a given spatial or temporal scale. **Section Three** provides an "R Cheatsheet" to the various functions you will likely use in the preparation of data for analysis.
+In this project, we evaluate the proportion of core and transient species at a given site using data collected across a wide range of taxa, regions, and environmental systems. A challenge that we face is that ecological data are collected at highly variable spatial, temporal, and biological scales and it is necessary to consistently format the data in preparation for analysis. Here we provide instructions associated with formatting datasets and then creating a proportional occurrence and dataset summary files. This document is divided into three parts. **Section One** provides instructions on how to format a raw dataset to a consistent set of fields at the finest available spatial and temporal grain. **Section Two** provides instructions on how to make a proportional occurrence data frame after summarizing the data at a given spatial or temporal scale. **Section Three** provides an "R Cheatsheet" to the various functions you will likely use in the preparation of data for analysis.
 
-## Formatting datasets for the core-transient project
+## SECTION ONE: CREATING FORMATTED DATASETS
 
+In the formatting process, we will avoid making any decisions on scale. Instead, we want to ensure that the fields are all consistently of the same structure, that only valid species are listed, and count data are summarized by site, date, and species. 
 
+The overall goal in this step of the process is to format a dataset as follows:
 
-The goal is to format a dataset as follows:
-
-datasetID | site | species | year | count
+datasetID | site | species | date | count
 --------- | ---- | ------- | ---- | -----
 01 | d01_Treatment1PlotA | A._schoenobaenus | 1928 | 1
 01 | d01_Treatment1PlotA | Buteo_buteo | 1928 | 3
@@ -16,31 +16,35 @@ datasetID | site | species | year | count
 01 | d01_Treatment2PlotA | Cuculus_canorus | 1929 | 1
 01 | d01_Treatment2PlotB | Gallinula_chloropus | 1928 | 2
 
-This document is written in three parts. Section One describes typical workflow one should follow when formatting a dataset. Section Two describes the typical steps required to modify a given field in the dataset. Section Three provides an R cheatsheet for data exploration and formatting.
 
-## SECTION ONE: WORKFLOW
-
-Below are the steps that you should take when exploring and formatting datasets. These steps should be followed in the order that they’re presented. I also suggest using the example_cleaning_script in the scripts/R-scripts/data_cleaning_scripts folder as a guide. Following and modifying this script will also ensure that all of our scripts are in similar format and are thus easier to follow. _**IMPORTANT**: throughout this process, if there are any problems that keep you from successfully formatting a dataset, add an asterisk to the “flag” column of the data_source_table, git-add-commit-pull the data_source_table, and **add an issue to GitHub** (assigning the issue to me)._
+Below are the steps that you should take when exploring and formatting datasets. These steps should be followed in the order that they’re presented.  _**IMPORTANT**: throughout this process, if there are any problems that keep you from successfully formatting a dataset, add an asterisk to the “flag” column of the data_source_table, git-add-commit-pull the data_source_table, and **add an issue to GitHub** (assigning the issue to me)._
 
 1. Git pull! Before you begin to work on a dataset, make sure to do a **git pull** to ensure that you’re working on the most up-to-date version of the core-transient folder. Taking a few seconds to do this may end up saving you minutes in trying to figure out how to deal with git conflicts if they arise.
 
 2. Scratch paper! I suggest always working with a piece of scrap paper to keep track of various issues with the dataset you’re working with. 
 
-3. Open up the _data_formatting_template.R_ (located in _/~core-transient/scripts/R-scripts/data_cleaning_scripts_) script in RStudio. Save your script with the naming convention dwork_[datasetID]_[your initials].R and **git add-commit-push**.
+3. Open up the _data_formatting_template.R_ (located in _/~core-transient/scripts/R-scripts/data_cleaning_scripts_) script in RStudio.Following and modifying this script will also ensure that all of our scripts are in similar format and are thus easier to follow.Save your script with the naming convention dwork_[datasetID]_[your initials].R and **git add-commit-push**.
 
-4. Read in a raw data file, for example: `read.csv('data/raw_datasets/dataset_208.csv`
+4. Read in a raw data file, for example: `read.csv('data/raw_datasets/dataset_223.csv`
 
-4. Item 4 Explore! When you first load a dataset into R, take some time to explore the data. Common R commands that should be used whenever you start formatting a new dataset include: 
+5. Explore! When you first load a dataset into R, take some time to explore the data. Common R commands that should be used whenever you start formatting a new dataset include: 
 
   1. `names(example_df)`: Used to observer the field names of the data frame. This is great first look at how you can modify the fields of a data frame to fit the core-transient format.
   2. `dim(example_df)`: Used to observe the number of rows and columns of the data frame. To observe just the number of rows, use `nrow(example_df)`
   3. `str(example_df)`: Used to observe the structure of the data frame, including how each of the fields are formatted and the fields. Some fields may require to be changed from one format to another. This can be done using: as.character(example_field), as.numeric(example_field), and factor(example_field). _Warning! If you are changing a factor to numeric and want to maintain the field values, you need to use: as.numeric(as.character(example_field))_.
-  4. `head(example_df)`: Used to observe the first few rows of the data frame. Note that it may sometimes be necessary to observe more rows than the default. You can specify this; for example, if you’d like to view the first 10 rows, type head(example_df, 10). You can also look at the last few rows of data using tail(example_df) and modify the number of rows shown as above.
+  4. `head(example_df)`: Used to observe the first few rows of the data frame. Note that it may sometimes be necessary to observe more rows than the default. You can specify this -- if, for example, you’d like to view the first 10 rows, type `head(example_df, 10)`. You can also look at the last few rows of data using tail(example_df) and modify the number of rows shown as above.
   5. `summary(example_df)`: Provide summary data of the data frame. This can be especially useful, for example, to find out if there are zeros in the count data that need to be removed.
+  6. `class(example_df$site)`: Determine the type of data in a field.
 
-5. Once you are done with the exploration of the larger dataset, save your script and git-add-commit-push.
+6. Remove unnecessary columns. Most datasets contain columns that we will not use and those columns can be removed. As an example, if you wanted to remove columns 1, 3, 5, 6,  7, 8 from example_df, you could write:
+	```
+	example_df1 = example_df[,-c(1,3,5:)
+	```
+_**Note**: In the above I added a "1" to the example_df name. I consider this best practices -- you can check your work and only overwrite the R object if there were no errors. This will save you from having to rerun portions of the script._
 
-6. Explore and format **site** data. Prior to formatting sites (see Section Two) take a moment to explore how sites are coded. Of importance are:
+7. Once you are done with the exploration of the larger dataset, save your script and git-add-commit-push.
+
+7. Explore and format **site** data. Prior to formatting sites (see Section Two) take a moment to explore how sites are coded. Of importance are:
 
   6. **How many sites are there?** You need to ensure that there are a reasonable number of sites. To determine the number of sites, use: `length(unique(example_df$site))`. There have been instances in which the number of sites comes close to the number of records in the data frame. This sort of situation is most likely due to miscoding of the site field. Try to find out how the sites are miscoded. If you can find the problem, see the site section below in how the site data can be modified. Make sure to provide a comment in your data cleaning script that tells exactly what you’ve changed and why. Also, after the modification make sure to git add-commit-push and provide a message that details the modification. If the problem is not clear to you, add an issue to the core-transient git hub repository, describe the problem in detail and assign the issue to me.
   6. **How many records are there per site?** Sites that are mis-defined can also be determined by observing the number of records across sites. If sites are mis-defined, this can be identified if a large proportion of sites have very few records. There are many ways to determine this. To observe the number of records per site using the table function in base R, use either `table(example_df$site)` to observe the records in wide format or `data.frame(table(example_df$site))` to observe the records in long format. The latter can also be done in Hadley Wickham’s **plyr** package using: `ddply(example_df,.(site),'nrow')`. If there are a large number of sites, it can be cumbersome to search through them all. You can avoid this by ordering from the smallest to largest number of records per site. First, assign a name to your site table: `xy <- data.frame(table(example_df$site))`. Next, order by frequency: `xy2[order(xy2$Freq),]`. Modify as necessary (see Section Two), providing descriptive comments in your script for your modification, and add-commit-push to GitHub. Again, if the problem is not clear to you, add an issue to the core-transient git hub repository, describe the problem in detail and assign the issue to me.
