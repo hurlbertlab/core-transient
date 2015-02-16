@@ -73,15 +73,8 @@ head(dataset)
 # We can see that sites are broken up into (potentially) 5 fields. Find the 
 # metadata link in the data source table use that link to determine how
 # sites are characterized.
-#  -- If sampling is nested (e.g., site, block, treatment, plot, quad as in 
-# this study), use each of the identifying fields and separate each field with
-# an underscore.
-# -- If sites are listed as lats and longs, use the finest available grain 
-# and separate lat and long fields with an underscore.
-# -- If the site definition is clear, make a new site column as necessary.
 
-# Here, we will concatenate all of the potential fields that describe the 
-# site:
+# Concatenate all of the potential fields that describe the site
 
 head(dataset)
 
