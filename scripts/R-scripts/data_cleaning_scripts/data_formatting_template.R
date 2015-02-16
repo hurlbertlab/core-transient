@@ -331,9 +331,18 @@ write.csv(dataset, "data/formatted_datasets/dataset_223.csv", row.names = F)
 # COMMIT-PUSH THE UPDATED DATA FOLDER!
 
 
-#################################################################################
+################################################################################*
 # ---- END CREATION OF FORMATTED DATA FRAME ----
-#################################################################################
+################################################################################*
+# If you had to set the formatting script aside and opened this in a new 
+# session, source the script and load required libraries and dataset:
+
+library(stringr)
+library(plyr)
+
+source('scripts/R-scripts/core-transient_functions.R')
+
+dataset = read.csv("data/formatted_datasets/dataset_223.csv")
 
 #===============================================================================*
 # ---- MAKE PROPORTIONAL OCCUPANCY AND DATA SUMMARY FRAMES ----
@@ -346,9 +355,77 @@ write.csv(dataset, "data/formatted_datasets/dataset_223.csv", row.names = F)
 # ---- TIME DATA ----
 #===============================================================================*
 # Because it's often considerably more straightforward, we'll start with the
-# temporal data.
+# temporal data. For this, go to the metadata of the study. There, we see
+# that data are collected in two seasons, spring and fall. We want to change
+# these to a decimal year, which are simply grouped time samples (the actual 
+# values don't really matter much).
 
-levels(dataset$site)
+# Extract year values:
+
+year = as.numeric(format(dataset$date, '%Y'))
+
+head(year)
+
+summary(year)
+
+# Extract month values (if applicable):
+
+month = as.numeric(format(dataset$date, '%m'))
+
+head(month)
+
+summary(month)
+
+unique(month)
+
+# Make "season" values:
+
+season = ifelse(month < 7, .25, .75)
+
+unique(season)
+
+# Add year and season:
+
+yearSeason = year + season
+
+head(yearSeason)
+
+summary(yearSeason)
+
+# Modify date column to now represent the decimal year:
+
+dataset1 = dataset
+
+dataset1$date = yearSeason
+
+head(dataset1)
+
+# Change the column name to year:
+
+names(dataset1)
+
+names(dataset1)[3] = 'year'
+
+# Summarize the dataset to the new temporal grain:
+
+dataset2 = ddply(dataset1, .(datasetID, site, year, species), 
+                 summarize, count = max(count))
+
+# Explore:
+
+dim(dataset1)
+dim(dataset2)
+
+head(dataset1)
+head(dataset2)
+
+str(dataset2)
+
+# All looks okay, rename as dataset:
+
+dataset = dataset2
+
+# !GIT-ADD-COMMIT-PUSH AND DESCRIBE ANY TEMPORAL GRAIN DECISIONS!
 
 #-------------------------------------------------------------------------------*
 # ---- SITE DATA ----
@@ -356,366 +433,103 @@ levels(dataset$site)
 # What is the appropriate sampling grain for sites? Return to the metadata to
 # see if there's any clues.
 
-levels(dataset$site)
-
-#################################################################################
-# ENDED CODING UPDATE HERE
-#################################################################################
-#######################################################################
-
-# Our next task is to determine the temporal sampling grain. To do so
-# we return to the online metadata. We see from the description of the 
-# sampling design that quadrats were visited twice a year. 
-
-# What was the temporal distribution of the two sampling periods?
-
-months = months(date)
-
-table(months)
-
-# We can see that samples were collected in the spring and fall. We want
-# these seasons. Of course we already knew that from the second column.
-
-# Our next goal is to extract year from the date object:
-
-year = as.numeric(format(date, '%Y'))
-
-# We could pull seasonal data from months, but season is already 
-# provided (albeit with year). Lets extract fall and spring from that
-# field and change to numeric values of 0.25 (spring) and 0.75 (fall).
-
-season = str_sub(dataset$season, end = -5)
-
-season = ifelse(season == 'SPRING',.25, .75)
-
-# Add year and season together and you have a date column provided in
-# decimal years:
-
-dataset$year = year + season 
-
-# Check it out and if all looks okay, we'll remove the season and 
-# date columns:
-
-head(dataset)
-
-# Okay we can see that the sampling is divided into fall and spring. Let's 
-# just turn those into decimal years:
-
-season = ifelse(season == 'SPRING',.25, .75)
-
-summary(season)
-
-# Now, let's extract year from the date (we could easily do this using
-# the str_sub method as well, but this is more universal).
-# First, make the date into an R date object:
-
-class(dataset$record_record_date)
-
-date = strptime(dataset$record_record_date, '%m/%d/%Y')
-
-class(date)
-
-head(date)
-
-# It worked! Now extract year:
-
-year = as.numeric(format(date, '%Y'))
-
-# Add the decimal year and year vectors:
-
-dataset$year = year + season 
-
-head(dataset)
-
-# Now let's clean up by removing the other date columns:
-
-dataset1 = dataset[,-c(2,5)]
-
-head(dataset1)
-
-summary(dataset1)
-
-# A couple of years are listed as NA. Let's remove them:
-
-dataset1 = na.omit(dataset1)
-
-summary(dataset1)
-
-# Everything looks good, so let's call it d again
-
-dataset = dataset1
-
-# !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE DATA WERE MODIFIED!
-
-
-
-
-
-#-------------------------------------------------------------------------------*
-# ---- EXPLORE AND FORMAT SITE DATA ----
-#===============================================================================*
-
-# We can see that sites are broken up into (potentially) 5 fields. Find the 
-# metadata link in the data source table use that link to determine how
-# sites are characterized.
-#  -- If sampling is nested (e.g., site, block, treatment, plot, quad as in 
-# this study), use each of the identifying fields and separate each field with
-# an underscore.
-# -- If sites are listed as lats and longs, use the finest available grain 
-# and separate lat and long fields with an underscore.
-# -- If the site definition is clear, make a new site column as necessary.
-
-# Here, we will concatenate all of the potential fields that describe the 
-# site:
-
-head(dataset)
-
-site = paste(dataset$site, dataset$block, dataset$treatment, 
-             dataset$plot, dataset$quad, sep = '_')
-
-# Do some quality control by comparing the site fields in the dataset with the 
-# new vector of sites:
-
-head(site)
-
-# All looks correct, so replace the site column in the dataset and remove the 
-# unnecessary fields, start by renaming the dataset in case you make a mistake:
-
-dataset1 = dataset
-
-dataset1$site = site
-
-dataset1 = dataset1[,-c(2:5)]
-
-# Check the new dataset (are the columns as they should be?):
-
-head(dataset1)
-
-# All looks good, so overwrite the dataset file:
-
-dataset = dataset1
-
-# !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE SITE DATA WERE MODIFIED!
-
 # How many sites are there?
 
 length(unique(dataset$site))
 
-# How many records are there per site?
+# How many time and species records are there per site?
 
-ddply(dataset, .(site), nrow)
+siteTable = ddply(dataset, .(site), summarize,
+                  nYear = length(unique(year)),
+                  nSp = length(unique(species)))
 
-# Hmmmm ... it seems the scale of site is off (and a conversation with
-# Sevilleta confirmed this). What if we concatenated all of the site columns?
-# Use paste to concatenate:
+head(siteTable)
 
-site = paste(dataset$site, dataset$block, dataset$treatment, 
-             dataset$plot, dataset$quad, sep = '')
+summary(siteTable)
+
+# We see that each of the sites was sampled with equivalent, and adequate,
+# time samples (>4) but that at least some sites have species richness 
+# below the cut-off value of 10. Perhaps too many sites of with low sr?
+
+# Let's sort and have a look at the first few rows:
+
+head(siteTable[order(siteTable$nSp),],20)
+
+# All 1's! How many sites have less than 10 species?
+
+nrow(siteTable)
+nrow(subset(siteTable, nSp < 10))
+
+# That's almost a third of the sites! This is a clue that the 
+# smallest spatial sampling grain (quadrat) is too fine.
+
+# Let's try concatenating all but the quad field and explore the output. 
+# We start by splitting site:
+
+site = read.table(text = as.character(dataset$site), sep ='_')
 
 head(site)
 
-length(unique(site))
+site1 = do.call('paste', c(site[,1:4],sep = '_'))
 
-# Now we have quite a few sites, how many records are there per site?
-# Assign a name, because it's going to be super long:
+head(site1)
 
-siteTable = ddply(data.frame(site), .(site), nrow)
+length(site1)
+
+# How have we changed the number of sites?
+
+length(unique(dataset$site))
+
+length(unique(site1))
+
+# We've reduced the number of sites to 28! How does the richness look
+# for this new spatial sampling grain?
+
+dataset1 = dataset
+
+dataset1$site = site1
+
+siteTable = ddply(dataset1, .(site), summarize,
+                  nYear = length(unique(year)),
+                  nSp = length(unique(species)))
 
 head(siteTable)
 
-# Sort the table to see the fewest number of records per site:
-
-head(siteTable[order(siteTable$V1),],10)
-
-# Lot's of sites with few records! Let's explore further:
-
 summary(siteTable)
 
-# Let's try concatenating all but the quad field and explore the output:
+head(siteTable[order(siteTable$nSp),],10)
 
-site = paste(dataset$site, dataset$block, 
-             dataset$treatment, dataset$plot, sep = '')
+# For all but the first site (and perhaps the second), the species richness
+# is adequate.Change the dataset site column to this one:
 
-length(unique(site))
+dataset$site = dataset1$site
 
-siteTable = ddply(data.frame(site), .(site), nrow)
+# Now let's remove the sites with inadequate sample sites:
 
-head(siteTable[order(siteTable$V1),],10)
+badSites = subset(siteSummaryFun(dataset), spRich < 10 | nTime < 5)$site
 
-summary(siteTable)
+dataset1 = dataset[!dataset$site %in% badSites,]
 
-# For all but the first site (and perhaps the second), these sample sizes are 
-# adequate. Add to reduced dataframe:
+# Summarize the dataset to the new spatial grain:
 
-dataset1 = dataset[,-c(2:5)]
+dataset2 = ddply(dataset1, .(datasetID, site, year, species), 
+                 summarize, count = max(count))
 
-dataset1$site = site
+head(dataset2)
 
-head(dataset1)
+dim(dataset2)
 
-# Now let's remove the site with the very low sample size:
+summary(dataset2)
 
-head(siteTable[order(siteTable$V1),],10)
+# All looks good, rename dataset:
 
-dataset1 = dataset1[!dataset1$site %in% 'C3C1',]
+dataset = dataset2
 
-head(dataset1)
-
-dataset = dataset1
-
-# !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE DATA WERE MODIFIED!
-
-#-------------------------------------------------------------------------------*
-# ---- EXPLORE AND FORMAT SPECIES DATA ----
-#===============================================================================*
-
-
-#-------------------------------------------------------------------------------*
-# ---- EXPLORE AND FORMAT COUNT DATA ----
-#===============================================================================*
-# Next, we need to explore the count records. A good first pass is to remove 
-# zero counts and NA's:
-
-summary(dataset)
-
-# Subset to records > 0
-
-dataset1 = dataset[dataset$cover>0,]
-
-summary(dataset1)
-
-# Remove NA's:
-
-dataset = na.omit(dataset1)
-
-# Let's change the cover column to count. Make sure to write in the data summary
-# table the type of observed count.
-
-names(dataset)[4] = 'count'
-
-head(dataset)
-
-# !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE DATA WERE MODIFIED!
-
-#-------------------------------------------------------------------------------*
-# ---- EXPLORE AND FORMAT TIME DATA ----
-#===============================================================================*
-# Here, we need to modify the dates of sampling to decimal years. To do so, we 
-# we need to be aware of the temporal grain of the analysis.
-
-# Let's look at how the seasons are distributed by extracting just the 
-# season (not year data):
-
-head(dataset)
-
-season = str_sub(dataset$season, end = -5)
-
-levels(factor(season))
-
-# Okay we can see that the sampling is divided into fall and spring. Let's 
-# just turn those into decimal years:
-
-season = ifelse(season == 'SPRING',.25, .75)
-
-summary(season)
-
-# Now, let's extract year from the date (we could easily do this using
-# the str_sub method as well, but this is more universal).
-# First, make the date into an R date object:
-
-class(dataset$record_record_date)
-
-date = strptime(dataset$record_record_date, '%m/%d/%Y')
-
-class(date)
-
-head(date)
-
-# It worked! Now extract year:
-
-year = as.numeric(format(date, '%Y'))
-
-# Add the decimal year and year vectors:
-
-dataset$year = year + season 
-
-head(dataset)
-
-# Now let's clean up by removing the other date columns:
-
-dataset1 = dataset[,-c(2,5)]
-
-head(dataset1)
-
-summary(dataset1)
-
-# A couple of years are listed as NA. Let's remove them:
-
-dataset1 = na.omit(dataset1)
-
-summary(dataset1)
-
-# Everything looks good, so let's call it d again
-
-dataset = dataset1
-
-# !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE DATA WERE MODIFIED!
-
-#-------------------------------------------------------------------------------*
-# ---- MAKE DATA FRAME OF COUNT BY SITES, SPECIES, AND YEAR ----
-#===============================================================================*
-# Now we will make the final formatted dataset, add a datasetID field, check for
-# errors, and remove records that can't be used for our purposes.
-
-# First, lets add the datasetID:
-
-dataset$datasetID = rep(223,nrow(dataset))
-
-# Now make the data frame
-
-dataset1 = ddply(dataset,.(datasetID, site, year, species), summarize, count = max(count))
-
-# Give a quick look: 
-
-head(dataset1)
-dim(dataset1)
-summary(dataset1)
-
-# Now let's check and make sure each site has at least 10 species and 5 time
-# samples:
-
-siteTable = siteSummaryFun(dataset1)
-
-head(siteTable)
-dim(siteTable)
-summary(siteTable)
-
-# How many sites failed to pass the richness and time test?
-
-badSites = badSiteFun(dataset1)
-
-head(badSites)
-dim(badSites)
-summary(badSites)
-
-# Remove bad sites
-
-dataset1 = dataset1[!dataset1$site %in% badSiteFun(dataset)$site,]
-
-# !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE DATA WERE MODIFIED!
+# !GIT-ADD-COMMIT-PUSH AND DESCRIBE ANY SPATIAL GRAIN DECISIONS!
 
 #-------------------------------------------------------------------------------*
 # ---- WRITE OUTPUT DATA FRAMES  ----
 #===============================================================================*
-
-# If everything is looks okay (e.g., almost all, or at least most, sites have
-# adequate), we're ready make and write formatted data frame:
-
-dataset = dataset1
-
-write.csv(dataset, "data/formatted_datasets/dataset_223.csv", row.names = F)
-
-# !GIT-ADD-COMMIT-PUSH BOTH YOUR COMPLETED SCRIPT AND THE NEW FORMATTED DATASET!
 
 # And make our proportional occurence data frame:
 
