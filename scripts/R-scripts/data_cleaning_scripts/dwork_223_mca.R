@@ -296,7 +296,7 @@ head(dataset)
 
 summary (dataset)
 
-# If everything is looks okay we're ready to write formatted data frame:
+# write formatted data frame:
 
 write.csv(dataset, "data/formatted_datasets/dataset_223.csv", row.names = F)
 
