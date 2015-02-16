@@ -38,19 +38,10 @@ siteSummaryFun = function(dataset){
         nTime = length(unique(year)))
 }
 
-# The following function is used to show a subset of a dataset in which the
-# number of time samples or species richness is not adequate:
-
-badSiteFun = function(dataset){
-  subset(siteSummaryFun(dataset), spRich < 10 | nTime < 5)
-}
-
 # The following function writes the proportional occurence data
-# frame on sites in which there is an adequate number of time
-# samples and species richness. 
+# frame on sites.
 
 propOccFun = function(dataset){
-  dataset = dataset[!dataset$site %in% badSiteFun(dataset)$site,]
   siteNames = unique(dataset$site)
   occPropOutList = list(length = length(siteNames))
   # For each of the sites in the dataset ...
