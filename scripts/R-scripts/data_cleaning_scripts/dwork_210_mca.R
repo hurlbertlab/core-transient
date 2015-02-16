@@ -1,94 +1,65 @@
-# Script for cleaning raw dataset number 210
+# Formatting dataset 210: Cedar Creek LTER Plants
 
-#Get data
+#-------------------------------------------------------------------------------*
+# ---- SET-UP ----
+#===============================================================================*
+
+# Load libraries:
+
+library(stringr)
+library(plyr)
+
+# Source the functions file:
+
+source('scripts/R-scripts/core-transient_functions.R')
+
+# Get data:
+
 getwd()
-list.files('raw_datasets')
-setwd('C:/Users/auriemma/core-transient/raw_datasets')
-list.files()
-d = read.csv('dataset_210.csv')
 
+list.files('data/raw_datasets')
 
-# Explore data
+d = read.csv('data/raw_datasets/dataset_210.csv')
+
+#-------------------------------------------------------------------------------*
+# ---- EXPLORE THE DATASET ----
+#===============================================================================*
+
 head(d)
 dim(d)
 str(d)
 
-# Removing biomass counts of 0
-
-summary(d$biomass)
-
-d = d[d$biomass> 0,]
-summary(d$biomass)
-dim(d)
-
-# Site data 
-
-summary(d$exp)
-site = paste(d$field, d$plot, sep = '')
-length(unique(site))
-table(site)
-    #All sites have significant sample sizes, so none removed
-
-# Add site column to dataset d
-
-d$site = paste(d$field, d$plot, sep = '')
-head(d)
-tail(d)
-
-# Remove unnecessary columns
-
-d1 = d[,c(3,10,11,12)]
-head(d1)
-d = d1
-head(d)
-
-# Raw species data
-
-species = d$species
-unique(species)
-
-# Remove unwanted species names in dataset
-remove_spp = c('Miscellaneous herbs','Miscellaneous grasses','Fungi','Miscellaneous litter','Mosses & lichens','Miscellaneous rushes','Miscellaneous legumes','Miscellaneous sedges','Miscellaneous forb','Miscellaneous sp.','Miscellaneous grasses 2','Miscellaneous woody plants','Pine needles','Sedges','Mosses & lichens 2','Miscellaneous herb')
-species = species[!species%in%remove_spp]
-unique(species)
-
-# Dataset species column species removal
-d1 = d[!d$species%in%remove_spp,]
-dim(d1)
-unique(d1$species)
-d = d1
-head(d)
-
-# Time column
-str(d)
-unique(d$year)
-year2 = strptime(d$year,'%Y')
-str(year2)
-year3 = as.numeric(format(year2,'%Y'))
-str(year3)
-
-# Numeric year into the dataset
-d$year = year3
-
-head(d)
-tail(d)
-str(d)
-
-# Count column creation
-library('plyr')
-d1 = ddply(d,.(site,year,species), summarize, count = max(biomass))
+# Remove columns not needed
+d1 = d[,-c(1,2,6,7,8,9)]
 head(d1)
 summary(d1)
-dim(d1)
 
-# Add datasetID column
-d1$datasetID = rep(210,length(d1[,1]))
+# Revert back to d
+d = d1
+
+#-------------------------------------------------------------------------------*
+# ---- EXPLORE AND FORMAT SITE DATA ----
+#===============================================================================*
+
+# 2 different fields associated with site data: "field" and "plot"
+# Explore
+class(d$field)
+class(d$plot)
+unique(d$field)
+unique(d$plot)
+
+# After checking for data to remove, there is none, so no removals
+# Change plot to factor
+d1 = d
+d1$plot = factor(d1$plot)
+levels(d$plot)
+
+# Concatenate the two site columns to create new 'site' column
+d1$site = paste(d1$field, d1$plot, sep = '_')
 head(d1)
-d210 = d1[,c(5,1,3,2,4)]
-head(d210)
-str(d210)
+unique(d1$site)
 
-# Write cleaned dataset to main file
-setwd('C:/Users/auriemma/core-transient//formatted_datasets')
+# All looks good, so remove old site columns and change back to d
+d = d1[,-c(2,3)]
+head(d)
 
-write.csv(d210, 'dataset_210.csv', row.names = F)
