@@ -63,3 +63,40 @@ unique(d1$site)
 d = d1[,-c(2,3)]
 head(d)
 
+#-------------------------------------------------------------------------------*
+# ---- EXPLORE AND FORMAT SPECIES DATA ----
+#===============================================================================*
+# explore
+class(d$species)
+length(unique(d$species))
+#  259 unique species names
+
+# Capitalize all to check for any case errors
+sp = toupper(d$species)
+length(unique(sp))
+
+  # No case errors, so use original species column
+
+# Look through unique species to find unwanted species names
+levels(d$species)
+
+# Several species names to be removed
+badsp = c("Miscellaneous forb", "Miscellaneous grasses", "Miscellaneous grasses 2", "Miscellaneous herb", 
+          "Miscellaneous herbs", "Miscellaneous legumes", "Miscellaneous litter", "Miscellaneous rushes", 
+          "Miscellaneous sedges", "Miscellaneous sp.", "Miscellaneous woody plants","Forb seedlings","Mosses & lichens",
+          "Pine needles")
+
+# Remove species
+d1 = d[!d$species %in% badsp,]
+length(unique(d1$species))
+unique(d1$species)
+
+# Check nrows
+nrow(d)
+nrow(d1)
+
+d = d1
+
+#-------------------------------------------------------------------------------*
+# ---- EXPLORE AND FORMAT TIME DATA ----
+#===============================================================================*
