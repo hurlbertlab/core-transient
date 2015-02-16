@@ -332,15 +332,31 @@ write.csv(dataset, "data/formatted_datasets/dataset_223.csv", row.names = F)
 
 
 #################################################################################
-# ENDED CODING UPDATE HERE
+# ---- END CREATION OF FORMATTED DATA FRAME ----
 #################################################################################
 
-# Give a quick look: 
+#===============================================================================*
+# ---- MAKE PROPORTIONAL OCCUPANCY AND DATA SUMMARY FRAMES ----
+#===============================================================================*
+# We have now formatted the dataset to the finest possible spatial and temporal
+# grain, removed bad species, and added the dataset ID. It's now to make some
+# scale decisions and determine the proportional occupancies.
 
-head(dataset1)
-dim(dataset1)
-summary(dataset1)
+#-------------------------------------------------------------------------------*
+# ---- TIME DATA ----
+#===============================================================================*
+# Because it's often considerably more straightforward, we'll start with the
+# temporal data.
 
+levels(dataset$site)
+
+#-------------------------------------------------------------------------------*
+# ---- SITE DATA ----
+#===============================================================================*
+# What is the appropriate sampling grain for sites? Return to the metadata to
+# see if there's any clues.
+
+levels(dataset$site)
 
 #################################################################################
 # ENDED CODING UPDATE HERE
