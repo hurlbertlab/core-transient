@@ -105,12 +105,13 @@ site = paste(dataset$site, dataset$block, dataset$treatment,
 
 head(site)
 
-# All looks correct, so replace the site column in the dataset and remove the 
-# unnecessary fields, start by renaming the dataset in case you make a mistake:
+# All looks correct, so replace the site column in the dataset (as a factor) 
+# and remove the unnecessary fields, start by renaming the dataset in case 
+# you make a mistake:
 
 dataset1 = dataset
 
-dataset1$site = site
+dataset1$site = factor(site)
 
 dataset1 = dataset1[,-c(2:5)]
 
@@ -244,7 +245,7 @@ dataset = dataset1
 
 summary(dataset)
 
-# Subset to records > 0
+# Subset to records > 0 (if applicable):
 
 dataset1 = subset(dataset, cover > 0) 
 
@@ -274,14 +275,62 @@ dataset = dataset1
 
 # First, lets add the datasetID:
 
-dataset$datasetID = rep(223,nrow(dataset))
+dataset1 = dataset
+
+dataset1$datasetID = rep(223,nrow(dataset1))
+
+# Change date to a factor:
+
+dataset1$date = factor(as.character(dataset1$date))
 
 # Now make the compiled dataframe:
 
-dataset1 = ddply(dataset,.(datasetID, site, factor(as.character(date)), species), 
+dataset2 = ddply(dataset1,.(datasetID, site, date, species),
                  summarize, count = max(cover))
 
-# NOT WORKING CURRENTLY
+
+# Explore the data frame:
+
+dim(dataset2)
+
+head(dataset2)
+
+summary(dataset2)
+
+# Convert date back to a date object:
+
+date = as.Date(dataset2$date, '%Y-%m-%d')
+
+class(date)
+
+head(date)
+
+# All looks good, reassign the column:
+
+dataset = dataset2
+
+dataset$date = date
+
+# !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE DATA WERE MODIFIED!
+
+#-------------------------------------------------------------------------------*
+# ---- WRITE OUTPUT DATA FRAMES  ----
+#===============================================================================*
+
+# Take a final look at the dataset:
+
+head(dataset)
+
+summary (dataset)
+
+# If everything is looks okay we're ready to write formatted data frame:
+
+write.csv(dataset, "data/formatted_datasets/dataset_223.csv", row.names = F)
+
+# !GIT-ADD-COMMIT-PUSH THE FORMATTED DATASET IN THE DATA FILE, THEN GIT-ADD-
+# COMMIT-PUSH THE UPDATED DATA FOLDER!
+
+
 #################################################################################
 # ENDED CODING UPDATE HERE
 #################################################################################
