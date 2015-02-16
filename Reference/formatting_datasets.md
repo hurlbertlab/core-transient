@@ -1,6 +1,12 @@
-# Formatting datasets for the core-transient project
+# Preparing datasets for analysis 
 
-In this project, we evaluate the proportion of core and transient species at a given site using data collected across a wide range of taxa, regions, and environmental systems. A challenge that we face is that ecological data are collected at highly variable spatial, temporal, and biological scales and it is necessary to consistently format the data in preparation for analysis. Here we provide instructions associated with formatting datasets. The goal is to format a dataset as follows:
+In this project, we evaluate the proportion of core and transient species at a given site using data collected across a wide range of taxa, regions, and environmental systems. A challenge that we face is that ecological data are collected at highly variable spatial, temporal, and biological scales and it is necessary to consistently format the data in preparation for analysis. Here we provide instructions associated with formatting datasets and then creating a proportional occurrence and dataset summary files. This document is divided into three parts. **Section One** provides instructions on how to format a dataset to the finest available spatial and temporal grain. **Section Two** provides instructions on how to make a proportional occurrence data frame after summarizing the data at a given spatial or temporal scale. **Section Three** provides an "R Cheatsheet" to the various functions you will likely use in the preparation of data for analysis.
+
+## Formatting datasets for the core-transient project
+
+
+
+The goal is to format a dataset as follows:
 
 datasetID | site | species | year | count
 --------- | ---- | ------- | ---- | -----
