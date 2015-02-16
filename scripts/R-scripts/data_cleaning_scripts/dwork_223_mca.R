@@ -214,8 +214,7 @@ dataset = dataset1
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT COUNT DATA ----
 #===============================================================================*
-# Next, we need to explore the count records. A good first pass is to remove 
-# zero counts and NA's:
+# remove zero counts and NA's:
 
 summary(dataset)
 
