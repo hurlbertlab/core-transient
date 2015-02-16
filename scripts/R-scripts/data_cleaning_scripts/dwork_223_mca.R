@@ -1,133 +1,337 @@
-# Get data
-getwd()
-list.files('raw_datasets')
+# Formatting dataset 223: Sevilletta LTER Plants
 
-d = read.csv('raw_datasets/dataset_223.csv')
+#-------------------------------------------------------------------------------*
+# ---- SET-UP ----
+#===============================================================================*
 
-# Explore data
-
-head(d)
-str(d)
-summary(d)
-dim(d)
-
-# Subset to records > 0
-
-d = d[d$cover>0,]
-
-# Explore site data:
-
-site = paste(d$site, d$block, d$treatment, d$plot, d$quad, sep ='')
-length(site)
-length(unique(site))
-table(site)
-# Coarser scale sites removing d$quad
-site = paste(d$site, d$block, d$treatment, d$plot, sep ='')
-
-# Subsetting data for removing 'NA' and site C3C1 due to lack of sample size
-
-site = subset(site, site!= 'C3C1' & site != 'NANANANA')
-length(site)
-table(site)
-
-# Add site column to dataset
-
-d$site = paste(d$site, d$block, d$treatment, d$plot, sep ='')
-d1 = subset(d, site!= 'C3C1' & site != 'NANANANA')
-head(d1)
-
-#Remove unnecessary columns
-
-d = d1[,c(3,9,10,12,15)]
-head(d)
-
-# Explore species
-
-length(unique(d$species))
-unique(d$species)
-
-# Subset out unwanted species
-
-species = d$species
-badspec = c('DEAD', 'seed', '<NA>', 'seeds2', 'seeds1')
-species = species[!species%in%badspec]
-    #instead of long way:
-  species = subset(species, species!= 'DEAD' & species!= 'seed'& species!= '<NA>' & species!= 'seeds2', species!= 'seeds1')
-length(species)
-d1 = d[!d$species%in%badspec,]
-dim(d1)
-head(d1)
-unique(d1$species)
-d = na.omit(d1)
-dim(d)
-head(d)
-
-# Time assignment
-
-str(d)
-unique(d$season)
-
-  #Substringing year
+# Load libraries:
 
 library(stringr)
-substr('hello_world',1,5)
-str_sub('hello_world',-5)
-?str_sub
-
-year = str_sub(d$season, -4)
-head(year)
-year = as.numeric(year)
-head(year)
-
-  # For FALL and SPRING vectors
-
-season = str_sub(d$season, end = -5)
-head(season)
-tail(season)
-
-  # Putting year + season together
-
-season1 = ifelse(season == 'SPRING',.25,.75)
-str(season1)
-summary(season1)
-year = year + season1
-head(year)
-
-# Extracting date METHOD 2 making date objects
-
-head(d)
-date = strptime(d$record_record_date, '%m/%d/%Y')
-head(date)
-year2 = as.numeric(format(date, '%Y'))
-head(year2)
-month = as.numeric(format(date, '%m'))
-head(month)
-unique(month)
-quarter = ifelse(month >= 9,.75,.25)
-summary(quarter)
-head(quarter)
-
-d$year = year
-head(d)
-d1 = d[,-c(2,5)]
-head(d1)
-
-# Count 
-
 library(plyr)
-d = ddply(d1,.(site, year, species), summarize, count = max(cover))
-head(d)
-dim(d)
-summary(d)
 
-# Dataset ID assignment
-dim(d)
-d$datasetID = rep(223,length(d[,1]))
-head(d)
-d = d[,c(5,1,3,2,4)]
-head(d)
-names(d)[1] = 'datasetID'
+# Source the functions file:
+getwd()
+setwd('C:/Users/auriemma/core-transient/')
+source('scripts/R-scripts/core-transient_functions.R')
 
-# Writing dataframe to main file
+# Get data:
 
-write.csv(d, "formatted_datasets/dataset_223.csv",row.names = F)
+getwd()
+
+list.files('data/raw_datasets')
+
+dataset = read.csv('data/raw_datasets/dataset_223.csv')
+
+
+#-------------------------------------------------------------------------------*
+# ---- EXPLORE THE DATASET ----
+#===============================================================================*
+# View field names:
+
+names(dataset)
+
+# View how many records and fields:
+
+dim(dataset)
+
+# View the structure of the dataset:
+
+str(dataset)
+
+# View first 6 rows of the dataset:
+
+head(dataset)
+
+# Here, we can see that there are some fields that we won't use. Let's remove
+# them, note that I've given a new name here "d1", this is to ensure that
+# we don't have to go back to square 1 if we've miscoded anything.
+
+names(dataset)
+
+dataset1 = dataset[,-c(1,2,8,11,13,14)]
+
+head(dataset1)
+
+# Because all (and only) the fields we want are present, we can re-assign d1:
+
+dataset = dataset1
+
+# !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE DATA WERE MODIFIED!
+
+#-------------------------------------------------------------------------------*
+# ---- EXPLORE AND FORMAT SITE DATA ----
+#===============================================================================*
+
+# View summary of fields in the dataset:
+
+summary(dataset)
+
+# Reminder of the dataset:
+
+head(dataset)
+
+# We can see that sites are broken up into (potentially) 5 fields. Find the 
+# metadata link in the data source table use that link to determine how
+# sites are characterized.
+
+# Concatenate all of the potential fields that describe the site
+
+head(dataset)
+
+site = paste(dataset$site, dataset$block, dataset$treatment, 
+             dataset$plot, dataset$quad, sep = '_')
+
+# Do some quality control by comparing the site fields in the dataset with the 
+# new vector of sites:
+
+head(site)
+
+# All looks correct, so replace the site column in the dataset (as a factor) 
+# and remove the unnecessary fields, start by renaming the dataset in case 
+# you make a mistake:
+
+dataset1 = dataset
+
+dataset1$site = factor(site)
+
+dataset1 = dataset1[,-c(2:5)]
+
+# Check the new dataset (are the columns as they should be?):
+
+head(dataset1)
+
+# All looks good, so overwrite the dataset file:
+
+dataset = dataset1
+
+# !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE SITE DATA WERE MODIFIED!
+
+#-------------------------------------------------------------------------------*
+# ---- EXPLORE AND FORMAT SPECIES DATA ----
+#===============================================================================*
+
+# Look at the individual species present:
+
+sp = dataset$species
+
+levels(sp)
+
+# Uppercase to remove possible case error
+
+dataset$species = toupper(dataset$species)
+
+# Differences?
+
+length(unique(dataset$species))
+
+length(unique(sp))
+
+# We see that almost 70 species were the result of upper and lower case!
+# Make a new species vector (factor ensures that it is coded as a factor
+# rather than character and removes any unused levels) 
+# and continue exploring:
+
+sp = factor(dataset$species)
+
+levels(sp)
+
+# Now explore the listed species themselves. To do so, you should go back to study's 
+# metadata. A quick look at the metadata is not informative, unfortunately. Because of
+# this, you should really stop here and post an issue on GitHub. With some more thorough
+# digging, however, I've found the names represent "Kartez codes". Several species can
+# be removed (double-checked with USDA plant codes at plants.usda.gov and another Sevilleta
+# study (dataset 254) that provides species names for some codes). Some codes were identified
+# with this pdf from White Sands: 
+# https://nhnm.unm.edu/sites/default/files/nonsensitive/publications/nhnm/U00MUL02NMUS.pdf
+
+bad_sp = c('', 'NONE','UK1','UKFO1','UNK1','UNK2','UNK3','LAMIA', 'UNGR1','CACT1','UNK','NONE',
+           'UNK2','UNK3', 'UNK1','FORB7', 'MISSING', '-888', 'DEAD','ERRO2', 'FORB1','FSEED', 'GSEED',
+           'MOSQ', 'SEED','SEEDS1','SEEDS2', 'SEFLF','SESPM','SPOR1')
+
+dataset1 = dataset[!dataset$species %in% bad_sp,]
+
+dataset1$species = factor(dataset1$species)
+
+# Let's look at how the removal of bad species altered the length of the dataset:
+
+nrow(dataset)
+
+nrow(dataset1)
+
+# Look at the head of the dataset to ensure everything is correct:
+
+head(dataset1)
+
+# Having checked through the results, we can now reassign the dataset:
+
+dataset = dataset1
+
+# !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE SPECIES DATA WERE MODIFIED!
+
+#-------------------------------------------------------------------------------*
+# ---- EXPLORE AND FORMAT TIME DATA ----
+#===============================================================================*
+# Here, we need to extract the sampling dates. 
+
+# change the date column to a true date and replace name
+
+head(dataset)
+
+date = strptime(dataset$record_record_date, '%m/%d/%Y')
+
+# A check on the structure lets you know that date field is now a date object:
+
+class(dataset$record_record_date)
+
+class(date)
+
+# Give a double-check, if everything looks okay, then replace the column:
+
+head(dataset$record_record_date)
+
+head(date)
+
+dataset1 = dataset
+
+dataset1$record_record_date = date
+
+names(dataset1)[5] = 'date'
+
+# Let's remove the season field (for now):
+
+dataset1 = dataset1[,-2]
+
+# After a check of dataset1, you can rename it dataset:
+
+head(dataset)
+
+head(dataset1)
+
+dataset = dataset1
+
+# !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE DATE DATA WERE MODIFIED!
+
+#-------------------------------------------------------------------------------*
+# ---- EXPLORE AND FORMAT COUNT DATA ----
+#===============================================================================*
+# remove zero counts and NA's:
+
+summary(dataset)
+
+# Subset to records > 0 (if applicable):
+
+dataset1 = subset(dataset, cover > 0) 
+
+summary(dataset1)
+
+# Remove NA's:
+
+dataset1 = na.omit(dataset1)
+
+# Make sure to write in the data summary table the type of observed count (here,
+# it represents % cover)
+
+# How does it look? If you approve,  assign changes to dataset:
+
+summary(dataset)
+summary(dataset1)
+
+dataset = dataset1
+
+# !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE COUNT DATA WERE MODIFIED!
+
+#-------------------------------------------------------------------------------*
+# ---- MAKE DATA FRAME OF COUNT BY SITES, SPECIES, AND YEAR ----
+#===============================================================================*
+# make the final formatted dataset, add a datasetID field, check for
+# errors, and remove records that can't be used for our purposes.
+
+# add the datasetID:
+
+dataset1 = dataset
+
+dataset1$datasetID = rep(223,nrow(dataset1))
+
+# Change date to a factor:
+
+dataset1$date = factor(as.character(dataset1$date))
+
+# Now make the compiled dataframe:
+
+dataset2 = ddply(dataset1,.(datasetID, site, date, species),
+                 summarize, count = max(cover))
+
+# Explore 
+
+dim(dataset2)
+
+head(dataset2)
+
+summary(dataset2)
+
+# Convert date back to a date object:
+
+date = as.Date(dataset2$date, '%Y-%m-%d')
+
+class(date)
+
+head(date)
+
+# All looks good, reassign the column:
+
+dataset = dataset2
+
+dataset$date = date
+head(dataset)
+
+# !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE DATA WERE MODIFIED!
+
+#-------------------------------------------------------------------------------*
+# ---- WRITE OUTPUT DATA FRAMES  ----
+#===============================================================================*
+
+# Take a final look at the dataset:
+
+head(dataset)
+
+summary (dataset)
+
+# write formatted data frame:
+
+write.csv(dataset, "data/formatted_datasets/dataset_223.csv", row.names = F)
+
+# !GIT-ADD-COMMIT-PUSH THE FORMATTED DATASET IN THE DATA FILE, THEN GIT-ADD-
+# COMMIT-PUSH THE UPDATED DATA FOLDER!
+
+
+# cd data
+# git add formatted_datasets/dataset_208.csv
+# git commit -m "added formatted dataset"
+# git push
+# cd ..
+# git add data
+# git commit -m "updated submodule with formatted dataset 208"
+# git push
+
+#-------------------------------------------------------------------------------*
+# ---- EXPLORE YOUR DATASET SUMMARY INFO AND UPDATE THE DATA SOURCE TABLE  ----
+#===============================================================================*
+
+# !!!At this point, go to the data source table and provide:
+#   -central lat and lon (if available, if so, LatLonFLAG = 0, if you couldn't do
+#    it, add a flag of 1)
+#   -spatial_grain columns (T through W)
+#   -nRecs, nSites, nTime, nSpecies
+#   -temporal_grain columns (AH to AK)
+#   -Start and end year
+#   -Any necessary notes
+#   -flag any issues and put issue on github
+#   -git-add-commit-push data_source_table.csv
+
+dim(dataset)
+
+length(unique(dataset$site))
+
+length(unique(dataset$date))
+
+length(unique(dataset$species))
