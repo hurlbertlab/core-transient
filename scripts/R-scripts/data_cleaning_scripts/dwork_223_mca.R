@@ -109,24 +109,18 @@ dataset = dataset1
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SPECIES DATA ----
 #===============================================================================*
-# Here, your primary goal is to ensure that all of your species are valid. To do
-# so, you need to look at the list of unique species very carefully. Avoid being
-# too liberal in interpretation, if you notice an entry that MIGHT be a problem, 
-# but you can't say with certainty, create an issue on GitHub.
 
 # Look at the individual species present:
 
 sp = dataset$species
 
-levels(sp) # Note: You can also use unique(sp) here.
+levels(sp)
 
-# The first thing that I notice is that there are lower and upper case
-# entries. Because R is case-sensitive, this will be coded as separate species.
-# Modify this prior to continuing:
+# Uppercase to remove possible case error
 
 dataset$species = toupper(dataset$species)
 
-# Let's explore whether there was a difference:
+# Differences?
 
 length(unique(dataset$species))
 
