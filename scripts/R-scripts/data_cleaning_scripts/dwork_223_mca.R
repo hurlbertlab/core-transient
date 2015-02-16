@@ -243,10 +243,10 @@ dataset = dataset1
 #-------------------------------------------------------------------------------*
 # ---- MAKE DATA FRAME OF COUNT BY SITES, SPECIES, AND YEAR ----
 #===============================================================================*
-# Now we will make the final formatted dataset, add a datasetID field, check for
+# make the final formatted dataset, add a datasetID field, check for
 # errors, and remove records that can't be used for our purposes.
 
-# First, lets add the datasetID:
+# add the datasetID:
 
 dataset1 = dataset
 
@@ -261,8 +261,7 @@ dataset1$date = factor(as.character(dataset1$date))
 dataset2 = ddply(dataset1,.(datasetID, site, date, species),
                  summarize, count = max(cover))
 
-
-# Explore the data frame:
+# Explore 
 
 dim(dataset2)
 
@@ -283,6 +282,7 @@ head(date)
 dataset = dataset2
 
 dataset$date = date
+head(dataset)
 
 # !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE DATA WERE MODIFIED!
 
