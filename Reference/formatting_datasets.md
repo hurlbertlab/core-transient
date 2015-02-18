@@ -141,6 +141,24 @@ _**Note**: In the above I added a "1" to the example_df name. I consider this be
 		```
 		
 	8. git-add-commit-push your script, describing the removal of species, if necessary.
+
+10. Explore and format the time data. Here we need to extract sampling date. 
+	1. If dates are provided in multiple columns, it may be necessary to concatenate the columns. 
+		
+		```
+		date = paste(example_df$month, example_df$day, example_df$year, sep '/')
+		```
+	2. If the date column is provided only as years, leave date as simply a numeric year.
+	3. If the date column is in the format of "mm/dd/yyyy", or something similar, convert it to a date object. Check and to make sure that it is properly formatted after the date object is created (will be a POSIX-class object):
+	
+		```
+		date = strptime(date, '%m/%d/%Y')
+		
+		class(date)
+		```
+		
+	4. git-add-commit-push describing any modifications made to the date field.
+		
 		
 ###end update
   6. **How many sites are there?** You need to ensure that there are a reasonable number of sites. To determine the number of sites, use: `length(unique(example_df$site))`. There have been instances in which the number of sites comes close to the number of records in the data frame. This sort of situation is most likely due to miscoding of the site field. Try to find out how the sites are miscoded. If you can find the problem, see the site section below in how the site data can be modified. Make sure to provide a comment in your data cleaning script that tells exactly what you’ve changed and why. Also, after the modification make sure to git add-commit-push and provide a message that details the modification. If the problem is not clear to you, add an issue to the core-transient git hub repository, describe the problem in detail and assign the issue to me.
