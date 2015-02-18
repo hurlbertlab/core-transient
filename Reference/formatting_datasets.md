@@ -58,6 +58,8 @@ _**Note**: In the above I added a "1" to the example_df name. I consider this be
 			To extract "hello" in "hello world" (the first five characters), you would use:
 
 			```
+			require(stringr)
+			
 			str_sub('hello_world', 1, 5)
 			```
 			
@@ -172,7 +174,67 @@ _**Note**: In the above I added a "1" to the example_df name. I consider this be
 		```
 		
 	3. git-add-commit-push your script, describing any changes you made to the count field.
-	4. 
+12. You're now ready to make the final formatted dataset!
+	1. First, we'll make our "safe" dataset and add a datasetID field (for this example, let's say this is dataset 33):
+		
+		```
+		example_df1 = example_df
+		
+		example_df1$datasetID = 33
+		```
+		
+	2. If date is a POSIX object, convert it to a factor:
+	
+		```
+		example_df1$date = factor(as.character(example_df1$date))
+		```
+	3. Now use Hadley Wickham's "plyr" package to summarize counts by site, date, and species:
+		
+		```
+		require(plyr)
+		
+		example_df2 = ddply(example_df1, .(datasetID, site, date, species),
+			summarize, count = max(count))
+		```
+	
+	4. Explore the dataframe to be sure that everything worked:
+		
+		```
+		dim(example_df2)
+		
+		head(example_df2)
+		
+		summary(example_df2_
+		```
+		
+	5. Unless date is a numeric vector of years, convert date back into a POSIX object and, if everything looks good, reassign the column:
+	
+		```
+		date = as.Date(example_df2$date, '%Y-%m-%d')
+		
+		class(date)
+		
+		head(date)
+		
+		example_df2 = date
+		```
+	
+	6. Take a final look and then git-add-push decribing any modifications to the data!
+		
+		```
+		head(example_df2)
+		
+		summary(example_df2)
+		```
+		
+	7. Write to file (for this example, we'll say this is dataset 33):
+		
+		```
+		write.csv(example_df2, 'data/formatted_datasets/dataset_33.csv, row.names = F)
+		```
+	
+	8. git-add-commit-push the formatted dataset in the data file, then git-add-commit-push the updated data submodule!
+		
 ###end update
   6. **How many sites are there?** You need to ensure that there are a reasonable number of sites. To determine the number of sites, use: `length(unique(example_df$site))`. There have been instances in which the number of sites comes close to the number of records in the data frame. This sort of situation is most likely due to miscoding of the site field. Try to find out how the sites are miscoded. If you can find the problem, see the site section below in how the site data can be modified. Make sure to provide a comment in your data cleaning script that tells exactly what you’ve changed and why. Also, after the modification make sure to git add-commit-push and provide a message that details the modification. If the problem is not clear to you, add an issue to the core-transient git hub repository, describe the problem in detail and assign the issue to me.
   6. **How many records are there per site?** Sites that are mis-defined can also be determined by observing the number of records across sites. If sites are mis-defined, this can be identified if a large proportion of sites have very few records. There are many ways to determine this. To observe the number of records per site using the table function in base R, use either `table(example_df$site)` to observe the records in wide format or `data.frame(table(example_df$site))` to observe the records in long format. The latter can also be done in Hadley Wickham’s **plyr** package using: `ddply(example_df,.(site),'nrow')`. If there are a large number of sites, it can be cumbersome to search through them all. You can avoid this by ordering from the smallest to largest number of records per site. First, assign a name to your site table: `xy <- data.frame(table(example_df$site))`. Next, order by frequency: `xy2[order(xy2$Freq),]`. Modify as necessary (see Section Two), providing descriptive comments in your script for your modification, and add-commit-push to GitHub. Again, if the problem is not clear to you, add an issue to the core-transient git hub repository, describe the problem in detail and assign the issue to me.
