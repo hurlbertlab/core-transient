@@ -74,6 +74,30 @@ siterecs
 d[300:350,]
 # Site data appears all good
 
+#-------------------------------------------------------------------------------*
+# ---- EXPLORE AND FORMAT SPECIES DATA ----
+#===============================================================================*
+# Explore species
+length(unique(d$species))
+  # 44 Unique coded species
+unique(d$species)
 
+# Remove unwanted species
+badsp = c('OTHERS')
+d1 = d[!d$species %in% badsp,]
+unique(d1$species)
+length(unique(d1$species))
+  # Worked, now only 43 unique species
 
+# How many lost rows
+nrow(d)
+nrow(d1)
 
+# Explored the coding of species in this study and found they
+# are lised as just 4 letter abbreviations for speciefic species 
+# within the experimental plots.  All species shown here were 
+# confirmed and all bad spp were removed.
+
+#-------------------------------------------------------------------------------*
+# ---- EXPLORE AND FORMAT TIME DATA ----
+#===============================================================================*
