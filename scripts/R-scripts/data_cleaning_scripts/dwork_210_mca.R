@@ -167,3 +167,26 @@ d = d1
 
 write.csv(d, 'data/formatted_datasets/dataset_210.csv', row.names = F)
 
+#-------------------------------------------------------------------------------*
+# ---- EXPLORE DATASET SUMMARY INFO AND UPDATE THE DATA SOURCE TABLE  ----
+#===============================================================================*
+
+# !!!At this point, go to the data source table and provide:
+#   -central lat and lon (if available, if so, LatLonFLAG = 0, if you couldn't do
+#    it, add a flag of 1)
+#   -spatial_grain columns (T through W)
+#   -nRecs, nSites, nTime, nSpecies
+#   -temporal_grain columns (AH to AK)
+#   -Start and end year
+#   -Any necessary notes
+#   -flag any issues and put issue on github
+#   -git-add-commit-push data_source_table.csv
+
+dim(d)
+
+length(unique(d$site))
+
+length(unique(d$date))
+unique(d$date)
+
+length(unique(d$species))
