@@ -93,6 +93,8 @@ length(unique(d1$species))
 nrow(d)
 nrow(d1)
 
+d = d1
+
 # Explored the coding of species in this study and found they
 # are lised as just 4 letter abbreviations for speciefic species 
 # within the experimental plots.  All species shown here were 
@@ -100,4 +102,76 @@ nrow(d1)
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT TIME DATA ----
+#===============================================================================*
+# Explore dates and format
+class(d$date)
+levels(d$date)
+
+# Separate month and year
+month = str_sub(d$date, end = 3)
+unique(month)
+  #change to factor
+month = factor(month)
+levels(month)
+
+year = str_sub(d$date, start = -2, end = -1)
+class(year)
+unique(year)
+  # change to factor
+year = factor(year)
+
+# Change months to numbers
+levels(month)
+levels(month)= c('4', '8', '12')
+head(month)
+month
+
+# change years to full 4 digit year
+levels(year)
+levels(year) = c("2002", "1989", "1990", "1991", "1992", "1993", "1994", "1995", "1996", "1997", "1998", "1999")
+head(year)
+tail(year)
+
+
+# Add date to dataset
+d1$date = paste(month, year, sep = '/')
+head(d1,20)
+tail(d1, 20)
+
+# change date to date format
+  # Make dates as.character first
+date = factor(d1$date)
+head(date)
+class(date)
+date2 = strptime(date, format = "%m/%Y")
+class(date2)
+head(date2)
+tail(date2)
+# !!!This strptime DID NOT WORK without day.(returned all NAs) 
+# so need to add first of month (vector of 1s) to do %d/%m/%Y format
+day = rep(1, nrow(d1))
+d1$date = paste(day,month,year,sep = "/")
+head(d1)
+
+# change to date format
+date = as.character(d1$date)
+date1 = strptime(date, "%d/%m/%Y")
+head(date1)
+tail(date1)
+class(date1)
+# This worked, so made note in data source table
+
+# Replace with this new date column
+head(d1)
+d1$date = date1
+head(d1)
+str(d1)
+summary(d1)
+unique(d1$date)
+
+# Revert back to d
+d = d1
+
+#-------------------------------------------------------------------------------*
+# ---- EXPLORE AND FORMAT COUNT DATA ----
 #===============================================================================*
