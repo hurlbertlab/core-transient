@@ -38,13 +38,29 @@ Below are the steps that you should take when exploring and formatting datasets.
 
 6. Remove unnecessary columns. Most datasets contain columns that we will not use and those columns can be removed. As an example, if you wanted to remove columns 1, 3, 5, 6,  7, 8 from example_df, you could write:
 	```
-	example_df1 = example_df[,-c(1,3,5:)
+	example_df1 = example_df[,-c(1,3,5:8)]
 	```
 _**Note**: In the above I added a "1" to the example_df name. I consider this best practices -- you can check your work and only overwrite the R object if there were no errors. This will save you from having to rerun portions of the script._
 
-7. Once you are done with the exploration of the larger dataset, save your script and git-add-commit-push.
+7. Once you are done with the exploration of the larger dataset and (potentially) removing columns, save your script and git-add-commit-push and describe which columns were removed and why.
 
-7. Explore and format **site** data. Prior to formatting sites (see Section Two) take a moment to explore how sites are coded. Of importance are:
+8. Explore and format **site** data. At this point, you will need to decide what qualifies as a site for a given study. To do so, visit the metadata of a site with the link provided in the metadata field of the data source table (core-transient/data_source_table.csv). 
+	1. If sites are codes as lats and longs, concatenate the fields as such:
+	```
+	example_df$site = paste(example_df$lat, example_df$long, sep = '_')
+	```
+	2. Lats and Longs may be embedded in larger field. If this is the case, you may need to use the substring function in Hadley Wickham's stringr package to extract the necessary characters.
+		To extract "hello" in "hello world" (the first five characters), you would use:
+		```
+		str_sub('hello_world', 1, 5)
+		```
+		To extract "world" in "hello world" (the last five characters), you would use:
+		```
+		str_sub('hello_world', -5)
+		```
+		
+		
+	2. Prior to formatting sites (see Section Two) take a moment to explore how sites are coded. Of importance are:
 
   6. **How many sites are there?** You need to ensure that there are a reasonable number of sites. To determine the number of sites, use: `length(unique(example_df$site))`. There have been instances in which the number of sites comes close to the number of records in the data frame. This sort of situation is most likely due to miscoding of the site field. Try to find out how the sites are miscoded. If you can find the problem, see the site section below in how the site data can be modified. Make sure to provide a comment in your data cleaning script that tells exactly what you’ve changed and why. Also, after the modification make sure to git add-commit-push and provide a message that details the modification. If the problem is not clear to you, add an issue to the core-transient git hub repository, describe the problem in detail and assign the issue to me.
   6. **How many records are there per site?** Sites that are mis-defined can also be determined by observing the number of records across sites. If sites are mis-defined, this can be identified if a large proportion of sites have very few records. There are many ways to determine this. To observe the number of records per site using the table function in base R, use either `table(example_df$site)` to observe the records in wide format or `data.frame(table(example_df$site))` to observe the records in long format. The latter can also be done in Hadley Wickham’s **plyr** package using: `ddply(example_df,.(site),'nrow')`. If there are a large number of sites, it can be cumbersome to search through them all. You can avoid this by ordering from the smallest to largest number of records per site. First, assign a name to your site table: `xy <- data.frame(table(example_df$site))`. Next, order by frequency: `xy2[order(xy2$Freq),]`. Modify as necessary (see Section Two), providing descriptive comments in your script for your modification, and add-commit-push to GitHub. Again, if the problem is not clear to you, add an issue to the core-transient git hub repository, describe the problem in detail and assign the issue to me.
