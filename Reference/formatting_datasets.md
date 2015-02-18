@@ -58,6 +58,8 @@ _**Note**: In the above I added a "1" to the example_df name. I consider this be
 			To extract "hello" in "hello world" (the first five characters), you would use:
 
 			```
+			require(stringr)
+			
 			str_sub('hello_world', 1, 5)
 			```
 			
@@ -141,163 +143,112 @@ _**Note**: In the above I added a "1" to the example_df name. I consider this be
 		```
 		
 	8. git-add-commit-push your script, describing the removal of species, if necessary.
+
+10. Explore and format the time data. Here we need to extract sampling date. 
+	1. If dates are provided in multiple columns, it may be necessary to concatenate the columns. 
 		
-###end update
-  6. **How many sites are there?** You need to ensure that there are a reasonable number of sites. To determine the number of sites, use: `length(unique(example_df$site))`. There have been instances in which the number of sites comes close to the number of records in the data frame. This sort of situation is most likely due to miscoding of the site field. Try to find out how the sites are miscoded. If you can find the problem, see the site section below in how the site data can be modified. Make sure to provide a comment in your data cleaning script that tells exactly what you’ve changed and why. Also, after the modification make sure to git add-commit-push and provide a message that details the modification. If the problem is not clear to you, add an issue to the core-transient git hub repository, describe the problem in detail and assign the issue to me.
-  6. **How many records are there per site?** Sites that are mis-defined can also be determined by observing the number of records across sites. If sites are mis-defined, this can be identified if a large proportion of sites have very few records. There are many ways to determine this. To observe the number of records per site using the table function in base R, use either `table(example_df$site)` to observe the records in wide format or `data.frame(table(example_df$site))` to observe the records in long format. The latter can also be done in Hadley Wickham’s **plyr** package using: `ddply(example_df,.(site),'nrow')`. If there are a large number of sites, it can be cumbersome to search through them all. You can avoid this by ordering from the smallest to largest number of records per site. First, assign a name to your site table: `xy <- data.frame(table(example_df$site))`. Next, order by frequency: `xy2[order(xy2$Freq),]`. Modify as necessary (see Section Two), providing descriptive comments in your script for your modification, and add-commit-push to GitHub. Again, if the problem is not clear to you, add an issue to the core-transient git hub repository, describe the problem in detail and assign the issue to me.
-
-7. Once you are done with site exploration and formatting, save your script and git-add-commit-push.
-
-8. Explore and format **species** data. Your primary goal in exploring species data is to remove problem species. For example, there may be NA’s in the dataset, as well as “species” such as “bare ground”. Use `unique(example_df$species)` to explore the species in the dataset (*Note: prior to this species columns may need to be concatenated (see Section Two) if genus and species are listed in separate fields*). If there is a problem, and it can be easily remedied, make sure to add comments to your code that describe the steps you have taken and why they were necessary. Make no assumptions when removing species! If a species designation is not ENTIRELY clear, add an issue to the core-transient git hub repository, describe the problem in detail and assign the issue to me.
-
-9. Once you are done with species exploration and formatting, save your script and git-add-commit-push.
-
-10. Explore and format **time** data. Open data_source_table.csv. Here, you will see a column called analysis_grain_temporal This refers to the smallest time units of the study. If the temporal grain is less than one year, you will have to adjust the year column to represent partial years (we are coding these as decimals of a year). It is important that decimal years are rounded to the appropriate scale. If, for example, data are collected on a monthly basis, date objects should reflect months rather than days. See Section Two for how to adjust the year column.
-
-11. Once you are done with time sample exploration and formatting, save your script and git-add-commit-push.
-
-12. Explore and format count data. Of primary importance is ensuring that the count data are all non-zero (remove any zero counts, see Section Two) and that you note the type of count conducted (for example abundance, density, and cover). If the data_source_data currently contains the entry “FILL” and you are able to interpret the type of count data represented, please modify the table (and git add-commit-push). Once you have removed zeros and ensured the type of count data present, you will create a new data frame that summarizes the counts by site, species, and time unit (see Section Two).
-
-13. Once you are done with count data exploration and formatting, save your script and git-add-commit-push.
-
-14. You now have a reduced dataset and are ready to add the datasetID field. Follow the steps in Section Two for doing so and git-add-commit-push.
-
-15. Write your formatted dataset to the formatted datasets folder, for example:
-
-```
-write.csv(dataset, 'formatted_datasets/dataset_208.csv', row.names = F)
-```
-
-16. Use the following steps in Git Bash to ensure that the data submodule is updated across users, for example:
-
-```
-cd data
-git add formatted_datasets/dataset_208.csv
-git commit -m "added formatted dataset"
-git push
-cd ..
-git add data
-git commit -m "updated submodule with formatted dataset 208"
-git push
-```
-
-15. As a final step, you will compare a summary of your dataset with the data_source_table. Adjust the data_source_table as necessary. With every adjustment, git-add-commit-push and explain what you have done and why.
-  15. Nrecs: `nrow(example_df)`
-  15. nSites: `length(unique(example_df$site))`
-  15. nSpecies: `length(unique(example_df$species))`
-  15. startYear: `min(example_df$year)`
-  15. endYear: `max(example_df$year)`
-
- 
-## SECTION TWO: MODIFYING FIELDS
-
-### datasetID:
-
-* Goal: Add a column that repeats the name of the dataset.
-
-* DatasetID’s are available from the dataset_summary_table. This must be the first column of your formatted dataset. To do so, you simply use the rep command in the base package and tell it to repeat the value for the number of rows of the data frame. Note: example_df is the unformatted dataset being prepared for analysis.
-
-	`datasetID = rep(01, nrow(example_df))`
-
-### site:
-
-* Goal: Add a column that provides a unique site ID for each site. Determining sites can sometimes be challenging the steps required to create unique site ID’s depends on how researchers have coded their site data. The examples below provide the most common solutions to create unique site ID’s
-
-* _**Concatenating multiple site columns into a single site:**_ In the example above, the sites were broken down into different treatments and plots. To construct the sites field, we paste the datasetID as well as any site information provided. If the above example were constructed from a data frame with the fields “Treatment” and “Plot”, the site column would be made using the following code:
-
-	`site = paste(‘d’, datasetID, example_df$Treatment, example_df$Plot, sep = ‘’)`
-
-* _**Removing site information:**_ Some data sources include information in the site field that are problematic for analysis. For example, some sites include the time that a sample was collected as a part of the site field. Consider a column named “site” where year is included in the field, such that the first entry might be “Treatment1PlotA1928”. You can extract the plot information easily in one of two ways:
-
-> Substring the plot information by from the first to the last plot character. The following code extracts all characters from the first to the 15th within the site field. This is ONLY to be used is the plot information contains the same number of characters!
-
-```
-	site1 = substr(example_df$site, 1, 15)
-
-# Note: If the field is not a character field, you can convert it on the fly using:
-
-	site1 = substr(as.character(example_df$site), 1, 15)
-```
-
-> Substring the plot information by removing the last characters in a field. This method is valid if the number characters that make up the true site field are not the same across sites but there is an equal number of characters that need to be removed. To do so, the easiest way is to use the str_sub function in Hadley Wickham’s **stringr** package (though this can be easily accomplished by writing your own function in base).
-
-```
-	require(stringr)
+		```
+		date = paste(example_df$month, example_df$day, example_df$year, sep '/')
+		```
+	2. If the date column is provided only as years, leave date as simply a numeric year.
+	3. If the date column is in the format of "mm/dd/yyyy", or something similar, convert it to a date object. Check and to make sure that it is properly formatted after the date object is created (will be a POSIX-class object):
 	
-	x = “hello world”
+		```
+		date = strptime(date, '%m/%d/%Y')
+		
+		class(date)
+		```
+		
+	4. git-add-commit-push describing any modifications made to the date field.
+		
+11. Explore and format the count data. Here we need to check what type of count data are provided and remove 0 and NA counts.
+	1. If counts are "true" counts, enter "count" in the data source table "count_type" field. If counts are actually proportional cover data, enter "cover" in the "count_type" field. If counts are actually density data, enter "density" in the "count_type" field. git-add-commit-push data_source_table.csv.
+	2. Remove NA's and subset to counts that are greater than 0. After taking the following steps below, be sure to explore the data frame to ensure that the data are formatted correctly:
 	
-	str_sub(x, 1, -7)
+		```
+		summary(example_df$count)
+		
+		example_df1 = na.omit(example_df)
+		
+		example_df1 = subset(example_df1, count > 0)
+		```
+		
+	3. git-add-commit-push your script, describing any changes you made to the count field.
+12. You're now ready to make the final formatted dataset!
+	1. First, we'll make our "safe" dataset and add a datasetID field (for this example, let's say this is dataset 33):
+		
+		```
+		example_df1 = example_df
+		
+		example_df1$datasetID = 33
+		```
+		
+	2. If date is a POSIX object, convert it to a factor:
 	
-	[1] "hello"
-```
-
-_**Separating a field to extract site information:**_ It is also often necessary to separate the site field by some common character (such as, in the example below “_”). This is done using the transform and colsplit functions. Colsplit is located in Hadley Wickham’s package **reshape2**. The output of this function is a multiple field dataset containing the original data (field 1) and a column for each split. In this case, the second column contains the site information, so using “[,2]” returns a vector with just the relevant site information.
-
-```
-	require(reshape2)
-
-	x = 'Treatment1PlotB_1927'
-
-	site1a = transform(x, site = colsplit(x, pattern = '\\_', names = c('site','year')))[,2]
-```
-
-_**Using latitude and longitude to define sites:**_ It is sometimes necessary to define sites using latitude and longitude if this is the only site information provided. While making decisions for the appropriate scale to analyze the data requires an understanding of the taxa and method of collection, the process of creating the site information is relatively straitforward. Here we will use the “round_any” function in Hadley Wickham’s **plyr** package to turn decimal latitude and longitude data sites composed of 2 degree lat-lon blocks.
-
-```
-	x = 13.35679
+		```
+		example_df1$date = factor(as.character(example_df1$date))
+		```
+	3. Now use Hadley Wickham's "plyr" package to summarize counts by site, date, and species:
+		
+		```
+		require(plyr)
+		
+		example_df2 = ddply(example_df1, .(datasetID, site, date, species),
+			summarize, count = max(count))
+		```
 	
-	y = 46.87
-
-	site1 = paste(round_any(x, 2), round_any(y, 2))
-```
+	4. Explore the dataframe to be sure that everything worked:
+		
+		```
+		dim(example_df2)
+		
+		head(example_df2)
+		
+		summary(example_df2_
+		```
+		
+	5. Unless date is a numeric vector of years, convert date back into a POSIX object and, if everything looks good, reassign the column:
 	
-### species:
-
-Goal: Subset dataset to unique species records. It is occasionally necessary to modify species records, such as if genus and species are provided in separate fields (in which case you would concatenate the two fields as above) and remove records that are not valid species. 
-
-_**Subsetting a dataset to valid species observations:**_ There are several methods for removing problem records; here are a few examples.
-
-```
-# Removing NA’s:
-
-	example_df1 = na.omit(example_df)
-
-	example_df1 = example_df[!is.na(example_df$species),]
-
-# Removing a given species record (example is records called “Bare Ground”):
-
-	example_df1 = example_df[example_df!='Bare Ground',]
-
-	example_df1 = subset(example_df1, species!= 'Bare Ground')
-
-# Removing multiple species records (example is a set of bad records):
-
-	bad_recs = c('Bare_Ground', 'bad2', 'bad3')
+		```
+		date = as.Date(example_df2$date, '%Y-%m-%d')
+		
+		class(date)
+		
+		head(date)
+		
+		example_df2 = date
+		```
 	
-	example_df1 = example_df[!example_df$species %in% bad_recs]
-```
-
-### year:
-
-Goal: Create a time column. The two challenges that may be associated with this are if the date is provided as a date formatted object (example 01/01/2015) or if there are multiple samples per year. If the latter is the issue, the appropriate temporal scale must be determined prior to formatting the dataset (see Allen, Ethan, or myself). Once the time scale is determined, data are reported as a decimal year and simply requires a bit of math (for example, if sampling was done monthly and a sample was taken on 1 Mar 2015, the time of the sample would be 2015 + 3/12 as March is the third month of the year).
-
-_**Extracting year from a date object:**_ Convert the date column to an R formatted date (in this case pretending that our unformatted dataset contains a column called record_date):
-
-```
-# Convert to a date object:
-
-	date = strptime(example_df $record_date, '%m/ %d/ %y')
+	6. Take a final look and then git-add-push decribing any modifications to the data!
+		
+		```
+		head(example_df2)
+		
+		summary(example_df2)
+		```
+		
+	7. Write to file (for this example, we'll say this is dataset 33):
+		
+		```
+		write.csv(example_df2, 'data/formatted_datasets/dataset_33.csv, row.names = F)
+		```
 	
-# Extracting year from a date object:
-	
-	example_df $year = as.numeric(format(date, '%Y'))
-```
+	8. git-add-commit-push the formatted dataset in the data file, then git-add-commit-push the updated data submodule using the following steps (in git bash, example is for dataset 33):
 
-### count:
-
-* Goal: Summarize the dataset to the count of individuals per species, site, and year for a given dataset. To do so, we will use Hadley Wickham’s “ddply” function in the plyr package. Below is an example in which there is a count column that must be summarized.
-
-	`example_df2 = ddply(example_df, .(site, year, species), summarize, count = sum(count))`
+		```
+		cd data
+		git add formatted_datasets/dataset_33.csv
+		git commit -m "added formatted dataset"
+		git push
+		cd ..
+		git add data
+		git commit -m "updated submodule with formatted dataset 33"
+		git push
+		```
+		
+## SECTION TWO: CREATING PROPORTIONAL OCCURRENCE AND DATASET SUMMARY DATA FRAMES
+		
+FILL ME IN!
 
 ## SECTION THREE: R CODE CHEATSHEET
 
@@ -349,10 +300,6 @@ Create data object:
 
 Extract year from date object:
 `as.numeric(format(date, '%Y'))`
-
-#### Repeat a value the length of a dataset:
-
-`rep(value, nrow(df))`
 
 #### Summary data:
 
