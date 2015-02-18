@@ -144,3 +144,26 @@ d = d1
 
 summary(d)
 
+#-------------------------------------------------------------------------------*
+# ---- MAKE DATA FRAME OF COUNT BY SITES, SPECIES, AND YEAR ----
+#===============================================================================*
+# Add datasetID column
+d$datasetID = rep(210, nrow(d))
+head(d)
+
+# check class of each row
+str(d)
+
+# Make the compiled dataframe
+d1 = ddply(d, .(datasetID, site, date, species), summarize, count = max(count))
+summary(d1)
+head(d1, 50)
+
+d = d1
+#-------------------------------------------------------------------------------*
+# ---- WRITE OUTPUT DATA FRAMES  ----
+#===============================================================================*
+# All looks good so write csv to data submodule
+
+write.csv(d, 'data/formatted_datasets/dataset_210.csv', row.names = F)
+
