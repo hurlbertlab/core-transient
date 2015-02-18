@@ -159,7 +159,20 @@ _**Note**: In the above I added a "1" to the example_df name. I consider this be
 		
 	4. git-add-commit-push describing any modifications made to the date field.
 		
+11. Explore and format the count data. Here we need to check what type of count data are provided and remove 0 and NA counts.
+	1. If counts are "true" counts, enter "count" in the data source table "count_type" field. If counts are actually proportional cover data, enter "cover" in the "count_type" field. If counts are actually density data, enter "density" in the "count_type" field. git-add-commit-push data_source_table.csv.
+	2. Remove NA's and subset to counts that are greater than 0. After taking the following steps below, be sure to explore the data frame to ensure that the data are formatted correctly:
+	
+		```
+		summary(example_df$count)
 		
+		example_df1 = na.omit(example_df)
+		
+		example_df1 = subset(example_df1, count > 0)
+		```
+		
+	3. git-add-commit-push your script, describing any changes you made to the count field.
+	4. 
 ###end update
   6. **How many sites are there?** You need to ensure that there are a reasonable number of sites. To determine the number of sites, use: `length(unique(example_df$site))`. There have been instances in which the number of sites comes close to the number of records in the data frame. This sort of situation is most likely due to miscoding of the site field. Try to find out how the sites are miscoded. If you can find the problem, see the site section below in how the site data can be modified. Make sure to provide a comment in your data cleaning script that tells exactly what you’ve changed and why. Also, after the modification make sure to git add-commit-push and provide a message that details the modification. If the problem is not clear to you, add an issue to the core-transient git hub repository, describe the problem in detail and assign the issue to me.
   6. **How many records are there per site?** Sites that are mis-defined can also be determined by observing the number of records across sites. If sites are mis-defined, this can be identified if a large proportion of sites have very few records. There are many ways to determine this. To observe the number of records per site using the table function in base R, use either `table(example_df$site)` to observe the records in wide format or `data.frame(table(example_df$site))` to observe the records in long format. The latter can also be done in Hadley Wickham’s **plyr** package using: `ddply(example_df,.(site),'nrow')`. If there are a large number of sites, it can be cumbersome to search through them all. You can avoid this by ordering from the smallest to largest number of records per site. First, assign a name to your site table: `xy <- data.frame(table(example_df$site))`. Next, order by frequency: `xy2[order(xy2$Freq),]`. Modify as necessary (see Section Two), providing descriptive comments in your script for your modification, and add-commit-push to GitHub. Again, if the problem is not clear to you, add an issue to the core-transient git hub repository, describe the problem in detail and assign the issue to me.
