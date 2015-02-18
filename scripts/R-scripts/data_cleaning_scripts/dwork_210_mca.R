@@ -10,7 +10,7 @@ library(stringr)
 library(plyr)
 
 # Source the functions file:
-
+setwd('C:/Users/auriemma/core-transient/')
 source('scripts/R-scripts/core-transient_functions.R')
 
 # Get data:
@@ -100,3 +100,47 @@ d = d1
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT TIME DATA ----
 #===============================================================================*
+# Explore
+head(d)
+  # Time listed by year
+class(d$year)
+
+  # Change from integer to factor
+d$year = factor(d$year)
+class(d$year)
+head(d)
+unique(d$year)
+
+# Change name to 'date'
+names(d)[1] = 'date'
+
+
+#-------------------------------------------------------------------------------*
+# ---- EXPLORE AND FORMAT COUNT DATA ----
+#===============================================================================*
+# Explore
+length(unique(d$biomass))
+str(d)
+summary(d$biomass)
+
+# Subset to remove zeros 
+d1 = subset(d, biomass > 0)
+dim(d1)
+dim(d)
+
+# Remove na's
+d1 = na.omit(d1)
+dim(d1)
+
+summary(d1$biomass)
+
+# Change name of column from biomass to count
+names(d1)
+names(d1)[3] = 'count'
+head(d1, 20)
+
+# Revert back to d
+d = d1
+
+summary(d)
+
