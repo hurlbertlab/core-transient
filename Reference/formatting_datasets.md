@@ -233,16 +233,16 @@ _**Note**: In the above I added a "1" to the example_df name. I consider this be
 		write.csv(example_df2, 'data/formatted_datasets/dataset_33.csv, row.names = F)
 		```
 	
-	8. git-add-commit-push the formatted dataset in the data file, then git-add-commit-push the updated data submodule using the following steps:
+	8. git-add-commit-push the formatted dataset in the data file, then git-add-commit-push the updated data submodule using the following steps (in git bash, example is for dataset 33):
 
 		```
 		cd data
-		git add formatted_datasets/dataset_208.csv
+		git add formatted_datasets/dataset_33.csv
 		git commit -m "added formatted dataset"
 		git push
 		cd ..
 		git add data
-		git commit -m "updated submodule with formatted dataset 208"
+		git commit -m "updated submodule with formatted dataset 33"
 		git push
 		```
 		
