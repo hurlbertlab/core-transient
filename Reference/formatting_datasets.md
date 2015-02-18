@@ -37,6 +37,7 @@ Below are the steps that you should take when exploring and formatting datasets.
   6. `class(example_df$site)`: Determine the type of data in a field.
 
 6. Remove unnecessary columns. Most datasets contain columns that we will not use and those columns can be removed. As an example, if you wanted to remove columns 1, 3, 5, 6,  7, 8 from example_df, you could write:
+
 	```
 	example_df1 = example_df[,-c(1,3,5:8)]
 	```
@@ -46,18 +47,25 @@ _**Note**: In the above I added a "1" to the example_df name. I consider this be
 
 8. Explore and format **site** data. At this point, you will need to decide what qualifies as a site for a given study. To do so, visit the metadata of a site with the link provided in the metadata field of the data source table (core-transient/data_source_table.csv). 
 	1. If sites are codes as lats and longs, concatenate the fields as such:
+
 		```
 		example_df$site = paste(example_df$lat, example_df$long, sep = '_')
 		```
+		
 		1. Lats and Longs may be embedded in larger field. If this is the case, you may need to use the 	substring function in Hadley Wickham's stringr package to extract the necessary characters.
+		
 			To extract "hello" in "hello world" (the first five characters), you would use:
+
 			```
 			str_sub('hello_world', 1, 5)
 			```
+			
 			To extract "world" in "hello world" (the last five characters), you would use:
+			
 			```
 			str_sub('hello_world', -5)
 			```
+			
 	2. Prior to formatting sites (see Section Two) take a moment to explore how sites are coded. Of importance are:
 
   6. **How many sites are there?** You need to ensure that there are a reasonable number of sites. To determine the number of sites, use: `length(unique(example_df$site))`. There have been instances in which the number of sites comes close to the number of records in the data frame. This sort of situation is most likely due to miscoding of the site field. Try to find out how the sites are miscoded. If you can find the problem, see the site section below in how the site data can be modified. Make sure to provide a comment in your data cleaning script that tells exactly what you’ve changed and why. Also, after the modification make sure to git add-commit-push and provide a message that details the modification. If the problem is not clear to you, add an issue to the core-transient git hub repository, describe the problem in detail and assign the issue to me.
