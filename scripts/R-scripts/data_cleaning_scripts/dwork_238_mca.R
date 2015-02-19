@@ -171,7 +171,68 @@ unique(d1$date)
 
 # Revert back to d
 d = d1
+head(d, 20)
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT COUNT DATA ----
 #===============================================================================*
+# Explore data
+summary(d$count)
+summary(d)
+length(unique(d$count))
+unique(d$count)
+
+# Change to numeric
+d$count = as.numeric(d$count)
+length(unique(d$count))
+unique(d$count)
+  # there are NAs and zeros
+
+# Remove NAs and zeros
+d = d[d$count>0,]
+length(unique(d$count))
+head(d)
+dim(d1)
+dim(d)
+
+d = na.omit(d)
+dim(d)
+length(unique(d$count))
+
+# Check 
+summary(d)
+
+#-------------------------------------------------------------------------------*
+# ---- MAKE DATA FRAME OF COUNT BY SITES, SPECIES, AND YEAR ----
+#===============================================================================*
+# Add dataset ID column
+d$datasetID = rep(238, nrow(d))
+head(d,10)
+
+# Make dataframe
+str(d)
+  # Change date to factor
+d$date = factor(as.character(d$date))
+head(d)
+d1 = ddply(d, .(datasetID, site, date, species), summarize, count = max(count))
+
+# Check the dataframe
+summary(d1)
+head(d1, 30)
+
+# Convert date back to date object
+d1$date = as.Date(d1$date)
+head(d1)
+summary(d1)
+
+# All looks good
+d = d1
+#-------------------------------------------------------------------------------*
+# ---- WRITE OUTPUT DATA FRAMES  ----
+#===============================================================================*
+summary(d)
+head(d,20)
+
+# Write to data submodule
+setwd('C:/Users/auriemma/core-transient/')
+write.csv(d, "data/formatted_datasets/dataset_238.csv", row.names = F)
