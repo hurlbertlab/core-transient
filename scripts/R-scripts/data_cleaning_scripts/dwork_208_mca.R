@@ -1,4 +1,4 @@
-## Formatting Dataset 238: Plants in Chile
+## Formatting Dataset 208: Landis Long Term Insect Dataset
 
 #-------------------------------------------------------------------------------*
 # ---- SET-UP ----
