@@ -162,10 +162,9 @@ write.csv(d, "data/formatted_datasets/dataset_208.csv", row.names = F)
 #   -flag any issues and put issue on github
 #   -git-add-commit-push data_source_table.csv
 
-dim(dataset)
+dim(d)
+length(unique(d$site))
 
-length(unique(dataset$site))
+length(unique(d$date))
 
-length(unique(dataset$year))
-
-length(unique(dataset$species))
+length(unique(d$species))
