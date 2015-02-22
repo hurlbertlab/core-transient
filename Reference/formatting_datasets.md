@@ -265,8 +265,64 @@ source('scripts/R-scripts/core-transient_functions.R')
 dataset = read.csv("data/formatted_datasets/dataset_223.csv")
 ```
 
-
 Start by exploring the date field:
+
+```
+class(dataset$date)
+
+head(dataset$date)
+```
+
+To separate the date into two seasons, we'll extract the month, convert the field to numeric, and then explore the data.
+
+```
+month = as.numeric(format(dataset$date, '%m'))
+
+head(month)
+
+summary(month)
+
+unique(month)
+```
+
+To make the "season" values (recalling that it is the separate sampling occasions that matter rather than the month per se, we'll use an ifelse statement that separates the sampling occasions:
+
+```
+season = ifelse(month < 7, .25, .75)
+```
+
+Next, we'll extract year from the date and add the two columns to get a decimal date:
+
+```
+year = as.numeric(format(dataset$date, '%Y'))
+
+yearSeason = year + season
+```
+
+And change the date in the dataset to our new decimal date format and then rename the column year:
+
+```
+dataset1 = dataset
+
+dataset1$date = yearSeason
+
+names(dataset1)[3] = 'year'
+```
+Finally, we will summarize the dataset to the new temporal grain, summarizing the maximum count for a given site and sampling period. Explore the data to ensure that the values are correct then reassign the name dataset once you're sure:
+
+```
+dataset2 = ddply(dataset1, .(datasetID, site, year, species), 
+                 summarize, count = max(count))
+
+dim(dataset2)      
+
+head(dataset2)
+
+summary(dataset2)
+
+dataset = dataset2
+```
+
 
 
 
