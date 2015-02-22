@@ -345,19 +345,23 @@ head(siteTable[order(siteTable$nSp),],20)
 
 In the eample dataset, several of the sites had species richness values below the cut-off (about a third of them). Sites in this study were in a nested design (e.g., quadrats within plots).  This suggests that the sampling grain is too fine. The descriptors of site in the column are separated by an underscore, in the order of the largest to smallest sampling class. In this instance, we remove the smallest category (quadrats) and explore the data to see if the new definition of a site is adequate.
 
-```
-# We start by splitting site in separate fields in a table:
+We start by splitting site in separate fields in a table:
 
+```
 site = read.table(text = as.character(dataset$site), sep ='_')
 
 head(site)
+```
 
-# And paste all but the last site descriptor together:
+Then paste together all but the last site descriptor:
 
+```
 site1 = do.call('paste', c(site[,1:4],sep = '_'))
+```
 
-# Then explore number of species based on the new site descriptions:
+Then explore number of species based on the new site descriptions:
 
+```
 siteTable = ddply(dataset1, .(site), summarize,
                   nYear = length(unique(year)),
                   nSp = length(unique(species)))
@@ -376,8 +380,11 @@ badSites = subset(siteSummaryFun(dataset), spRich < 10 | nTime < 5)$site
 
 dataset1 = dataset[!dataset$site %in% badSites,]
 
-# Summarize the dataset to the new spatial grain and explore:
+```
 
+Summarize the dataset to the new spatial grain and explore:
+
+```
 dataset2 = ddply(dataset1, .(datasetID, site, year, species), 
                  summarize, count = max(count))
 
@@ -390,8 +397,17 @@ summary(dataset2)
 dataset = dataset2
 ```
 
+If the species and time samples are adequate, you are now ready to create and write the proportional occurrence data frame. This part of the process is easy becuase there is a function called PropOccFun that is located in the core-transient-functions script that does this automatically for you. Simply run the function and write the output to the file in one step:
 
+```
+write.csv(propOccFun(dataset), "data/propOcc_datasets/propOcc_223.csv", row.names = F)
+```
 
+We will also write a summary of the file, that provides the number of time samples and species richness for each site using the function siteSummaryFun (also located in the core-transient-functions R script):
+
+```
+write.csv(siteSummaryFun(dataset), 'data/siteSummaries/siteSummary_223.csv', row.names = F)
+```
 
 ## SECTION THREE: R CODE CHEATSHEET
 
