@@ -270,10 +270,6 @@ Start by exploring the date field:
 
 
 
-# temporal data. For this, go to the metadata of the study. There, we see
-# that data are collected in two seasons, spring and fall. We want to change
-# these to a decimal year, which are simply grouped time samples (the actual 
-# values don't really matter much).
 
 ## SECTION THREE: R CODE CHEATSHEET
 
