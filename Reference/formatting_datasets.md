@@ -324,6 +324,7 @@ dataset = dataset2
 ```
 
 ### Site data:
+
 Determining the appropriate spatial sampling grain can be especially challenging. If the definition of sites is not very clear cut, you will have to return to the metadata to see if there's any clues.
 
 A quick way to determine if the sites, as defined in the formatted dataset, are adequate for our needs is to take a look at the number of time samples and species recorded at a site. We're using a cut-off of 5 sampling intervals and at least 10 observed species.
@@ -396,6 +397,7 @@ summary(dataset2)
 
 dataset = dataset2
 ```
+### Making the proportional occurrence data frame:
 
 If the species and time samples are adequate, you are now ready to create and write the proportional occurrence data frame. This part of the process is easy becuase there is a function called PropOccFun that is located in the core-transient-functions script that does this automatically for you. Simply run the function and write the output to the file in one step:
 
