@@ -248,7 +248,7 @@ _**Note**: In the above I added a "1" to the example_df name. I consider this be
 		
 ## SECTION TWO: CREATING PROPORTIONAL OCCURRENCE AND DATASET SUMMARY DATA FRAMES
 		
-We have now formatted the dataset to the finest possible spatial and temporal grain, removed bad species, and added the dataset ID. We've alreay done the heavy lifting of dataset formatiting and it's now to make some scale decisions and determine the proportional occupancies. To do so, we need to explore the dataset and look through the metadata for clues to the approriate temporal and spatial grain.
+We have now formatted the dataset to the finest possible spatial and temporal grain, removed bad species, and added the dataset ID. We've alreay done the heavy lifting of dataset formatiting and it's now to make some scale decisions and determine the proportional occupancies. To do so, we need to explore the dataset and look through the metadata for clues to the approriate temporal and spatial grain. As you create the proportional occurrence frame, be sure to keep careful notes describing how the data were summarized, including any decision made for scaling decisions.
 
 ### Temporal data:
 
@@ -323,6 +323,72 @@ summary(dataset2)
 dataset = dataset2
 ```
 
+### Site data:
+Determining the appropriate spatial sampling grain can be especially challenging. If the definition of sites is not very clear cut, you will have to return to the metadata to see if there's any clues.
+
+A quick way to determine if the sites, as defined in the formatted dataset, are adequate for our needs is to take a look at the number of time samples and species recorded at a site. We're using a cut-off of 5 sampling intervals and at least 10 observed species.
+
+```
+siteTable = ddply(dataset, .(site), summarize,
+                  nYear = length(unique(year)),
+                  nSp = length(unique(species)))
+
+head(siteTable)
+
+summary(siteTable)
+
+# Sort the site table for a closer look:
+
+head(siteTable[order(siteTable$nSp),],20)
+
+```
+
+In the eample dataset, several of the sites had species richness values below the cut-off (about a third of them). Sites in this study were in a nested design (e.g., quadrats within plots).  This suggests that the sampling grain is too fine. The descriptors of site in the column are separated by an underscore, in the order of the largest to smallest sampling class. In this instance, we remove the smallest category (quadrats) and explore the data to see if the new definition of a site is adequate.
+
+```
+# We start by splitting site in separate fields in a table:
+
+site = read.table(text = as.character(dataset$site), sep ='_')
+
+head(site)
+
+# And paste all but the last site descriptor together:
+
+site1 = do.call('paste', c(site[,1:4],sep = '_'))
+
+# Then explore number of species based on the new site descriptions:
+
+siteTable = ddply(dataset1, .(site), summarize,
+                  nYear = length(unique(year)),
+                  nSp = length(unique(species)))
+
+head(siteTable)
+
+summary(siteTable)
+
+head(siteTable[order(siteTable$nSp),],10)
+```
+
+In this instance we have lost only a few sites. We have to remove the bad sites prior to making the proportional occurrence data frame. We do so by defining the "bad" sites in the dataset. and then subsetting the dataframe to only the "good"sites. As always, we explore the resulting data frame and, if it is acceptable we can reassign our chosen name "dataset".
+
+```
+badSites = subset(siteSummaryFun(dataset), spRich < 10 | nTime < 5)$site
+
+dataset1 = dataset[!dataset$site %in% badSites,]
+
+# Summarize the dataset to the new spatial grain and explore:
+
+dataset2 = ddply(dataset1, .(datasetID, site, year, species), 
+                 summarize, count = max(count))
+
+head(dataset2)
+
+dim(dataset2)
+
+summary(dataset2)
+
+dataset = dataset2
+```
 
 
 
