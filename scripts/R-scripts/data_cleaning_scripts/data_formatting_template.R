@@ -527,6 +527,12 @@ dataset = dataset2
 
 # !GIT-ADD-COMMIT-PUSH AND DESCRIBE ANY SPATIAL GRAIN DECISIONS!
 
+# Note: In many instances, site definition will be spatially explicit (e.g., 
+# lats and longs). When this is the case, we may need to summarize the data to
+# a courser precision (few decimal places). We can do so by using the 
+# "round_any" function in Hadley Wickham's plyr package, specifying "floor" 
+# as the rounding function.
+
 #-------------------------------------------------------------------------------*
 # ---- WRITE OUTPUT DATA FRAMES  ----
 #===============================================================================*
