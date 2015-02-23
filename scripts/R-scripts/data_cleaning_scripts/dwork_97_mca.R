@@ -1,116 +1,111 @@
-# Formatting Dataset 97 ArcOD Plankton
+Formatting Dataset 97: ArcOD Plankton
 
 #-------------------------------------------------------------------------------*
 # ---- SET-UP ----
 #===============================================================================*
+
 # Load libraries:
 
-install.packages('stringr')
-library('stringr')
-install.packages('plyr')
+library(stringr)
 library(plyr)
 
 # Source the functions file:
-getwd()
-setwd('C:/Users/auriemma/core-transient/')
+
+setwd("C:/Users/auriemma/core-transient/")
 source('scripts/R-scripts/core-transient_functions.R')
 
 # Get data:
+
+getwd()
+
+list.files('data/raw_datasets')
 
 d = read.csv('data/raw_datasets/dataset_97.csv')
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE THE DATASET ----
 #===============================================================================*
-
-head(d)
 names(d)
+head(d)
+dim(d)
 str(d)
 
-# Remove unwanted columns
-d1 = d[,-c(1,2)]
-head(d1)
-
-  # Change d1 back to d
-d = d1
-summary(d)
+# Remove unwanted column
+d = d[,-1]
+head(d)
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SITE DATA ----
 #===============================================================================*
-# Sites are recorded as collection method with lat_longs
-  # Explore
+# Explore 
 length(unique(d$SampleID))
-class(d$SampleID)
-  # Total of 835 unique sites
+  # 835 Unique sites, listed by station, catch method, and lat_longs in each record
 
-# Find number of records per site
-siteTable = ddply(data.frame(d$SampleID),.(d$SampleID), nrow)
-head(siteTable[order(siteTable$V1),],150)
-tail(siteTable[order(siteTable$V1),],150)
-summary(siteTable)
+# Search for possible NAs or the like
+levels(d$SampleID)
 
-# Hundreds of sites have very low sample sizes
-  ## Need to find a way to broaden site data
-  # Use substring to get just lat_lons for each site sample???
-class(d$SampleID)
-site = d$SampleID
-head(site)
-site = str_sub(site, start = -20, end = -1)
-head(site)
-tail(site)
+# No bad sites removed, but probably very low sample size for many
+
+# Change name
+names(d)[3] = "site"
+head (d)
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SPECIES DATA ----
 #===============================================================================*
 # Explore
+head(d)
+
+# how many different species?
 length(unique(d$Species))
-  # 419 unique species
-class(d$Species)
+  # 419 unique spp names
 
-# Capitalize all to remove capitalization error
-d$species = factor(toupper(d$Species))
+# Capitalize to check for error in letter case
+d$species = toupper(d$Species)
+
+# Check for difference
 length(unique(d$species))
-    # No capitalization errors, none to remove
+  # No difference, so remove new column
+head(d)
+d = d[,-6]
+head(d)
 
-# Explore unique species
-levels(d$species)
-  # Wide variation in taxonomic resolution
-  # No questionable species recorded, so none removed
-names(d)[3] = 'species'
+# Look for bad species
+levels(d$Species)
+
+# No bad species found, none removed from data
+
+# change name
+head(d)
+names(d)[4] = 'species'
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT COUNT DATA ----
 #===============================================================================*
 # Explore
 head(d)
-length(unique(d$Abundance))
-class(d$Abundance)
 summary(d$Abundance)
+class(d$Abundance)
+length(unique(d$Abundance))
 
-# Already numeric, so remove zeros
-d1 = d
-d1 = d[d$Abundance>0,]
+# Remove zeros
+d1 = subset(d, Abundance > 0)
+
+# Check uniques
+d1$count = factor(d$Abundance)
+levels(d1$count)
+
+# No values of zero or NAs found
+
+# Remove new column
 head(d1)
-unique(d1$Abundance)
+d1 = d1[,-6]
+head(d1)
 
-# No numbers to remove, name Abundance column 'count'
+# Change name
+names(d1)[5] = 'count'
+names(d1)
+head(d1)
+
 d = d1
-names(d)[4] = 'count'
-head(d)
 
-#-------------------------------------------------------------------------------*
-# ---- EXPLORE AND FORMAT TIME DATA ----
-#===============================================================================*
-# Explore
-length(unique(d$Year))
-class(d$Year)
-unique(d$Year)
-
-# Change to numeric
-d$Year = as.character(d$Year)
-d$Year = as.numeric(d$Year)
-head(d)
-names(d)[1] = 'year'
-
-unique(d$year)
