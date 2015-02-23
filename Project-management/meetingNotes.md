@@ -127,3 +127,8 @@ Include biome ... to do this, probably a gis extraction based on point data for 
  2. Strength of evidence for bimodality
  3. Course groups and addressing the # of individuals (Note: we should discuss this further, I think my brain shut off here)
 
+## Meeting notes: Allen, 2/23/14
+
+* In the data source table, include fields that describe decision making for temporal and spatial analysis grains and a note field for species describing decisions to exclude some records.
+* Have a look at Zach's work on the Ecological Data Wiki. We should be modifying our workflow to incorporate updating the Wiki on our end as well. Send Zach an email to see if he might create a how-to (template) document for posting on the Wiki.
+* Work towards having the scripts and workflow ready to pass on 
