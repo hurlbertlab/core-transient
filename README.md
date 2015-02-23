@@ -50,19 +50,13 @@ This takes you through the steps necessary to generate an ssh key to work with t
 
 ## Priority rankings for obtaining and/or formatting data, on a scale of 0-5, are currently based on summing:
 
-### Taxa (based on current representation): 
-  0: birds  
-  1: Benthos, Fish, Plants  
-  2: Arthropod, Invertebrate, Plankton, Mammal  
+0 = Low priority: common system and taxa, less than 20 sites
+1 = Minor priority: common system and taxa, more than 20 sites -OR- uncommon system OR taxa less than 20 sites
+2 = Medium priority: Uncommon system OR taxa, more than 20 sites -OR- uncommon system AND taxa, less than 20 sites
+3 = high priority: Uncommon system AND taxa, more than 20 sites  
+
+### Uncommon taxa (based on current representation in formatted datasets):  Arthropod, Invertebrate, Plankton, Mammal  
   
-### System (based on current representation):
-  0: marine  
-  1: terrestrial or aquatic  
+### Uncommon System (based on current representation in formatted datasets): Terrestrial or Aquatic  
 
-### Number of sites:
-  0: less than 10 or unknown  
-  1: >= 10  
 
-### Number of time intervals:
-  0: less than 15 or unknown  
-  1: greater than 15  
