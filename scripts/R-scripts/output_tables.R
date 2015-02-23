@@ -32,24 +32,13 @@ siteSummaryList = paste('data/siteSummaries/',
 
 dataSourceTable = read.csv('data_source_table.csv')
 
-# Source core-transient functions:
-
-source('scripts/R-scripts/core-transient_functions.R')
-
-
-#----------------------------------------------------------------------------------*
-#  ---- SUMMARY TABLE OUTPUT ----
-#==================================================================================*
-
 #----------------------------------------------------------------------------------*
 # ---- Sampling summary ----
 #==================================================================================*
   
-
 # Calculate the summary statistics (all summary data with the exception of
 # bimodality across sites for sites that meet our sampling criteria). Input is 
-# the core-transient threshold. The proportional dataframe must be loaded into the
-# environment above.
+# the core-transient threshold. 
 
 site = unique(occProp$site)
 # site = site[50:51]
