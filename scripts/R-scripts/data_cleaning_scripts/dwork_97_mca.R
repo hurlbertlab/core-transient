@@ -78,3 +78,34 @@ levels(d$Species)
 # change name
 head(d)
 names(d)[4] = 'species'
+
+#-------------------------------------------------------------------------------*
+# ---- EXPLORE AND FORMAT COUNT DATA ----
+#===============================================================================*
+# Explore
+head(d)
+summary(d$Abundance)
+class(d$Abundance)
+length(unique(d$Abundance))
+
+# Remove zeros
+d1 = subset(d, Abundance > 0)
+
+# Check uniques
+d1$count = factor(d$Abundance)
+levels(d1$count)
+
+# No values of zero or NAs found
+
+# Remove new column
+head(d1)
+d1 = d1[,-6]
+head(d1)
+
+# Change name
+names(d1)[5] = 'count'
+names(d1)
+head(d1)
+
+d = d1
+
