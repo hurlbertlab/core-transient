@@ -1,17 +1,24 @@
-# Cleaning dataset 173 OBIS Inverts
+# Cleaning dataset 173 OBIS Marine Inverts
 
-# Set Up
-  # Load libraries and source functions
+#-------------------------------------------------------------------------------*
+# ---- SET-UP ----
+#===============================================================================*
+  # Load libraries 
 setwd("C:/Users/auriemma/core-transient/")
 
 library(plyr)
 library(stringr)
+
+# Source functions
 source("scripts/R-scripts/core-transient_functions.R")
 
 # Get data
 d = read.csv("data/raw_datasets/dataset_173.csv")
 
-# Explore dataset
+#-------------------------------------------------------------------------------*
+# ---- EXPLORE THE DATASET ----
+#===============================================================================*
+# Explore
 dim(d)
 names(d)
 str(d)
@@ -19,45 +26,100 @@ head(d)
 summary(d)
 
 # Remove unwanted columns
-d = d[,-c(1)]
+d = d[,-1]
 head(d)
-
-# Rename columns to appropriate names
-names(d) = c('datasetID','year','site','species','count')
-names(d)
-head(d, 15)
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SITE DATA ----
 #===============================================================================*
 # Explore
-length(unique(d$site))
+length(unique(d$SampleID))
 
   # 758 individual sites
-class(d$site)
+class(d$SampleID)
 
 # View unique sites for any unwanted site names (NAs, undefined, etc)
-levels(d$site)
+levels(d$SampleID)
 
-  # No unwanted site names
+  # No unwanted site names to remove
+
+# Change name
+names(d)
+names(d)[3] = 'site'
+head(d)
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SPECIES DATA ----
 #===============================================================================*
 # Explore species
-length(unique(d$species))
+length(unique(d$Species))
   # 678 different species accounted for
 
-# Capitalize all species to eliminate errors
-d$sp = toupper(d$species)
+# Capitalize all species to eliminate letter case repeats
+d$sp = toupper(d$Species)
 length(unique(d$sp))
   # Still 678 unique spp names, so no errors
   #Remove sp column
 head(d)
-d = d[,-c(6)]
+d = d[,-6]
 
 # Look for unidentifieds or other unwanted species
-levels(d$species)
+levels(d$Species)
   # No questionable species or unidentifieds
   # wide variety in taxonomic resolution
+class(d$Species)
 
+# Change name
+names(d)[4]= 'species'
+head(d)
+
+#-------------------------------------------------------------------------------*
+# ---- EXPLORE AND FORMAT TIME DATA ----
+#===============================================================================*
+# Explore
+head(d)
+summary(d$Year)
+class(d$Year)
+
+# Change to factor 
+d1 = d 
+d1$Year = factor(as.character(d1$Year))
+
+# Explore for bad values
+levels(d1$Year)
+
+# All good, change name and back to d
+names(d1)[2]= 'date'
+d = d1
+head(d)
+
+#-------------------------------------------------------------------------------*
+# ---- EXPLORE AND FORMAT COUNT DATA ----
+#===============================================================================*
+# Explore
+summary(d$Abundance)
+  # No zeros
+class(d$Abundance)
+
+# Change to numeric
+d1 = d
+d1$Abundance = as.numeric(as.character(d1$Abundance))
+class(d1$Abundance)
+summary(d1$Abundance)
+
+# Look for bad count values
+unique(d1$Abundance)
+  # No bad values, none removed
+
+# Change column name
+names(d1)[5] = 'count'
+
+head(d1)
+
+# revert back to d
+d = d1
+head(d, 30)
+
+#-------------------------------------------------------------------------------*
+# ---- MAKE DATA FRAME OF COUNT BY SITES, SPECIES, AND YEAR ----
+#===============================================================================*
