@@ -1,32 +1,13 @@
 ###################################################################################*
 # ---- CORE-TRANSIENT TABULAR SUMMARY OUTPUT ----
-###################################################################################*
-  
-source('scripts/R-Scripts/core-transient_functions.R')
-  
+###################################################################################*  
 # This file is used as a "dashboard" to observe / produce tabular summary output 
 # from core-transient analyses. Functions are located in the 
 # core-transient_functions.R source file.
 
-proc.replaceFun(78)
-
 #----------------------------------------------------------------------------------*
 # ---- Set-up ----
 #==================================================================================*
-# The source script that checks for new datasets and adds/writes them to the prop 
-# and nTime frames if necessary:
-
-source('scripts/R-scripts/ct_proportion_frame.R')
-
-# Get files:
-
-occProp = read.csv('output/occProp.csv')
-nTime = read.csv('output/nTime.csv')
-outSummary = read.csv('data_source_table.csv')
-
-# Source core-transient functions:
-
-source('scripts/R-scripts/core-transient_functions.R')
 
 # Load libraries:
 
@@ -35,6 +16,26 @@ library(ggplot2)
 library(grid)
 library(gridExtra)
 library(MASS)
+
+# Source functions:
+
+source('scripts/R-Scripts/core-transient_functions.R')
+
+
+# Get files:
+
+occPropList = paste('data/propOcc_datasets/',
+                    list.files('data/propOcc_datasets'), sep ='')
+
+siteSummaryList = paste('data/siteSummaries/',
+                    list.files('data/siteSummaries'), sep ='')
+
+dataSourceTable = read.csv('data_source_table.csv')
+
+# Source core-transient functions:
+
+source('scripts/R-scripts/core-transient_functions.R')
+
 
 #----------------------------------------------------------------------------------*
 #  ---- SUMMARY TABLE OUTPUT ----
