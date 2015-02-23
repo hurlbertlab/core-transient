@@ -108,9 +108,11 @@ propOccFun = function(dataset){
 
 # True bimodality for a given site (or random sample of occurrences at a site)
 
-bimodality = function(occs, site) {
-  nt = nTime[as.character(nTime$site) == site,'nt']
-  maxvar = var(c(rep(1/nt,floor(length(occs)/2)),
+bimodality = function(site) {
+  
+  nTime = subset(siteSummary, site = site)$nTime
+  occs = propOcc$occProp
+  maxvar = var(c(rep(1/nTime,floor(length(occs)/2)),
                  rep(1,ceiling(length(occs)/2))))
   return(var(occs)/maxvar)
 }
