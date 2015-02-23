@@ -123,3 +123,62 @@ head(d, 30)
 #-------------------------------------------------------------------------------*
 # ---- MAKE DATA FRAME OF COUNT BY SITES, SPECIES, AND YEAR ----
 #===============================================================================*
+# Change name of datasetID
+names(d)[1] = 'datasetID'
+head(d)
+
+  #Change to character
+d$datasetID = as.character(d$datasetID)
+
+# Check data structure
+str(d)
+
+# Make the dataframe
+d1 = ddply(d, .(datasetID, site, date, species), summarize, count = max(count))
+
+# Explore new dataframe
+head(d1, 40)
+summary(d1)
+str(d1)
+
+# All looks good, revert back to d
+d = d1
+
+head(d)
+
+#-------------------------------------------------------------------------------*
+# ---- WRITE OUTPUT DATA FRAMES  ----
+#===============================================================================*
+
+# final look at the dataset:
+
+head(d)
+summary(d)
+
+# looks okay, write formatted data frame
+
+write.csv(d, "data/formatted_datasets/dataset_173.csv", row.names = F)
+
+#-------------------------------------------------------------------------------*
+# ---- EXPLORE YOUR DATASET SUMMARY INFO AND UPDATE THE DATA SOURCE TABLE  ----
+#===============================================================================*
+
+# !!!At this point, go to the data source table and provide:
+#   -central lat and lon (if available, if so, LatLonFLAG = 0, if you couldn't do
+#    it, add a flag of 1)
+#   -spatial_grain columns (T through W)
+#   -nRecs, nSites, nTime, nSpecies
+#   -temporal_grain columns (AH to AK)
+#   -Start and end year
+#   -Any necessary notes
+#   -flag any issues and put issue on github
+#   -git-add-commit-push data_source_table.csv
+
+dim(d)
+
+length(unique(d$site))
+
+summary(d$date)
+length(unique(d$date))
+
+length(unique(d$species))
