@@ -51,16 +51,18 @@ This takes you through the steps necessary to generate an ssh key to work with t
 ## Priority rankings for obtaining and/or formatting data, on a scale of 0-5, are currently based on summing:
 
 ### 0 = Low priority
-Common system and taxa, less than 20 sites
+Common system and taxa, less than 20 sites **OR** sites defined by Lat Long
 
 ### 1 = Minor priority
-Common system and taxa, more than 20 sites -OR- uncommon system OR taxa less than 20 sites
+Common system and taxa, more than 20 sites (**IF** sites are not defined by Lat Long)
+-OR- uncommon system OR taxa less than 20 sites (**OR** sites defined by Lat Long)
 
 ### 2 = Medium priority
-Uncommon system OR taxa, more than 20 sites -OR- uncommon system AND taxa, less than 20 sites
+Uncommon system OR taxa, more than 20 sites (**IF** sites are not defined by Lat Long)
+-OR- uncommon system AND taxa, less than 20 sites (**OR** sites defined by Lat Long)
 
 ### 3 = high priority
-Uncommon system AND taxa, more than 20 sites  
+Uncommon system AND taxa, more than 20 sites (**IF** sites are not defined by Lat Long)
 
 #### Uncommon taxa (based on current representation in formatted datasets)
 Arthropod, Invertebrate, Plankton, Mammal  
