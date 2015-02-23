@@ -48,7 +48,7 @@ This takes you through the steps necessary to generate an ssh key to work with t
 17. Explore the data folder a bit to find out if you were successful! 
 
 
-## Priority rankings for obtaining and/or formatting data, on a scale of 0-5, are currently based on summing:
+## Priority rankings for obtaining and/or formatting data, on a scale of 0-3, are currently based on summing:
 
 ### 0 = Low priority
 Common system and taxa, less than 20 sites **OR** sites defined by Lat Long
