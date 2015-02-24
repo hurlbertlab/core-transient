@@ -259,3 +259,84 @@ length(unique(d$site))
 length(unique(d$date))
 
 length(unique(d$species))
+
+################################################################################*
+# ---- END CREATION OF FORMATTED DATA FRAME ----
+################################################################################*
+
+library(stringr)
+library(plyr)
+
+source('scripts/R-scripts/core-transient_functions.R')
+
+d = read.csv("data/formatted_datasets/dataset_238.csv")
+
+#===============================================================================*
+# ---- MAKE PROPORTIONAL OCCUPANCY AND DATA SUMMARY FRAMES ----
+#===============================================================================*
+
+#-------------------------------------------------------------------------------*
+# ---- TIME DATA ----
+#===============================================================================*
+head(d, 40)
+length(unique(d$date))
+unique(d$date)\
+
+# Temporal grain is 3 records per year, so turn into decimal years
+# Extract year values:
+  # First need to turn d$date into date object
+d$date = as.Date(d$date)
+year = as.numeric(format(d$date, '%Y'))
+unique(year)
+summary(year)
+
+# Extract month values (if applicable):
+
+month = as.numeric(format(d$date, '%m'))
+head(month)
+summary(month)
+
+# Make months decimals
+dec_month = (month - 1)/12
+unique(dec_month)
+
+# Add dec_month and year to get decimal year
+decimalyear = year + dec_month
+head(decimalyear, 40)
+d$date = decimalyear
+head(d, 40)
+
+# Name column 'year'
+names(d)[3] = 'year'
+head(d)
+
+# Create new dataframe
+d1 = ddply(d, .(datasetID, site, year, species), 
+                 summarize, count = max(count))
+# Explore 
+head(d1)
+summary(d1)
+str(d1)
+str(d)
+
+# all looks good
+d = d1
+
+#-------------------------------------------------------------------------------*
+# ---- SITE DATA ----
+#===============================================================================*
+
+# How many sites are there?
+
+length(unique(d$site))
+
+# How many time and species records are there per site?
+
+siteTable = ddply(d, .(site), summarize, nYear = length(unique(date)),
+                  nSp = length(unique(species)))
+head(siteTable, 30)
+
+# 31 time samples per site, and > 30 species per site
+
+# So no problems with site scale in this dataset, no bad sites to remove
+
