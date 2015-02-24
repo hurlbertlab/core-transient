@@ -42,28 +42,13 @@ siteSummaryFun = function(dataset){
 # frame on sites.
 
 propOccFun = function(dataset){
-  siteNames = unique(dataset$site)
-  occPropOutList = list(length = length(siteNames))
-  # For each of the sites in the dataset ...
-  for(i in 1:length(siteNames)){
-    # Subset to calculate occupancy by site:
-    dataSite = subset(dataset, site == siteNames[i])        
-    sp = factor(unique(dataSite$species))
-    datasetNum = rep(unique(dataSite$datasetID), length(sp))
-    # For each species ...
-    # Calculate the proportion of years a species has been observed:
-    occPropSp = numeric(length = length(sp))
-    for (j in 1:length(sp)){
-      dataSiteSp = subset(dataSite, species == as.character(sp[j]))
-      occPropSp[j] = length(unique(dataSiteSp$year))/
-        length(unique(dataSite$year))
-    }
-    occPropOutList[[i]] = data.frame(datasetID = datasetNum, 
-                                     site =  siteNames[i], species = sp, 
-                                     occProp = occPropSp)
-  }
-  occPropDf = rbind.fill(occPropOutList)
-  return(occPropDf)
+  spTime = ddply(dataset, .(datasetID, site, species), summarize, 
+                 spTime = length(unique(year)))
+  siteTime = ddply(dataset, .(site), summarize, 
+                   siteTime = length(unique(year)))
+  propOcc = merge(spTime, siteTime)
+  propOcc$propOcc = propOcc$spTime / propOcc$siteTime
+  return(propOcc[,-c(4:5)])
 }
 
 #==================================================================================*
