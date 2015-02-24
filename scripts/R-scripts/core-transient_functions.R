@@ -44,7 +44,7 @@ siteSummaryFun = function(dataset){
 propOccFun = function(dataset){
   spTime = ddply(dataset, .(datasetID, site, species), summarize, 
                  spTime = length(unique(year)))
-  siteTime = ddply(dataset, .(site), summarize, 
+  siteTime = ddply(dataset, .(datasetID, site), summarize, 
                    siteTime = length(unique(year)))
   propOcc = merge(spTime, siteTime)
   propOcc$propOcc = propOcc$spTime / propOcc$siteTime
@@ -93,10 +93,29 @@ propOccFun = function(dataset){
 
 # True bimodality for a given site (or random sample of occurrences at a site)
 
+summaryStats = function(site, threshold){
+  # Get data:
+  siteOcc = subset(propOccFun(dataset), site == site)
+  siteSummary = siteSummaryFun(dataset, site == site)
+  d = occProp[as.character(occProp$site) == site,]
+  nTime = nTime[as.character(nTime$site) == site,'nt']
+  dst = outSummary[outSummary$dataset_ID == dataset,]
+  # Calculate richness indices:
+  rich.total = length(d[,1])
+  rich.core = length(d[d$occ>=1-threshold,1])
+  rich.trans = length(d[d$occ<=threshold,1])
+  # Calculate proportional occurrences:
+  prop.core = rich.core/rich.total
+  prop.trans = rich.trans/rich.total
+  mu = mean(d$occ)
+  # Output 1-row dataset:
+  return(data.frame(dataset, site, system = dst$system, taxa = dst$taxa, nTime,
+                    rich.total, rich.core, rich.trans, prop.core, prop.trans, mu))
+}
+
 bimodality = function(site) {
-  
-  nTime = subset(siteSummary, site = site)$nTime
-  occs = propOcc$occProp
+  nTime = subset(siteSummaryFun(dataset), site = site)$nTime
+  occs = propOcc$propOcc
   maxvar = var(c(rep(1/nTime,floor(length(occs)/2)),
                  rep(1,ceiling(length(occs)/2))))
   return(var(occs)/maxvar)
@@ -222,6 +241,8 @@ mode.summary = function(site, reps){
 #----------------------------------------------------------------------------------*
 # ---- Function to generate summary of sampling ----
 #==================================================================================*
+
+
 
 summaryStats = function(site, threshold){
   # Get data:
