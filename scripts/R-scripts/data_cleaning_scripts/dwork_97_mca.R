@@ -189,3 +189,43 @@ length(unique(d$date))
 summary(d$date)
 
 length(unique(d$species))
+
+################################################################################*
+# ---- END CREATION OF FORMATTED DATA FRAME ----
+################################################################################*
+
+library(stringr)
+library(plyr)
+setwd("C:/Users/auriemma/core-transient/")
+source('scripts/R-scripts/core-transient_functions.R')
+
+d = read.csv("data/formatted_datasets/dataset_97.csv")
+
+#===============================================================================*
+# ---- MAKE PROPORTIONAL OCCUPANCY AND DATA SUMMARY FRAMES ----
+#===============================================================================*
+head(d)
+
+#-------------------------------------------------------------------------------*
+# ---- TIME DATA ----
+#===============================================================================*
+# Temporal grain for this dataset is yearly, so no changes need to be made for time data
+
+#-------------------------------------------------------------------------------*
+# ---- SITE DATA ----
+#===============================================================================*
+# Site data records are catch method, net mesh size, and lat_longs
+# First thing is to extract the lat longs using substring
+d1 = d
+sitedata = data.frame(str_sub(d1$site, start = -20))
+head(sitedata)
+names(sitedata) = 'site'
+head(sitedata, 50)
+
+# Separate the values to extract latlongs
+class(sitedata$site)
+sitedata$site = as.character(sitedata$site)
+sitedata.sep = str_split_fixed(d1$site, "_", )
+head(sitedata.sep, 100)
+  # Create lat long dataframes
+  # Need help doing this....
