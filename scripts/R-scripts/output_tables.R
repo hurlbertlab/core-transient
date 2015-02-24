@@ -9,18 +9,9 @@
 # ---- Set-up ----
 #==================================================================================*
 
-# Load libraries:
-
-library(plyr)
-library(ggplot2)
-library(grid)
-library(gridExtra)
-library(MASS)
-
 # Source functions:
 
 source('scripts/R-Scripts/core-transient_functions.R')
-
 
 # Get files:
 
@@ -30,7 +21,7 @@ occPropList = paste('data/propOcc_datasets/',
 siteSummaryList = paste('data/siteSummaries/',
                     list.files('data/siteSummaries'), sep ='')
 
-dataSourceTable = read.csv('data_source_table.csv')
+metadata = read.csv('data_source_table.csv')
 
 #----------------------------------------------------------------------------------*
 # ---- Sampling summary ----
