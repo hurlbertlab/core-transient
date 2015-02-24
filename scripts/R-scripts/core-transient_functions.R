@@ -28,7 +28,7 @@ library(MASS)
 se = function(x) sd(x)/sqrt(length(x))
 
 #==================================================================================*
-# ---- FUNCTIONS to be run when making proportional Occurance dataframe  ----
+# ---- FUNCTIONS for proportional occurance and site summary data frames  ----
 #==================================================================================*
 
 # The following function is used to create and explore and extract the species 
@@ -52,6 +52,46 @@ propOccFun = function(dataset){
   propOcc$propOcc = propOcc$spTime / propOcc$siteTime
   return(propOcc[,-c(4:5)])
 }
+
+#==================================================================================*
+# ---- BASIC DATASET LOADING AND SUMMARIZING ----
+#==================================================================================*
+
+getDataList = function(datasetID){
+  propOcc = read.csv(paste('data/propOcc_datasets/propOcc_', 
+                           datasetID, '.csv', sep = ''))
+  siteSummary = read.csv(paste('data/siteSummaries/siteSummary_', 
+                               datasetID, '.csv',  sep = ''))
+  metaData = subset(read.csv('data_source_table.csv'),
+                    dataset_ID == datasetID)
+  system = metaData$system
+  taxa = metaData$taxa
+  return(list(propOcc, siteSummary, system = system, taxa = taxa))
+}
+
+summaryStats = function(datasetNum, siteValue, threshold){
+  # Data List
+  # Get data:
+  propOcc = subset(propOccFun(dataset), site == siteValue)$propOcc
+  siteSummary = subset(siteSummaryFun(dataset), site == siteValue)
+  siteMetadata = subset(metadata, )
+  
+  d = occProp[as.character(occProp$site) == site,]
+  nTime = nTime[as.character(nTime$site) == site,'nt']
+  dst = outSummary[outSummary$dataset_ID == dataset,]
+  # Calculate richness indices:
+  richTotal = siteSummary$spRich
+  richCore = length(propOcc[propOcc >= 1 - threshold])
+  richTrans = length(propOcc[propOcc <= threshold])
+  # Calculate proportional occurrences:
+  propCore = richCore/richTotal
+  propTrans = richTrans/richTotal
+  mu = mean(propOcc)
+  # Output 1-row dataset:
+  return(data.frame(dataset, site, system = dst$system, taxa = dst$taxa, nTime,
+                    rich.total, rich.core, rich.trans, prop.core, prop.trans, mu))
+}
+
 
 #==================================================================================*
 # ---- BIMODALILITY ----
@@ -95,32 +135,6 @@ propOccFun = function(dataset){
 
 # True bimodality for a given site (or random sample of occurrences at a site)
 
-getSiteData = function(dataset){
-  propOcc = read.csv(paste('data/propOcc_datasets/propOcc_', dataset, '.csv'))
-  siteSummary = read.csv(paste('data/siteSummaries/siteSummary_', dataset, '.csv'))
-  
-}
-summaryStats = function(dataset, siteValue, threshold){
-  # Get data:
-    propOcc = subset(propOccFun(dataset), site == siteValue)$propOcc
-    siteSummary = subset(siteSummaryFun(dataset), site == siteValue)
-    siteMetadata = subset(metadata, )
-  
-  d = occProp[as.character(occProp$site) == site,]
-  nTime = nTime[as.character(nTime$site) == site,'nt']
-  dst = outSummary[outSummary$dataset_ID == dataset,]
-  # Calculate richness indices:
-    richTotal = siteSummary$spRich
-    richCore = length(propOcc[propOcc >= 1 - threshold])
-    richTrans = length(propOcc[propOcc <= threshold])
-  # Calculate proportional occurrences:
-    propCore = richCore/richTotal
-    propTrans = richTrans/richTotal
-    mu = mean(propOcc)
-  # Output 1-row dataset:
-  return(data.frame(dataset, site, system = dst$system, taxa = dst$taxa, nTime,
-                    rich.total, rich.core, rich.trans, prop.core, prop.trans, mu))
-  }
 
 bimodality = function(site) {
   nTime = subset(siteSummaryFun(dataset), site = site)$nTime
