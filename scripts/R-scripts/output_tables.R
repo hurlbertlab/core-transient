@@ -51,22 +51,6 @@ for (i in 1:length(site)){
 
 ss = rbind.fill(out.list)
 
-# Remove sites with < 10 species and < 5 time intervals:
-
-samplingSummary  = ss[ss$rich.total >= 10 & ss$nTime >= 5,]
-
-samplingSummary = na.omit(samplingSummary)
-
-# Something is wrong here! showing lots of NA's. Not sure the cause, will have to
-# explore this tomorrow (it is an improvement over the last summary file -- which
-# contained only 157 records -- this one contains 474 records)
-
-# Subset the nTime frame to include just the appropriate samples:
-
-sites2 = data.frame(site = samplingSummary$site)
-nTime = merge(nTime, sites2, all = F)
-nTime$site = factor(nTime$site)
-
 #----------------------------------------------------------------------------------*
 # ---- Core-transient summary table ----
 #----------------------------------------------------------------------------------*
