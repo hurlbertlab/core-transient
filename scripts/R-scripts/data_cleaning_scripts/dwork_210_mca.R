@@ -232,3 +232,43 @@ d1 = ddply(d, .(datasetID, site, year, species), summarize, count = max(count))
 head(d1)
 summary(d1)
 
+d = d1
+
+#-------------------------------------------------------------------------------*
+# ---- WRITE OUTPUT DATA FRAMES  ----
+#===============================================================================*
+
+# Make proportional occurence data frame:
+
+write.csv(propOccFun(d), "data/propOcc_datasets/propOcc_210.csv", row.names = F)
+
+# !GIT-ADD-COMMIT-PUSH propOcc!
+
+# write site summary dataset:
+
+write.csv(siteSummaryFun(d), 'data/siteSummaries/siteSummary_210.csv', row.names = F)
+
+# Committed and pushed to both data submodule and core-trans git folder
+
+#-------------------------------------------------------------------------------*
+# ---- EXPLORE YOUR DATASET SUMMARY INFO AND UPDATE THE DATA SOURCE TABLE  ----
+#===============================================================================*
+
+# !!!At this point, go to the data source table and provide:
+#   -central lat and lon (if available, if so, LatLonFLAG = 0, if you couldn't do
+#    it, add a flag of 1)
+#   -spatial_grain columns (T through W)
+#   -nRecs, nSites, nTime, nSpecies
+#   -temporal_grain columns (AH to AK)
+#   -Start and end year
+#   -Any necessary notes
+#   -flag any issues and put issue on github
+#   -git-add-commit-push data_source_table.csv
+
+dim(dataset)
+
+length(unique(dataset$site))
+
+length(unique(dataset$year))
+
+length(unique(dataset$species))
