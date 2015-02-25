@@ -210,22 +210,71 @@ head(d)
 # ---- TIME DATA ----
 #===============================================================================*
 # Temporal grain for this dataset is yearly, so no changes need to be made for time data
+head(d)
+
+# Change to 'year' column
+names(d)[3] = 'year'
 
 #-------------------------------------------------------------------------------*
 # ---- SITE DATA ----
 #===============================================================================*
-# Site data records are catch method, net mesh size, and lat_longs
-# First thing is to extract the lat longs using substring
+# Explore
+length(unique(d$site))
+  # 835 unique sites, so most likely going to be bad sites
+
+# Check records for each site
+siteTable = ddply(d, .(site), summarize,
+                  nYear = length(unique(year)),
+                  nSp = length(unique(species)))
+
+head(siteTable[order(siteTable$nSp),], 30)
+tail(siteTable[order(siteTable$nSp),], 30)
+
+# Lot of 1's for nYear and 1-4's for nSp
+# How many have less than 10 species?
+nrow(subset(siteTable, nSp < 10))
+  # There are 180 sites that have less than 10 spp
+
+# How many have less than 5 time samples?
+nrow(subset(siteTable, nYear < 5))
+
+#!! No sites have more than 1 time sample!
+# Since site data records are catch method, net mesh size, and lat_longs,
+# need to extract the lat_long data from it then expand the grain size 
+
+# First thing is to get rid of some unneccesary data using substring
 d1 = d
-sitedata = data.frame(str_sub(d1$site, start = -20))
+sitedata = data.frame(d1$site)
 head(sitedata)
 names(sitedata) = 'site'
 head(sitedata, 50)
+tail(sitedata, 50)
+sitedata1 = str_sub(sitedata$site, start = -16)
+head(sitedata1, 20)
+tail(sitedata1, 20)
+summary(sitedata1)
 
-# Separate the values to extract latlongs
-class(sitedata$site)
-sitedata$site = as.character(sitedata$site)
-sitedata.sep = str_split_fixed(d1$site, "_", )
-head(sitedata.sep, 100)
-  # Create lat long dataframes
-  # Need help doing this....
+# Parse the values that are separated by underscores to extract latlongs
+sitesep = read.table(text = sitedata1, sep = '_')
+# No good, need to use stringsplit function
+
+# Strsplit the data in sitedata
+head(sitedata1)
+sitedata.df = data.frame(sitedata1)
+?str_split_fixed
+siteSplit = str_split_fixed(sitedata1, '_', 6)
+head(siteSplit, 40)
+tail(siteSplit, 40)
+
+# Worked, separating the individual strings, but lat longs are in different
+# columns for different data groupings. Need to get all in same columns
+
+siteSplit.df = data.frame(siteSplit)
+head(siteSplit.df, 30)
+names(siteSplit.df) = c('1','2','3','4','5','6')
+siteSplit.df
+
+# Write the table to excel to explore better
+write.csv(siteSplit.df, 'C:/Users/auriemma/mca-core-trans-work/siteSplit.csv', row.names = F)
+
+# Need to find a way to group lat longs in all same columns
