@@ -167,26 +167,68 @@ d = d1
 
 write.csv(d, 'data/formatted_datasets/dataset_210.csv', row.names = F)
 
-#-------------------------------------------------------------------------------*
-# ---- EXPLORE DATASET SUMMARY INFO AND UPDATE THE DATA SOURCE TABLE  ----
+
+################################################################################*
+# ---- END CREATION OF FORMATTED DATA FRAME ----
+################################################################################*
+
+library(stringr)
+library(plyr)
+
+source('scripts/R-scripts/core-transient_functions.R')
+
+d = read.csv("data/formatted_datasets/dataset_210.csv")
+
+#===============================================================================*
+# ---- MAKE PROPORTIONAL OCCUPANCY AND DATA SUMMARY FRAMES ----
 #===============================================================================*
 
-# !!!At this point, go to the data source table and provide:
-#   -central lat and lon (if available, if so, LatLonFLAG = 0, if you couldn't do
-#    it, add a flag of 1)
-#   -spatial_grain columns (T through W)
-#   -nRecs, nSites, nTime, nSpecies
-#   -temporal_grain columns (AH to AK)
-#   -Start and end year
-#   -Any necessary notes
-#   -flag any issues and put issue on github
-#   -git-add-commit-push data_source_table.csv
-
-dim(d)
-
-length(unique(d$site))
-
-length(unique(d$date))
+#-------------------------------------------------------------------------------*
+# ---- TIME DATA ----
+#===============================================================================*
+# Explore again
+class(d$date)
+summary(d$date)
 unique(d$date)
 
-length(unique(d$species))
+# Temporal scale is yearly, so no changes need to be made
+
+# Change to 'year'
+names(d)[3] = 'year'
+
+#-------------------------------------------------------------------------------*
+# ---- SITE DATA ----
+#===============================================================================*
+# Explore
+length(unique(d$site))
+summary(d$site)
+head(d, 30)
+
+# See how many time and species records per site
+siteTable = ddply(d, .(site), summarize,
+                  nYear = length(unique(year)),
+                  nSp = length(unique(species)))
+
+# Explore siteTable to find bad sites
+head(siteTable)
+
+head(siteTable[order(siteTable$nSp),],20)
+
+# sufficient richness per site (lowest is 13)
+
+# now check for number of time records
+head(siteTable[order(siteTable$nYear),], 10)
+
+  # Sufficient time samples per site
+
+# Double check for bad sites
+badSites = subset(siteSummaryFun(d), spRich < 10 | nTime < 5)$site
+length(badSites)
+  # Length of badsites is 0, so no bad sites to remove
+
+# Nothing changed, but rewrite the cleaned dataframe
+d1 = ddply(d, .(datasetID, site, year, species), summarize, count = max(count))
+
+head(d1)
+summary(d1)
+
