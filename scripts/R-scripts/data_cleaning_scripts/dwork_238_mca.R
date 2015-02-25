@@ -237,28 +237,6 @@ head(d,20)
 setwd('C:/Users/auriemma/core-transient/')
 write.csv(d, "data/formatted_datasets/dataset_238.csv", row.names = F)
 
-#-------------------------------------------------------------------------------*
-# ---- EXPLORE YOUR DATASET SUMMARY INFO AND UPDATE THE DATA SOURCE TABLE  ----
-#===============================================================================*
-
-# !!!At this point, go to the data source table and provide:
-#   -central lat and lon (if available, if so, LatLonFLAG = 0, if you couldn't do
-#    it, add a flag of 1)
-#   -spatial_grain columns (T through W)
-#   -nRecs, nSites, nTime, nSpecies
-#   -temporal_grain columns (AH to AK)
-#   -Start and end year
-#   -Any necessary notes
-#   -flag any issues and put issue on github
-#   -git-add-commit-push data_source_table.csv
-
-dim(d)
-
-length(unique(d$site))
-
-length(unique(d$date))
-
-length(unique(d$species))
 
 ################################################################################*
 # ---- END CREATION OF FORMATTED DATA FRAME ----
@@ -266,7 +244,8 @@ length(unique(d$species))
 
 library(stringr)
 library(plyr)
-
+setwd('C:/Users/auriemma/core-transient/')
+install.packages('gridExtra')
 source('scripts/R-scripts/core-transient_functions.R')
 
 d = read.csv("data/formatted_datasets/dataset_238.csv")
@@ -280,7 +259,7 @@ d = read.csv("data/formatted_datasets/dataset_238.csv")
 #===============================================================================*
 head(d, 40)
 length(unique(d$date))
-unique(d$date)\
+unique(d$date)
 
 # Temporal grain is 3 records per year, so turn into decimal years
 # Extract year values:
@@ -332,7 +311,7 @@ length(unique(d$site))
 
 # How many time and species records are there per site?
 
-siteTable = ddply(d, .(site), summarize, nYear = length(unique(date)),
+siteTable = ddply(d, .(site), summarize, nYear = length(unique(year)),
                   nSp = length(unique(species)))
 head(siteTable, 30)
 
@@ -340,3 +319,38 @@ head(siteTable, 30)
 
 # So no problems with site scale in this dataset, no bad sites to remove
 
+#-------------------------------------------------------------------------------*
+# ---- WRITE OUTPUT DATA FRAMES  ----
+#===============================================================================*
+
+# Make proportional occurence data frame:
+
+write.csv(propOccFun(d), "data/propOcc_datasets/propOcc_238.csv", row.names = F)
+
+# Make site summary
+write.csv(siteSummaryFun(d), "data/siteSummaries/siteSummary_238.csv", row.names = F)
+
+# Committed and pushed to submodule and core-transient git folder
+
+#-------------------------------------------------------------------------------*
+# ---- EXPLORE YOUR DATASET SUMMARY INFO AND UPDATE THE DATA SOURCE TABLE  ----
+#===============================================================================*
+
+# !!!At this point, go to the data source table and provide:
+#   -central lat and lon (if available, if so, LatLonFLAG = 0, if you couldn't do
+#    it, add a flag of 1)
+#   -spatial_grain columns (T through W)
+#   -nRecs, nSites, nTime, nSpecies
+#   -temporal_grain columns (AH to AK)
+#   -Start and end year
+#   -Any necessary notes
+#   -flag any issues and put issue on github
+#   -git-add-commit-push data_source_table.csv
+
+dim(d)
+
+length(unique(d$site))
+
+length(unique(d$year))
+
+length(unique(d$species))
