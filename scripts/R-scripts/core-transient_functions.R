@@ -28,7 +28,7 @@ library(MASS)
 se = function(x) sd(x)/sqrt(length(x))
 
 #==================================================================================*
-# ---- FUNCTIONS for proportional occurance and site summary data frames  ----
+# ---- FUNCTIONS for proportional occurrence and site summary data frames  ----
 #==================================================================================*
 
 # Function to change date object to year:
@@ -61,7 +61,7 @@ propOccFun = function(dataset){
 }
 
 #==================================================================================*
-# ---- BASIC DATASET LOADING AND SUMMARIZING ----
+# ---- GET DATA ----
 #==================================================================================*
 
 # The following function reads in the data and returns a list of the proportional 
@@ -79,33 +79,6 @@ getDataList = function(datasetID){
   taxa = metaData$taxa
   return(list(propOcc = propOcc, siteSummary = siteSummary, 
               system = system, taxa = taxa))
-}
-
-# The following calculates the summary statistics for each site in a dataset.
-# Summary statistics do not include bimodality measure. 
-
-summaryStatsFun = function(datasetID, threshold){
-  # Get data:
-    dataList = getDataList(datasetID)
-    sites  = dataList$siteSummary$site
-  # Get summary stats for each site:
-    outList = list(length = length(sites))
-    for(i in 1:length(sites)){
-      propOcc = subset(dataList$propOcc, site == sites[i])$propOcc
-      siteSummary = subset(dataList$siteSummary, site == sites[i])
-      nTime = siteSummary$nTime
-      spRichTotal = siteSummary$spRich
-      spRichCore = length(propOcc[propOcc >= 1 - threshold])
-      spRichTrans = length(propOcc[propOcc <= threshold])
-      propCore = spRichCore/spRichTotal
-      propTrans = spRichTrans/spRichTotal
-      mu = mean(propOcc)
-      outList[[i]] = data.frame(datasetID, site = sites[i],
-          system = dataList$system, taxa = dataList$taxa,
-          nTime, spRichTotal, spRichCore, spRichTrans,
-          propCore, propTrans, mu)
-      }
-    return(rbind.fill(outList))
 }
 
 #==================================================================================*
@@ -150,6 +123,12 @@ summaryStatsFun = function(datasetID, threshold){
 
 # True bimodality for a given site (or random sample of occurrences at a site)
 
+l1 = getDataList(238)
+test = summaryStatsFun(238, 1/3)
+t1 = test[test$site == 1,]
+p1 = subset(l1$propOcc, site == 1)$propOcc
+
+head(p1)
 
 bimodality = function(site) {
   nTime = subset(siteSummaryFun(dataset), site = site)$nTime
@@ -280,25 +259,31 @@ mode.summary = function(site, reps){
 # ---- Function to generate summary of sampling ----
 #==================================================================================*
 
+# The following calculates the summary statistics for each site in a dataset.
+# Summary statistics do not include bimodality measure. 
 
-
-summaryStats = function(site, threshold){
+summaryStatsFun = function(datasetID, threshold){
   # Get data:
-  dataset = as.numeric(gsub('_','',substr(site,2,4)))
-  d = occProp[as.character(occProp$site) == site,]
-  nTime = nTime[as.character(nTime$site) == site,'nt']
-  dst = outSummary[outSummary$dataset_ID == dataset,]
-  # Calculate richness indices:
-  rich.total = length(d[,1])
-  rich.core = length(d[d$occ>=1-threshold,1])
-  rich.trans = length(d[d$occ<=threshold,1])
-  # Calculate proportional occurrences:
-  prop.core = rich.core/rich.total
-  prop.trans = rich.trans/rich.total
-  mu = mean(d$occ)
-  # Output 1-row dataset:
-  return(data.frame(dataset, site, system = dst$system, taxa = dst$taxa, nTime,
-                    rich.total, rich.core, rich.trans, prop.core, prop.trans, mu))
+  dataList = getDataList(datasetID)
+  sites  = dataList$siteSummary$site
+  # Get summary stats for each site:
+  outList = list(length = length(sites))
+  for(i in 1:length(sites)){
+    propOcc = subset(dataList$propOcc, site == sites[i])$propOcc
+    siteSummary = subset(dataList$siteSummary, site == sites[i])
+    nTime = siteSummary$nTime
+    spRichTotal = siteSummary$spRich
+    spRichCore = length(propOcc[propOcc >= 1 - threshold])
+    spRichTrans = length(propOcc[propOcc <= threshold])
+    propCore = spRichCore/spRichTotal
+    propTrans = spRichTrans/spRichTotal
+    mu = mean(propOcc)
+    outList[[i]] = data.frame(datasetID, site = sites[i],
+                              system = dataList$system, taxa = dataList$taxa,
+                              nTime, spRichTotal, spRichCore, spRichTrans,
+                              propCore, propTrans, mu)
+  }
+  return(rbind.fill(outList))
 }
 
 #----------------------------------------------------------------------------------*
