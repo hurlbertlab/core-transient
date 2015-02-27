@@ -254,12 +254,11 @@ We have now formatted the dataset to the finest possible spatial and temporal gr
 
 We start by extracting year from the dataset. Year are our default temporal grain. Decisions for finer temporal grains may be decided at a later date. This process involves changing the date column to year (uses a custom function in the core-transient_functions.R file) and then renaming the column to "year".
 
-	```
-	dataset$date = getYear(dataset$date)
+```
+dataset$date = getYear(dataset$date)
 
-	names(dataset)[3] = 'year'
-
-	```
+names(dataset)[3] = 'year'
+```
 
 ### Site data:
 
