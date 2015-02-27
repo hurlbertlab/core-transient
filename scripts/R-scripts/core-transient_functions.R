@@ -31,6 +31,13 @@ se = function(x) sd(x)/sqrt(length(x))
 # ---- FUNCTIONS for proportional occurance and site summary data frames  ----
 #==================================================================================*
 
+# Function to change date object to year:
+
+getYear = function(date){
+  if (class(date)[1] == 'factor') date = as.POSIXlt(date)
+  return(as.numeric(format(date, '%Y')))
+}
+
 # The following function is used to create and explore and extract the species 
 # richness and number of time samples for a site.
 
