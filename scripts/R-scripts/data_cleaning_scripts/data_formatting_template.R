@@ -60,7 +60,7 @@ head(dataset)
 
 names(dataset)
 
-dataset1 = dataset[,-c(1,2,8,11,13,14)]
+dataset1 = dataset[,-c(5,6,8,9)]
 
 head(dataset1)
 
@@ -354,76 +354,17 @@ dataset = read.csv("data/formatted_datasets/dataset_223.csv")
 #-------------------------------------------------------------------------------*
 # ---- TIME DATA ----
 #===============================================================================*
-# Because it's often considerably more straightforward, we'll start with the
-# temporal data. For this, go to the metadata of the study. There, we see
-# that data are collected in two seasons, spring and fall. We want to change
-# these to a decimal year, which are simply grouped time samples (the actual 
-# values don't really matter much).
+# We start by extracting year from the dataset. Year will now be our DEFAULT
+# temporal grain. Decisions for finer temporal grains may be decided at a 
+# later date.
 
-# Extract year values:
+# Change date column to year:
 
-year = as.numeric(format(dataset$date, '%Y'))
+dataset$date = getYear(dataset$date)
 
-head(year)
+# Change column name:
 
-summary(year)
-
-# Extract month values (if applicable):
-
-month = as.numeric(format(dataset$date, '%m'))
-
-head(month)
-
-summary(month)
-
-unique(month)
-
-# Make "season" values:
-
-season = ifelse(month < 7, .25, .75)
-
-unique(season)
-
-# Add year and season:
-
-yearSeason = year + season
-
-head(yearSeason)
-
-summary(yearSeason)
-
-# Modify date column to now represent the decimal year:
-
-dataset1 = dataset
-
-dataset1$date = yearSeason
-
-head(dataset1)
-
-# Change the column name to year:
-
-names(dataset1)
-
-names(dataset1)[3] = 'year'
-
-# Summarize the dataset to the new temporal grain:
-
-dataset2 = ddply(dataset1, .(datasetID, site, year, species), 
-                 summarize, count = max(count))
-
-# Explore:
-
-dim(dataset1)
-dim(dataset2)
-
-head(dataset1)
-head(dataset2)
-
-str(dataset2)
-
-# All looks okay, rename as dataset:
-
-dataset = dataset2
+names(dataset)[3] = 'year'
 
 # !GIT-ADD-COMMIT-PUSH AND DESCRIBE ANY TEMPORAL GRAIN DECISIONS!
 
