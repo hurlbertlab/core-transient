@@ -57,6 +57,10 @@ propOccFun = function(dataset){
 # ---- BASIC DATASET LOADING AND SUMMARIZING ----
 #==================================================================================*
 
+# The following function reads in the data and returns a list of the proportional 
+# occurence data frame, the site summary (sp richness and number of time samples
+# for a given site), system, and taxa:
+
 getDataList = function(datasetID){
   propOcc = read.csv(paste('data/propOcc_datasets/propOcc_', 
                            datasetID, '.csv', sep = ''))
@@ -66,14 +70,16 @@ getDataList = function(datasetID){
                     dataset_ID == datasetID)
   system = metaData$system
   taxa = metaData$taxa
-  return(list(propOcc, siteSummary, system = system, taxa = taxa))
+  return(list(propOcc = propOcc, siteSummary = siteSummary, 
+              system = system, taxa = taxa))
 }
 
-summaryStats = function(datasetNum, siteValue, threshold){
-  # Data List
+summaryStats = function(datasetID, siteValue, threshold){
   # Get data:
-  propOcc = subset(propOccFun(dataset), site == siteValue)$propOcc
-  siteSummary = subset(siteSummaryFun(dataset), site == siteValue)
+  dataList = getDataList(datasetID)
+  
+  propOcc = subset(dataList[[1]], site == siteValue)$propOcc
+  siteSummary = subset(dataList[[2]], site == siteValue)$propOcc
   siteMetadata = subset(metadata, )
   
   d = occProp[as.character(occProp$site) == site,]
