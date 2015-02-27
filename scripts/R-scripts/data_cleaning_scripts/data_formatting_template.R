@@ -366,8 +366,6 @@ dataset$date = getYear(dataset$date)
 
 names(dataset)[3] = 'year'
 
-# !GIT-ADD-COMMIT-PUSH AND DESCRIBE ANY TEMPORAL GRAIN DECISIONS!
-
 #-------------------------------------------------------------------------------*
 # ---- SITE DATA ----
 #===============================================================================*
