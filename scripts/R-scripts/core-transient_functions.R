@@ -164,6 +164,15 @@ bimodality = function(propOcc_or_RandomPropOcc){
 
 # Random sample of occurences for a given site (to be used in randomization, below):
 
+randomOccsFun = function(){
+  # Generate a table (data frame) of occProps and frequencies:
+  occPropTable = data.frame(table(propOcc))
+  # Create a data frame of possible occProps:
+  occPropDummyTable = data.frame(propOcc = seq(1/nTime, 1, length = nTime))
+  # Merge the two data frames:
+  t2 = merge(occPropTable, occPropDummyTable, all.x = T)
+}
+
 random.occs = function(site){
   nt = nTime[as.character(nTime$site) == site,'nt']
   occs = occProp[as.character(occProp$site) == site,'occ']
