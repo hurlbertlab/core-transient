@@ -130,9 +130,33 @@ p1 = subset(l1$propOcc, site == 1)$propOcc
 
 head(p1)
 
-bimodality = function(site) {
-  nTime = subset(siteSummaryFun(dataset), site = site)$nTime
-  occs = propOcc$propOcc
+summaryStatsFun = function(datasetID, threshold){
+  # Get data:
+  dataList = getDataList(datasetID)
+  sites  = dataList$siteSummary$site
+  # Get summary stats for each site:
+  outList = list(length = length(sites))
+  for(i in 1:length(sites)){
+    propOcc = subset(dataList$propOcc, site == sites[i])$propOcc
+    siteSummary = subset(dataList$siteSummary, site == sites[i])
+    nTime = siteSummary$nTime
+    spRichTotal = siteSummary$spRich
+    spRichCore = length(propOcc[propOcc >= 1 - threshold])
+    spRichTrans = length(propOcc[propOcc <= threshold])
+    propCore = spRichCore/spRichTotal
+    propTrans = spRichTrans/spRichTotal
+    mu = mean(propOcc)
+    bimodality = bimodality(propOcc)
+    outList[[i]] = data.frame(datasetID, site = sites[i],
+                              system = dataList$system, taxa = dataList$taxa,
+                              nTime, spRichTotal, spRichCore, spRichTrans,
+                              propCore, propTrans, mu, bimodality)
+  }
+  return(rbind.fill(outList))
+}
+
+bimodality = function(propOcc_or_RandomPropOcc){
+  occs = propOcc_or_RandomPropOcc
   maxvar = var(c(rep(1/nTime,floor(length(occs)/2)),
                  rep(1,ceiling(length(occs)/2))))
   return(var(occs)/maxvar)
