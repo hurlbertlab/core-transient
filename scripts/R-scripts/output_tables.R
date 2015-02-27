@@ -21,8 +21,6 @@ occPropList = paste('data/propOcc_datasets/',
 siteSummaryList = paste('data/siteSummaries/',
                     list.files('data/siteSummaries'), sep ='')
 
-metadata = read.csv('data_source_table.csv')
-
 #----------------------------------------------------------------------------------*
 # ---- Sampling summary ----
 #==================================================================================*
