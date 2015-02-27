@@ -252,76 +252,14 @@ We have now formatted the dataset to the finest possible spatial and temporal gr
 
 ### Temporal data:
 
-Because it's often considerably more straightforward, we'll start with the temporal data. Here, our goal is to determine what the sampling interval was for a given site, determine whether the sampling interval meets the needs of our study and convert the date column to a numeric "year" field. Sampling intervals of less than a year are provided as decimal years (e.g., if data were collected monthly, January of 2015 might be coded as 2015.0, whereas December might be coded as 2015.92). Importantly, this numeric value is simply used to differentiate between sampling periods -- the number itself really doesn't matter much.
+We start by extracting year from the dataset. Year are our default temporal grain. Decisions for finer temporal grains may be decided at a later date. This process involves changing the date column to year (uses a custom function in the core-transient_functions.R file) and then renaming the column to "year".
 
-As an example, we'll look at dataset 223, in which sites were sampled at fall and winter time intervals but reported as the day they were sampled. Again, looking at the metadata is very important to determine the sampling interval. We'll use dataset 223 as an example throughout this section. If you're following along with this we must first make sure to set-up:
+	```
+	dataset$date = getYear(dataset$date)
 
-```
-library(stringr)
-library(plyr)
+	names(dataset)[3] = 'year'
 
-source('scripts/R-scripts/core-transient_functions.R')
-
-dataset = read.csv("data/formatted_datasets/dataset_223.csv")
-```
-
-Start by exploring the date field:
-
-```
-class(dataset$date)
-
-head(dataset$date)
-```
-
-To separate the date into two seasons, we'll extract the month, convert the field to numeric, and then explore the data.
-
-```
-month = as.numeric(format(dataset$date, '%m'))
-
-head(month)
-
-summary(month)
-
-unique(month)
-```
-
-To make the "season" values (recalling that it is the separate sampling occasions that matter rather than the month per se, we'll use an ifelse statement that separates the sampling occasions:
-
-```
-season = ifelse(month < 7, .25, .75)
-```
-
-Next, we'll extract year from the date and add the two columns to get a decimal date:
-
-```
-year = as.numeric(format(dataset$date, '%Y'))
-
-yearSeason = year + season
-```
-
-And change the date in the dataset to our new decimal date format and then rename the column year:
-
-```
-dataset1 = dataset
-
-dataset1$date = yearSeason
-
-names(dataset1)[3] = 'year'
-```
-Finally, we will summarize the dataset to the new temporal grain, summarizing the maximum count for a given site and sampling period. Explore the data to ensure that the values are correct then reassign the name dataset once you're sure:
-
-```
-dataset2 = ddply(dataset1, .(datasetID, site, year, species), 
-                 summarize, count = max(count))
-
-dim(dataset2)      
-
-head(dataset2)
-
-summary(dataset2)
-
-dataset = dataset2
-```
+	```
 
 ### Site data:
 
