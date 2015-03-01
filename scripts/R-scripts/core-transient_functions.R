@@ -132,7 +132,7 @@ p1 = subset(l1$propOcc, site == 1)$propOcc
 
 head(p1)
 
-summaryStatsFun = function(datasetID, threshold){
+summaryStatsFun = function(datasetID, threshold, reps){
   # Get data:
   dataList = getDataList(datasetID)
   sites  = dataList$siteSummary$site
@@ -148,16 +148,17 @@ summaryStatsFun = function(datasetID, threshold){
     propCore = spRichCore/spRichTotal
     propTrans = spRichTrans/spRichTotal
     mu = mean(propOcc)
-    bimodality = bimodality(propOcc, nTime)
+    bimodality = bimodalityFun(propOcc, nTime)
+    pBimodal = pBimodalFun(propOcc, nTime, reps)
     outList[[i]] = data.frame(datasetID, site = sites[i],
                               system = dataList$system, taxa = dataList$taxa,
                               nTime, spRichTotal, spRichCore, spRichTrans,
-                              propCore, propTrans, mu, bimodality)
+                              propCore, propTrans, mu, bimodality, pBimodal)
   }
   return(rbind.fill(outList))
 }
 
-bimodality = function(propOcc_or_RandomPropOcc, nTime){
+bimodalityFun = function(propOcc_or_RandomPropOcc, nTime){
   occs = propOcc_or_RandomPropOcc
   maxvar = var(c(rep(1/nTime,floor(length(occs)/2)),
                  rep(1,ceiling(length(occs)/2))))
@@ -183,17 +184,16 @@ randomOccsFun = function(propOcc, nTime){
 
 # Randomization test for bimodality:
 
-p.bimodal = function(site, reps){
-  nt = nTime[as.character(nTime$site) == site,'nt']
-  actual.bimod = bimodality(occProp[as.character(occProp$site) == site,'occ'], site)
+pBimodalFun = function(propOcc,nTime, reps){
+  actualBimod = bimodalityFun(propOcc, nTime)
   # For loop to get random bimodality values
-  r.bimod = numeric(length = reps)
+  randomBimod = numeric(length = reps)
   for (i in 1:reps){
-    r.bimod[i] = bimodality(random.occs(site), site)
+    randomBimod[i] = bimodalityFun(randomOccsFun(propOcc, nTime), nTime)
   }
   # Calculate the p-value (proportion of sites with higher bimodality than the
   # actual bimodality value):
-  sum(r.bimod >= actual.bimod)/(reps + 1)
+  sum(randomBimod >= actualBimod)/(reps + 1)
 }
 
 #----------------------------------------------------------------------------------*
