@@ -126,7 +126,7 @@ getDataList = function(datasetID){
 l1 = getDataList(238)
 test = summaryStatsFun(238, 1/3)
 
-nTime = subset(test$siteSummary, site == 1)$nTime
+nt = subset(test$siteSummary, site == 1)$nTime
 t1 = test[test$site == 1,]
 p1 = subset(l1$propOcc, site == 1)$propOcc
 
@@ -148,7 +148,7 @@ summaryStatsFun = function(datasetID, threshold){
     propCore = spRichCore/spRichTotal
     propTrans = spRichTrans/spRichTotal
     mu = mean(propOcc)
-    bimodality = bimodality(propOcc)
+    bimodality = bimodality(propOcc, nTime)
     outList[[i]] = data.frame(datasetID, site = sites[i],
                               system = dataList$system, taxa = dataList$taxa,
                               nTime, spRichTotal, spRichCore, spRichTrans,
@@ -157,7 +157,7 @@ summaryStatsFun = function(datasetID, threshold){
   return(rbind.fill(outList))
 }
 
-bimodality = function(propOcc_or_RandomPropOcc){
+bimodality = function(propOcc_or_RandomPropOcc, nTime){
   occs = propOcc_or_RandomPropOcc
   maxvar = var(c(rep(1/nTime,floor(length(occs)/2)),
                  rep(1,ceiling(length(occs)/2))))
@@ -166,7 +166,7 @@ bimodality = function(propOcc_or_RandomPropOcc){
 
 # Random sample of occurences for a given site (to be used in randomization, below):
 
-randomOccsFun = function(){
+randomOccsFun = function(propOcc, nTime){
   # Generate a table (data frame) of occProps and frequencies:
   occPropTable = data.frame(table(propOcc))
   # Create a data frame of possible occProps:
