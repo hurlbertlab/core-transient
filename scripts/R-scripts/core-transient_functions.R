@@ -125,6 +125,8 @@ getDataList = function(datasetID){
 
 l1 = getDataList(238)
 test = summaryStatsFun(238, 1/3)
+
+nTime = subset(test$siteSummary, site == 1)$nTime
 t1 = test[test$site == 1,]
 p1 = subset(l1$propOcc, site == 1)$propOcc
 
@@ -168,24 +170,15 @@ randomOccsFun = function(){
   # Generate a table (data frame) of occProps and frequencies:
   occPropTable = data.frame(table(propOcc))
   # Create a data frame of possible occProps:
-  occPropDummyTable = data.frame(propOcc = seq(1/nTime, 1, length = nTime))
+  occPropDummyTable = data.frame(propOcc = seq(1/nTime, 1, by = 1/nTime))
   # Merge the two data frames:
-  t2 = merge(occPropTable, occPropDummyTable, all.x = T)
-}
-
-random.occs = function(site){
-  nt = nTime[as.character(nTime$site) == site,'nt']
-  occs = occProp[as.character(occProp$site) == site,'occ']
-  t1 = data.frame(table(occs))                      # Occurence prop and frequency
-  occ = data.frame(occs = seq(1/nt, 1, length = nt)) # Possible occurence props
-  t2 = merge(occ, t1, all.x = T)  # Occurence by possible proportions
-  t2[is.na(t2[,2]),2]<-0                            # Replace NA's with zeros
+  combinedTable = merge(occPropDummyTable, occPropTable, all.x = T)
+  combinedTable[is.na(combinedTable[,2]),2]<-0                            # Replace NA's with zeros
   # Reassign bin values randomly and add to frame:
-  new.freq = sample(t2$Freq, length(t2[,1]))
-  t3 = data.frame(t2[,1], new.freq)
-  # Create new occurence vector:
-  r.occs=unlist(apply(t3, 1, function(x) rep(x[1], x[2])))
-  return(as.vector(r.occs))
+  newFreq = sample(combinedTable$Freq, length(combinedTable[,1]))
+  randomTable = data.frame(combinedTable[,1], newFreq)
+  randomOccs=unlist(apply(randomTable, 1, function(x) rep(x[1], x[2])))
+  return(as.vector(randomOccs))
 }
 
 # Randomization test for bimodality:
