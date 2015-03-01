@@ -205,8 +205,8 @@ pBimodalFun = function(propOcc,nTime, reps){
 # Note: See supplemental at
 # http://supp.apa.org/psycarticles/supplemental/met_11_1_54/met_11_1_54_supp.html
 
-occs.scaled = function(site){
-  x = occProp[as.character(occProp$site) == site,'occ']
+occsScaledFun = function(occProp){
+  x = occProp# [as.character(occProp$site) == site,'occ']
   n = length(x)
   s = .5
   (x*(n-1)+s)/n
@@ -214,9 +214,9 @@ occs.scaled = function(site){
 
 # Fit beta distribution:
 
-fitBeta = function(site) {
-  if (bimodality(occProp[as.character(occProp$site) == site,'occ'], site)!= 0)
-  {occs  = occs.scaled(site)
+fitBeta = function(occProp) {
+  if (bimodalityFun(occProp,nTime)!= 0)
+  {occs  = occsScaledFun(occProp)
   shape.params = suppressWarnings(fitdistr(occs, "beta",
                                   list(shape1 = 2, shape2 = 2)))
   return(as.vector(shape.params$estimate))
