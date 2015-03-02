@@ -159,26 +159,35 @@ summary(d)
 
 write.csv(d, "data/formatted_datasets/dataset_173.csv", row.names = F)
 
-#-------------------------------------------------------------------------------*
-# ---- EXPLORE YOUR DATASET SUMMARY INFO AND UPDATE THE DATA SOURCE TABLE  ----
+################################################################################*
+# ---- END CREATION OF FORMATTED DATA FRAME ----
+################################################################################*
+library(stringr)
+library(plyr)
+
+source('scripts/R-scripts/core-transient_functions.R')
+
+d = read.csv("data/formatted_datasets/dataset_173.csv")
+
+head(d)
+
+#===============================================================================*
+# ---- MAKE PROPORTIONAL OCCUPANCY AND DATA SUMMARY FRAMES ----
 #===============================================================================*
 
-# !!!At this point, go to the data source table and provide:
-#   -central lat and lon (if available, if so, LatLonFLAG = 0, if you couldn't do
-#    it, add a flag of 1)
-#   -spatial_grain columns (T through W)
-#   -nRecs, nSites, nTime, nSpecies
-#   -temporal_grain columns (AH to AK)
-#   -Start and end year
-#   -Any necessary notes
-#   -flag any issues and put issue on github
-#   -git-add-commit-push data_source_table.csv
+#-------------------------------------------------------------------------------*
+# ---- TIME DATA ----
+#===============================================================================*
+# Year is default temporal grain size
 
-dim(d)
+# change date column to factor
+d$date = factor(as.character(d$date))
+class(d$date)
 
-length(unique(d$site))
+# Temporal grain for this dataset is already year
 
-summary(d$date)
-length(unique(d$date))
+# Change column name:
 
-length(unique(d$species))
+names(d)[3] = 'year'
+head(d, 30)
+
