@@ -191,3 +191,54 @@ class(d$date)
 names(d)[3] = 'year'
 head(d, 30)
 
+#-------------------------------------------------------------------------------*
+# ---- SITE DATA ----
+#===============================================================================*
+
+# How many sites are there?
+length(unique(d$site))
+  # 758 unique sites, so likely several with low number of records
+
+# How many species and time samples per site
+siteTable = ddply(d, .(site), summarize, nyear= length(unique(year)), 
+                  nsp = length(unique(species)))
+head(siteTable, 20)
+tail(siteTable)
+summary(siteTable)
+
+# All sites have only 1 time sample and several have less than 10 spp
+# Need to expand the scope of each site 
+# Look at all sites to find consistencies across all data
+
+unique(d$site)
+
+# All sites are listed by given name, and most followed by numeric 
+# (2-4 digits) site name as well. All words and numeric indicators are
+# separated by underscores.
+
+# After looking through all site names, the ones that appear several times
+# are the ones that have different numeric indicators at the end of the name.
+# So a good way to expand the scope would be to substring the last 4 characters
+# of the sites to remove numbers and get just the names.
+
+site1 = str_sub(site, end = -4)
+head(site1, 30)
+head(site, 30)
+tail(site1, 30)
+# There were 2 spaces after the numbers in sites, so remove 2 more characters
+site1 = str_sub(site, end = -6)
+head(site1, 50)
+
+# it worked, now plug new sites into dataset
+d1 = d
+d1$site = site1
+head(d1, 20)
+
+# Now check siteTable for year and species sample sizes per site
+siteTable = ddply(d1, .(site), summarize, nyear = length(unique(year)),
+                                          nsp = length(unique(species)))
+head(siteTable, 20)
+head(siteTable[order(siteTable$nyear),], 30)
+tail(siteTable[order(siteTable$nyear),], 30)
+length(unique(site1))
+
