@@ -237,17 +237,17 @@ modeProp = function(propOcc, mode, threshold) {
 # Randomization test for a given mode (is the proportion of samples in core or
 # transient greater than we would expect by random chance):
 
-p.mode = function(site, mode, reps){
-    actual.prop = modeProp(occProp[as.character(occProp$site) == site,'occ'], mode)
+pModeFun = function(propOcc, nTime, mode, threshold, reps){
+    actualProp = modeProp(propOcc, mode, threshold)
   # For loop to get random frequncies in the mode:
-    r.props = numeric(length = reps)
+    randomProps = numeric(length = reps)
     for (i in 1:reps){
-      r.props[i] = mode.prop(random.occs(site), mode)
+      randomProps[i] = modeProp(randomOccsFun(propOcc, nTime), mode, threshold)
     }
   # Calculate the p-value (proportion of sites with higher frequency than the
   # actual bimodality value):
-  p.mode = sum(r.props >= actual.prop)/(reps + 1)
-  return(data.frame(actual.prop, p.mode))
+  pMode = sum(randomProps >= actualProp)/(reps + 1)
+  return(data.frame(actualProp, pMode))
 }
 
 mode.summary = function(site, reps){
