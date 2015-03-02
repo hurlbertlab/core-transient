@@ -100,21 +100,20 @@ head(dataset)
 # https://knb.ecoinformatics.org/#view/doi:10.5063/AA/mcolunga60.3.2
 
 # My reading of this is that the entire study site was divided into 6 blocks
-# and in each block there were 7 different 1-ha plots each receiving a different
-# cropping system treatment ('Treatment', which in addition to 'T1' thru 'T7'
-# also includes 'DF', 'CF', and 'SF' which I am unclear on). Within each plot 
-# there are 5 permanent trap locations. 
+# ('Replicate', I think) and in each block there were 7 different 1-ha plots 
+# each receiving a different cropping system treatment ('Treatment', which 
+# in addition to 'T1' thru 'T7' also includes 'DF', 'CF', and 'SF' which I am 
+# unclear on). Within each plot there are 5 permanent trap locations. 
 
+# The spatial grain of analysis probably shouldn't be an individual sticky
+# trap location. Possibly the grain could be the plot (a set of 5 trap locations)
+# which would be the concatenation of Treatment and Replicate fields, or it 
+# could be the entire block of 7 different treatments (i.e., just the Replicate
+# field).
 
-# We can see that sites are broken up into (potentially) 5 fields. Find the 
-# metadata link in the data source table use that link to determine how
-# sites are characterized.
-#  -- If sampling is nested (e.g., site, block, treatment, plot, quad as in 
-# this study), use each of the identifying fields and separate each field with
-# an underscore.
-# -- If sites are listed as lats and longs, use the finest available grain 
-# and separate lat and long fields with an underscore.
-# -- If the site definition is clear, make a new site column as necessary.
+# As I can't find more detailed info at present, it seems that the 'DF', 'CF',
+# and 'SF' treatments should be excluded.
+
 
 # Here, we will concatenate all of the potential fields that describe the 
 # site:
