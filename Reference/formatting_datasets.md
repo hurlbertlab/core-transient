@@ -25,7 +25,7 @@ Below are the steps that you should take when exploring and formatting datasets.
 
 3. Open up the _data_formatting_template.R_ (located in _/~core-transient/scripts/R-scripts/data_cleaning_scripts_) script in RStudio.Following and modifying this script will also ensure that all of our scripts are in similar format and are thus easier to follow.Save your script with the naming convention dwork_[datasetID]_[your initials].R and **git add-commit-push**.
 
-4. Read in a raw data file, for example: `read.csv('data/raw_datasets/dataset_223.csv`
+4. Read in a raw data file, for example: `read.csv('data/raw_datasets/dataset_223.csv')`
 
 5. Explore! When you first load a dataset into R, take some time to explore the data. Common R commands that should be used whenever you start formatting a new dataset include: 
 
