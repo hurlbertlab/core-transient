@@ -19,23 +19,23 @@ getwd()
 
 list.files('data/raw_datasets')
 
-d = read.csv('data/raw_datasets/dataset_210.csv')
+dataset = read.csv('data/raw_datasets/dataset_210.csv')
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE THE DATASET ----
 #===============================================================================*
 
-head(d)
-dim(d)
-str(d)
+head(dataset)
+dim(dataset)
+str(dataset)
 
 # Remove columns not needed
-d1 = d[,-c(1,2,6,7,8,9)]
-head(d1)
-summary(d1)
+dataset1 = dataset[,-c(1,2,6,7,8,9)]
+head(dataset1)
+summary(dataset1)
 
-# Revert back to d
-d = d1
+# Revert back to dataset
+dataset = dataset1
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SITE DATA ----
@@ -43,42 +43,42 @@ d = d1
 
 # 2 different fields associated with site data: "field" and "plot"
 # Explore
-class(d$field)
-class(d$plot)
-unique(d$field)
-unique(d$plot)
+class(dataset$field)
+class(dataset$plot)
+unique(dataset$field)
+unique(dataset$plot)
 
 # After checking for data to remove, there is none, so no removals
 # Change plot to factor
-d1 = d
-d1$plot = factor(d1$plot)
-levels(d$plot)
+dataset1 = dataset
+dataset1$plot = factor(dataset1$plot)
+levels(dataset$plot)
 
 # Concatenate the two site columns to create new 'site' column
-d1$site = paste(d1$field, d1$plot, sep = '_')
-head(d1)
-unique(d1$site)
+dataset1$site = paste(dataset1$field, dataset1$plot, sep = '_')
+head(dataset1)
+unique(dataset1$site)
 
-# All looks good, so remove old site columns and change back to d
-d = d1[,-c(2,3)]
-head(d)
+# All looks goodataset, so remove old site columns and change back to dataset
+dataset = dataset1[,-c(2,3)]
+head(dataset)
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SPECIES DATA ----
 #===============================================================================*
 # explore
-class(d$species)
-length(unique(d$species))
+class(dataset$species)
+length(unique(dataset$species))
 #  259 unique species names
 
 # Capitalize all to check for any case errors
-sp = toupper(d$species)
+sp = toupper(dataset$species)
 length(unique(sp))
 
   # No case errors, so use original species column
 
 # Look through unique species to find unwanted species names
-levels(d$species)
+levels(dataset$species)
 
 # Several species names to be removed
 badsp = c("Miscellaneous forb", "Miscellaneous grasses", "Miscellaneous grasses 2", "Miscellaneous herb", 
@@ -87,85 +87,85 @@ badsp = c("Miscellaneous forb", "Miscellaneous grasses", "Miscellaneous grasses 
           "Pine needles")
 
 # Remove species
-d1 = d[!d$species %in% badsp,]
-length(unique(d1$species))
-unique(d1$species)
+dataset1 = dataset[!dataset$species %in% badsp,]
+length(unique(dataset1$species))
+unique(dataset1$species)
 
 # Check nrows
-nrow(d)
-nrow(d1)
+nrow(dataset)
+nrow(dataset1)
 
-d = d1
+dataset = dataset1
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT TIME DATA ----
 #===============================================================================*
 # Explore
-head(d)
+head(dataset)
   # Time listed by year
-class(d$year)
+class(dataset$year)
 
   # Change from integer to factor
-d$year = factor(d$year)
-class(d$year)
-head(d)
-unique(d$year)
+dataset$year = factor(dataset$year)
+class(dataset$year)
+head(dataset)
+unique(dataset$year)
 
 # Change name to 'date'
-names(d)[1] = 'date'
+names(dataset)[1] = 'date'
 
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT COUNT DATA ----
 #===============================================================================*
 # Explore
-length(unique(d$biomass))
-str(d)
-summary(d$biomass)
+length(unique(dataset$biomass))
+str(dataset)
+summary(dataset$biomass)
 
 # Subset to remove zeros 
-d1 = subset(d, biomass > 0)
-dim(d1)
-dim(d)
+dataset1 = subset(dataset, biomass > 0)
+dim(dataset1)
+dim(dataset)
 
 # Remove na's
-d1 = na.omit(d1)
-dim(d1)
+dataset1 = na.omit(dataset1)
+dim(dataset1)
 
-summary(d1$biomass)
+summary(dataset1$biomass)
 
 # Change name of column from biomass to count
-names(d1)
-names(d1)[3] = 'count'
-head(d1, 20)
+names(dataset1)
+names(dataset1)[3] = 'count'
+head(dataset1, 20)
 
-# Revert back to d
-d = d1
+# Revert back to dataset
+dataset = dataset1
 
-summary(d)
+summary(dataset)
 
 #-------------------------------------------------------------------------------*
 # ---- MAKE DATA FRAME OF COUNT BY SITES, SPECIES, AND YEAR ----
 #===============================================================================*
-# Add datasetID column
-d$datasetID = rep(210, nrow(d))
-head(d)
+# Add dataset datasetID column
+dataset$datasetID = rep(210, nrow(dataset))
+head(dataset)
 
 # check class of each row
-str(d)
+str(dataset)
 
 # Make the compiled dataframe
-d1 = ddply(d, .(datasetID, site, date, species), summarize, count = max(count))
-summary(d1)
-head(d1, 50)
+dataset1 = ddply(dataset, .(datasetID, site, date, species), summarize, count = max(count))
+summary(dataset1)
+head(dataset1, 50)
 
-d = d1
+dataset = dataset1
 #-------------------------------------------------------------------------------*
 # ---- WRITE OUTPUT DATA FRAMES  ----
 #===============================================================================*
 # All looks good so write csv to data submodule
 
-write.csv(d, 'data/formatted_datasets/dataset_210.csv', row.names = F)
+write.csv(dataset, 'data/formatted_datasets/dataset_210.csv', row.names = F)
 
 
 ################################################################################*
@@ -177,7 +177,7 @@ library(plyr)
 
 source('scripts/R-scripts/core-transient_functions.R')
 
-d = read.csv("data/formatted_datasets/dataset_210.csv")
+dataset = read.csv("data/formatted_datasets/dataset_210.csv")
 
 #===============================================================================*
 # ---- MAKE PROPORTIONAL OCCUPANCY AND DATA SUMMARY FRAMES ----
@@ -187,25 +187,25 @@ d = read.csv("data/formatted_datasets/dataset_210.csv")
 # ---- TIME DATA ----
 #===============================================================================*
 # Explore again
-class(d$date)
-summary(d$date)
-unique(d$date)
+class(dataset$date)
+summary(dataset$date)
+unique(dataset$date)
 
 # Temporal scale is yearly, so no changes need to be made
 
 # Change to 'year'
-names(d)[3] = 'year'
+names(dataset)[3] = 'year'
 
 #-------------------------------------------------------------------------------*
 # ---- SITE DATA ----
 #===============================================================================*
 # Explore
-length(unique(d$site))
-summary(d$site)
-head(d, 30)
+length(unique(dataset$site))
+summary(dataset$site)
+head(dataset, 30)
 
 # See how many time and species records per site
-siteTable = ddply(d, .(site), summarize,
+siteTable = ddply(dataset, .(site), summarize,
                   nYear = length(unique(year)),
                   nSp = length(unique(species)))
 
@@ -221,18 +221,18 @@ head(siteTable[order(siteTable$nYear),], 10)
 
   # Sufficient time samples per site
 
-# Double check for bad sites
-badSites = subset(siteSummaryFun(d), spRich < 10 | nTime < 5)$site
+# datasetouble check for bad sites
+badSites = subset(siteSummaryFun(dataset), spRich < 10 | nTime < 5)$site
 length(badSites)
   # Length of badsites is 0, so no bad sites to remove
 
-# Nothing changed, but rewrite the cleaned dataframe
-d1 = ddply(d, .(datasetID, site, year, species), summarize, count = max(count))
+# Nothing changed, but rewrite the cleanedataset dataframe
+dataset1 = ddply(dataset, .(datasetID, site, year, species), summarize, count = max(count))
 
-head(d1)
-summary(d1)
+head(dataset1)
+summary(dataset1)
 
-d = d1
+dataset = dataset1
 
 #-------------------------------------------------------------------------------*
 # ---- WRITE OUTPUT DATA FRAMES  ----
@@ -240,13 +240,11 @@ d = d1
 
 # Make proportional occurence data frame:
 
-write.csv(propOccFun(d), "data/propOcc_datasets/propOcc_210.csv", row.names = F)
-
-# !GIT-ADD-COMMIT-PUSH propOcc!
+write.csv(propOccFun(dataset), "data/propOcc_datasets/propOcc_210.csv", row.names = F)
 
 # write site summary dataset:
 
-write.csv(siteSummaryFun(d), 'data/siteSummaries/siteSummary_210.csv', row.names = F)
+write.csv(siteSummaryFun(dataset), 'data/siteSummaries/siteSummary_210.csv', row.names = F)
 
 # Committed and pushed to both data submodule and core-trans git folder
 
