@@ -17,7 +17,7 @@ datasetID | site | species | date | count
 01 | d01_Treatment2PlotB | Gallinula_chloropus | 1928 | 2
 
 
-Below are the steps that you should take when exploring and formatting datasets. These steps should be followed in the order that they’re presented.  _**IMPORTANT**: throughout this process, if there are any problems that keep you from successfully formatting a dataset, add an asterisk to the “flag” column of the data_source_table, git-add-commit-pull the data_source_table, and **add an issue to GitHub** (assigning the issue to me)._
+Below are the steps that you should take when exploring and formatting datasets. These steps should be followed in the order that they’re presented.  _**IMPORTANT**: throughout this process, if there are any problems that keep you from successfully formatting a dataset, add an asterisk to the “flag” column of the data_source_table, git-add-commit-push the data_source_table, and **add an issue to GitHub** (assigning the issue to me)._
 
 1. Git pull! Before you begin to work on a dataset, make sure to do a **git pull** to ensure that you’re working on the most up-to-date version of the core-transient folder. Taking a few seconds to do this may end up saving you minutes in trying to figure out how to deal with git conflicts if they arise.
 
