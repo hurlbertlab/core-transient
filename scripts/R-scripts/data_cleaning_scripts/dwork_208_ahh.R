@@ -50,16 +50,16 @@ dim(dataset)
 
 str(dataset)
 
-'data.frame':  48443 obs. of  9 variables:
-$ Sample_Date      : Factor w/ 765 levels "1989-05-24","1989-06-07",..: 765 765 765 765 765 765 765 765 765 765 ...
-$ Treatment        : Factor w/ 10 levels "CF","DF","SF",..: 2 10 10 10 2 10 2 10 10 3 ...
-$ Replicate_Station: Factor w/ 30 levels "1_1","1_2","1_3",..: 13 1 26 26 14 11 15 11 11 1 ...
-$ Species          : Factor w/ 22 levels "Adalia bipunctata",..: 18 3 10 9 18 10 18 3 6 18 ...
-$ Family           : Factor w/ 8 levels "","Cantharidae",..: 7 2 4 4 7 4 7 2 4 7 ...
-$ Order            : Factor w/ 5 levels "","Coleoptera",..: 4 2 2 2 4 2 4 2 2 4 ...
-$ Adults           : int  2 1 2 1 4 1 6 1 1 1 ...
-$ location_utm     : Factor w/ 255 levels "(631819.64,4697018.97)",..: 38 85 42 42 39 170 40 170 170 17 ...
-$ Year             : int  2013 2013 2013 2013 2013 2013 2013 2013 2013 2013 ...
+#'data.frame':  48443 obs. of  9 variables:
+#$ Sample_Date      : Factor w/ 765 levels "1989-05-24","1989-06-07",..: 765 765 765 765 765 765 765 765 765 765 ...
+#$ Treatment        : Factor w/ 10 levels "CF","DF","SF",..: 2 10 10 10 2 10 2 10 10 3 ...
+#$ Replicate_Station: Factor w/ 30 levels "1_1","1_2","1_3",..: 13 1 26 26 14 11 15 11 11 1 ...
+#$ Species          : Factor w/ 22 levels "Adalia bipunctata",..: 18 3 10 9 18 10 18 3 6 18 ...
+#$ Family           : Factor w/ 8 levels "","Cantharidae",..: 7 2 4 4 7 4 7 2 4 7 ...
+#$ Order            : Factor w/ 5 levels "","Coleoptera",..: 4 2 2 2 4 2 4 2 2 4 ...
+#$ Adults           : int  2 1 2 1 4 1 6 1 1 1 ...
+#$ location_utm     : Factor w/ 255 levels "(631819.64,4697018.97)",..: 38 85 42 42 39 170 40 170 170 17 ...
+#$ Year             : int  2013 2013 2013 2013 2013 2013 2013 2013 2013 2013 ...
 
 # View first 6 rows of the dataset:
 
@@ -71,9 +71,12 @@ head(dataset)
 
 names(dataset)
 
-dataset1 = dataset[,-c(1,2,8,11,13,14)]
+dataset1 = dataset[, !names(dataset) %in% c("Family", "Order", "location_utm", "Sample_Date")]
 
 head(dataset1)
+
+# Rename fields using standardized names where appropriate
+names(dataset1)[3:5] = c('species', 'count', 'date')
 
 # Because all (and only) the fields we want are present, we can re-assign d1:
 
@@ -130,7 +133,7 @@ dataset1 = dataset
 
 dataset1$site = factor(site)
 
-dataset1 = dataset1[,-c(2:3)]
+dataset1 = dataset1[, !names(dataset1) %in% c("Treatment", "Replicate_Station")]
 
 # Check the new dataset (are the columns as they should be?):
 
@@ -156,39 +159,10 @@ sp = dataset$species
 
 levels(sp) # Note: You can also use unique(sp) here.
 
-# The first thing that I notice is that there are lower and upper case
-# entries. Because R is case-sensitive, this will be coded as separate species.
-# Modify this prior to continuing:
-
-dataset$species = toupper(dataset$species)
-
-# Let's explore whether there was a difference:
-
-length(unique(dataset$species))
-
-length(unique(sp))
-
-# We see that almost 70 species were the result of upper and lower case!
-# Make a new species vector (factor ensures that it is coded as a factor
-# rather than character and removes any unused levels) 
-# and continue exploring:
-
-sp = factor(dataset$species)
-
-levels(sp)
-
 # Now explore the listed species themselves. To do so, you should go back to study's 
-# metadata. A quick look at the metadata is not informative, unfortunately. Because of
-# this, you should really stop here and post an issue on GitHub. With some more thorough
-# digging, however, I've found the names represent "Kartez codes". Several species can
-# be removed (double-checked with USDA plant codes at plants.usda.gov and another Sevilleta
-# study (dataset 254) that provides species names for some codes). Some codes were identified
-# with this pdf from White Sands: 
-# https://nhnm.unm.edu/sites/default/files/nonsensitive/publications/nhnm/U00MUL02NMUS.pdf
+# metadata. 
 
-bad_sp = c('', 'NONE','UK1','UKFO1','UNK1','UNK2','UNK3','LAMIA', 'UNGR1','CACT1','UNK','NONE',
-  'UNK2','UNK3', 'UNK1','FORB7', 'MISSING', '-888', 'DEAD','ERRO2', 'FORB1','FSEED', 'GSEED',
-  'MOSQ', 'SEED','SEEDS1','SEEDS2', 'SEFLF','SESPM','SPOR1')
+bad_sp = c('something else')
 
 dataset1 = dataset[!dataset$species %in% bad_sp,]
 
@@ -196,9 +170,9 @@ dataset1$species = factor(dataset1$species)
 
 # Let's look at how the removal of bad species altered the length of the dataset:
 
-nrow(dataset)
+nrow(dataset) #48443
 
-nrow(dataset1)
+nrow(dataset1) #47854
 
 # Look at the head of the dataset to ensure everything is correct:
 
