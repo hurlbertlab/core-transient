@@ -147,6 +147,85 @@ class(d$date)
 # Write it
 write.csv(d, "data/formatted_datasets/dataset_208.csv", row.names = F)
 
+################################################################################*
+# ---- END CREATION OF FORMATTED DATA FRAME ----
+################################################################################*
+
+library(stringr)
+library(plyr)
+
+getwd()
+setwd('C:/Users/auriemma/core-transient/')
+source('scripts/R-scripts/core-transient_functions.R')
+
+d = read.csv("data/formatted_datasets/dataset_208.csv")
+
+head(d)
+
+#===============================================================================*
+# ---- MAKE PROPORTIONAL OCCUPANCY AND DATA SUMMARY FRAMES ----
+#===============================================================================*
+#-------------------------------------------------------------------------------*
+# ---- TIME DATA ----
+#===============================================================================*
+# Change to temporal grain default of year
+
+# Change date column to year:
+
+d$date = getYear(d$date)
+summary(d)
+head(d)
+
+# Change column name:
+
+names(d)[3] = 'year'
+
+#-------------------------------------------------------------------------------*
+# ---- SITE DATA ----
+#===============================================================================*
+# How many sites are there?
+length(unique(d$site))
+# only 30 different site
+
+# Find time and species sample sizes
+siteTable = ddply(d, .(site), summarize,
+                  nyear = length(unique(year)),
+                  nsp = length(unique(species)))
+# View table
+siteTable
+
+# All sites have adequate sample sizes (>5 Years, >10 species)
+
+# Double check for bad sites
+badSites = subset(siteSummaryFun(d), spRich < 10 | nTime < 5)$site
+length(badSites)
+
+# Length = 0, so no bad sites
+
+# Re-write the dataset summary with new temporal grain (no spacial grain change)
+d1 = ddply(d, .(datasetID, site, year, species), summarize, count = max(count))
+
+dim(d1)
+summary(d1)
+head(d1, 20)
+
+# All good, revert back to d
+d = d1
+
+#-------------------------------------------------------------------------------*
+# ---- WRITE OUTPUT DATA FRAMES  ----
+#===============================================================================*
+
+# Make proportional occurence data frame:
+
+write.csv(propOccFun(d), "data/propOcc_datasets/propOcc_208.csv", row.names = F)
+head(propOccFun(d))
+
+
+# site summary dataset:
+
+write.csv(siteSummaryFun(d), 'data/siteSummaries/siteSummary_208.csv', row.names = F)
+
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE YOUR DATASET SUMMARY INFO AND UPDATE THE DATA SOURCE TABLE  ----
 #===============================================================================*
@@ -162,9 +241,10 @@ write.csv(d, "data/formatted_datasets/dataset_208.csv", row.names = F)
 #   -flag any issues and put issue on github
 #   -git-add-commit-push data_source_table.csv
 
-dim(d)
-length(unique(d$site))
+dim(dataset)
 
-length(unique(d$date))
+length(unique(dataset$site))
 
-length(unique(d$species))
+length(unique(dataset$year))
+
+length(unique(dataset$species))
