@@ -121,18 +121,7 @@ getDataList = function(datasetID){
 # Note 2: To run this function the number of time samples for the site (nt) needs
 # to be specified. This is done so in the wrapper summary table function.
 
-# True bimodality for a given site (or random sample of occurrences at a site)
-# 
-# l1 = getDataList(238)
-# test = summaryStatsFun(238, 1/3)
-# 
-# summaryStatsFun(208, 1/3)
-# 
-# nt = subset(test$siteSummary, site == 1)$nTime
-# t1 = test[test$site == 1,]
-# p1 = subset(l1$propOcc, site == 1)$propOcc
-# 
-# head(p1)
+# Summary stats for all sites in a dataset:
 
 summaryStatsFun = function(datasetID, threshold, reps){
   # Get data:
@@ -252,14 +241,14 @@ pModeFun = function(propOcc, nTime, mode, threshold, reps){
   return(data.frame(actualProp, pMode))
 }
 
-mode.summary = function(site, reps){
+modeSummaryFun = function(site, propOcc, nTime, threshold, reps){
   # Summary stats for core and transient modes:
-    core.prop = p.mode(site, 'core', reps)
-    trans.prop = p.mode(site, 'trans', reps)
- # Bind output into dataframe:
-    df.out = data.frame(site, threshold, cbind(core.prop, trans.prop))
-    names(df.out)[3:6] = c('core.prop', 'coreP','trans.prop','transP')
-    return(df.out)
+    coreProp = pModeFun(propOcc, nTime, 'core', threshold, reps)
+    transProp = pModeFun(propOcc, nTime, 'trans', threshold, reps)
+ # Bind output into data frame:
+    modeSummaryOut = data.frame(site, threshold, cbind(coreProp, transProp))
+    names(modeSummaryOut)[3:6] = c('coreProp', 'corePval','transProp','transPval')
+    return(modeSummaryOut)
 }
 
 #==================================================================================*
@@ -286,6 +275,12 @@ mode.summary = function(site, reps){
 #----------------------------------------------------------------------------------*
 # ---- Function to generate summary of sampling ----
 #==================================================================================*
+
+# 
+# testList = getDataList(238)
+# testSumStats = summaryStatsFun(238, 1/3)
+# testnTime =  subset(testList$siteSummary, site == 1)$nTime
+# testpropOcc = subset(l1$propOcc, site == 1)$propOcc
 
 # The following calculates the summary statistics for each site in a dataset.
 # Summary statistics do not include bimodality measure. 
