@@ -122,15 +122,17 @@ getDataList = function(datasetID){
 # to be specified. This is done so in the wrapper summary table function.
 
 # True bimodality for a given site (or random sample of occurrences at a site)
-
-l1 = getDataList(238)
-test = summaryStatsFun(238, 1/3)
-
-nt = subset(test$siteSummary, site == 1)$nTime
-t1 = test[test$site == 1,]
-p1 = subset(l1$propOcc, site == 1)$propOcc
-
-head(p1)
+# 
+# l1 = getDataList(238)
+# test = summaryStatsFun(238, 1/3)
+# 
+# summaryStatsFun(208, 1/3)
+# 
+# nt = subset(test$siteSummary, site == 1)$nTime
+# t1 = test[test$site == 1,]
+# p1 = subset(l1$propOcc, site == 1)$propOcc
+# 
+# head(p1)
 
 summaryStatsFun = function(datasetID, threshold, reps){
   # Get data:
