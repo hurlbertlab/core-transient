@@ -231,15 +231,16 @@ summary(dataset1)
 
 # All looks good
 dataset = dataset1
+
 #-------------------------------------------------------------------------------*
 # ---- WRITE OUTPUT DATA FRAMES  ----
 #===============================================================================*
-summary(d)
-head(d,20)
+summary(dataset)
+head(dataset,20)
 
 # Write to data submodule
 setwd('C:/Users/auriemma/core-transient/')
-write.csv(d, "data/formatted_datasets/dataset_238.csv", row.names = F)
+write.csv(dataset, "data/formatted_datasets/dataset_238.csv", row.names = F)
 
 
 ################################################################################*
@@ -252,7 +253,7 @@ setwd('C:/Users/auriemma/core-transient/')
 install.packages('gridExtra')
 source('scripts/R-scripts/core-transient_functions.R')
 
-d = read.csv("data/formatted_datasets/dataset_238.csv")
+dataset = read.csv("data/formatted_datasets/dataset_238.csv")
 
 #===============================================================================*
 # ---- MAKE PROPORTIONAL OCCUPANCY AND DATA SUMMARY FRAMES ----
@@ -261,49 +262,13 @@ d = read.csv("data/formatted_datasets/dataset_238.csv")
 #-------------------------------------------------------------------------------*
 # ---- TIME DATA ----
 #===============================================================================*
-head(d, 40)
-length(unique(d$date))
-unique(d$date)
+# change to Year temporal grain
+class(dataset$date)
+dataset$date = getYear(dataset$date)
 
-# Temporal grain is 3 records per year, so turn into decimal years
-# Extract year values:
-  # First need to turn d$date into date object
-d$date = as.Date(d$date)
-year = as.numeric(format(d$date, '%Y'))
-unique(year)
-summary(year)
-
-# Extract month values (if applicable):
-
-month = as.numeric(format(d$date, '%m'))
-head(month)
-summary(month)
-
-# Make months decimals
-dec_month = (month - 1)/12
-unique(dec_month)
-
-# Add dec_month and year to get decimal year
-decimalyear = year + dec_month
-head(decimalyear, 40)
-d$date = decimalyear
-head(d, 40)
-
-# Name column 'year'
-names(d)[3] = 'year'
-head(d)
-
-# Create new dataframe
-d1 = ddply(d, .(datasetID, site, year, species), 
-                 summarize, count = max(count))
-# Explore 
-head(d1)
-summary(d1)
-str(d1)
-str(d)
-
-# all looks good
-d = d1
+# Change column name to year
+names(dataset)[3] = 'year'
+head(dataset)
 
 #-------------------------------------------------------------------------------*
 # ---- SITE DATA ----
@@ -311,17 +276,32 @@ d = d1
 
 # How many sites are there?
 
-length(unique(d$site))
+length(unique(dataset$site))
 
 # How many time and species records are there per site?
 
-siteTable = ddply(d, .(site), summarize, nYear = length(unique(year)),
+siteTable = ddply(dataset, .(site), summarize, nYear = length(unique(year)),
                   nSp = length(unique(species)))
-head(siteTable, 30)
+
+# view table
+siteTable
 
 # 31 time samples per site, and > 30 species per site
 
 # So no problems with site scale in this dataset, no bad sites to remove
+
+# Re-write the dataset summary with new temporal grain (but no new spacial)
+dataset1 = ddply(dataset, .(datasetID, site, year, species), 
+                 summarize, count = max(count))
+head(dataset1)
+summary(dataset1)
+dim(dataset)
+dim(dataset1)
+
+# All looks good after changes
+
+dataset = dataset1
+
 
 #-------------------------------------------------------------------------------*
 # ---- WRITE OUTPUT DATA FRAMES  ----
