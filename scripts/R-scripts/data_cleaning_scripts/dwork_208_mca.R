@@ -219,8 +219,8 @@ d = d1
 # Make proportional occurence data frame:
 
 write.csv(propOccFun(d), "data/propOcc_datasets/propOcc_208.csv", row.names = F)
-head(propOccFun(d))
-
+head(propOccFun(d), 10)
+head(d, 10)
 
 # site summary dataset:
 
