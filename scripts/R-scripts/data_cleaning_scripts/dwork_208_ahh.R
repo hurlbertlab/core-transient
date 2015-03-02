@@ -71,12 +71,12 @@ head(dataset)
 
 names(dataset)
 
-dataset1 = dataset[, !names(dataset) %in% c("Family", "Order", "location_utm", "Sample_Date")]
+dataset1 = dataset[, !names(dataset) %in% c("Family", "Order", "location_utm")]
 
 head(dataset1)
 
 # Rename fields using standardized names where appropriate
-names(dataset1)[3:5] = c('species', 'count', 'date')
+names(dataset1)[names(dataset1) %in% c('Species', 'Adults', 'Year')] = c('species', 'count', 'date')
 
 # Because all (and only) the fields we want are present, we can re-assign d1:
 
@@ -95,6 +95,16 @@ summary(dataset)
 # Reminder of the dataset:
 
 head(dataset)
+
+# I found a description of the spatial data collection available here:
+# https://knb.ecoinformatics.org/#view/doi:10.5063/AA/mcolunga60.3.2
+
+# My reading of this is that the entire study site was divided into 6 blocks
+# and in each block there were 7 different 1-ha plots each receiving a different
+# cropping system treatment ('Treatment', which in addition to 'T1' thru 'T7'
+# also includes 'DF', 'CF', and 'SF' which I am unclear on). Within each plot 
+# there are 5 permanent trap locations. 
+
 
 # We can see that sites are broken up into (potentially) 5 fields. Find the 
 # metadata link in the data source table use that link to determine how
@@ -189,12 +199,24 @@ dataset = dataset1
 #===============================================================================*
 # Here, we need to extract the sampling dates. 
 
-# For starters, let's change the date column to a true date (and give the darned
-# column a better name:
+# For starters, let's make sure that the number of sampling events per site
+# within a year does not change systematically across years.
 
 head(dataset)
+uniqSiteDate = unique(dataset[, c('Sample_Date', 'date', 'site')])
+samplingPerSiteYear = data.frame(table(uniqSiteDate[, c('date', 'site')]))
+samplingPerSiteYear = samplingPerSiteYear[samplingPerSiteYear$Freq != 0, ]
+meanSamplingPerYear = aggregate(samplingPerSiteYear$Freq, 
+                                by = list(samplingPerSiteYear$date), mean)
+plot(as.numeric(as.character(samplingPerSiteYear$date)), 
+    samplingPerSiteYear$Freq, xlab = 'Year', 
+    ylab = 'Mean sampling events per site')
+points(as.numeric(as.character(meanSamplingPerYear$Group.1)),
+       meanSamplingPerYear$x, type = 'l', lwd = 3)
 
-date = strptime(dataset$record_record_date, '%m/%d/%Y')
+# There is some interannual variation in sampling intensity, and a weak trend
+# in recent years towards more sampling events per year.
+
 
 # A check on the structure lets you know that date field is now a date object:
 
