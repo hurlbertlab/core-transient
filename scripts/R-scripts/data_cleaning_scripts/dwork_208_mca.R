@@ -154,6 +154,8 @@ write.csv(d, "data/formatted_datasets/dataset_208.csv", row.names = F)
 library(stringr)
 library(plyr)
 
+getwd()
+setwd('C:/Users/auriemma/core-transient/')
 source('scripts/R-scripts/core-transient_functions.R')
 
 d = read.csv("data/formatted_datasets/dataset_208.csv")
