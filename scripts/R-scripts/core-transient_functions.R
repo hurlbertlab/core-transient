@@ -121,33 +121,6 @@ getDataList = function(datasetID){
 # Note 2: To run this function the number of time samples for the site (nt) needs
 # to be specified. This is done so in the wrapper summary table function.
 
-# Summary stats for all sites in a dataset:
-
-summaryStatsFun = function(datasetID, threshold, reps){
-  # Get data:
-  dataList = getDataList(datasetID)
-  sites  = dataList$siteSummary$site
-  # Get summary stats for each site:
-  outList = list(length = length(sites))
-  for(i in 1:length(sites)){
-    propOcc = subset(dataList$propOcc, site == sites[i])$propOcc
-    siteSummary = subset(dataList$siteSummary, site == sites[i])
-    nTime = siteSummary$nTime
-    spRichTotal = siteSummary$spRich
-    spRichCore = length(propOcc[propOcc >= 1 - threshold])
-    spRichTrans = length(propOcc[propOcc <= threshold])
-    propCore = spRichCore/spRichTotal
-    propTrans = spRichTrans/spRichTotal
-    mu = mean(propOcc)
-    bimodality = bimodalityFun(propOcc, nTime)
-    pBimodal = pBimodalFun(propOcc, nTime, reps)
-    outList[[i]] = data.frame(datasetID, site = sites[i],
-                              system = dataList$system, taxa = dataList$taxa,
-                              nTime, spRichTotal, spRichCore, spRichTrans,
-                              propCore, propTrans, mu, bimodality, pBimodal)
-  }
-  return(rbind.fill(outList))
-}
 
 bimodalityFun = function(propOcc_or_RandomPropOcc, nTime){
   occs = propOcc_or_RandomPropOcc
@@ -285,7 +258,9 @@ modeSummaryFun = function(site, propOcc, nTime, threshold, reps){
 # The following calculates the summary statistics for each site in a dataset.
 # Summary statistics do not include bimodality measure. 
 
-summaryStatsFun = function(datasetID, threshold){
+# Summary stats for all sites in a dataset:
+
+summaryStatsFun = function(datasetID, threshold, reps){
   # Get data:
   dataList = getDataList(datasetID)
   sites  = dataList$siteSummary$site
@@ -301,10 +276,12 @@ summaryStatsFun = function(datasetID, threshold){
     propCore = spRichCore/spRichTotal
     propTrans = spRichTrans/spRichTotal
     mu = mean(propOcc)
+    bimodality = bimodalityFun(propOcc, nTime)
+    pBimodal = pBimodalFun(propOcc, nTime, reps)
     outList[[i]] = data.frame(datasetID, site = sites[i],
                               system = dataList$system, taxa = dataList$taxa,
                               nTime, spRichTotal, spRichCore, spRichTrans,
-                              propCore, propTrans, mu)
+                              propCore, propTrans, mu, bimodality, pBimodal)
   }
   return(rbind.fill(outList))
 }
@@ -313,7 +290,9 @@ summaryStatsFun = function(datasetID, threshold){
 # ---- Function to generate output summary dataset ----
 #==================================================================================*
 
-ctSummary = function(site, threshold, reps){
+ctSummaryFun = function(site, threshold, reps){
+  # Get data for a given dataset
+    
   # Get data for a given site:
     d = occProp[as.character(occProp$site) == site,]
   # Sampling summary for site:
