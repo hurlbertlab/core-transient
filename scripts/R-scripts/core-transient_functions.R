@@ -229,16 +229,16 @@ fitBeta = function(occProp) {
 
 # Proportion of samples that are core or transient:
 
-mode.prop = function(occs, mode) {
-  if (mode == 'core') length(occs[occs >= 1-threshold])/length(occs)
-    else length(occs[occs <= threshold])/length(occs)
+modeProp = function(propOcc, mode, threshold) {
+  if (mode == 'core') length(propOcc[propOcc >= 1-propOcc])/length(propOcc)
+    else length(propOcc[propOcc <= threshold])/length(propOcc)
 }
 
 # Randomization test for a given mode (is the proportion of samples in core or
 # transient greater than we would expect by random chance):
 
 p.mode = function(site, mode, reps){
-    actual.prop = mode.prop(occProp[as.character(occProp$site) == site,'occ'], mode)
+    actual.prop = modeProp(occProp[as.character(occProp$site) == site,'occ'], mode)
   # For loop to get random frequncies in the mode:
     r.props = numeric(length = reps)
     for (i in 1:reps){
