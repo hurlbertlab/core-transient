@@ -224,7 +224,7 @@ head(propOccFun(d))
 
 # site summary dataset:
 
-write.csv(siteSummaryFun(d), 'data/siteSummaries/siteSummary_208_new.csv', row.names = F)
+write.csv(siteSummaryFun(d), 'data/siteSummaries/siteSummary_208.csv', row.names = F)
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE YOUR DATASET SUMMARY INFO AND UPDATE THE DATA SOURCE TABLE  ----
