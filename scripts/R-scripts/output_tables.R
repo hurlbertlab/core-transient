@@ -44,18 +44,30 @@ siteSummaryList = paste('data/siteSummaries/',
 # ---- Core-transient summary table ----
 #----------------------------------------------------------------------------------*
 
+# Get the summary data for datasets that have already been summarized:
+
+currentSummaryData = read.csv('output/tabular_data/core-transient_summary.csv')
+
+# Create a vector of the already summarized datasets:
+
+currentDatasetIDs = unique(currentSummaryData$datasetID)
+
 # Get a vector of the datset ID's in the propOcc folder:
 
 datasetIDs = as.numeric(sapply(strsplit(occPropList, '\\_|\\.'),'[[',3))
 
+# Subset the ID's to those not already processed:
+
+datasetIDs[!datasetIDs %in% currentDatasetIDs]
 # Generate an empty list for summary table output:
 
 outList = list(length = length(datasetIDs))
 
 # Loop across available propOcc datasets:
+# Note: SummaryStatsFun(datasetID, treshold, reps)
 
 for(i in 1:length(datasetIDs)){
-  outList[[i]] = summaryStatsFun(datasetIDs[i], 1/3, 1)
+  outList[[i]] = summaryStatsFun(datasetIDs[i], 1/3,1)
 }
 
 # Bind list output into a single dataframe:
@@ -64,7 +76,9 @@ summaryStats = rbind.fill(outList)
 
 # Write file:
 
-write.csv(ct, 'output/tabular_data/core-transient_summary.csv', row.names = F)
+write.csv(summaryStats, 'output/tabular_data/core-transient_summary.csv', row.names = F)
+
+test = read.csv('output/tabular_data/core-transient_summary.csv')
 
 ###################################################################################*
 # ---- UPDATED TO THIS POINT ----
