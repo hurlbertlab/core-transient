@@ -10,6 +10,7 @@
 
 library(stringr)
 library(plyr)
+library(lubridate)
 
 # Source the functions file:
 
@@ -111,28 +112,25 @@ head(dataset)
 # could be the entire block of 7 different treatments (i.e., just the Replicate
 # field).
 
+# Here, we use just the Replicate column (i.e., a field with 7+ plots and 5 traps/plot)
+dataset$site = substr(dataset$Replicate_Station,1,1)
+
 # As I can't find more detailed info at present, it seems that the 'DF', 'CF',
 # and 'SF' treatments should be excluded.
 
-
-# Here, we will concatenate all of the potential fields that describe the 
-# site:
-
-head(dataset)
-
-site = paste(dataset$Treatment, dataset$Replicate_Station, sep = '_')
+dataset = dataset[!dataset$Treatment %in% c('DF', 'CF', 'SF'), ]
 
 # Do some quality control by comparing the site fields in the dataset with the 
 # new vector of sites:
 
-head(site)
+head(dataset$site)
 
 # Are these site names equitably represented in the dataset?
 
-hist(table(site))
+hist(table(dataset$site))
 
-# For dataset 208, the majority of sites have between 150-250 rows of data 
-# associated with them, with a nice narrow normal distribution. Seems good.
+# For dataset 208, the 6 sites have between 6854 and 7524 rows of data 
+# associated with them. Seems pretty equitable.
 
 # All looks correct, so replace the site column in the dataset (as a factor) 
 # and remove the unnecessary fields, start by renaming the dataset in case 
@@ -140,7 +138,7 @@ hist(table(site))
 
 dataset1 = dataset
 
-dataset1$site = factor(site)
+dataset1$site = factor(dataset1$site)
 
 dataset1 = dataset1[, !names(dataset1) %in% c("Treatment", "Replicate_Station")]
 
@@ -179,9 +177,9 @@ dataset1$species = factor(dataset1$species)
 
 # Let's look at how the removal of bad species altered the length of the dataset:
 
-nrow(dataset) #48443
+nrow(dataset) #43314
 
-nrow(dataset1) #47854
+nrow(dataset1) #43167
 
 # Look at the head of the dataset to ensure everything is correct:
 
@@ -213,15 +211,45 @@ plot(as.numeric(as.character(samplingPerSiteYear$date)),
 points(as.numeric(as.character(meanSamplingPerYear$Group.1)),
        meanSamplingPerYear$x, type = 'l', lwd = 3)
 
-# There is some interannual variation in sampling intensity, and a weak trend
-# in recent years towards more sampling events per year.
+# There is quite a bit of interannual variation in sampling intensity, 
+# with many more sampling events in 2001-2003. This could bias results 
+# towards more transient species (i.e., presumably there are species 
+# that will only be observed in high sampling years).
 
+# It seems that one reason for this is that in 2001-2003,
+# sampling was conducted over a broader range of dates than in other years.
+dataset$sdate = as.Date(dataset$Sample_Date, "%Y-%m-%d")
+dataset$julianDay = yday(dataset$sdate)
+uniqSiteDay = unique(dataset[, c('julianDay', 'site')])
+daycount = data.frame(table(uniqSiteDay$julianDay))
 
-# A check on the structure lets you know that date field is now a date object:
+plot(as.numeric(as.character(daycount$Var1)), daycount$Freq, xlab = "Julian Day", 
+     ylab = "Sampling Events")
 
-class(dataset$record_record_date)
+# One simple course of action is to exclude all sampling events prior to
+# ~day 150 (May 30) and after ~day 240 (Aug 31).
 
-class(date)
+dataset1 = dataset[dataset$julianDay >= 150 & dataset$julianDay <=240,]
+
+# Counting the number of sampling events per site and year as above
+# reveals that this has reduced but not fully taken care of the problem.
+# 2001-2003 are being sampled at a higher frequency.
+# In 2002, sampling happened on 61 days over the summer, far more than weekly!
+uniqSiteDate1 = unique(dataset1[, c('Sample_Date', 'date', 'site')])
+samplingPerSiteYear1 = data.frame(table(uniqSiteDate1[, c('date', 'site')]))
+samplingPerSiteYear1 = samplingPerSiteYear1[samplingPerSiteYear1$Freq != 0, ]
+meanSamplingPerYear1 = aggregate(samplingPerSiteYear1$Freq, 
+                                by = list(samplingPerSiteYear1$date), mean)
+plot(as.numeric(as.character(samplingPerSiteYear1$date)), 
+     samplingPerSiteYear1$Freq, xlab = 'Year', 
+     ylab = 'Mean sampling events per site')
+points(as.numeric(as.character(meanSamplingPerYear1$Group.1)),
+       meanSamplingPerYear1$x, type = 'l', lwd = 3)
+
+# Seems like the solution is to only use some constant number of sampling events
+# in each year, evenly spaced over the same range of time (julian days 150-240).
+
+threshold = 12
 
 # Give a double-check, if everything looks okay, then replace the column:
 
@@ -289,7 +317,7 @@ dataset = dataset1
 
 dataset1 = dataset
 
-dataset1$datasetID = rep(223,nrow(dataset1))
+dataset1$datasetID = rep(208,nrow(dataset1))
 
 # Change date to a factor:
 
