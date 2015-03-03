@@ -178,7 +178,7 @@ occsScaledFun = function(occProp){
 
 # Fit beta distribution:
 
-fitBeta = function(occProp) {
+fitBeta = function(occProp, nTime) {
   if (bimodalityFun(occProp,nTime)!= 0)
   {occs  = occsScaledFun(occProp)
   shape.params = suppressWarnings(fitdistr(occs, "beta",
@@ -261,11 +261,14 @@ summaryStatsFun = function(datasetID, threshold, reps){
     mu = mean(propOcc)
     bimodality = bimodalityFun(propOcc, nTime)
     pBimodal = pBimodalFun(propOcc, nTime, reps)
+    betaParms = fitBeta(propOcc, nTime)
+      alpha = betaParms[1]
+      beta = betaParms[2]   
     outList[[i]] = data.frame(datasetID, site = sites[i],
                               system = dataList$system, taxa = dataList$taxa,
                               nTime, spRichTotal, spRichCore, spRichTrans,
                               propCore, propCore_pVal,  propTrans, propTrans_pVal,
-                              mu, bimodality, pBimodal)
+                              mu, bimodality, pBimodal, alpha, beta)
   }
   return(rbind.fill(outList))
 }
