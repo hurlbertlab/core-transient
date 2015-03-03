@@ -11,7 +11,7 @@
 
 # Source functions:
 
-source('scripts/R-Scripts/core-transient_functions.R')
+source('scripts/R-scripts/core-transient_functions.R')
 
 # Get files:
 
@@ -21,78 +21,54 @@ occPropList = paste('data/propOcc_datasets/',
 siteSummaryList = paste('data/siteSummaries/',
                     list.files('data/siteSummaries'), sep ='')
 
-#----------------------------------------------------------------------------------*
-# ---- Sampling summary ----
-#==================================================================================*
-  
-# Calculate the summary statistics (all summary data with the exception of
-# bimodality across sites for sites that meet our sampling criteria). Input is 
-# the core-transient threshold. 
-
-site = unique(occProp$site)
-# site = site[50:51]
-threshold = 1/3
-out.list = list()
-
-for (i in 1:length(site)){
-  out.list[[i]] = summaryStats(site[i], threshold)
-}
-
-ss = rbind.fill(out.list)
+# #----------------------------------------------------------------------------------*
+# # ---- Sampling summary ----
+# #==================================================================================*
+#   
+# # Calculate the summary statistics (all summary data with the exception of
+# # bimodality across sites for sites that meet our sampling criteria). Input is 
+# # the core-transient threshold. 
+# 
+# site = unique(occProp$site)
+# # site = site[50:51]
+# threshold = 1/3
+# out.list = list()
+# 
+# for (i in 1:length(site)){
+#   out.list[[i]] = summaryStats(site[i], threshold)
+# }
+# 
+# ss = rbind.fill(out.list)
 
 #----------------------------------------------------------------------------------*
 # ---- Core-transient summary table ----
 #----------------------------------------------------------------------------------*
-# Input is the cut-ff for core- and transient designation and the number of reps
-# used to calculate the p-value. The proportional dataframe must be loaded into the
-# environment above and the sampling summary code above must be run prior to 
-# running this script.
 
-site = factor(samplingSummary$site)
-threshold = 1/3
-reps = 1000
+# Get a vector of the datset ID's in the propOcc folder:
 
-out.list = list()
+datasetIDs = as.numeric(sapply(strsplit(occPropList, '\\_|\\.'),'[[',3))
 
-for (i in 1:length(site)){
-  tryCatch({
-    out.list[[i]] =  ctSummary(site[i], threshold, reps)
-  }, error=function(e){
-    cat('ERROR for site',site[i],':', conditionMessage(e), '\n')
-    })
+# Generate an empty list for summary table output:
+
+outList = list(length = length(datasetIDs))
+
+# Loop across available propOcc datasets:
+
+for(i in 1:length(datasetIDs)){
+  outList[[i]] = summaryStatsFun(datasetIDs[i], 1/3, 1)
 }
 
-ct = rbind.fill(out.list)
+# Bind list output into a single dataframe:
 
-# ---- Write core-transient summary table to file ----
+summaryStats = rbind.fill(outList)
+
+# Write file:
 
 write.csv(ct, 'output/tabular_data/core-transient_summary.csv', row.names = F)
 
-#----------------------------------------------------------------------------------*
-# ---- Mode table ----
-#----------------------------------------------------------------------------------*
-# Input is the cut-ff for core- and transient designation and the number of reps
-# used to calculate the p-value. The proportional dataframe must be loaded into the
-# environment and the sampling summary code must be run prior to running this script.
-# WARNING: This takes a very long time to run!
-
-site = factor(samplingSummary$site)
-threshold = 1/3
-reps = 1000
-
-out.list = list()
-   
-for (i in 1:length(site)){
-  tryCatch({
-  out.list[[i]] =  mode.summary(site[i], reps)
-  }, error = function(e){
-    cat('ERROR for site',site[i],':', conditionMessage(e), '\n')
-  })
-}
-
-modeSummary = rbind.fill(out.list)
-
-write.csv(modeSummary, 'output/tabular_data/ct_mode_summary.csv', row.names = F)
+###################################################################################*
+# ---- UPDATED TO THIS POINT ----
+###################################################################################*
 
 #----------------------------------------------------------------------------------*
 # ----  Counting the number of individuals per site ----
