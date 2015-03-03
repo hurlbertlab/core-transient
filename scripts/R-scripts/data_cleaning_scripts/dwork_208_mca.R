@@ -158,9 +158,9 @@ getwd()
 setwd('C:/Users/auriemma/core-transient/')
 source('scripts/R-scripts/core-transient_functions.R')
 
-d = read.csv("data/formatted_datasets/dataset_208.csv")
+dataset = read.csv("data/formatted_datasets/dataset_208.csv")
 
-head(d)
+head(dataset)
 
 #===============================================================================*
 # ---- MAKE PROPORTIONAL OCCUPANCY AND DATA SUMMARY FRAMES ----
@@ -171,14 +171,13 @@ head(d)
 # Change to temporal grain default of year
 
 # Change date column to year:
-
-d$date = getYear(d$date)
-summary(d)
-head(d)
+dataset$date = getYear(dataset$date)
+summary(dataset)
+head(dataset)
 
 # Change column name:
 
-names(d)[3] = 'year'
+names(dataset)[3] = 'year'
 
 #-------------------------------------------------------------------------------*
 # ---- SITE DATA ----
@@ -188,7 +187,7 @@ length(unique(d$site))
 # only 30 different site
 
 # Find time and species sample sizes
-siteTable = ddply(d, .(site), summarize,
+siteTable = ddply(dataset, .(site), summarize,
                   nyear = length(unique(year)),
                   nsp = length(unique(species)))
 # View table
@@ -203,14 +202,22 @@ length(badSites)
 # Length = 0, so no bad sites
 
 # Re-write the dataset summary with new temporal grain (no spacial grain change)
-d1 = ddply(d, .(datasetID, site, year, species), summarize, count = max(count))
+dataset1 = ddply(dataset, .(datasetID, site, year, species), summarize, count = max(count))
 
-dim(d1)
-summary(d1)
-head(d1, 20)
+# Explore new data summary
 
-# All good, revert back to d
-d = d1
+dim(dataset1)
+summary(dataset1)
+head(dataset1, 20)
+
+# All good, revert back to dataset
+dataset = dataset1
+
+# Explore more
+
+head(propOccFun(dataset), 20)
+head(siteSummaryFun(dataset), 20)
+summary(siteSummaryFun(dataset))
 
 #-------------------------------------------------------------------------------*
 # ---- WRITE OUTPUT DATA FRAMES  ----
@@ -218,13 +225,13 @@ d = d1
 
 # Make proportional occurence data frame:
 
-write.csv(propOccFun(d), "data/propOcc_datasets/propOcc_208.csv", row.names = F)
-head(propOccFun(d), 10)
-head(d, 10)
+write.csv(propOccFun(dataset), "data/propOcc_datasets/propOcc_208.csv", 
+          row.names = F)
 
 # site summary dataset:
 
-write.csv(siteSummaryFun(d), 'data/siteSummaries/siteSummary_208.csv', row.names = F)
+write.csv(siteSummaryFun(dataset), 'data/siteSummaries/siteSummary_208.csv', 
+          row.names = F)
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE YOUR DATASET SUMMARY INFO AND UPDATE THE DATA SOURCE TABLE  ----
