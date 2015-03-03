@@ -251,6 +251,7 @@ library(stringr)
 library(plyr)
 setwd('C:/Users/auriemma/core-transient/')
 install.packages('gridExtra')
+install.packages('ggplot2')
 source('scripts/R-scripts/core-transient_functions.R')
 
 dataset = read.csv("data/formatted_datasets/dataset_238.csv")
