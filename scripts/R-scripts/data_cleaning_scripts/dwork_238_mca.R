@@ -309,10 +309,10 @@ dataset = dataset1
 
 # Make proportional occurence data frame:
 
-write.csv(propOccFun(d), "data/propOcc_datasets/propOcc_238.csv", row.names = F)
+write.csv(propOccFun(dataset), "data/propOcc_datasets/propOcc_238.csv", row.names = F)
 
 # Make site summary
-write.csv(siteSummaryFun(d), "data/siteSummaries/siteSummary_238.csv", row.names = F)
+write.csv(siteSummaryFun(dataset), "data/siteSummaries/siteSummary_238.csv", row.names = F)
 
 # Committed and pushed to submodule and core-transient git folder
 
