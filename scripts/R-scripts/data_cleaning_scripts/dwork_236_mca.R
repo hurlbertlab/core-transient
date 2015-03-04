@@ -141,3 +141,16 @@ head(dataset)
 
 # All good
 
+#-------------------------------------------------------------------------------*
+# ---- EXPLORE AND FORMAT COUNT DATA ----
+#===============================================================================*
+# Explore dataset
+summary(dataset)
+
+# No count column, but same species listed several times for each sampling event
+# So create a data frame of the count of species per site per time
+
+library(plyr)
+count = ddply(dataset, .(site, species, date), 
+            summarize, count = length(species))
+
