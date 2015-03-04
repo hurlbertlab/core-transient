@@ -64,4 +64,80 @@ levels(dataset$gr)
 names(dataset)[2] = "site"
 head(dataset)
 
+#-------------------------------------------------------------------------------*
+# ---- EXPLORE AND FORMAT SPECIES DATA ----
+#===============================================================================*
+# Look at the individual species present:
+
+sp = dataset$sp
+class(dataset$sp)
+levels(sp)
+
+length(unique(sp))
+# Only 14 species present in this dataset
+# No bad species present
+
+unique(dataset$sp)
+
+# Change name
+names(dataset)[3]= "species"
+head(dataset)
+
+#-------------------------------------------------------------------------------*
+# ---- EXPLORE AND FORMAT TIME DATA ----
+#===============================================================================*
+# Explore mo column
+summary(dataset$mo)
+length(unique(dataset$mo))
+# Date is structured as datenth no space
+
+# Extract date and reformat
+date = dataset$mo
+head(date)
+
+# Substring month from date
+library(stringr)
+
+  #Change to character and dataframe
+date = data.frame(as.character(date))
+head(date)
+
+  # Substring out year and month
+date$month = substring(date$as.character.date., 5)
+head(date)
+date$year = substring(date$as.character.date., 1,4)
+head(date)
+
+# Remove old column
+date = date[,-1]
+head(date)
+
+# Because we're going to need a day column to satisfy date format
+# add a column of just '01's, just as a day 1
+
+date$day = rep(as.character(01), nrow(date))
+summary(date)
+head(date)
+
+# Paste year and month together
+date$date = paste(date$month, date$day, date$year, sep = "/")
+head(date)
+
+# Extract as date format
+date1= strptime(date$date,'%m/%d/%Y')
+class(date1)
+head(date1)
+summary(date1)
+
+# Add new date to dataset
+dataset$date = date1
+head(dataset)
+
+# Remove old column
+dataset = dataset[,-1]
+
+# Double check over
+head(dataset)
+
+# All good
 
