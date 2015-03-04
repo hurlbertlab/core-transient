@@ -1,44 +1,105 @@
-# Dataset 234: Powdermill small mammals
+# Cleaning dataset 234: Powdermill Mammals
 
-# Add libraries:
+#-------------------------------------------------------------------------------*
+# ---- SET-UP ----
+#===============================================================================*
+# Source the functions file:
 
-library(plyr)
+source('scripts/R-scripts/core-transient_functions.R')
 
-# Set read and write directories:
+# Get data:
 
-in_dir = 'raw_datasets'
-out_dir = 'formatted_datasets'
+getwd()
 
-d234 = read.csv(file.path(in_dir,'dataset_234.csv'))
+list.files('data/raw_datasets')
 
-# Goal is to change monthly sample to some decimal of year (breaking into quarters):
+dataset = read.csv('data/raw_datasets/dataset_234.csv')
 
-# Month is embedded within a date string (YYYYMMDD), extract month:
+#===============================================================================*
+# MAKE FORMATTED DATASET
+#===============================================================================*
 
-d = as.numeric(substr(as.character(d234$date), 5,6))
+#-------------------------------------------------------------------------------*
+# ---- EXPLORE THE DATASET ----
+#===============================================================================*
+names(dataset)
+head(dataset)
+tail(dataset)
 
-# Change month to season (wint = Dec, Jan, Feb, spr = Mar, Apr, May, sum  = Jun, Jul, Aug, etc.)
+# Remove unwanted columns
+dataset1 = dataset[,-c(1,2,4,5,8,9,11,12,13,14,15,16,17)]
+head(dataset1)
 
-d1 = .1* ifelse(d >= 3 & d <=5, 1, 
-            ifelse(d >= 6 & d <= 8, 2,
-            ifelse(d >= 9 & d <=11, 3, 4)))
+dataset = dataset1
 
-# Add the decimal season to the year column:
+#-------------------------------------------------------------------------------*
+# ---- EXPLORE AND FORMAT SITE DATA ----
+#===============================================================================*
+# View summary of fields in the dataset:
 
-d234$year = d234$year + d1
+summary(dataset)
+head(dataset)
 
-# Create a "site" column (just one site)
+# How many sites are there
+length(unique(dataset$quadr))
+# 124 unique sites
 
-site = rep('d234_pm',length(d234[,1]))
+# View sites
+unique(dataset$quadr)
 
-# Make initial frame (necessary columns, not summarized):
+# Remove bad sites 
+badsites = c("?", "0")
+dataset1 = dataset[!dataset$quadr %in% badsites,]
+unique(dataset1$quadr)
 
-df1 = data.frame(site, d234$species, d234$year, d234$date)
-  colnames(df1)[2:4] = c('species','year','date')
+# See how many sites removed
+dim(dataset1)
+dim(dataset)
 
-# Some species are blank (47 of them) and others are "?" (1) ... remove:
+# All good, revert back from dataset1 to dataset
+dataset = dataset1
 
-df1 = df1[df1$species!='' & df1$species != '?',]
+#-------------------------------------------------------------------------------*
+# ---- EXPLORE AND FORMAT TIME DATA ----
+#===============================================================================*
+# Explore dates
+head(dataset)
+
+# Date is lumped altogether in one string
+# Need to substring day and month from date column
+
+# Create separate dataframe
+
+date = data.frame(as.character(dataset$date))
+head(date)
+
+# Substring day
+date$day = str_sub(date$as.character.dataset.date., start = -2)
+head(date)
+
+# Substring month
+date$month = str_sub(date$as.character.dataset.date., start = 5, end = -3)
+head(date)
+
+# Now year
+date$year = str_sub(date$as.character.dataset.date., end = 4)
+head(date)
+
+# Paste day month year back together
+date1 = paste(date$month, date$day, date$year, sep = "/")
+head(date1)
+
+# Add date1 as date object to dataset
+dataset$date = strptime(date1, "%m/%d/%Y")
+class(dataset$date)
+unique(dataset$date)
+head(dataset)
+
+#-------------------------------------------------------------------------------*
+# ---- EXPLORE AND FORMAT COUNT DATA ----
+#===============================================================================*
+
+# THIS IS ALL OLD CODE NEEDS REWORKING
 
 # Create a data frame of the count of individuals for a given sampling event:
 
