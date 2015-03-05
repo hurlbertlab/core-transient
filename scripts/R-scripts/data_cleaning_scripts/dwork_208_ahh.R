@@ -198,62 +198,159 @@ dataset = dataset1
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT TIME DATA ----
 #===============================================================================*
-# Here, we need to extract the sampling dates. 
+# Here, we need to extract the sampling dates. For most studies, we will be 
+# calculating temporal occupancy based on annual snapshots of our communities.
+# For communities that are sampled once per year, this is fairly straightforward
+# but for sites that are sampled multiple times per year, we want to ensure
+# that both across sites and across years, that level of sampling effort does
+# not vary wildly.
 
 # For starters, let's make sure that the number of sampling events per site
 # within a year does not change systematically across years.
 
-head(dataset)
+# The list of unique Sample_Date x site combinations
 uniqSiteDate = unique(dataset[, c('Sample_Date', 'date', 'site')])
+
+# Count up the number of Sample_Dates per site-year and remove 0's
 samplingPerSiteYear = data.frame(table(uniqSiteDate[, c('date', 'site')]))
 samplingPerSiteYear = samplingPerSiteYear[samplingPerSiteYear$Freq != 0, ]
+
+# Calculate the mean sampling per site in each year
 meanSamplingPerYear = aggregate(samplingPerSiteYear$Freq, 
                                 by = list(samplingPerSiteYear$date), mean)
+
+# Plot in two different ways
 plot(as.numeric(as.character(samplingPerSiteYear$date)), 
     samplingPerSiteYear$Freq, xlab = 'Year', 
     ylab = 'Mean sampling events per site')
 points(as.numeric(as.character(meanSamplingPerYear$Group.1)),
        meanSamplingPerYear$x, type = 'l', lwd = 3)
 
-# There is quite a bit of interannual variation in sampling intensity, 
-# with many more sampling events in 2001-2003. This could bias results 
+hist(samplingPerSiteYear$Freq)
+
+# You can see there is a bit of variation over time, with higher sampling
+# in 2001 and 2002, as well as 1990 and 2012. This could bias results 
 # towards more transient species (i.e., presumably there are species 
 # that will only be observed in high sampling years).
 
-# It seems that one reason for this is that in 2001-2003,
-# sampling was conducted over a broader range of dates than in other years.
+# This means we should choose some standardized number of sampling events
+# with which to characterize the assemblage in any given year. Sites that
+# do not have sufficient sampling will not be characterized for that year.
+# Sites with more sampling events will have the standardized number of
+# events chosen at random, while ensuring stratification across the
+# time of year over which surveys are conducted. (Wouldn't want to 
+# randomly choose all the surveys in June in one year, and all the surveys
+# in August in another.)
+
+# So first, let's get a sense of that time of year over which surveys are
+# conducted. We'll convert dates to Julian Day for convenience.
 dataset$sdate = as.Date(dataset$Sample_Date, "%Y-%m-%d")
 dataset$julianDay = yday(dataset$sdate)
-uniqSiteDay = unique(dataset[, c('julianDay', 'site')])
+uniqSiteDay = unique(dataset[, c('julianDay', 'site', 'date')])
 daycount = data.frame(table(uniqSiteDay$julianDay))
 
 plot(as.numeric(as.character(daycount$Var1)), daycount$Freq, xlab = "Julian Day", 
-     ylab = "Sampling Events")
+     ylab = "Sampling Events", type = 'l')
 
-# One simple course of action is to exclude all sampling events prior to
-# ~day 150 (May 30) and after ~day 240 (Aug 31).
+# We might get a slightly clearer picture if we count the number of sampling
+# events on a weekly basis throughout the summer instead of a daily basis.
+uniqSiteDay$julianWeek = 7*floor(uniqSiteDay$julianDay/7)
+weekcount = data.frame(table(uniqSiteDay$julianWeek))
 
-dataset1 = dataset[dataset$julianDay >= 150 & dataset$julianDay <=240,]
+plot(as.numeric(as.character(weekcount$Var1)), weekcount$Freq, xlab = "Julian Day", 
+     ylab = "Sampling Events per week", type = 'l')
+abline(v = c(164, 216), col = 'red')
 
-# Counting the number of sampling events per site and year as above
-# reveals that this has reduced but not fully taken care of the problem.
-# 2001-2003 are being sampled at a higher frequency.
-# In 2002, sampling happened on 61 days over the summer, far more than weekly!
+# From these graphs, we need to make a decision on the window over which 
+# sampling over all sites is fairly consistent. This requires a somewhat
+# arbitrary decision, but in this case let's go with Julian days 155 to 227,
+# or May 30 to August 15.
+
+begDay = 164
+endDay = 216
+
+dataset1 = dataset[dataset$julianDay >= begDay & dataset$julianDay <= endDay,]
+
+# Now let's revisit how frequently sites are visited per year given
+# this more restricted window.
 uniqSiteDate1 = unique(dataset1[, c('Sample_Date', 'date', 'site')])
 samplingPerSiteYear1 = data.frame(table(uniqSiteDate1[, c('date', 'site')]))
 samplingPerSiteYear1 = samplingPerSiteYear1[samplingPerSiteYear1$Freq != 0, ]
-meanSamplingPerYear1 = aggregate(samplingPerSiteYear1$Freq, 
-                                by = list(samplingPerSiteYear1$date), mean)
-plot(as.numeric(as.character(samplingPerSiteYear1$date)), 
-     samplingPerSiteYear1$Freq, xlab = 'Year', 
-     ylab = 'Mean sampling events per site')
-points(as.numeric(as.character(meanSamplingPerYear1$Group.1)),
-       meanSamplingPerYear1$x, type = 'l', lwd = 3)
+hist(samplingPerSiteYear1$Freq, xlab = "Sampling events per year", main = "")
 
-# Seems like the solution is to only use some constant number of sampling events
-# in each year, evenly spaced over the same range of time (julian days 150-240).
+# We can quickly check what fraction of site-years would meet different
+# required levels of sampling from 1:10
 
-threshold = 12
+sapply(1:10, function(x) 
+  round(sum(samplingPerSiteYear1$Freq > x)/nrow(samplingPerSiteYear1), 2))
+
+#  [1] 0.96 0.92 0.85 0.65 0.46 0.28 0.11 0.00 0.00 0.00
+# This tells us that at a minimum of 4 samples per year, we would still be able
+# to use 65% of all site-years.
+
+# We can also do a quick check to see how many years of data meet
+# this criterion at each site. First, you can see that without any criterion
+# sites were sampled for 25 years (1989-2013).
+table(samplingPerSiteYear1$site)
+
+table(samplingPerSiteYear1$site[samplingPerSiteYear1$Freq >= 4])
+table(samplingPerSiteYear1$site[samplingPerSiteYear1$Freq >= 5])
+
+# We see that requiring 5 samples per year drops a number of sites below
+# 15 usable years, while all sites have at least 16 usable years using
+# a minimum of 4 samples per year. So let's specify our number of
+# subannual samples for standardization:
+
+num_subsamples = 4
+
+# This means we want to divide up the time window established above
+# into 4 periods. They will have midpoints as follows
+
+periodLength = (endDay - begDay + 1)/num_subsamples
+
+period_midpoints = round(begDay + periodLength/2 + 
+                           0:(num_subsamples-1)*periodLength, 0)
+
+# Now assign the Julian day of each sampling event to one of these
+# sampling periods.
+dataset1$samplingPeriod = round(periodLength*floor((dataset1$julianDay - 
+                                 begDay)/periodLength) + period_midpoints[1], 0)
+
+# And now, we would like to reduce the data down so that for any 
+# site, only one sampling event per sampling period is represented.
+
+# Let's use a small subset (site 6_T7 in 2013) which we know has 11 samples.
+sub = subset(dataset1, site=='6_T7' & date==2013)
+
+# A function that samples n rows of a dataframe at random
+sample.df = function(dataset, n) dataset[sample(nrow(dataset), n), ]
+
+sampledData = c()
+for (p in period_midpoints) {
+  temp = subset(sub, samplingPeriod == p)
+  tempsample = sample.df(temp, 1)
+  sampledData = rbind(sampledData, tempsample)
+}
+
+
+
+uniqSitePeriod = unique(dataset1[, c('site', 'date', 'samplingPeriod')])
+periodsPerSiteYear = data.frame(table(uniqSitePeriod[,c('site','date')]))
+
+
+
+
+
+
+
+
+
+
+
+
+
+#
+
 
 # Give a double-check, if everything looks okay, then replace the column:
 
