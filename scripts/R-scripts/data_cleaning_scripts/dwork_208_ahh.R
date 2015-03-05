@@ -12,13 +12,15 @@ library(stringr)
 library(plyr)
 library(lubridate)
 
+# Make sure you are in the core-transient directory
+
+getwd()
+
 # Source the functions file:
 
 source('scripts/R-scripts/core-transient_functions.R')
 
 # Get data:
-
-getwd()
 
 list.files('data/raw_datasets')
 
@@ -67,19 +69,22 @@ str(dataset)
 head(dataset)
 
 # Here, we can see that there are some fields that we won't use. Let's remove
-# them, note that I've given a new name here "d1", this is to ensure that
+# them, note that I've given a new name here "dataset1", this is to ensure that
 # we don't have to go back to square 1 if we've miscoded anything.
 
 names(dataset)
 
-dataset1 = dataset[, !names(dataset) %in% c("Family", "Order", "location_utm")]
+unnecessaryFields = c("Family", "Order", "location_utm")
+
+dataset1 = dataset[, !names(dataset) %in% unnecessaryFields]
 
 head(dataset1)
 
 # Rename fields using standardized names where appropriate
-names(dataset1)[names(dataset1) %in% c('Species', 'Adults', 'Year')] = c('species', 'count', 'date')
+names(dataset1)[names(dataset1) %in% c('Species', 'Adults', 'Year')] = 
+  c('species', 'count', 'date')
 
-# Because all (and only) the fields we want are present, we can re-assign d1:
+# Because all (and only) the fields we want are present, we can re-assign dataset1:
 
 dataset = dataset1
 
@@ -112,33 +117,32 @@ head(dataset)
 # could be the entire block of 7 different treatments (i.e., just the Replicate
 # field).
 
-# Here, we use just the Replicate column (i.e., a field with 7+ plots and 5 traps/plot)
-dataset$site = substr(dataset$Replicate_Station,1,1)
-
 # As I can't find more detailed info at present, it seems that the 'DF', 'CF',
 # and 'SF' treatments should be excluded.
 
-dataset = dataset[!dataset$Treatment %in% c('DF', 'CF', 'SF'), ]
+dataset1 = dataset[!dataset$Treatment %in% c('DF', 'CF', 'SF'), ]
+
+# Here, we use the 1 ha treatment plots each consisting of 5 traps)
+site = paste(substr(dataset1$Replicate_Station,1,1), dataset1$Treatment, sep = "_")
+
+
+# How many unique sites are there? Does this jive with what you expect
+# based on the metadata?
+
+length(unique(site))
+
+# For dataset 208, this is 42 which sounds right given 6 blocks x 7 treatments per block
 
 # Do some quality control by comparing the site fields in the dataset with the 
 # new vector of sites:
 
-head(dataset$site)
-
-# Are these site names equitably represented in the dataset?
-
-hist(table(dataset$site))
-
-# For dataset 208, the 6 sites have between 6854 and 7524 rows of data 
-# associated with them. Seems pretty equitable.
+head(site)
 
 # All looks correct, so replace the site column in the dataset (as a factor) 
 # and remove the unnecessary fields, start by renaming the dataset in case 
 # you make a mistake:
 
-dataset1 = dataset
-
-dataset1$site = factor(dataset1$site)
+dataset1$site = factor(site)
 
 dataset1 = dataset1[, !names(dataset1) %in% c("Treatment", "Replicate_Station")]
 
