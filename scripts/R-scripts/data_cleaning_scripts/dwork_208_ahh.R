@@ -120,6 +120,12 @@ head(dataset)
 # As I can't find more detailed info at present, it seems that the 'DF', 'CF',
 # and 'SF' treatments should be excluded.
 
+#######################################
+#
+# Need to ensure "sites" are represented by equal spatial sampling effort
+#
+#######################################
+
 dataset1 = dataset[!dataset$Treatment %in% c('DF', 'CF', 'SF'), ]
 
 # Here, we use the 1 ha treatment plots each consisting of 5 traps)
