@@ -119,42 +119,21 @@ head(dataset)
 
 # As I can't find more detailed info at present, it seems that the 'DF', 'CF',
 # and 'SF' treatments should be excluded.
-
-#######################################
-#
-# Need to ensure "sites" are represented by equal spatial sampling effort
-#
-#######################################
-
 dataset1 = dataset[!dataset$Treatment %in% c('DF', 'CF', 'SF'), ]
 
-# Here, we use the 1 ha treatment plots each consisting of 5 traps)
-site = paste(substr(dataset1$Replicate_Station,1,1), dataset1$Treatment, sep = "_")
+# Here, we use the 1 ha treatment plots each consisting of 5 traps locations)
+
+################################################################################
+# MODIFY HERE ONCE RAW DATA HAS BEEN REVERTED BACK TO SEPARATE "Replicate" AND
+# "Station" FIELDS
+dataset1$site = paste(substr(dataset1$Replicate_Station,1,1), 
+                      dataset1$Treatment, sep = "_")
+
+dataset1$Station = substr(dataset1$Replicate_Station,3,3)
+
+################################################################################
 
 
-# How many unique sites are there? Does this jive with what you expect
-# based on the metadata?
-
-length(unique(site))
-
-# For dataset 208, this is 42 which sounds right given 6 blocks x 7 treatments per block
-
-# Do some quality control by comparing the site fields in the dataset with the 
-# new vector of sites:
-
-head(site)
-
-# All looks correct, so replace the site column in the dataset (as a factor) 
-# and remove the unnecessary fields, start by renaming the dataset in case 
-# you make a mistake:
-
-dataset1$site = factor(site)
-
-dataset1 = dataset1[, !names(dataset1) %in% c("Treatment", "Replicate_Station")]
-
-# Check the new dataset (are the columns as they should be?):
-
-head(dataset1)
 
 # All looks good, so overwrite the dataset file:
 
@@ -499,86 +478,61 @@ dataset = read.csv("data/formatted_datasets/dataset_223.csv")
 # scale decisions and determine the proportional occupancies.
 
 #-------------------------------------------------------------------------------*
-# ---- TIME DATA ----
-#===============================================================================*
-# Because it's often considerably more straightforward, we'll start with the
-# temporal data. For this, go to the metadata of the study. There, we see
-# that data are collected in two seasons, spring and fall. We want to change
-# these to a decimal year, which are simply grouped time samples (the actual 
-# values don't really matter much).
-
-# Extract year values:
-
-year = as.numeric(format(dataset$date, '%Y'))
-
-head(year)
-
-summary(year)
-
-# Extract month values (if applicable):
-
-month = as.numeric(format(dataset$date, '%m'))
-
-head(month)
-
-summary(month)
-
-unique(month)
-
-# Make "season" values:
-
-season = ifelse(month < 7, .25, .75)
-
-unique(season)
-
-# Add year and season:
-
-yearSeason = year + season
-
-head(yearSeason)
-
-summary(yearSeason)
-
-# Modify date column to now represent the decimal year:
-
-dataset1 = dataset
-
-dataset1$date = yearSeason
-
-head(dataset1)
-
-# Change the column name to year:
-
-names(dataset1)
-
-names(dataset1)[3] = 'year'
-
-# Summarize the dataset to the new temporal grain:
-
-dataset2 = ddply(dataset1, .(datasetID, site, year, species), 
-                 summarize, count = max(count))
-
-# Explore:
-
-dim(dataset1)
-dim(dataset2)
-
-head(dataset1)
-head(dataset2)
-
-str(dataset2)
-
-# All looks okay, rename as dataset:
-
-dataset = dataset2
-
-# !GIT-ADD-COMMIT-PUSH AND DESCRIBE ANY TEMPORAL GRAIN DECISIONS!
-
-#-------------------------------------------------------------------------------*
 # ---- SITE DATA ----
 #===============================================================================*
 # What is the appropriate sampling grain for sites? Return to the metadata to
 # see if there's any clues.
+
+# If the spatial grain of analysis is larger than the finest grain of the data,
+# then we will have to make sure that each "site" is being defined based on 
+# a constant number of subplots. How many subplots will depend on the nature
+# of the sampling design and how regularly different subplots were sampled.
+# If there is variation in the number of subplots sampled across years, this
+# could bias our estimation of the relative fraction of core vs transient species.
+
+# As a rule, we will only include a site-year (that is, a snapshot of a community
+# at a particular site in a particular year) if that site-year is represented by
+# a large number of subplots relative to distribution of subplot sampling. 
+
+# The list of unique Year x subplot combinations. In this case, "site" refers
+# to the spatial grain we have deciding on conducting analyses at, while 
+# "Station" is the finer spatial grain within sites.
+uniqSiteDateStations = unique(dataset1[, c('date', 'site','Station')])
+
+# Count up the number of Sample_Dates per site-year and remove 0's
+samplingPerSiteYear = data.frame(table(uniqSiteDateStations[, c('date', 'site')]))
+samplingPerSiteYear = samplingPerSiteYear[samplingPerSiteYear$Freq != 0, ]
+# For dataset 208, every site ('Replicate_Treatment') has 5 sticky trap Stations
+
+
+
+
+
+# How many unique sites are there? Does this jive with what you expect
+# based on the metadata?
+
+length(unique(site))
+
+# For dataset 208, this is 42 which sounds right given 6 blocks x 7 treatments per block
+
+# Do some quality control by comparing the site fields in the dataset with the 
+# new vector of sites:
+
+head(site)
+
+# All looks correct, so replace the site column in the dataset (as a factor) 
+# and remove the unnecessary fields, start by renaming the dataset in case 
+# you make a mistake:
+
+dataset1$site = factor(site)
+
+dataset1 = dataset1[, !names(dataset1) %in% c("Treatment", "Replicate_Station")]
+
+# Check the new dataset (are the columns as they should be?):
+
+head(dataset1)
+
+
 
 # How many sites are there?
 
@@ -679,6 +633,91 @@ dataset = dataset2
 # a courser precision (few decimal places). We can do so by using the 
 # "round_any" function in Hadley Wickham's plyr package, specifying "floor" 
 # as the rounding function.
+
+
+#-------------------------------------------------------------------------------*
+# ---- TIME DATA ----
+#===============================================================================*
+# Because it's often considerably more straightforward, we'll start with the
+# temporal data. For this, go to the metadata of the study. There, we see
+# that data are collected in two seasons, spring and fall. We want to change
+# these to a decimal year, which are simply grouped time samples (the actual 
+# values don't really matter much).
+
+
+
+
+
+
+
+
+
+# Extract year values:
+
+year = as.numeric(format(dataset$date, '%Y'))
+
+head(year)
+
+summary(year)
+
+# Extract month values (if applicable):
+
+month = as.numeric(format(dataset$date, '%m'))
+
+head(month)
+
+summary(month)
+
+unique(month)
+
+# Make "season" values:
+
+season = ifelse(month < 7, .25, .75)
+
+unique(season)
+
+# Add year and season:
+
+yearSeason = year + season
+
+head(yearSeason)
+
+summary(yearSeason)
+
+# Modify date column to now represent the decimal year:
+
+dataset1 = dataset
+
+dataset1$date = yearSeason
+
+head(dataset1)
+
+# Change the column name to year:
+
+names(dataset1)
+
+names(dataset1)[3] = 'year'
+
+# Summarize the dataset to the new temporal grain:
+
+dataset2 = ddply(dataset1, .(datasetID, site, year, species), 
+                 summarize, count = max(count))
+
+# Explore:
+
+dim(dataset1)
+dim(dataset2)
+
+head(dataset1)
+head(dataset2)
+
+str(dataset2)
+
+# All looks okay, rename as dataset:
+
+dataset = dataset2
+
+# !GIT-ADD-COMMIT-PUSH AND DESCRIBE ANY TEMPORAL GRAIN DECISIONS!
 
 #-------------------------------------------------------------------------------*
 # ---- WRITE OUTPUT DATA FRAMES  ----
