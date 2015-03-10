@@ -4,7 +4,7 @@ data_obtained,factor,describes whether datasets have been downloaded and placed 
 data_formatted,factor,describes whether datasets have been reduced to the necessary columns
 obtain_priority,numeric,"priority is valued between 0-5 and is based on current representation of the system (terrestrial, aquatic, marine) and taxa as well as the number of years and sites in the study"
 format_priority,numeric,"0 = Low priority: common system and taxa, less than 20 sites; 1 = Minor priority: common system and taxa, more than 20 sites -OR- uncommon system OR taxa less than 20 sites; 2 = Medium priority: Uncommon system OR taxa, more than 20 sites -OR- uncommon system AND taxa, less than 20 sites; 3 = high priority: Uncommon system AND taxa, more than 20 sites  "
-flag_code,numeric,"0 = not currently worked on, 1 = formatting complete, 2 = formatting in process, 3 = formatting halted, issue "
+flag_code,numeric,"0 = not currently worked on, 1 = formatting complete, 2 = formatting in process, 3 = formatting halted, issue, 4 = data unavailable"
 spatial_sites,factor,Y or N. Whether sites are determined by lat and lon
 dataset_name,character,Name provided for the dataset
 retriever_code,factor,Whether the dataset was obtained using EcoData Retriever
