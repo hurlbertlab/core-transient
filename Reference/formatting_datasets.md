@@ -90,63 +90,68 @@ At this point, you will need to decide what qualifies as a site for a given stud
 	2. **Important**: Enter an "N" in the spatial sites column of the data source table. If the component site fields are nested (for example quadrats within plots), enter "Y in the "spatial_scale_variable" field of the data source table. git-add-push data_source_table.csv
 		
 	
-9. Explore and format **species** data: Here, your primary goal is to ensure that all of your species are valid. To do so, you need to look at the list of unique species very carefully. Avoid being too liberal in interpretation, if you notice an entry that MIGHT be a problem, but you can't say with certainty, create an issue on GitHub.
-	1. Take a look at how species are in the dataset (_Note: rename the column if necessary_):
+## EXPLORE AND FORMAT SPECIES DATA
 
-		```
-		head(example_df)
-		
-		sp = example_df$species
-		
-		class(sp)
-		
-		length(unique(sp))
-		```
-	2. If species are formatted as characters, it may be easier to format them as factors:
+Here, your primary goal is to ensure that all of your species are valid. To do so, you need to look at the list of unique species very carefully. Avoid being too liberal in interpretation, if you notice an entry that MIGHT be a problem, but you can't say with certainty, create an issue on GitHub.
 
-		```
-		sp = factor(example_df$species
-		```
-		
-	3. Species may be listed in multiple columns, if this is the case, concatenate the columns. For example, if species data are provided in separate genus and species columns, you would use:
+1. Take a look at how species are in the dataset (_Note: rename the column if necessary_):
 
+	```
+	head(example_df)
+		
+	sp = example_df$species
+		
+	class(sp)
+		
+	length(unique(sp))
 		```
-		sp = paste(example_df$genus, example_df$species, sep = '')
-		```
-	4. Oftentimes, there is an irregular use of lower and uppercase values. Because R is case sensitive, these would actually be coded as separate species. To change the case of the species column use either of following:
+2. If species are formatted as characters, it may be easier to format them as factors:
 
-		```
-		tolower('Hello World')
+	```
+	sp = factor(example_df$species
+	```
 		
-		toupper('Hello World')
-		```
-		
-	5. Explore the metadata to determine how species are coded. This may give some clue of listed species that are not valid. Look at the levels of the species themselves:
+3. Species may be listed in multiple columns, if this is the case, concatenate the columns. For example, if species data are provided in separate genus and species columns, you would use:
 
-		```
-		levels(sp)
-		```
-	6. Remove bad species (for example, "bare_ground" and "unidentified") by making a vector of bad species names and then subsetting the data to just the valid species):
+	```
+	sp = paste(example_df$genus, example_df$species, sep = '')
+	```
+
+4. Oftentimes, there is an irregular use of lower and uppercase values. Because R is case sensitive, these would actually be coded as separate species. To change the case of the species column use either of following:
+
+	```
+	tolower('Hello World')
 		
-		```
-		bad_sp = c('bare_ground','unidentified')
+	toupper('Hello World')
+	```
 		
-		example_df1 = example_df[!example_df$species %in% bad_sp,]
-		```
+5. Explore the metadata to determine how species are coded. This may give some clue of listed species that are not valid. Look at the levels of the species themselves:
+
+	```
+	levels(sp)
+	```
+	
+6. Remove bad species (for example, "bare_ground" and "unidentified") by making a vector of bad species names and then subsetting the data to just the valid species):
 		
-	7. Explore the dataset to determine how removing these species affected your data frame. If all looks okay, rename:
+	```
+	bad_sp = c('bare_ground','unidentified')
 		
-		```
-		head(example_df1)
+	example_df1 = example_df[!example_df$species %in% bad_sp,]
+	```
 		
-		summary(example_df1)
+7. Explore the dataset to determine how removing these species affected your data frame:
 		
-		nrow(example_df1)
+	```
+	head(example_df1)
 		
-		example_df = example_df1
-		```
+	summary(example_df1)
 		
-	8. git-add-commit-push your script, describing the removal of species, if necessary.
+	nrow(example_df1)
+		
+	example_df = example_df1
+	```
+		
+8. git-add-commit-push your script, describing the removal of species, if necessary.
 
 10. Explore and format the time data. Here we need to extract sampling date. 
 	1. If dates are provided in multiple columns, it may be necessary to concatenate the columns. 
