@@ -1,8 +1,8 @@
 # Preparing datasets for analysis 
 
-In this project, we evaluate the proportion of core and transient species at a given site using data collected across a wide range of taxa, regions, and environmental systems. A challenge that we face is that ecological data are collected at highly variable spatial, temporal, and biological scales and it is necessary to consistently format the data in preparation for analysis. Here we provide instructions associated with formatting datasets and then creating a proportional occurrence and dataset summary files. This document is divided into three parts. **Section One** provides instructions on how to format a raw dataset to a consistent set of fields at the finest available spatial and temporal grain. **Section Two** provides instructions on how to make a proportional occurrence data frame after summarizing the data at a given spatial or temporal scale. **Section Three** provides an "R Cheatsheet" to the various functions you will likely use in the preparation of data for analysis.
+In this project, we evaluate the proportion of core and transient species at a given site using data collected across a wide range of taxa, regions, and environmental systems. A challenge that we face is that ecological data are collected at highly variable spatial, temporal, and biological scales and it is necessary to consistently format the data in preparation for analysis. Here we provide instructions associated with formatting datasets and then creating a proportional occurrence and dataset summary files. This document is divided into three parts. This document provides instructions on how to format a raw dataset to a consistent set of fields at the finest available spatial and temporal grain. At the end of this document is an "R Cheatsheet" that provides a list of the various functions you will likely use in the preparation of data for analysis.
 
-## SECTION ONE: CREATING FORMATTED DATASETS
+## OVERVIEW AND INITIAL EXPLORATION
 
 In the formatting process, we will avoid making any decisions on scale. Instead, we want to ensure that the fields are all consistently of the same structure, that only valid species are listed, and count data are summarized by site, date, and species. 
 
@@ -45,15 +45,19 @@ _**Note**: In the above I added a "1" to the example_df name. I consider this be
 
 7. Once you are done with the exploration of the larger dataset and (potentially) removing columns, save your script and git-add-commit-push and describe which columns were removed and why.
 
-8. Explore and format **site** data. At this point, you will need to decide what qualifies as a site for a given study. To do so, visit the metadata of a site with the link provided in the metadata field of the data source table (core-transient/data_source_table.csv). 
-	1. If sites are coded as lats and longs, concatenate the fields as such:
+## EXPLORE AND FORMAT SITE DATA
+
+At this point, you will need to decide what qualifies as a site for a given study. To do so, visit the metadata of a site with the link provided in the metadata field of the data source table (core-transient/data_source_table.csv). 
+
+1. If sites are coded as lats and longs, concatenate the fields as such:
 
 		```
 		example_df$site = paste(example_df$lat, example_df$long, sep = '_')
 		```
 		
-		1. Note that we use "_" to separate between components of the site field. This will be the case with all site data and using this format consistently is necessary to simplifying field modification in later steps.
-		2. Lats and Longs may be embedded in larger field. If this is the case, you may need to use the 	substring function in Hadley Wickham's stringr package to extract the necessary characters.
+	_Note that we use "_" to separate between components of the site field. This will be the case with all site data and using this format consistently is necessary to simplifying field modification in later steps._
+	
+		1. Lats and Longs may be embedded in larger field. If this is the case, you may need to use the 	substring function in Hadley Wickham's stringr package to extract the necessary characters.
 		
 			To extract "hello" in "hello world" (the first five characters), you would use:
 
@@ -246,108 +250,6 @@ _**Note**: In the above I added a "1" to the example_df name. I consider this be
 		git push
 		```
 		
-## SECTION TWO: CREATING PROPORTIONAL OCCURRENCE AND DATASET SUMMARY DATA FRAMES
-		
-We have now formatted the dataset to the finest possible spatial and temporal grain, removed bad species, and added the dataset ID. We've alreay done the heavy lifting of dataset formatiting and it's now to make some scale decisions and determine the proportional occupancies. To do so, we need to explore the dataset and look through the metadata for clues to the approriate temporal and spatial grain. As you create the proportional occurrence frame, be sure to keep careful notes describing how the data were summarized, including any decision made for scaling decisions.
-
-### Temporal data:
-
-We start by extracting year from the dataset. Year are our default temporal grain. Decisions for finer temporal grains may be decided at a later date. This process involves changing the date column to year (uses a custom function in the core-transient_functions.R file) and then renaming the column to "year".
-
-```
-dataset$date = getYear(dataset$date)
-
-names(dataset)[3] = 'year'
-```
-
-### Site data:
-
-Determining the appropriate spatial sampling grain can be especially challenging. If the definition of sites is not very clear cut, you will have to return to the metadata to see if there's any clues.
-
-A quick way to determine if the sites, as defined in the formatted dataset, are adequate for our needs is to take a look at the number of time samples and species recorded at a site. We're using a cut-off of 5 sampling intervals and at least 10 observed species.
-
-```
-siteTable = ddply(dataset, .(site), summarize,
-                  nYear = length(unique(year)),
-                  nSp = length(unique(species)))
-
-head(siteTable)
-
-summary(siteTable)
-
-# Sort the site table for a closer look:
-
-head(siteTable[order(siteTable$nSp),],20)
-
-```
-
-In the eample dataset, several of the sites had species richness values below the cut-off (about a third of them). Sites in this study were in a nested design (e.g., quadrats within plots).  This suggests that the sampling grain is too fine. The descriptors of site in the column are separated by an underscore, in the order of the largest to smallest sampling class. In this instance, we remove the smallest category (quadrats) and explore the data to see if the new definition of a site is adequate.
-
-We start by splitting site in separate fields in a table:
-
-```
-site = read.table(text = as.character(dataset$site), sep ='_')
-
-head(site)
-```
-
-Then paste together all but the last site descriptor:
-
-```
-site1 = do.call('paste', c(site[,1:4],sep = '_'))
-```
-
-Then explore number of species based on the new site descriptions:
-
-```
-siteTable = ddply(dataset1, .(site), summarize,
-                  nYear = length(unique(year)),
-                  nSp = length(unique(species)))
-
-head(siteTable)
-
-summary(siteTable)
-
-head(siteTable[order(siteTable$nSp),],10)
-```
-
-In this instance we have lost only a few sites. We have to remove the bad sites prior to making the proportional occurrence data frame. We do so by defining the "bad" sites in the dataset. and then subsetting the dataframe to only the "good"sites. As always, we explore the resulting data frame and, if it is acceptable we can reassign our chosen name "dataset".
-
-```
-badSites = subset(siteSummaryFun(dataset), spRich < 10 | nTime < 5)$site
-
-dataset1 = dataset[!dataset$site %in% badSites,]
-
-```
-
-Summarize the dataset to the new spatial grain and explore:
-
-```
-dataset2 = ddply(dataset1, .(datasetID, site, year, species), 
-                 summarize, count = max(count))
-
-head(dataset2)
-
-dim(dataset2)
-
-summary(dataset2)
-
-dataset = dataset2
-```
-### Making the proportional occurrence data frame:
-
-If the species and time samples are adequate, you are now ready to create and write the proportional occurrence data frame. This part of the process is easy becuase there is a function called PropOccFun that is located in the core-transient-functions script that does this automatically for you. Simply run the function and write the output to the file in one step:
-
-```
-write.csv(propOccFun(dataset), "data/propOcc_datasets/propOcc_223.csv", row.names = F)
-```
-
-We will also write a summary of the file, that provides the number of time samples and species richness for each site using the function siteSummaryFun (also located in the core-transient-functions R script):
-
-```
-write.csv(siteSummaryFun(dataset), 'data/siteSummaries/siteSummary_223.csv', row.names = F)
-```
-
 ## SECTION THREE: R CODE CHEATSHEET
 
 ####  Removing records:
