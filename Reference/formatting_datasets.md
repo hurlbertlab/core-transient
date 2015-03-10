@@ -55,39 +55,37 @@ At this point, you will need to decide what qualifies as a site for a given stud
 		example_df$site = paste(example_df$lat, example_df$long, sep = '_')
 		```
 		
-	_Note that we use "_" to separate between components of the site field. This will be the case with all site data and using this format consistently is necessary to simplifying field modification in later steps._
+	Note that we use "_" to separate between components of the site field. This will be the case with all site data and using this format consistently is necessary to simplifying field modification in later steps.
 	
-		1. Lats and Longs may be embedded in larger field. If this is the case, you may need to use the 	substring function in Hadley Wickham's stringr package to extract the necessary characters.
-		
-			To extract "hello" in "hello world" (the first five characters), you would use:
+	1. Lats and Longs may be embedded in larger field. If this is the case, you may need to use the 	substring function in Hadley Wickham's stringr package to extract the necessary characters.
+	To extract "hello" in "hello world" (the first five characters), you would use:
 
 			```
 			require(stringr)
 			
 			str_sub('hello_world', 1, 5)
 			```
-			
-			To extract "world" in "hello world" (the last five characters), you would use:
+	To extract "world" in "hello world" (the last five characters), you would use:
 			
 			```
 			str_sub('hello_world', -5)
 			```
 			
-		2. **Important**: If sites are defined by lats and longs, mark "Y" in the "spatial_sites" column of the data source table. If the spatial grain can be varied (for example "rounding" lats and longs to different precisions), then enter "Y" in the "spatial_scale_variable" field of the data source table. git-add-push data_source_table.csv
+	2. **Important**: If sites are defined by lats and longs, mark "Y" in the "spatial_sites" column of the data source table. If the spatial grain can be varied (for example "rounding" lats and longs to different precisions), then enter "Y" in the "spatial_scale_variable" field of the data source table. git-add-push data_source_table.csv
 		
-	2. If sites are not coded as lats and longs, use the metadata to determine what consititutes a site. Rename the column as "site", if necessary. For example, if site is the first column, use:
+2. If sites are not coded as lats and longs, use the metadata to determine what constitutes a site. Rename the column as "site", if necessary. For example, if site is the first column, use:
 		
-		```
-		names(example_df)[1] <- 'site'
-		```
+	```
+	names(example_df)[1] <- 'site'
+	```
 	
-		1. If site information is stored in multiple fields, you will need to determine with the metadata what  constitutes a site and concatenate the field. For example, consider a site defined by "plot" and "quadrat" fields:
+	1. If site information is stored in multiple fields, you will need to determine with the metadata what  constitutes a site and concatenate the field. For example, consider a site defined by "plot" and "quadrat" fields:
 		
-			```
-			example_df$site = paste(example_df$plot, example_df$ quadrat)
-			```
+	```
+	example_df$site = paste(example_df$plot, example_df$ quadrat)
+	```
 		
-		2. **Important**: Enter an "N" in the spatial sites column of the data source table. If the component site fields are nested (for example quadrats within plots), enter "Y in the "spatial_scale_variable" field of the data source table. git-add-push data_source_table.csv
+	2. **Important**: Enter an "N" in the spatial sites column of the data source table. If the component site fields are nested (for example quadrats within plots), enter "Y in the "spatial_scale_variable" field of the data source table. git-add-push data_source_table.csv
 		
 	
 9. Explore and format **species** data: Here, your primary goal is to ensure that all of your species are valid. To do so, you need to look at the list of unique species very carefully. Avoid being too liberal in interpretation, if you notice an entry that MIGHT be a problem, but you can't say with certainty, create an issue on GitHub.
