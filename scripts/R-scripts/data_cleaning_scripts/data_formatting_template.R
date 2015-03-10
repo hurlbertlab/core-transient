@@ -5,6 +5,7 @@
 # determine which dataset you should be working on, see the "format_priority"
 # field. Choose the dataset with the highest format priority, but be sure to 
 # check out the format_flag field to see the current status of the dataset.
+
 # Flag codes are as follows:
   # 0 = not currently worked on
   # 1 = formatting complete
@@ -28,20 +29,11 @@ list.files('data/raw_datasets')
 
 dataset = read.csv('data/raw_datasets/dataset_223.csv')
 
-#===============================================================================*
-# MAKE FORMATTED DATASET
-#===============================================================================*
-# The goal is: 
-# 1) To create a dataset of the columns of interest at the smallest spatial
-#  and temporal sampling grain available.
-# 2) To eliminate "bad" species data.
-
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE THE DATASET ----
 #===============================================================================*
-# Here, you are predominantly interested in getting to know the dataset,
-# what the fields represent and determining which fields are relavent. Do 
-# this carefully, making notes on a piece of scratch paper.
+# Here, you are predominantly interested in getting to know the dataset, and 
+# determine what the fields represent and  which fields are relavent.
 
 # View field names:
 
