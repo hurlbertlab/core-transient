@@ -59,9 +59,8 @@ dataset1 = dataset[,-c(5,6,8,9)]
 
 head(dataset1)
 
-# Because all (and only) the fields we want are present, we can re-assign d1:
-
-dataset = dataset1
+# If everything looks okay, you're ready to move forward. If not, retrace your
+# steps to look for and fix errors. 
 
 # !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE DATA WERE MODIFIED!
 
@@ -71,11 +70,11 @@ dataset = dataset1
 
 # View summary of fields in the dataset:
 
-summary(dataset)
+summary(dataset1)
 
 # Reminder of the dataset:
 
-head(dataset)
+head(dataset1)
 
 # We can see that sites are broken up into (potentially) 5 fields. Find the 
 # metadata link in the data source table use that link to determine how
@@ -90,10 +89,8 @@ head(dataset)
 # Here, we will concatenate all of the potential fields that describe the 
 # site:
 
-head(dataset)
-
-site = paste(dataset$site, dataset$block, dataset$treatment, 
-             dataset$plot, dataset$quad, sep = '_')
+site = paste(dataset1$site, dataset1$block, dataset1$treatment, 
+             dataset1$plot, dataset1$quad, sep = '_')
 
 # Do some quality control by comparing the site fields in the dataset with the 
 # new vector of sites:
@@ -104,19 +101,15 @@ head(site)
 # and remove the unnecessary fields, start by renaming the dataset in case 
 # you make a mistake:
 
-dataset1 = dataset
+dataset2 = dataset1
 
-dataset1$site = factor(site)
+dataset2$site = factor(site)
 
-dataset1 = dataset1[,-c(2:5)]
+dataset2 = dataset2[,-c(2:5)]
 
 # Check the new dataset (are the columns as they should be?):
 
-head(dataset1)
-
-# All looks good, so overwrite the dataset file:
-
-dataset = dataset1
+head(dataset2)
 
 # !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE SITE DATA WERE MODIFIED!
 
@@ -130,7 +123,7 @@ dataset = dataset1
 
 # Look at the individual species present:
 
-sp = dataset$species
+sp = dataset2$species
 
 levels(sp) # Note: You can also use unique(sp) here.
 
@@ -138,11 +131,11 @@ levels(sp) # Note: You can also use unique(sp) here.
 # entries. Because R is case-sensitive, this will be coded as separate species.
 # Modify this prior to continuing:
 
-dataset$species = toupper(dataset$species)
+sp = toupper(sp)
 
 # Let's explore whether there was a difference:
 
-length(unique(dataset$species))
+length(unique(dataset2$species))
 
 length(unique(sp))
 
@@ -151,7 +144,7 @@ length(unique(sp))
 # rather than character and removes any unused levels) 
 # and continue exploring:
 
-sp = factor(dataset$species)
+sp = factor(sp)
 
 levels(sp)
 
@@ -168,23 +161,19 @@ bad_sp = c('', 'NONE','UK1','UKFO1','UNK1','UNK2','UNK3','LAMIA', 'UNGR1','CACT1
   'UNK2','UNK3', 'UNK1','FORB7', 'MISSING', '-888', 'DEAD','ERRO2', 'FORB1','FSEED', 'GSEED',
   'MOSQ', 'SEED','SEEDS1','SEEDS2', 'SEFLF','SESPM','SPOR1')
 
-dataset1 = dataset[!dataset$species %in% bad_sp,]
+dataset3 = dataset[!dataset2$species %in% bad_sp,]
 
-dataset1$species = factor(dataset1$species)
+dataset3$species = factor(dataset3$species)
 
 # Let's look at how the removal of bad species altered the length of the dataset:
 
-nrow(dataset)
+nrow(dataset2)
 
-nrow(dataset1)
+nrow(dataset3)
 
 # Look at the head of the dataset to ensure everything is correct:
 
-head(dataset1)
-
-# Having checked through the results, we can now reassign the dataset:
-
-dataset = dataset1
+head(dataset3)
 
 # !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE SPECIES DATA WERE MODIFIED!
 
@@ -193,42 +182,35 @@ dataset = dataset1
 #===============================================================================*
 # Here, we need to extract the sampling dates. 
 
-# For starters, let's change the date column to a true date (and give the darned
-# column a better name:
-
-head(dataset)
+# For starters, let's change the date column to a true date:
 
 date = strptime(dataset$record_record_date, '%m/%d/%Y')
 
 # A check on the structure lets you know that date field is now a date object:
 
-class(dataset$record_record_date)
-
 class(date)
 
-# Give a double-check, if everything looks okay, then replace the column:
+# Give a double-check, if everything looks okay replace the column:
 
 head(dataset$record_record_date)
 
 head(date)
 
-dataset1 = dataset
+dataset4 = dataset3
 
-dataset1$record_record_date = date
+dataset4$record_record_date = date
 
-names(dataset1)[5] = 'date'
+names(dataset4)[5] = 'date'
 
-# Let's remove the season field (for now):
+# Let's remove the season field:
 
-dataset1 = dataset1[,-2]
+dataset4 = dataset4[,-2]
   
-# After a check of dataset1, you can rename it dataset:
+# Check the results
   
-head(dataset)
+head(dataset3)
 
-head(dataset1)
-
-dataset = dataset1
+head(dataset4)
 
 # !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE DATE DATA WERE MODIFIED!
 
@@ -238,27 +220,26 @@ dataset = dataset1
 # Next, we need to explore the count records. A good first pass is to remove 
 # zero counts and NA's:
 
-summary(dataset)
+summary(dataset4)
 
 # Subset to records > 0 (if applicable):
 
-dataset1 = subset(dataset, cover > 0) 
+dataset5 = subset(dataset, cover > 0) 
 
-summary(dataset1)
+summary(dataset5)
 
 # Remove NA's:
 
-dataset1 = na.omit(dataset1)
+dataset6 = na.omit(dataset5)
 
 # Make sure to write in the data summary table the type of observed count (here,
 # it represents % cover)
 
-# How does it look? If you approve,  assign changes to dataset:
+# How does it look?
 
-summary(dataset)
-summary(dataset1)
+head(dataset6)
 
-dataset = dataset1
+summary(dataset6)
 
 # !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE COUNT DATA WERE MODIFIED!
 
@@ -268,29 +249,27 @@ dataset = dataset1
 # Now we will make the final formatted dataset, add a datasetID field, check for
 # errors, and remove records that can't be used for our purposes.
 
-# First, lets add the datasetID:
+# First, let's add the datasetID:
 
-dataset1 = dataset
-
-dataset1$datasetID = rep(223,nrow(dataset1))
+dataset6$datasetID = rep(223,nrow(dataset1))
 
 # Change date to a factor:
 
-dataset1$date = factor(as.character(dataset1$date))
+dataset6$date = factor(as.character(dataset1$date))
 
 # Now make the compiled dataframe:
 
-dataset2 = ddply(dataset1,.(datasetID, site, date, species),
+dataset7 = ddply(dataset6,.(datasetID, site, date, species),
                  summarize, count = max(cover))
 
 
 # Explore the data frame:
 
-dim(dataset2)
+dim(dataset7)
 
-head(dataset2)
+head(dataset7)
 
-summary(dataset2)
+summary(dataset7)
 
 # Convert date back to a date object:
 
@@ -302,9 +281,7 @@ head(date)
 
 # All looks good, reassign the column:
 
-dataset = dataset2
-
-dataset$date = date
+dataset7$date = date
 
 # !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE DATA WERE MODIFIED!
 
@@ -314,18 +291,13 @@ dataset$date = date
 
 # Take a final look at the dataset:
 
-head(dataset)
+head(dataset7)
 
-summary (dataset)
+summary (dataset7)
 
 # If everything is looks okay we're ready to write formatted data frame:
 
-write.csv(dataset, "data/formatted_datasets/dataset_223.csv", row.names = F)
+write.csv(dataset7, "data/formatted_datasets/dataset_223.csv", row.names = F)
 
 # !GIT-ADD-COMMIT-PUSH THE FORMATTED DATASET IN THE DATA FILE, THEN GIT-ADD-
 # COMMIT-PUSH THE UPDATED DATA FOLDER!
-
-
-################################################################################*
-# ---- END CREATION OF FORMATTED DATA FRAME ----
-################################################################################*
