@@ -1,6 +1,16 @@
 ################################################################################*
 #  DATA FORMATTING TEMPLATE
 ################################################################################*
+# Start by opening the data formatting table (data_formatting_table.csv). To
+# determine which dataset you should be working on, see the "format_priority"
+# field. Choose the dataset with the highest format priority, but be sure to 
+# check out the format_flag field to see the current status of the dataset.
+# Flag codes are as follows:
+  # 0 = not currently worked on
+  # 1 = formatting complete
+  # 2 = formatting in process
+  # 3 = formatting halted, issue
+  # 4 = data unavailable
 
 #-------------------------------------------------------------------------------*
 # ---- SET-UP ----
@@ -50,12 +60,12 @@ str(dataset)
 head(dataset)
 
 # Here, we can see that there are some fields that we won't use. Let's remove
-# them, note that I've given a new name here "d1", this is to ensure that
+# them, note that I've given a new name here "dataset1", this is to ensure that
 # we don't have to go back to square 1 if we've miscoded anything.
 
 names(dataset)
 
-dataset1 = dataset[,-c(5,6,8,9)]
+dataset1 = dataset[,-c(1, 2, 8, 9, 11,13, 14)]
 
 head(dataset1)
 
@@ -64,21 +74,16 @@ head(dataset1)
 
 # !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE DATA WERE MODIFIED!
 
+#!DATA FORMATTING TABLE UPDATE: Fill in the value for Column H (R_nRecs)!
+
+nrow(dataset)
+
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SITE DATA ----
 #===============================================================================*
-
-# View summary of fields in the dataset:
-
-summary(dataset1)
-
-# Reminder of the dataset:
-
-head(dataset1)
-
-# We can see that sites are broken up into (potentially) 5 fields. Find the 
-# metadata link in the data source table use that link to determine how
-# sites are characterized.
+# From the previous head commmand, we can see that sites are broken up into 
+# (potentially) 5 fields. Find the metadata link in the data formatting table
+# use that link to determine how sites are characterized.
 #  -- If sampling is nested (e.g., site, block, treatment, plot, quad as in 
 # this study), use each of the identifying fields and separate each field with
 # an underscore.
@@ -98,8 +103,7 @@ site = paste(dataset1$site, dataset1$block, dataset1$treatment,
 head(site)
 
 # All looks correct, so replace the site column in the dataset (as a factor) 
-# and remove the unnecessary fields, start by renaming the dataset in case 
-# you make a mistake:
+# and remove the unnecessary fields, start by renaming the dataset to dataset2:
 
 dataset2 = dataset1
 
@@ -111,7 +115,15 @@ dataset2 = dataset2[,-c(2:5)]
 
 head(dataset2)
 
+# For memory and cleaning purposes, removed the site object:
+
+rm(site)
+
 # !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE SITE DATA WERE MODIFIED!
+
+#!DATA FORMATTING TABLE UPDATE: Fill in the value for Column I (R_nSites)!
+
+length(unique(dataset2$site))
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SPECIES DATA ----
@@ -123,30 +135,13 @@ head(dataset2)
 
 # Look at the individual species present:
 
-sp = dataset2$species
-
-levels(sp) # Note: You can also use unique(sp) here.
+levels(dataset2$species) 
 
 # The first thing that I notice is that there are lower and upper case
 # entries. Because R is case-sensitive, this will be coded as separate species.
 # Modify this prior to continuing:
 
-sp = toupper(sp)
-
-# Let's explore whether there was a difference:
-
-length(unique(dataset2$species))
-
-length(unique(sp))
-
-# We see that almost 70 species were the result of upper and lower case!
-# Make a new species vector (factor ensures that it is coded as a factor
-# rather than character and removes any unused levels) 
-# and continue exploring:
-
-sp = factor(sp)
-
-levels(sp)
+dataset2$species = toupper(dataset2$species)
 
 # Now explore the listed species themselves. To do so, you should go back to study's 
 # metadata. A quick look at the metadata is not informative, unfortunately. Because of
@@ -161,11 +156,13 @@ bad_sp = c('', 'NONE','UK1','UKFO1','UNK1','UNK2','UNK3','LAMIA', 'UNGR1','CACT1
   'UNK2','UNK3', 'UNK1','FORB7', 'MISSING', '-888', 'DEAD','ERRO2', 'FORB1','FSEED', 'GSEED',
   'MOSQ', 'SEED','SEEDS1','SEEDS2', 'SEFLF','SESPM','SPOR1')
 
-dataset3 = dataset[!dataset2$species %in% bad_sp,]
+dataset3 = dataset2[!dataset2$species %in% bad_sp,]
+
+# Reset the factor levels:
 
 dataset3$species = factor(dataset3$species)
 
-# Let's look at how the removal of bad species altered the length of the dataset:
+# Let's look at how the removal of bad species and altered the length of the dataset:
 
 nrow(dataset2)
 
@@ -177,6 +174,10 @@ head(dataset3)
 
 # !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE SPECIES DATA WERE MODIFIED!
 
+#!DATA FORMATTING TABLE UPDATE: Fill in the value for Column J (R_nSpecies)!
+
+length(levels(dataset1$species))
+
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT TIME DATA ----
 #===============================================================================*
@@ -184,7 +185,7 @@ head(dataset3)
 
 # For starters, let's change the date column to a true date:
 
-date = strptime(dataset$record_record_date, '%m/%d/%Y')
+date = strptime(dataset3$record_record_date, '%m/%d/%Y')
 
 # A check on the structure lets you know that date field is now a date object:
 
@@ -192,7 +193,7 @@ class(date)
 
 # Give a double-check, if everything looks okay replace the column:
 
-head(dataset$record_record_date)
+head(dataset3$record_record_date)
 
 head(date)
 
@@ -200,19 +201,21 @@ dataset4 = dataset3
 
 dataset4$record_record_date = date
 
-names(dataset4)[5] = 'date'
-
-# Let's remove the season field:
-
-dataset4 = dataset4[,-2]
+names(dataset4)[4] = 'date'
   
-# Check the results
+# Check the results:
   
-head(dataset3)
-
 head(dataset4)
 
+# For memory and cleaning purposes, removed the date object:
+
+rm(date)
+
 # !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE DATE DATA WERE MODIFIED!
+
+#!DATA FORMATTING TABLE UPDATE: Fill in the value for Column K (R_nTime)!
+
+length(unique(dataset4$date))
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT COUNT DATA ----
@@ -224,7 +227,7 @@ summary(dataset4)
 
 # Subset to records > 0 (if applicable):
 
-dataset5 = subset(dataset, cover > 0) 
+dataset5 = subset(dataset4, cover > 0) 
 
 summary(dataset5)
 
@@ -239,9 +242,23 @@ dataset6 = na.omit(dataset5)
 
 head(dataset6)
 
-summary(dataset6)
-
 # !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE COUNT DATA WERE MODIFIED!
+
+#!DATA FORMATTING TABLE UPDATE: Fill in the values in Columns K-M, 
+# R_Mean_Individuals_perSiteYear, R_Min_Individuals_perSiteYear, and 
+# R_Max_Individuals_perSiteYear. 
+
+# If, as is the case here, the count is actually "cover", put "NA" in each of
+# the columns. In Column Z (Notes_countFormat), enter "Count values represent 
+# cover".
+
+# Regardless of the type of data, be sure to include the removal of NA's or
+# zeros.
+
+# If the data were counts (which they are not here, this is only an example), 
+# you would obtain the counts per site year summary statistics as follows:
+
+tempCount = ddply(dataset6, .(as.character(date)), summarize, sum(cover))
 
 #-------------------------------------------------------------------------------*
 # ---- MAKE DATA FRAME OF COUNT BY SITES, SPECIES, AND YEAR ----
@@ -301,3 +318,15 @@ write.csv(dataset7, "data/formatted_datasets/dataset_223.csv", row.names = F)
 
 # !GIT-ADD-COMMIT-PUSH THE FORMATTED DATASET IN THE DATA FILE, THEN GIT-ADD-
 # COMMIT-PUSH THE UPDATED DATA FOLDER!
+
+#-------------------------------------------------------------------------------*
+# ---- UPDATE THE DATA_FORMATTING_TABLE  ----
+#===============================================================================*
+
+# Your last step in the process is to update the data formatting table. You must
+# provide enough information to thoroughly explain any alterations to the final
+# formatted dataframe!
+
+# Start by filling in the information that pertains to the raw dataset prior
+# to any formatting (field names that start with "R", columns F:L)
+# 
