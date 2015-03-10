@@ -67,10 +67,14 @@ names(dataset)
 
 dataset1 = dataset[,-c(1, 2, 8, 9, 11,13, 14)]
 
-head(dataset1)
+# Let's change the name of the "record_record_date" column to simply "date":
 
-# If everything looks okay, you're ready to move forward. If not, retrace your
+names(dataset1)[8] = 'date'
+
+# Explore, if everything looks okay, you're ready to move forward. If not, retrace your
 # steps to look for and fix errors. 
+
+head(dataset1)
 
 # !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE DATA WERE MODIFIED!
 
@@ -258,7 +262,22 @@ head(dataset6)
 # If the data were counts (which they are not here, this is only an example), 
 # you would obtain the counts per site year summary statistics as follows:
 
-tempCount = ddply(dataset6, .(as.character(date)), summarize, sum(cover))
+tempCount = ddply(dataset6, .(species), summarize, tCount = sum(cover))
+
+summary(dataset6)
+
+str(dataset6)
+
+dfx <- data.frame(
+  group = c(rep('A', 8), rep('B', 15), rep('C', 6)),
+  sex = sample(c("M", "F"), size = 29, replace = TRUE),
+  age = runif(n = 29, min = 18, max = 54)
+)
+
+# Note the use of the '.' function to allow
+# group and sex to be used without quoting
+ddply(dfx, .(group, sex), summarize, mean = round(mean(age), 2))
+ddply(dataset1, .(species), summarize, tCount = sum(cover))
 
 #-------------------------------------------------------------------------------*
 # ---- MAKE DATA FRAME OF COUNT BY SITES, SPECIES, AND YEAR ----
