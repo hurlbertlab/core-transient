@@ -282,9 +282,12 @@ addNewSummariesFun = function(threshold, reps){
   currentSummaryData = read.csv('output/tabular_data/core-transient_summary.csv')
   currentDatasetIDs = unique(currentSummaryData$datasetID)
   propOcc_datasets = list.files('data/propOcc_datasets')
+  # The following gets the integer values for the datasetID's from
+  # "propOcc_##.csv" or "propOcc_###.csv":
   propOccDatasetIDs = read.table(text = 
                   as.character(read.table(text = propOcc_datasets,
                   sep =c('_'))[,2]),sep ='.')[,1]
+  # Find dataset IDs that are not yet summarized:
   newDatasetIDs = propOccDatasetIDs[!propOccDatasetIDs %in% currentDatasetIDs]
   # For loop to extract summary stats for new datasetIDs
   outList = list(length = length(newDatasetIDs))
