@@ -104,7 +104,7 @@ Here, your primary goal is to ensure that all of your species are valid. To do s
 	class(sp)
 		
 	length(unique(sp))
-		```
+	```
 2. If species are formatted as characters, it may be easier to format them as factors:
 
 	```
