@@ -254,11 +254,11 @@ Here, our goal is to check what type of count data are provided and remove 0 and
 	cd data
 	git add formatted_datasets/dataset_33.csv
 	git commit -m "added formatted dataset"
-	git push
+	git push origin master
 	cd ..
 	git add data
 	git commit -m "updated submodule with formatted dataset 33"
-	git push
+	git push origin master
 	```
 		
 ## R CODE CHEATSHEET
