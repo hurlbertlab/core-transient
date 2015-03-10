@@ -153,22 +153,26 @@ Here, your primary goal is to ensure that all of your species are valid. To do s
 		
 8. git-add-commit-push your script, describing the removal of species, if necessary.
 
-10. Explore and format the time data. Here we need to extract sampling date. 
-	1. If dates are provided in multiple columns, it may be necessary to concatenate the columns. 
+## EXPLORE AND FORMAT TIME DATA
+
+Here our goal is simply to format the sampling date. 
+
+1. If dates are provided in multiple columns, it may be necessary to concatenate the columns. 
 		
-		```
-		date = paste(example_df$month, example_df$day, example_df$year, sep '/')
-		```
-	2. If the date column is provided only as years, leave date as simply a numeric year.
-	3. If the date column is in the format of "mm/dd/yyyy", or something similar, convert it to a date object. Check and to make sure that it is properly formatted after the date object is created (will be a POSIX-class object):
+	```
+	date = paste(example_df$month, example_df$day, example_df$year, sep '/')
+	```
 	
-		```
-		date = strptime(date, '%m/%d/%Y')
+2. If the date column is provided only as years, leave date as simply a numeric year.
+3. If the date column is in the format of "mm/dd/yyyy", or something similar, convert it to a date object. Check and to make sure that it is properly formatted after the date object is created (will be a POSIX-class object):
+	
+	```
+	date = strptime(date, '%m/%d/%Y')
 		
-		class(date)
-		```
+	class(date)
+	```
 		
-	4. git-add-commit-push describing any modifications made to the date field.
+4. git-add-commit-push describing any modifications made to the date field.
 		
 11. Explore and format the count data. Here we need to check what type of count data are provided and remove 0 and NA counts.
 	1. If counts are "true" counts, enter "count" in the data source table "count_type" field. If counts are actually proportional cover data, enter "cover" in the "count_type" field. If counts are actually density data, enter "density" in the "count_type" field. git-add-commit-push data_source_table.csv.
