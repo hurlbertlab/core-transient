@@ -5,6 +5,7 @@
 # determine which dataset you should be working on, see the "format_priority"
 # field. Choose the dataset with the highest format priority, but be sure to 
 # check out the format_flag field to see the current status of the dataset.
+
 # Flag codes are as follows:
   # 0 = not currently worked on
   # 1 = formatting complete
@@ -28,20 +29,11 @@ list.files('data/raw_datasets')
 
 dataset = read.csv('data/raw_datasets/dataset_223.csv')
 
-#===============================================================================*
-# MAKE FORMATTED DATASET
-#===============================================================================*
-# The goal is: 
-# 1) To create a dataset of the columns of interest at the smallest spatial
-#  and temporal sampling grain available.
-# 2) To eliminate "bad" species data.
-
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE THE DATASET ----
 #===============================================================================*
-# Here, you are predominantly interested in getting to know the dataset,
-# what the fields represent and determining which fields are relavent. Do 
-# this carefully, making notes on a piece of scratch paper.
+# Here, you are predominantly interested in getting to know the dataset, and 
+# determine what the fields represent and  which fields are relavent.
 
 # View field names:
 
@@ -78,9 +70,21 @@ head(dataset1)
 
 # !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE DATA WERE MODIFIED!
 
-#!DATA FORMATTING TABLE UPDATE: Fill in the value for Column H (R_nRecs)!
+#!DATA FORMATTING TABLE UPDATE!
+
+# Column E. LatLong_sites. Are the sites defined by latitude and longitude? Y/N
+
+# Column F. R_nRecs. Number of records in the raw dataset:
 
 nrow(dataset)
+
+# Column G. R_nTime. Number of unique time samples in the raw dataset:
+
+length(unique(dataset1$date))
+
+# Column H. R_nSpecies. Number of unique species in the raw dataset:
+
+length(unique(dataset1$species))
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SITE DATA ----
@@ -90,7 +94,8 @@ nrow(dataset)
 # use that link to determine how sites are characterized.
 #  -- If sampling is nested (e.g., site, block, treatment, plot, quad as in 
 # this study), use each of the identifying fields and separate each field with
-# an underscore.
+# an underscore. For nested samples be sure the order of concatenated columns
+# goes from coarser to finer scales (e.g. "km_m_cm")
 # -- If sites are listed as lats and longs, use the finest available grain 
 # and separate lat and long fields with an underscore.
 # -- If the site definition is clear, make a new site column as necessary.
@@ -125,9 +130,22 @@ rm(site)
 
 # !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE SITE DATA WERE MODIFIED!
 
-#!DATA FORMATTING TABLE UPDATE: Fill in the value for Column I (R_nSites)!
+#!DATA FORMATTING TABLE UPDATE!
+
+# Column I. R_siteUnit. How a site is coded (i.e. if the field was concatenated
+# such as this one, it was coded as "site_block_treatment_plot_quad").
+# Alternatively, if the site were concatenated from latitude and longitude 
+# fields, the encoding would be "lat_long". 
+#
+# Column J. spatial_scale_variable. Is a site potentially nested (e.g., plot
+# within a quad or decimal lat longs that could be scaled up): Y/N
+#
+# Column K. R_nSites. The number of records in the raw number of sites:
 
 length(unique(dataset2$site))
+
+# Column L. Notes_siteFormat. Use this field to THOROUGHLY describe any changes
+# made to the site field during formatting.
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SPECIES DATA ----
@@ -178,48 +196,10 @@ head(dataset3)
 
 # !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE SPECIES DATA WERE MODIFIED!
 
-#!DATA FORMATTING TABLE UPDATE: Fill in the value for Column J (R_nSpecies)!
+#!DATA FORMATTING TABLE UPDATE!
 
-length(levels(dataset1$species))
-
-#-------------------------------------------------------------------------------*
-# ---- EXPLORE AND FORMAT TIME DATA ----
-#===============================================================================*
-# Here, we need to extract the sampling dates. 
-
-# For starters, let's change the date column to a true date:
-
-date = strptime(dataset3$date, '%m/%d/%Y')
-
-# A check on the structure lets you know that date field is now a date object:
-
-class(date)
-
-# Give a double-check, if everything looks okay replace the column:
-
-head(dataset3$date)
-
-head(date)
-
-dataset4 = dataset3
-
-dataset4$date = date
-
-names(dataset4)[4] = 'date'
-  
-# Check the results:
-  
-head(dataset4)
-
-# For memory and cleaning purposes, removed the date object:
-
-rm(date)
-
-# !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE DATE DATA WERE MODIFIED!
-
-#!DATA FORMATTING TABLE UPDATE: Fill in the value for Column K (R_nTime)!
-
-length(unique(dataset4$date))
+# Column M. Notes_spFormat. Provide a THOROUGH description of any changes made
+# to the species field, including why any species were removed.
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT COUNT DATA ----
@@ -227,57 +207,49 @@ length(unique(dataset4$date))
 # Next, we need to explore the count records. A good first pass is to remove 
 # zero counts and NA's:
 
-summary(dataset4)
+summary(dataset3)
 
 # Subset to records > 0 (if applicable):
 
-dataset5 = subset(dataset4, cover > 0) 
+dataset4 = subset(dataset3, cover > 0) 
 
-summary(dataset5)
+summary(dataset4)
 
 # Remove NA's:
 
-dataset6 = na.omit(dataset5)
+dataset5 = na.omit(dataset4)
 
 # Make sure to write in the data summary table the type of observed count (here,
 # it represents % cover)
 
 # How does it look?
 
-head(dataset6)
+head(dataset5)
 
 # !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE COUNT DATA WERE MODIFIED!
 
-#!DATA FORMATTING TABLE UPDATE: Fill in the values in Columns K-M, 
-# R_Mean_Individuals_perSiteYear, R_Min_Individuals_perSiteYear, and 
-# R_Max_Individuals_perSiteYear. 
+#!DATA FORMATTING TABLE UPDATE!
+# Note: If, as is the case here, the count is actually "cover", put "NA" in 
+# columns N-P. The below script is an example for "true" counts.
 
-# If, as is the case here, the count is actually "cover", put "NA" in each of
-# the columns. In Column Z (Notes_countFormat), enter "Count values represent 
-# cover".
+siteYearCounts = ddply(dataset5, .(site, date), summarize, tCount = sum(cover))
 
-# Regardless of the type of data, be sure to include the removal of NA's or
-# zeros.
+# Column N. R_Mean_Individuals_perSiteYear. Average individuals per site per year:
 
-# If the data were counts (which they are not here, this is only an example), 
-# you would obtain the counts per site year summary statistics as follows:
+mean(siteYearCounts$tCount)
 
-tempCount = ddply(dataset6, .(species), summarize, tCount = sum(cover))
+# Column O. R_Min_Individuals_perSiteYear. Minimum individuals per site per year:
 
-summary(dataset6)
+min(siteYearCounts$tCount)
 
-str(dataset6)
+# Column P. R_Max_Individuals_perSiteYear. Maximum individuals per site per year:
 
-dfx <- data.frame(
-  group = c(rep('A', 8), rep('B', 15), rep('C', 6)),
-  sex = sample(c("M", "F"), size = 29, replace = TRUE),
-  age = runif(n = 29, min = 18, max = 54)
-)
+max(siteYearCounts$tCount)
 
-# Note the use of the '.' function to allow
-# group and sex to be used without quoting
-ddply(dfx, .(group, sex), summarize, mean = round(mean(age), 2))
-ddply(dataset1, .(species), summarize, tCount = sum(cover))
+# Column Q. Notes_countFormat. Provide a complete description of how count
+# data formatted. In this instance, you would enter "Count values represent 
+# cover". Regardless of the type of data, be sure to include the removal any
+# NA's or zeros in the notes field.
 
 #-------------------------------------------------------------------------------*
 # ---- MAKE DATA FRAME OF COUNT BY SITES, SPECIES, AND YEAR ----
@@ -287,39 +259,92 @@ ddply(dataset1, .(species), summarize, tCount = sum(cover))
 
 # First, let's add the datasetID:
 
-dataset6$datasetID = rep(223,nrow(dataset1))
-
-# Change date to a factor:
-
-dataset6$date = factor(as.character(dataset1$date))
-
+dataset5$datasetID = 223
+  
 # Now make the compiled dataframe:
 
-dataset7 = ddply(dataset6,.(datasetID, site, date, species),
+dataset6 = ddply(dataset5,.(datasetID, site, date, species),
                  summarize, count = max(cover))
-
 
 # Explore the data frame:
 
-dim(dataset7)
+dim(dataset6)
 
-head(dataset7)
+head(dataset6)
 
-summary(dataset7)
+summary(dataset6)
 
-# Convert date back to a date object:
+# !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE DATA WERE MODIFIED!
 
-date = as.Date(dataset2$date, '%Y-%m-%d')
+#-------------------------------------------------------------------------------*
+# ---- UPDATE THE DATA FORMATTING TABLE  ----
+#===============================================================================*
+# Your goal is to now fill in the remainder of the data formatting table.
+
+# Column R. F_nRec. Number of records in the formatted dataset:
+
+nrow(dataset6)
+
+# Column S. F_nSite Number of sites in the formatted dataset:
+
+length(unique(dataset6$site))
+
+# Column T. F_nSpecies. Number of species in the formatted dataset:
+
+length(levels(dataset6$species))
+
+# Columns U-W. As N-P above:
+
+siteYearCounts = ddply(dataset6, .(site, date), summarize, tCount = sum(cover))
+
+head(siteYearCounts)
+
+mean(siteYearCounts$tCount)
+
+min(siteYearCounts$tCount)
+
+max(siteYearCounts$tCount)
+
+#-------------------------------------------------------------------------------*
+# ---- FORMAT TIME DATA ----
+#===============================================================================*
+# Here, we need to extract the sampling dates. 
+
+# For starters, let's change the date column to a true date:
+
+date = as.POSIXct(strptime(dataset6$date, '%m/%d/%Y'))
+
+# A check on the structure lets you know that date field is now a date object:
 
 class(date)
 
+# Give a double-check, if everything looks okay replace the column:
+
+head(dataset6$date)
+
 head(date)
 
-# All looks good, reassign the column:
+dataset7 = dataset6
 
 dataset7$date = date
 
-# !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE DATA WERE MODIFIED!
+# Check the results:
+
+head(dataset7)
+
+# For memory and cleaning purposes, removed the date object:
+
+rm(date)
+
+# !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE DATE DATA WERE MODIFIED!
+
+#!DATA FORMATTING TABLE UPDATE!
+
+# Column X. Notes_timeFormat. Provide a thorough description of any modifications
+# that were made to the time field.
+
+# Column Y. subannualTgrain. After exploring the time data, was this dataset
+# sampled at a sub-annual temporal grain?
 
 #-------------------------------------------------------------------------------*
 # ---- WRITE OUTPUT DATA FRAMES  ----
@@ -338,14 +363,3 @@ write.csv(dataset7, "data/formatted_datasets/dataset_223.csv", row.names = F)
 # !GIT-ADD-COMMIT-PUSH THE FORMATTED DATASET IN THE DATA FILE, THEN GIT-ADD-
 # COMMIT-PUSH THE UPDATED DATA FOLDER!
 
-#-------------------------------------------------------------------------------*
-# ---- UPDATE THE DATA_FORMATTING_TABLE  ----
-#===============================================================================*
-
-# Your last step in the process is to update the data formatting table. You must
-# provide enough information to thoroughly explain any alterations to the final
-# formatted dataframe!
-
-# Start by filling in the information that pertains to the raw dataset prior
-# to any formatting (field names that start with "R", columns F:L)
-# 
