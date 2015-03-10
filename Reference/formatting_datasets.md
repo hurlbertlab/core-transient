@@ -174,19 +174,23 @@ Here our goal is simply to format the sampling date.
 		
 4. git-add-commit-push describing any modifications made to the date field.
 		
-11. Explore and format the count data. Here we need to check what type of count data are provided and remove 0 and NA counts.
-	1. If counts are "true" counts, enter "count" in the data source table "count_type" field. If counts are actually proportional cover data, enter "cover" in the "count_type" field. If counts are actually density data, enter "density" in the "count_type" field. git-add-commit-push data_source_table.csv.
-	2. Remove NA's and subset to counts that are greater than 0. After taking the following steps below, be sure to explore the data frame to ensure that the data are formatted correctly:
+## EXPLORE AND FORMAT COUNT DATA
+
+Here, our goal is to check what type of count data are provided and remove 0 and NA counts.
+
+1. If counts are "true" counts, enter "count" in the data source table "count_type" field. If counts are actually proportional cover data, enter "cover" in the "count_type" field. If counts are actually density data, enter "density" in the "count_type" field. git-add-commit-push data_source_table.csv.
+2. Remove NA's and subset to counts that are greater than 0. After taking the following steps below, be sure to explore the data frame to ensure that the data are formatted correctly:
 	
-		```
-		summary(example_df$count)
+	```
+	summary(example_df$count)
 		
-		example_df1 = na.omit(example_df)
+	example_df1 = na.omit(example_df)
 		
-		example_df1 = subset(example_df1, count > 0)
-		```
+	example_df1 = subset(example_df1, count > 0)
+	```
 		
-	3. git-add-commit-push your script, describing any changes you made to the count field.
+3. git-add-commit-push your script, describing any changes you made to the count field.
+
 12. You're now ready to make the final formatted dataset!
 	1. First, we'll make our "safe" dataset and add a datasetID field (for this example, let's say this is dataset 33):
 		
