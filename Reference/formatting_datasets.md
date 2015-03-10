@@ -41,7 +41,6 @@ Below are the steps that you should take when exploring and formatting datasets.
 	```
 	example_df1 = example_df[,-c(1,3,5:8)]
 	```
-_**Note**: In the above I added a "1" to the example_df name. I consider this best practices -- you can check your work and only overwrite the R object if there were no errors. This will save you from having to rerun portions of the script._
 
 7. Once you are done with the exploration of the larger dataset and (potentially) removing columns, save your script and git-add-commit-push and describe which columns were removed and why.
 
@@ -148,7 +147,6 @@ Here, your primary goal is to ensure that all of your species are valid. To do s
 		
 	nrow(example_df1)
 		
-	example_df = example_df1
 	```
 		
 8. git-add-commit-push your script, describing the removal of species, if necessary.
@@ -184,70 +182,70 @@ Here, our goal is to check what type of count data are provided and remove 0 and
 	```
 	summary(example_df$count)
 		
-	example_df1 = na.omit(example_df)
+	example_df = na.omit(example_df)
 		
-	example_df1 = subset(example_df1, count > 0)
+	example_df = subset(example_df, count > 0)
 	```
 		
 3. git-add-commit-push your script, describing any changes you made to the count field.
 
-12. You're now ready to make the final formatted dataset!
-	1. First, we'll make our "safe" dataset and add a datasetID field (for this example, let's say this is dataset 33):
+## MAKE AND WRITE THE FINAL FORMATTED DATASET
+
+1. First, add a datasetID field (for this example, let's say this is dataset 33):
 		
-		```
-		example_df1 = example_df
+	```
+	example_df$datasetID = 33
+	```
 		
-		example_df1$datasetID = 33
-		```
-		
-	2. If date is a POSIX object, convert it to a factor:
+2. If date is a POSIX object, convert it to a factor:
 	
-		```
-		example_df1$date = factor(as.character(example_df1$date))
-		```
-	3. Now use Hadley Wickham's "plyr" package to summarize counts by site, date, and species:
+	```
+	example_df$date = factor(as.character(example_df1$date))
+	```
+	
+3. Now use Hadley Wickham's "plyr" package to summarize counts by site, date, and species:
 		
-		```
-		require(plyr)
+	```
+	require(plyr)
 		
-		example_df2 = ddply(example_df1, .(datasetID, site, date, species),
-			summarize, count = max(count))
+	example_df = ddply(example_df, .(datasetID, site, date, species),
+		summarize, count = max(count))
 		```
 	
 	4. Explore the dataframe to be sure that everything worked:
 		
 		```
-		dim(example_df2)
+		dim(example_df)
 		
-		head(example_df2)
+		head(example_df)
 		
-		summary(example_df2_
+		summary(example_df)
 		```
 		
 	5. Unless date is a numeric vector of years, convert date back into a POSIX object and, if everything looks good, reassign the column:
 	
 		```
-		date = as.Date(example_df2$date, '%Y-%m-%d')
+		date = as.Date(example_df$date, '%Y-%m-%d')
 		
 		class(date)
 		
 		head(date)
 		
-		example_df2 = date
+		example_df$date = date
 		```
 	
 	6. Take a final look and then git-add-push decribing any modifications to the data!
 		
 		```
-		head(example_df2)
+		head(example_df)
 		
-		summary(example_df2)
+		summary(example_df)
 		```
 		
 	7. Write to file (for this example, we'll say this is dataset 33):
 		
 		```
-		write.csv(example_df2, 'data/formatted_datasets/dataset_33.csv, row.names = F)
+		write.csv(example_df, 'data/formatted_datasets/dataset_33.csv, row.names = F)
 		```
 	
 	8. git-add-commit-push the formatted dataset in the data file, then git-add-commit-push the updated data submodule using the following steps (in git bash, example is for dataset 33):
