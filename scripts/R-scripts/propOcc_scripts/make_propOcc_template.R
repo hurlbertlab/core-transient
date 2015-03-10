@@ -19,35 +19,70 @@ dataset = read.csv("data/formatted_datasets/dataset_223.csv")
 # scale decisions and determine the proportional occupancies.
 
 #-------------------------------------------------------------------------------*
-# ---- TIME DATA ----
-#===============================================================================*
-# We start by extracting year from the dataset. Year will now be our DEFAULT
-# temporal grain. Decisions for finer temporal grains may be decided at a 
-# later date.
-
-# Change date column to year:
-
-dataset$date = getYear(dataset$date)
-
-# Change column name:
-
-names(dataset)[3] = 'year'
-
-#-------------------------------------------------------------------------------*
 # ---- SITE DATA ----
 #===============================================================================*
 # What is the appropriate sampling grain for sites? Return to the metadata to
 # see if there's any clues.
 
+##################################
+# PUT THIS AT THE END OF THE DATA FORMATTING TEMPLATE:
+# We want to address Sites before Time, but to address Sites we still need
+# this 'year' field. Or we can just include it here.
+
+# Add year column:
+
+dataset$year = getYear(dataset$date)
+
+####################################
+
+
 # How many sites are there?
 
 length(unique(dataset$site))
 
-# How many time and species records are there per site?
+# How many species are recorded at each site? If too few (<10),
+# then we may want to use a coarser spatial grain if possible.
 
 siteTable = ddply(dataset, .(site), summarize,
-                  nYear = length(unique(year)),
-                  nSp = length(unique(species)))
+                  nSpecies = length(unique(species)))
+hist(siteTable$nSpecies)
+
+# Does this dataset involve spatial sampling at a grain below that of the site?
+# I.e., Is their an underscore in the site code that demarcates sampling grain(s)?
+finerGrain = grep("_", dataset$site[1])
+
+# If so, then we want to see how consistently sites are represented by the 
+# same number of subplots from year to year and site to site.
+
+#----------------------------
+# WAIT: Will site codes really include info on spatial scales BELOW the site
+# level? If you have a scheme of traps within a quad within a plot, and you
+# initially decide that the quad is the best level of analysis, then isn't 
+# every site just going to be characterized by Plot1_quadA with trap ignored?
+# How then to pull it back out if this field is not included during the
+# original dataset formatting? Ah, no, the formatted dataset should have
+# all of the hierarchical data coded down to the finest level, right?
+
+if(finerGrain == 1) {
+
+  subplots = read.table(text = as.character(dataset$site), sep = "_")
+  names(subplots) = paste('subplot', 0:(ncol(subplots)-1), sep = "")
+  
+  # How many time and species records are there per site per year?
+  
+  siteTable = ddply(dataset, .(site, year), summarize,
+                    nSubplots = length(unique(Station)),
+                    nSampleDates = length(unique(Sample_Date)),
+                    nSpecies = length(unique(species)))
+  
+  
+}
+
+siteTable2 = ddply(dataset, .(site), summarize,
+                  nSubplots = length(unique(Station)),
+                  nSampleDates = length(unique(Sample_Date)),
+                  nSpecies = length(unique(species)))
+
 
 head(siteTable)
 
@@ -138,6 +173,22 @@ dataset = dataset2
 # a courser precision (few decimal places). We can do so by using the 
 # "round_any" function in Hadley Wickham's plyr package, specifying "floor" 
 # as the rounding function.
+
+#-------------------------------------------------------------------------------*
+# ---- TIME DATA ----
+#===============================================================================*
+# We start by extracting year from the dataset. Year will now be our DEFAULT
+# temporal grain. Decisions for finer temporal grains may be decided at a 
+# later date.
+
+# Change date column to year:
+
+dataset$date = getYear(dataset$date)
+
+# Change column name:
+
+names(dataset)[3] = 'year'
+
 
 #-------------------------------------------------------------------------------*
 # ---- WRITE OUTPUT DATA FRAMES  ----
