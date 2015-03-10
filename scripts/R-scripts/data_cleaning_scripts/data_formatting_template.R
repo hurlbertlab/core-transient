@@ -189,7 +189,7 @@ length(levels(dataset1$species))
 
 # For starters, let's change the date column to a true date:
 
-date = strptime(dataset3$record_record_date, '%m/%d/%Y')
+date = strptime(dataset3$date, '%m/%d/%Y')
 
 # A check on the structure lets you know that date field is now a date object:
 
@@ -197,13 +197,13 @@ class(date)
 
 # Give a double-check, if everything looks okay replace the column:
 
-head(dataset3$record_record_date)
+head(dataset3$date)
 
 head(date)
 
 dataset4 = dataset3
 
-dataset4$record_record_date = date
+dataset4$date = date
 
 names(dataset4)[4] = 'date'
   
