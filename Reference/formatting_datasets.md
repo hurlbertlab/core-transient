@@ -210,58 +210,58 @@ Here, our goal is to check what type of count data are provided and remove 0 and
 		
 	example_df = ddply(example_df, .(datasetID, site, date, species),
 		summarize, count = max(count))
-		```
+	```
 	
-	4. Explore the dataframe to be sure that everything worked:
+4. Explore the dataframe to be sure that everything worked:
 		
-		```
-		dim(example_df)
+	```
+	dim(example_df)
 		
-		head(example_df)
+	head(example_df)
 		
-		summary(example_df)
-		```
+	summary(example_df)
+	```
 		
-	5. Unless date is a numeric vector of years, convert date back into a POSIX object and, if everything looks good, reassign the column:
+5. Unless date is a numeric vector of years, convert date back into a POSIX object and, if everything looks good, reassign the column:
 	
-		```
-		date = as.Date(example_df$date, '%Y-%m-%d')
+	```
+	date = as.Date(example_df$date, '%Y-%m-%d')
 		
-		class(date)
+	class(date)
 		
-		head(date)
+	head(date)
 		
-		example_df$date = date
-		```
+	example_df$date = date
+	```
 	
-	6. Take a final look and then git-add-push decribing any modifications to the data!
+6. Take a final look and then git-add-push decribing any modifications to the data!
 		
-		```
-		head(example_df)
+	```
+	head(example_df)
 		
-		summary(example_df)
-		```
+	summary(example_df)
+	```
 		
-	7. Write to file (for this example, we'll say this is dataset 33):
+7. Write to file (for this example, we'll say this is dataset 33):
 		
-		```
-		write.csv(example_df, 'data/formatted_datasets/dataset_33.csv, row.names = F)
-		```
+	```
+	write.csv(example_df, 'data/formatted_datasets/dataset_33.csv, row.names = F)
+	```
 	
-	8. git-add-commit-push the formatted dataset in the data file, then git-add-commit-push the updated data submodule using the following steps (in git bash, example is for dataset 33):
+8. git-add-commit-push the formatted dataset in the data file, then git-add-commit-push the updated data submodule using the following steps (in git bash, example is for dataset 33):
 
-		```
-		cd data
-		git add formatted_datasets/dataset_33.csv
-		git commit -m "added formatted dataset"
-		git push
-		cd ..
-		git add data
-		git commit -m "updated submodule with formatted dataset 33"
-		git push
-		```
+	```
+	cd data
+	git add formatted_datasets/dataset_33.csv
+	git commit -m "added formatted dataset"
+	git push
+	cd ..
+	git add data
+	git commit -m "updated submodule with formatted dataset 33"
+	git push
+	```
 		
-## SECTION THREE: R CODE CHEATSHEET
+## R CODE CHEATSHEET
 
 ####  Removing records:
 
