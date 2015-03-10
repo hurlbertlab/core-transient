@@ -13,6 +13,7 @@
 
 # Load libraries:
 
+library(stringr)
 library(plyr)
 library(ggplot2)
 library(grid)
@@ -271,6 +272,28 @@ summaryStatsFun = function(datasetID, threshold, reps){
                               mu, bimodality, pBimodal, alpha, beta)
   }
   return(rbind.fill(outList))
+}
+
+#----------------------------------------------------------------------------------*
+# ---- MAKE SUMMARY STATS OF ANY NEW PROPOCC FILES ----
+#==================================================================================*
+
+addNewSummariesFun = function(threshold, reps){
+  currentSummaryData = read.csv('output/tabular_data/core-transient_summary.csv')
+  currentDatasetIDs = unique(currentSummaryData$datasetID)
+  propOcc_datasets = list.files('data/propOcc_datasets')
+  propOccDatasetIDs = read.table(text = 
+                  as.character(read.table(text = propOcc_datasets,
+                  sep =c('_'))[,2]),sep ='.')[,1]
+  newDatasetIDs = propOccDatasetIDs[!propOccDatasetIDs %in% currentDatasetIDs]
+  # For loop to extract summary stats for new datasetIDs
+  outList = list(length = length(newDatasetIDs))
+  for(i in 1:length(newDatasetIDs)){
+    outList[[i]] = summaryStatsFun(newDatasetIDs[i], threshold, reps)
+  }
+  newSummaryData = rbind.fill(outList)
+  updatedSummaryData = rbind(currentSummaryData, newSummaryData)
+  return(updatedSummaryData[order(datasetID),])
 }
 
 ###################################################################################*
