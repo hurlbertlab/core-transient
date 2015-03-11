@@ -1,0 +1,4 @@
+# Files to ignore
+
+# R history and files
+.Rhistory
