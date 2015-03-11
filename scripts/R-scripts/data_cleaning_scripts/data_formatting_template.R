@@ -13,6 +13,9 @@
   # 3 = formatting halted, issue
   # 4 = data unavailable
 
+# NOTE: All changes to the data formatting table will be done in R! Do not
+# make changes directly to this table, this will create conflicting versions.
+
 #-------------------------------------------------------------------------------*
 # ---- SET-UP ----
 #===============================================================================*
@@ -28,6 +31,8 @@ getwd()
 list.files('data/raw_datasets')
 
 dataset = read.csv('data/raw_datasets/dataset_223.csv')
+
+data_formatting_table = read.csv('Reference/data_formatting_table.csv')
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE THE DATASET ----
