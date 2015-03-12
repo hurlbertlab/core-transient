@@ -32,8 +32,8 @@ se = function(x) sd(x)/sqrt(length(x))
 # ---- FUNCTIONS FOR DATA FORMATTING ----
 #==================================================================================*
 
-# This function reads in the data formatting table and modifies a value for a 
-# specific field
+# This function modifies a value in the data formatting table for a 
+# specific field:
 
 dataFormattingTableFieldUpdate = function(datasetID, Field, Value){
   rowIndex = which(dataFormattingTable$dataset_ID == datasetID)
