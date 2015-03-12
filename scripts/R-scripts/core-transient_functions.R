@@ -29,6 +29,23 @@ library(MASS)
 se = function(x) sd(x)/sqrt(length(x))
 
 #==================================================================================*
+# ---- FUNCTIONS FOR DATA FORMATTING ----
+#==================================================================================*
+
+# This function reads in the data formatting table and modifies a value for a 
+# specific field
+
+dataFormattingTableFieldUpdate = function(datasetID, Field, Value){
+  rowIndex = which(dataFormattingTable$dataset_ID == datasetID)
+  if (is.factor(FieldSubset)) {
+    dataFormattingTable[,Field] = as.character(dataFormattingTable[,Field])
+    dataFormattingTable[rowIndex, Field] = Value
+    dataFormattingTable[,Field] = factor(dataFormattingTable[,Field])
+  } else {dataFormattingTable[,Field] = factor(dataFormattingTable[,Field])}
+  return(dataFormattingTable)
+}
+
+#==================================================================================*
 # ---- FUNCTIONS for proportional occurrence and site summary data frames  ----
 #==================================================================================*
 
