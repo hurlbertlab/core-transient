@@ -28,7 +28,7 @@ list.files('data/raw_datasets')
 
 dataset = read.csv('data/raw_datasets/dataset_223.csv')
 
-data_formatting_table = read.csv('Reference/data_formatting_table.csv')
+dataFormattingTable = read.csv('Reference/data_formatting_table.csv')
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE THE DATASET ----
@@ -69,7 +69,7 @@ head(dataset1)
 
 #!DATA FORMATTING TABLE UPDATE! Are the sites defined by latitude and longitude? Y/N
 
-dataFormattingTableFieldUpdateFun('LatLong_sites') = 'N'
+dataFormattingTable = dataFormattingTableFieldUpdate(223, 'LatLong_sites','Y')
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SITE DATA ----
@@ -113,15 +113,16 @@ rm(site)
 
 # Raw_siteUnit. How a site is coded (i.e. if the field was concatenated such as this one, it was coded as "site_block_treatment_plot_quad"). Alternatively, if the site were concatenated from latitude and longitude fields, the encoding would be "lat_long". 
 
-dataFormattingTableFieldUpdateFun('Raw_siteUnit') = 'site_block_treatment_plot_quad'
+dataFormattingTable = dataFormattingTableFieldUpdate(223, 'Raw_siteUnit','site_block_treatment_plot_quad')
+
 
 # spatial_scale_variable. Is a site potentially nested (e.g., plot within a quad or decimal lat longs that could be scaled up)? Y/N
 
-dataFormattingTableFieldUpdateFun('spatial_scale_variable') = 'Y'
+dataFormattingTable = dataFormattingTableFieldUpdate(223, 'spatial_scale_variable','Y')
 
 # Notes_siteFormat. Use this field to THOROUGHLY describe any changes made to the site field during formatting.
 
-dataFormattingTableFieldUpdateFun('Notes_siteFormat') = 'site fields concatenated. metadata suggests site-block-treatment-plot-quad describes the order of nested sites from small to large.'
+dataFormattingTable = dataFormattingTableFieldUpdate(223, 'Notes_siteFormat','site fields concatenated. metadata suggests site-block-treatment-plot-quad describes the order of nested sites from small to large.')
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SPECIES DATA ----
@@ -163,7 +164,7 @@ head(dataset3)
 # Column M. Notes_spFormat. Provide a THOROUGH description of any changes made
 # to the species field, including why any species were removed.
 
-dataFormattingTableFieldUpdateFun('Notes_spFormat') = 'several species removed. Metadata was relatively uninformative regarding what constitutes a true species sample for this study. Exploration of metadata from associated Sevilleta studies were more informative regarding which species needed to be removed. Species names are predominantly provided as Kartez codes, but not always. See: http://sev.lternet.edu/data/sev-212/5048. Some codes were identified with this pdf from White Sands: https://nhnm.unm.edu/sites/default/files/nonsensitive/publications/nhnm/U00MUL02NMUS.pdf'
+dataFormattingTable = dataFormattingTableFieldUpdate(223, 'Notes_spFormat', 'several species removed. Metadata was relatively uninformative regarding what constitutes a true species sample for this study. Exploration of metadata from associated Sevilleta studies were more informative regarding which species needed to be removed. Species names are predominantly provided as Kartez codes, but not always. See: http://sev.lternet.edu/data/sev-212/5048. Some codes were identified with this pdf from White Sands: https://nhnm.unm.edu/sites/default/files/nonsensitive/publications/nhnm/U00MUL02NMUS.pdf')
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT COUNT DATA ----
@@ -195,7 +196,7 @@ head(dataset5)
 
 # Notes_countFormat. Provide a complete description of how count data formatted.  Regardless of the type of data, be sure to include the removal any NA's or zeros in the notes field.
 
-dataFormattingTableFieldUpdateFun('Notes_countFormat') = 'Data represents cover. There were no NAs nor 0s that required removal'
+dataFormattingTable = dataFormattingTableFieldUpdate(223, 'Notes_countFormat','Data represents cover. There were no NAs nor 0s that required removal')
 
 #-------------------------------------------------------------------------------*
 # ---- MAKE DATA FRAME OF COUNT BY SITES, SPECIES, AND YEAR ----
@@ -258,11 +259,11 @@ rm(date)
 
 # Notes_timeFormat. Provide a thorough description of any modifications that were made to the time field.
 
-dataFormattingTableFieldUpdateFun('Notes_timeFormat') = 'temporal data provided as dates. The only modification to this field involved converting to a date object.'
+dataFormattingTable = dataFormattingTableFieldUpdate(223, 'Notes_timeFormat', 'temporal data provided as dates. The only modification to this field involved converting to a date object.')
 
 # subannualTgrain. After exploring the time data, was this dataset sampled at a sub-annual temporal grain? Y/N
 
-dataFormattingTableFieldUpdateFun('subannualTgrain') = 'Y'
+dataFormattingTable = dataFormattingTableFieldUpdate(223, 'subannualTgrain', 'Y')
 
 #-------------------------------------------------------------------------------*
 # ---- UPDATE THE DATA FORMATTING TABLE  ----
