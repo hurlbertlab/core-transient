@@ -205,14 +205,19 @@ dataFormattingTable[,'Notes_spFormat'] =
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT COUNT DATA ----
 #===============================================================================*
-# Next, we need to explore the count records. A good first pass is to remove 
-# zero counts and NA's:
+# Next, we need to explore the count records. For filling out the data formatting table, we need to change the name of the field which represents counts, densities, percent cover, etc to "count". Then we will clean up unnecessary values.
+
+names(dataset3)
+
+names(dataset3)[3] = 'count'
+
+# Now we will remove zero counts and NA's:
 
 summary(dataset3)
 
 # Subset to records > 0 (if applicable):
 
-dataset4 = subset(dataset3, cover > 0) 
+dataset4 = subset(dataset3, count > 0) 
 
 summary(dataset4)
 
@@ -220,12 +225,6 @@ summary(dataset4)
 
 dataset5 = na.omit(dataset4)
 
-# For filling out the data formatting table, we need to change the name of
-# the cover field to count. We will record this information below.
-
-names(dataset5)
-
-names(dataset5)[3] = 'count'
 
 # How does it look?
 
