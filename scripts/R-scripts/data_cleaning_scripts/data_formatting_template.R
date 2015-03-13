@@ -16,6 +16,11 @@
 # ---- SET-UP ----
 #===============================================================================*
 
+# This script is best viewed in RStudio. I like to reduced the size of my window
+# to roughly the width of the section lines (as above). Additionally, ensure 
+# that your global options are set to soft-wrap by selecting:
+# Tools/Global Options .../Code Editing/Soft-wrap R source files
+
 # Load libraries:
 
 library(stringr)
@@ -300,6 +305,20 @@ summary (dataset7)
 write.csv(dataset7, "data/formatted_datasets/dataset_223.csv", row.names = F)
 
 # !GIT-ADD-COMMIT-PUSH THE FORMATTED DATASET IN THE DATA FILE, THEN GIT-ADD-COMMIT-PUSH THE UPDATED DATA FOLDER!
+
+# As we've now successfully created the formatted dataset, we will now update the format priority and format flag fields. 
+
+dataFormattingTable[,'format_priority'] = 
+  dataFormattingTableFieldUpdate(223, 'format_priority', 'NA')
+
+dataFormattingTable[,'format_flag'] = 
+  dataFormattingTableFieldUpdate(223, 'format_flag', 1)
+
+# And update the data formatting table:
+
+write.csv(dataFormattingTable, 'Reference/data_formatting_table.csv')
+
+# !GIT-ADD-COMMIT-PUSH THE DATA FORMATTING TABLE!
 
 # Remove all objects except for functions from the environment:
 
