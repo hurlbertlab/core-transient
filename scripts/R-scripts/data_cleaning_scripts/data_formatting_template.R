@@ -246,37 +246,13 @@ dataFormattingTable[,'Notes_countFormat'] =
    'Data represents cover. There were no NAs nor 0s that required removal')
 
 #-------------------------------------------------------------------------------*
-# ---- MAKE DATA FRAME OF COUNT BY SITES, SPECIES, AND YEAR ----
-#===============================================================================*
-# Now we will make the final formatted dataset, add a datasetID field, check for errors, and remove records that cant be used for our purposes.
-
-# First, lets add the datasetID:
-
-dataset5$datasetID = ds
-  
-# Now make the compiled dataframe:
-
-dataset6 = ddply(dataset5,.(datasetID, site, date, species),
-                 summarize, count = max(count))
-
-# Explore the data frame:
-
-dim(dataset6)
-
-head(dataset6)
-
-summary(dataset6)
-
-# !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE DATA WERE MODIFIED!
-
-#-------------------------------------------------------------------------------*
 # ---- FORMAT TIME DATA ----
 #===============================================================================*
 # Here, we need to extract the sampling dates. 
 
 # For starters, let's change the date column to a true date:
 
-date = as.POSIXct(strptime(dataset6$date, '%m/%d/%Y'))
+date = as.POSIXct(strptime(dataset5$date, '%m/%d/%Y'))
 
 # A check on the structure lets you know that date field is now a date object:
 
@@ -284,17 +260,17 @@ class(date)
 
 # Give a double-check, if everything looks okay replace the column:
 
-head(dataset6$date)
+head(dataset5$date)
 
 head(date)
 
-dataset7 = dataset6
+dataset6 = dataset5
 
-dataset7$date = date
+dataset6$date = date
 
 # Check the results:
 
-head(dataset7)
+head(dataset6)
 
 # !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE DATE DATA WERE MODIFIED!
 
@@ -304,8 +280,8 @@ head(dataset7)
 
 dataFormattingTable[,'Notes_timeFormat'] = 
   dataFormattingTableFieldUpdate(ds, 'Notes_timeFormat',  # Fill value below in quotes
-
-  'temporal data provided as dates. The only modification to this field involved converting to a date object.')
+                                 
+                                 'temporal data provided as dates. The only modification to this field involved converting to a date object.')
 
 # subannualTgrain. After exploring the time data, was this dataset sampled at a sub-annual temporal grain? Y/N
 
@@ -314,6 +290,29 @@ dataFormattingTable[,'subannualTgrain'] =
                                  
                                  'Y')
 
+#-------------------------------------------------------------------------------*
+# ---- MAKE DATA FRAME OF COUNT BY SITES, SPECIES, AND YEAR ----
+#===============================================================================*
+# Now we will make the final formatted dataset, add a datasetID field, check for errors, and remove records that cant be used for our purposes.
+
+# First, lets add the datasetID:
+
+dataset6$datasetID = ds
+  
+# Now make the compiled dataframe:
+
+dataset7 = ddply(dataset6,.(datasetID, site, date, species),
+                 summarize, count = max(count))
+
+# Explore the data frame:
+
+dim(dataset7)
+
+head(dataset7)
+
+summary(dataset7)
+
+# !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE DATA WERE MODIFIED!
 #-------------------------------------------------------------------------------*
 # ---- UPDATE THE DATA FORMATTING TABLE AND WRITE OUTPUT DATA FRAMES  ----
 #===============================================================================*
