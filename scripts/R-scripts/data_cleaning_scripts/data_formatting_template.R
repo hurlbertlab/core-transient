@@ -108,6 +108,8 @@ dataFormattingTable[,'LatLong_sites'] =
 
 # -- If the site definition is clear, make a new site column as necessary.
 
+# -- If the dataset is for just a single site, and there is no site column, then add one.
+
 # Here, we will concatenate all of the potential fields that describe the site:
 
 site = paste(dataset1$site, dataset1$block, dataset1$treatment, 
