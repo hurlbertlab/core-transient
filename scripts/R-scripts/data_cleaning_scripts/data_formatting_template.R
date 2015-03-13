@@ -234,6 +234,7 @@ head(dataset5)
 
 #!DATA FORMATTING TABLE UPDATE!
 
+# Possible values for countFormat field are ... **************#$@$*#*#$*#$*
 dataFormattingTable[,'countFormat'] = 
   dataFormattingTableFieldUpdate(ds, 'countFormat',    # Fill value below in quotes
 
