@@ -84,10 +84,14 @@ head(dataset1)
 
 # !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE DATA WERE MODIFIED!
 
-#!DATA FORMATTING TABLE UPDATE! Are the sites defined by latitude and longitude? Y/N
+#!DATA FORMATTING TABLE UPDATE! 
+# Are the ONLY site identifiers the latitude and longitude of the observation or 
+# sample? (I.e., there are no site names or site IDs or other designations) Y/N
 
 dataFormattingTable[,'LatLong_sites'] = 
-  dataFormattingTableFieldUpdate(ds, 'LatLong_sites','Y')
+  dataFormattingTableFieldUpdate(ds, 'LatLong_sites',   # Fill value below in quotes
+  
+                                 'Y') 
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SITE DATA ----
@@ -128,18 +132,24 @@ head(dataset2)
 # Raw_siteUnit. How a site is coded (i.e. if the field was concatenated such as this one, it was coded as "site_block_treatment_plot_quad"). Alternatively, if the site were concatenated from latitude and longitude fields, the encoding would be "lat_long". 
 
 dataFormattingTable[,'Raw_siteUnit'] = 
-  dataFormattingTableFieldUpdate(ds, 'Raw_siteUnit','site_block_treatment_plot_quad')
+  dataFormattingTableFieldUpdate(ds, 'Raw_siteUnit',       # Fill value below in quotes
+                                 
+                                 'site_block_treatment_plot_quad') 
 
 
 # spatial_scale_variable. Is a site potentially nested (e.g., plot within a quad or decimal lat longs that could be scaled up)? Y/N
 
 dataFormattingTable[,'spatial_scale_variable'] = 
-  dataFormattingTableFieldUpdate(ds, 'spatial_scale_variable','Y')
+  dataFormattingTableFieldUpdate(ds, 'spatial_scale_variable',
+                                 
+                                 'Y') # Fill value here in quotes
 
 # Notes_siteFormat. Use this field to THOROUGHLY describe any changes made to the site field during formatting.
 
 dataFormattingTable[,'Notes_siteFormat'] = 
-  dataFormattingTableFieldUpdate(ds, 'Notes_siteFormat','site fields concatenated. metadata suggests site-block-treatment-plot-quad describes the order of nested sites from small to large.')
+  dataFormattingTableFieldUpdate(ds, 'Notes_siteFormat',  # Fill value below in quotes
+                                 
+  'site fields concatenated. metadata suggests site-block-treatment-plot-quad describes the order of nested sites from small to large.')
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SPECIES DATA ----
@@ -182,7 +192,9 @@ head(dataset3)
 # to the species field, including why any species were removed.
 
 dataFormattingTable[,'Notes_spFormat'] = 
-  dataFormattingTableFieldUpdate(ds, 'Notes_spFormat', 'several species removed. Metadata was relatively uninformative regarding what constitutes a true species sample for this study. Exploration of metadata from associated Sevilleta studies were more informative regarding which species needed to be removed. Species names are predominantly provided as Kartez codes, but not always. See: http://sev.lternet.edu/data/sev-212/5048. Some codes were identified with this pdf from White Sands: https://nhnm.unm.edu/sites/default/files/nonsensitive/publications/nhnm/U00MUL02NMUS.pdf')
+  dataFormattingTableFieldUpdate(ds, 'Notes_spFormat',    # Fill value below in quotes
+                                 
+  'several species removed. Metadata was relatively uninformative regarding what constitutes a true species sample for this study. Exploration of metadata from associated Sevilleta studies were more informative regarding which species needed to be removed. Species names are predominantly provided as Kartez codes, but not always. See: http://sev.lternet.edu/data/sev-212/5048. Some codes were identified with this pdf from White Sands: https://nhnm.unm.edu/sites/default/files/nonsensitive/publications/nhnm/U00MUL02NMUS.pdf')
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT COUNT DATA ----
@@ -218,10 +230,14 @@ head(dataset5)
 #!DATA FORMATTING TABLE UPDATE!
 
 dataFormattingTable[,'countFormat'] = 
-  dataFormattingTableFieldUpdate(ds, 'countFormat','cover')
+  dataFormattingTableFieldUpdate(ds, 'countFormat',    # Fill value below in quotes
+
+                                 'cover')
 
 dataFormattingTable[,'Notes_countFormat'] = 
-  dataFormattingTableFieldUpdate(ds, 'Notes_countFormat','Data represents cover. There were no NAs nor 0s that required removal')
+  dataFormattingTableFieldUpdate(ds, 'Notes_countFormat', # Fill value below in quotes
+
+   'Data represents cover. There were no NAs nor 0s that required removal')
 
 #-------------------------------------------------------------------------------*
 # ---- MAKE DATA FRAME OF COUNT BY SITES, SPECIES, AND YEAR ----
@@ -281,12 +297,16 @@ head(dataset7)
 # Notes_timeFormat. Provide a thorough description of any modifications that were made to the time field.
 
 dataFormattingTable[,'Notes_timeFormat'] = 
-  dataFormattingTableFieldUpdate(ds, 'Notes_timeFormat', 'temporal data provided as dates. The only modification to this field involved converting to a date object.')
+  dataFormattingTableFieldUpdate(ds, 'Notes_timeFormat',  # Fill value below in quotes
+
+  'temporal data provided as dates. The only modification to this field involved converting to a date object.')
 
 # subannualTgrain. After exploring the time data, was this dataset sampled at a sub-annual temporal grain? Y/N
 
 dataFormattingTable[,'subannualTgrain'] = 
-  dataFormattingTableFieldUpdate(ds, 'subannualTgrain', 'Y')
+  dataFormattingTableFieldUpdate(ds, 'subannualTgrain',    # Fill value below in quotes
+                                 
+                                 'Y')
 
 #-------------------------------------------------------------------------------*
 # ---- UPDATE THE DATA FORMATTING TABLE AND WRITE OUTPUT DATA FRAMES  ----
@@ -311,10 +331,14 @@ write.csv(dataset7, "data/formatted_datasets/dataset_ds.csv", row.names = F)
 # As we've now successfully created the formatted dataset, we will now update the format priority and format flag fields. 
 
 dataFormattingTable[,'format_priority'] = 
-  dataFormattingTableFieldUpdate(ds, 'format_priority', 'NA')
+  dataFormattingTableFieldUpdate(ds, 'format_priority',    # Fill value below in quotes 
+                                 
+                                 'NA')
 
 dataFormattingTable[,'format_flag'] = 
-  dataFormattingTableFieldUpdate(ds, 'format_flag', 1)
+  dataFormattingTableFieldUpdate(ds, 'format_flag',    # Fill value below
+                                 
+                                 1)
 
 # And update the data formatting table:
 
