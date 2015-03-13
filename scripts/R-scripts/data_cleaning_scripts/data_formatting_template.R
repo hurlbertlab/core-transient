@@ -70,9 +70,13 @@ head(dataset)
 
 # Here, we can see that there are some fields that we won't use. Let's remove them, note that I've given a new name here "dataset1", this is to ensure that we don't have to go back to square 1 if we've miscoded anything.
 
+# If all fields will be used, then set unusedFields = 0
+
 names(dataset)
 
-dataset1 = dataset[,-c(1, 2, 8, 9, 11,13, 14)]
+unusedFields = c(1, 2, 8, 9, 11,13, 14)
+
+dataset1 = dataset[,-unusedFields]
 
 # Let's change the name of the "record_record_date" column to simply "date":
 
