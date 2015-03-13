@@ -83,7 +83,7 @@ dataFormattingTableUpdate = function(datasetID){
                                      min(siteYearCounts$tCount))
     dataFormattingTable[,'Formatted_Max_Individuals_perSiteYear'] = 
       dataFormattingTableFieldUpdate(223, 'Formatted_Max_Individuals_perSiteYear', 
-                                     max(siteYearCounts$tCount))`
+                                     max(siteYearCounts$tCount))
     } else {
         dataFormattingTable[,'Raw_Mean_Individuals_perSiteYear'] = 
           dataFormattingTableFieldUpdate(223, 'Raw_Mean_Individuals_perSiteYear',NA)
