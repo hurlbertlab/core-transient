@@ -189,7 +189,12 @@ summary(dataset4)
 
 dataset5 = na.omit(dataset4)
 
-# Make sure to write in the data summary table the type of observed count (here, it represents % cover)
+# For filling out the data formatting table, we need to change the name of
+# the cover field to count. We will record this information below.
+
+names(dataset5)
+
+names(dataset5)[3] = 'count'
 
 # How does it look?
 
@@ -198,8 +203,6 @@ head(dataset5)
 # !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE COUNT DATA WERE MODIFIED!
 
 #!DATA FORMATTING TABLE UPDATE!
-
-# Notes_countFormat. Provide a complete description of how count data formatted.  Regardless of the type of data, be sure to include the removal any NA's or zeros in the notes field.
 
 dataFormattingTable[,'countFormat'] = 
   dataFormattingTableFieldUpdate(223, 'countFormat','cover')
@@ -219,7 +222,7 @@ dataset5$datasetID = 223
 # Now make the compiled dataframe:
 
 dataset6 = ddply(dataset5,.(datasetID, site, date, species),
-                 summarize, count = max(cover))
+                 summarize, count = max(count))
 
 # Explore the data frame:
 
