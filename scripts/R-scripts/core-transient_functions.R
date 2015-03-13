@@ -24,7 +24,7 @@ se = function(x) sd(x)/sqrt(length(x))
 
 dataFormattingTableFieldUpdate = function(datasetID, Field, Value){
   rowIndex = which(dataFormattingTable$dataset_ID == datasetID)
-  if (is.factor(FieldSubset)) {
+  if (is.factor(dataFormattingTable[,Field])) {
     dataFormattingTable[,Field] = as.character(dataFormattingTable[,Field])
     dataFormattingTable[rowIndex, Field] = Value
     dataFormattingTable[,Field] = factor(dataFormattingTable[,Field])
@@ -77,7 +77,13 @@ dataFormattingTableUpdate = function(datasetID){
         dataFormattingTable[,'Raw_Min_Individuals_perSiteYear'] = 
           dataFormattingTableFieldUpdate(223, 'Raw_Min_Individuals_perSiteYear','NA')
         dataFormattingTable[,'Raw_Max_Individuals_perSiteYear'] = 
-          dataFormattingTableFieldUpdate(223, 'Raw_Max_Individuals_perSiteYear','NA') 
+          dataFormattingTableFieldUpdate(223, 'Raw_Max_Individuals_perSiteYear','NA')
+        dataFormattingTable[,'Formatted_Mean_Individuals_perSiteYear'] = 
+          dataFormattingTableFieldUpdate(223, 'Formatted_Mean_Individuals_perSiteYear','NA')
+        dataFormattingTable[,'Formatted_Min_Individuals_perSiteYear'] = 
+          dataFormattingTableFieldUpdate(223, 'Formatted_Min_Individuals_perSiteYear','NA')
+        dataFormattingTable[,'Formatted_Max_Individuals_perSiteYear'] = 
+          dataFormattingTableFieldUpdate(223, 'Formatted_Max_Individuals_perSiteYear','NA') 
       }
   dataFormattingTable[,'Formatted_nRecs'] = 
     dataFormattingTableFieldUpdate(223, 'Formatted_nRecs',
