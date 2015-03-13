@@ -16,6 +16,16 @@
 # ---- SET-UP ----
 #===============================================================================*
 
+# Load libraries:
+
+library(stringr)
+library(plyr)
+library(ggplot2)
+library(grid)
+library(gridExtra)
+library(MASS)
+
+
 # Source the functions file:
 
 getwd()
@@ -103,10 +113,6 @@ dataset2 = dataset2[,-c(2:5)]
 # Check the new dataset (are the columns as they should be?):
 
 head(dataset2)
-
-# For memory and cleaning purposes, removed the site object:
-
-rm(site)
 
 # !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE SITE DATA WERE MODIFIED!
 
@@ -261,10 +267,6 @@ dataset7$date = date
 
 head(dataset7)
 
-# For memory and cleaning purposes, removed the date object:
-
-rm(date)
-
 # !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE DATE DATA WERE MODIFIED!
 
 #!DATA FORMATTING TABLE UPDATE!
@@ -280,15 +282,12 @@ dataFormattingTable[,'subannualTgrain'] =
   dataFormattingTableFieldUpdate(223, 'subannualTgrain', 'Y')
 
 #-------------------------------------------------------------------------------*
-# ---- UPDATE THE DATA FORMATTING TABLE  ----
+# ---- UPDATE THE DATA FORMATTING TABLE AND WRITE OUTPUT DATA FRAMES  ----
 #===============================================================================*
-# Your goal is to now fill in the remainder of the data formatting table.
+
+# Update the data formatting table (this may take a moment to process):
 
 dataFormattingTableUpdate(223)
-
-#-------------------------------------------------------------------------------*
-# ---- WRITE OUTPUT DATA FRAMES  ----
-#===============================================================================*
 
 # Take a final look at the dataset:
 
@@ -301,4 +300,9 @@ summary (dataset7)
 write.csv(dataset7, "data/formatted_datasets/dataset_223.csv", row.names = F)
 
 # !GIT-ADD-COMMIT-PUSH THE FORMATTED DATASET IN THE DATA FILE, THEN GIT-ADD-COMMIT-PUSH THE UPDATED DATA FOLDER!
+
+# Remove all objects except for functions from the environment:
+
+rm(list = setdiff(ls(), lsf.str()))
+
 
