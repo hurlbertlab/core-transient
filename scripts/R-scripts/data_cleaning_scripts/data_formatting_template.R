@@ -292,7 +292,7 @@ dataFormattingTable[,'subannualTgrain'] =
 
 # Update the data formatting table (this may take a moment to process):
 
-dataFormattingTableUpdate(223)
+dataFormattingTable = dataFormattingTableUpdate(223)
 
 # Take a final look at the dataset:
 
@@ -316,7 +316,7 @@ dataFormattingTable[,'format_flag'] =
 
 # And update the data formatting table:
 
-write.csv(dataFormattingTable, 'Reference/data_formatting_table.csv')
+write.csv(dataFormattingTable, 'Reference/data_formatting_table.csv', row.names = F)
 
 # !GIT-ADD-COMMIT-PUSH THE DATA FORMATTING TABLE!
 
