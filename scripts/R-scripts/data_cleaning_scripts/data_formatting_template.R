@@ -250,9 +250,24 @@ dataFormattingTable[,'Notes_countFormat'] =
 #===============================================================================*
 # Here, we need to extract the sampling dates. 
 
-# For starters, let's change the date column to a true date:
+# What is the name of the field that has information on sampling date?
+datefield = 'date'
 
-date = as.POSIXct(strptime(dataset5$date, '%m/%d/%Y'))
+# What is the format in which date data is recorded? For example, if it is
+# recorded as 5/30/94, then this would be '%m/%d/%y', while 1994-5-30 would
+# be '%Y-%m-%d'. Type "?strptime" for other examples of date formatting.
+
+dateformat = '%m/%d/%Y'
+
+# If the date is just a year, then make sure it is of class numeric
+# and not a factor. Otherwise change to a true date object.
+
+if (dateformat == '%Y' | dateformat == '%y') {
+  date = as.numeric(as.character(dataset5[, datefield]))
+} else {
+  date = as.POSIXct(strptime(dataset5[, datefield], dateformat))
+  
+}
 
 # A check on the structure lets you know that date field is now a date object:
 
@@ -260,12 +275,16 @@ class(date)
 
 # Give a double-check, if everything looks okay replace the column:
 
-head(dataset5$date)
+head(dataset5[, datefield])
 
 head(date)
 
 dataset6 = dataset5
 
+# Delete the old date field
+dataset6 = dataset6[, -which(names(dataset6) == 'datefield')]
+
+# Assign the new date values in a field called 'date'
 dataset6$date = date
 
 # Check the results:
