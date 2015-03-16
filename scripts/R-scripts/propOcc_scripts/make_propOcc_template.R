@@ -88,20 +88,29 @@ siteValidity = function(dataset){
 
 siteValidity(dataset)
          
-    
-# Check to see how many sites fail to meet the time and species sample cut-offs:
+# nested sites
 
-nrow(subset(siteTable, timeSamples < 5))/nrow(siteTable)
+siteUnit = dataFormattingTable$Raw_siteUnit
 
-nrow(subset(siteTable, nSpecies < 10))/nrow(siteTable)
+siteUnitTable = read.table(text = as.character(siteUnit), sep = '_', stringsAsFactors = F)
 
+siteUnit1 = character(length = ncol(siteUnitTable))
 
+for (i in 1:ncol(siteUnitTable)){
+  siteUnit1[i] = paste(as.character(siteUnitTable[1,1:i]), collapse = '_')
+}
+
+siteUnit1
+
+# Next I'll write a function that can be used to modify the site unites to each potential level then a for loop that populates the siteValidity data frame across units.
+
+### Stopped HERE ####
 
 # We can see that 12% of the sites don't meet the time sample requirement and almost 29% of the species, which would lead to only 71% of the sites being valid! This is an indication that the sampling grain is too fine. If "finerGrain" above is "Y", we are now tasked with removing the finer grain component of the site field and exploring the data further as above. If not, those sites would have to be removed prior to further analysis.
 
 dataset1 = dataset
 
-subplots = read.table(text = as.character(dataset$site), sep = "_")
+subplots = read.table(text = as.character(dataset$site), sep = "_", stringsAsFactors = F)
 
 dataset1$site = apply(subplots[,-ncol(subplots)], 1,
                         function(x) paste(x, collapse = '_'))
