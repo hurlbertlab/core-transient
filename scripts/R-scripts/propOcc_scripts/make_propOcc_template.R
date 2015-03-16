@@ -70,17 +70,34 @@ hist(siteTable$nSpecies)
 # A good first pass is to look at the number of years and species per
 # site:
 
-siteTable = ddply(dataset, .(site), summarize,
+siteValidity = function(dataset){
+  siteTable = ddply(dataset, .(site), summarize,
       timeSamples = length(unique(year)), 
       nSpecies = length(unique(species)))
+  nRecs = nrow(siteTable)
+  nBadSiteTime = nrow(subset(siteTable, timeSamples < 5))
+  nBadSiteSpecies = nrow(subset(siteTable, nSpecies < 10))
+  nBadSites = nrow(subset(siteTable, timeSamples < 5 & nSpecies < 10))
+  propBadSiteTime = nBadSiteTime/nRecs
+  propBadSiteSpecies = nBadSiteSpecies/nRecs
+  propBadSites = nBadSiteSpecies/nRecs
+  return(data.frame(nRecs, nBadSiteTime, nBadSiteSpecies,nBadSites,
+                    propBadSiteTime, propBadSiteSpecies, propBadSites))
+}
 
+
+siteValidity(dataset)
+         
+    
 # Check to see how many sites fail to meet the time and species sample cut-offs:
 
 nrow(subset(siteTable, timeSamples < 5))/nrow(siteTable)
 
 nrow(subset(siteTable, nSpecies < 10))/nrow(siteTable)
 
-# We can see that 12% of the sites don't meet the time sample requirement and almost 29% of the species! This is definitely an indication that the sampling grain is too fine. If "finerGrain" above is "Y", we are now tasked with removing the finer grain component of the site field and exploring the data further as above. If not, those sites would have to be removed prior to further analysis.
+
+
+# We can see that 12% of the sites don't meet the time sample requirement and almost 29% of the species, which would lead to only 71% of the sites being valid! This is an indication that the sampling grain is too fine. If "finerGrain" above is "Y", we are now tasked with removing the finer grain component of the site field and exploring the data further as above. If not, those sites would have to be removed prior to further analysis.
 
 dataset1 = dataset
 
