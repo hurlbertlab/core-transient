@@ -67,6 +67,40 @@ hist(siteTable$nSpecies)
 # original dataset formatting? Ah, no, the formatted dataset should have
 # all of the hierarchical data coded down to the finest level, right?
 
+# A good first pass is to look at the number of years and species per
+# site:
+
+siteTable = ddply(dataset, .(site), summarize,
+      timeSamples = length(unique(year)), 
+      nSpecies = length(unique(species)))
+
+# Check to see how many sites fail to meet the time and species sample cut-offs:
+
+nrow(subset(siteTable, timeSamples < 5))/nrow(siteTable)
+
+nrow(subset(siteTable, nSpecies < 10))/nrow(siteTable)
+
+# We can see that 12% of the sites don't meet the time sample requirement and almost 29% of the species! This is definitely an indication that the sampling grain is too fine. If "finerGrain" above is "Y", we are now tasked with removing the finer grain component of the site field and exploring the data further as above. If not, those sites would have to be removed prior to further analysis.
+
+dataset1 = dataset
+
+subplots = read.table(text = as.character(dataset$site), sep = "_")
+
+dataset1$site = apply(subplots[,-ncol(subplots)], 1,
+                        function(x) paste(x, collapse = '_'))
+
+siteTable1 = ddply(dataset1, .(site), summarize,
+                  timeSamples = length(unique(year)), 
+                  nSpecies = length(unique(species)))
+
+# Check to see how many sites fail to meet the time and species sample cut-offs:
+
+nrow(subset(siteTable1, timeSamples < 5))/nrow(siteTable1)
+
+nrow(subset(siteTable1, nSpecies < 10))/nrow(siteTable1)
+
+
+
 dataset1 = dataset
 apply(df[,cols], 1, function(x) paste(x, collapse=""))
 
@@ -83,7 +117,6 @@ if(finerGrain == 'Y') {
 #                     nSubplots = length(unique(site)),
                     nSampleDates = length(unique(date)),
                     nSpecies = length(unique(species)))
-
 }
 
 siteTable2 = ddply(dataset, .(site), summarize,
