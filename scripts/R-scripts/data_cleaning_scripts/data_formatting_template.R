@@ -93,7 +93,7 @@ head(dataset1)
 # sample? (I.e., there are no site names or site IDs or other designations) Y/N
 
 dataFormattingTable[,'LatLong_sites'] = 
-  dataFormattingTableFieldUpdate(ds, 'LatLong_sites',   # Fill value below in quotes
+  dataFormattingTableFieldUpdate(ds, 'LatLong_sites',   # Fill value in below
   
                                  'Y') 
 
@@ -110,7 +110,8 @@ dataFormattingTable[,'LatLong_sites'] =
 
 # -- If the dataset is for just a single site, and there is no site column, then add one.
 
-# Here, we will concatenate all of the potential fields that describe the site:
+# Here, we will concatenate all of the potential fields that describe the site 
+# in hierarchical order from largest to smallest grain:
 
 site = paste(dataset1$site, dataset1$block, dataset1$treatment, 
              dataset1$plot, dataset1$quad, sep = '_')
