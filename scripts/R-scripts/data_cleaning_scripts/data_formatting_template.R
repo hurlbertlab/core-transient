@@ -209,7 +209,11 @@ dataFormattingTable[,'Notes_spFormat'] =
 
 names(dataset3)
 
-names(dataset3)[3] = 'count'
+# Fill in the original field name here
+countfield = 'density'
+
+# Renaming it
+names(dataset3)[which(names(dataset3) == countfield)] = 'count'
 
 # Now we will remove zero counts and NA's:
 
@@ -298,14 +302,14 @@ head(dataset6)
 # Notes_timeFormat. Provide a thorough description of any modifications that were made to the time field.
 
 dataFormattingTable[,'Notes_timeFormat'] = 
-  dataFormattingTableFieldUpdate(ds, 'Notes_timeFormat',  # Fill value below in quotes
+  dataFormattingTableFieldUpdate(ds, 'Notes_timeFormat',  # Fill value in below
                                  
                                  'temporal data provided as dates. The only modification to this field involved converting to a date object.')
 
 # subannualTgrain. After exploring the time data, was this dataset sampled at a sub-annual temporal grain? Y/N
 
 dataFormattingTable[,'subannualTgrain'] = 
-  dataFormattingTableFieldUpdate(ds, 'subannualTgrain',    # Fill value below in quotes
+  dataFormattingTableFieldUpdate(ds, 'subannualTgrain',    # Fill value in below
                                  
                                  'Y')
 
