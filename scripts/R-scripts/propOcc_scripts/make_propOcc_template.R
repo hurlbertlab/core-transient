@@ -51,9 +51,9 @@ siteTable = ddply(dataset, .(site), summarize,
                   nSpecies = length(unique(species)))
 hist(siteTable$nSpecies)
 
-# Does this dataset involve spatial sampling at a grain below that of the site?
-# I.e., Is their an underscore in the site code that demarcates sampling grain(s)?
-finerGrain = grep("_", dataset$site[1])
+# Could this dataset involve spatial sampling at a grain below that of the site?
+
+(finerGrain = dataFormattingTable$spatial_scale_variable)
 
 # If so, then we want to see how consistently sites are represented by the 
 # same number of subplots from year to year and site to site.
@@ -67,19 +67,23 @@ finerGrain = grep("_", dataset$site[1])
 # original dataset formatting? Ah, no, the formatted dataset should have
 # all of the hierarchical data coded down to the finest level, right?
 
-if(finerGrain == 1) {
+dataset1 = dataset
+apply(df[,cols], 1, function(x) paste(x, collapse=""))
+
+if(finerGrain == 'Y') {
 
   subplots = read.table(text = as.character(dataset$site), sep = "_")
-  names(subplots) = paste('subplot', 0:(ncol(subplots)-1), sep = "")
+  # names(subplots) = paste('subplot', 0:(ncol(subplots)-1), sep = "")
+  dataset1$site = apply(subplots[,-ncol(subplots)], 1,
+                        function(x) paste(x, collapse = '_'))
   
   # How many time and species records are there per site per year?
   
-  siteTable = ddply(dataset, .(site, year), summarize,
-                    nSubplots = length(unique(Station)),
-                    nSampleDates = length(unique(Sample_Date)),
+  siteTable = ddply(dataset1, .(site, year), summarize,
+#                     nSubplots = length(unique(site)),
+                    nSampleDates = length(unique(date)),
                     nSpecies = length(unique(species)))
-  
-  
+
 }
 
 siteTable2 = ddply(dataset, .(site), summarize,
