@@ -11,6 +11,10 @@ source('scripts/R-scripts/core-transient_functions.R')
 
 dataset = read.csv("data/formatted_datasets/dataset_223.csv")
 
+dataFormattingTable = read.csv("Reference/data_formatting_table.csv")
+
+dataFormattingTable = subset(dataFormattingTable, dataset_ID == 223)
+
 #===============================================================================*
 # ---- MAKE PROPORTIONAL OCCUPANCY AND DATA SUMMARY FRAMES ----
 #===============================================================================*
