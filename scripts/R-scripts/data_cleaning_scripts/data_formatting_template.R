@@ -211,7 +211,7 @@ dataFormattingTable[,'Notes_spFormat'] =
 names(dataset3)
 
 # Fill in the original field name here
-countfield = 'density'
+countfield = 'cover'
 
 # Renaming it
 names(dataset3)[which(names(dataset3) == countfield)] = 'count'
@@ -271,7 +271,6 @@ if (dateformat == '%Y' | dateformat == '%y') {
   date = as.numeric(as.character(dataset5[, datefield]))
 } else {
   date = as.POSIXct(strptime(dataset5[, datefield], dateformat))
-  
 }
 
 # A check on the structure lets you know that date field is now a date object:
@@ -287,7 +286,7 @@ head(date)
 dataset6 = dataset5
 
 # Delete the old date field
-dataset6 = dataset6[, -which(names(dataset6) == 'datefield')]
+dataset6 = dataset6[, -which(names(dataset6) == datefield)]
 
 # Assign the new date values in a field called 'date'
 dataset6$date = date
