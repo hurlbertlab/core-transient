@@ -53,56 +53,58 @@ hist(siteTable$nSpecies)
 
 # Could this dataset involve spatial sampling at a grain below that of the site?
 
-(finerGrain = dataFormattingTable$spatial_scale_variable)
+dataFormattingTable$spatial_scale_variable
 
-# If so, then we want to see how consistently sites are represented by the 
-# same number of subplots from year to year and site to site.
+# If no, you can move to the next section. If yes, you need to determine whether site designations are lat-long or nested sampling groups.
 
-#----------------------------
-# WAIT: Will site codes really include info on spatial scales BELOW the site
-# level? If you have a scheme of traps within a quad within a plot, and you
-# initially decide that the quad is the best level of analysis, then isn't 
-# every site just going to be characterized by Plot1_quadA with trap ignored?
-# How then to pull it back out if this field is not included during the
-# original dataset formatting? Ah, no, the formatted dataset should have
-# all of the hierarchical data coded down to the finest level, right?
+dataFormattingTable$LatLong_sites
 
-# A good first pass is to look at the number of years and species per
-# site:
+#-------------------------------------------------------------------------------*
+# ---- SITE SCALE: NESTED SAMPLING GROUPS
+#-------------------------------------------------------------------------------*
 
-siteValidity = function(dataset){
-  siteTable = ddply(dataset, .(site), summarize,
+# A good first pass is to look at the number of years and species per site:
+
+nestedSiteValidity = function(dataset, i){
+  siteUnit = paste(as.character(siteUnitTable[1,1:i]), collapse = '_')
+  if (siteUnit == siteUnitTable[,1]){
+    dataset$site = siteTable[,1] } else {
+      dataset$site = factor(apply(siteTable[,1:i], 1, paste, collapse = '_'))
+  } 
+  siteSummary = ddply(dataset, .(site), summarize,
       timeSamples = length(unique(year)), 
       nSpecies = length(unique(species)))
-  nRecs = nrow(siteTable)
-  nBadSiteTime = nrow(subset(siteTable, timeSamples < 5))
-  nBadSiteSpecies = nrow(subset(siteTable, nSpecies < 10))
-  nBadSites = nrow(subset(siteTable, timeSamples < 5 & nSpecies < 10))
+  nSite = nrow(siteSummary)
+  nBadSiteTime = nrow(subset(siteSummary, timeSamples < 5))
+  nBadSiteSpecies = nrow(subset(siteSummary, nSpecies < 10))
+  nBadSites = nrow(subset(siteSummary, timeSamples < 5 & nSpecies < 10))
   propBadSiteTime = nBadSiteTime/nRecs
   propBadSiteSpecies = nBadSiteSpecies/nRecs
   propBadSites = nBadSiteSpecies/nRecs
-  return(data.frame(nRecs, nBadSiteTime, nBadSiteSpecies,nBadSites,
+  return(data.frame(siteUnit, nSite, nBadSiteTime, nBadSiteSpecies,nBadSites,
                     propBadSiteTime, propBadSiteSpecies, propBadSites))
 }
-
-
-siteValidity(dataset)
          
-# nested sites
+# For loop to calculate site validity across scales for nested sites:
 
 siteUnit = dataFormattingTable$Raw_siteUnit
 
 siteUnitTable = read.table(text = as.character(siteUnit), sep = '_', stringsAsFactors = F)
 
-siteUnit1 = character(length = ncol(siteUnitTable))
+siteTable = read.table(text = as.character(dataset$site), sep = '_', stringsAsFactors = F)
+
+outList = list(length = ncol(siteUnitTable))
 
 for (i in 1:ncol(siteUnitTable)){
-  siteUnit1[i] = paste(as.character(siteUnitTable[1,1:i]), collapse = '_')
+  outList[[i]] = nestedSiteValidity(dataset, i)
+#   siteDescription[i] = paste(as.character(siteUnitTable[1,1:i]), collapse = '_')
 }
 
-siteUnit1
+rbind.fill(outList)
 
-# Next I'll write a function that can be used to modify the site unites to each potential level then a for loop that populates the siteValidity data frame across units.
+
+
+
 
 ### Stopped HERE ####
 
