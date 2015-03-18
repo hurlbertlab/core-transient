@@ -74,15 +74,19 @@ nestedSiteValidity = function(dataset, i){
   siteSummary = ddply(dataset, .(site), summarize,
       timeSamples = length(unique(year)), 
       nSpecies = length(unique(species)))
-  nSite = nrow(siteSummary)
+      nSite = nrow(siteSummary)
+  MEANnTime = mean(siteSummary$timeSamples)
+  MINnTime = min(siteSummary$timeSamples)
+  MAXnTime = max(siteSummary$timeSamples)
   nBadSiteTime = nrow(subset(siteSummary, timeSamples < 5))
   nBadSiteSpecies = nrow(subset(siteSummary, nSpecies < 10))
-  nBadSites = nrow(subset(siteSummary, timeSamples < 5 & nSpecies < 10))
+  nBadSites = nrow(subset(siteSummary, timeSamples < 5 | nSpecies < 10))
   propBadSiteTime = nBadSiteTime/nRecs
   propBadSiteSpecies = nBadSiteSpecies/nRecs
   propBadSites = nBadSiteSpecies/nRecs
-  return(data.frame(siteUnit, nSite, nBadSiteTime, nBadSiteSpecies,nBadSites,
-                    propBadSiteTime, propBadSiteSpecies, propBadSites))
+  return(data.frame(siteUnit, nSite, 
+                    MEANnTime, MINnTime, MAXnTime, nBadSiteTime,propBadSiteTime, 
+                    nBadSiteSpecies,propBadSiteSpecies, nBadSites, propBadSites))
 }
          
 # For loop to calculate site validity across scales for nested sites:
@@ -97,35 +101,17 @@ outList = list(length = ncol(siteUnitTable))
 
 for (i in 1:ncol(siteUnitTable)){
   outList[[i]] = nestedSiteValidity(dataset, i)
-#   siteDescription[i] = paste(as.character(siteUnitTable[1,1:i]), collapse = '_')
 }
 
-rbind.fill(outList)
+nestedSiteValiditySummary = rbind.fill(outList)
 
-
+nestedSiteValiditySummary
 
 
 
 ### Stopped HERE ####
 
-# We can see that 12% of the sites don't meet the time sample requirement and almost 29% of the species, which would lead to only 71% of the sites being valid! This is an indication that the sampling grain is too fine. If "finerGrain" above is "Y", we are now tasked with removing the finer grain component of the site field and exploring the data further as above. If not, those sites would have to be removed prior to further analysis.
 
-dataset1 = dataset
-
-subplots = read.table(text = as.character(dataset$site), sep = "_", stringsAsFactors = F)
-
-dataset1$site = apply(subplots[,-ncol(subplots)], 1,
-                        function(x) paste(x, collapse = '_'))
-
-siteTable1 = ddply(dataset1, .(site), summarize,
-                  timeSamples = length(unique(year)), 
-                  nSpecies = length(unique(species)))
-
-# Check to see how many sites fail to meet the time and species sample cut-offs:
-
-nrow(subset(siteTable1, timeSamples < 5))/nrow(siteTable1)
-
-nrow(subset(siteTable1, nSpecies < 10))/nrow(siteTable1)
 
 
 
