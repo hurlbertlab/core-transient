@@ -25,31 +25,11 @@ dataFormattingTable = subset(dataFormattingTable, dataset_ID == 223)
 #-------------------------------------------------------------------------------*
 # ---- SITE DATA ----
 #===============================================================================*
-# What is the appropriate sampling grain for sites? Return to the metadata to
-# see if there's any clues.
-
-##################################
-# PUT THIS AT THE END OF THE DATA FORMATTING TEMPLATE:
-# We want to address Sites before Time, but to address Sites we still need
-# this 'year' field. Or we can just include it here.
-
-# Add year column:
-
-dataset$year = getYear(dataset$date)
-
-####################################
-
+# What is the appropriate sampling grain for sites? We'll explore the data formatting table to see if there are any clues
 
 # How many sites are there?
 
 length(unique(dataset$site))
-
-# How many species are recorded at each site? If too few (<10),
-# then we may want to use a coarser spatial grain if possible.
-
-siteTable = ddply(dataset, .(site), summarize,
-                  nSpecies = length(unique(species)))
-hist(siteTable$nSpecies)
 
 # Could this dataset involve spatial sampling at a grain below that of the site?
 
@@ -63,21 +43,27 @@ dataFormattingTable$LatLong_sites
 # ---- SITE SCALE: NESTED SAMPLING GROUPS
 #-------------------------------------------------------------------------------*
 
+dSafe = dataset
+
+dataset = dSafe
+
 # A good first pass is to look at the number of years and species per site:
 
 nestedSiteValidity = function(dataset, i){
   siteUnit = paste(as.character(siteUnitTable[1,1:i]), collapse = '_')
-  if (siteUnit == factor(siteUnitTable[,1]){
-    dataset$site = siteTable[,1] } else {
+  dataset$year = getYear(dataset$date)
+  if (siteUnit == siteUnitTable[,1]) {
+    dataset$site = siteTable[,1]} else {
       dataset$site = factor(apply(siteTable[,1:i], 1, paste, collapse = '_'))
   } 
   siteSummary = ddply(dataset, .(site), summarize,
       timeSamples = length(unique(year)), 
       nSpecies = length(unique(species)))
-      nSite = nrow(siteSummary)
+  nSite = nrow(siteSummary)
   MEANnTime = mean(siteSummary$timeSamples)
   MINnTime = min(siteSummary$timeSamples)
   MAXnTime = max(siteSummary$timeSamples)
+  STDEVnTime = sd(siteSummary$timeSamples) 
   nBadSiteTime = nrow(subset(siteSummary, timeSamples < 5))
   nBadSiteSpecies = nrow(subset(siteSummary, nSpecies < 10))
   nBadSites = nrow(subset(siteSummary, timeSamples < 5 | nSpecies < 10))
@@ -85,27 +71,25 @@ nestedSiteValidity = function(dataset, i){
   propBadSiteSpecies = nBadSiteSpecies/nRecs
   propBadSites = nBadSiteSpecies/nRecs
   return(data.frame(siteUnit, nSite, 
-                    MEANnTime, MINnTime, MAXnTime, nBadSiteTime,propBadSiteTime, 
-                    nBadSiteSpecies,propBadSiteSpecies, nBadSites, propBadSites))
+                    MEANnTime, MINnTime, MAXnTime, STDEVnTime,
+                    nBadSiteTime,nBadSiteSpecies,nBadSites,
+                    propBadSiteTime, propBadSiteSpecies, propBadSites))
 }
          
-# For loop to calculate site validity across scales for nested sites:
+# Function to calculate site validity across scales for nested sites:
 
-siteUnit = dataFormattingTable$Raw_siteUnit
-
-siteUnitTable = read.table(text = as.character(siteUnit), sep = '_', stringsAsFactors = F)
-
-siteTable = read.table(text = as.character(dataset$site), sep = '_', stringsAsFactors = F)
-
-outList = list(length = ncol(siteUnitTable))
-
-for (i in 1:ncol(siteUnitTable)){
-  outList[[i]] = nestedSiteValidity(dataset, i)
+nestedSiteValiditySummary = function(dataset){
+  siteUnit = dataFormattingTable$Raw_siteUnit
+  siteUnitTable = read.table(text = as.character(siteUnit), sep = '_', stringsAsFactors = F)
+  siteTable = read.table(text = as.character(dataset$site), sep = '_', stringsAsFactors = F)
+  outList = list(length = ncol(siteTable))
+  for (i in 1:ncol(siteTable)){
+    outList[[i]] = nestedSiteValidity(dataset, i)
+    }
+  return(rbind.fill(outList))
 }
 
-nestedSiteValiditySummary = rbind.fill(outList)
-
-nestedSiteValiditySummary
+nestedSiteValiditySummary(dataset)
 
 # Function to make the spatial grain more course for a dataset. 
 
