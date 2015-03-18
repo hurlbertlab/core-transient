@@ -43,10 +43,6 @@ dataFormattingTable$LatLong_sites
 # ---- SITE SCALE: NESTED SAMPLING GROUPS
 #-------------------------------------------------------------------------------*
 
-dSafe = dataset
-
-dataset = dSafe
-
 # A good first pass is to look at the number of years and species per site:
 
 nestedSiteValidity = function(dataset, i){
@@ -104,16 +100,7 @@ rescaleNestedDataset = function(dataset, scale){
   return(dataset)
 }
 
-nestedSiteValidity = function(dataset, i){
-  siteUnit = paste(as.character(siteUnitTable[1,1:i]), collapse = '_')
-  if (siteUnit == siteUnitTable[,1]){
-    dataset$site = siteTable[,1] } else {
-      dataset$site = factor(apply(siteTable[,1:i], 1, paste, collapse = '_'))
-    } 
-  siteSummary = ddply(dataset, .(site), summarize,
-                      timeSamples = length(unique(year)), 
-                      nSpecies = length(unique(species)))
-  nSite = nrow(siteSummary)### Stopped HERE ####
+### Stopped HERE ####
 
 
 # Now let's remove the sites with inadequate sample sites:
