@@ -89,31 +89,35 @@ nestedSiteValiditySummary(dataset)
 
 # Function to make the spatial grain more course for a dataset. 
 
+dSafe = dataset
+
+dataset = dSafe
+
 rescaleNestedDataset = function(dataset, scale){
   siteUnit = paste(as.character(siteUnitTable[1,1:scale]), collapse = '_')
   if (siteUnit == siteUnitTable[,1]){
     dataset$site = factor(siteTable[,1]) } else {
-      dataset$site = factor(apply(siteTable[,1:i], 1, paste, collapse = '_'))
+      dataset$site = factor(apply(siteTable[,1:scale], 1, paste, collapse = '_'))
     }
   dataset = ddply(dataset, .(datasetID, site, date, species), summarize,
                   count = sum(count))
   return(dataset)
 }
 
-### Stopped HERE ####
+# Make sure ot have a sense of the site levels first!
 
+head(dataset$site)
+
+dataset1 = rescaleNestedDataset(dataset, 4)
 
 # Now let's remove the sites with inadequate sample sites:
 
-badSites = subset(siteSummaryFun(dataset), spRich < 10 | nTime < 5)$site
+badSites = subset(ddply(dataset1, .(site), summarize,
+                  timeSamples = length(unique(getYear(date))), 
+                  nSpecies = length(unique(species))),
+                  nSpecies < 10 | timeSamples < 5)$site
 
-dataset2 = dataset[!dataset$site %in% badSites,]
-
-
-
-# All looks good, rename dataset:
-
-dataset = dataset2
+dataset2 = dataset1[!dataset1$site %in% badSites,]
 
 # !GIT-ADD-COMMIT-PUSH AND DESCRIBE ANY SPATIAL GRAIN DECISIONS!
 
