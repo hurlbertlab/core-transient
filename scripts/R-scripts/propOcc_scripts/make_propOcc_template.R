@@ -67,7 +67,7 @@ dataFormattingTable$LatLong_sites
 
 nestedSiteValidity = function(dataset, i){
   siteUnit = paste(as.character(siteUnitTable[1,1:i]), collapse = '_')
-  if (siteUnit == siteUnitTable[,1]){
+  if (siteUnit == factor(siteUnitTable[,1]){
     dataset$site = siteTable[,1] } else {
       dataset$site = factor(apply(siteTable[,1:i], 1, paste, collapse = '_'))
   } 
@@ -107,16 +107,36 @@ nestedSiteValiditySummary = rbind.fill(outList)
 
 nestedSiteValiditySummary
 
+# Function to make the spatial grain more course for a dataset. 
 
+rescaleNestedDataset = function(dataset, scale){
+  siteUnit = paste(as.character(siteUnitTable[1,1:scale]), collapse = '_')
+  if (siteUnit == siteUnitTable[,1]){
+    dataset$site = factor(siteTable[,1]) } else {
+      dataset$site = factor(apply(siteTable[,1:i], 1, paste, collapse = '_'))
+    }
+  dataset = ddply(dataset, .(datasetID, site, date, species), summarize,
+                  count = sum(count))
+  return(dataset)
+}
 
-### Stopped HERE ####
+nestedSiteValidity = function(dataset, i){
+  siteUnit = paste(as.character(siteUnitTable[1,1:i]), collapse = '_')
+  if (siteUnit == siteUnitTable[,1]){
+    dataset$site = siteTable[,1] } else {
+      dataset$site = factor(apply(siteTable[,1:i], 1, paste, collapse = '_'))
+    } 
+  siteSummary = ddply(dataset, .(site), summarize,
+                      timeSamples = length(unique(year)), 
+                      nSpecies = length(unique(species)))
+  nSite = nrow(siteSummary)### Stopped HERE ####
 
 
 # Now let's remove the sites with inadequate sample sites:
 
 badSites = subset(siteSummaryFun(dataset), spRich < 10 | nTime < 5)$site
 
-dataset1 = dataset[!dataset$site %in% badSites,]
+dataset2 = dataset[!dataset$site %in% badSites,]
 
 
 
