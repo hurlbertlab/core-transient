@@ -112,110 +112,13 @@ nestedSiteValiditySummary
 ### Stopped HERE ####
 
 
-
-
-
-dataset1 = dataset
-apply(df[,cols], 1, function(x) paste(x, collapse=""))
-
-if(finerGrain == 'Y') {
-
-  subplots = read.table(text = as.character(dataset$site), sep = "_")
-  # names(subplots) = paste('subplot', 0:(ncol(subplots)-1), sep = "")
-  dataset1$site = apply(subplots[,-ncol(subplots)], 1,
-                        function(x) paste(x, collapse = '_'))
-  
-  # How many time and species records are there per site per year?
-  
-  siteTable = ddply(dataset1, .(site, year), summarize,
-#                     nSubplots = length(unique(site)),
-                    nSampleDates = length(unique(date)),
-                    nSpecies = length(unique(species)))
-}
-
-siteTable2 = ddply(dataset, .(site), summarize,
-                  nSubplots = length(unique(Station)),
-                  nSampleDates = length(unique(Sample_Date)),
-                  nSpecies = length(unique(species)))
-
-
-head(siteTable)
-
-summary(siteTable)
-
-# We see that each of the sites was sampled with equivalent, and adequate,
-# time samples (>4) but that at least some sites have species richness 
-# below the cut-off value of 10. Perhaps too many sites of with low sr?
-
-# Let's sort and have a look at the first few rows:
-
-head(siteTable[order(siteTable$nSp),],20)
-
-# All 1's! How many sites have less than 10 species?
-
-nrow(siteTable)
-nrow(subset(siteTable, nSp < 10))
-
-# That's almost a third of the sites! This is a clue that the 
-# smallest spatial sampling grain (quadrat) is too fine.
-
-# Let's try concatenating all but the quad field and explore the output. 
-# We start by splitting site:
-
-site = read.table(text = as.character(dataset$site), sep ='_')
-
-head(site)
-
-site1 = do.call('paste', c(site[,1:4],sep = '_'))
-
-head(site1)
-
-length(site1)
-
-# How have we changed the number of sites?
-
-length(unique(dataset$site))
-
-length(unique(site1))
-
-# We've reduced the number of sites to 28! How does the richness look
-# for this new spatial sampling grain?
-
-dataset1 = dataset
-
-dataset1$site = site1
-
-siteTable = ddply(dataset1, .(site), summarize,
-                  nYear = length(unique(year)),
-                  nSp = length(unique(species)))
-
-head(siteTable)
-
-summary(siteTable)
-
-head(siteTable[order(siteTable$nSp),],10)
-
-# For all but the first site (and perhaps the second), the species richness
-# is adequate.Change the dataset site column to this one:
-
-dataset$site = dataset1$site
-
 # Now let's remove the sites with inadequate sample sites:
 
 badSites = subset(siteSummaryFun(dataset), spRich < 10 | nTime < 5)$site
 
 dataset1 = dataset[!dataset$site %in% badSites,]
 
-# Summarize the dataset to the new spatial grain:
 
-dataset2 = ddply(dataset1, .(datasetID, site, year, species), 
-                 summarize, count = max(count))
-
-head(dataset2)
-
-dim(dataset2)
-
-summary(dataset2)
 
 # All looks good, rename dataset:
 
