@@ -44,35 +44,38 @@ unusedFields = c(1,2,4,5,8,9,11,12,13,14,15,16,17)
 
   # Remove
 dataset1 = dataset[,-unusedFields]
+
+# Check
 head(dataset1)
 
+# !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE DATA WERE MODIFIED!
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SITE DATA ----
 #===============================================================================*
 # View summary of fields in the dataset:
 
-summary(dataset)
-head(dataset)
+summary(dataset1)
+head(dataset1)
 
-# How many sites are there
-length(unique(dataset$quadr))
-# 124 unique sites
+# Make 'site' object
 
-# View sites
-unique(dataset$quadr)
+site = dataset1$quadr
+head(site)
 
-# Remove bad sites 
-badsites = c("?", "0")
-dataset1 = dataset[!dataset$quadr %in% badsites,]
-unique(dataset1$quadr)
+# Add new column to dataset
 
-# See how many sites removed
-dim(dataset1)
-dim(dataset)
+dataset2 = dataset1
 
-# All good, revert back from dataset1 to dataset
-dataset = dataset1
+dataset2$site = factor(site)
+head(dataset2)
+
+dataset2 = dataset2[,-c(3)]
+
+# Check
+head(dataset2)
+
+# !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE SITE DATA WERE MODIFIED!
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT TIME DATA ----
