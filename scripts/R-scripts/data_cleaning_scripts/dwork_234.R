@@ -3,21 +3,32 @@
 #-------------------------------------------------------------------------------*
 # ---- SET-UP ----
 #===============================================================================*
+# # Load libraries:
+
+library(stringr)
+library(plyr)
+library(ggplot2)
+library(grid)
+library(gridExtra)
+library(MASS)
+
 # Source the functions file:
-
-source('scripts/R-scripts/core-transient_functions.R')
-
-# Get data:
 
 getwd()
 
+setwd('C:/Users/auriemma/core-transient/')
+
+source('scripts/R-scripts/core-transient_functions.R')
+
+# Get data
+
+ds = 234
+
 list.files('data/raw_datasets')
 
-dataset = read.csv('data/raw_datasets/dataset_234.csv')
+dataset = read.csv(paste('data/raw_datasets/dataset_', ds, '.csv', sep = ''))
 
-#===============================================================================*
-# MAKE FORMATTED DATASET
-#===============================================================================*
+dataFormattingTable = read.csv('Reference/data_formatting_table.csv')
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE THE DATASET ----
@@ -25,12 +36,16 @@ dataset = read.csv('data/raw_datasets/dataset_234.csv')
 names(dataset)
 head(dataset)
 tail(dataset)
+str(dataset)
 
 # Remove unwanted columns
-dataset1 = dataset[,-c(1,2,4,5,8,9,11,12,13,14,15,16,17)]
+  # List unused fields
+unusedFields = c(1,2,4,5,8,9,11,12,13,14,15,16,17)
+
+  # Remove
+dataset1 = dataset[,-unusedFields]
 head(dataset1)
 
-dataset = dataset1
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SITE DATA ----
