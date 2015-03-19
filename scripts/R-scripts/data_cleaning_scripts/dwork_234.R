@@ -118,3 +118,22 @@ levels(dataset3$species)
 head(dataset3)
 
 # !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE SPECIES DATA WERE MODIFIED!
+
+#!DATA FORMATTING TABLE UPDATE!
+
+# Column M. Notes_spFormat.
+dataFormattingTable[,'Notes_spFormat'] = 
+  dataFormattingTableFieldUpdate(ds, 'Notes_spFormat', 'no info in metadata about species coding but not many different species so little chance for error. Only items removed were blanks and items labeled with a question mark')
+
+#-------------------------------------------------------------------------------*
+# ---- EXPLORE AND FORMAT COUNT DATA ----
+#===============================================================================*
+names(dataset3)
+head(dataset3, 30)
+
+# Remove another column called 'weight' because is not a count column
+dataset3 = dataset3[,-3]
+names(dataset3)
+
+# Leaves just species, date, and site columns
+# Count can be obtained by ddply because species are accounted for several times at one site and one time sample
