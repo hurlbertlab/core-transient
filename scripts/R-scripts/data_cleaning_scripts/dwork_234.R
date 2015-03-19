@@ -77,76 +77,44 @@ head(dataset2)
 
 # !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE SITE DATA WERE MODIFIED!
 
-#-------------------------------------------------------------------------------*
-# ---- EXPLORE AND FORMAT TIME DATA ----
-#===============================================================================*
-# Explore dates
-head(dataset)
+# !DATA FORMATTING TABLE UPDATE!
 
-# Date is lumped altogether in one string
-# Need to substring day and month from date column
+dataFormattingTable[,'Raw_siteUnit'] = 
+  dataFormattingTableFieldUpdate(ds, 'Raw_siteUnit', 'quadr')
 
-# Create separate dataframe
+# Site is probably a site listed as a letter and quadrant within listed as number
+dataFormattingTable[,'spatial_scale_variable'] = 
+  dataFormattingTableFieldUpdate(ds, 'spatial_scale_variable',
+                                 
+                                 'Y')
 
-date = data.frame(as.character(dataset$date))
-head(date)
+# Notes_siteFormat.
 
-# Substring day
-date$day = str_sub(date$as.character.dataset.date., start = -2)
-head(date)
+dataFormattingTable[,'Notes_siteFormat'] = 
+  dataFormattingTableFieldUpdate(ds, 'Notes_siteFormat',                                   
+                                 'sites are 1 ha plots lettered and trapping stations separated into 10 by 10 grids which are numbered.  No changes made to site data')
 
-# Substring month
-date$month = str_sub(date$as.character.dataset.date., start = 5, end = -3)
-head(date)
-
-# Now year
-date$year = str_sub(date$as.character.dataset.date., end = 4)
-head(date)
-
-# Paste day month year back together
-date1 = paste(date$month, date$day, date$year, sep = "/")
-head(date1)
-
-# Add date1 as date object to dataset
-dataset$date = strptime(date1, "%m/%d/%Y")
-class(dataset$date)
-unique(dataset$date)
-head(dataset)
 
 #-------------------------------------------------------------------------------*
-# ---- EXPLORE AND FORMAT COUNT DATA ----
+# ---- EXPLORE AND FORMAT SPECIES DATA ----
 #===============================================================================*
 
-# THIS IS ALL OLD CODE NEEDS REWORKING
+# Look at the individual species present:
 
-# Create a data frame of the count of individuals for a given sampling event:
+levels(dataset2$species)
 
-df2 = ddply(df1, .(site, year, species, date), 
-               summarise, count = length(species))
+# Species are coded but metadata found does not discuss species coding.  There are some obvious items to remove from the dataset, though:
 
-# Create a data frame of the maximum count of individuals 
-# for a given sampling event within a season.
+bad_sp = c("","?")
 
-df3 = ddply(df2,.(site,year,species),
-               summarise, count = max(count))
+# Remove the bad species from dataset
+dataset3 = dataset2[!dataset2$species %in% bad_sp,]
 
-# Arrange the fields in the same order as other datasets:
+# Reset factor levels
+dataset3$species = factor(dataset3$species)
 
-df4 = data.frame(df3[,1],df3[,3],df3[,2],df3[,4])
-names(df4) = c('site','species','year','count')
+# Check
+levels(dataset3$species)
+head(dataset3)
 
-# Add a dataset ID column for matching with metadata
-
-df4$datasetID = rep(234, length(df4[,1]))
-
-# Rearrange the columns"
-
-d234 = df4[,c(5,1:4)]
-
-# Write to file:
-
-write.csv(d234, file.path(out_dir,'dataset_234.csv'), row.names = F)
-
-# Remove objects from the global environment
-
-rm(list = ls())
+# !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE SPECIES DATA WERE MODIFIED!
