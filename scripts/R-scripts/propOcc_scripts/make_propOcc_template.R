@@ -45,46 +45,6 @@ dataFormattingTable$LatLong_sites
 
 # A good first pass is to look at the number of years and species per site:
 
-nestedSiteValidity = function(dataset, i){
-  siteUnit = paste(as.character(siteUnitTable[1,1:i]), collapse = '_')
-  dataset$year = getYear(dataset$date)
-  if (siteUnit == siteUnitTable[,1]) {
-    dataset$site = siteTable[,1]} else {
-      dataset$site = factor(apply(siteTable[,1:i], 1, paste, collapse = '_'))
-  } 
-  siteSummary = ddply(dataset, .(site), summarize,
-      timeSamples = length(unique(year)), 
-      nSpecies = length(unique(species)))
-  nSite = nrow(siteSummary)
-  MEANnTime = mean(siteSummary$timeSamples)
-  MINnTime = min(siteSummary$timeSamples)
-  MAXnTime = max(siteSummary$timeSamples)
-  STDEVnTime = sd(siteSummary$timeSamples) 
-  nBadSiteTime = nrow(subset(siteSummary, timeSamples < 5))
-  nBadSiteSpecies = nrow(subset(siteSummary, nSpecies < 10))
-  nBadSites = nrow(subset(siteSummary, timeSamples < 5 | nSpecies < 10))
-  propBadSiteTime = nBadSiteTime/nRecs
-  propBadSiteSpecies = nBadSiteSpecies/nRecs
-  propBadSites = nBadSiteSpecies/nRecs
-  return(data.frame(siteUnit, nSite, 
-                    MEANnTime, MINnTime, MAXnTime, STDEVnTime,
-                    nBadSiteTime,nBadSiteSpecies,nBadSites,
-                    propBadSiteTime, propBadSiteSpecies, propBadSites))
-}
-         
-# Function to calculate site validity across scales for nested sites:
-
-nestedSiteValiditySummary = function(dataset){
-  siteUnit = dataFormattingTable$Raw_siteUnit
-  siteUnitTable = read.table(text = as.character(siteUnit), sep = '_', stringsAsFactors = F)
-  siteTable = read.table(text = as.character(dataset$site), sep = '_', stringsAsFactors = F)
-  outList = list(length = ncol(siteTable))
-  for (i in 1:ncol(siteTable)){
-    outList[[i]] = nestedSiteValidity(dataset, i)
-    }
-  return(rbind.fill(outList))
-}
-
 nestedSiteValiditySummary(dataset)
 
 # Function to make the spatial grain more course for a dataset. 
