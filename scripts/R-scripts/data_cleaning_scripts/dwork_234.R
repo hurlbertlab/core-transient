@@ -233,3 +233,22 @@ dataFormattingTable[,'Notes_timeFormat'] =
 dataFormattingTable[,'subannualTgrain'] = 
   dataFormattingTableFieldUpdate(ds, 'subannualTgrain', 'Y')
 
+#-------------------------------------------------------------------------------*
+# ---- MAKE DATA FRAME OF COUNT BY SITES, SPECIES, AND YEAR ----
+#===============================================================================*
+# add the datasetID:
+
+dataset6$datasetID = ds
+head(dataset6)
+dim(dataset6)
+summary(dataset6)
+
+# Now make the compiled dataframe:
+
+  # Blank site names need to changed to NAs???????
+site = dataset6$site
+unique(site)
+levels(site)
+site[""] = 'NA'
+unique(site)
+
