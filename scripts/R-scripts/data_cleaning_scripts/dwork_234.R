@@ -111,6 +111,7 @@ dataFormattingTable[,'Notes_siteFormat'] =
 
 # Look at the individual species present:
 
+head(dataset2)
 levels(dataset2$species)
 
 # Species are coded but metadata found does not discuss species coding.  There are some obvious items to remove from the dataset, though:
@@ -126,6 +127,9 @@ dataset3$species = factor(dataset3$species)
 # Check
 levels(dataset3$species)
 head(dataset3)
+
+dim(dataset2)
+dim(dataset3)
 
 # !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE SPECIES DATA WERE MODIFIED!
 
