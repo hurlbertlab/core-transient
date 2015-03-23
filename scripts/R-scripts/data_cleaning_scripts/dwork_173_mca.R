@@ -69,31 +69,45 @@ head(dataset2)
 
 # !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE SITE DATA WERE MODIFIED!
 
+dataFormattingTable[,'Raw_siteUnit'] = 
+  dataFormattingTableFieldUpdate(ds, 'Raw_siteUnit',       # Fill value below in quotes
+                                 
+                                 'site')
+
+dataFormattingTable[,'spatial_scale_variable'] = 
+  dataFormattingTableFieldUpdate(ds, 'spatial_scale_variable',
+                                 
+                                 'N')
+
+dataFormattingTable[,'Notes_siteFormat'] = 
+  dataFormattingTableFieldUpdate(ds, 'Notes_siteFormat', 'no changes were made to raw data. sites are listed by name, and some have different number IDs.')
+
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SPECIES DATA ----
 #===============================================================================*
-# Explore species
-length(unique(d$Species))
-  # 678 different species accounted for
+# Look at each individual species to find ones to remove
 
-# Capitalize all species to eliminate letter case repeats
-d$sp = toupper(d$Species)
-length(unique(d$sp))
-  # Still 678 unique spp names, so no errors
-  #Remove sp column
-head(d)
-d = d[,-6]
+dataset2 = dataset1
+levels(dataset2$Species)
 
-# Look for unidentifieds or other unwanted species
-levels(d$Species)
-  # No questionable species or unidentifieds
-  # wide variety in taxonomic resolution
-class(d$Species)
+# No questionable or bad species
 
-# Change name
-names(d)[4]= 'species'
-head(d)
+# Change name of field
+head(dataset2)
+names(dataset2)[3] = "species"
+
+# Check
+names(dataset2)
+
+# !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE SPECIES DATA WERE MODIFIED!
+
+#!DATA FORMATTING TABLE UPDATE!
+
+# Column M. Notes_spFormat.
+
+dataFormattingTable[,'Notes_spFormat'] = 
+  dataFormattingTableFieldUpdate(ds, 'Notes_spFormat', 'no changes made to species column.  Wide variety of taxonomic resolution, but there are no unidentified or bad species in data.')
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT TIME DATA ----
