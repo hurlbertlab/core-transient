@@ -3,31 +3,57 @@
 #-------------------------------------------------------------------------------*
 # ---- SET-UP ----
 #===============================================================================*
-  # Load libraries 
-setwd("C:/Users/auriemma/core-transient/")
 
-library(plyr)
+# Load libraries:
+
 library(stringr)
+library(plyr)
+library(ggplot2)
+library(grid)
+library(gridExtra)
+library(MASS)
 
-# Source functions
-source("scripts/R-scripts/core-transient_functions.R")
+# Source the functions file:
+
+getwd()
+setwd("C:/Users/auriemma/core-transient/")
+source('scripts/R-scripts/core-transient_functions.R')
 
 # Get data
-d = read.csv("data/raw_datasets/dataset_173.csv")
+
+ds = 173 
+
+list.files('data/raw_datasets')
+
+dataset = read.csv(paste('data/raw_datasets/dataset_', ds, '.csv', sep = ''))
+
+dataFormattingTable = read.csv('Reference/data_formatting_table.csv')
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE THE DATASET ----
 #===============================================================================*
 # Explore
-dim(d)
-names(d)
-str(d)
-head(d)
-summary(d)
+
+dim(dataset)
+names(dataset)
+str(dataset)
+head(dataset)
+summary(dataset)
 
 # Remove unwanted columns
-d = d[,-1]
-head(d)
+  # List removed fields
+
+unusedFields = c(1,2)
+dataset1 = dataset[,-unusedFields]
+
+# Check
+
+dim(dataset1)
+head(dataset1)
+
+# !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE DATA WERE MODIFIED!
+
+
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SITE DATA ----
