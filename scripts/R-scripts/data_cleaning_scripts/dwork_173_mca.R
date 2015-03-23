@@ -53,26 +53,22 @@ head(dataset1)
 
 # !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE DATA WERE MODIFIED!
 
-
+dataFormattingTable[,'LatLong_sites'] = 
+  dataFormattingTableFieldUpdate(ds, 'LatLong_sites', 'N') 
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SITE DATA ----
 #===============================================================================*
-# Explore
-length(unique(d$SampleID))
+# Make site column
 
-  # 758 individual sites
-class(d$SampleID)
+dataset2 = dataset1
 
-# View unique sites for any unwanted site names (NAs, undefined, etc)
-levels(d$SampleID)
+# just renamed only site column from "sampleID" to "site"
+names(dataset2)[2] = "site"
+head(dataset2)
 
-  # No unwanted site names to remove
+# !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE SITE DATA WERE MODIFIED!
 
-# Change name
-names(d)
-names(d)[3] = 'site'
-head(d)
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SPECIES DATA ----
