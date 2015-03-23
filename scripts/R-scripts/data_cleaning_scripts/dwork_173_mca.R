@@ -149,14 +149,10 @@ head(dataset5)
 
 # Possible values for countFormat field are density, cover, and count.
 dataFormattingTable[,'countFormat'] = 
-  dataFormattingTableFieldUpdate(ds, 'countFormat',    # Fill value below in quotes
-                                 
-                                 'cover')
+  dataFormattingTableFieldUpdate(ds, 'countFormat', 'count')
 
 dataFormattingTable[,'Notes_countFormat'] = 
-  dataFormattingTableFieldUpdate(ds, 'Notes_countFormat', # Fill value below in quotes
-                                 
-                                 'Data represents cover. There were no NAs nor 0s that required removal')
+  dataFormattingTableFieldUpdate(ds, 'Notes_countFormat', 'Data represents count, originally labeled as abundance. There were no NAs nor 0s that required removal')
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT TIME DATA ----
