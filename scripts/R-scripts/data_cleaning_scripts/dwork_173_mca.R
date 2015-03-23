@@ -157,49 +157,71 @@ dataFormattingTable[,'Notes_countFormat'] =
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT TIME DATA ----
 #===============================================================================*
-# Explore
-head(d)
-summary(d$Year)
-class(d$Year)
+# extract the sampling dates. 
 
-# Change to factor 
-d1 = d 
-d1$Year = factor(as.character(d1$Year))
+# name of the field
+datefield = 'Year'
 
-# Explore for bad values
-levels(d1$Year)
+# What is the format in which date data is recorded?
+class(dataset5$Year)
 
-# All good, change name and back to d
-names(d1)[2]= 'date'
-d = d1
-head(d)
+# If the date is just a year, then make sure it is of class numeric
+# and not a factor. Otherwise change to a true date object.
 
+if (dateformat == '%Y' | dateformat == '%y') {
+  date = as.numeric(as.character(dataset5[, datefield]))
+} else {
+  date = as.POSIXct(strptime(dataset5[, datefield], dateformat))
+}
+
+# Check
+class(date)
+
+head(dataset5[, datefield])
+
+head(date)
+
+dataset6 = dataset5
+
+# Delete the old date field
+
+dataset6 = dataset6[, -which(names(dataset6) == datefield)]
+head(dataset6)
+
+# Add new date field
+
+dataset6$date = date
+
+# Check the results:
+
+head(dataset6)
+
+# !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE DATE DATA WERE MODIFIED!
+
+#!DATA FORMATTING TABLE UPDATE!
+
+# Notes_timeFormat. Provide a thorough description of any modifications that were made to the time field.
+
+dataFormattingTable[,'Notes_timeFormat'] = 
+  dataFormattingTableFieldUpdate(ds, 'Notes_timeFormat',  'temporal data provided as year of sample. The only modification to this field involved converting to a date object.')
+
+# subannualTgrain. After exploring the time data, was this dataset sampled at a sub-annual temporal grain? Y/N
+
+dataFormattingTable[,'subannualTgrain'] = 
+  dataFormattingTableFieldUpdate(ds, 'subannualTgrain', 'N')
 
 #-------------------------------------------------------------------------------*
 # ---- MAKE DATA FRAME OF COUNT BY SITES, SPECIES, AND YEAR ----
 #===============================================================================*
-# Change name of datasetID
-names(d)[1] = 'datasetID'
-head(d)
+# Add the datasetID:
 
-  #Change to character
-d$datasetID = as.character(d$datasetID)
+dataset6$datasetID = ds
+head(dataset6)
 
-# Check data structure
-str(d)
+# Now make the compiled dataframe:
 
-# Make the dataframe
-d1 = ddply(d, .(datasetID, site, date, species), summarize, count = max(count))
-
-# Explore new dataframe
-head(d1, 40)
-summary(d1)
-str(d1)
-
-# All looks good, revert back to d
-d = d1
-
-head(d)
+dataset7 = ddply(dataset6,.(datasetID, site, date, species),
+                 summarize, count = max(count))
 
 #-------------------------------------------------------------------------------*
 # ---- WRITE OUTPUT DATA FRAMES  ----
