@@ -64,6 +64,7 @@ dataFormattingTable[,'LatLong_sites'] =
 dataset2 = dataset1
 
 # just renamed only site column from "sampleID" to "site"
+
 names(dataset2)[2] = "site"
 head(dataset2)
 
@@ -94,6 +95,7 @@ levels(dataset2$Species)
 # No questionable or bad species
 
 # Change name of field
+
 head(dataset2)
 names(dataset2)[3] = "species"
 
@@ -108,6 +110,53 @@ names(dataset2)
 
 dataFormattingTable[,'Notes_spFormat'] = 
   dataFormattingTableFieldUpdate(ds, 'Notes_spFormat', 'no changes made to species column.  Wide variety of taxonomic resolution, but there are no unidentified or bad species in data.')
+
+#-------------------------------------------------------------------------------*
+# ---- EXPLORE AND FORMAT COUNT DATA ----
+#===============================================================================*
+# Explore
+
+dataset3 = dataset2
+
+# Make count column
+
+countfield = 'Abundance'
+
+# Renaming it
+
+names(dataset3)[which(names(dataset3) == countfield)] = 'count'
+
+# Remove zeros and NAs
+
+summary(dataset3)
+
+# Subset to records > 0:
+
+dataset4 = subset(dataset3, count > 0) 
+summary(dataset4)
+
+# Remove NA's:
+
+dataset5 = na.omit(dataset4)
+
+# Check over 
+
+head(dataset5)
+
+# !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE COUNT DATA WERE MODIFIED!
+
+#!DATA FORMATTING TABLE UPDATE!
+
+# Possible values for countFormat field are density, cover, and count.
+dataFormattingTable[,'countFormat'] = 
+  dataFormattingTableFieldUpdate(ds, 'countFormat',    # Fill value below in quotes
+                                 
+                                 'cover')
+
+dataFormattingTable[,'Notes_countFormat'] = 
+  dataFormattingTableFieldUpdate(ds, 'Notes_countFormat', # Fill value below in quotes
+                                 
+                                 'Data represents cover. There were no NAs nor 0s that required removal')
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT TIME DATA ----
@@ -129,32 +178,6 @@ names(d1)[2]= 'date'
 d = d1
 head(d)
 
-#-------------------------------------------------------------------------------*
-# ---- EXPLORE AND FORMAT COUNT DATA ----
-#===============================================================================*
-# Explore
-summary(d$Abundance)
-  # No zeros
-class(d$Abundance)
-
-# Change to numeric
-d1 = d
-d1$Abundance = as.numeric(as.character(d1$Abundance))
-class(d1$Abundance)
-summary(d1$Abundance)
-
-# Look for bad count values
-unique(d1$Abundance)
-  # No bad values, none removed
-
-# Change column name
-names(d1)[5] = 'count'
-
-head(d1)
-
-# revert back to d
-d = d1
-head(d, 30)
 
 #-------------------------------------------------------------------------------*
 # ---- MAKE DATA FRAME OF COUNT BY SITES, SPECIES, AND YEAR ----
