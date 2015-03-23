@@ -182,6 +182,54 @@ dataFormattingTable[,'countFormat'] =
 dataFormattingTable[,'Notes_countFormat'] = 
   dataFormattingTableFieldUpdate(ds, 'Notes_countFormat', 'data was extracted by creating table and getting frequency of each species at each time sample per each site.')
 
+#-------------------------------------------------------------------------------*
+# ---- FORMAT TIME DATA ----
+#===============================================================================*
+# This dataset gives date without any separation betw values
+# So, need to separate values using substring, then put back together to make date object
 
+dataset5 = dataset4
 
+# Substring year, month, and day
+
+year = str_sub(dataset5$date, end = 4)
+
+month = str_sub(dataset5$date, start = 5, end = 6)
+
+day = str_sub(dataset5$date, start = 7, end = 8)
+
+# Paste values back together
+
+date = paste(month, day, year, sep = '/')
+
+# Change to date format
+
+date1 = strptime(date, '%m/%d/%Y')
+
+class(date1)
+summary(date1)
+
+# Add new date field to dataset
+
+dataset6 = dataset5
+
+dataset6$date = date1
+
+# Check
+head(dataset6, 20)
+tail(dataset6)
+
+# !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE DATE DATA WERE MODIFIED!
+
+# !DATA FORMATTING TABLE UPDATE!
+
+# Notes_timeFormat.
+
+dataFormattingTable[,'Notes_timeFormat'] = 
+  dataFormattingTableFieldUpdate(ds, 'Notes_timeFormat',  'temporal data provided as dates, but with no separation betw year, month, day values. Separated the values, pasted back together, then converted to date object.  Then added the date object to the dataset.')
+
+# subannualTgrain. After exploring the time data, was this dataset sampled at a sub-annual temporal grain? Y/N
+
+dataFormattingTable[,'subannualTgrain'] = 
+  dataFormattingTableFieldUpdate(ds, 'subannualTgrain', 'Y')
 
