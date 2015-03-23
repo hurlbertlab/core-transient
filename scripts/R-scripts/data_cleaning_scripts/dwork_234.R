@@ -72,10 +72,20 @@ dataset2 = dataset1
 dataset2$site = factor(site)
 head(dataset2)
 
+# Remove old one
+
 dataset2 = dataset2[,-c(3)]
 
 # Check
 head(dataset2)
+
+# Check for number of sites sampled per year
+
+uniqQuadPerYear = data.frame(table(unique(dataset[, c('year', 'quadr')])$year))
+
+uniqQuadPerYear
+
+# Note the minor difference in number of sites sampled each year
 
 # !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE SITE DATA WERE MODIFIED!
 
@@ -84,17 +94,15 @@ head(dataset2)
 dataFormattingTable[,'Raw_siteUnit'] = 
   dataFormattingTableFieldUpdate(ds, 'Raw_siteUnit', 'quadr')
 
-# Site is probably a site listed as a letter and quadrant within listed as number
+# Sites are different quadrats within a 1 ha grid, sp can be reduced to the whole grid
+
 dataFormattingTable[,'spatial_scale_variable'] = 
-  dataFormattingTableFieldUpdate(ds, 'spatial_scale_variable',
-                                 
-                                 'Y')
+  dataFormattingTableFieldUpdate(ds, 'spatial_scale_variable','Y')
 
 # Notes_siteFormat.
 
 dataFormattingTable[,'Notes_siteFormat'] = 
-  dataFormattingTableFieldUpdate(ds, 'Notes_siteFormat',                                   
-                                 'sites are 1 ha plots lettered and trapping stations separated into 10 by 10 grids which are numbered.  No changes made to site data')
+  dataFormattingTableFieldUpdate(ds, 'Notes_siteFormat', 'sites are quadrats within a 1 ha plot.  No changes made to site data. Site data was checked for variation in number of sites sampled per year.  Varied from 99 sites to 105 sites, a negligible differece, so was ignored.')
 
 
 #-------------------------------------------------------------------------------*
