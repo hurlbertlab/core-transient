@@ -102,7 +102,7 @@ dataFormattingTable[,'spatial_scale_variable'] =
 # Notes_siteFormat.
 
 dataFormattingTable[,'Notes_siteFormat'] = 
-  dataFormattingTableFieldUpdate(ds, 'Notes_siteFormat', 'sites are quadrats within a 1 ha plot.  No changes made to site data. Site data was checked for variation in number of sites sampled per year.  Varied from 99 sites to 105 sites, a negligible differece, so was ignored.')
+  dataFormattingTableFieldUpdate(ds, 'Notes_siteFormat', 'sites are quadrats within a 1 ha plot.  No changes made to site data. Site data was checked for variation in number of sites sampled per year.  Varied from 99 sites to 105 sites, a negligible differece, so was ignored. There may be blank site names and other misnamed sites, but this can be ignored')
 
 
 #-------------------------------------------------------------------------------*
@@ -145,9 +145,43 @@ dataFormattingTable[,'Notes_spFormat'] =
 names(dataset3)
 head(dataset3, 30)
 
-# Remove another column called 'weight' because is not a count column
-dataset3 = dataset3[,-3]
-names(dataset3)
-
 # Leaves just species, date, and site columns
-# Count can be obtained by ddply because species are accounted for several times at one site and one time sample
+
+# Species are accounted for several times at one time sample, so extract count data using table function
+
+dataset_count = data.frame(table(dataset3[,c('species','date','site')]))
+dataset_count = dataset_count[dataset_count$Freq!=0, ]
+head(dataset_count,30)
+tail(dataset_count,30)
+
+# Freq value is the number of each species at each site and each time sample
+
+# Change dataset to new dataframe
+
+dataset4 = dataset_count
+
+# Change count column name
+
+names(dataset4)[4] = 'count'
+
+# check all
+
+head(dataset4)
+summary(dataset4)
+
+# All looks good
+
+# !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE COUNT DATA WERE MODIFIED!
+
+#!DATA FORMATTING TABLE UPDATE!
+
+# Possible values for countFormat field are density, cover, and count.
+dataFormattingTable[,'countFormat'] = 
+  dataFormattingTableFieldUpdate(ds, 'countFormat', 'count')
+
+dataFormattingTable[,'Notes_countFormat'] = 
+  dataFormattingTableFieldUpdate(ds, 'Notes_countFormat', 'data was extracted by creating table and getting frequency of each species at each time sample per each site.')
+
+
+
+
