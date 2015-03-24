@@ -62,11 +62,30 @@ getNestedSiteDataset = function(dataset, i){
   return(cbind(dataset, siteFrame))
 }
 
-test = getNestedSiteDataset(dataset)
-
-timerFun = function(dataset){
+getNestedTimeDataset = function(dataset){
   nestedSiteDataset = getNestedSiteDataset(dataset)
+  nestedSiteDataset$date = as.POSIXct(strptime(dataset$date, '%Y-%m-%d'))
+  day = as.numeric(strftime(nestedSiteDataset$date, format = '%j'))
+  week = trunc(day/7)+1
+  biweek = trunc(week/2)+1
+  month = as.numeric(format(nestedSiteDataset$date, '%m'))
+  bimonth = trunc(month/2)+1
+  season = ifelse(day < 80 |day >= 356, 1,
+                  ifelse(day >= 80 & day < 172, 2,
+                  ifelse(day >= 172 & day < 266, 3, 4)))
+  subYearList = list(week, biweek, month, bimonth,season)
+  names(subYearList) = c('week','biweek','month','bimonth','season')
+  outList = list(length = length(subYearList))
+  for(i in 1:length(subYearList)){
+    outFrame = data.frame(paste(nestedSiteDataset$year, subYearList[[i]], sep = '_'))
+    names(outFrame)  = paste('year', names(subYearList)[i], sep = '_')
+    outList[[i]] = outFrame
+  }
+  subYearFrame = do.call(cbind, outList)
+  return(cbind(nestedSiteDataset, subYearFrame))
 }
+
+test = getNestedTimeDataset(dataset)
 
 nestedSiteValidity = function(dataset, i){
   siteUnit = paste(as.character(siteUnitTable[1,1:i]), collapse = '_')
