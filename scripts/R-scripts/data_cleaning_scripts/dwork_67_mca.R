@@ -84,3 +84,55 @@ head(dataset2, 30)
 
 # !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE SITE DATA WERE MODIFIED!
 
+# !DATA FORMATTING TABLE UPDATE! 
+
+# Raw_siteUnit 
+
+dataFormattingTable[,'Raw_siteUnit'] = 
+  dataFormattingTableFieldUpdate(ds, 'Raw_siteUnit', "lat_long") 
+
+
+# spatial_scale_variable
+
+dataFormattingTable[,'spatial_scale_variable'] = 
+  dataFormattingTableFieldUpdate(ds, 'spatial_scale_variable','N')
+
+
+# Notes_siteFormat. Use this field to THOROUGHLY describe any changes made to the site field during formatting.
+
+dataFormattingTable[,'Notes_siteFormat'] = 
+  dataFormattingTableFieldUpdate(ds, 'Notes_siteFormat', 'sites were listed as South_Africa_lat_long, so I used substring to remove the South Africa text, leaving only lat_long data. No changes or removals were made to the actual data.')
+
+#-------------------------------------------------------------------------------*
+# ---- EXPLORE AND FORMAT SPECIES DATA ----
+#===============================================================================*
+# Look at the individual species present:
+
+levels(dataset2$Species) 
+
+# All species are good
+
+length(unique(dataset2$Species))
+
+# 68 unique species
+
+# Change name to 'species'
+
+dataset3 = dataset2
+
+names(dataset3)[4] = 'species'
+
+head(dataset3)
+
+# !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE SPECIES DATA WERE MODIFIED!
+
+#!DATA FORMATTING TABLE UPDATE!
+
+# Column M. Notes_spFormat
+
+dataFormattingTable[,'Notes_spFormat'] = 
+  dataFormattingTableFieldUpdate(ds, 'Notes_spFormat', 'no changes made')
+
+#-------------------------------------------------------------------------------*
+# ---- EXPLORE AND FORMAT COUNT DATA ----
+#===============================================================================*
