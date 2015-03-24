@@ -59,12 +59,13 @@ getNestedSiteDataset = function(dataset, i){
     outList[[i]] = site
   }
   siteFrame = do.call(cbind, outList)
-  return(cbind(dataset, siteFrame))
+  nestedSiteData = cbind(dataset, siteFrame)
+  return(list(nestedSiteData, names(siteFrame)))
 }
 
 getNestedTimeDataset = function(dataset){
   if(dataFormattingTable$spatial_scale_variable == 'Y') {
-    dataset = getNestedSiteDataset(dataset)}
+    dataset = getNestedSiteDataset(dataset)[[1]]}
   nestedSiteDataset$date = as.POSIXct(strptime(dataset$date, '%Y-%m-%d'))
   day = as.numeric(strftime(nestedSiteDataset$date, format = '%j'))
   week = trunc(day/7)+1
@@ -96,7 +97,28 @@ getSiteValidityFrame = function(dataset){
   return(dataset)
 }
 
+t2 = ddply(test, .(site), summarize, length(unique(3)))[,2]
 
+# histFun = function(dataset){
+#   test = getNestedTimeDataset(dataset)
+  timeGrains = c('date','year_week','year_biweek','year_month','year_bimonth','year_season','year')
+  spatialGrains = getNestedSiteDataset(dataset)[[2]]
+  par(mar=c(2,2,2,2))
+  par(mfrow = c(length(timeGrains), length(spatialGrains)))
+for(i in 1:length(timeGrains)){
+  for(j in 1:length(spatialGrains)){
+    t3 = data.frame(test[,spatialGrains[[j]]],test[,timeGrains[i]])
+    names(t3) = c('site','time')
+    t4 = ddply(t3, .(site), summarize, length(unique(time)))[,2] 
+    hist(t4, xlab = 'Sampling events', main = paste(spatialGrains[j],timeGrains[i], sep ='_'),
+         cex.main = .75,cex.axis = .5, col = 'gray')
+  }
+}
+}
+
+histFun(dataset)
+
+#####
 
 nestedSiteValidity = function(dataset, i){
   siteUnit = paste(as.character(siteUnitTable[1,1:i]), collapse = '_')
