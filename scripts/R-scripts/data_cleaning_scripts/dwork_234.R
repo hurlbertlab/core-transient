@@ -300,3 +300,8 @@ write.csv(dataFormattingTable, 'Reference/data_formatting_table.csv', row.names 
 # Remove all objects except for functions from the environment:
 
 rm(list = setdiff(ls(), lsf.str()))
+
+dataset7 = read.csv("data/formatted_datasets/dataset_234.csv")
+
+dim(dataset7)
+length(unique(dataset7$species))
