@@ -286,14 +286,10 @@ write.csv(dataset7, "data/formatted_datasets/dataset_234.csv", row.names = F)
 # As we've now successfully created the formatted dataset, we will now update the format priority and format flag fields. 
 
 dataFormattingTable[,'format_priority'] = 
-  dataFormattingTableFieldUpdate(ds, 'format_priority',    # Fill value below in quotes 
-                                 
-                                 'NA')
+  dataFormattingTableFieldUpdate(ds, 'format_priority', 'NA')
 
 dataFormattingTable[,'format_flag'] = 
-  dataFormattingTableFieldUpdate(ds, 'format_flag',    # Fill value below
-                                 
-                                 1)
+  dataFormattingTableFieldUpdate(ds, 'format_flag',   1)
 
 # And update the data formatting table:
 
