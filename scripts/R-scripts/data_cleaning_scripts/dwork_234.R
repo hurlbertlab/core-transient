@@ -252,6 +252,7 @@ class(dataset6$date)
 dataset6$date = as.POSIXct(strptime(dataset6$date, '%Y-%m-%d'))
 
 # Make new summary dataset
+# Site field removed because this dataset represents 1 large site with individual plots
 
 dataset7 = ddply(dataset6,.(datasetID, date, species),
                  summarize, count = sum(count))
@@ -261,3 +262,45 @@ dataset7 = ddply(dataset6,.(datasetID, date, species),
 head(dataset7)
 summary(dataset7)
 str(dataset7)
+
+#-------------------------------------------------------------------------------*
+# ---- UPDATE THE DATA FORMATTING TABLE AND WRITE OUTPUT DATA FRAMES  ----
+#===============================================================================*
+
+# Update the data formatting table
+
+dataFormattingTable = dataFormattingTableUpdate(ds)
+
+# Take a final look at the dataset:
+
+head(dataset7)
+
+summary (dataset7)
+
+# If everything is looks okay we're ready to write formatted data frame:
+
+write.csv(dataset7, "data/formatted_datasets/dataset_234.csv", row.names = F)
+
+# !GIT-ADD-COMMIT-PUSH THE FORMATTED DATASET IN THE DATA FILE, THEN GIT-ADD-COMMIT-PUSH THE UPDATED DATA FOLDER!
+
+# As we've now successfully created the formatted dataset, we will now update the format priority and format flag fields. 
+
+dataFormattingTable[,'format_priority'] = 
+  dataFormattingTableFieldUpdate(ds, 'format_priority',    # Fill value below in quotes 
+                                 
+                                 'NA')
+
+dataFormattingTable[,'format_flag'] = 
+  dataFormattingTableFieldUpdate(ds, 'format_flag',    # Fill value below
+                                 
+                                 1)
+
+# And update the data formatting table:
+
+write.csv(dataFormattingTable, 'Reference/data_formatting_table.csv', row.names = F)
+
+# !GIT-ADD-COMMIT-PUSH THE DATA FORMATTING TABLE!
+
+# Remove all objects except for functions from the environment:
+
+rm(list = setdiff(ls(), lsf.str()))
