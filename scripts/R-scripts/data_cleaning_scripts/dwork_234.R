@@ -245,10 +245,19 @@ summary(dataset6)
 
 # Now make the compiled dataframe:
 
-  # Blank site names need to changed to NAs???????
-site = dataset6$site
-unique(site)
-levels(site)
-site[""] = 'NA'
-unique(site)
+class(dataset6$date)
 
+# Change from POSIXlt to POSIXct format
+
+dataset6$date = as.POSIXct(strptime(dataset6$date, '%Y-%m-%d'))
+
+# Make new summary dataset
+
+dataset7 = ddply(dataset6,.(datasetID, date, species),
+                 summarize, count = sum(count))
+
+# Check and explore
+
+head(dataset7)
+summary(dataset7)
+str(dataset7)
