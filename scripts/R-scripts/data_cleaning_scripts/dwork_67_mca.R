@@ -56,3 +56,31 @@ head(dataset1)
 dataFormattingTable[,'LatLong_sites'] = 
   dataFormattingTableFieldUpdate(ds, 'LatLong_sites', 'N') 
 
+#-------------------------------------------------------------------------------*
+# ---- EXPLORE AND FORMAT SITE DATA ----
+#===============================================================================*
+# Explore
+length(unique(dataset1$site))
+unique(dataset1$site)
+
+# 423 sites listed as "South_Africa_Lat_Long"
+# Can remove the 'South Africa' portion leaving just lat-longs
+
+site = str_sub(dataset1$site, start = 14)
+
+# Check for accuracy
+
+unique(site)
+length(dataset1$site)
+length(site)
+
+# All good, so add new site field to dataset
+
+dataset2 = dataset1
+
+dataset2$site = factor(site)
+
+head(dataset2, 30)
+
+# !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE SITE DATA WERE MODIFIED!
+
