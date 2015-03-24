@@ -63,7 +63,8 @@ getNestedSiteDataset = function(dataset, i){
 }
 
 getNestedTimeDataset = function(dataset){
-  nestedSiteDataset = getNestedSiteDataset(dataset)
+  if(dataFormattingTable$spatial_scale_variable == 'Y') {
+    dataset = getNestedSiteDataset(dataset)}
   nestedSiteDataset$date = as.POSIXct(strptime(dataset$date, '%Y-%m-%d'))
   day = as.numeric(strftime(nestedSiteDataset$date, format = '%j'))
   week = trunc(day/7)+1
@@ -85,7 +86,17 @@ getNestedTimeDataset = function(dataset){
   return(cbind(nestedSiteDataset, subYearFrame))
 }
 
-test = getNestedTimeDataset(dataset)
+getSiteValidityFrame = function(dataset){
+  if(dataFormattingTable$subannualTgrain == 'Y'){
+    dataset = getNestedTimeDataset(dataset)
+  } else {if(dataFormattingTable$spatial_scale_variable == T &
+               dataFormattingTable$LatLong_sites != 'Y'){
+    dataset = getNestedSiteDataset(dataset)
+  }}
+  return(dataset)
+}
+
+
 
 nestedSiteValidity = function(dataset, i){
   siteUnit = paste(as.character(siteUnitTable[1,1:i]), collapse = '_')
