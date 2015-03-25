@@ -117,7 +117,23 @@ for(i in 1:length(timeGrains)){
 }
 
 histFun(dataset)
-
+#####
+timeGrains = c('date','year_week','year_biweek','year_month','year_bimonth','year_season','year')
+spatialGrains = getNestedSiteDataset(dataset)[[2]]
+par(mar=c(2,2,2,2))
+par(mfrow = c(length(timeGrains), length(spatialGrains)))
+for(i in 1:length(timeGrains)){
+  for(j in 1:length(spatialGrains)){
+    t3 = data.frame(test[,spatialGrains[[j]]],test[,timeGrains[i]])
+    names(t3) = c('site','time')
+    t4 = ddply(t3, .(site), summarize, length(unique(time)))[,2] 
+#     hist(t4, xlab = 'Sampling events', main = paste(spatialGrains[j],timeGrains[i], sep ='_'),
+#          cex.main = .75,cex.axis = .5, col = 'gray')
+t4o = t4[order(t4)]
+cdf = sapply(t4o, function(x) sum(x > t4o))
+plot(t4o, cdf, type ='l', main = paste(spatialGrains[j],timeGrains[i], sep ='_'), cex.main = .75)
+abline(v = 5, lty='dashed')
+  }}
 #####
 
 nestedSiteValidity = function(dataset, i){
