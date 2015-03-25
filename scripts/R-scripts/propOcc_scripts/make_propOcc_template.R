@@ -141,7 +141,7 @@ nestedDataset = getNestedDataset(dataset)
 timeGrains = c('date','year_week','year_biweek','year_month','year_bimonth','year_season','year')
 spatialGrains = getNestedSiteDataset(dataset)[[2]]
 
-contourPlotter = function(i, threshold){
+wzMaker = function(i, threshold){
   spatialGrain = spatialGrains[i]
   nestedDataset$siteGrain = nestedDataset[,spatialGrain]
   # Subset to sites with a high enough species richness and year samples:
@@ -164,11 +164,8 @@ contourPlotter = function(i, threshold){
        xlab = 'Spatial subsamples', ylab = 'Temporal subsamples',
        pch = 19, col = 'darkgrey', main = spatialGrain)
 
-t = threshold
-
 wz = expand.grid(w = seq(1,max(site_wz$spatialSubsamples), by = 1), 
                  z = seq(1,max(site_wz$temporalSubsamples), by = 1))
-
 
 for(j in 1:nrow(wz)){
     siteYears = nrow(site_wz)
@@ -179,53 +176,69 @@ for(j in 1:nrow(wz)){
 }
 
 names(wz)[3:6] = c('siteYears_w', 'siteYears_z', 'siteYears_wz', 'propSiteYears_wz')
+return(list(spatialGrain,site_wz,wz))
+}
 
-pdf(paste('output/plots/exploringSiteSelection/wz_scatterplots_', spatialGrain, '.pdf'))
-par(mfrow = c(2,2))
-
-plot(I(siteYears_w/nrow(site_wz)) ~ w,  data = wz,
+wzScatterplotter = function(i, threshold){
+  wzList = wzMaker(i, threshold)
+  spatialGrain = wzList[[1]]
+  site_wz = wzList[[2]]
+  wz = wzList[[3]]
+  
+  pdf(paste('output/plots/exploringSiteSelection/wz_scatterplots_', spatialGrain, '.pdf'))
+  par(mfrow = c(2,2))
+  
+  plot(I(siteYears_w/nrow(site_wz)) ~ w,  data = wz,
      pch = 19, col = 'gray', ylim = c(0,1),
      ylab = 'Proportion of siteYears >= w', main = spatialGrain)
     abline(h = .8, lty = 2)
 
-plot(I(siteYears_z/nrow(site_wz)) ~ z,  data = wz,
-     pch = 19, col = 'gray', ylim = c(0,1),
-     ylab = 'Proportion of siteYears >= z', main = spatialGrain)
-    abline(h = .8, lty = 2)
+  plot(I(siteYears_z/nrow(site_wz)) ~ z,  data = wz,
+       pch = 19, col = 'gray', ylim = c(0,1),
+       ylab = 'Proportion of siteYears >= z', main = spatialGrain)
+      abline(h = .8, lty = 2)
 
-plot(siteYears_w ~ w,  data = wz,
-     pch = 19, col = 'gray', 
-     ylab = 'Number of siteYears >= w', main = spatialGrain)
-      abline(h = .8*nrow(site_wz), lty = 2)
+  plot(siteYears_w ~ w,  data = wz,
+       pch = 19, col = 'gray', 
+       ylab = 'Number of siteYears >= w', main = spatialGrain)
+        abline(h = .8*nrow(site_wz), lty = 2)
 
-plot(siteYears_z ~ z,  data = wz,
-     pch = 19, col = 'gray', 
-     ylab = 'Number of siteYears >= z', main = spatialGrain)
-      abline(h = .8*nrow(site_wz), lty = 2)
-
-dev.off()
-
-par(mfrow = c(1,1))
-
-# pdf(paste('output/plots/exploringSiteSelection/wz_contourplots_', spatialGrain, '.pdf'))
-# 
-# 
-# contourplot(wz$propSiteYears_wz~ wz$w*wz$z, data=wz,
-#             xlab = 'Number of spatial subsamples',
-#             ylab = 'Number of temporal subsamples',
-#             main = paste(spatialGrain,'\nnSiteYears at threshold = ',
-#                          wz[which.min(abs(wz[,'propSiteYears_wz'] - threshold)),'siteYears_wz'],
-#                          '\nw (nSpatialSubsamples) =',
-#                          wz[which.min(abs(wz[,'propSiteYears_wz'] - threshold)),'w'],
-#                          ', z (nTemporalSubsamples) = ',
-#                          wz[which.min(abs(wz[,'propSiteYears_wz'] - threshold)),'z']))
-# 
-# dev.off()
-
-return(wz)
+  plot(siteYears_z ~ z,  data = wz,
+       pch = 19, col = 'gray', 
+       ylab = 'Number of siteYears >= z', main = spatialGrain)
+        abline(h = .8*nrow(site_wz), lty = 2)
+  
+  dev.off()
 }
 
-contourPlotter(1, .8)
+
+wzContourPlotter = function(i, threshold){
+  wzList = wzMaker(i, threshold)
+  spatialGrain = wzList[[1]]
+  site_wz = wzList[[2]]
+  wz = wzList[[3]]
+  
+  pdf(paste('output/plots/exploringSiteSelection/wz_contourplots_', spatialGrain, '.pdf'))
+  
+  print(contourplot(wz$propSiteYears_wz~ wz$w*wz$z, data=wz,
+              xlab = 'Number of spatial subsamples',
+              ylab = 'Number of temporal subsamples',
+              main = paste(spatialGrain,'\nnSiteYears at threshold = ',
+                           wz[which.min(abs(wz[,'propSiteYears_wz'] - threshold)),'siteYears_wz'],
+                           '\nw (nSpatialSubsamples) =',
+                           wz[which.min(abs(wz[,'propSiteYears_wz'] - threshold)),'w'],
+                           ', z (nTemporalSubsamples) = ',
+                           wz[which.min(abs(wz[,'propSiteYears_wz'] - threshold)),'z'])))
+  dev.off()
+}
+
+for (i in 1:5) wzScatterplotter(i, .8)
+
+for (i in 1:5) wzContourPlotter(i, .8)
+
+
+wzContourPlotter(2, .8)
+
 a = contourPlotter(2, .8)
 contourPlotter(3, .8)
 contourPlotter(4)
