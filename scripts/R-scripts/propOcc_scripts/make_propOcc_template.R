@@ -87,7 +87,7 @@ getNestedTimeDataset = function(dataset){
   return(cbind(nestedSiteDataset, subYearFrame))
 }
 
-getSiteValidityFrame = function(dataset){
+getNestedDataset = function(dataset){
   if(dataFormattingTable$subannualTgrain == 'Y'){
     dataset = getNestedTimeDataset(dataset)
   } else {if(dataFormattingTable$spatial_scale_variable == T &
@@ -97,26 +97,29 @@ getSiteValidityFrame = function(dataset){
   return(dataset)
 }
 
-t2 = ddply(test, .(site), summarize, length(unique(3)))[,2]
+nestedDataset = getNestedDataset(dataset)
+timeGrains = c('date','year_week','year_biweek','year_month','year_bimonth','year_season','year')
+spatialGrains = getNestedSiteDataset(dataset)[[2]]
 
-# histFun = function(dataset){
-#   test = getNestedTimeDataset(dataset)
+histFun = function(dataset){
+  nestedDataset = getNestedDataset(dataset)
   timeGrains = c('date','year_week','year_biweek','year_month','year_bimonth','year_season','year')
   spatialGrains = getNestedSiteDataset(dataset)[[2]]
   par(mar=c(2,2,2,2))
   par(mfrow = c(length(timeGrains), length(spatialGrains)))
 for(i in 1:length(timeGrains)){
   for(j in 1:length(spatialGrains)){
-    t3 = data.frame(test[,spatialGrains[[j]]],test[,timeGrains[i]])
-    names(t3) = c('site','time')
-    t4 = ddply(t3, .(site), summarize, length(unique(time)))[,2] 
-    hist(t4, xlab = 'Sampling events', main = paste(spatialGrains[j],timeGrains[i], sep ='_'),
+    d1 = data.frame(nestedDataset[,spatialGrains[[j]]],nestedDataset[,timeGrains[i]])
+    names(d1) = c('site','time')
+    d2 = ddply(d1, .(site), summarize, length(unique(time)))[,2] 
+    hist(d2, xlab = 'Sampling events', main = paste(spatialGrains[j],timeGrains[i], sep ='_'),
          cex.main = .75,cex.axis = .5, col = 'gray')
   }
 }
 }
 
 histFun(dataset)
+
 #####
 timeGrains = c('date','year_week','year_biweek','year_month','year_bimonth','year_season','year')
 spatialGrains = getNestedSiteDataset(dataset)[[2]]
@@ -134,7 +137,89 @@ cdf = sapply(t4o, function(x) sum(x > t4o))
 plot(t4o, cdf, type ='l', main = paste(spatialGrains[j],timeGrains[i], sep ='_'), cex.main = .75)
 abline(v = 5, lty='dashed')
   }}
-#####
+######################################################################
+nestedDataset = test
+spatialGrains = getNestedSiteDataset(dataset)[[2]]
+
+contourPlotter = function(i){
+spatialGrain = spatialGrains[i]
+nestedDataset$siteGrain = nestedDataset[,spatialGrain]
+
+siteSr_nTime = ddply(nestedDataset, .(siteGrain), summarize,
+                     sr = length(unique(species)), 
+                     nTime = length(unique(year)))
+
+goodSites = subset(siteSr_nTime, sr >= 10 & siteSr_nTime$nTime >= 5)$siteGrain
+
+d1 = nestedDataset[nestedDataset$siteGrain %in% goodSites,]
+
+site_wz = ddply(d1,.(siteGrain, year), summarize,
+                spatialSubsamples = length(unique(site)),
+                temporalSubsamples = length(unique(date)))
+
+# par(mar = c(5,4,4,2))
+# par(mfrow = c(1,1))
+# plot(site_wz$spatialSubsamples, site_wz$temporalSubsamples)
+
+w = seq(min(site_wz$spatialSubsamples),max(site_wz$spatialSubsamples), by = 1)
+z = seq(min(site_wz$temporalSubsamples),max(site_wz$temporalSubsamples), by = 1)
+
+t = .8 # Threshold
+
+wz = expand.grid(x = w, y = z)
+names(wz) = c('w','z')
+
+for(j in 1:nrow(wz)){
+    sites = length(unique(site_wz$siteGrain))
+    goodSites = length(unique(subset(site_wz, spatialSubsamples >= wz[j,'w'] & temporalSubsamples >= wz[j,'z'])$siteGrain))
+    wz[i,3] = goodSites
+    wz[i,4] = goodSites/sites
+#     wz[i,3] = nrow(subset(site_wz, spatialSubsamples >= wz[i,'w'] & temporalSubsamples >= wz[i,'z']))
+#     wz[i,4] = nrow(subset(site_wz, spatialSubsamples >= wz[i,'w'] & temporalSubsamples >= wz[i,'z']))/nrow(site_wz)
+#     wz[i,5] = nrow(subset(site_wz, spatialSubsamples >= wz[i,'w']))/nrow(site_wz)
+#     wz[i,6] = nrow(subset(site_wz, temporalSubsamples >= wz[i,'z']))/nrow(site_wz)
+}
+
+# plot(w~V3, xlab = 'Proportion of good sites', data = wz, pch = 19, col = 'gray')
+#   abline(v = .8, lty = 2)
+# 
+# plot(z~V3, xlab = 'Proportion of good sites', data = wz, pch = 19, col = 'gray')
+#   abline(v = .8, lty = 2)
+# 
+# plot(w~V4, xlab = 'Proportion of good sites', data = wz, pch = 19, col = 'gray')
+# abline(v = .8, lty = 2)
+# 
+# plot(z~V5,  xlab = 'Proportion of good sites', data = wz, pch = 19, col = 'gray')
+# abline(v = .8, lty = 2)
+# 
+# ggplot(wz, aes(x = V3, y = w, shape = as.factor(z))) + geom_point()
+# 
+# summary(lm(V3~w + z + w:z, data = wz))
+
+# par(mfrow = c(1,2))
+# contourplot(wz$V3~wz$w*wz$z, data=wz, 
+#             xlab = 'Number of spatial samples',
+#             ylab = 'Number of temporal samples',
+#             main = 'test')
+
+contourplot(wz$V4~wz$w*wz$z, data=wz, 
+            xlab = 'Number of spatial subsamples',
+            ylab = 'Number of temporal subsamples',
+            main = paste(spatialGrain,'\nnSites at threshold = ',
+                         wz[which.min(abs(wz$V4 - .8)),'V3'],
+                         '\nw (nSpatialSubsamples) =',wz[which.min(abs(wz$V4 - .8)),'w'],
+                         ', z (nTemporalSubsamples) = ',
+                         wz[which.min(abs(wz$V4 - .8)),'z']))
+}
+
+contourPlotter(1)
+contourPlotter(2)
+contourPlotter(3)
+contourPlotter(4)
+
+
+
+######################################################################
 
 nestedSiteValidity = function(dataset, i){
   siteUnit = paste(as.character(siteUnitTable[1,1:i]), collapse = '_')
