@@ -159,12 +159,58 @@ head(dataset3)
 
 # Possible values for countFormat field are density, cover, and count.
 dataFormattingTable[,'countFormat'] = 
-  dataFormattingTableFieldUpdate(ds, 'countFormat',    # Fill value below in quotes
-                                 
-                                 'cover')
+  dataFormattingTableFieldUpdate(ds, 'countFormat', 'Abundance')
 
 dataFormattingTable[,'Notes_countFormat'] = 
-  dataFormattingTableFieldUpdate(ds, 'Notes_countFormat', # Fill value below in quotes
-                                 
-                                 'Data represents cover. There were no NAs nor 0s that required removal')
+  dataFormattingTableFieldUpdate(ds, 'Notes_countFormat', "Data represents abundance. no changes or removals necessary")
 
+#-------------------------------------------------------------------------------*
+# ---- FORMAT TIME DATA ----
+#===============================================================================*
+# What is the name of the field that has information on sampling date?
+
+datefield = 'Year'
+
+# What format?
+dateformat = '%Y'
+
+# Date is in just year
+dataset5 = dataset3
+
+if (dateformat == '%Y' | dateformat == '%y') {
+  date = as.numeric(as.character(dataset5[, datefield]))
+} else {
+  date = as.POSIXct(strptime(dataset5[, datefield], dateformat))
+}
+
+# check
+
+class(date)
+
+# Worked, so add the new date to dataset
+
+dataset6 = dataset5
+dataset6$date = date
+
+# check results
+
+head(dataset6)
+summary(dataset6)
+
+# !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE DATE DATA WERE MODIFIED!
+
+#!DATA FORMATTING TABLE UPDATE!
+
+# Notes_timeFormat. Provide a thorough description of any modifications that were made to the time field.
+
+dataFormattingTable[,'Notes_timeFormat'] = 
+  dataFormattingTableFieldUpdate(ds, 'Notes_timeFormat',  # Fill value in below
+                                 
+                                 'temporal data provided as dates. The only modification to this field involved converting to a date object.')
+
+# subannualTgrain. After exploring the time data, was this dataset sampled at a sub-annual temporal grain? Y/N
+
+dataFormattingTable[,'subannualTgrain'] = 
+  dataFormattingTableFieldUpdate(ds, 'subannualTgrain',    # Fill value in below
+                                 
+                                 'Y')
