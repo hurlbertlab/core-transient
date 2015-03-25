@@ -53,7 +53,7 @@ length(unique(dataset$sp))
 # Look through metadata to see which fields we don't need
 
 # List fields to get rid of
-unusedFields = c(1,3,4,8,9,11,12,13,14,15,16)
+unusedFields = c(1,3,4,6:9,11:16)
 
 # New dataset without those fields
 
@@ -72,3 +72,6 @@ dataFormattingTable[,'LatLong_sites'] =
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SITE DATA ----
 #===============================================================================*
+
+# Site data given in grid numbers
+
