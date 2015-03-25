@@ -87,7 +87,7 @@ getNestedTimeDataset = function(dataset){
   return(cbind(nestedSiteDataset, subYearFrame))
 }
 
-getSiteValidityFrame = function(dataset){
+getNestedDataset = function(dataset){
   if(dataFormattingTable$subannualTgrain == 'Y'){
     dataset = getNestedTimeDataset(dataset)
   } else {if(dataFormattingTable$spatial_scale_variable == T &
@@ -97,26 +97,29 @@ getSiteValidityFrame = function(dataset){
   return(dataset)
 }
 
-t2 = ddply(test, .(site), summarize, length(unique(3)))[,2]
+nestedDataset = getNestedDataset(dataset)
+timeGrains = c('date','year_week','year_biweek','year_month','year_bimonth','year_season','year')
+spatialGrains = getNestedSiteDataset(dataset)[[2]]
 
-# histFun = function(dataset){
-#   test = getNestedTimeDataset(dataset)
+histFun = function(dataset){
+  nestedDataset = getNestedDataset(dataset)
   timeGrains = c('date','year_week','year_biweek','year_month','year_bimonth','year_season','year')
   spatialGrains = getNestedSiteDataset(dataset)[[2]]
   par(mar=c(2,2,2,2))
   par(mfrow = c(length(timeGrains), length(spatialGrains)))
 for(i in 1:length(timeGrains)){
   for(j in 1:length(spatialGrains)){
-    t3 = data.frame(test[,spatialGrains[[j]]],test[,timeGrains[i]])
-    names(t3) = c('site','time')
-    t4 = ddply(t3, .(site), summarize, length(unique(time)))[,2] 
-    hist(t4, xlab = 'Sampling events', main = paste(spatialGrains[j],timeGrains[i], sep ='_'),
+    d1 = data.frame(nestedDataset[,spatialGrains[[j]]],nestedDataset[,timeGrains[i]])
+    names(d1) = c('site','time')
+    d2 = ddply(d1, .(site), summarize, length(unique(time)))[,2] 
+    hist(d2, xlab = 'Sampling events', main = paste(spatialGrains[j],timeGrains[i], sep ='_'),
          cex.main = .75,cex.axis = .5, col = 'gray')
   }
 }
 }
 
 histFun(dataset)
+
 #####
 timeGrains = c('date','year_week','year_biweek','year_month','year_bimonth','year_season','year')
 spatialGrains = getNestedSiteDataset(dataset)[[2]]
@@ -210,6 +213,10 @@ contourplot(wz$V4~wz$w*wz$z, data=wz,
 }
 
 contourPlotter(1)
+contourPlotter(2)
+contourPlotter(3)
+contourPlotter(4)
+
 
 
 ######################################################################
