@@ -54,7 +54,7 @@ head(dataset1)
 # sample? (I.e., there are no site names or site IDs or other designations) Y/N
 
 dataFormattingTable[,'LatLong_sites'] = 
-  dataFormattingTableFieldUpdate(ds, 'LatLong_sites', 'N') 
+  dataFormattingTableFieldUpdate(ds, 'LatLong_sites', 'Y') 
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SITE DATA ----
