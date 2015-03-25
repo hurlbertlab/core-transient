@@ -146,7 +146,7 @@ siteSr_nTime = ddply(nestedDataset, .(siteGrain), summarize,
                      sr = length(unique(species)), 
                      nTime = length(unique(year)))
 
-goodSites = subset(siteSr_nTime, sr > 10 & siteSr_nTime$nTime > 5)$siteGrain
+goodSites = subset(siteSr_nTime, sr >= 10 & siteSr_nTime$nTime >= 5)$siteGrain
 
 d1 = nestedDataset[nestedDataset$siteGrain %in% goodSites,]
 
@@ -160,16 +160,21 @@ site_wz = ddply(d1,.(siteGrain, year), summarize,
 
 w = seq(min(site_wz$spatialSubsamples),max(site_wz$spatialSubsamples), by = 1)
 z = seq(min(site_wz$temporalSubsamples),max(site_wz$temporalSubsamples), by = 1)
+
 t = .8 # Threshold
 
 wz = expand.grid(x = w, y = z)
 names(wz) = c('w','z')
 
-for(i in 1:nrow(wz)){
-    wz[i,3] = nrow(subset(site_wz, spatialSubsamples >= wz[i,'w'] & temporalSubsamples >= wz[i,'z']))
-    wz[i,4] = nrow(subset(site_wz, spatialSubsamples >= wz[i,'w'] & temporalSubsamples >= wz[i,'z']))/nrow(site_wz)
-    wz[i,5] = nrow(subset(site_wz, spatialSubsamples >= wz[i,'w']))/nrow(site_wz)
-    wz[i,6] = nrow(subset(site_wz, temporalSubsamples >= wz[i,'z']))/nrow(site_wz)
+for(j in 1:nrow(wz)){
+    sites = length(unique(site_wz$siteGrain))
+    goodSites = length(unique(subset(site_wz, spatialSubsamples >= wz[j,'w'] & temporalSubsamples >= wz[j,'z'])$siteGrain))
+    wz[i,3] = goodSites
+    wz[i,4] = goodSites/sites
+#     wz[i,3] = nrow(subset(site_wz, spatialSubsamples >= wz[i,'w'] & temporalSubsamples >= wz[i,'z']))
+#     wz[i,4] = nrow(subset(site_wz, spatialSubsamples >= wz[i,'w'] & temporalSubsamples >= wz[i,'z']))/nrow(site_wz)
+#     wz[i,5] = nrow(subset(site_wz, spatialSubsamples >= wz[i,'w']))/nrow(site_wz)
+#     wz[i,6] = nrow(subset(site_wz, temporalSubsamples >= wz[i,'z']))/nrow(site_wz)
 }
 
 # plot(w~V3, xlab = 'Proportion of good sites', data = wz, pch = 19, col = 'gray')
@@ -194,8 +199,6 @@ for(i in 1:nrow(wz)){
 #             ylab = 'Number of temporal samples',
 #             main = 'test')
 
-if ( i !=5){
-
 contourplot(wz$V4~wz$w*wz$z, data=wz, 
             xlab = 'Number of spatial subsamples',
             ylab = 'Number of temporal subsamples',
@@ -204,9 +207,7 @@ contourplot(wz$V4~wz$w*wz$z, data=wz,
                          '\nw (nSpatialSubsamples) =',wz[which.min(abs(wz$V4 - .8)),'w'],
                          ', z (nTemporalSubsamples) = ',
                          wz[which.min(abs(wz$V4 - .8)),'z']))
-} else {
-  plot(wz$V4~wz$y)
-}}
+}
 
 contourPlotter(1)
 
