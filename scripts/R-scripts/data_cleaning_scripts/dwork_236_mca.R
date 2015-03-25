@@ -75,3 +75,43 @@ dataFormattingTable[,'LatLong_sites'] =
 
 # Site data given in grid numbers
 
+dataset2 = dataset1
+
+# change name
+
+names(dataset2)[2] = 'site'
+unique(dataset2$site)
+class(dataset2$site)
+
+# change to factor
+
+dataset2$site = as.factor(dataset2$site)
+
+# Check
+head(dataset2)
+
+# !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE SITE DATA WERE MODIFIED!
+
+# !DATA FORMATTING TABLE UPDATE! 
+
+# Raw_siteUnit. How a site is coded (i.e. if the field was concatenated such as this one, it was coded as "site_block_treatment_plot_quad"). Alternatively, if the site were concatenated from latitude and longitude fields, the encoding would be "lat_long". 
+
+dataFormattingTable[,'Raw_siteUnit'] = 
+  dataFormattingTableFieldUpdate(ds, 'Raw_siteUnit',       # Fill value below in quotes
+                                 
+                                 'site_block_treatment_plot_quad') 
+
+
+# spatial_scale_variable. Is a site potentially nested (e.g., plot within a quad or decimal lat longs that could be scaled up)? Y/N
+
+dataFormattingTable[,'spatial_scale_variable'] = 
+  dataFormattingTableFieldUpdate(ds, 'spatial_scale_variable',
+                                 
+                                 'Y') # Fill value here in quotes
+
+# Notes_siteFormat. Use this field to THOROUGHLY describe any changes made to the site field during formatting.
+
+dataFormattingTable[,'Notes_siteFormat'] = 
+  dataFormattingTableFieldUpdate(ds, 'Notes_siteFormat',  # Fill value below in quotes
+                                 
+                                 'site fields concatenated. metadata suggests site-block-treatment-plot-quad describes the order of nested sites from small to large.')
