@@ -97,10 +97,6 @@ getNestedDataset = function(dataset){
   return(dataset)
 }
 
-nestedDataset = getNestedDataset(dataset)
-timeGrains = c('date','year_week','year_biweek','year_month','year_bimonth','year_season','year')
-spatialGrains = getNestedSiteDataset(dataset)[[2]]
-
 histFun = function(dataset){
   nestedDataset = getNestedDataset(dataset)
   timeGrains = c('date','year_week','year_biweek','year_month','year_bimonth','year_season','year')
@@ -120,7 +116,9 @@ for(i in 1:length(timeGrains)){
 
 histFun(dataset)
 
-#####
+
+
+####################################################################################################
 timeGrains = c('date','year_week','year_biweek','year_month','year_bimonth','year_season','year')
 spatialGrains = getNestedSiteDataset(dataset)[[2]]
 par(mar=c(2,2,2,2))
@@ -137,84 +135,99 @@ cdf = sapply(t4o, function(x) sum(x > t4o))
 plot(t4o, cdf, type ='l', main = paste(spatialGrains[j],timeGrains[i], sep ='_'), cex.main = .75)
 abline(v = 5, lty='dashed')
   }}
-######################################################################
-nestedDataset = test
+####################################################################################################
+
+nestedDataset = getNestedDataset(dataset)
+timeGrains = c('date','year_week','year_biweek','year_month','year_bimonth','year_season','year')
 spatialGrains = getNestedSiteDataset(dataset)[[2]]
 
-contourPlotter = function(i){
-spatialGrain = spatialGrains[i]
-nestedDataset$siteGrain = nestedDataset[,spatialGrain]
+contourPlotter = function(i, threshold){
+  spatialGrain = spatialGrains[i]
+  nestedDataset$siteGrain = nestedDataset[,spatialGrain]
+  # Subset to sites with a high enough species richness and year samples:
+    siteSr_nTime = ddply(nestedDataset, .(siteGrain), summarize,
+                       sr = length(unique(species)), 
+                       nTime = length(unique(year)))
+    goodSites = subset(siteSr_nTime, sr >= 10 & siteSr_nTime$nTime >= 5)$siteGrain
+  
+    d1 = nestedDataset[nestedDataset$siteGrain %in% goodSites,]
 
-siteSr_nTime = ddply(nestedDataset, .(siteGrain), summarize,
-                     sr = length(unique(species)), 
-                     nTime = length(unique(year)))
-
-goodSites = subset(siteSr_nTime, sr >= 10 & siteSr_nTime$nTime >= 5)$siteGrain
-
-d1 = nestedDataset[nestedDataset$siteGrain %in% goodSites,]
-
-site_wz = ddply(d1,.(siteGrain, year), summarize,
+    site_wz = ddply(d1,.(siteGrain, year), summarize,
                 spatialSubsamples = length(unique(site)),
                 temporalSubsamples = length(unique(date)))
+  
+    site_wz = na.omit(site_wz)
 
 # par(mar = c(5,4,4,2))
 # par(mfrow = c(1,1))
-# plot(site_wz$spatialSubsamples, site_wz$temporalSubsamples)
+  plot(site_wz$spatialSubsamples, site_wz$temporalSubsamples, 
+       xlab = 'Spatial subsamples', ylab = 'Temporal subsamples',
+       pch = 19, col = 'darkgrey', main = spatialGrain)
 
-w = seq(min(site_wz$spatialSubsamples),max(site_wz$spatialSubsamples), by = 1)
-z = seq(min(site_wz$temporalSubsamples),max(site_wz$temporalSubsamples), by = 1)
+t = threshold
 
-t = .8 # Threshold
+wz = expand.grid(w = seq(1,max(site_wz$spatialSubsamples), by = 1), 
+                 z = seq(1,max(site_wz$temporalSubsamples), by = 1))
 
-wz = expand.grid(x = w, y = z)
-names(wz) = c('w','z')
 
 for(j in 1:nrow(wz)){
-    sites = length(unique(site_wz$siteGrain))
-    goodSites = length(unique(subset(site_wz, spatialSubsamples >= wz[j,'w'] & temporalSubsamples >= wz[j,'z'])$siteGrain))
-    wz[i,3] = goodSites
-    wz[i,4] = goodSites/sites
-#     wz[i,3] = nrow(subset(site_wz, spatialSubsamples >= wz[i,'w'] & temporalSubsamples >= wz[i,'z']))
-#     wz[i,4] = nrow(subset(site_wz, spatialSubsamples >= wz[i,'w'] & temporalSubsamples >= wz[i,'z']))/nrow(site_wz)
-#     wz[i,5] = nrow(subset(site_wz, spatialSubsamples >= wz[i,'w']))/nrow(site_wz)
-#     wz[i,6] = nrow(subset(site_wz, temporalSubsamples >= wz[i,'z']))/nrow(site_wz)
+    siteYears = nrow(site_wz)
+    wz[j,3] = nrow(subset(site_wz, spatialSubsamples  >= wz[j,'w']))
+    wz[j,4] = nrow(subset(site_wz, temporalSubsamples >= wz[j,'z']))
+    wz[j,5]  = nrow(subset(site_wz, spatialSubsamples  >= wz[j,'w'] & temporalSubsamples >= wz[j,'z']))
+    wz[j,6] = nrow(subset(site_wz, spatialSubsamples  >= wz[j,'w'] & temporalSubsamples >= wz[j,'z']))/siteYears
 }
 
-# plot(w~V3, xlab = 'Proportion of good sites', data = wz, pch = 19, col = 'gray')
-#   abline(v = .8, lty = 2)
-# 
-# plot(z~V3, xlab = 'Proportion of good sites', data = wz, pch = 19, col = 'gray')
-#   abline(v = .8, lty = 2)
-# 
-# plot(w~V4, xlab = 'Proportion of good sites', data = wz, pch = 19, col = 'gray')
-# abline(v = .8, lty = 2)
-# 
-# plot(z~V5,  xlab = 'Proportion of good sites', data = wz, pch = 19, col = 'gray')
-# abline(v = .8, lty = 2)
-# 
-# ggplot(wz, aes(x = V3, y = w, shape = as.factor(z))) + geom_point()
-# 
-# summary(lm(V3~w + z + w:z, data = wz))
+names(wz)[3:6] = c('siteYears_w', 'siteYears_z', 'siteYears_wz', 'propSiteYears_wz')
 
-# par(mfrow = c(1,2))
-# contourplot(wz$V3~wz$w*wz$z, data=wz, 
-#             xlab = 'Number of spatial samples',
-#             ylab = 'Number of temporal samples',
-#             main = 'test')
+pdf(paste('output/plots/exploringSiteSelection/wz_scatterplots_', spatialGrain, '.pdf'))
+par(mfrow = c(2,2))
 
-contourplot(wz$V4~wz$w*wz$z, data=wz, 
-            xlab = 'Number of spatial subsamples',
-            ylab = 'Number of temporal subsamples',
-            main = paste(spatialGrain,'\nnSites at threshold = ',
-                         wz[which.min(abs(wz$V4 - .8)),'V3'],
-                         '\nw (nSpatialSubsamples) =',wz[which.min(abs(wz$V4 - .8)),'w'],
-                         ', z (nTemporalSubsamples) = ',
-                         wz[which.min(abs(wz$V4 - .8)),'z']))
+plot(I(siteYears_w/nrow(site_wz)) ~ w,  data = wz,
+     pch = 19, col = 'gray', ylim = c(0,1),
+     ylab = 'Proportion of siteYears >= w', main = spatialGrain)
+    abline(h = .8, lty = 2)
+
+plot(I(siteYears_z/nrow(site_wz)) ~ z,  data = wz,
+     pch = 19, col = 'gray', ylim = c(0,1),
+     ylab = 'Proportion of siteYears >= z', main = spatialGrain)
+    abline(h = .8, lty = 2)
+
+plot(siteYears_w ~ w,  data = wz,
+     pch = 19, col = 'gray', 
+     ylab = 'Number of siteYears >= w', main = spatialGrain)
+      abline(h = .8*nrow(site_wz), lty = 2)
+
+plot(siteYears_z ~ z,  data = wz,
+     pch = 19, col = 'gray', 
+     ylab = 'Number of siteYears >= z', main = spatialGrain)
+      abline(h = .8*nrow(site_wz), lty = 2)
+
+dev.off()
+
+par(mfrow = c(1,1))
+
+# pdf(paste('output/plots/exploringSiteSelection/wz_contourplots_', spatialGrain, '.pdf'))
+# 
+# 
+# contourplot(wz$propSiteYears_wz~ wz$w*wz$z, data=wz,
+#             xlab = 'Number of spatial subsamples',
+#             ylab = 'Number of temporal subsamples',
+#             main = paste(spatialGrain,'\nnSiteYears at threshold = ',
+#                          wz[which.min(abs(wz[,'propSiteYears_wz'] - threshold)),'siteYears_wz'],
+#                          '\nw (nSpatialSubsamples) =',
+#                          wz[which.min(abs(wz[,'propSiteYears_wz'] - threshold)),'w'],
+#                          ', z (nTemporalSubsamples) = ',
+#                          wz[which.min(abs(wz[,'propSiteYears_wz'] - threshold)),'z']))
+# 
+# dev.off()
+
+return(wz)
 }
 
-contourPlotter(1)
-contourPlotter(2)
-contourPlotter(3)
+contourPlotter(1, .8)
+a = contourPlotter(2, .8)
+contourPlotter(3, .8)
 contourPlotter(4)
 
 
