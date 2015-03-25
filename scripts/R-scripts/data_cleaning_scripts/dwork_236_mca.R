@@ -44,9 +44,31 @@ head(dataset)
 
 summary(dataset)
 
-# Remove some unwanted fields
-# Look through metadata to see which fields mean what
-  # List unused
-unusedFields = c(1,3,4,8,9,11,12)
+# Get raw info for formatting table
 
-  # What does sst, rst, st, f stand for??
+length(unique(dataset$mo))
+length(unique(dataset$sp))
+
+# Remove some unwanted fields
+# Look through metadata to see which fields we don't need
+
+# List fields to get rid of
+unusedFields = c(1,3,4,8,9,11,12,13,14,15,16)
+
+# New dataset without those fields
+
+dataset1 = dataset[,-unusedFields]
+head(dataset1)
+
+# !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE DATA WERE MODIFIED!
+
+#!DATA FORMATTING TABLE UPDATE! 
+# Are the ONLY site identifiers the latitude and longitude of the observation or 
+# sample? (I.e., there are no site names or site IDs or other designations) Y/N
+
+dataFormattingTable[,'LatLong_sites'] = 
+  dataFormattingTableFieldUpdate(ds, 'LatLong_sites','N') 
+
+#-------------------------------------------------------------------------------*
+# ---- EXPLORE AND FORMAT SITE DATA ----
+#===============================================================================*
