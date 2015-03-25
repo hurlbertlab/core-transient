@@ -187,10 +187,11 @@ if (dateformat == '%Y' | dateformat == '%y') {
 
 class(date)
 
-# Worked, so add the new date to dataset
+# Worked, so add the new date to dataset and remove old
 
 dataset6 = dataset5
 dataset6$date = date
+dataset6 = dataset6[,-2]
 
 # check results
 
@@ -201,16 +202,45 @@ summary(dataset6)
 
 #!DATA FORMATTING TABLE UPDATE!
 
-# Notes_timeFormat. Provide a thorough description of any modifications that were made to the time field.
+# Notes_timeFormat. 
 
 dataFormattingTable[,'Notes_timeFormat'] = 
-  dataFormattingTableFieldUpdate(ds, 'Notes_timeFormat',  # Fill value in below
-                                 
-                                 'temporal data provided as dates. The only modification to this field involved converting to a date object.')
+  dataFormattingTableFieldUpdate(ds, 'Notes_timeFormat', 'temporal data provided yearly. only change made was to a numeric object.')
 
 # subannualTgrain. After exploring the time data, was this dataset sampled at a sub-annual temporal grain? Y/N
 
 dataFormattingTable[,'subannualTgrain'] = 
-  dataFormattingTableFieldUpdate(ds, 'subannualTgrain',    # Fill value in below
-                                 
-                                 'Y')
+  dataFormattingTableFieldUpdate(ds, 'subannualTgrain', 'N')
+
+#-------------------------------------------------------------------------------*
+# ---- MAKE DATA FRAME OF COUNT BY SITES, SPECIES, AND YEAR ----
+#===============================================================================*
+
+# DatasetID already in dataset, so just change name
+
+names(dataset6)[1] = 'datasetID'
+
+# Last check over
+
+head(dataset6)
+str(dataset6)
+
+# Make summary dataset
+
+dataset7 = ddply(dataset6,.(datasetID, site, date, species), summarize, 
+                 count = max(count))
+
+# Explore the data frame:
+
+dim(dataset7)
+
+head(dataset7)
+
+summary(dataset7)
+
+# !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE DATA WERE MODIFIED!
+
+#-------------------------------------------------------------------------------*
+# ---- UPDATE THE DATA FORMATTING TABLE AND WRITE OUTPUT DATA FRAMES  ----
+#===============================================================================*
+
