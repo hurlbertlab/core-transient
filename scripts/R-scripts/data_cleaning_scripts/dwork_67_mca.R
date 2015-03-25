@@ -272,6 +272,11 @@ dataFormattingTable[,'format_flag'] =
 
 write.csv(dataFormattingTable, 'Reference/data_formatting_table.csv', row.names = F)
 
+# Formatting table info
+
+dim(dataset7)
+length(unique(dataset7$site))
+length(unique(dataset7$species))
 
 
 # !GIT-ADD-COMMIT-PUSH THE DATA FORMATTING TABLE!
