@@ -188,3 +188,62 @@ dataFormattingTable[,'countFormat'] =
 
 dataFormattingTable[,'Notes_countFormat'] = 
   dataFormattingTableFieldUpdate(ds, 'Notes_countFormat', 'no specific count data, but multiple records of same species at each site and single time samples. count values were created using table function.  Count field represents number of each species at each site per time sample.')
+
+#-------------------------------------------------------------------------------*
+# ---- FORMAT TIME DATA ----
+#===============================================================================*
+
+# extract the sampling dates. 
+
+datefield = 'mo'
+
+# Change name to date
+
+names(dataset5)[2] = 'date'
+
+head(dataset5)
+
+# Create separate date vector
+
+date = dataset5$date
+
+# Since date is formatted year-month with no space, need to substring out year and month and then paste back together
+
+year = str_sub(date, end = 4)
+month = str_sub(date, start = 5)
+
+# No day in time data of this dataset. In order to make a date object, need to add 01 as a filler for the day
+
+day = '01'
+
+date = paste(month, day, year, sep = "/")
+
+# Make date object
+
+date1 = strptime(date,'%m/%d/%Y')
+class(date1)
+head(date1)
+
+# add to dataset to replace old
+
+dataset6 = dataset5
+
+dataset6$date = date1
+head(dataset6)
+
+# Looks good
+
+# !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE DATE DATA WERE MODIFIED!
+
+#!DATA FORMATTING TABLE UPDATE!
+
+# Notes_timeFormat. Provide a thorough description of any modifications that were made to the time field.
+
+dataFormattingTable[,'Notes_timeFormat'] = 
+  dataFormattingTableFieldUpdate(ds, 'Notes_timeFormat', 'temporal data provided in yearmonth format, no spaces. Used substring to separate month from year, then paste back together in correct format.  No days were provided, so needed to add a filler 01 as day to make into POSIX date object formmated m/d/y.')
+
+# subannualTgrain. After exploring the time data, was this dataset sampled at a sub-annual temporal grain? Y/N
+
+dataFormattingTable[,'subannualTgrain'] = 
+  dataFormattingTableFieldUpdate(ds, 'subannualTgrain',  'Y')
+
