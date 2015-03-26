@@ -152,6 +152,39 @@ levels(dataset3$species)
 dataFormattingTable[,'Notes_spFormat'] = 
   dataFormattingTableFieldUpdate(ds, 'Notes_spFormat', "species coded, codes available in metadata. 2 species listed in dataset that were not present in metadata, so they were removed. Named MM and UN.  UN likely stands for unidentified")
 
+#-------------------------------------------------------------------------------*
+# ---- EXPLORE AND FORMAT COUNT DATA ----
+#===============================================================================*
+# No count in this dataset, but able to extract count because multiple records of each species at time samples and sites
 
+dataset_count = data.frame(table(dataset3[,c('species','mo','site')]))
 
+# check results
 
+summary(dataset_count)
+head(dataset_count, 100)
+
+# Remove zeros
+
+dataset5 = dataset_count[dataset_count$Freq!=0, ]
+
+summary(dataset_count)
+
+head(dataset_count)
+
+# All worked, change name of field to count
+
+names(dataset5)[4] = 'count'
+
+head(dataset5)
+
+# !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE COUNT DATA WERE MODIFIED!
+
+#!DATA FORMATTING TABLE UPDATE!
+
+# Possible values for countFormat field are density, cover, and count.
+dataFormattingTable[,'countFormat'] = 
+  dataFormattingTableFieldUpdate(ds, 'countFormat',  "NA")
+
+dataFormattingTable[,'Notes_countFormat'] = 
+  dataFormattingTableFieldUpdate(ds, 'Notes_countFormat', 'no specific count data, but multiple records of same species at each site and single time samples. count values were created using table function.  Count field represents number of each species at each site per time sample.')
