@@ -17,7 +17,7 @@ library(MASS)
 # Source the functions file:
 
 getwd()
-
+setwd('C:/Users/auriemma/core-transient/')
 source('scripts/R-scripts/core-transient_functions.R')
 
 # Get data. First specify the dataset number ('ds') you are working with.
@@ -107,3 +107,51 @@ dataFormattingTable[,'spatial_scale_variable'] =
 
 dataFormattingTable[,'Notes_siteFormat'] = 
   dataFormattingTableFieldUpdate(ds, 'Notes_siteFormat',  "checked metadata; sites are separated across 20 different 0.56 ha grids. no changes or removals were made.")
+
+#-------------------------------------------------------------------------------*
+# ---- EXPLORE AND FORMAT SPECIES DATA ----
+#===============================================================================*
+# Explore
+head(dataset2)
+
+levels(dataset2$sp)
+
+# 2 species listed (MM and UN) not in metadata, UN probably means unidentified.  
+# See how many MMs there are, if not many, probably a typo and can be eliminated
+
+table(dataset2$sp)
+
+# Only one 'MM' in whole dataset, so remove it and UN
+
+bad_sp = c("MM","UN")
+
+dataset3 = dataset2[!dataset2$sp %in% bad_sp,]
+
+# Change field name and to factor
+
+dataset3$sp = factor(dataset3$sp)
+
+names(dataset3)[3] = 'species'
+
+# Check results
+
+nrow(dataset2)
+
+nrow(dataset3)
+
+head(dataset3)
+
+levels(dataset3$species)
+
+# !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE SPECIES DATA WERE MODIFIED!
+
+#!DATA FORMATTING TABLE UPDATE!
+
+# Column M. Notes_spFormat.
+
+dataFormattingTable[,'Notes_spFormat'] = 
+  dataFormattingTableFieldUpdate(ds, 'Notes_spFormat', "species coded, codes available in metadata. 2 species listed in dataset that were not present in metadata, so they were removed. Named MM and UN.  UN likely stands for unidentified")
+
+
+
+
