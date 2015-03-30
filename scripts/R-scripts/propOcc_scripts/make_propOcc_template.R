@@ -141,50 +141,117 @@ abline(v = 5, lty='dashed')
 
 ####################################################################################################
 
+
+
 nestedDataset = getNestedDataset(dataset)
 timeGrains = c('date','year_week','year_biweek','year_month','year_bimonth','year_season','year')
 spatialGrains = getNestedSiteDataset(dataset)[[2]]
 
 wzMaker = function(i, threshold){
-  spatialGrain = spatialGrains[i]
-  nestedDataset$siteGrain = nestedDataset[,spatialGrain]
+    spatialGrain = spatialGrains[i]
+    nestedDataset$siteGrain = nestedDataset[,spatialGrain]
+    
   # Subset to sites with a high enough species richness and year samples:
+  
     siteSr_nTime = ddply(nestedDataset, .(siteGrain), summarize,
                        sr = length(unique(species)), 
                        nTime = length(unique(year)))
+  
     goodSites = subset(siteSr_nTime, sr >= 10 & siteSr_nTime$nTime >= 5)$siteGrain
   
     d1 = nestedDataset[nestedDataset$siteGrain %in% goodSites,]
 
-    site_wz = ddply(d1,.(siteGrain, year), summarize,
+  # Get data frame of the number of spatial and temporal samples by site and year:
+  
+    spaceTime = ddply(d1,.(siteGrain, year), summarize,
                 spatialSubsamples = length(unique(site)),
                 temporalSubsamples = length(unique(date)))
   
-    site_wz = na.omit(site_wz)
+    spaceTime = na.omit(spaceTime)
+  
+  # Get the value for w threshold:
+    w = seq(min(spaceTime$spatialSubsamples), max(spaceTime$spatialSubsamples, by  = 1))
+    siteYears = nrow(spaceTime)
+    wFrame = data.frame(w)
+    for(i in 1:length(w)) {
+      wFrame[i,2] = nrow(subset(spaceTime, spatialSubsamples  <= w[i]))
+      wFrame[i,3] = wFrame[i,2]/siteYears
+    }
+    names(wFrame)[2:3] = c('siteYears','propW')
+    w = wFrame[which.min(abs(wFrame[,'propW'] - threshold)), 'w']
 
-wz = expand.grid(w = seq(1,max(site_wz$spatialSubsamples), by = 1), 
-                 z = seq(1,max(site_wz$temporalSubsamples), by = 1))
-
-for(j in 1:nrow(wz)){
-    siteYears = nrow(site_wz)
-    wz[j,3] = nrow(subset(site_wz, spatialSubsamples  >= wz[j,'w']))
-    wz[j,4] = nrow(subset(site_wz, temporalSubsamples >= wz[j,'z']))
-    wz[j,5]  = nrow(subset(site_wz, spatialSubsamples  >= wz[j,'w'] & temporalSubsamples >= wz[j,'z']))
-    wz[j,6] = nrow(subset(site_wz, spatialSubsamples  >= wz[j,'w'] & temporalSubsamples >= wz[j,'z']))/siteYears
-    
-    wz[j,7] = length(unique(subset(site_wz, spatialSubsamples  >= wz[j,'w'])$siteGrain))
-    wz[j,8] = length(unique(subset(site_wz, temporalSubsamples >= wz[j,'z'])$siteGrain))
-    wz[j,9]  = length(unique(subset(site_wz, spatialSubsamples  >= wz[j,'w'] & temporalSubsamples >= wz[j,'z'])$siteGrain))
-}
-names(wz)[3:6] = c('siteYears_w', 'siteYears_z', 'siteYears_wz', 'propSiteYears_wz')
-names(wz)[7:9] = c('sites_w', 'sites_z', 'sites_wz')
-outList = list(spatialGrain,site_wz,wz)
-names(outList) = c('spatialGrain', 'spaceTimeSubsamples', 'wzGrid')
-return(outList)
+  # Get the value for the z threshold:
+    z = seq(min(spaceTime$temporalSubsamples), max(spaceTime$temporalSubsamples, by  = 1))
+    zFrame = data.frame(z)
+    for(i in 1:length(z)){
+      zFrame[i,2] = nrow(subset(spaceTime, temporalSubsamples <=z[i]))
+      zFrame[i,3] = zFrame[i,2]/siteYears
+    }
+    names(zFrame)[2:3] = c('siteYears','propZ')
+    z = zFrame[which.min(abs(zFrame[,'propZ'] - threshold)), 'z']
+  
+  # Output:
+  
+    outList = list(spatialGrain,wFrame,zFrame, w, z, spaceTime)
+    names(outList) = c('spatialGrain', 'wFrame', 'zFrame','w', 'z', 'spaceTimeSamples')
+    return(outList)
 }
 
 wzList = list(length = length(spatialGrains))
 for(i in 1:length(spatialGrains)) wzList[[i]] = wzMaker(i, .8)
+names(wzList) = spatialGrains
+
+
+exploreWZ = function(i){
+  wzListSub = wzList[[i]]
+  nSiteYears = nrow(wzListSub$spaceTimeSamples)
+  nSites = length(unique(wzListSub$spaceTimeSamples$siteGrain))
+  w = wzList[[i]]$w
+  spaceTimeSubW = subset(wzListSub$spaceTimeSamples, spatialSubsamples >= w)
+  nSitesW = length(unique(spaceTimeSubW$siteGrain))
+  siteYearsW = nrow(spaceTimeSubW)
+  
+  z = wzListSub$z
+  spaceTimeSubZ = subset(wzListSub$spaceTimeSamples, temporalSubsamples >= z)
+  nSitesZ= length(unique(spaceTimeSubZ$siteGrain))
+  siteYearsZ = nrow(spaceTimeSubZ)
+  
+  spaceTimeSubWZ = subset(wzListSub$spaceTimeSamples, 
+                          temporalSubsamples >= z &
+                          spatialSubsamples >= w)
+  nSitesWZ= length(unique(spaceTimeSubWZ$siteGrain))
+  siteYearsWZ = nrow(spaceTimeSubZ)
+  
+  outList = list(nSiteYears, nSites, w, nSitesW, 
+              siteYearsW, z, nSitesZ, siteYearsZ,
+              nSitesWZ, siteYearsWZ)
+  names(outList) = c('nSiteYears', 'nSites', 'w', 'nSitesW', 
+                     'siteYearsW', 'z', 'nSitesZ', 'siteYearsZ',
+                     'nSitesWZ', 'siteYearsWZ')
+  return(outList)
+}
+
+exploreWZ(1)
+
+plotWZ = function(i){
+  par(mfrow = c(1, 2))
+  plot(propW~w, data = wzList[[i]]$wFrame, 
+       type = 'l', lwd = 2,
+       xlab = 'Spatial subsamples',
+       ylab = 'Proportion of siteYears',
+       main = spatialGrains[i])
+    abline(h = .8, lty = 2)
+  plot(propZ~z, data = wzList[[i]]$zFrame, 
+       type = 'l', lwd = 2,
+       xlab = 'Temporal subsamples',
+       ylab = 'Proportion of siteYears',
+       main = spatialGrains[i])
+    abline(h = .8, lty = 2)
+}
+
+for (i in 1:5) plotWZ(i)
+
+
 
 names(wzList) = spatialGrains
   
