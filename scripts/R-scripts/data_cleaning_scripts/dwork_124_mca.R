@@ -107,3 +107,57 @@ dataFormattingTable[,'spatial_scale_variable'] =
 dataFormattingTable[,'Notes_siteFormat'] = 
   dataFormattingTableFieldUpdate(ds, 'Notes_siteFormat', "site fields were cut down using substring to delete the redundant site name USA_Massachusetts which was present in every site. Remaining are the sites as just lat_longs and also sites with rth_America_Atlantic followed by possibly a site number, then a lat_long")
 
+#-------------------------------------------------------------------------------*
+# ---- EXPLORE AND FORMAT SPECIES DATA ----
+#===============================================================================*
+
+# Explore
+
+length(unique(dataset2$Species))
+# 654 unique species accounted for
+
+head(dataset2)
+
+# Upper and lower case could present an issue, so make new species column with all uppercase
+
+dataset2$species = toupper(dataset2$Species)
+head(dataset2)
+length(unique(dataset2$species))
+
+# no change in number of uniques, so case wasn't an issue
+
+# Check all species to look for removable data
+
+class(dataset2$species)
+dataset2$species = as.factor(dataset2$species)
+
+levels(dataset2$species)
+
+# List bad species
+
+bad_sp = c('ACANTHOCYTHEREIS_DUNELMENSISÂ ','AMPITHOE_LONGIMANAÂ ','ANADARA_OVALISÂ ','ASTERIAS_TANNERIÂ ','CALLITHAMNION_TENUISSIMUMÂ ',"CALLOPORA_LINEATAÂ ","CAVOLINIA_TRIDENTATAÂ ","CELLEPORA_AVICULARISÂ ","CERASTODERMA_PINNULATUMÂ ","CHAETOPTERUS_VARIOPEDATUSÂ ","COLUS_ISLANDICUSÂ ",'COLUS_STIMPSONIÂ ','CYMADUSA_COMPTAÂ ','CYRTOPLEURA_COSTATAÂ ','DICHELOPANDALUS_LEPTOCERUSÂ (','DRILLIOLAÂ SP.','EUNOE_OERSTEDIÂ ','FUCUS_VESICULOSUS_SPHAEROCARPUSÂ ','GLYCERA_AMERICANAÂ ','GRIFFITSIA_TENUISÂ ','GRINNELLIA_AMERICANAÂ ','HAMINOEA_SOLITARIAÂ ','ISCHNOCHITON_RUBERÂ ','LEMBOS_SMITHIÂ ','LOLIGO_PEALEIIÂ ','MELANELLA_CONOIDEAÂ ','MITRELLA_LUNATAÂ ','NASSARIUS_VIBEXÂ ','NICOLEA_VENUSTULAÂ ','NOETIA_PONDEROSAÂ ','PISTA_PALMATAÂ ','PODOCEROPSIS_NITIDAÂ ','SCHIZOPORELLA_ERRATAÂ ','SCYTOSIPHON_LOMENTARIAÂ ','SEILA_ADAMSIÂ ','STENOPLEUSTES_LATIPESÂ ','THARYX_PARVUSÂ')
+
+# Make dataset w/o bad species
+
+dataset3 = dataset2[!dataset2$species %in% bad_spp,]
+head(dataset3)
+
+
+# Reset the factor levels:
+
+dataset3$species = factor(dataset3$species)
+
+# Check
+
+nrow(dataset2)
+nrow(dataset3)
+
+# !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE SPECIES DATA WERE MODIFIED!
+
+#!DATA FORMATTING TABLE UPDATE!
+
+# Column M. Notes_spFormat. Provide a THOROUGH description of any changes made
+# to the species field, including why any species were removed.
+
+dataFormattingTable[,'Notes_spFormat'] = 
+  dataFormattingTableFieldUpdate(ds, 'Notes_spFormat', "several species removed; bad species were repeated species names with an A-hat character on the end.  These were the only species removed from the field")
