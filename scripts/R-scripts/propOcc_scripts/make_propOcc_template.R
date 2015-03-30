@@ -120,8 +120,10 @@ histFun(dataset)
 dev.off()
 
 ####################################################################################################
+
 timeGrains = c('date','year_week','year_biweek','year_month','year_bimonth','year_season','year')
 spatialGrains = getNestedSiteDataset(dataset)[[2]]
+test = getNestedDataset(dataset)
 par(mar=c(2,2,2,2))
 par(mfrow = c(length(timeGrains), length(spatialGrains)))
 for(i in 1:length(timeGrains)){
@@ -136,6 +138,7 @@ cdf = sapply(t4o, function(x) sum(x > t4o))
 plot(t4o, cdf, type ='l', main = paste(spatialGrains[j],timeGrains[i], sep ='_'), cex.main = .75)
 abline(v = 5, lty='dashed')
   }}
+
 ####################################################################################################
 
 nestedDataset = getNestedDataset(dataset)
@@ -168,8 +171,13 @@ for(j in 1:nrow(wz)){
     wz[j,4] = nrow(subset(site_wz, temporalSubsamples >= wz[j,'z']))
     wz[j,5]  = nrow(subset(site_wz, spatialSubsamples  >= wz[j,'w'] & temporalSubsamples >= wz[j,'z']))
     wz[j,6] = nrow(subset(site_wz, spatialSubsamples  >= wz[j,'w'] & temporalSubsamples >= wz[j,'z']))/siteYears
+    
+    wz[j,7] = length(unique(subset(site_wz, spatialSubsamples  >= wz[j,'w'])$siteGrain))
+    wz[j,8] = length(unique(subset(site_wz, temporalSubsamples >= wz[j,'z'])$siteGrain))
+    wz[j,9]  = length(unique(subset(site_wz, spatialSubsamples  >= wz[j,'w'] & temporalSubsamples >= wz[j,'z'])$siteGrain))
 }
 names(wz)[3:6] = c('siteYears_w', 'siteYears_z', 'siteYears_wz', 'propSiteYears_wz')
+names(wz)[7:9] = c('sites_w', 'sites_z', 'sites_wz')
 outList = list(spatialGrain,site_wz,wz)
 names(outList) = c('spatialGrain', 'spaceTimeSubsamples', 'wzGrid')
 return(outList)
@@ -177,78 +185,89 @@ return(outList)
 
 wzList = list(length = length(spatialGrains))
 for(i in 1:length(spatialGrains)) wzList[[i]] = wzMaker(i, .8)
-  
-spaceTimePlotsMaker = function(wz) # par(mar = c(5,4,4,2))
-  # par(mfrow = c(1,1))
-  plot(site_wz$spatialSubsamples, site_wz$temporalSubsamples, 
-       xlab = 'Spatial subsamples', ylab = 'Temporal subsamples',
-       pch = 19, col = 'darkgrey', main = spatialGrain)
 
-test = wzMaker(1, .8)
+names(wzList) = spatialGrains
+  
+# Plots of the number of temporal subsamples by the number of spatial subsamples
+
+pdf('output/plots/exploringSiteSelection/spaceTimeSubsamples_d223.pdf', onefile = T)
+
+plot.new()
+par(mar = c(5,4,4,2))
+par(mfrow = c(3,2))
+
+for(i in 1:length(wzList)){
+  spaceTimeSubSamples = wzList[[i]]$spaceTimeSubsamples
+  plot(spaceTimeSubSamples$spatialSubsamples, spaceTimeSubSamples$temporalSubsamples, 
+       xlab = 'Spatial subsamples', ylab = 'Temporal subsamples',
+       pch = 19, col = 'darkgrey', main = wzList[[i]]$spatialGrain)
+}
+dev.off()
+
+# Plots of the number of temporal subsamples by the number of spatial subsamples
 
 wzScatterplotter = function(i, threshold){
-  wzList = wzMaker(i, threshold)
+  wzList = wzList[[i]]
   spatialGrain = wzList[[1]]
   site_wz = wzList[[2]]
   wz = wzList[[3]]
+  wz$propsYw = wz$siteYears_w/nrow(site_wz)
+  wz$propsYz = wz$siteYears_z/nrow(site_wz)
   
-  pdf(paste('output/plots/exploringSiteSelection/wz_scatterplots_', spatialGrain, '.pdf'))
+#   pdf(paste('output/plots/exploringSiteSelection/wz_scatterplots_', spatialGrain, '.pdf'))
   par(mfrow = c(2,2))
   
-  plot(I(siteYears_w/nrow(site_wz)) ~ w,  data = wz,
-     pch = 19, col = 'gray', ylim = c(0,1),
-     ylab = 'Proportion of siteYears >= w', main = spatialGrain)
+  plot(propsYw ~ w,  data = wz[order(w),], 
+       type = 'l', col = 1, lwd = 1.5, ylim = c(0,1),
+       ylab = 'Proportion of siteYears >= w', main = spatialGrain)
     abline(h = .8, lty = 2)
 
-  plot(I(siteYears_z/nrow(site_wz)) ~ z,  data = wz,
-       pch = 19, col = 'gray', ylim = c(0,1),
+  plot(propsYz ~ z,  data = wz, # wz[order(z),],
+       type = 'l', col = 1, lwd = 1.5, ylim = c(0,1),
        ylab = 'Proportion of siteYears >= z', main = spatialGrain)
       abline(h = .8, lty = 2)
 
-  plot(siteYears_w ~ w,  data = wz,
-       pch = 19, col = 'gray', 
+  plot(siteYears_w ~ w,  data = wz[order(w),],
+       type = 'l', col = 1, lwd = 1.5, 
        ylab = 'Number of siteYears >= w', main = spatialGrain)
         abline(h = .8*nrow(site_wz), lty = 2)
 
-  plot(siteYears_z ~ z,  data = wz,
-       pch = 19, col = 'gray', 
+  plot(siteYears_z ~ z,  data = wz, #wz[order(z),],
+       type = 'l', col = 1, lwd = 1.5, 
        ylab = 'Number of siteYears >= z', main = spatialGrain)
         abline(h = .8*nrow(site_wz), lty = 2)
-  
-  dev.off()
 }
 
+pdf('output/plots/exploringSiteSelection/wzScatterplots_d223.pdf', onefile = T)
+
+for(i in 1:length(spatialGrains)) wzScatterplotter(i, .8)
+
+dev.off()
 
 wzContourPlotter = function(i, threshold){
-  wzList = wzMaker(i, threshold)
+  wzList = wzList[[i]]
   spatialGrain = wzList[[1]]
   site_wz = wzList[[2]]
-  wz = wzList[[3]]
-  
-  pdf(paste('output/plots/exploringSiteSelection/wz_contourplots_', spatialGrain, '.pdf'))
-  
+  wz = wzList[[3]]  
   print(contourplot(wz$propSiteYears_wz~ wz$w*wz$z, data=wz,
               xlab = 'Number of spatial subsamples',
               ylab = 'Number of temporal subsamples',
               main = paste(spatialGrain,'\nnSiteYears at threshold = ',
                            wz[which.min(abs(wz[,'propSiteYears_wz'] - threshold)),'siteYears_wz'],
+                           '\nnSites at threshold = ',
+                           wz[which.min(abs(wz[,'propSiteYears_wz'] - threshold)),'sites_wz'],
                            '\nw (nSpatialSubsamples) =',
                            wz[which.min(abs(wz[,'propSiteYears_wz'] - threshold)),'w'],
                            ', z (nTemporalSubsamples) = ',
                            wz[which.min(abs(wz[,'propSiteYears_wz'] - threshold)),'z'])))
-  dev.off()
 }
 
-for (i in 1:5) wzScatterplotter(i, .8)
+pdf('output/plots/exploringSiteSelection/wz_contourplots_d223.pdf', onefile = T)
 
-for (i in 1:5) wzContourPlotter(i, .8)
+for(i in 1:length(spatialGrains)) wzContourPlotter(i, .8)
 
+dev.off()
 
-wzContourPlotter(2, .8)
-
-a = contourPlotter(2, .8)
-contourPlotter(3, .8)
-contourPlotter(4)
 
 
 
