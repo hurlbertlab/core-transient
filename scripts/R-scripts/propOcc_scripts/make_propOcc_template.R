@@ -114,9 +114,10 @@ for(i in 1:length(timeGrains)){
 }
 }
 
+
+pdf('output/plots/exploringSiteSelection/hist_dataset223.pdf')
 histFun(dataset)
-
-
+dev.off()
 
 ####################################################################################################
 timeGrains = c('date','year_week','year_biweek','year_month','year_bimonth','year_season','year')
@@ -158,12 +159,6 @@ wzMaker = function(i, threshold){
   
     site_wz = na.omit(site_wz)
 
-# par(mar = c(5,4,4,2))
-# par(mfrow = c(1,1))
-  plot(site_wz$spatialSubsamples, site_wz$temporalSubsamples, 
-       xlab = 'Spatial subsamples', ylab = 'Temporal subsamples',
-       pch = 19, col = 'darkgrey', main = spatialGrain)
-
 wz = expand.grid(w = seq(1,max(site_wz$spatialSubsamples), by = 1), 
                  z = seq(1,max(site_wz$temporalSubsamples), by = 1))
 
@@ -174,10 +169,22 @@ for(j in 1:nrow(wz)){
     wz[j,5]  = nrow(subset(site_wz, spatialSubsamples  >= wz[j,'w'] & temporalSubsamples >= wz[j,'z']))
     wz[j,6] = nrow(subset(site_wz, spatialSubsamples  >= wz[j,'w'] & temporalSubsamples >= wz[j,'z']))/siteYears
 }
-
 names(wz)[3:6] = c('siteYears_w', 'siteYears_z', 'siteYears_wz', 'propSiteYears_wz')
-return(list(spatialGrain,site_wz,wz))
+outList = list(spatialGrain,site_wz,wz)
+names(outList) = c('spatialGrain', 'spaceTimeSubsamples', 'wzGrid')
+return(outList)
 }
+
+wzList = list(length = length(spatialGrains))
+for(i in 1:length(spatialGrains)) wzList[[i]] = wzMaker(i, .8)
+  
+spaceTimePlotsMaker = function(wz) # par(mar = c(5,4,4,2))
+  # par(mfrow = c(1,1))
+  plot(site_wz$spatialSubsamples, site_wz$temporalSubsamples, 
+       xlab = 'Spatial subsamples', ylab = 'Temporal subsamples',
+       pch = 19, col = 'darkgrey', main = spatialGrain)
+
+test = wzMaker(1, .8)
 
 wzScatterplotter = function(i, threshold){
   wzList = wzMaker(i, threshold)
