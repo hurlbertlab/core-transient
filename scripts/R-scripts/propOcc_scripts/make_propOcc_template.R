@@ -236,13 +236,13 @@ exploreWZ(1)
 plotWZ = function(i){
   par(mfrow = c(1, 2))
   plot(propW~w, data = wzList[[i]]$wFrame, 
-       type = 'l', lwd = 2,
+       #type = 'l', lwd = 2,
        xlab = 'Spatial subsamples',
        ylab = 'Proportion of siteYears',
        main = spatialGrains[i])
     abline(h = .8, lty = 2)
   plot(propZ~z, data = wzList[[i]]$zFrame, 
-       type = 'l', lwd = 2,
+       #type = 'l', lwd = 2,
        xlab = 'Temporal subsamples',
        ylab = 'Proportion of siteYears',
        main = spatialGrains[i])
@@ -250,6 +250,8 @@ plotWZ = function(i){
 }
 
 for (i in 1:5) plotWZ(i)
+
+wzList[[1]]$wFrame
 
 
 
