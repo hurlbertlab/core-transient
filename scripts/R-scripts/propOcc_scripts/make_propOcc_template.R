@@ -120,8 +120,10 @@ histFun(dataset)
 dev.off()
 
 ####################################################################################################
+
 timeGrains = c('date','year_week','year_biweek','year_month','year_bimonth','year_season','year')
 spatialGrains = getNestedSiteDataset(dataset)[[2]]
+test = getNestedDataset(dataset)
 par(mar=c(2,2,2,2))
 par(mfrow = c(length(timeGrains), length(spatialGrains)))
 for(i in 1:length(timeGrains)){
@@ -136,6 +138,7 @@ cdf = sapply(t4o, function(x) sum(x > t4o))
 plot(t4o, cdf, type ='l', main = paste(spatialGrains[j],timeGrains[i], sep ='_'), cex.main = .75)
 abline(v = 5, lty='dashed')
   }}
+
 ####################################################################################################
 
 nestedDataset = getNestedDataset(dataset)
@@ -265,17 +268,6 @@ for(i in 1:length(spatialGrains)) wzContourPlotter(i, .8)
 
 dev.off()
 
-
-for (i in 1:5) wzScatterplotter(i, .8)
-
-for (i in 1:5) wzContourPlotter(i, .8)
-
-
-wzContourPlotter(2, .8)
-
-a = contourPlotter(2, .8)
-contourPlotter(3, .8)
-contourPlotter(4)
 
 
 
