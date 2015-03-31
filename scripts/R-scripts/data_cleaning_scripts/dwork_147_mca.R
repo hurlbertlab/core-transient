@@ -108,3 +108,33 @@ dataFormattingTable[,'Notes_siteFormat'] =
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SPECIES DATA ----
 #===============================================================================*
+# Explore all the species
+
+    # Rename field first
+names(dataset2)[4] = 'species'
+
+levels(dataset2$species) 
+
+# Change to all caps
+
+dataset2$species = toupper(dataset2$species)
+length(unique(dataset1$Species))
+length(unique(dataset2$species))
+
+# No errors from letter case
+
+# After looking through all species, no bad species detected, so no removals necessary
+
+# !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE SPECIES DATA WERE MODIFIED!
+
+#!DATA FORMATTING TABLE UPDATE!
+
+# Column M. Notes_spFormat. Provide a THOROUGH description of any changes made
+# to the species field, including why any species were removed.
+
+dataFormattingTable[,'Notes_spFormat'] = 
+  dataFormattingTableFieldUpdate(ds, 'Notes_spFormat', 'only change made was to uppercase all species.  no removals or other changes')
+
+#-------------------------------------------------------------------------------*
+# ---- EXPLORE AND FORMAT COUNT DATA ----
+#===============================================================================*
