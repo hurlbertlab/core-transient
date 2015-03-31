@@ -133,24 +133,51 @@ dataset2$species = as.factor(dataset2$species)
 
 levels(dataset2$species)
 
-# List bad species
+# Several species have repeats but followed by a typo of a symbol character (Â) and a space. Can be treated as typo and removed from the dataset.  
 
-bad_sp = c('ACANTHOCYTHEREIS_DUNELMENSISÂ ','AMPITHOE_LONGIMANAÂ ','ANADARA_OVALISÂ ','ASTERIAS_TANNERIÂ ','CALLITHAMNION_TENUISSIMUMÂ ',"CALLOPORA_LINEATAÂ ","CAVOLINIA_TRIDENTATAÂ ","CELLEPORA_AVICULARISÂ ","CERASTODERMA_PINNULATUMÂ ","CHAETOPTERUS_VARIOPEDATUSÂ ","COLUS_ISLANDICUSÂ ",'COLUS_STIMPSONIÂ ','CYMADUSA_COMPTAÂ ','CYRTOPLEURA_COSTATAÂ ','DICHELOPANDALUS_LEPTOCERUSÂ (','DRILLIOLAÂ SP.','EUNOE_OERSTEDIÂ ','FUCUS_VESICULOSUS_SPHAEROCARPUSÂ ','GLYCERA_AMERICANAÂ ','GRIFFITSIA_TENUISÂ ','GRINNELLIA_AMERICANAÂ ','HAMINOEA_SOLITARIAÂ ','ISCHNOCHITON_RUBERÂ ','LEMBOS_SMITHIÂ ','LOLIGO_PEALEIIÂ ','MELANELLA_CONOIDEAÂ ','MITRELLA_LUNATAÂ ','NASSARIUS_VIBEXÂ ','NICOLEA_VENUSTULAÂ ','NOETIA_PONDEROSAÂ ','PISTA_PALMATAÂ ','PODOCEROPSIS_NITIDAÂ ','SCHIZOPORELLA_ERRATAÂ ','SCYTOSIPHON_LOMENTARIAÂ ','SEILA_ADAMSIÂ ','STENOPLEUSTES_LATIPESÂ ','THARYX_PARVUSÂ')
+# Trying functions seemed to work to remove these characters, but probably not the most efficient method. 
+           
+spTest = levels(dataset2$species)
+spTest1 = str_trim(spTest)
+head(spTest1)
+spTest2 = gsub("Â", "", spTest1)
+head(spTest2)
+length(unique(spTest))
+length(unique(spTest2))
 
-# Make dataset w/o bad species
+# Apply it to the dataset
 
-dataset3 = dataset2[!dataset2$species %in% bad_spp,]
+dataset3 = dataset2
+dataset3$species = str_trim(dataset3$species)
+unique(dataset3$species)
+  
+  # This worked to remove the trailing space on these typo species
+
+# Now to remove the symbol character (Â)
+
+dataset3$species = gsub("Â", "", dataset3$species)
+
+# Check to see if it worked
+
+length(unique(dataset2$species))
+length(unique(dataset3$species))
+
+# Removed 35 typo species from the dataset
+# Reset vectors
+
+dataset3$species = as.factor(dataset3$species)
+
+# Check all species again
+
+levels(dataset3$species)
 head(dataset3)
 
+# Remove old species column
 
-# Reset the factor levels:
+dataset3 = dataset3[,-4]
+head(dataset3)
 
-dataset3$species = factor(dataset3$species)
-
-# Check
-
-nrow(dataset2)
-nrow(dataset3)
+# All good after check
 
 # !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE SPECIES DATA WERE MODIFIED!
 
@@ -160,4 +187,117 @@ nrow(dataset3)
 # to the species field, including why any species were removed.
 
 dataFormattingTable[,'Notes_spFormat'] = 
-  dataFormattingTableFieldUpdate(ds, 'Notes_spFormat', "several species removed; bad species were repeated species names with an A-hat character on the end.  These were the only species removed from the field")
+  dataFormattingTableFieldUpdate(ds, 'Notes_spFormat', "several species were removed because they were repeated in the dataset due to a symbol and extra space; treated as a typo. typos were removed from the dataset individually, first by the space then by the symbol. started with 654 uniques, now have 619.")
+
+#-------------------------------------------------------------------------------*
+# ---- EXPLORE AND FORMAT COUNT DATA ----
+#===============================================================================*
+# Assign countfield
+
+countfield = "Abundance"
+
+# Renaming it
+names(dataset3)[which(names(dataset3) == countfield)] = 'count'
+
+# remove zero counts and NA's:
+
+summary(dataset3)
+str(dataset3)
+unique(dataset3$count)
+
+# No zeros or NAs to remove
+
+head(dataset3)
+
+# set straight to dataset 5 to mirror template
+dataset5 = dataset3
+
+# !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE COUNT DATA WERE MODIFIED!
+
+#!DATA FORMATTING TABLE UPDATE!
+
+# Possible values for countFormat field are density, cover, and count.
+dataFormattingTable[,'countFormat'] = 
+  dataFormattingTableFieldUpdate(ds, 'countFormat', 'count')
+
+dataFormattingTable[,'Notes_countFormat'] = 
+  dataFormattingTableFieldUpdate(ds, 'Notes_countFormat', 'Data represents abundance. There were no NAs nor 0s that required removal')
+
+#-------------------------------------------------------------------------------*
+# ---- FORMAT TIME DATA ----
+#===============================================================================*
+
+# Set datefield and date format
+head(dataset5)
+
+datefield = 'Year'
+dateformat = '%Y'
+
+# Date is just a year, change to a true date object.
+
+str(dataset5)
+
+# First change to numeric format
+
+dataset5$Year = as.numeric(dataset5$Year)
+
+# Change to date object
+
+if (dateformat == '%Y' | dateformat == '%y') {
+  date = as.numeric(as.character(dataset5[, datefield]))
+} else {
+  date = as.POSIXct(strptime(dataset5[, datefield], dateformat))
+}
+
+# Check
+
+class(date)
+head(dataset5[, datefield])
+
+head(date)
+dataset6 = dataset5
+
+# Delete the old date field
+dataset6 = dataset6[, -which(names(dataset6) == datefield)]
+
+# Assign the new date values in a field called 'date'
+dataset6$date = date
+
+head(dataset6)
+
+# !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE DATE DATA WERE MODIFIED!
+
+#!DATA FORMATTING TABLE UPDATE!
+
+# Notes_timeFormat. Provide a thorough description of any modifications that were made to the time field.
+
+dataFormattingTable[,'Notes_timeFormat'] = 
+  dataFormattingTableFieldUpdate(ds, 'Notes_timeFormat', 'temporal data provided in yearly grain. no changes made other than to date object')
+
+# subannualTgrain. After exploring the time data, was this dataset sampled at a sub-annual temporal grain? Y/N
+
+dataFormattingTable[,'subannualTgrain'] = 
+  dataFormattingTableFieldUpdate(ds, 'subannualTgrain', 'N')
+
+#-------------------------------------------------------------------------------*
+# ---- MAKE DATA FRAME OF COUNT BY SITES, SPECIES, AND YEAR ----
+#===============================================================================*
+# datasetID already there
+
+# make the compiled dataframe:
+
+dataset7 = ddply(dataset6,.(datasetID, site, date, species),
+                 summarize, count = max(count))
+
+# Explore the data frame
+
+dim(dataset7)
+
+head(dataset7)
+
+summary(dataset7)
+
+# !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE DATA WERE MODIFIED!
+#-------------------------------------------------------------------------------*
+# ---- UPDATE THE DATA FORMATTING TABLE AND WRITE OUTPUT DATA FRAMES  ----
+#===============================================================================*
