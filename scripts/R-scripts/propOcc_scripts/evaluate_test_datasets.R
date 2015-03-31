@@ -1,5 +1,8 @@
 test = fakeData(2,2,10,2)
 
+test1a = fakeData(2,2,10,2)
+
+
 nestedDataset = getNestedSiteDataset(test)
 
 wzMaker2 = function(i){
@@ -29,35 +32,40 @@ wzMaker2 = function(i){
   # Get the value for w threshold:
   
   w = seq(min(spaceTime$spatialSubsamples), max(spaceTime$spatialSubsamples, by  = 1))
-  siteYears = nrow(spaceTime)
-  wFrame = data.frame(w)
-  for(i in 1:length(w)) {
-    wFrame[i,2] = nrow(subset(spaceTime, spatialSubsamples  <= w[i]))
-    wFrame[i,3] = wFrame[i,2]/siteYears
-  }
-  names(wFrame)[2:3] = c('siteYears','propW')
-  w = wFrame[which.min(abs(wFrame[,'propW'] - threshold)), 'w']
-  
-  # Get the value for the z threshold:
-  
   z = seq(min(spaceTime$temporalSubsamples), max(spaceTime$temporalSubsamples, by  = 1))
-  zFrame = data.frame(z)
-  for(i in 1:length(z)){
-    zFrame[i,2] = nrow(subset(spaceTime, temporalSubsamples <=z[i]))
-    zFrame[i,3] = zFrame[i,2]/siteYears
-  }
-  names(zFrame)[2:3] = c('siteYears','propZ')
-  z = zFrame[which.min(abs(zFrame[,'propZ'] - threshold)), 'z']
+  wz = expand.grid(w = w, z = z)
   
+  sites = unique(spaceTime$siteGrain)
+    
+  outList = list(length = length(sites))
+  
+  for(i in 1:length(sites)) {
+    for(j in 1:nrow(wz)){
+      siteSub = subset(spaceTime, siteGrain  == sites[i])
+      w = wz[j, 1]
+      z = wz[j, 2]
+      outList[[i]] = data.frame(site = unique(siteSub$siteGrain), 
+                                w = w, z = z, 
+                                YearsGTEwz = sum(siteSub$spatialSubsamples >= w &
+                                    siteSub$temporalSubsamples >= z))
+    }}
+  
+  # This dataframe provides the calculation of the number of years a site was greater than or equal to w and z for each site and potential value of w and z:
+  
+  wzFrame = rbind.fill(outList)
+
   # Output:
   
-  outList = list(spatialGrain,wFrame,zFrame, w, z, spaceTime)
-  names(outList) = c('spatialGrain', 'wFrame', 'zFrame','w', 'z', 'spaceTimeSamples')
+  outList = list(spatialGrain, wz, wzFrame, spaceTime)
+  names(outList) = c('spatialGrain', 'wz','wzFrame', 'spaceTimeSamples')
   return(outList)
 }
 
 
+wzMaker2(2)
+
 wzMaker2(1)
+
 
 
 
