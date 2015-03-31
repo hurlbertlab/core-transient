@@ -316,20 +316,16 @@ summary(dataset7)
 
 write.csv(dataset7, "data/formatted_datasets/dataset_124.csv", row.names = F)
 
-
 # !GIT-ADD-COMMIT-PUSH THE FORMATTED DATASET IN THE DATA FILE, THEN GIT-ADD-COMMIT-PUSH THE UPDATED DATA FOLDER!
 
-# As we've now successfully created the formatted dataset, we will now update the format priority and format flag fields. 
+# Updating formatting table priorities and flag
 
 dataFormattingTable[,'format_priority'] = 
-  dataFormattingTableFieldUpdate(ds, 'format_priority',    # Fill value below in quotes 
-                                 
-                                 'NA')
+  dataFormattingTableFieldUpdate(ds, 'format_priority','NA')
+
 
 dataFormattingTable[,'format_flag'] = 
-  dataFormattingTableFieldUpdate(ds, 'format_flag',    # Fill value below
-                                 
-                                 1)
+  dataFormattingTableFieldUpdate(ds, 'format_flag',1)
 
 # update the data formatting table:
 
