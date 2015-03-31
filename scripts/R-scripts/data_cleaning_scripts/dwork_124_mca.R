@@ -189,3 +189,37 @@ head(dataset3)
 dataFormattingTable[,'Notes_spFormat'] = 
   dataFormattingTableFieldUpdate(ds, 'Notes_spFormat', "several species were removed because they were repeated in the dataset due to a symbol and extra space; treated as a typo. typos were removed from the dataset individually, first by the space then by the symbol. started with 654 uniques, now have 619.")
 
+#-------------------------------------------------------------------------------*
+# ---- EXPLORE AND FORMAT COUNT DATA ----
+#===============================================================================*
+# Assign countfield
+
+countfield = "Abundance"
+
+# Renaming it
+names(dataset3)[which(names(dataset3) == countfield)] = 'count'
+
+# remove zero counts and NA's:
+
+summary(dataset3)
+str(dataset3)
+unique(dataset3$count)
+
+# No zeros or NAs to remove
+
+head(dataset3)
+
+# set straight to dataset 5 to mirror template
+dataset5 = dataset3
+
+# !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE COUNT DATA WERE MODIFIED!
+
+#!DATA FORMATTING TABLE UPDATE!
+
+# Possible values for countFormat field are density, cover, and count.
+dataFormattingTable[,'countFormat'] = 
+  dataFormattingTableFieldUpdate(ds, 'countFormat', 'count')
+
+dataFormattingTable[,'Notes_countFormat'] = 
+  dataFormattingTableFieldUpdate(ds, 'Notes_countFormat', 'Data represents abundance. There were no NAs nor 0s that required removal')
+
