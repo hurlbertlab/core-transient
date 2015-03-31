@@ -133,24 +133,51 @@ dataset2$species = as.factor(dataset2$species)
 
 levels(dataset2$species)
 
-# List bad species
+# Several species have repeats but followed by a typo of a symbol character (Â) and a space. Can be treated as typo and removed from the dataset.  
 
-bad_sp = c('ACANTHOCYTHEREIS_DUNELMENSISÂ ','AMPITHOE_LONGIMANAÂ ','ANADARA_OVALISÂ ','ASTERIAS_TANNERIÂ ','CALLITHAMNION_TENUISSIMUMÂ ',"CALLOPORA_LINEATAÂ ","CAVOLINIA_TRIDENTATAÂ ","CELLEPORA_AVICULARISÂ ","CERASTODERMA_PINNULATUMÂ ","CHAETOPTERUS_VARIOPEDATUSÂ ","COLUS_ISLANDICUSÂ ",'COLUS_STIMPSONIÂ ','CYMADUSA_COMPTAÂ ','CYRTOPLEURA_COSTATAÂ ','DICHELOPANDALUS_LEPTOCERUSÂ (','DRILLIOLAÂ SP.','EUNOE_OERSTEDIÂ ','FUCUS_VESICULOSUS_SPHAEROCARPUSÂ ','GLYCERA_AMERICANAÂ ','GRIFFITSIA_TENUISÂ ','GRINNELLIA_AMERICANAÂ ','HAMINOEA_SOLITARIAÂ ','ISCHNOCHITON_RUBERÂ ','LEMBOS_SMITHIÂ ','LOLIGO_PEALEIIÂ ','MELANELLA_CONOIDEAÂ ','MITRELLA_LUNATAÂ ','NASSARIUS_VIBEXÂ ','NICOLEA_VENUSTULAÂ ','NOETIA_PONDEROSAÂ ','PISTA_PALMATAÂ ','PODOCEROPSIS_NITIDAÂ ','SCHIZOPORELLA_ERRATAÂ ','SCYTOSIPHON_LOMENTARIAÂ ','SEILA_ADAMSIÂ ','STENOPLEUSTES_LATIPESÂ ','THARYX_PARVUSÂ')
+# Trying functions seemed to work to remove these characters, but probably not the most efficient method. 
+           
+spTest = levels(dataset2$species)
+spTest1 = str_trim(spTest)
+head(spTest1)
+spTest2 = gsub("Â", "", spTest1)
+head(spTest2)
+length(unique(spTest))
+length(unique(spTest2))
 
-# Make dataset w/o bad species
+# Apply it to the dataset
 
-dataset3 = dataset2[!dataset2$species %in% bad_spp,]
+dataset3 = dataset2
+dataset3$species = str_trim(dataset3$species)
+unique(dataset3$species)
+  
+  # This worked to remove the trailing space on these typo species
+
+# Now to remove the symbol character (Â)
+
+dataset3$species = gsub("Â", "", dataset3$species)
+
+# Check to see if it worked
+
+length(unique(dataset2$species))
+length(unique(dataset3$species))
+
+# Removed 35 typo species from the dataset
+# Reset vectors
+
+dataset3$species = as.factor(dataset3$species)
+
+# Check all species again
+
+levels(dataset3$species)
 head(dataset3)
 
+# Remove old species column
 
-# Reset the factor levels:
+dataset3 = dataset3[,-4]
+head(dataset3)
 
-dataset3$species = factor(dataset3$species)
-
-# Check
-
-nrow(dataset2)
-nrow(dataset3)
+# All good after check
 
 # !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE SPECIES DATA WERE MODIFIED!
 
@@ -160,4 +187,5 @@ nrow(dataset3)
 # to the species field, including why any species were removed.
 
 dataFormattingTable[,'Notes_spFormat'] = 
-  dataFormattingTableFieldUpdate(ds, 'Notes_spFormat', "several species removed; bad species were repeated species names with an A-hat character on the end.  These were the only species removed from the field")
+  dataFormattingTableFieldUpdate(ds, 'Notes_spFormat', "several species were removed because they were repeated in the dataset due to a symbol and extra space; treated as a typo. typos were removed from the dataset individually, first by the space then by the symbol. started with 654 uniques, now have 619.")
+
