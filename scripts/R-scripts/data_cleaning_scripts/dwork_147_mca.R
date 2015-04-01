@@ -250,3 +250,37 @@ summary(dataset7)
 # ---- UPDATE THE DATA FORMATTING TABLE AND WRITE OUTPUT DATA FRAMES  ----
 #===============================================================================*
 
+# Update the data formatting table
+
+dataFormattingTable = dataFormattingTableUpdate(ds)
+
+# final look at the dataset
+
+head(dataset7)
+
+summary (dataset7)
+
+# everything is looks okay, write formatted data frame
+
+write.csv(dataset7, "data/formatted_datasets/dataset_147.csv", row.names = F)
+
+
+# Update format flag and priority
+
+dataFormattingTable[,'format_priority'] = 
+  dataFormattingTableFieldUpdate(ds, 'format_priority','NA')
+
+dataFormattingTable[,'format_flag'] = 
+  dataFormattingTableFieldUpdate(ds, 'format_flag', 1)
+
+# write the data formatting table:
+
+write.csv(dataFormattingTable, 'Reference/data_formatting_table.csv', row.names = F)
+
+# !GIT-ADD-COMMIT-PUSH THE FORMATTED DATASET IN THE DATA FILE, THEN GIT-ADD-COMMIT-PUSH THE UPDATED DATA FOLDER!
+
+# Remove all objects except for functions from the environment:
+
+rm(list = setdiff(ls(), lsf.str()))
+
+
