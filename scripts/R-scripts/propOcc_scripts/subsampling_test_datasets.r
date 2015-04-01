@@ -6,19 +6,24 @@ fakeData = function(nSites, nPlots, nYears, nSeasons,
                     startingSite = 1,
                     startingYear = 2001,
                     startingPlot = 1,
-                    startingSeason = 1) {
+                    startingSeason = 1,
+                    nSpecies = 10) {
   
   sitenums = startingSite:(startingSite + nSites - 1)
   years = startingYear:(startingYear + nYears - 1)
   plots = startingPlot:(startingPlot + nPlots - 1)
   seasons = startingSeason:(startingSeason + nSeasons -1)
+  sites = rep(sitenums, each = nSpecies * nPlots*nYears*nSeasons)
+  plot = rep(letters[plots], each = nSeasons*nSpecies, times = nSites*nYears)
   
-  dataOut = data.frame(site = rep(sitenums, each = nPlots*nYears*nSeasons), 
-                       plot = rep(letters[plots], each = nSeasons, times = nSites*nYears),
-                       year = rep(years, each = nPlots*nSeasons, times = nSites),
-                       season = rep(seasons, times = nPlots*nYears*nSites))
+  dataOut = data.frame(site = paste(sites,plot, sep ='_'),
+                        year = rep(years, each = nSpecies*nPlots*nSeasons, times = nSites),
+                        date = rep(seasons, each = nSpecies, times = nPlots*nYears*nSites),
+                        species = rep(letters[1:nSpecies], times = nSites*nPlots*nYears*nSeasons))
   return(dataOut)
 }
+
+
 
 # These datasets should be tested by finding the combination of w
 # (spatial subsampling) and z (temporal subsampling) that reflect
