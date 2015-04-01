@@ -282,5 +282,3 @@ write.csv(dataFormattingTable, 'Reference/data_formatting_table.csv', row.names 
 # Remove all objects except for functions from the environment:
 
 rm(list = setdiff(ls(), lsf.str()))
-
-
