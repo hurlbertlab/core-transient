@@ -105,3 +105,44 @@ dataFormattingTable[,'spatial_scale_variable'] =
 dataFormattingTable[,'Notes_siteFormat'] = 
   dataFormattingTableFieldUpdate(ds, 'Notes_siteFormat', 'site fields concatenated. after looking through metadata descriptions, it seems that location_web_trap describes the order of nested sites from small to large.')
 
+#-------------------------------------------------------------------------------*
+# ---- EXPLORE AND FORMAT SPECIES DATA ----
+#===============================================================================*
+
+# Look at the individual species present:
+
+levels(dataset2$species) 
+
+# Species is coded with four letter codes, but found Sevilleta species coding 
+#here:  https://knb.ecoinformatics.org/knb/metacat?action=read&qformat=knb&sessionid=&docid=knb-lter-sev.8&displaymodule=attributedomain&entitytype=dataTable&entityindex=1&attributeindex=8.
+
+# "dime" species repeated because space at end, so remove spaces
+
+dataset3 = dataset2
+dataset3$species = str_trim(dataset3$species)
+
+# Reset factor levels
+
+dataset3$species = factor(dataset3$species)
+
+# Check
+levels(dataset3$species)
+length(unique(dataset3$species))
+length(unique(dataset2$species))
+
+# All good, no bad species to remove
+
+# Look at the head of the dataset to ensure everything is correct:
+
+head(dataset3)
+
+# !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE SPECIES DATA WERE MODIFIED!
+
+#!DATA FORMATTING TABLE UPDATE!
+
+# Column M. Notes_spFormat. Provide a THOROUGH description of any changes made
+# to the species field, including why any species were removed.
+
+dataFormattingTable[,'Notes_spFormat'] = 
+  dataFormattingTableFieldUpdate(ds, 'Notes_spFormat', 'Species is coded with four letter codes, but found Sevilleta species coding here:  https://knb.ecoinformatics.org/knb/metacat?action=read&qformat=knb&sessionid=&docid=knb-lter-sev.8&displaymodule=attributedomain&entitytype=dataTable&entityindex=1&attributeindex=8. No bad species removed because all accounted for in this source. Only change made was remove extra space after one species')
+
