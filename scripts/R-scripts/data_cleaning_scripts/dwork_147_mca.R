@@ -17,7 +17,7 @@ library(MASS)
 # Source the functions file:
 
 getwd()
-
+setwd('C:/Users/auriemma//core-transient')
 source('scripts/R-scripts/core-transient_functions.R')
 
 # Get data. First specify the dataset number ('ds') you are working with.
@@ -138,3 +138,37 @@ dataFormattingTable[,'Notes_spFormat'] =
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT COUNT DATA ----
 #===============================================================================*
+
+# Explore
+head(dataset2)
+
+# Make countfield
+countfield = "Abundance"
+
+# Renaming it
+
+dataset3 = dataset2
+names(dataset3)[which(names(dataset3) == countfield)] = 'count'
+
+# Remove zeros and NAs 
+
+summary(dataset3$count)
+unique(dataset3$count)
+
+# none to remove, so no changes made
+
+# Change to 5 to keep with template
+
+dataset5 = dataset3
+
+# !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE COUNT DATA WERE MODIFIED!
+
+#!DATA FORMATTING TABLE UPDATE!
+
+# Possible values for countFormat field are density, cover, and count.
+dataFormattingTable[,'countFormat'] = 
+  dataFormattingTableFieldUpdate(ds, 'countFormat', "count")
+
+dataFormattingTable[,'Notes_countFormat'] = 
+  dataFormattingTableFieldUpdate(ds, 'Notes_countFormat', 'data represents species abundance at sites.  No changes were made')
+
