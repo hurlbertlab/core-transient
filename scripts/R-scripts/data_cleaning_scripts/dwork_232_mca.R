@@ -146,3 +146,15 @@ head(dataset3)
 dataFormattingTable[,'Notes_spFormat'] = 
   dataFormattingTableFieldUpdate(ds, 'Notes_spFormat', 'Species is coded with four letter codes, but found Sevilleta species coding here:  https://knb.ecoinformatics.org/knb/metacat?action=read&qformat=knb&sessionid=&docid=knb-lter-sev.8&displaymodule=attributedomain&entitytype=dataTable&entityindex=1&attributeindex=8. No bad species removed because all accounted for in this source. Only change made was remove extra space after one species')
 
+#-------------------------------------------------------------------------------*
+# ---- EXPLORE AND FORMAT COUNT DATA ----
+#===============================================================================*
+
+names(dataset3)
+names(dataset)
+
+# No actual count field in this dataset
+
+head(dataset3, 40)
+site2 = dataset3[dataset3$site == '5pgrass_2_24',]
+site2
