@@ -73,9 +73,11 @@ getMaxWz = function(i){
   wzCombinationSum = ddply(wzFrame, .(w, z), summarize, 
                            wzSum = sum(GTEYearThreshold))
   
-  wzCombinationSum$siteProp = wzCombinationSum$wzSum/nSites  
+  wzCombinationSum$siteProp = wzCombinationSum$wzSum/nSites
+  wzCombinationSum$wFract = wzCombinationSum$w/max(wzCombinationSum$w)
+  wzCombinationSum$zFract = wzCombinationSum$z/max(wzCombinationSum$z)
   wzFrameGTE20 = subset(wzCombinationSum, siteProp >= .2) 
-  wzFrameGTEmax = subset(wzFrameGTE20, w + z == max(w+z))
+  wzFrameGTEmax = subset(wzFrameGTE20, wFract + zFract == max(wFract+zFract))
   return(wzFrameGTEmax)
 }
 
