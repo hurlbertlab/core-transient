@@ -172,3 +172,58 @@ dataFormattingTable[,'countFormat'] =
 dataFormattingTable[,'Notes_countFormat'] = 
   dataFormattingTableFieldUpdate(ds, 'Notes_countFormat', 'data represents species abundance at sites.  No changes were made')
 
+#-------------------------------------------------------------------------------*
+# ---- FORMAT TIME DATA ----
+#===============================================================================*
+# Here, we need to extract the sampling dates. 
+
+# name of the field and format
+datefield = 'Year'
+
+dateformat = '%Y'
+
+# Make date object
+
+if (dateformat == '%Y' | dateformat == '%y') {
+  date = as.numeric(as.character(dataset5[, datefield]))
+} else {
+  date = as.POSIXct(strptime(dataset5[, datefield], dateformat))
+}
+
+# A check on the structure
+
+class(date)
+
+# numeric, so all good
+# Check and replace column
+
+head(dataset5[, datefield])
+
+head(date)
+
+dataset6 = dataset5
+
+# Delete the old date field
+dataset6 = dataset6[, -which(names(dataset6) == datefield)]
+
+# Assign the new date values in a field called 'date'
+dataset6$date = date
+
+# Check the results:
+
+head(dataset6)
+
+# !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE DATE DATA WERE MODIFIED!
+
+#!DATA FORMATTING TABLE UPDATE!
+
+# Notes_timeFormat
+
+dataFormattingTable[,'Notes_timeFormat'] = 
+  dataFormattingTableFieldUpdate(ds, 'Notes_timeFormat', 'temporal data provided as years. only modification to this field involved converting to a numeric object.')
+
+# subannualTgrain. After exploring the time data, was this dataset sampled at a sub-annual temporal grain? Y/N
+
+dataFormattingTable[,'subannualTgrain'] = 
+  dataFormattingTableFieldUpdate(ds, 'subannualTgrain', 'N')
+
