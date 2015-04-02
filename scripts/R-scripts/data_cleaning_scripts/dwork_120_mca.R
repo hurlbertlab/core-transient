@@ -64,3 +64,80 @@ head(dataset1)
 dataFormattingTable[,'LatLong_sites'] = 
   dataFormattingTableFieldUpdate(ds, 'LatLong_sites', 'N')
 
+#-------------------------------------------------------------------------------*
+# ---- EXPLORE AND FORMAT SITE DATA ----
+#===============================================================================*
+
+length(unique(dataset1$site))
+unique(dataset1$site)
+
+# Sites give the region of site, number, and lat_longs
+
+# Can remove the word 'REGION' from the site data
+
+dataset2 = dataset1
+dataset2$site = str_sub(dataset1$site, start = 8)
+
+# Check over
+
+head(dataset2)
+tail(dataset2)
+
+# All good
+
+# !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE SITE DATA WERE MODIFIED!
+
+# !DATA FORMATTING TABLE UPDATE! 
+
+# Raw_siteUnit. 
+
+dataFormattingTable[,'Raw_siteUnit'] = 
+  dataFormattingTableFieldUpdate(ds, 'Raw_siteUnit', 'region_site_sitenumber_lat_long') 
+
+
+# spatial_scale_variable. Is a site potentially nested (e.g., plot within a quad or decimal lat longs that could be scaled up)? Y/N
+
+dataFormattingTable[,'spatial_scale_variable'] = 
+  dataFormattingTableFieldUpdate(ds, 'spatial_scale_variable', 'N')
+
+# Notes_siteFormat. Use this field to THOROUGHLY describe any changes made to the site field during formatting.
+
+dataFormattingTable[,'Notes_siteFormat'] = 
+  dataFormattingTableFieldUpdate(ds, 'Notes_siteFormat', 'No sites removed, but used subtring to remove text REGION which was present on all data points.  Had hard time searching for metadata, and what I call site number may not be an actual site number since there are some as egative values')
+
+#-------------------------------------------------------------------------------*
+# ---- EXPLORE AND FORMAT SPECIES DATA ----
+#===============================================================================*
+
+# Explore
+head(dataset2)
+length(unique(dataset2$Species))
+
+# Change name
+names(dataset2)[4] = 'species'
+
+# Check all levels over for bad species
+
+levels(dataset2$species)
+
+# Set to dataset3
+
+dataset3 = dataset2
+
+head(dataset3)
+
+# No bad species to remove
+
+# !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE SPECIES DATA WERE MODIFIED!
+
+#!DATA FORMATTING TABLE UPDATE!
+
+# Column M. Notes_spFormat. Provide a THOROUGH description of any changes made
+# to the species field, including why any species were removed.
+
+dataFormattingTable[,'Notes_spFormat'] = 
+  dataFormattingTableFieldUpdate(ds, 'Notes_spFormat', 'No species removed, no changes')
+
+#-------------------------------------------------------------------------------*
+# ---- EXPLORE AND FORMAT COUNT DATA ----
+#===============================================================================*
