@@ -144,7 +144,7 @@ head(dataset3)
 # to the species field, including why any species were removed.
 
 dataFormattingTable[,'Notes_spFormat'] = 
-  dataFormattingTableFieldUpdate(ds, 'Notes_spFormat', 'Species is coded with four letter codes, but found Sevilleta species coding here:  https://knb.ecoinformatics.org/knb/metacat?action=read&qformat=knb&sessionid=&docid=knb-lter-sev.8&displaymodule=attributedomain&entitytype=dataTable&entityindex=1&attributeindex=8. No bad species removed because all accounted for in this source. Only change made was remove extra space after one species')
+  dataFormattingTableFieldUpdate(ds, 'Notes_spFormat', 'Species is coded with four letter codes, but found Sevilleta species coding here:  http://sev.lternet.edu/data/sev-008/4786. No bad species removed because all accounted for in this source. Only change made was remove extra space after one species')
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT COUNT DATA ----
@@ -186,4 +186,17 @@ dataFormattingTable[,'countFormat'] =
 
 dataFormattingTable[,'Notes_countFormat'] = 
   dataFormattingTableFieldUpdate(ds, 'Notes_countFormat', 'no count field in this dataset, so created a dataframe using table to get frequency of species per time sample per site.')
+
+#-------------------------------------------------------------------------------*
+# ---- FORMAT TIME DATA ----
+#===============================================================================*
+
+head(dataset5)
+
+# Year, season and night are the fields representing time.  After checking metadata it seems that night is not a necessary time component.  So it can be removed from the dataset
+
+dataset6 = dataset5[,-4]
+head(dataset6)
+
+# Season needs to be incorporated into the year.  Metadata says that coding for season is as follows: 1 = Spring, 2 = Summer, 3 = Fall
 
