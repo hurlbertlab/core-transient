@@ -58,7 +58,7 @@ dataset_ID,format_priority,format_flag,metadata_link,LatLong_sites,Raw_nRecs,Raw
 113,1,0,FILL,FILL,89922,25,2112,FILL,FILL,2324,FILL,FILL,FILL,FILL,FILL,FILL,FILL,FILL,FILL,FILL,FILL,FILL,FILL,FILL,FILL,FILL
 117,NA,1,FILL,FILL,1514,44,156,FILL,FILL,115,FILL,FILL,FILL,FILL,FILL,FILL,FILL,FILL,FILL,FILL,FILL,FILL,FILL,FILL,FILL,FILL
 119,0,0,FILL,FILL,140752,41,14019,FILL,FILL,14019,FILL,FILL,FILL,FILL,FILL,FILL,FILL,FILL,FILL,FILL,FILL,FILL,FILL,FILL,FILL,FILL
-120,1,0,FILL,FILL,10198,7,258,FILL,FILL,466,FILL,FILL,FILL,FILL,FILL,FILL,FILL,FILL,FILL,FILL,FILL,FILL,FILL,FILL,FILL,FILL
+120,1,2,FILL,FILL,10198,7,258,FILL,FILL,466,FILL,FILL,FILL,FILL,FILL,FILL,FILL,FILL,FILL,FILL,FILL,FILL,FILL,FILL,FILL,FILL
 123,0,0,FILL,FILL,37723,10,147,FILL,FILL,1750,FILL,FILL,FILL,FILL,FILL,FILL,FILL,FILL,FILL,FILL,FILL,FILL,FILL,FILL,FILL,FILL
 124,NA,1,FILL,Y,21459,7,654,lat_long or site number and lat_long,N,761,"site fields were cut down using substring to delete the redundant site name USA_Massachusetts which was present in every site. Remaining are the sites as just lat_longs and also sites with rth_America_Atlantic followed by possibly a site number, then a lat_long","several species were removed because they were repeated in the dataset due to a symbol and extra space; treated as a typo. typos were removed from the dataset individually, first by the space then by the symbol. started with 654 uniques, now have 619.",FILL,FILL,FILL,count,Data represents abundance. There were no NAs nor 0s that required removal,21459,761,619,FILL,FILL,FILL,temporal data provided in yearly grain. no changes made other than to date object,N,FILL
 125,0,0,FILL,FILL,10546,12,101,FILL,FILL,1205,FILL,FILL,FILL,FILL,FILL,FILL,FILL,FILL,FILL,FILL,FILL,FILL,FILL,FILL,FILL,FILL
