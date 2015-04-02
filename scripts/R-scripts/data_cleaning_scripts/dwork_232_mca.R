@@ -17,7 +17,7 @@ library(MASS)
 # Source the functions file:
 
 getwd()
-
+setwd('C:/Users/auriemma/core-transient/')
 source('scripts/R-scripts/core-transient_functions.R')
 
 # Get data. First specify the dataset number ('ds') you are working with.
@@ -156,5 +156,34 @@ names(dataset)
 # No actual count field in this dataset
 
 head(dataset3, 40)
-site2 = dataset3[dataset3$site == '5pgrass_2_24',]
-site2
+
+# Table the dataframe by the appropriate fields to get frequencies of species per time sample per site
+
+dataset_count = data.frame(table(dataset3[,c('species','year','season','night','site')]))
+
+# Get rid of the zeros
+
+dataset_count = dataset_count[dataset_count$Freq!=0, ]
+
+# Check
+
+head(dataset_count, 30)
+tail(dataset_count,20)
+summary(dataset_count)
+
+# Seems to have worked, make Freq the count field
+
+dataset5 = dataset_count
+
+names(dataset5)[6] = 'count'
+
+# !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE COUNT DATA WERE MODIFIED!
+
+#!DATA FORMATTING TABLE UPDATE!
+
+dataFormattingTable[,'countFormat'] = 
+  dataFormattingTableFieldUpdate(ds, 'countFormat', 'count')
+
+dataFormattingTable[,'Notes_countFormat'] = 
+  dataFormattingTableFieldUpdate(ds, 'Notes_countFormat', 'no count field in this dataset, so created a dataframe using table to get frequency of species per time sample per site.')
+
