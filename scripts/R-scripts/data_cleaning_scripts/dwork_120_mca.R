@@ -17,7 +17,7 @@ library(MASS)
 # Source the functions file:
 
 getwd()
-
+setwd('C:/Users/auriemma/core-transient/')
 source('scripts/R-scripts/core-transient_functions.R')
 
 # Get data. First specify the dataset number ('ds') you are working with.
@@ -141,3 +141,40 @@ dataFormattingTable[,'Notes_spFormat'] =
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT COUNT DATA ----
 #===============================================================================*
+
+# Make countfield and rename field
+
+names(dataset3)
+countfield = 'Abundance'
+
+# Renaming it
+
+names(dataset3)[which(names(dataset3) == countfield)] = 'count'
+head(dataset3)
+
+# Check for NAs or zeros
+
+summary(dataset3)
+unique(dataset3$count)
+
+# No  zeros or NAs found in count field
+
+dataset4 = na.omit(dataset3)
+
+# none in whole dataset
+# Set to dataset5 to keep with template
+
+dataset5 = dataset4
+
+head(dataset5)
+
+# !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE COUNT DATA WERE MODIFIED!
+
+#!DATA FORMATTING TABLE UPDATE!
+
+# Possible values for countFormat field are density, cover, and count.
+dataFormattingTable[,'countFormat'] = 
+  dataFormattingTableFieldUpdate(ds, 'countFormat', 'count')
+
+dataFormattingTable[,'Notes_countFormat'] = 
+  dataFormattingTableFieldUpdate(ds, 'Notes_countFormat','Data represents abundance count. There were no NAs nor 0s that required removal')
