@@ -174,8 +174,8 @@ summary(dataset_count)
 # Seems to have worked, make Freq the count field
 
 dataset5 = dataset_count
-
-names(dataset5)[6] = 'count'
+head(dataset5)
+names(dataset5)[5] = 'count'
 
 # !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE COUNT DATA WERE MODIFIED!
 
@@ -195,9 +195,74 @@ head(dataset5)
 
 # Year, season and night are the fields representing time.
 
-dataset6 = dataset5
-head(dataset6)
+head(dataset5)
 
 # Season needs to be incorporated into the year.  Metadata says that coding for season is as follows: 1 = Spring, 2 = Summer, 3 = Fall
 
+# In order to maintain consistent date format, assign a date to represent Spring, Summer, and Fall.
+# Spring(1) = April 1, Summer(2) = July 1, Fall(3) = Oct 1
+
+levels(dataset5$season)
+
+# Set new season levels
+
+levels(dataset5$season) = c('4/1','7/1','10/1')
+
+head(dataset5)
+
+# Paste together year and season fields to get new date field
+
+dataset5$date = paste(dataset5$season, dataset5$year, sep = '/')
+head(dataset5)
+
+# Remove old fields
+
+dataset6 = dataset5[,-c(2,3)]
+
+head(dataset6)
+
+# name of the field that has information on sampling date
+
+datefield = 'date'
+
+# Make date object
+
+dateformat = '%m/%d/%Y'
+
+if (dateformat == '%Y' | dateformat == '%y') {
+  date = as.numeric(as.character(dataset5[, datefield]))
+} else {
+  date = as.POSIXct(strptime(dataset5[, datefield], dateformat))
+}
+
+# A check on the structure
+
+class(date)
+unique(date)
+
+# Assign the new date values in a field called 'date'
+
+dataset6$date = date
+
+# Check the results:
+
+head(dataset6)
+summary(dataset6)
+str(dataset6)
+
+# All looks good
+
+# !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE DATE DATA WERE MODIFIED!
+
+#!DATA FORMATTING TABLE UPDATE!
+
+# Notes_timeFormat. Provide a thorough description of any modifications that were made to the time field.
+
+dataFormattingTable[,'Notes_timeFormat'] = 
+  dataFormattingTableFieldUpdate(ds, 'Notes_timeFormat', 'temporal data was provided in years and seasons separated. Seasons were listed as numbers, 1 = Spring, 2 = Summer, 3 = Fall. To keep consistent date format, I re-assigned these seasons as specific dates, making Spring = 4/1, Summer = 7/1, and Fall = 10/1. Then pasted these dates to year and made them date objects. Also, field named night was removed, after reading metadata, was not necessary.')
+
+# subannualTgrain. After exploring the time data, was this dataset sampled at a sub-annual temporal grain? Y/N
+
+dataFormattingTable[,'subannualTgrain'] = 
+  dataFormattingTableFieldUpdate(ds, 'subannualTgrain', 'Y')
 
