@@ -178,3 +178,48 @@ dataFormattingTable[,'countFormat'] =
 
 dataFormattingTable[,'Notes_countFormat'] = 
   dataFormattingTableFieldUpdate(ds, 'Notes_countFormat','Data represents abundance count. There were no NAs nor 0s that required removal')
+
+
+#-------------------------------------------------------------------------------*
+# ---- FORMAT TIME DATA ----
+#===============================================================================*
+
+# field representing sampling date?
+datefield = 'Year'
+
+# Date is just given in year
+# Make sure it is numeric
+
+class(dataset5$Year)
+
+dataset6 = dataset5
+
+dataset6$Year = as.numeric(dataset6$Year)
+
+# Rename field
+
+names(dataset6)[2] = 'date'
+
+# Check
+
+head(dataset6)
+str(dataset6)
+summary(dataset6)
+
+# !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE DATE DATA WERE MODIFIED!
+
+#!DATA FORMATTING TABLE UPDATE!
+
+# Notes_timeFormat. Provide a thorough description of any modifications that were made to the time field.
+
+dataFormattingTable[,'Notes_timeFormat'] = 
+  dataFormattingTableFieldUpdate(ds, 'Notes_timeFormat', 'temporal data given yearly. Only change made was to numeric')
+
+# subannualTgrain.
+
+dataFormattingTable[,'subannualTgrain'] = 
+  dataFormattingTableFieldUpdate(ds, 'subannualTgrain', 'N')
+
+#-------------------------------------------------------------------------------*
+# ---- MAKE DATA FRAME OF COUNT BY SITES, SPECIES, AND YEAR ----
+#===============================================================================*
