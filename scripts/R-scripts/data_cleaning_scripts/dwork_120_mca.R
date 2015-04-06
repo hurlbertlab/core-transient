@@ -240,6 +240,11 @@ head(dataset7)
 summary(dataset7)
 
 # !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE DATA WERE MODIFIED!
+
 #-------------------------------------------------------------------------------*
 # ---- UPDATE THE DATA FORMATTING TABLE AND WRITE OUTPUT DATA FRAMES  ----
 #===============================================================================*
+
+# Update the data formatting table
+
+dataFormattingTable = dataFormattingTableUpdate(ds)
