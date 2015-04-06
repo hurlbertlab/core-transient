@@ -105,4 +105,57 @@ dataFormattingTable[,'Notes_siteFormat'] =
 
 # Look at the individual species present:
 
+  # change name first
+
+names(dataset2)[4] = 'species'
+class(dataset2$species)
 levels(dataset2$species) 
+
+# Change to all uppercase
+
+dataset2$species = toupper(dataset2$species)
+
+# Change to factor
+
+dataset2$species = factor(dataset2$species)
+
+# Look for bad species
+
+levels(dataset2$species)
+
+# One species found with a typo
+# Table to see how many are messed up
+
+table(dataset2$species)
+
+# Only 1 individual with the typo and 278 with good spelling, so just remove the bad one
+
+bad_sp = c(' TH+M37663ALASSIOSIRA_ANTARCTICA_BOREALIS')
+
+# Remove
+
+dataset3 = dataset2[!dataset2$species %in% bad_sp,]
+
+# Reset the factor levels
+
+dataset3$species = factor(dataset3$species)
+
+# Check
+
+levels(dataset3$species)
+nrow(dataset2)
+nrow(dataset3)
+
+# # !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE SPECIES DATA WERE MODIFIED!
+
+#!DATA FORMATTING TABLE UPDATE!
+
+# Column M. Notes_spFormat. 
+
+dataFormattingTable[,'Notes_spFormat'] = 
+  dataFormattingTableFieldUpdate(ds, 'Notes_spFormat', 'only one removal of the THALASSIOSIRA_ANTARCTICA_BOREALIS species because of a typo in one individual. All other species good.')
+
+#-------------------------------------------------------------------------------*
+# ---- EXPLORE AND FORMAT COUNT DATA ----
+#===============================================================================*
+
