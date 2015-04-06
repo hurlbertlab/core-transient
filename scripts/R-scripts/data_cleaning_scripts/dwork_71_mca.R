@@ -242,4 +242,42 @@ dataFormattingTable[,'Notes_timeFormat'] =
 dataFormattingTable[,'subannualTgrain'] = 
   dataFormattingTableFieldUpdate(ds, 'subannualTgrain', 'N')
 
+#-------------------------------------------------------------------------------*
+# ---- MAKE DATA FRAME OF COUNT BY SITES, SPECIES, AND YEAR ----
+#===============================================================================*
+# DatasetID already in datase
 
+# Make the compiled dataframe
+
+dataset7 = ddply(dataset6,.(datasetID, site, date, species),
+                 summarize, count = max(count))
+
+# Explore the data frame:
+
+dim(dataset7)
+
+head(dataset7)
+
+summary(dataset7)
+
+# !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE DATA WERE MODIFIED!
+
+#-------------------------------------------------------------------------------*
+# ---- UPDATE THE DATA FORMATTING TABLE AND WRITE OUTPUT DATA FRAMES  ----
+#===============================================================================*
+
+# Update the data formatting table
+
+dataFormattingTable = dataFormattingTableUpdate(ds)
+
+# Take a final look at the dataset:
+
+head(dataset7)
+
+summary(dataset7)
+
+# If everything is looks okay we're ready to write formatted data frame:
+
+write.csv(dataset7, "data/formatted_datasets/dataset_71.csv", row.names = F)
+
+# !GIT-ADD-COMMIT-PUSH THE FORMATTED DATASET IN THE DATA FILE, THEN GIT-ADD-COMMIT-PUSH THE UPDATED DATA FOLDER!
