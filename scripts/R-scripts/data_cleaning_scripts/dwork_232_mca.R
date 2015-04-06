@@ -157,9 +157,9 @@ names(dataset)
 
 head(dataset3, 40)
 
-# Table the dataframe by the appropriate fields to get frequencies of species per time sample per site
+# Table the dataframe by the appropriate fields to get frequencies of species per time sample per site. After checking metadata it seems that night is not a necessary time component.  So it doesn't need to be considered for this dataset.
 
-dataset_count = data.frame(table(dataset3[,c('species','year','season','night','site')]))
+dataset_count = data.frame(table(dataset3[,c('species','year','season','site')]))
 
 # Get rid of the zeros
 
@@ -193,10 +193,11 @@ dataFormattingTable[,'Notes_countFormat'] =
 
 head(dataset5)
 
-# Year, season and night are the fields representing time.  After checking metadata it seems that night is not a necessary time component.  So it can be removed from the dataset
+# Year, season and night are the fields representing time.
 
-dataset6 = dataset5[,-4]
+dataset6 = dataset5
 head(dataset6)
 
 # Season needs to be incorporated into the year.  Metadata says that coding for season is as follows: 1 = Spring, 2 = Summer, 3 = Fall
+
 
