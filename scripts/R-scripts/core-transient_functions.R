@@ -34,66 +34,69 @@ dataFormattingTableFieldUpdate = function(datasetID, Field, Value){
 
 # This function modifies numeric summary values:
 
-dataFormattingTableUpdate = function(datasetID){
+dataFormattingTableUpdate = function(datasetID, datasetFinal){
   rowIndex = which(dataFormattingTable$dataset_ID == datasetID)
   dataFormattingTable[,'Raw_nRecs'] = 
-    dataFormattingTableFieldUpdate(223, 'Raw_nRecs',
+    dataFormattingTableFieldUpdate(datasetID, 'Raw_nRecs',
     nrow(dataset))
   dataFormattingTable[,'Raw_nTime'] = 
-    dataFormattingTableFieldUpdate(223, 'Raw_nTime',
+    dataFormattingTableFieldUpdate(datasetID, 'Raw_nTime',
     length(unique(dataset1$date)))
   dataFormattingTable[,'Raw_nSpecies'] = 
-    dataFormattingTableFieldUpdate(223, 'Raw_nSpecies', 
+    dataFormattingTableFieldUpdate(datasetID, 'Raw_nSpecies', 
     length(unique(dataset1$species)))
   dataFormattingTable[,'Raw_nSites'] = 
-    dataFormattingTableFieldUpdate(223, 'Raw_nSites', 
+    dataFormattingTableFieldUpdate(datasetID, 'Raw_nSites', 
     length(unique(dataset2$site)))
   if(dataFormattingTable[rowIndex, 'countFormat'] == 'count'){
-    siteYearCounts = ddply(dataset5, .(site, date), 
+    if(dataFormattingTable[rowIndex, 'subannualTgrain'] == 'Y'){
+      datasetFinal$date = as.numeric(format(datasetFinal$date, '%Y'))
+    }
+    siteYearCounts = ddply(datasetFinal, .(site, date), 
       summarize, tCount = sum(count))
     dataFormattingTable[,'Raw_Mean_Individuals_perSiteYear'] = 
-      dataFormattingTableFieldUpdate(223, 'Raw_Mean_Individuals_perSiteYear', 
+      dataFormattingTableFieldUpdate(datasetID, 'Raw_Mean_Individuals_perSiteYear', 
       mean(siteYearCounts$tCount))
     dataFormattingTable[,'Raw_Min_Individuals_perSiteYear'] = 
-      dataFormattingTableFieldUpdate(223, 'Raw_Min_Individuals_perSiteYear', 
+      dataFormattingTableFieldUpdate(datasetID, 'Raw_Min_Individuals_perSiteYear', 
       min(siteYearCounts$tCount))
     dataFormattingTable[,'Raw_Max_Individuals_perSiteYear'] = 
-      dataFormattingTableFieldUpdate(223, 'Raw_Max_Individuals_perSiteYear', 
+      dataFormattingTableFieldUpdate(datasetID, 'Raw_Max_Individuals_perSiteYear', 
       max(siteYearCounts$tCount))
-    siteYearCounts = ddply(dataset6, .(site, date), 
+    siteYearCounts = ddply(datasetFinal, .(site, date), 
                            summarize, tCount = sum(count))
     dataFormattingTable[,'Formatted_Mean_Individuals_perSiteYear'] = 
-      dataFormattingTableFieldUpdate(223, 'Formatted_Mean_Individuals_perSiteYear', 
+      dataFormattingTableFieldUpdate(datasetID, 'Formatted_Mean_Individuals_perSiteYear', 
                                      mean(siteYearCounts$tCount))
     dataFormattingTable[,'Formatted_Min_Individuals_perSiteYear'] = 
-      dataFormattingTableFieldUpdate(223, 'Formatted_Min_Individuals_perSiteYear', 
+      dataFormattingTableFieldUpdate(datasetID, 'Formatted_Min_Individuals_perSiteYear', 
                                      min(siteYearCounts$tCount))
     dataFormattingTable[,'Formatted_Max_Individuals_perSiteYear'] = 
-      dataFormattingTableFieldUpdate(223, 'Formatted_Max_Individuals_perSiteYear', 
+      dataFormattingTableFieldUpdate(datasetID, 'Formatted_Max_Individuals_perSiteYear', 
                                      max(siteYearCounts$tCount))
     } else {
         dataFormattingTable[,'Raw_Mean_Individuals_perSiteYear'] = 
-          dataFormattingTableFieldUpdate(223, 'Raw_Mean_Individuals_perSiteYear','NA')
+          dataFormattingTableFieldUpdate(datasetID, 'Raw_Mean_Individuals_perSiteYear','NA')
         dataFormattingTable[,'Raw_Min_Individuals_perSiteYear'] = 
-          dataFormattingTableFieldUpdate(223, 'Raw_Min_Individuals_perSiteYear','NA')
+          dataFormattingTableFieldUpdate(datasetID, 'Raw_Min_Individuals_perSiteYear','NA')
         dataFormattingTable[,'Raw_Max_Individuals_perSiteYear'] = 
-          dataFormattingTableFieldUpdate(223, 'Raw_Max_Individuals_perSiteYear','NA')
+          dataFormattingTableFieldUpdate(datasetID, 'Raw_Max_Individuals_perSiteYear','NA')
         dataFormattingTable[,'Formatted_Mean_Individuals_perSiteYear'] = 
-          dataFormattingTableFieldUpdate(223, 'Formatted_Mean_Individuals_perSiteYear','NA')
+          dataFormattingTableFieldUpdate(datasetID, 'Formatted_Mean_Individuals_perSiteYear','NA')
         dataFormattingTable[,'Formatted_Min_Individuals_perSiteYear'] = 
-          dataFormattingTableFieldUpdate(223, 'Formatted_Min_Individuals_perSiteYear','NA')
+          dataFormattingTableFieldUpdate(datasetID, 'Formatted_Min_Individuals_perSiteYear','NA')
         dataFormattingTable[,'Formatted_Max_Individuals_perSiteYear'] = 
-          dataFormattingTableFieldUpdate(223, 'Formatted_Max_Individuals_perSiteYear','NA') 
+          dataFormattingTableFieldUpdate(datasetID, 'Formatted_Max_Individuals_perSiteYear','NA') 
       }
   dataFormattingTable[,'Formatted_nRecs'] = 
-    dataFormattingTableFieldUpdate(223, 'Formatted_nRecs',
-                                   nrow(dataset6))
+    dataFormattingTableFieldUpdate(datasetID, 'Formatted_nRecs',
+                                   nrow(datasetFinal))
   dataFormattingTable[,'Formatted_nSpecies'] = 
-    dataFormattingTableFieldUpdate(223, 'Formatted_nSpecies', 
-                                   length(unique(dataset6$species)))
+    dataFormattingTableFieldUpdate(datasetID, 'Formatted_nSpecies', 
+                                   length(unique(datasetFinal$species)))
   dataFormattingTable[,'Formatted_nSites'] = 
-    dataFormattingTableFieldUpdate(223, 'Formatted_nSites', 
-                                   length(unique(dataset6$site)))
+    dataFormattingTableFieldUpdate(datasetID, 'Formatted_nSites', 
+                                   length(unique(datasetFinal$site)))
   return(dataFormattingTable)
 }
 
