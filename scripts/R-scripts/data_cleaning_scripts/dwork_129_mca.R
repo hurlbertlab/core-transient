@@ -67,9 +67,11 @@ tail(dataset1)
 
 levels(dataset1$site)
 
-# 'USA_GulfOfMexico' is consistent for all sites, so this information is not necessary.  But will not remove it.  All data seems to be good
+# 'USA_GulfOfMexico' is consistent for all sites, so this information is not necessary.  
+# Substring it out
 
 dataset2 = dataset1
+dataset2$site = str_sub(dataset2$site, start = 18)
 
 head(dataset2)
 
@@ -92,5 +94,8 @@ dataFormattingTable[,'spatial_scale_variable'] =
 # Notes_siteFormat. Use this field to THOROUGHLY describe any changes made to the site field during formatting.
 
 dataFormattingTable[,'Notes_siteFormat'] = 
-  dataFormattingTableFieldUpdate(ds, 'Notes_siteFormat',  'all sites are in GOM, but have site numbers and lat_long.  No changes were made to the field')
+  dataFormattingTableFieldUpdate(ds, 'Notes_siteFormat',  'all sites are in GOM, so removed that information from each site using substring.  Sites not have sitenumberand lat_long.  No sites were removed were made to the field.')
 
+#-------------------------------------------------------------------------------*
+# ---- EXPLORE AND FORMAT SPECIES DATA ----
+#===============================================================================*
