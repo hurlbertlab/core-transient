@@ -54,3 +54,43 @@ head(dataset1)
 
 dataFormattingTable[,'LatLong_sites'] = 
   dataFormattingTableFieldUpdate(ds, 'LatLong_sites','N')
+
+#-------------------------------------------------------------------------------*
+# ---- EXPLORE AND FORMAT SITE DATA ----
+#===============================================================================*
+
+# Explore
+length(unique(dataset1$site))
+tail(dataset1)
+
+# Sites are listed as USA_GulfOfMexico_sitenumber_lat_longs
+
+levels(dataset1$site)
+
+# 'USA_GulfOfMexico' is consistent for all sites, so this information is not necessary.  But will not remove it.  All data seems to be good
+
+dataset2 = dataset1
+
+head(dataset2)
+
+# !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE SITE DATA WERE MODIFIED!
+
+# !DATA FORMATTING TABLE UPDATE! 
+
+# Raw_siteUnit. How a site is coded (i.e. if the field was concatenated such as this one, it was coded as "site_block_treatment_plot_quad"). Alternatively, if the site were concatenated from latitude and longitude fields, the encoding would be "lat_long". 
+
+dataFormattingTable[,'Raw_siteUnit'] = 
+  dataFormattingTableFieldUpdate(ds, 'Raw_siteUnit', 
+                                 'USA_GulfOfMexico_sitenumber_lat_long') 
+
+
+# spatial_scale_variable. Is a site potentially nested (e.g., plot within a quad or decimal lat longs that could be scaled up)? Y/N
+
+dataFormattingTable[,'spatial_scale_variable'] = 
+  dataFormattingTableFieldUpdate(ds, 'spatial_scale_variable', 'N')
+
+# Notes_siteFormat. Use this field to THOROUGHLY describe any changes made to the site field during formatting.
+
+dataFormattingTable[,'Notes_siteFormat'] = 
+  dataFormattingTableFieldUpdate(ds, 'Notes_siteFormat',  'all sites are in GOM, but have site numbers and lat_long.  No changes were made to the field')
+
