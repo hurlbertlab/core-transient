@@ -247,4 +247,4 @@ summary(dataset7)
 
 # Update the data formatting table
 
-dataFormattingTable = dataFormattingTableUpdate(ds)
+dataFormattingTable = dataFormattingTableUpdate(ds, dataset7)
