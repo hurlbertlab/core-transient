@@ -97,3 +97,39 @@ dataFormattingTable[,'spatial_scale_variable'] =
 dataFormattingTable[,'Notes_siteFormat'] = 
   dataFormattingTableFieldUpdate(ds, 'Notes_siteFormat', 'No changes made.  sites are listed as USA_Atlantic_sitenumber.  site numbers go by intervals of 0.5, no metadata found to determine what these numbers represent.')
 
+#-------------------------------------------------------------------------------*
+# ---- EXPLORE AND FORMAT SPECIES DATA ----
+#===============================================================================*
+
+# Change name of field
+
+names(dataset2)[4] = 'species'
+
+# Look at all individual species present
+
+class(dataset2$species)
+levels(dataset2$species) 
+
+# Make uppercase
+
+dataset2$species = factor(toupper(dataset2$species))
+head(dataset2)
+
+# Reset levels, search for bad species
+
+levels(dataset2$species)
+
+# No bad species found
+
+dataset3 = dataset2
+
+# !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE SPECIES DATA WERE MODIFIED!
+
+#!DATA FORMATTING TABLE UPDATE!
+
+# Column M. Notes_spFormat. Provide a THOROUGH description of any changes made
+# to the species field, including why any species were removed.
+
+dataFormattingTable[,'Notes_spFormat'] = 
+  dataFormattingTableFieldUpdate(ds, 'Notes_spFormat', 'no bad species needed to be removed.  No changes to this field.')
+
