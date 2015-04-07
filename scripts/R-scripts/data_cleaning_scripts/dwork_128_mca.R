@@ -226,3 +226,24 @@ dataFormattingTable[,'subannualTgrain'] =
 #-------------------------------------------------------------------------------*
 # ---- MAKE DATA FRAME OF COUNT BY SITES, SPECIES, AND YEAR ----
 #===============================================================================*
+
+# DatasetID already included
+
+# Last look
+
+head(dataset6, 20)
+
+# Make compiled dataframe
+
+dataset7 = ddply(dataset6, .(datasetID, site, date, species), summarize, 
+                 count = max(count))
+
+# Explore the data frame:
+
+dim(dataset7)
+
+head(dataset7, 30)
+
+summary(dataset7)
+
+# !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE DATA WERE MODIFIED
