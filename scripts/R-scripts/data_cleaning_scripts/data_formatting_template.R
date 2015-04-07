@@ -340,9 +340,9 @@ summary(dataset7)
 # ---- UPDATE THE DATA FORMATTING TABLE AND WRITE OUTPUT DATA FRAMES  ----
 #===============================================================================*
 
-# Update the data formatting table (this may take a moment to process):
+# Update the data formatting table (this may take a moment to process). Note that the inputs for this are 'ds', the datasetID and the dataset form that you consider to be fully formatted.
 
-dataFormattingTable = dataFormattingTableUpdate(ds)
+dataFormattingTable = dataFormattingTableUpdate(ds, dataset7)
 
 # Take a final look at the dataset:
 
