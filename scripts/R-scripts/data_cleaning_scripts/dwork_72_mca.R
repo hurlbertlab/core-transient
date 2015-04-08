@@ -91,3 +91,37 @@ dataFormattingTable[,'spatial_scale_variable'] =
 dataFormattingTable[,'Notes_siteFormat'] = 
   dataFormattingTableFieldUpdate(ds, 'Notes_siteFormat', 'Sites have a lot of  information including net mesh size, some species or catch information, and several number combinations. No lat_longs. No changes made to site data, need to find metdata for info on site coding')
 
+#-------------------------------------------------------------------------------*
+# ---- EXPLORE AND FORMAT SPECIES DATA ----
+#===============================================================================*
+
+# Look at the individual species present:
+
+# change name first
+
+names(dataset2)[4] = 'species'
+class(dataset2$species)
+levels(dataset2$species) 
+
+# Change to all uppercase
+
+dataset2$species = factor(toupper(dataset2$species))
+
+# Look for bad species
+
+levels(dataset2$species)
+
+# No bad spp found, set to dataset3 
+
+dataset3 = dataset2
+
+head(dataset3)
+
+# # !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE SPECIES DATA WERE MODIFIED!
+
+#!DATA FORMATTING TABLE UPDATE!
+
+# Column M. Notes_spFormat. 
+
+dataFormattingTable[,'Notes_spFormat'] = 
+  dataFormattingTableFieldUpdate(ds, 'Notes_spFormat', 'no bad spp to remove, nothing changed in species field.')
