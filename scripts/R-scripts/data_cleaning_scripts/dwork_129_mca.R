@@ -130,3 +130,41 @@ dataFormattingTable[,'Notes_spFormat'] =
 # ---- EXPLORE AND FORMAT COUNT DATA ----
 #===============================================================================*
 
+# Explore 
+
+names(dataset3)
+
+# Name of field
+
+countfield = "Abundance"
+
+# Renaming it
+
+names(dataset3)[which(names(dataset3) == countfield)] = 'count'
+
+# Check for zeros and NAs
+
+summary(dataset3)
+length(unique(dataset3$count))
+
+# No NAs or zeros to remove
+
+dataset5 = dataset3
+
+head(dataset5)
+str(dataset5)
+
+# !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE COUNT DATA WERE MODIFIED!
+
+#!DATA FORMATTING TABLE UPDATE!
+
+# Possible values for countFormat field are density, cover, and count.
+dataFormattingTable[,'countFormat'] = 
+  dataFormattingTableFieldUpdate(ds, 'countFormat',  'count')
+
+dataFormattingTable[,'Notes_countFormat'] = 
+  dataFormattingTableFieldUpdate(ds, 'Notes_countFormat', 'Data represents abundance counts. There were no NAs nor 0s that required removal')
+
+#-------------------------------------------------------------------------------*
+# ---- FORMAT TIME DATA ----
+#===============================================================================*
