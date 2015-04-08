@@ -99,3 +99,34 @@ dataFormattingTable[,'Notes_siteFormat'] =
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SPECIES DATA ----
 #===============================================================================*
+# Look at the individual species present
+
+length(unique(dataset2$species))
+levels(dataset2$species) 
+
+# Capitalize species names
+
+dataset2$species = factor(toupper(dataset2$species))
+
+# Look for bad spp
+
+levels(dataset2$species)
+
+# No bad species to remove
+
+dataset3 = dataset2
+
+# !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE SPECIES DATA WERE MODIFIED!
+
+#!DATA FORMATTING TABLE UPDATE!
+
+# Column M. Notes_spFormat. Provide a THOROUGH description of any changes made
+# to the species field, including why any species were removed.
+
+dataFormattingTable[,'Notes_spFormat'] = 
+  dataFormattingTableFieldUpdate(ds, 'Notes_spFormat', 'only change made to species was to upper case.  No bad species removed')
+
+#-------------------------------------------------------------------------------*
+# ---- EXPLORE AND FORMAT COUNT DATA ----
+#===============================================================================*
+
