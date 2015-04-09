@@ -16,7 +16,7 @@ library(MASS)
 # Source the functions file:
 
 getwd()
-
+setwd("C:/Users/auriemma/core-transient/")
 source('scripts/R-scripts/core-transient_functions.R')
 
 # Get data. First specify the dataset number ('ds') you are working with.
@@ -125,3 +125,46 @@ head(dataset3)
 
 dataFormattingTable[,'Notes_spFormat'] = 
   dataFormattingTableFieldUpdate(ds, 'Notes_spFormat', 'no bad spp to remove, nothing changed in species field.')
+
+#-------------------------------------------------------------------------------*
+# ---- EXPLORE AND FORMAT COUNT DATA ----
+#===============================================================================*
+
+# Name count field
+
+names(dataset3)
+countfield = "Abundance"
+
+# Renaming it
+
+names(dataset3)[which(names(dataset3) == countfield)] = 'count'
+head(dataset3)
+
+# Check for NAs or zeros
+
+summary(dataset3)
+str(dataset3)
+
+# No zeros, remove NAs if there are any
+
+dataset4 = na.omit(dataset3)
+
+# No NAs or zeros, set to dataset 5
+
+dataset5 = dataset4
+
+head(dataset5)
+
+# Data is not in whole numbers
+
+# !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE COUNT DATA WERE MODIFIED!
+
+#!DATA FORMATTING TABLE UPDATE!
+
+# Possible values for countFormat field are density, cover, and count.
+dataFormattingTable[,'countFormat'] = 
+  dataFormattingTableFieldUpdate(ds, 'countFormat', 'count')
+
+dataFormattingTable[,'Notes_countFormat'] = 
+  dataFormattingTableFieldUpdate(ds, 'Notes_countFormat', 'Data represents abundance count. There were no NAs nor 0s that required removal.  Count data is not in whole numbers, must be concentrations or densities per a certain volume of seawater')
+
