@@ -27,7 +27,7 @@ fakeData = function(nSites, nPlots, nYears, nSeasons,
 
 # Function to evaluate spatial and temporal sampling grain:
 
-wzMaker = function(i, minNYears = 10){
+wzMaker = function(i, minNYears = 10, proportionalThreshold = .2){
   
   siteID = nestedDataset[[2]][i]
   nestedDatasetDf = nestedDataset[[1]]
@@ -80,7 +80,7 @@ wzMaker = function(i, minNYears = 10){
     
   # Subset to max w z values for site proportions greater than .2
   
-  wzMax = subset(subset(wzSiteSummary, wzSiteProp >=.2), wzScaledSum == max(wzScaledSum))
+  wzMax = subset(subset(wzSiteSummary, wzSiteProp >=proportionalThreshold), wzScaledSum == max(wzScaledSum))
   
   wz = subset(wzMax, wzSiteProp == max(wzSiteProp))[,1:2]
     
