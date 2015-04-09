@@ -101,5 +101,19 @@ dataFormattingTable[,'spatial_scale_variable'] =
 # Notes_siteFormat.
 
 dataFormattingTable[,'Notes_siteFormat'] = 
-  dataFormattingTableFieldUpdate(ds, 'Notes_siteFormat', 'Sites were all written as Netherlands_sitenumber_sitenumber.  Used substring to cut out Netherlands, leaving only site numbers in the data.  No sites removed.")
+  dataFormattingTableFieldUpdate(ds, 'Notes_siteFormat', 'Sites were all written as Netherlands_sitenumber_sitenumber.  Used substring to cut out Netherlands, leaving only site numbers in the data.  No sites removed.')
 
+#-------------------------------------------------------------------------------*
+# ---- EXPLORE AND FORMAT SPECIES DATA ----
+#===============================================================================*
+
+# Change name of field
+
+names(dataset2)
+names(dataset2)[4] = 'species'
+
+# Uppercase and look through for bad species
+
+dataset2$species = factor(toupper(dataset2$species))
+
+levels(dataset2$species)
