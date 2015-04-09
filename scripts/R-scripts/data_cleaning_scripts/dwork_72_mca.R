@@ -230,3 +230,22 @@ dataFormattingTable[,'Notes_timeFormat'] =
 dataFormattingTable[,'subannualTgrain'] = 
   dataFormattingTableFieldUpdate(ds, 'subannualTgrain','N')
 
+#-------------------------------------------------------------------------------*
+# ---- MAKE DATA FRAME OF COUNT BY SITES, SPECIES, AND YEAR ----
+#===============================================================================*
+# DatasetID already in dataset
+
+# Make the compiled dataframe
+
+dataset7 = ddply(dataset6,.(datasetID, site, date, species),
+                 summarize, count = max(count))
+
+# Explore the data frame:
+
+dim(dataset7)
+
+head(dataset7)
+
+summary(dataset7)
+
+# !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE DATA WERE MODIFIED!
