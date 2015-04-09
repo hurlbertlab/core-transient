@@ -2,7 +2,32 @@ library('plyr')
 library('dplyr')
 library('tidyr')
 
-wzMaker = function(i, minNYears = 10){
+# Function to create fake datasets
+
+fakeData = function(nSites, nPlots, nYears, nSeasons, 
+                    startingSite = 1,
+                    startingYear = 2001,
+                    startingPlot = 1,
+                    startingSeason = 1,
+                    nSpecies = 10) {
+  
+  sitenums = startingSite:(startingSite + nSites - 1)
+  years = startingYear:(startingYear + nYears - 1)
+  plots = startingPlot:(startingPlot + nPlots - 1)
+  seasons = startingSeason:(startingSeason + nSeasons -1)
+  sites = rep(sitenums, each = nSpecies * nPlots*nYears*nSeasons)
+  plot = rep(letters[plots], each = nSeasons*nSpecies, times = nSites*nYears)
+  
+  dataOut = data.frame(site = paste(sites,plot, sep ='_'),
+                       year = rep(years, each = nSpecies*nPlots*nSeasons, times = nSites),
+                       date = rep(seasons, each = nSpecies, times = nPlots*nYears*nSites),
+                       species = rep(letters[1:nSpecies], times = nSites*nPlots*nYears*nSeasons))
+  return(dataOut)
+}
+
+# Function to evaluate spatial and temporal sampling grain:
+
+wzMaker = function(i, minNYears = 10, proportionalThreshold = .2){
   
   siteID = nestedDataset[[2]][i]
   nestedDatasetDf = nestedDataset[[1]]
@@ -55,7 +80,7 @@ wzMaker = function(i, minNYears = 10){
     
   # Subset to max w z values for site proportions greater than .2
   
-  wzMax = subset(subset(wzSiteSummary, wzSiteProp >=.2), wzScaledSum == max(wzScaledSum))
+  wzMax = subset(subset(wzSiteSummary, wzSiteProp >=proportionalThreshold), wzScaledSum == max(wzScaledSum))
   
   wz = subset(wzMax, wzSiteProp == max(wzSiteProp))[,1:2]
     
