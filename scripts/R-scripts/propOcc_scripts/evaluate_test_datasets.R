@@ -75,7 +75,7 @@ testData1 = fakeData(nSites = 4, nPlots = 4, nYears = 10, nSeasons = 4)
 
 nestedDataset = getNestedSiteDataset(testData1)
 
-(wzList = wzMaker(1))
+wzMaker(1)
 
 
 # Dataset 2: half of sites with high spatial subsampling, half with low,
@@ -90,7 +90,7 @@ testData2 = rbind(d2a, d2b)
 
 nestedDataset = getNestedSiteDataset(testData2)
 
-(wzList = wzMaker(1))
+wzMaker(1)
 
 # Dataset 3: half of sites with high spatial subsampling but low temporal
 #            and vice versa
@@ -106,7 +106,7 @@ testData3 = rbind(d3a, d3b)
 
 nestedDataset = getNestedSiteDataset(testData3)
 
-(wzList = wzMaker(1))
+wzMaker(1)
 
 # Dataset 4: half+1 of sites with high spatial subsampling but low temporal
 #            and half-1 have low spatial subsampling and high temporal subsampling
@@ -122,7 +122,7 @@ testData4 = rbind(d4a, d4b)
 
 nestedDataset = getNestedSiteDataset(testData4)
 
-(wzList = wzMaker(1))
+wzMaker(1)
 
 # Dataset 5: 1 site with high subsampling, 3 sites with low subsampling
 # Expected output: w = 6, z = 6
@@ -135,7 +135,7 @@ testData5 = rbind(d5a, d5b)
 
 nestedDataset = getNestedSiteDataset(testData5)
 
-(wzList = wzMaker(1))
+wzMaker(1)
 
 # Dataset 6: 1 site with high subsampling in 6 years, and low subsampling in 6 years,
 #            and very low subsampling in 4 years
@@ -152,7 +152,7 @@ testData6 = rbind(d6a, d6b, d6c)
 
 nestedDataset = getNestedSiteDataset(testData6)
 
-(wzList = wzMaker(1))
+wzMaker(1)
 
 # Dataset 7: 1 site with high subsampling in 6 years, and low subsampling in 6 years,
 #            site 2 has low subsampling 
@@ -169,7 +169,7 @@ testData7 = rbind(d7a, d7b, d7c)
 
 nestedDataset = getNestedSiteDataset(testData7)
 
-(wzList = wzMaker(1))
+wzMaker(1)
 
 
 
