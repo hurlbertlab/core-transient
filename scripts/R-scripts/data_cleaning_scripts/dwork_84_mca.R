@@ -93,3 +93,32 @@ dataFormattingTable[,'spatial_scale_variable'] =
 dataFormattingTable[,'Notes_siteFormat'] = 
   dataFormattingTableFieldUpdate(ds, 'Notes_siteFormat', 'Sites are written as region, location of site/siteinfo and lat_longs.  No sites removed and no changes made to data.')
 
+#-------------------------------------------------------------------------------*
+# ---- EXPLORE AND FORMAT SPECIES DATA ----
+#===============================================================================*
+
+# Change name of field
+
+head(dataset2)
+names(dataset2)[4] = "species"
+
+# Uppercase and look through for bad species
+
+dataset2$species = factor(toupper(dataset2$species))
+
+levels(dataset2$species)
+
+# No bad spp found, set to dataset3 
+
+dataset3 = dataset2
+
+head(dataset3)
+
+# !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE SPECIES DATA WERE MODIFIED!
+
+#!DATA FORMATTING TABLE UPDATE!
+
+# Column M. Notes_spFormat. 
+
+dataFormattingTable[,'Notes_spFormat'] = 
+  dataFormattingTableFieldUpdate(ds, 'Notes_spFormat', 'no bad spp to remove, nothing changed in species field.')
