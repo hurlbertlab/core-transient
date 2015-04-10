@@ -104,15 +104,19 @@ dataFormattingTableUpdate = function(datasetID, datasetFinal){
 # ---- FUNCTIONS for proportional occurrence and site summary data frames  ----
 #==================================================================================*
 
+#----------------------------------------------------------------------------------*
 # Function to change date object to year:
+#----------------------------------------------------------------------------------*
 
 getYear = function(date){
   if (class(date)[1] == 'factor') date = as.POSIXlt(date)
   return(as.numeric(format(date, '%Y')))
 }
 
-# The following function is used to create and explore and extract the species 
-# richness and number of time samples for a site.
+#----------------------------------------------------------------------------------*
+# The following function is used to create and explore and extract the species richness and number of time samples for a site.
+#----------------------------------------------------------------------------------*
+
 
 siteSummaryFun = function(dataset){
   ddply(dataset, .(datasetID, site), summarize, 
@@ -120,8 +124,75 @@ siteSummaryFun = function(dataset){
         nTime = length(unique(year)))
 }
 
-# The following function writes the proportional occurence data
-# frame on sites.
+#----------------------------------------------------------------------------------*
+# Function to evaluate spatial and temporal sampling grain:
+#----------------------------------------------------------------------------------*
+
+wzMaker = function(i, minNYears = 10, proportionalThreshold = .2){
+  
+  siteID = nestedDataset[[2]][i]
+  nestedDatasetDf = nestedDataset[[1]]
+  nestedDatasetDf$siteID = nestedDatasetDf[,siteID]
+  
+  # Subset to sites with a high enough species richness and year samples:
+  
+  siteSr_nTime = ddply(nestedDatasetDf, .(siteID), summarize,
+                       sr = length(unique(species)), 
+                       nTime = length(unique(year)))
+  
+  goodSites = subset(siteSr_nTime, sr >= 10 & siteSr_nTime$nTime >= minNYears)$siteID
+  
+  d1 = nestedDatasetDf[nestedDatasetDf$siteID %in% goodSites,]
+  
+  # Get data frame of the number of spatial and temporal samples by site and year:
+  
+  spaceTime = ddply(d1,.(siteID, year), summarize,
+                    spatialSubsamples = length(unique(site)),
+                    temporalSubsamples = length(unique(date)))
+  
+  # Summarize, counting the length of years for a given site having a given number of spatial and temporal subsamples.
+  
+  spaceTimeSummary = ddply(spaceTime,.(siteID, spatialSubsamples, temporalSubsamples),
+                           summarize, years = length(year))
+  
+  # Get potential values for w and z:
+  
+  w = seq(min(spaceTime$spatialSubsamples), max(spaceTime$spatialSubsamples, by  = 1))
+  z = seq(min(spaceTime$temporalSubsamples), max(spaceTime$temporalSubsamples, by  = 1))
+  wz = expand.grid(w = w, z = z)
+  
+  # Out
+  outList = list(length = nrow(wz))
+  for(i in 1:nrow(wz)){
+    w = wz[i,1]
+    z = wz[i,2]
+    # Calculate the sum of w and z values relative to the max values of each:
+    wzScaledSum = w/max(wz$w) + z/max(wz$z)
+    # For each site and value of w and z, count the number of years sampled with time and spatial samples greater than or equal to the values of w and z:
+    wzSiteYearSum = ddply(subset(spaceTime, spatialSubsamples>=w & temporalSubsamples>=z),
+                          .(siteID), summarize, years = length(year))
+    # Determine the proportion of sites greater than the minimum number of years:
+    wzSiteProp = ifelse(nrow(wzSiteYearSum) == 0, 0, sum(wzSiteYearSum>=minNYears)/length(goodSites))
+    # Bind output
+    outList[[i]] = cbind(wz[i,], wzScaledSum, wzSiteProp)
+  }
+  
+  wzSiteSummary = rbind.fill(outList)
+  
+  # Subset to max w z values for site proportions greater than .2
+  
+  wzMax = subset(subset(wzSiteSummary, wzSiteProp >=proportionalThreshold), wzScaledSum == max(wzScaledSum))
+  
+  wz = subset(wzMax, wzSiteProp == max(wzSiteProp))[,1:2]
+  
+  wzMakerOutList = list(spaceTimeSummary, wzSiteSummary, wz)
+  names(wzMakerOutList) = c('spaceTimeSummary', 'wzSiteSummary', 'wzMax')
+  return(wzMakerOutList)
+}
+
+#----------------------------------------------------------------------------------*
+# The following function writes the proportional occurence data frame on sites.
+#----------------------------------------------------------------------------------*
 
 propOccFun = function(dataset){
   spTime = ddply(dataset, .(datasetID, site, species), summarize, 
