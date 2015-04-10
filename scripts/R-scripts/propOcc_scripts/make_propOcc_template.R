@@ -40,162 +40,15 @@ dataFormattingTable$spatial_scale_variable
 dataFormattingTable$LatLong_sites
 
 #-------------------------------------------------------------------------------*
-# ---- SITE SCALE: NESTED SAMPLING GROUPS
+# ---- SITE SCALE: NESTED SAMPLING GROUPS ----
 #-------------------------------------------------------------------------------*
-
-getNestedSiteDataset = function(dataset, i){
-  siteTable = read.table(text = as.character(dataset$site), sep = '_', stringsAsFactors = F)
-  siteDefinition = dataFormattingTable$Raw_siteUnit
-  siteUnitTable = read.table(text = as.character(siteDefinition), sep = '_', stringsAsFactors = F)
-  outList = list(length = ncol(siteTable))
-  for (i in 1:ncol(siteTable)){
-    siteUnit = paste(as.character(siteUnitTable[1,1:i]), collapse = '_')
-    if (siteUnit == siteUnitTable[,1]) {
-      site = data.frame(siteTable[,1])} else {
-      site = data.frame(factor(apply(siteTable[,1:i], 1, paste, collapse = '_')))
-    } 
-    names(site) = siteUnit
-    if(names(site) == 'site') names(site) = 'site1'
-    outList[[i]] = site
-  }
-  siteFrame = do.call(cbind, outList)
-  nestedSiteData = cbind(dataset, siteFrame)
-  return(list(nestedSiteData, names(siteFrame)))
-}
-
-getNestedTimeDataset = function(dataset){
-  if(dataFormattingTable$spatial_scale_variable == 'Y') {
-    dataset = getNestedSiteDataset(dataset)[[1]]}
-  nestedSiteDataset$date = as.POSIXct(strptime(dataset$date, '%Y-%m-%d'))
-  day = as.numeric(strftime(nestedSiteDataset$date, format = '%j'))
-  week = trunc(day/7)+1
-  biweek = trunc(week/2)+1
-  month = as.numeric(format(nestedSiteDataset$date, '%m'))
-  bimonth = trunc(month/2)+1
-  season = ifelse(day < 80 |day >= 356, 1,
-                  ifelse(day >= 80 & day < 172, 2,
-                  ifelse(day >= 172 & day < 266, 3, 4)))
-  subYearList = list(week, biweek, month, bimonth,season)
-  names(subYearList) = c('week','biweek','month','bimonth','season')
-  outList = list(length = length(subYearList))
-  for(i in 1:length(subYearList)){
-    outFrame = data.frame(paste(nestedSiteDataset$year, subYearList[[i]], sep = '_'))
-    names(outFrame)  = paste('year', names(subYearList)[i], sep = '_')
-    outList[[i]] = outFrame
-  }
-  subYearFrame = do.call(cbind, outList)
-  return(cbind(nestedSiteDataset, subYearFrame))
-}
-
-getNestedDataset = function(dataset){
-  if(dataFormattingTable$subannualTgrain == 'Y'){
-    dataset = getNestedTimeDataset(dataset)
-  } else {if(dataFormattingTable$spatial_scale_variable == T &
-               dataFormattingTable$LatLong_sites != 'Y'){
-    dataset = getNestedSiteDataset(dataset)
-  }}
-  return(dataset)
-}
-
-histFun = function(dataset){
-  nestedDataset = getNestedDataset(dataset)
-  timeGrains = c('date','year_week','year_biweek','year_month','year_bimonth','year_season','year')
-  spatialGrains = getNestedSiteDataset(dataset)[[2]]
-  par(mar=c(2,2,2,2))
-  par(mfrow = c(length(timeGrains), length(spatialGrains)))
-for(i in 1:length(timeGrains)){
-  for(j in 1:length(spatialGrains)){
-    d1 = data.frame(nestedDataset[,spatialGrains[[j]]],nestedDataset[,timeGrains[i]])
-    names(d1) = c('site','time')
-    d2 = ddply(d1, .(site), summarize, length(unique(time)))[,2] 
-    hist(d2, xlab = 'Sampling events', main = paste(spatialGrains[j],timeGrains[i], sep ='_'),
-         cex.main = .75,cex.axis = .5, col = 'gray')
-  }
-}
-}
-
-
-pdf('output/plots/exploringSiteSelection/hist_dataset223.pdf')
-histFun(dataset)
-dev.off()
-
-####################################################################################################
-
-timeGrains = c('date','year_week','year_biweek','year_month','year_bimonth','year_season','year')
-spatialGrains = getNestedSiteDataset(dataset)[[2]]
-test = getNestedDataset(dataset)
-par(mar=c(2,2,2,2))
-par(mfrow = c(length(timeGrains), length(spatialGrains)))
-for(i in 1:length(timeGrains)){
-  for(j in 1:length(spatialGrains)){
-    t3 = data.frame(test[,spatialGrains[[j]]],test[,timeGrains[i]])
-    names(t3) = c('site','time')
-    t4 = ddply(t3, .(site), summarize, length(unique(time)))[,2] 
-#     hist(t4, xlab = 'Sampling events', main = paste(spatialGrains[j],timeGrains[i], sep ='_'),
-#          cex.main = .75,cex.axis = .5, col = 'gray')
-t4o = t4[order(t4)]
-cdf = sapply(t4o, function(x) sum(x > t4o))
-plot(t4o, cdf, type ='l', main = paste(spatialGrains[j],timeGrains[i], sep ='_'), cex.main = .75)
-abline(v = 5, lty='dashed')
-  }}
-
-####################################################################################################
-
-
+# Use this section IF sites are spacially nested (but not Lat Lon)
 
 nestedDataset = getNestedDataset(dataset)
 timeGrains = c('date','year_week','year_biweek','year_month','year_bimonth','year_season','year')
 spatialGrains = getNestedSiteDataset(dataset)[[2]]
 
-wzMaker = function(i, threshold){
-    spatialGrain = spatialGrains[i]
-    nestedDataset$siteGrain = nestedDataset[,spatialGrain]
-    
-  # Subset to sites with a high enough species richness and year samples:
-  
-    siteSr_nTime = ddply(nestedDataset, .(siteGrain), summarize,
-                       sr = length(unique(species)), 
-                       nTime = length(unique(year)))
-  
-    goodSites = subset(siteSr_nTime, sr >= 10 & siteSr_nTime$nTime >= 5)$siteGrain
-  
-    d1 = nestedDataset[nestedDataset$siteGrain %in% goodSites,]
 
-  # Get data frame of the number of spatial and temporal samples by site and year:
-  
-    spaceTime = ddply(d1,.(siteGrain, year), summarize,
-                spatialSubsamples = length(unique(site)),
-                temporalSubsamples = length(unique(date)))
-  
-    spaceTime = na.omit(spaceTime)
-  
-  # Get the value for w threshold:
-    w = seq(min(spaceTime$spatialSubsamples), max(spaceTime$spatialSubsamples, by  = 1))
-    siteYears = nrow(spaceTime)
-    wFrame = data.frame(w)
-    for(i in 1:length(w)) {
-      wFrame[i,2] = nrow(subset(spaceTime, spatialSubsamples  <= w[i]))
-      wFrame[i,3] = wFrame[i,2]/siteYears
-    }
-    names(wFrame)[2:3] = c('siteYears','propW')
-    w = wFrame[which.min(abs(wFrame[,'propW'] - threshold)), 'w']
-
-  # Get the value for the z threshold:
-    z = seq(min(spaceTime$temporalSubsamples), max(spaceTime$temporalSubsamples, by  = 1))
-    zFrame = data.frame(z)
-    for(i in 1:length(z)){
-      zFrame[i,2] = nrow(subset(spaceTime, temporalSubsamples <=z[i]))
-      zFrame[i,3] = zFrame[i,2]/siteYears
-    }
-    names(zFrame)[2:3] = c('siteYears','propZ')
-    z = zFrame[which.min(abs(zFrame[,'propZ'] - threshold)), 'z']
-  
-  # Output:
-  
-    outList = list(spatialGrain,wFrame,zFrame, w, z, spaceTime)
-    names(outList) = c('spatialGrain', 'wFrame', 'zFrame','w', 'z', 'spaceTimeSamples')
-    return(outList)
-}
 
 wzList = list(length = length(spatialGrains))
 for(i in 1:length(spatialGrains)) wzList[[i]] = wzMaker(i, .8)
@@ -471,7 +324,7 @@ write.csv(propOccFun(dataset), "data/propOcc_datasets/propOcc_223.csv", row.name
 
 write.csv(siteSummaryFun(dataset), 'data/siteSummaries/siteSummary_223.csv', row.names = F)
 
-# Note: Both the submodule and core-transient folder need to be pushed to, 
+# Note: Both the submodule and core-transient folder need to be pushed to Git, 
 # in git bash:
 
 # cd data
