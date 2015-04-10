@@ -48,11 +48,11 @@ dataFormattingTable$LatLong_sites
 # If the spatial sampling grain is nested and site designations are not defined by lat-longs, it may be necessary to remove some observations and possibly extract samples from the data if the sampling is unevenly distributed. 
 
 nestedDataset = getNestedDataset(dataset)
-timeGrains = c('date','year_week','year_biweek','year_month','year_bimonth','year_season','year')
-spatialGrains = getNestedSiteDataset(dataset)[[2]]
+#timeGrains = c('date','year_week','year_biweek','year_month','year_bimonth','year_season','year')
+spatialGrains = nestedDataset[[2]]
 
 wzList = list(length = length(spatialGrains))
-for(i in 1:length(spatialGrains)) wzList[[i]] = wzMaker(i, .8)
+for(i in 1:length(spatialGrains)) wzList[[i]] = wzMaker(i)
 names(wzList) = spatialGrains
 
 
