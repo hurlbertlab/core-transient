@@ -150,7 +150,9 @@ getNestedSiteDataset = function(dataset, i){
 
 getNestedTimeDataset = function(dataset){
   if(dataFormattingTable$spatial_scale_variable == 'Y') {
-    nestedSiteDataset = getNestedSiteDataset(dataset)[[1]]}
+    nestedSiteData = getNestedSiteDataset(dataset)
+    nestedSiteLevels = nestedSiteData[[2]]
+    nestedSiteDataset = nestedSiteData[[1]]}
   nestedSiteDataset$date = as.POSIXct(strptime(dataset$date, '%Y-%m-%d'))
   nestedSiteDataset$year = as.numeric(format(nestedSiteDataset$date, '%Y'))
   day = as.numeric(strftime(nestedSiteDataset$date, format = '%j'))
@@ -170,7 +172,7 @@ getNestedTimeDataset = function(dataset){
     outList[[i]] = outFrame
   }
   subYearFrame = do.call(cbind, outList)
-  return(cbind(nestedSiteDataset, subYearFrame))
+  return(list(cbind(nestedSiteDataset, subYearFrame), nestedSiteLevels))
 }
 
 getNestedDataset = function(dataset){
