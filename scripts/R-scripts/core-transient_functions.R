@@ -150,7 +150,7 @@ getNestedSiteDataset = function(dataset, i){
 
 getNestedTimeDataset = function(dataset){
   if(dataFormattingTable$spatial_scale_variable == 'Y') {
-    dataset = getNestedSiteDataset(dataset)[[1]]}
+    nestedSiteDataset = getNestedSiteDataset(dataset)[[1]]}
   nestedSiteDataset$date = as.POSIXct(strptime(dataset$date, '%Y-%m-%d'))
   day = as.numeric(strftime(nestedSiteDataset$date, format = '%j'))
   week = trunc(day/7)+1
