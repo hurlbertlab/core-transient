@@ -125,6 +125,65 @@ siteSummaryFun = function(dataset){
 }
 
 #----------------------------------------------------------------------------------*
+# The following functions are used to evaluate scale for temporally or spatially nested data
+#----------------------------------------------------------------------------------*
+
+getNestedSiteDataset = function(dataset, i){
+  siteTable = read.table(text = as.character(dataset$site), sep = '_', stringsAsFactors = F)
+  siteDefinition = dataFormattingTable$Raw_siteUnit
+  siteUnitTable = read.table(text = as.character(siteDefinition), sep = '_', stringsAsFactors = F)
+  outList = list(length = ncol(siteTable))
+  for (i in 1:ncol(siteTable)){
+    siteUnit = paste(as.character(siteUnitTable[1,1:i]), collapse = '_')
+    if (siteUnit == siteUnitTable[,1]) {
+      site = data.frame(siteTable[,1])} else {
+        site = data.frame(factor(apply(siteTable[,1:i], 1, paste, collapse = '_')))
+      } 
+    names(site) = siteUnit
+    if(names(site) == 'site') names(site) = 'site1'
+    outList[[i]] = site
+  }
+  siteFrame = do.call(cbind, outList)
+  nestedSiteData = cbind(dataset, siteFrame)
+  return(list(nestedSiteData, names(siteFrame)))
+}
+
+getNestedTimeDataset = function(dataset){
+  if(dataFormattingTable$spatial_scale_variable == 'Y') {
+    dataset = getNestedSiteDataset(dataset)[[1]]}
+  nestedSiteDataset$date = as.POSIXct(strptime(dataset$date, '%Y-%m-%d'))
+  day = as.numeric(strftime(nestedSiteDataset$date, format = '%j'))
+  week = trunc(day/7)+1
+  biweek = trunc(week/2)+1
+  month = as.numeric(format(nestedSiteDataset$date, '%m'))
+  bimonth = trunc(month/2)+1
+  season = ifelse(day < 80 |day >= 356, 1,
+                  ifelse(day >= 80 & day < 172, 2,
+                         ifelse(day >= 172 & day < 266, 3, 4)))
+  subYearList = list(week, biweek, month, bimonth,season)
+  names(subYearList) = c('week','biweek','month','bimonth','season')
+  outList = list(length = length(subYearList))
+  for(i in 1:length(subYearList)){
+    outFrame = data.frame(paste(nestedSiteDataset$year, subYearList[[i]], sep = '_'))
+    names(outFrame)  = paste('year', names(subYearList)[i], sep = '_')
+    outList[[i]] = outFrame
+  }
+  subYearFrame = do.call(cbind, outList)
+  return(cbind(nestedSiteDataset, subYearFrame))
+}
+
+getNestedDataset = function(dataset){
+  if(dataFormattingTable$subannualTgrain == 'Y'){
+    dataset = getNestedTimeDataset(dataset)
+  } else {if(dataFormattingTable$spatial_scale_variable == T &
+               dataFormattingTable$LatLong_sites != 'Y'){
+    dataset = getNestedSiteDataset(dataset)
+  }}
+  return(dataset)
+}
+
+
+#----------------------------------------------------------------------------------*
 # Function to evaluate spatial and temporal sampling grain:
 #----------------------------------------------------------------------------------*
 
