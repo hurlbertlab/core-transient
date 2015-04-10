@@ -6,6 +6,8 @@
 
 library(stringr)
 library(plyr)
+library(dplyr)
+library(tidyr)
 
 source('scripts/R-scripts/core-transient_functions.R')
 
@@ -35,20 +37,19 @@ length(unique(dataset$site))
 
 dataFormattingTable$spatial_scale_variable
 
-# If no, you can move to the next section. If yes, you need to determine whether site designations are lat-long or nested sampling groups.
+# If no, you can move to the temporal section. If yes, you need to determine whether site designations are lat-long or nested sampling groups.
 
 dataFormattingTable$LatLong_sites
 
 #-------------------------------------------------------------------------------*
-# ---- SITE SCALE: NESTED SAMPLING GROUPS ----
+# ---- SITE SCALE: NESTED SAMPLING CATEGORICAL GROUPS ----
 #-------------------------------------------------------------------------------*
-# Use this section IF sites are spacially nested (but not Lat Lon)
+# Use this section IF sites are spacially nested but sites are not defined by lat-longs.
+# If the spatial sampling grain is nested and site designations are not defined by lat-longs, it may be necessary to remove some observations and possibly extract samples from the data if the sampling is unevenly distributed. 
 
 nestedDataset = getNestedDataset(dataset)
 timeGrains = c('date','year_week','year_biweek','year_month','year_bimonth','year_season','year')
 spatialGrains = getNestedSiteDataset(dataset)[[2]]
-
-
 
 wzList = list(length = length(spatialGrains))
 for(i in 1:length(spatialGrains)) wzList[[i]] = wzMaker(i, .8)
