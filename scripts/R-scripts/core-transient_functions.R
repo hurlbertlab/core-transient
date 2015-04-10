@@ -226,7 +226,9 @@ wzMaker = function(i, minNYears = 10, proportionalThreshold = .2){
   
   w = seq(min(spaceTime$spatialSubsamples), max(spaceTime$spatialSubsamples, by  = 1))
   z = seq(min(spaceTime$temporalSubsamples), max(spaceTime$temporalSubsamples, by  = 1))
-  wz = expand.grid(w = w, z = z)
+  #wz = expand.grid(w = w, z = z)
+  
+  wz = distinct(expand.grid(w = spaceTime$spatialSubsamples, z = spaceTime$temporalSubsamples))
   
   # Out
   outList = list(length = nrow(wz))
@@ -239,7 +241,7 @@ wzMaker = function(i, minNYears = 10, proportionalThreshold = .2){
     wzSiteYearSum = ddply(subset(spaceTime, spatialSubsamples>=w & temporalSubsamples>=z),
                           .(siteID), summarize, years = length(year))
     # Determine the proportion of sites greater than the minimum number of years:
-    wzSiteProp = ifelse(nrow(wzSiteYearSum) == 0, 0, sum(wzSiteYearSum>=minNYears)/length(goodSites))
+    wzSiteProp = ifelse(nrow(wzSiteYearSum) == 0, 0, sum(wzSiteYearSum[,2]>=minNYears)/length(goodSites))
     # Bind output
     outList[[i]] = cbind(wz[i,], wzScaledSum, wzSiteProp)
   }
