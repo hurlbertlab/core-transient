@@ -128,6 +128,8 @@ siteSummaryFun = function(dataset){
 # The following functions are used to evaluate scale for temporally or spatially nested data
 #----------------------------------------------------------------------------------*
 
+# Nested site dataset (nesting is categorical, not lat-long):
+
 getNestedSiteDataset = function(dataset, i){
   siteTable = read.table(text = as.character(dataset$site), sep = '_', stringsAsFactors = F)
   siteDefinition = dataFormattingTable$Raw_siteUnit
@@ -147,6 +149,8 @@ getNestedSiteDataset = function(dataset, i){
   nestedSiteData = cbind(dataset, siteFrame)
   return(list(nestedSiteData, names(siteFrame)))
 }
+
+# Nested time dataset (spatial nesting is categorical, not lat-long):
 
 getNestedTimeDataset = function(dataset){
   if(dataFormattingTable$spatial_scale_variable == 'Y') {
@@ -175,6 +179,8 @@ getNestedTimeDataset = function(dataset){
   return(list(cbind(nestedSiteDataset, subYearFrame), nestedSiteLevels))
 }
 
+# Wrapper function (spatial nesting is categorical, not lat-long):
+
 getNestedDataset = function(dataset){
   if(dataFormattingTable$subannualTgrain == 'Y'){
     dataset = getNestedTimeDataset(dataset)
@@ -184,7 +190,6 @@ getNestedDataset = function(dataset){
   }}
   return(dataset)
 }
-
 
 #----------------------------------------------------------------------------------*
 # Function to evaluate spatial and temporal sampling grain:
