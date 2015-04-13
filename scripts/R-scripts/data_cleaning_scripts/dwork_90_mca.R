@@ -57,3 +57,41 @@ tail(dataset1)
 dataFormattingTable[,'LatLong_sites'] = 
   dataFormattingTableFieldUpdate(ds, 'LatLong_sites', 'Y')
 
+#-------------------------------------------------------------------------------*
+# ---- EXPLORE AND FORMAT SITE DATA ----
+#===============================================================================*
+
+# Explore
+
+length(unique(dataset1$site))
+summary(dataset1)
+
+# View all sites
+
+levels(dataset1$site)
+
+# sites are listed as 'AAtlantic_Bay_of_Biscay_sitenumber_lat_long'
+# Only valuable info is the lat-long data.  Could substring out but varied number of digits and characters for all the sites.  So no changes will be made
+
+dataset2 = dataset1
+
+
+# !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE SITE DATA WERE MODIFIED!
+
+# !DATA FORMATTING TABLE UPDATE! 
+
+# Raw_siteUnit. How a site is coded 
+
+dataFormattingTable[,'Raw_siteUnit'] = 
+  dataFormattingTableFieldUpdate(ds, 'Raw_siteUnit', 'region_sitenumber_lat_long') 
+
+# spatial_scale_variable. Is a site potentially nested (e.g., plot within a quad or decimal lat longs that could be scaled up)? Y/N
+
+dataFormattingTable[,'spatial_scale_variable'] = 
+  dataFormattingTableFieldUpdate(ds, 'spatial_scale_variable', 'N') 
+
+# Notes_siteFormat.
+
+dataFormattingTable[,'Notes_siteFormat'] = 
+  dataFormattingTableFieldUpdate(ds, 'Notes_siteFormat', 'Sites were all written as Atlantic_Bay_of_Biscay_sitenumber_lat_long. Only lat long data is relevant, but not extracted out because varied number of characters used in data. No sites removed and no changes to data.')
+
