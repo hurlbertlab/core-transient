@@ -57,6 +57,23 @@ dataset1 = dataset[,-unusedFields]
 
 head(dataset1)
 
+# Change name of date field
+
+names(dataset1)[8] = 'date'
+
+# Explore
+
+head(dataset1)
+
+# !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE DATA WERE MODIFIED!
+
+# !DATA FORMATTING TABLE UPDATE!
+# Are the ONLY site identifiers the latitude and longitude of the observation or 
+# sample? (I.e., there are no site names or site IDs or other designations) Y/N
+
+dataFormattingTable[,'LatLong_sites'] = 
+  dataFormattingTableFieldUpdate(ds, 'LatLong_sites', 'N') 
+
 # !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE DATA WERE MODIFIED!
 
 #-------------------------------------------------------------------------------*
