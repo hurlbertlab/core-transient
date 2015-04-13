@@ -91,7 +91,7 @@ head(dataset1)
 
 # Concatenate all of the potential fields to a site object
 
-site = paste(dataset1$site, dataset1$block, dataset1$plot, dataset1$treatment,  dataset$quad, sep = '_')
+site = paste(dataset1$site, dataset1$block, dataset1$plot,  dataset$quad, sep = '_')
 
 # Do some quality control by comparing the site fields in the dataset with the 
 # new vector of sites:
@@ -107,7 +107,9 @@ dataset2 = dataset1
 
 dataset2$site = factor(site)
 
-dataset2 = dataset2[,-c(1:5)]
+head(dataset2)
+
+dataset2 = dataset2[,-c(2:5)]
 
 # Check the new dataset (are the columns as they should be?):
 
@@ -120,7 +122,7 @@ head(dataset2)
 # Raw_siteUnit. How a site is coded (i.e. if the field was concatenated such as this one, it was coded as "site_block_treatment_plot_quad"). Alternatively, if the site were concatenated from latitude and longitude fields, the encoding would be "lat_long". 
 
 dataFormattingTable[,'Raw_siteUnit'] = 
-  dataFormattingTableFieldUpdate(ds, 'Raw_siteUnit','site_block_plot_treatment_quad') 
+  dataFormattingTableFieldUpdate(ds, 'Raw_siteUnit','site_block_treatment_plot_quad') 
 
 # spatial_scale_variable. Is a site potentially nested (e.g., plot within a quad or decimal lat longs that could be scaled up)? Y/N
 
@@ -130,7 +132,7 @@ dataFormattingTable[,'spatial_scale_variable'] =
 # Notes_siteFormat. Use this field to THOROUGHLY describe any changes made to the site field during formatting.
 
 dataFormattingTable[,'Notes_siteFormat'] = 
-  dataFormattingTableFieldUpdate(ds, 'Notes_siteFormat', 'site fields concatenated. metadata suggests site-block-plot-treatment-quad describes the order of nested sites from small to large.')
+  dataFormattingTableFieldUpdate(ds, 'Notes_siteFormat', 'site fields concatenated. metadata suggests site-block-plot-quad describes the order of nested sites from small to large. The treatment field was not included because it does not represent a spatial unit within the blocks.')
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SPECIES DATA ----
@@ -138,61 +140,53 @@ dataFormattingTable[,'Notes_siteFormat'] =
 
 # Look at the individual species present:
 
-sp = dataset$species
-
-levels(sp)
+levels(dataset2$species) 
 
 # Uppercase to remove possible case error
 
-dataset$species = toupper(dataset$species)
+dataset2$species = toupper(dataset2$species)
 
-# Differences?
+head(dataset2)
 
-length(unique(dataset$species))
+# Look through metadata for species codes. Found that names represent "Kartez codes". Several species can be removed (double-checked with USDA plant codes at plants.usda.gov and another Sevilleta study (dataset 254) that provides species names for some codes). Some codes were identified with this pdf from White Sands: https://nhnm.unm.edu/sites/default/files/nonsensitive/publications/nhnm/U00MUL02NMUS.pdf
 
-length(unique(sp))
+# reset factor levels and look for bad species
 
-# We see that almost 70 species were the result of upper and lower case!
-# Make a new species vector (factor ensures that it is coded as a factor
-# rather than character and removes any unused levels) 
-# and continue exploring:
+dataset2$species = factor(dataset2$species)
 
-sp = factor(dataset$species)
+levels(dataset2$species)
 
-levels(sp)
+bad_sp = c('','NONE','UK1','UKFO1','UNK1','UNK2','UNK3','LAMIA', 'UNGR1','CACT1','UNK','NONE','UNK2','UNK3', 'UNK1','FORB7', 'MISSING', '-888', 'DEAD','ERRO2', 'FORB1','FSEED', 'GSEED', 'MOSQ', 'SEED','SEEDS1','SEEDS2', 'SEFLF','SESPM','SPOR1')
 
-# Now explore the listed species themselves. To do so, you should go back to study's 
-# metadata. A quick look at the metadata is not informative, unfortunately. Because of
-# this, you should really stop here and post an issue on GitHub. With some more thorough
-# digging, however, I've found the names represent "Kartez codes". Several species can
-# be removed (double-checked with USDA plant codes at plants.usda.gov and another Sevilleta
-# study (dataset 254) that provides species names for some codes). Some codes were identified
-# with this pdf from White Sands: 
-# https://nhnm.unm.edu/sites/default/files/nonsensitive/publications/nhnm/U00MUL02NMUS.pdf
+# Remove bad spp
 
-bad_sp = c('', 'NONE','UK1','UKFO1','UNK1','UNK2','UNK3','LAMIA', 'UNGR1','CACT1','UNK','NONE',
-           'UNK2','UNK3', 'UNK1','FORB7', 'MISSING', '-888', 'DEAD','ERRO2', 'FORB1','FSEED', 'GSEED',
-           'MOSQ', 'SEED','SEEDS1','SEEDS2', 'SEFLF','SESPM','SPOR1')
+dataset3 = dataset2[!dataset2$species %in% bad_sp,]
 
-dataset1 = dataset[!dataset$species %in% bad_sp,]
+# Reset the factor levels:
 
-dataset1$species = factor(dataset1$species)
+dataset3$species = factor(dataset3$species)
 
 # Let's look at how the removal of bad species altered the length of the dataset:
 
-nrow(dataset)
+nrow(dataset2)
 
-nrow(dataset1)
+nrow(dataset3)
 
 # Look at the head of the dataset to ensure everything is correct:
 
-head(dataset1)
+head(dataset3)
 
-# Having checked through the results, we can now reassign the dataset:
-
-dataset = dataset1
+summary(dataset3)
 
 # !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE SPECIES DATA WERE MODIFIED!
+
+#!DATA FORMATTING TABLE UPDATE!
+
+# Column M. Notes_spFormat. Provide a THOROUGH description of any changes made
+# to the species field, including why any species were removed.
+
+dataFormattingTable[,'Notes_spFormat'] = 
+  dataFormattingTableFieldUpdate(ds, 'Notes_spFormat','several species removed. Metadata was relatively uninformative regarding what constitutes a true species sample for this study. Exploration of metadata from associated Sevilleta studies were more informative regarding which species needed to be removed. Species names are predominantly provided as Kartez codes, but not always. See: http://sev.lternet.edu/data/sev-212/5048. Some codes were identified with this pdf from White Sands: https://nhnm.unm.edu/sites/default/files/nonsensitive/publications/nhnm/U00MUL02NMUS.pdf')
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT TIME DATA ----
