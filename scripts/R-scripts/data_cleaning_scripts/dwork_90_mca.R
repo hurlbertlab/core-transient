@@ -118,6 +118,7 @@ levels(dataset2$species)
 # No bad species found
 
 head(dataset2)
+dataset3 = dataset2
 
 # all looks good
 
@@ -130,3 +131,51 @@ head(dataset2)
 dataFormattingTable[,'Notes_spFormat'] = 
   dataFormattingTableFieldUpdate(ds, 'Notes_spFormat', 'No bad species found.  No changes made to field')
 
+#-------------------------------------------------------------------------------*
+# ---- EXPLORE AND FORMAT COUNT DATA ----
+#===============================================================================*
+
+# Name count field
+
+names(dataset3)
+countfield = "Abundance"
+
+# Renaming it
+
+names(dataset3)[which(names(dataset3) == countfield)] = 'count'
+head(dataset3)
+
+# Check for NAs or zeros
+
+summary(dataset3)
+str(dataset3)
+unique(dataset3$count)
+
+# All count data given is 1's, so single occurrence of species per site per time is reported
+
+# Remove NAs if there are any
+
+dataset4 = na.omit(dataset3)
+
+# None removed, set to dataset5
+
+dataset5 = dataset4
+
+# double check
+
+head(dataset5, 20)
+
+# !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE COUNT DATA WERE MODIFIED!
+
+#!DATA FORMATTING TABLE UPDATE!
+
+# Possible values for countFormat field are density, cover, and count.
+dataFormattingTable[,'countFormat'] = 
+  dataFormattingTableFieldUpdate(ds, 'countFormat', 'count')
+
+dataFormattingTable[,'Notes_countFormat'] = 
+  dataFormattingTableFieldUpdate(ds, 'Notes_countFormat', 'Data represents count of abundance. All counts are 1s. Study must have collected species one at a time and recorded site per species.  Counts would likely be more effective data if site lat_longs were made slightly larger grain size. No changes to this field were made')
+
+#-------------------------------------------------------------------------------*
+# ---- FORMAT TIME DATA ----
+#===============================================================================*
