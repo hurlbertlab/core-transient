@@ -295,95 +295,25 @@ dataFormattingTable[,'subannualTgrain'] =
 #-------------------------------------------------------------------------------*
 # ---- MAKE DATA FRAME OF COUNT BY SITES, SPECIES, AND YEAR ----
 #===============================================================================*
-# make the final formatted dataset, add a datasetID field, check for
-# errors, and remove records that can't be used for our purposes.
+# Add the datasetID
 
-# add the datasetID:
+dataset6$datasetID = ds
 
-dataset1 = dataset
+# Now make the compiled dataframe
 
-dataset1$datasetID = rep(223,nrow(dataset1))
+head(dataset6)
 
-# Change date to a factor:
+dataset7 = ddply(dataset6,.(datasetID, site, date, species),
+                 summarize, count = max(count))
 
-dataset1$date = factor(as.character(dataset1$date))
+# Explore the data frame
 
-# Now make the compiled dataframe:
+dim(dataset7)
 
-dataset2 = ddply(dataset1,.(datasetID, site, date, species),
-                 summarize, count = max(cover))
+head(dataset7,20)
 
-# Explore 
-
-dim(dataset2)
-
-head(dataset2)
-
-summary(dataset2)
-
-# Convert date back to a date object:
-
-date = as.Date(dataset2$date, '%Y-%m-%d')
-
-class(date)
-
-head(date)
-
-# All looks good, reassign the column:
-
-dataset = dataset2
-
-dataset$date = date
-head(dataset)
+summary(dataset7)
 
 # !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE DATA WERE MODIFIED!
 
-#-------------------------------------------------------------------------------*
-# ---- WRITE OUTPUT DATA FRAMES  ----
-#===============================================================================*
 
-# Take a final look at the dataset:
-
-head(dataset)
-
-summary (dataset)
-
-# write formatted data frame:
-
-write.csv(dataset, "data/formatted_datasets/dataset_223.csv", row.names = F)
-
-# !GIT-ADD-COMMIT-PUSH THE FORMATTED DATASET IN THE DATA FILE, THEN GIT-ADD-
-# COMMIT-PUSH THE UPDATED DATA FOLDER!
-
-
-# cd data
-# git add formatted_datasets/dataset_208.csv
-# git commit -m "added formatted dataset"
-# git push
-# cd ..
-# git add data
-# git commit -m "updated submodule with formatted dataset 208"
-# git push
-
-#-------------------------------------------------------------------------------*
-# ---- EXPLORE YOUR DATASET SUMMARY INFO AND UPDATE THE DATA SOURCE TABLE  ----
-#===============================================================================*
-
-# !!!At this point, go to the data source table and provide:
-#   -central lat and lon (if available, if so, LatLonFLAG = 0, if you couldn't do
-#    it, add a flag of 1)
-#   -spatial_grain columns (T through W)
-#   -nRecs, nSites, nTime, nSpecies
-#   -temporal_grain columns (AH to AK)
-#   -Start and end year
-#   -Any necessary notes
-#   -flag any issues and put issue on github
-#   -git-add-commit-push data_source_table.csv
-
-dim(dataset)
-
-length(unique(dataset$site))
-
-length(unique(dataset$date))
-
-length(unique(dataset$species))
