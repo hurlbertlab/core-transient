@@ -79,50 +79,58 @@ dataFormattingTable[,'LatLong_sites'] =
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SITE DATA ----
 #===============================================================================*
-
-# View summary of fields in the dataset:
-
-summary(dataset)
-
 # Reminder of the dataset:
 
-head(dataset)
+head(dataset1)
 
 # We can see that sites are broken up into (potentially) 5 fields. Find the 
 # metadata link in the data source table use that link to determine how
 # sites are characterized.
 
-# Concatenate all of the potential fields that describe the site
+# Metadata suggests the site data can be organized (largest to smallest) in this fashion: site > block > plot > treatment > quad
 
-head(dataset)
+# Concatenate all of the potential fields to a site object
 
-site = paste(dataset$site, dataset$block, dataset$treatment, 
-             dataset$plot, dataset$quad, sep = '_')
+site = paste(dataset1$site, dataset1$block, dataset1$plot, dataset1$treatment,  dataset$quad, sep = '_')
 
 # Do some quality control by comparing the site fields in the dataset with the 
 # new vector of sites:
 
-head(site)
+head(site, 30)
+tail(site, 30)
 
 # All looks correct, so replace the site column in the dataset (as a factor) 
 # and remove the unnecessary fields, start by renaming the dataset in case 
 # you make a mistake:
 
-dataset1 = dataset
+dataset2 = dataset1
 
-dataset1$site = factor(site)
+dataset2$site = factor(site)
 
-dataset1 = dataset1[,-c(2:5)]
+dataset2 = dataset2[,-c(1:5)]
 
 # Check the new dataset (are the columns as they should be?):
 
-head(dataset1)
-
-# All looks good, so overwrite the dataset file:
-
-dataset = dataset1
+head(dataset2)
 
 # !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE SITE DATA WERE MODIFIED!
+
+# !DATA FORMATTING TABLE UPDATE! 
+
+# Raw_siteUnit. How a site is coded (i.e. if the field was concatenated such as this one, it was coded as "site_block_treatment_plot_quad"). Alternatively, if the site were concatenated from latitude and longitude fields, the encoding would be "lat_long". 
+
+dataFormattingTable[,'Raw_siteUnit'] = 
+  dataFormattingTableFieldUpdate(ds, 'Raw_siteUnit','site_block_plot_treatment_quad') 
+
+# spatial_scale_variable. Is a site potentially nested (e.g., plot within a quad or decimal lat longs that could be scaled up)? Y/N
+
+dataFormattingTable[,'spatial_scale_variable'] = 
+  dataFormattingTableFieldUpdate(ds, 'spatial_scale_variable','Y')
+
+# Notes_siteFormat. Use this field to THOROUGHLY describe any changes made to the site field during formatting.
+
+dataFormattingTable[,'Notes_siteFormat'] = 
+  dataFormattingTableFieldUpdate(ds, 'Notes_siteFormat', 'site fields concatenated. metadata suggests site-block-plot-treatment-quad describes the order of nested sites from small to large.')
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SPECIES DATA ----
