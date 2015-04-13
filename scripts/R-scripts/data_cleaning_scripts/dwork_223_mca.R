@@ -8,20 +8,23 @@
 
 library(stringr)
 library(plyr)
+library(ggplot2)
+library(grid)
+library(gridExtra)
+library(MASS)
 
 # Source the functions file:
 getwd()
 setwd('C:/Users/auriemma/core-transient/')
 source('scripts/R-scripts/core-transient_functions.R')
 
-# Get data:
+# Get data. First specify the dataset number ('ds') you are working with.
 
-getwd()
+ds = 223 
 
-list.files('data/raw_datasets')
+dataset = read.csv(paste('data/raw_datasets/dataset_', ds, '.csv', sep = ''))
 
-dataset = read.csv('data/raw_datasets/dataset_223.csv')
-
+dataFormattingTable = read.csv('Reference/data_formatting_table.csv')
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE THE DATASET ----
@@ -42,19 +45,17 @@ str(dataset)
 
 head(dataset)
 
-# Here, we can see that there are some fields that we won't use. Let's remove
-# them, note that I've given a new name here "d1", this is to ensure that
-# we don't have to go back to square 1 if we've miscoded anything.
+# Here, we can see that there are some fields that we won't use. Let's remove them, note that I've given a new name here "dataset1", this is to ensure that we don't have to go back to square 1 if we've miscoded anything.
+
+# If all fields will be used, then set unusedFields = 9999.
 
 names(dataset)
 
-dataset1 = dataset[,-c(1,2,8,11,13,14)]
+unusedFields = c(1, 2, 8, 9, 11,13, 14)
+
+dataset1 = dataset[,-unusedFields]
 
 head(dataset1)
-
-# Because all (and only) the fields we want are present, we can re-assign d1:
-
-dataset = dataset1
 
 # !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE DATA WERE MODIFIED!
 
