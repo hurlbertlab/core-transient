@@ -117,3 +117,42 @@ names(dataset2)[4] = 'species'
 dataset2$species = factor(toupper(dataset2$species))
 
 levels(dataset2$species)
+
+# After checking uniques, some species are listed twice because of extra underscore at end of spp name
+
+# Remove underscores at end of species names
+
+dataset3 = dataset2
+
+dataset3$species = gsub("_", " ", dataset3$species)
+
+head(dataset3)
+
+dataset3$species = str_trim(dataset3$species)
+
+head(dataset3)
+
+# Reset levels and check over
+
+dataset3$species = factor(dataset3$species)
+
+levels(dataset3$species)
+
+length(unique(dataset2$species))
+
+length(unique(dataset3$species))
+
+# It worked, speceis all good
+
+
+# !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE SPECIES DATA WERE MODIFIED!
+
+#!DATA FORMATTING TABLE UPDATE!
+
+# Column M. Notes_spFormat. 
+
+dataFormattingTable[,'Notes_spFormat'] = 
+  dataFormattingTableFieldUpdate(ds, 'Notes_spFormat', 'there were two unique species listed twice because of extra underscores at the end of their names in the dataset.  To fix this, all underscores were removed and replaced with spaces, and then all extra white space at end of names was removed')
+
+
+
