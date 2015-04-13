@@ -95,3 +95,38 @@ dataFormattingTable[,'spatial_scale_variable'] =
 dataFormattingTable[,'Notes_siteFormat'] = 
   dataFormattingTableFieldUpdate(ds, 'Notes_siteFormat', 'Sites were all written as Atlantic_Bay_of_Biscay_sitenumber_lat_long. Only lat long data is relevant, but not extracted out because varied number of characters used in data. No sites removed and no changes to data.')
 
+#-------------------------------------------------------------------------------*
+# ---- EXPLORE AND FORMAT SPECIES DATA ----
+#===============================================================================*
+
+# Change name of field
+
+names(dataset2)
+names(dataset2)[4] = 'species'
+
+# Explore
+
+length(unique(dataset2$species))
+head(dataset2)
+
+# Uppercase and look through for bad species
+
+dataset2$species = factor(toupper(dataset2$species))
+
+levels(dataset2$species)
+
+# No bad species found
+
+head(dataset2)
+
+# all looks good
+
+# !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE SPECIES DATA WERE MODIFIED!
+
+#!DATA FORMATTING TABLE UPDATE!
+
+# Column M. Notes_spFormat. 
+
+dataFormattingTable[,'Notes_spFormat'] = 
+  dataFormattingTableFieldUpdate(ds, 'Notes_spFormat', 'No bad species found.  No changes made to field')
+
