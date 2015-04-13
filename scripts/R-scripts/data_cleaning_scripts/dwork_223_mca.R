@@ -235,9 +235,62 @@ dataFormattingTable[,'Notes_countFormat'] =
   dataFormattingTableFieldUpdate(ds, 'Notes_countFormat', 'Data represents cover. Several NAs and some zeros were removed from original data.')
 
 #-------------------------------------------------------------------------------*
-# ---- EXPLORE AND FORMAT TIME DATA ----
+# ---- FORMAT TIME DATA ----
 #===============================================================================*
 
+# name of date field
+
+datefield = 'date'
+
+# Format of date field
+
+dateformat = '%m/%d/%Y'
+
+# Make date a date object
+
+if (dateformat == '%Y' | dateformat == '%y') {
+  date = as.numeric(as.character(dataset5[, datefield]))
+} else {
+  date = as.POSIXct(strptime(dataset5[, datefield], dateformat))
+}
+
+# A check on the structure
+
+class(date)
+
+# Check and replace column
+
+head(dataset5[, datefield])
+
+head(date)
+
+dataset6 = dataset5
+
+# Delete the old date field
+
+dataset6 = dataset6[, -which(names(dataset6) == datefield)]
+
+# Assign the new date values in a field called 'date'
+
+dataset6$date = date
+
+# Check the results:
+
+head(dataset6)
+
+# !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE DATE DATA WERE MODIFIED!
+
+#!DATA FORMATTING TABLE UPDATE!
+
+# Notes_timeFormat. Provide a thorough description of any modifications that were made to the time field.
+
+dataFormattingTable[,'Notes_timeFormat'] = 
+  dataFormattingTableFieldUpdate(ds, 'Notes_timeFormat', 'temporal data provided as dates. The only modification to this field involved converting to a date object.')
+
+# subannualTgrain. After exploring the time data, was this dataset sampled at a sub-annual temporal grain? Y/N
+
+dataFormattingTable[,'subannualTgrain'] = 
+  dataFormattingTableFieldUpdate(ds, 'subannualTgrain', 'Y')
 
 #-------------------------------------------------------------------------------*
 # ---- MAKE DATA FRAME OF COUNT BY SITES, SPECIES, AND YEAR ----
