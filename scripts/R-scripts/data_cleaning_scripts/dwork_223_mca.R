@@ -189,76 +189,55 @@ dataFormattingTable[,'Notes_spFormat'] =
   dataFormattingTableFieldUpdate(ds, 'Notes_spFormat','several species removed. Metadata was relatively uninformative regarding what constitutes a true species sample for this study. Exploration of metadata from associated Sevilleta studies were more informative regarding which species needed to be removed. Species names are predominantly provided as Kartez codes, but not always. See: http://sev.lternet.edu/data/sev-212/5048. Some codes were identified with this pdf from White Sands: https://nhnm.unm.edu/sites/default/files/nonsensitive/publications/nhnm/U00MUL02NMUS.pdf')
 
 #-------------------------------------------------------------------------------*
-# ---- EXPLORE AND FORMAT TIME DATA ----
-#===============================================================================*
-# Here, we need to extract the sampling dates. 
-
-# change the date column to a true date and replace name
-
-head(dataset)
-
-date = strptime(dataset$record_record_date, '%m/%d/%Y')
-
-# A check on the structure lets you know that date field is now a date object:
-
-class(dataset$record_record_date)
-
-class(date)
-
-# Give a double-check, if everything looks okay, then replace the column:
-
-head(dataset$record_record_date)
-
-head(date)
-
-dataset1 = dataset
-
-dataset1$record_record_date = date
-
-names(dataset1)[5] = 'date'
-
-# Let's remove the season field (for now):
-
-dataset1 = dataset1[,-2]
-
-# After a check of dataset1, you can rename it dataset:
-
-head(dataset)
-
-head(dataset1)
-
-dataset = dataset1
-
-# !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE DATE DATA WERE MODIFIED!
-
-#-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT COUNT DATA ----
 #===============================================================================*
-# remove zero counts and NA's:
 
-summary(dataset)
+# Original count field name
 
-# Subset to records > 0 (if applicable):
+names(dataset3)
+countfield = 'cover'
 
-dataset1 = subset(dataset, cover > 0) 
+# Renaming it
+names(dataset3)[which(names(dataset3) == countfield)] = 'count'
 
-summary(dataset1)
+# Now we will remove zero counts and NA's:
 
-# Remove NA's:
+summary(dataset3)
 
-dataset1 = na.omit(dataset1)
+# Subset to records > 0:
 
-# Make sure to write in the data summary table the type of observed count (here,
-# it represents % cover)
+dataset4 = subset(dataset3, count > 0) 
 
-# How does it look? If you approve,  assign changes to dataset:
+summary(dataset4)
 
-summary(dataset)
-summary(dataset1)
+# Remove NA's
 
-dataset = dataset1
+dataset5 = na.omit(dataset4)
+
+# How does it look?
+
+head(dataset5)
+
+length(unique(dataset5$count))
+unique(dataset5$count)
+
+# All good
 
 # !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE COUNT DATA WERE MODIFIED!
+
+#!DATA FORMATTING TABLE UPDATE!
+
+# Possible values for countFormat field are density, cover, and count.
+dataFormattingTable[,'countFormat'] = 
+  dataFormattingTableFieldUpdate(ds, 'countFormat','cover')
+
+dataFormattingTable[,'Notes_countFormat'] = 
+  dataFormattingTableFieldUpdate(ds, 'Notes_countFormat', 'Data represents cover. Several NAs and some zeros were removed from original data.')
+
+#-------------------------------------------------------------------------------*
+# ---- EXPLORE AND FORMAT TIME DATA ----
+#===============================================================================*
+
 
 #-------------------------------------------------------------------------------*
 # ---- MAKE DATA FRAME OF COUNT BY SITES, SPECIES, AND YEAR ----
