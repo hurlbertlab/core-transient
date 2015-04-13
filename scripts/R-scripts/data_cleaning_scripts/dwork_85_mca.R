@@ -154,5 +154,47 @@ length(unique(dataset3$species))
 dataFormattingTable[,'Notes_spFormat'] = 
   dataFormattingTableFieldUpdate(ds, 'Notes_spFormat', 'there were two unique species listed twice because of extra underscores at the end of their names in the dataset.  To fix this, all underscores were removed and replaced with spaces, and then all extra white space at end of names was removed')
 
+#-------------------------------------------------------------------------------*
+# ---- EXPLORE AND FORMAT COUNT DATA ----
+#===============================================================================*
 
+# Name count field
+
+names(dataset3)
+countfield = "Abundance"
+
+# Renaming it
+
+names(dataset3)[which(names(dataset3) == countfield)] = 'count'
+head(dataset3)
+
+# Check for NAs or zeros
+
+summary(dataset3)
+str(dataset3)
+
+# No zeros in count data
+
+# Remove NAs if there are any
+
+dataset4 = na.omit(dataset3)
+
+# None removed, set to dataset5
+
+dataset5 = dataset4
+
+# double check
+
+head(dataset5, 20)
+
+# !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE COUNT DATA WERE MODIFIED!
+
+#!DATA FORMATTING TABLE UPDATE!
+
+# Possible values for countFormat field are density, cover, and count.
+dataFormattingTable[,'countFormat'] = 
+  dataFormattingTableFieldUpdate(ds, 'countFormat', 'count')
+
+dataFormattingTable[,'Notes_countFormat'] = 
+  dataFormattingTableFieldUpdate(ds, 'Notes_countFormat', 'Data represents count of abundance. Data not in whole numbers.  There were no NAs nor 0s that required removal')
 
