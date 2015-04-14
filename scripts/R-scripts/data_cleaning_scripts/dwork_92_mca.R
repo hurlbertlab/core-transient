@@ -116,3 +116,50 @@ dataFormattingTable[,'spatial_scale_variable'] =
 dataFormattingTable[,'Notes_siteFormat'] = 
   dataFormattingTableFieldUpdate(ds, 'Notes_siteFormat',  'site fields listed as Russia_WhiteSea_sitenumber_lat_long. Lat-longs are only needed data, so used substring to take out the lat_longs.  Some data still includes site number because varying number of characters in each string.')
 
+#-------------------------------------------------------------------------------*
+# ---- EXPLORE AND FORMAT SPECIES DATA ----
+#===============================================================================*
+
+# Explore
+
+length(unique(dataset2$Species))
+summary(dataset2)
+
+# Change field name and letter case to upper
+
+names(dataset2)[4] = 'species'
+dataset2$species = factor(toupper(dataset2$species))
+
+# Look through all species for bad ones
+
+levels(dataset2$species)
+
+# All species look good after looking through all uniques
+# Set to dataset3
+
+dataset3 = dataset2
+
+# !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE SPECIES DATA WERE MODIFIED!
+
+#!DATA FORMATTING TABLE UPDATE!
+
+# Column M. Notes_spFormat. Provide a THOROUGH description of any changes made
+# to the species field, including why any species were removed.
+
+dataFormattingTable[,'Notes_spFormat'] = 
+  dataFormattingTableFieldUpdate(ds, 'Notes_spFormat',  'no bad species in dataset.  Only change made was to all uppercase letters.')
+
+#-------------------------------------------------------------------------------*
+# ---- EXPLORE AND FORMAT COUNT DATA ----
+#===============================================================================*
+
+# Name count field
+
+names(dataset3)
+countfield = "Abundance"
+
+# Renaming it
+
+names(dataset3)[which(names(dataset3) == countfield)] = 'count'
+head(dataset3)
+
