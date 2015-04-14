@@ -142,7 +142,7 @@ length(unique(dataset2$species))
 
 length(unique(dataset3$species))
 
-# It worked, speceis all good
+# It worked, species all good
 
 
 # !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE SPECIES DATA WERE MODIFIED!
