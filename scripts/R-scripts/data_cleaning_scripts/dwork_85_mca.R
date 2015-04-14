@@ -1,4 +1,4 @@
-# Formatting Dataset 84: EMODnet Macrobenthos
+# Formatting Dataset 85: EMODnet Macrobenthos
 
 #-------------------------------------------------------------------------------*
 # ---- SET-UP ----
@@ -82,7 +82,7 @@ dataset2$site = str_sub(dataset2$site, start=14)
 head(dataset2)
 tail(dataset2)
 
-#  just site numbers left in data
+# just site numbers left in data
 
 # !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE SITE DATA WERE MODIFIED!
 
@@ -142,7 +142,7 @@ length(unique(dataset2$species))
 
 length(unique(dataset3$species))
 
-# It worked, speceis all good
+# It worked, species all good
 
 
 # !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE SPECIES DATA WERE MODIFIED!

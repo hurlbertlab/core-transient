@@ -179,3 +179,123 @@ dataFormattingTable[,'Notes_countFormat'] =
 #-------------------------------------------------------------------------------*
 # ---- FORMAT TIME DATA ----
 #===============================================================================*
+
+# Get name of field
+
+names(dataset5)
+summary(dataset5)
+
+# Data only given by year
+
+datefield = 'Year'
+
+# Data format
+
+dateformat = "%Y"
+
+# Make numeric object 
+
+if (dateformat == '%Y' | dateformat == '%y') {
+  date = as.numeric(as.character(dataset5[, datefield]))
+} else {
+  date = as.POSIXct(strptime(dataset5[, datefield], dateformat))
+}
+
+# Check on the structure
+
+class(date)
+
+# Good numeric object. Now check over the dataset
+
+head(dataset5[, datefield])
+
+head(date)
+
+dataset6 = dataset5
+
+# Delete the old date field
+dataset6 = dataset6[, -which(names(dataset6) == datefield)]
+
+# Add new date field
+dataset6$date = date
+
+# Check the results
+
+head(dataset6)
+str(dataset6)
+tail(dataset6)
+
+# All good
+
+# !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE DATE DATA WERE MODIFIED!
+
+# !DATA FORMATTING TABLE UPDATE!
+
+# Notes_timeFormat. Provide a thorough description of any modifications that were made to the time field.
+
+dataFormattingTable[,'Notes_timeFormat'] = 
+  dataFormattingTableFieldUpdate(ds, 'Notes_timeFormat','data provided as years. only modification to this field was converting to numeric object.')
+
+# subannualTgrain. After exploring the time data, was this dataset sampled at a sub-annual temporal grain? Y/N
+
+dataFormattingTable[,'subannualTgrain'] = 
+  dataFormattingTableFieldUpdate(ds, 'subannualTgrain','N')
+
+#-------------------------------------------------------------------------------*
+# ---- MAKE DATA FRAME OF COUNT BY SITES, SPECIES, AND YEAR ----
+#===============================================================================*
+
+# Dataset ID number already in dataset
+
+# Make compiled dataframe
+
+dataset7 = ddply(dataset6,.(datasetID, site, date, species),
+                 summarize, count = max(count))
+
+# Explore
+
+head(dataset7)
+
+summary(dataset7)
+
+# !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE DATA WERE MODIFIED!
+
+#-------------------------------------------------------------------------------*
+# ---- UPDATE THE DATA FORMATTING TABLE AND WRITE OUTPUT DATA FRAMES  ----
+#===============================================================================*
+
+# Update the data formatting table
+
+dataFormattingTable = dataFormattingTableUpdate(ds, dataset7)
+
+# Final look at the dataset
+
+head(dataset7)
+
+summary(dataset7)
+
+# Everything looks good, write dataset to file
+
+write.csv(dataset7, "data/formatted_datasets/dataset_90.csv", row.names = F)
+
+# !GIT-ADD-COMMIT-PUSH THE FORMATTED DATASET IN THE DATA FILE, THEN GIT-ADD-COMMIT-PUSH THE UPDATED DATA FOLDER!
+
+# Update the format priority and format flag fields
+
+dataFormattingTable[,'format_priority'] = 
+  dataFormattingTableFieldUpdate(ds, 'format_priority', 'NA')
+
+dataFormattingTable[,'format_flag'] = 
+  dataFormattingTableFieldUpdate(ds, 'format_flag', 1)
+
+dataFormattingTable = dataFormattingTableUpdate(ds, dataset7)
+
+# And update the data formatting table:
+
+write.csv(dataFormattingTable, 'Reference/data_formatting_table.csv', row.names = F)
+
+# !GIT-ADD-COMMIT-PUSH THE DATA FORMATTING TABLE!
+
+# Remove all objects except for functions from the environment:
+
+rm(list = setdiff(ls(), lsf.str()))
