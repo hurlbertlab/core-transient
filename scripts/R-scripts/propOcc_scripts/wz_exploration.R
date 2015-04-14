@@ -71,7 +71,7 @@ zFinder = function(inData, minNYears = 10, proportionalThreshold = .5){
   # Get the highest Z value with at least minNYears:
     z = max(filter(data.frame(zMatrix), propSites >= proportionalThreshold)$z)
   
-  # Get the names of the sizes that satisfy Z:
+  # Get the names of the sites that satisfy Z:
    zSites = factor(zSiteList[[as.character(z)]])
 
   # Return the z value and site names 
@@ -80,40 +80,76 @@ zFinder = function(inData, minNYears = 10, proportionalThreshold = .5){
 
 inData = RichnessYearSubsetFrame(1)
 
-z = zFinder(inData)
-  
+zOutput = zFinder(inData)
 
-wFinder = function(inData, zOutput, minNYears = 10, proportionalThreshold = .5){
+#-------------------------------------------------------------------------------*
+# ---- CALCULATE the W-threshold, subset data ----
+#-------------------------------------------------------------------------------*
+# The W-threshold refers to the maximum number of spatial subsamples that provide a given proprtion of siteYears.
+
+# Note: Prior to running "wzDataSubset", you must have already run the function "RichnessYearSubsetFrame" (inData) and the "zFinder" (zOutput).  
+
+wzDataSubset = function(inData, zOutput, minNYears = 10, proportionalThreshold = .5){
   data = inData
+  z = zOutput[[1]]
+  # Subset data to just the sites that meet the z-threshold:
+    dataZ = filter(data, siteID %in% zOutput$zSites)
   # Add a siteYear column:
-  data$siteYear = paste(data$siteID, data$year, sep ='_')
-  data = filter(data, siteID %in% zOutput$goodSites)
+    dataZ$siteYear = paste(dataZ$siteID, dataZ$year, sep ='_')
   # Summarize data by the number of temporal samples in a given year:
-  spaceTime = ddply(data, .(siteYear, siteID, year), summarize, 
+    spaceTime = ddply(dataZ, .(siteYear), summarize, 
                            temporalSubsamples = length(unique(date)),
                            spatialSubsamples = length(unique(site)))
-  # Subset timeZsummary to siteYears >= z
-  spaceTimeZsub = filter(spaceTime, temporalSubsamples>=zOutput$z)
   
+  # Subset spaceTime to years with >= z temporal samples
+   spaceTimeZsub = filter(spaceTime, temporalSubsamples>=z)
+  
+  # Determine the number of siteYears present:
+    nSiteYears = nrow(spaceTimeZsub)
   
   # Get possible values for w:
-  w = unique(spaceTimeZsub$spatialSubsamples)
+    wPossible = sort(unique(spaceTimeZsub$spatialSubsamples))
   
-#   for(i in 1:length(wPossible)){
-#     # Years in which the subsamplings was greater than equal to z for a given site:
-#     siteYearsGTEz = ddply(filter(spaceTimeZsub, spatialSubsamples>=wPossible[i]), .(siteYear),
-#                           summarize, yearsGTEz = length(unique(year)))
-#     # The proportion of sites with a minimum number of 10 years of sampling >= z
-#     nSites = nrow(filter(siteYearsGTEz, yearsGTEz>=minNYears))
-#     propSites =  nSites/length(unique(data$siteID))
-#     siteYearsGTEzList[[i]] = data.frame(z = zPossible[i], nSites, propSites)
-#   }
-#   
-#   z = max(filter(rbind.fill(siteYearsGTEzList), propSites >=  proportionalThreshold)$z)
-#   return(z)
-}
+  # Create an empty matrix to store summary data for possible W-values:
+    wMatrix = matrix(ncol = 3, nrow = length(wPossible), 
+                   dimnames = list(NULL, c('w','nSiteYears','propSiteYears')))
   
+  # Create an empty list of sites to store site names of good sites at a given W-value:
+    wSiteYearList = list(length = length(wPossible))
+  
+  # For loop to populate the wMatrix and wSite Lists:
+  
+    for(i in 1:length(wPossible)){
+      # Calculate the years in which the subsamplings was greater than equal to w for a given site:
+        siteYearsGTEw = filter(spaceTimeZsub, spatialSubsamples>=wPossible[i])$siteYear
+      # Construct matrix of w values, the number and proportion of sites:
+        wMatrix[i,'w'] = wPossible[i]
+        wMatrix[i, 'nSiteYears'] = length(siteYearsGTEw)
+        wMatrix[i, 'propSiteYears'] = length(siteYearsGTEw)/nrow(spaceTimeZsub)
+      # List the names of siteYears for a given W-value:
+      wSiteYearList[[i]] = siteYearsGTEw
+      # Name each list entry by the Z-value
+      names(wSiteYearList)[[i]] = wPossible[i]
+    }
+  
+  # Get the highest W value with at least minNYears:
+    w = max(filter(data.frame(wMatrix), propSiteYears >= proportionalThreshold)$w)
+  
+  # Get the names of the siteYears that satisfy W:
+    wSiteYears = factor(wSiteYearList[[as.character(w)]])
+  
+  # Subset data
+  
+  dataW = filter(dataZ, siteYear %in% wSiteYears)
+  
+  
+  # Return the w,z values and dataframe
+  
+  return(list (w = w, z = z, data = dataW))
 }
+
+  
+
   
   
   
