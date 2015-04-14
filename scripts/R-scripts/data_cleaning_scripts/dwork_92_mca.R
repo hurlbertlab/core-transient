@@ -71,3 +71,48 @@ summary(dataset1)
 # View all sites
 
 levels(dataset1$site)
+
+# Can substring out the lat_long data
+
+dataset2 = dataset1
+
+dataset2$site = str_sub(dataset2$site, start = 18)
+
+# Check out
+
+head(dataset2)
+
+# Reset factor levels
+
+dataset2$site = factor(dataset2$site)
+
+# View all sites again
+
+levels(dataset2$site)
+
+# Not all sites have just lat_longs, some still have site numbers in the beginning
+
+head(dataset2)
+
+# All looks good though
+
+# !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE SITE DATA WERE MODIFIED!
+
+# !DATA FORMATTING TABLE UPDATE! 
+
+# Raw_siteUnit.  
+
+dataFormattingTable[,'Raw_siteUnit'] = 
+  dataFormattingTableFieldUpdate(ds, 'Raw_siteUnit', 'region_sitenumber_lat_long') 
+
+
+# spatial_scale_variable. Is a site potentially nested (e.g., plot within a quad or decimal lat longs that could be scaled up)? Y/N
+
+dataFormattingTable[,'spatial_scale_variable'] = 
+  dataFormattingTableFieldUpdate(ds, 'spatial_scale_variable','N')
+
+# Notes_siteFormat. Use this field to THOROUGHLY describe any changes made to the site field during formatting.
+
+dataFormattingTable[,'Notes_siteFormat'] = 
+  dataFormattingTableFieldUpdate(ds, 'Notes_siteFormat',  'site fields listed as Russia_WhiteSea_sitenumber_lat_long. Lat-longs are only needed data, so used substring to take out the lat_longs.  Some data still includes site number because varying number of characters in each string.')
+
