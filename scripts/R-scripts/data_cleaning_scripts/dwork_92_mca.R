@@ -58,3 +58,16 @@ tail(dataset1)
 dataFormattingTable[,'LatLong_sites'] = 
   dataFormattingTableFieldUpdate(ds, 'LatLong_sites', 'Y')
 
+#-------------------------------------------------------------------------------*
+# ---- EXPLORE AND FORMAT SITE DATA ----
+#===============================================================================*
+
+# Explore
+
+length(unique(dataset1$site))
+summary(dataset1)
+
+# Seems that all sites have "Russian_WhiteSea_..." and lat-longs at end
+# View all sites
+
+levels(dataset1$site)
