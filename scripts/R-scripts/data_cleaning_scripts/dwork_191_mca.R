@@ -8,64 +8,54 @@
 
 library(stringr)
 library(plyr)
+library(ggplot2)
+library(grid)
+library(gridExtra)
+library(MASS)
 
 # Source the functions file:
-setwd("C:/Users/auriemma/core-transient/")
+
+getwd()
+setwd('C:/Users/auriemma/core-transient/')
 source('scripts/R-scripts/core-transient_functions.R')
 
-# Get data:
+# Get data. First specify the dataset number ('ds') you are working with.
 
-list.files('data/raw_datasets')
+ds = 191 
 
-d = read.csv('data/raw_datasets/dataset_191.csv')
+dataset = read.csv(paste('data/raw_datasets/dataset_', ds, '.csv', sep = ''))
+
+dataFormattingTable = read.csv('Reference/data_formatting_table.csv')
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE THE DATASET ----
 #===============================================================================*
-names(d)
-str(d)
-summary(d)
-dim(d)
 
-# Remove unwanted column 'X'
-d = d[,-1]
-head(d)
+names(dataset)
+str(dataset)
+head(dataset)
 
-# Rename columns with appropriate names
-names(d)= c('datasetID','date','site','species','count')
-head(d)
+# Remove unused field labeled 'X'
 
-#-------------------------------------------------------------------------------*
-# ---- EXPLORE AND FORMAT SITE DATA ----
-#===============================================================================*
-# Explore sites
-length(unique(d$site))
-levels(d$site)
+dataset1 = dataset[,-1]
+head(dataset1)
 
-# Sites are formated by stations and lat_longs
-# Can remove some info from these sites that is consistent across all of them
-d1 = d
-site = str_sub(d1$site, start = 16)
-head(site, 1000)
-tail(site, 1000)
-# it worked, so add in new site column
-d1$site = site
-head(d1,50)
+# Change SampleID field to 'site' and ID to datasetID
 
-# change back to d
-d = d1
+names(dataset1)[1] = 'datasetID'
+names(dataset1)[3] = 'site'
 
-#-------------------------------------------------------------------------------*
-# ---- EXPLORE AND FORMAT SPECIES DATA ----
-#===============================================================================*
-# Explore
-head(d)
-length(unique(d$species))
+# Check 
 
-# Look for bad spp
-sp = toupper(d$species)
-  # Check for errors caused by letter case
-  length(unique(sp))
-  # no case errors
-unique(sp)
+head(dataset1)
+tail(dataset1)
+
+# !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE DATA WERE MODIFIED!
+
+#!DATA FORMATTING TABLE UPDATE! 
+# Are the ONLY site identifiers the latitude and longitude of the observation or 
+# sample?
+
+dataFormattingTable[,'LatLong_sites'] = 
+  dataFormattingTableFieldUpdate(ds, 'LatLong_sites',  'Y') 
 
