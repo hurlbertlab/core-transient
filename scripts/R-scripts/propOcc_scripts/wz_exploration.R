@@ -147,18 +147,18 @@ wzDataSubset = function(inData, zOutput, minNYears = 10, proportionalThreshold =
   
     for(i in 1:length(wPossible)){
       # Calculate the years in which the subsamplings was greater than equal to w for a given site:
-        siteYearsGTEw = filter(spaceTimeZsub, spatialSubsamples>=wPossible[i])$siteYear
+        siteYearsGTEw = filter(spaceTime, spatialSubsamples>=wPossible[i])$siteYear
       # Construct matrix of w values, the number and proportion of sites:
         wMatrix[i,'w'] = wPossible[i]
         wMatrix[i, 'nSiteYears'] = length(siteYearsGTEw)
-        wMatrix[i, 'propSiteYears'] = length(siteYearsGTEw)/nrow(spaceTimeZsub)
+        wMatrix[i, 'propSiteYears'] = length(siteYearsGTEw)/nrow(spaceTime)
       # List the names of siteYears for a given W-value:
       wSiteYearList[[i]] = siteYearsGTEw
       # Name each list entry by the Z-value
       names(wSiteYearList)[[i]] = wPossible[i]
     }
   
-  # Get the highest W value with at least minNYears:
+  # Get the highest W value that includes >= .5 of siteYears:
   
     wFrame = data.frame(wMatrix)
   
