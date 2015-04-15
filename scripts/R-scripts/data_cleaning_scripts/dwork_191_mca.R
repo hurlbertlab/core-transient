@@ -108,5 +108,38 @@ dataFormattingTable[,'spatial_scale_variable'] =
 # Notes_siteFormat. Use this field to THOROUGHLY describe any changes made to the site field during formatting.
 
 dataFormattingTable[,'Notes_siteFormat'] = 
-  dataFormattingTableFieldUpdate(ds, 'Notes_siteFormat', 'sites were listed as North Atlantic regions and site numbers with other unknown information.  Region names were removed to simplify site data, but still plenty of unwanted info in the data.  Lat_long data is included at the end of each data string.)
+  dataFormattingTableFieldUpdate(ds, 'Notes_siteFormat', 'sites were listed as North Atlantic regions and site numbers with other unknown information.  Region names were removed to simplify site data, but still plenty of unwanted info in the data.  Lat_long data is included at the end of each data string.')
+
+#-------------------------------------------------------------------------------*
+# ---- EXPLORE AND FORMAT SPECIES DATA ----
+#===============================================================================*
+
+# First change the name of the field
+
+names(dataset2)
+names(dataset2)[4] = 'species'
+
+# Explore
+
+summary(dataset2)
+
+# Make uppercase and look for bad species
+
+dataset2$species = factor(toupper(dataset2$species))
+levels(dataset2$species)
+
+# No bad species found
+
+dataset3 = dataset2
+
+head(dataset3)
+
+# !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE SPECIES DATA WERE MODIFIED!
+
+#!DATA FORMATTING TABLE UPDATE!
+
+# Column M. Notes_spFormat
+
+dataFormattingTable[,'Notes_spFormat'] = 
+  dataFormattingTableFieldUpdate(ds, 'Notes_spFormat', 'no bad species, no changes made besides upper casing')
 
