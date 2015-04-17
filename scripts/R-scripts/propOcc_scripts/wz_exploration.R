@@ -35,7 +35,7 @@ RichnessYearSubsetFrame = function(spatialGrain, temporalGrain, minNYears = 10, 
 
 # Note: Prior to running "zFinder", you must have already run the function "RichnessYearSubsetFrame" for which "inData" is the function's output.  
 
-zFinder = function(inData, temporalGrain, minNYears = 10, proportionalThreshold = .5){
+zFinder = function(inData, minNYears = 10, proportionalThreshold = .5){
   data = inData
   # Calculate the number of temporal samples per site and year: 
     spaceTime = ddply(data, .(siteID, year),
@@ -80,10 +80,6 @@ zFinder = function(inData, temporalGrain, minNYears = 10, proportionalThreshold 
     return(list (z = z, zSites = zSites, zTable = data.frame(zMatrix)))
 }
 
-inData = RichnessYearSubsetFrame(spatialGrain = 'site1',temporalGrain = 'year_season')
-
-zOutput = zFinder(inData)
-
 #-------------------------------------------------------------------------------*
 # ---- CALCULATE the W-threshold, subset data ----
 #-------------------------------------------------------------------------------*
@@ -110,21 +106,24 @@ wzDataSubset = function(inData, zOutput, minNYears = 10, proportionalThreshold =
     dataZ = filter(dataZSite, siteYear %in% siteYearZSub$siteYear)
   
   # For each siteID and year, sample z number of sampling events:
-    siteYearNames = unique(dataZ$siteYear)
+    siteYears = siteYearSummary$siteYear
     events = list(length = z*length(siteYears))
-  
+
     for(i in 1:length(siteYearNames)){
-      siteYearSub = filter(dataZ, siteYear == siteYearNames[i])
-      dateSiteYear = distinct(select(siteYearSub, one_of('date','siteYear')))
-      events[[i]] = sample(dateSiteYear$date, z, replace = F)
+      # Subset to a given siteYear:
+        siteYearSub = filter(dataZ, siteYear == siteYearNames[i])
+      # Collect sampling events for that siteYear:
+        dateSiteYear = distinct(select(siteYearSub, one_of('date','siteYear')))
+      # Sample the events by the Z-value:
+        events[[i]] = sample(dateSiteYear$date, z, replace = F)
     }
-  
+
   # Subset data to sampled events:
   
   sampledEvents = unlist(events)
   
   dataZSub = filter(dataZ, date %in% sampledEvents)
-   
+
   #-W-#
   # Summarize data by the number of temporal samples in a given year:
     dataZSub$siteYearDate = paste(dataZSub$siteYear, dataZSub$date, sep ='_')
@@ -172,10 +171,6 @@ wzDataSubset = function(inData, zOutput, minNYears = 10, proportionalThreshold =
   
   dataW = filter(dataZSub, siteYearDate %in% wSiteYearDates)
   
-  ddply(dataW, .(siteYearDate), summarize, 
-                    spatialSubsamples = length(unique(site)))
-  
-  
   # For each siteYearDate, sample w sampling events:
   siteYearDateNames = unique(dataW$siteYearDate)
   events = list(length = w*length(siteYearDateNames))
@@ -198,43 +193,39 @@ wzDataSubset = function(inData, zOutput, minNYears = 10, proportionalThreshold =
   return(list (data = outData, w = w, z = z))
 }
 
-wzDataSample = function(wzData){
-  data = wzData$data
-  w = wzData$w
-  z = wzData$z
-  #data$SubsiteYear = paste(data$site, data$year, sep ='_')
-  dateYear = select(data, one_of(c('date','year')))
-  dateYearSite = distinct(select(data,
-                      one_of(c('date','year','siteID'))))
-  
-  events = list(length = z*length(unique(data$year)))
-  
-  for(i in 1:length(unique(siteID))){
-    siteSub = siteID[i] 
-    for(j in 1:length(unique(data$year))){
-      events[[j]] = sample(dateYearSite$date, z)
-    }
-  }
-  
-  sampledEvents = do.call('c', events)
-  
-  dataZSub = filter(data, date %in% sampledEvents)
-  
-  test = ddply(dataZSub, .(siteYear), summarize, 
-                    spatialSubsamples = length(unique(site)))
+#---
+head(nestedDataset[[1]])
 
-  
-}
+inData = RichnessYearSubsetFrame(spatialGrain = 'site_block',temporalGrain = 'year_season')
 
-  
-wzData = wzDataSubset(inData, zOutput)
-  
-dim(nestedDataset[[1]])
+zOutput = zFinder(inData)
 
-dim(inData)
+test = wzDataSubset(inData, zOut)
 
-dim(wzData[[1]])
+dim(test[[1]]) ; head(test[[1]])
 
+#---
+head(nestedDataset[[1]])
+
+inData = RichnessYearSubsetFrame(spatialGrain = 'site_block',temporalGrain = 'year_season')
+
+zOutput = zFinder(inData)
+
+test = wzDataSubset(inData, zOut)
+
+dim(test[[1]]) ; head(test[[1]])
+
+#---
+
+names(nestedDataset[[1]])
+
+inData = RichnessYearSubsetFrame(spatialGrain = 'site_block_treatment',temporalGrain = 'year_season')
+
+zOutput = zFinder(inData)
+
+test = wzDataSubset(inData, zOut)
+
+dim(test[[1]]) ; head(test[[1]])
 
   
   
