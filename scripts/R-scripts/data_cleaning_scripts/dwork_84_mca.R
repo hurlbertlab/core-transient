@@ -230,7 +230,7 @@ dataFormattingTable[,'subannualTgrain'] =
   dataFormattingTableFieldUpdate(ds, 'subannualTgrain','N')
 
 #-------------------------------------------------------------------------------*
-  # ---- MAKE DATA FRAME OF COUNT BY SITES, SPECIES, AND YEAR ----
+# ---- MAKE DATA FRAME OF COUNT BY SITES, SPECIES, AND YEAR ----
 #===============================================================================*
 # DatasetID already in dataset
 
