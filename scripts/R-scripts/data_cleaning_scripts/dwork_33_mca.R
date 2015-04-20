@@ -78,6 +78,8 @@ unique(dataset1$site)
 
 # No changes can be made to this field
 
+dataset2 = dataset1
+
 # !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE SITE DATA WERE MODIFIED!
 
 # !DATA FORMATTING TABLE UPDATE! 
@@ -86,7 +88,6 @@ unique(dataset1$site)
 
 dataFormattingTable[,'Raw_siteUnit'] = 
   dataFormattingTableFieldUpdate(ds, 'Raw_siteUnit', "lat_long") 
-
 
 # spatial_scale_variable
 
@@ -101,3 +102,22 @@ dataFormattingTable[,'Notes_siteFormat'] =
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SPECIES DATA ----
 #===============================================================================*
+
+# Look at the individual species present:
+
+levels(dataset2$species) 
+
+# Looked through all uniques, all species are good
+
+dataset3 = dataset2
+
+head(dataset3)
+
+# !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE SPECIES DATA WERE MODIFIED!
+
+#!DATA FORMATTING TABLE UPDATE!
+
+# Column M. Notes_spFormat
+
+dataFormattingTable[,'Notes_spFormat'] = 
+  dataFormattingTableFieldUpdate(ds, 'Notes_spFormat', 'all species good, no changes made')
