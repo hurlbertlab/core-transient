@@ -159,7 +159,7 @@ dataFormattingTable[,'countFormat'] =
   dataFormattingTableFieldUpdate(ds, 'countFormat', 'count')
 
 dataFormattingTable[,'Notes_countFormat'] = 
-  dataFormattingTableFieldUpdate(ds, 'Notes_countFormat', "Data represents abundance counts. no changes or removals necessary")
+  dataFormattingTableFieldUpdate(ds, 'Notes_countFormat', "Data represents abundance counts. no changes or removals necessary. Varied count numbers for the same species may suggest that there are several different samples analyzed at the one site accounted for in this dataset")
 
 -------------------------------------------------------------------------------*
 # ---- FORMAT TIME DATA ----
