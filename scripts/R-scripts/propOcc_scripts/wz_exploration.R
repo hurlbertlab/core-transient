@@ -89,40 +89,43 @@ zFinder = function(inData, minNYears = 10, proportionalThreshold = .5){
 
 wzDataSubset = function(inData, zOutput, minNYears = 10, proportionalThreshold = .5){
   #-Z-#
-  data = inData
-  z = zOutput[[1]]
+    data = inData
+    z = zOutput[[1]]
   
   # Add a siteYear column:
     data$siteYear = paste(data$siteID, data$year, sep ='_')
   
   # Subset data to just the sites that meet the z-threshold for each site:
-    dataZSite = filter(data, siteID %in% zOutput$zSites)
+    dataZSiteSub = filter(data, siteID %in% zOutput$zSites)
   
   # Subset data to years that meet the z-threshold:
-    siteYearDates = distinct(select(dataZSite, one_of(c('siteYear','date'))))
+    siteYearDates = distinct(select(dataZSiteSub, one_of(c('siteYear','date'))))
     siteYearSummary = ddply(siteYearDates, .(siteYear), summarize, 
                       temporalSubsamples = length(unique(date)))
-    siteYearZSub = filter(siteYearSummary, temporalSubsamples>=z)
-    dataZ = filter(dataZSite, siteYear %in% siteYearZSub$siteYear)
+    siteYearZYearSub = filter(siteYearSummary, temporalSubsamples>=z)
+    dataZYearSub = filter(dataZSiteSub, siteYear %in% siteYearZYearSub$siteYear)
+  
+  # Add a column that concatenates site, year, and date:
+    dataZYearSub$siteYearDate = paste(dataZYearSub$siteYear, dataZYearSub$date, sep = '_')
   
   # For each siteID and year, sample z number of sampling events:
-    siteYears = siteYearSummary$siteYear
+    siteYears = siteYearZYearSub$siteYear
     events = list(length = z*length(siteYears))
-
-    for(i in 1:length(siteYearNames)){
+  
+    for(i in 1:length(siteYears)){
       # Subset to a given siteYear:
-        siteYearSub = filter(dataZ, siteYear == siteYearNames[i])
-      # Collect sampling events for that siteYear:
-        dateSiteYear = distinct(select(siteYearSub, one_of('date','siteYear')))
+        siteYearSub = filter(dataZYearSub, siteYear == siteYears[i])
+      # Get unique frame of siteYearDates
+        siteYearDates = distinct(data.frame(siteYearDate = siteYearSub$siteYearDate))
       # Sample the events by the Z-value:
-        events[[i]] = sample(dateSiteYear$date, z, replace = F)
+        events[[i]] = sample_n(siteYearDates, size = z, replace = F)$siteYearDate
     }
-
+  
   # Subset data to sampled events:
   
   sampledEvents = unlist(events)
   
-  dataZSub = filter(dataZ, date %in% sampledEvents)
+  dataZSub = filter(dataZYearSub, siteYearDate %in% sampledEvents)
 
   #-W-#
   # Summarize data by the number of temporal samples in a given year:
@@ -169,20 +172,22 @@ wzDataSubset = function(inData, zOutput, minNYears = 10, proportionalThreshold =
   
   # Subset data
   
-  dataW = filter(dataZSub, siteYearDate %in% wSiteYearDates)
+    dataW = filter(dataZSub, siteYearDate %in% wSiteYearDates)
   
   # For each siteYearDate, sample w sampling events:
-  siteYearDateNames = unique(dataW$siteYearDate)
-  events = list(length = w*length(siteYearDateNames))
+    siteYearDateNames = unique(dataW$siteYearDate)
+    events = list(length = w*length(siteYearDateNames))
+    
+    for(i in 1:length(siteYearDateNames)){
+      siteYearDateSub = filter(dataW, siteYearDate == siteYearDateNames[i])
+#       UniqueSiteYearDate = distinct(select(siteYearDateSub, one_of('site')))
+#       sampledSite = sample_n(UniqueSiteYearDate, w, replace = F)$site
+      UniqueSubsites = unique(siteYearDateSub$site) 
+      sampledSubsites = sample(UniqueSubsites, w, replace = F)
+      events[[i]] = filter(siteYearDateSub, site %in% sampledSubsites)
+    }
   
-  for(i in 1:length(siteYearDateNames)){
-    siteYearDateSub = filter(dataW, siteYearDate == siteYearDateNames[i])
-    UniqueSiteYearDate = distinct(select(siteYearDateSub, one_of('site')))
-    sampledSite = sample_n(UniqueSiteYearDate, w, replace = F)$site
-    events[[i]] = filter(siteYearDateSub, site %in% sampledSite)
-  }
-  
-  outSampledData = rbind.fill(events)
+    outSampledData = rbind.fill(events)
   
   # Keep only pertinent columns:
   
@@ -196,7 +201,7 @@ wzDataSubset = function(inData, zOutput, minNYears = 10, proportionalThreshold =
 #---
 head(nestedDataset[[1]])
 
-inData = RichnessYearSubsetFrame(spatialGrain = 'site_block',temporalGrain = 'year_season')
+inData = RichnessYearSubsetFrame(spatialGrain = 'site1',temporalGrain = 'year_season')
 
 zOutput = zFinder(inData)
 
@@ -204,28 +209,23 @@ test = wzDataSubset(inData, zOut)
 
 dim(test[[1]]) ; head(test[[1]])
 
-#---
-head(nestedDataset[[1]])
-
-inData = RichnessYearSubsetFrame(spatialGrain = 'site_block',temporalGrain = 'year_season')
-
-zOutput = zFinder(inData)
-
-test = wzDataSubset(inData, zOut)
-
-dim(test[[1]]) ; head(test[[1]])
-
-#---
+propOccFun = function(datasetID, spatialGrain, temporalGrain, minNYears = 10, minSpRich = 10){
+  inData = RichnessYearSubsetFrame(spatialGrain = spatialGrain, temporalGrain = temporalGrain)
+  zOutput = zFinder(inData)
+  dataset = wzDataSubset(inData, zOutput)$data
+  spTime = ddply(dataset, .(siteID, species), summarize, 
+                 spTime = length(unique(year)))
+  siteTime = ddply(dataset, .(siteID), summarize, 
+                   siteTime = length(unique(year)))
+  spSiteTime = merge(spTime, siteTime)
+  propOcc = data.frame(datasetID = datasetID, site = spSiteTime$siteID, 
+                       species = spSiteTime$species,
+                       propOcc = spSiteTime$spTime/spSiteTime$siteTime)
+  return(propOcc)
+}
 
 names(nestedDataset[[1]])
 
-inData = RichnessYearSubsetFrame(spatialGrain = 'site_block_treatment',temporalGrain = 'year_season')
 
-zOutput = zFinder(inData)
+head(propOccFun(223, spatialGrain = 'site_block',temporalGrain = 'year_season'))
 
-test = wzDataSubset(inData, zOut)
-
-dim(test[[1]]) ; head(test[[1]])
-
-  
-  
