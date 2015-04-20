@@ -159,7 +159,7 @@ head(dataset3)
 
 # Possible values for countFormat field are density, cover, and count.
 dataFormattingTable[,'countFormat'] = 
-  dataFormattingTableFieldUpdate(ds, 'countFormat', 'Abundance')
+  dataFormattingTableFieldUpdate(67, 'countFormat', 'count')
 
 dataFormattingTable[,'Notes_countFormat'] = 
   dataFormattingTableFieldUpdate(ds, 'Notes_countFormat', "Data represents abundance. no changes or removals necessary")
