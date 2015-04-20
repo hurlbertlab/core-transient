@@ -137,3 +137,44 @@ levels(dataset3$species)
 dataFormattingTable[,'Notes_spFormat'] = 
   dataFormattingTableFieldUpdate(ds, 'Notes_spFormat', 'A few bad species found because of extra underscore in name.  Removed all underscores and then removed all extra white space to fix this error.')
 
+#-------------------------------------------------------------------------------*
+# ---- EXPLORE AND FORMAT COUNT DATA ----
+#===============================================================================*
+
+# Name count field
+
+names(dataset3)
+countfield = "Abundance"
+
+# Renaming it
+
+names(dataset3)[which(names(dataset3) == countfield)] = 'count'
+head(dataset3)
+
+# Check for NAs or zeros
+
+summary(dataset3)
+str(dataset3)
+
+# Subset to records > 0
+
+dataset4 = subset(dataset3, count > 0.0) 
+summary(dataset4)
+
+# Remove NA's
+
+dataset5 = na.omit(dataset4)
+
+# Check
+
+head(dataset5)
+
+#!DATA FORMATTING TABLE UPDATE!
+
+# Possible values for countFormat field are density, cover, and count.
+dataFormattingTable[,'countFormat'] = 
+  dataFormattingTableFieldUpdate(ds, 'countFormat','density?')
+
+dataFormattingTable[,'Notes_countFormat'] = 
+  dataFormattingTableFieldUpdate(ds, 'Notes_countFormat','count data is not whole numbers, so must be plankton count per volume of water.  No zeros or NAs removed')
+
