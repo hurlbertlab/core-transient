@@ -95,3 +95,45 @@ dataFormattingTable[,'Notes_siteFormat'] =
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SPECIES DATA ----
 #===============================================================================*
+# Explore
+
+length(unique(dataset2$species))
+head(dataset2)
+
+# Uppercase and look through for bad species
+
+dataset2$species = factor(toupper(dataset2$species))
+
+levels(dataset2$species)
+
+# After checking uniques, some species are listed twice because of extra 
+# underscore at end of spp name
+
+# Remove underscores at end of species names
+
+dataset3 = dataset2
+
+dataset3$species = gsub("_", " ", dataset3$species)
+
+head(dataset3)
+
+dataset3$species = str_trim(dataset3$species)
+
+head(dataset3)
+
+# Reset factor levels and check over species
+
+dataset3$species = factor(dataset3$species)
+levels(dataset3$species)
+
+# All looks good
+
+# !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE SPECIES DATA WERE MODIFIED!
+
+#!DATA FORMATTING TABLE UPDATE!
+
+# Column M. Notes_spFormat. 
+
+dataFormattingTable[,'Notes_spFormat'] = 
+  dataFormattingTableFieldUpdate(ds, 'Notes_spFormat', 'A few bad species found because of extra underscore in name.  Removed all underscores and then removed all extra white space to fix this error.')
+
