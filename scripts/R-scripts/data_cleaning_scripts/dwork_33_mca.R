@@ -105,6 +105,7 @@ dataFormattingTable[,'Notes_siteFormat'] =
 
 # Look at the individual species present:
 
+length(unique(dataset2$species))
 levels(dataset2$species) 
 
 # Looked through all uniques, all species are good
@@ -121,3 +122,41 @@ head(dataset3)
 
 dataFormattingTable[,'Notes_spFormat'] = 
   dataFormattingTableFieldUpdate(ds, 'Notes_spFormat', 'all species good, no changes made')
+
+#-------------------------------------------------------------------------------*
+# ---- EXPLORE AND FORMAT COUNT DATA ----
+#===============================================================================*
+# Explore
+
+head(dataset3, 30)
+tail(dataset3, 20)
+summary(dataset3)
+
+# Fill in the original field name here
+countfield = 'Abundance'
+
+# Renaming it
+
+names(dataset3)[which(names(dataset3) == countfield)] = 'count'
+head(dataset3)
+
+# Check for zeros or NAs
+
+summary(dataset3)
+
+# Remove NAs if there are any
+
+dataset5 = na.omit(dataset3)
+
+# No zeros or NAs in data, so no need to remove any count values
+
+# !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE COUNT DATA WERE MODIFIED!
+
+#!DATA FORMATTING TABLE UPDATE!
+
+# Possible values for countFormat field are density, cover, and count.
+dataFormattingTable[,'countFormat'] = 
+  dataFormattingTableFieldUpdate(ds, 'countFormat', 'count')
+
+dataFormattingTable[,'Notes_countFormat'] = 
+  dataFormattingTableFieldUpdate(ds, 'Notes_countFormat', "Data represents abundance counts. no changes or removals necessary")
