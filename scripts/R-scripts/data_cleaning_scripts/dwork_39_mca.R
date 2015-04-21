@@ -148,7 +148,7 @@ dataset5 = na.omit(dataset3)
 
 # Possible values for countFormat field are density, cover, and count.
 dataFormattingTable[,'countFormat'] = 
-  dataFormattingTableFieldUpdate(67, 'countFormat', 'count')
+  dataFormattingTableFieldUpdate(ds, 'countFormat', 'count')
 
 dataFormattingTable[,'Notes_countFormat'] = 
   dataFormattingTableFieldUpdate(ds, 'Notes_countFormat', "Data represents abundance counts. no changes or removals necessary")
