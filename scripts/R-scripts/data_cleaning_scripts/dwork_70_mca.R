@@ -63,3 +63,31 @@ dataFormattingTable[,'LatLong_sites'] =
 # ---- EXPLORE AND FORMAT SITE DATA ----
 #===============================================================================*
 
+# Explore
+
+head(dataset1, 20)
+summary(dataset1$site)
+tail(dataset1)
+
+# Only one site in this dataset: called 'Belgium'
+# No changes to site to be made
+
+# !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE SITE DATA WERE MODIFIED!
+
+# !DATA FORMATTING TABLE UPDATE! 
+
+# Raw_siteUnit. How a site is coded (i.e. if the field was concatenated such as this one, it was coded as "site_block_treatment_plot_quad"). Alternatively, if the site were concatenated from latitude and longitude fields, the encoding would be "lat_long". 
+
+dataFormattingTable[,'Raw_siteUnit'] = 
+  dataFormattingTableFieldUpdate(ds, 'Raw_siteUnit','site') 
+
+# spatial_scale_variable. Is a site potentially nested (e.g., plot within a quad or decimal lat longs that could be scaled up)? Y/N
+
+dataFormattingTable[,'spatial_scale_variable'] = 
+  dataFormattingTableFieldUpdate(ds, 'spatial_scale_variable', 'N')
+
+# Notes_siteFormat. Use this field to THOROUGHLY describe any changes made to the site field during formatting.
+
+dataFormattingTable[,'Notes_siteFormat'] = 
+  dataFormattingTableFieldUpdate(ds, 'Notes_siteFormat',  'data includes only one site: Belgium. No changes made')
+
