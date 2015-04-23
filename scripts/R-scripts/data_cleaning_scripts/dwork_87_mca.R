@@ -109,3 +109,37 @@ dataFormattingTable[,'Notes_siteFormat'] =
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SPECIES DATA ----
 #===============================================================================*
+
+# Explore
+
+length(unique(dataset2$species))
+head(dataset2,20)
+
+# Uppercase and look for bad species
+
+# Uppercase and look through for bad species
+
+dataset2$species = factor(toupper(dataset2$species))
+
+levels(dataset2$species)
+
+# No bad species found
+
+head(dataset2)
+dataset3 = dataset2
+
+# all looks good
+
+# !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE SPECIES DATA WERE MODIFIED!
+
+#!DATA FORMATTING TABLE UPDATE!
+
+# Column M. Notes_spFormat. 
+
+dataFormattingTable[,'Notes_spFormat'] = 
+  dataFormattingTableFieldUpdate(ds, 'Notes_spFormat', 'No bad species found.  No changes made to field.')
+
+#-------------------------------------------------------------------------------*
+# ---- EXPLORE AND FORMAT COUNT DATA ----
+#===============================================================================*
+
