@@ -61,3 +61,51 @@ dataFormattingTable[,'LatLong_sites'] =
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SITE DATA ----
 #===============================================================================*
+
+# Explore
+
+length(unique(dataset1$site))
+summary(dataset1)
+levels(dataset1$site)
+
+# Only two sites in this dataset: 'Oosterschelde_Netherlands_51.4926_4.1275' and 'Oosterschelde_Netherlands_51.6059_3.6966'
+
+# Since lat_longs are only relevant data, substring the field to just the lat_longs
+
+site = str_sub(dataset1$site, start = -14)
+
+# check
+
+unique(site)
+
+# Add new site field to data
+
+dataset2 = dataset1
+dataset2$site = site
+
+# Double check
+
+head(dataset2)
+
+# !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE SITE DATA WERE MODIFIED!
+
+# !DATA FORMATTING TABLE UPDATE! 
+
+# Raw_siteUnit. How a site is coded 
+
+dataFormattingTable[,'Raw_siteUnit'] = 
+  dataFormattingTableFieldUpdate(ds, 'Raw_siteUnit', 'Region_lat_long') 
+
+# spatial_scale_variable. Is a site potentially nested (e.g., plot within a quad or decimal lat longs that could be scaled up)? Y/N
+
+dataFormattingTable[,'spatial_scale_variable'] = 
+  dataFormattingTableFieldUpdate(ds, 'spatial_scale_variable', 'N') 
+
+# Notes_siteFormat.
+
+dataFormattingTable[,'Notes_siteFormat'] = 
+  dataFormattingTableFieldUpdate(ds, 'Notes_siteFormat', 'Only two different sites in this dataset.  Lat_longs were extracted from the strings using substringbecause it was the only useful data.')
+
+#-------------------------------------------------------------------------------*
+# ---- EXPLORE AND FORMAT SPECIES DATA ----
+#===============================================================================*
