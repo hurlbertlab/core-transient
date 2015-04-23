@@ -178,3 +178,64 @@ dataFormattingTable[,'Notes_countFormat'] =
 # ---- FORMAT TIME DATA ----
 #===============================================================================*
 
+# Date field names
+
+names(dataset5)
+datefield = 'Year'
+
+# What format?
+
+dateformat = '%Y'
+
+# Date is in just year
+
+if (dateformat == '%Y' | dateformat == '%y') {
+  date = as.numeric(as.character(dataset5[, datefield]))
+} else {
+  date = as.POSIXct(strptime(dataset5[, datefield], dateformat))
+}
+
+# check
+
+class(date)
+
+# Check dataset
+
+head(dataset5[, datefield])
+
+head(date)
+
+dataset6 = dataset5
+
+# Delete the old date field
+
+dataset6 = dataset6[, -which(names(dataset6) == datefield)]
+
+# Add new date field
+
+dataset6$date = date
+
+# Check the results
+
+head(dataset6)
+str(dataset6)
+
+# All good
+
+# !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE DATE DATA WERE MODIFIED!
+
+#!DATA FORMATTING TABLE UPDATE!
+
+# Notes_timeFormat. Provide a thorough description of any modifications that were made to the time field.
+
+dataFormattingTable[,'Notes_timeFormat'] = 
+  dataFormattingTableFieldUpdate(ds, 'Notes_timeFormat','data provided as years. only modification to this field was converting to numeric object.')
+
+# subannualTgrain. After exploring the time data, was this dataset sampled at a sub-annual temporal grain? Y/N
+
+dataFormattingTable[,'subannualTgrain'] = 
+  dataFormattingTableFieldUpdate(ds, 'subannualTgrain','N')
+
+#-------------------------------------------------------------------------------*
+# ---- MAKE DATA FRAME OF COUNT BY SITES, SPECIES, AND YEAR ----
+#===============================================================================*
