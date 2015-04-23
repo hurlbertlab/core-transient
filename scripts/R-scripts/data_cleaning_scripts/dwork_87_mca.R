@@ -115,8 +115,6 @@ dataFormattingTable[,'Notes_siteFormat'] =
 length(unique(dataset2$species))
 head(dataset2,20)
 
-# Uppercase and look for bad species
-
 # Uppercase and look through for bad species
 
 dataset2$species = factor(toupper(dataset2$species))
