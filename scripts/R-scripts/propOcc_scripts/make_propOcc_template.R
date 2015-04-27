@@ -11,11 +11,11 @@ library(tidyr)
 
 source('scripts/R-scripts/core-transient_functions.R')
 
-dataset = read.csv("data/formatted_datasets/dataset_223.csv")
+dataset = read.csv("data/formatted_datasets/dataset_173.csv")
 
 dataFormattingTable = read.csv("Reference/data_formatting_table.csv")
 
-dataFormattingTable = subset(dataFormattingTable, dataset_ID == 223)
+dataFormattingTable = subset(dataFormattingTable, dataset_ID == 173)
 
 #===============================================================================*
 # ---- MAKE PROPORTIONAL OCCUPANCY AND DATA SUMMARY FRAMES ----
@@ -51,145 +51,75 @@ nestedDataset = getNestedDataset(dataset)
 #timeGrains = c('date','year_week','year_biweek','year_month','year_bimonth','year_season','year')
 spatialGrains = nestedDataset[[2]]
 
+# SUBSET DATASET TO SITES WITH ADEQUATE TIME SAMPLES AND RICHNESS:
+
+test = RichnessYearSubsetFrame(spatialGrain = 'site',temporalGrain = 'year')
+
 wzList = list(length = length(spatialGrains))
 for(i in 1:length(spatialGrains)) wzList[[i]] = wzMaker(i)
 names(wzList) = spatialGrains
 
 
-exploreWZ = function(i){
-  wzListSub = wzList[[i]]
-  nSiteYears = nrow(wzListSub$spaceTimeSamples)
-  nSites = length(unique(wzListSub$spaceTimeSamples$siteGrain))
-  w = wzList[[i]]$w
-  spaceTimeSubW = subset(wzListSub$spaceTimeSamples, spatialSubsamples >= w)
-  nSitesW = length(unique(spaceTimeSubW$siteGrain))
-  siteYearsW = nrow(spaceTimeSubW)
-  
-  z = wzListSub$z
-  spaceTimeSubZ = subset(wzListSub$spaceTimeSamples, temporalSubsamples >= z)
-  nSitesZ= length(unique(spaceTimeSubZ$siteGrain))
-  siteYearsZ = nrow(spaceTimeSubZ)
-  
-  spaceTimeSubWZ = subset(wzListSub$spaceTimeSamples, 
-                          temporalSubsamples >= z &
-                          spatialSubsamples >= w)
-  nSitesWZ= length(unique(spaceTimeSubWZ$siteGrain))
-  siteYearsWZ = nrow(spaceTimeSubZ)
-  
-  outList = list(nSiteYears, nSites, w, nSitesW, 
-              siteYearsW, z, nSitesZ, siteYearsZ,
-              nSitesWZ, siteYearsWZ)
-  names(outList) = c('nSiteYears', 'nSites', 'w', 'nSitesW', 
-                     'siteYearsW', 'z', 'nSitesZ', 'siteYearsZ',
-                     'nSitesWZ', 'siteYearsWZ')
-  return(outList)
+# In this example, we will use the 3rd scale (siteID = site_block_treatment)
+
+wzList[[1]]$wzMax
+
+w = 36
+z = 2
+
+
+nestedDataset2 = select(nestedDataset[[1]], one_of('site_block_treatment','date','year','site','species','count'))
+
+nestedDataset2$siteYear = paste(nestedDataset2$site_block_treatment, nestedDataset2$year, sep ='_')
+
+# For each siteYear, calculate the number of spatial and temporal subsamples:
+
+siteYearSubsampling = ddply(nestedDataset2, .(siteYear), summarize, 
+                            subTime = length(unique(date)), 
+                            subSpace = length(unique(site)))
+
+# Remove siteYears that don't have at least w and z number of spaceTime subsampling:
+
+siteYearSubsampling2 = filter(siteYearSubsampling, subTime >=z & subSpace>=w)
+
+# For the nestedDataset, Keep siteYears in which subSampling was >= w and z:
+
+nestedDataset3 = nestedDataset2[nestedDataset2$siteYear %in% siteYearSubsampling2$siteYear,]
+
+# create a dataset of unique temporal and spatial samples for a given year:
+
+subTimeSpaceData = distinct(select(nestedDataset3, one_of('siteYear','date','site')))
+
+# Sample from each siteYear, a given date and site:
+
+uniqueSiteYears = unique(subTimeSpaceData$siteYear)
+
+outList = list(length = length(uniqueSiteYears))
+
+for(i in 1:length(uniqueSiteYears)){
+  sYsub = filter(subTimeSpaceData, siteYear == uniqueSiteYears[i])
+  uniqueSites = unique(sYsub$site)
+  uniqueDates = unique(sYsub$date)
+  sites = sample(uniqueSites, size = w, replace = F)
+  dates = sample(uniqueDates, size = z, replace = F)
+  for(j in 1:length(sites)){
+    sample(filter(sYsub, sYsub$site == sites[j]), size = z, replace = F)
+  }
 }
 
-exploreWZ(1)
+sYsubSiteDate  = paste(sites, dates, sep = '_') # Potential site date combinations of sampled values
 
-plotWZ = function(i){
-  par(mfrow = c(1, 2))
-  plot(propW~w, data = wzList[[i]]$wFrame, 
-       #type = 'l', lwd = 2,
-       xlab = 'Spatial subsamples',
-       ylab = 'Proportion of siteYears',
-       main = spatialGrains[i])
-    abline(h = .8, lty = 2)
-  plot(propZ~z, data = wzList[[i]]$zFrame, 
-       #type = 'l', lwd = 2,
-       xlab = 'Temporal subsamples',
-       ylab = 'Proportion of siteYears',
-       main = spatialGrains[i])
-    abline(h = .8, lty = 2)
-}
+sYsubTest = sYsub[paste(sYsub$site, sYsub$date, sep = '_') %in% sYsubSiteDate,] # sY sub that matches the potential site date combinations
 
-for (i in 1:5) plotWZ(i)
+dim(sYsubTest)
 
-wzList[[1]]$wFrame
+dim(sYsub)
 
+length(unique(sYsub$site))
 
+length(unique(sYsub$subSite))
 
-names(wzList) = spatialGrains
-  
-# Plots of the number of temporal subsamples by the number of spatial subsamples
-
-pdf('output/plots/exploringSiteSelection/spaceTimeSubsamples_d223.pdf', onefile = T)
-
-plot.new()
-par(mar = c(5,4,4,2))
-par(mfrow = c(3,2))
-
-for(i in 1:length(wzList)){
-  spaceTimeSubSamples = wzList[[i]]$spaceTimeSubsamples
-  plot(spaceTimeSubSamples$spatialSubsamples, spaceTimeSubSamples$temporalSubsamples, 
-       xlab = 'Spatial subsamples', ylab = 'Temporal subsamples',
-       pch = 19, col = 'darkgrey', main = wzList[[i]]$spatialGrain)
-}
-dev.off()
-
-# Plots of the number of temporal subsamples by the number of spatial subsamples
-
-wzScatterplotter = function(i, threshold){
-  wzList = wzList[[i]]
-  spatialGrain = wzList[[1]]
-  site_wz = wzList[[2]]
-  wz = wzList[[3]]
-  wz$propsYw = wz$siteYears_w/nrow(site_wz)
-  wz$propsYz = wz$siteYears_z/nrow(site_wz)
-  
-#   pdf(paste('output/plots/exploringSiteSelection/wz_scatterplots_', spatialGrain, '.pdf'))
-  par(mfrow = c(2,2))
-  
-  plot(propsYw ~ w,  data = wz[order(w),], 
-       type = 'l', col = 1, lwd = 1.5, ylim = c(0,1),
-       ylab = 'Proportion of siteYears >= w', main = spatialGrain)
-    abline(h = .8, lty = 2)
-
-  plot(propsYz ~ z,  data = wz, # wz[order(z),],
-       type = 'l', col = 1, lwd = 1.5, ylim = c(0,1),
-       ylab = 'Proportion of siteYears >= z', main = spatialGrain)
-      abline(h = .8, lty = 2)
-
-  plot(siteYears_w ~ w,  data = wz[order(w),],
-       type = 'l', col = 1, lwd = 1.5, 
-       ylab = 'Number of siteYears >= w', main = spatialGrain)
-        abline(h = .8*nrow(site_wz), lty = 2)
-
-  plot(siteYears_z ~ z,  data = wz, #wz[order(z),],
-       type = 'l', col = 1, lwd = 1.5, 
-       ylab = 'Number of siteYears >= z', main = spatialGrain)
-        abline(h = .8*nrow(site_wz), lty = 2)
-}
-
-pdf('output/plots/exploringSiteSelection/wzScatterplots_d223.pdf', onefile = T)
-
-for(i in 1:length(spatialGrains)) wzScatterplotter(i, .8)
-
-dev.off()
-
-wzContourPlotter = function(i, threshold){
-  wzList = wzList[[i]]
-  spatialGrain = wzList[[1]]
-  site_wz = wzList[[2]]
-  wz = wzList[[3]]  
-  print(contourplot(wz$propSiteYears_wz~ wz$w*wz$z, data=wz,
-              xlab = 'Number of spatial subsamples',
-              ylab = 'Number of temporal subsamples',
-              main = paste(spatialGrain,'\nnSiteYears at threshold = ',
-                           wz[which.min(abs(wz[,'propSiteYears_wz'] - threshold)),'siteYears_wz'],
-                           '\nnSites at threshold = ',
-                           wz[which.min(abs(wz[,'propSiteYears_wz'] - threshold)),'sites_wz'],
-                           '\nw (nSpatialSubsamples) =',
-                           wz[which.min(abs(wz[,'propSiteYears_wz'] - threshold)),'w'],
-                           ', z (nTemporalSubsamples) = ',
-                           wz[which.min(abs(wz[,'propSiteYears_wz'] - threshold)),'z'])))
-}
-
-pdf('output/plots/exploringSiteSelection/wz_contourplots_d223.pdf', onefile = T)
-
-for(i in 1:length(spatialGrains)) wzContourPlotter(i, .8)
-
-dev.off()
+length(unique(sYsub$date))
 
 
 
