@@ -96,3 +96,140 @@ dataFormattingTable[,'Notes_siteFormat'] =
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SPECIES DATA ----
 #===============================================================================*
+
+# Explore
+
+head(dataset2, 30)
+length(unique(dataset2$species))
+
+# Uppercase species
+
+dataset2$species = factor(toupper(dataset2$species))
+length(unique(dataset2$species))
+
+# Look through all species for bad species
+
+levels(dataset2$species)
+species = levels(dataset2$species)
+species[1:500]
+species[500:1079]
+
+# No bad spp found
+
+head(dataset2)
+dataset3 = dataset2
+
+# All looks good
+
+# !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE SPECIES DATA WERE MODIFIED!
+
+#!DATA FORMATTING TABLE UPDATE!
+
+# Column M. Notes_spFormat. 
+
+dataFormattingTable[,'Notes_spFormat'] = 
+  dataFormattingTableFieldUpdate(ds, 'Notes_spFormat', 'No bad species found.  No changes made to field.')
+
+#-------------------------------------------------------------------------------*
+# ---- EXPLORE AND FORMAT COUNT DATA ----
+#===============================================================================*
+
+# Explore
+
+names(dataset3)
+
+# Fill in the original field name here
+
+countfield = 'Abundance'
+
+# Renaming it
+
+names(dataset3)[which(names(dataset3) == countfield)] = 'count'
+head(dataset3)
+
+# Check for zeros and NAs
+
+summary(dataset3)
+
+# No zeros, remove NAs
+
+dataset5 = na.omit(dataset3)
+
+# No zeros or NAs in data
+
+# !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE COUNT DATA WERE MODIFIED!
+
+#!DATA FORMATTING TABLE UPDATE!
+
+# Possible values for countFormat field are density, cover, and count.
+dataFormattingTable[,'countFormat'] = 
+  dataFormattingTableFieldUpdate(ds, 'countFormat', 'count')
+
+dataFormattingTable[,'Notes_countFormat'] = 
+  dataFormattingTableFieldUpdate(ds, 'Notes_countFormat', "Data represents abundance counts. no changes or removals necessary")
+
+#-------------------------------------------------------------------------------*
+# ---- FORMAT TIME DATA ----
+#===============================================================================*
+
+# Date field names
+
+names(dataset5)
+datefield = 'Year'
+
+# What format?
+
+dateformat = '%Y'
+
+# Date is in just year
+
+if (dateformat == '%Y' | dateformat == '%y') {
+  date = as.numeric(as.character(dataset5[, datefield]))
+} else {
+  date = as.POSIXct(strptime(dataset5[, datefield], dateformat))
+}
+
+# check
+
+class(date)
+
+# Check dataset
+
+head(dataset5[, datefield])
+
+head(date)
+
+dataset6 = dataset5
+
+# Delete the old date field
+
+dataset6 = dataset6[, -which(names(dataset6) == datefield)]
+
+# Add new date field
+
+dataset6$date = date
+
+# Check the results
+
+head(dataset6)
+str(dataset6)
+
+# All good
+
+# !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE DATE DATA WERE MODIFIED!
+
+#!DATA FORMATTING TABLE UPDATE!
+
+# Notes_timeFormat. Provide a thorough description of any modifications that were made to the time field.
+
+dataFormattingTable[,'Notes_timeFormat'] = 
+  dataFormattingTableFieldUpdate(ds, 'Notes_timeFormat','data provided as years. only modification to this field was converting to numeric object.')
+
+# subannualTgrain. After exploring the time data, was this dataset sampled at a sub-annual temporal grain? Y/N
+
+dataFormattingTable[,'subannualTgrain'] = 
+  dataFormattingTableFieldUpdate(ds, 'subannualTgrain','N')
+
+#-------------------------------------------------------------------------------*
+# ---- MAKE DATA FRAME OF COUNT BY SITES, SPECIES, AND YEAR ----
+#===============================================================================*
