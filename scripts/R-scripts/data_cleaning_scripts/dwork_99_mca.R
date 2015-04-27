@@ -61,3 +61,38 @@ dataFormattingTable[,'LatLong_sites'] =
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SITE DATA ----
 #===============================================================================*
+
+# Explore
+
+length(unique(dataset1$site))
+summary(dataset1)
+
+# Sites give a lot of information like surveyor, method, station number, dates
+# Can't find metadata to see what is relevant data
+
+# No changes to be made to site field
+
+dataset2 = dataset1
+
+# !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE SITE DATA WERE MODIFIED!
+
+# !DATA FORMATTING TABLE UPDATE! 
+
+# Raw_siteUnit. How a site is coded 
+
+dataFormattingTable[,'Raw_siteUnit'] = 
+  dataFormattingTableFieldUpdate(ds, 'Raw_siteUnit', 'surveyor_method_station_sitenumbers_date_other') 
+
+# spatial_scale_variable. Is a site potentially nested (e.g., plot within a quad or decimal lat longs that could be scaled up)? Y/N
+
+dataFormattingTable[,'spatial_scale_variable'] = 
+  dataFormattingTableFieldUpdate(ds, 'spatial_scale_variable', 'Y') 
+
+# Notes_siteFormat.
+
+dataFormattingTable[,'Notes_siteFormat'] = 
+  dataFormattingTableFieldUpdate(ds, 'Notes_siteFormat', 'Sites give a lot of information like surveyor, method, station number, dates, etc.  Not sure what data should be used because no metadata info found. No changes made to site field data.')
+
+#-------------------------------------------------------------------------------*
+# ---- EXPLORE AND FORMAT SPECIES DATA ----
+#===============================================================================*
