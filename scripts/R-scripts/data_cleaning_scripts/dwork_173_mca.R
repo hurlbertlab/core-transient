@@ -43,7 +43,7 @@ summary(dataset)
 # Remove unwanted columns
   # List removed fields
 
-unusedFields = c(1,2)
+unusedFields = c(1)
 dataset1 = dataset[,-unusedFields]
 
 # Check
@@ -65,20 +65,16 @@ dataset2 = dataset1
 
 # just renamed only site column from "sampleID" to "site"
 
-names(dataset2)[2] = "site"
+names(dataset2)[3] = "site"
 head(dataset2)
 
 # !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE SITE DATA WERE MODIFIED!
 
 dataFormattingTable[,'Raw_siteUnit'] = 
-  dataFormattingTableFieldUpdate(ds, 'Raw_siteUnit',       # Fill value below in quotes
-                                 
-                                 'site')
+  dataFormattingTableFieldUpdate(ds, 'Raw_siteUnit', 'site_sitenumber')
 
 dataFormattingTable[,'spatial_scale_variable'] = 
-  dataFormattingTableFieldUpdate(ds, 'spatial_scale_variable',
-                                 
-                                 'N')
+  dataFormattingTableFieldUpdate(ds, 'spatial_scale_variable','N')
 
 dataFormattingTable[,'Notes_siteFormat'] = 
   dataFormattingTableFieldUpdate(ds, 'Notes_siteFormat', 'no changes were made to raw data. sites are listed by name, and some have different number IDs.')
@@ -89,7 +85,6 @@ dataFormattingTable[,'Notes_siteFormat'] =
 #===============================================================================*
 # Look at each individual species to find ones to remove
 
-dataset2 = dataset1
 levels(dataset2$Species)
 
 # No questionable or bad species
@@ -97,7 +92,7 @@ levels(dataset2$Species)
 # Change name of field
 
 head(dataset2)
-names(dataset2)[3] = "species"
+names(dataset2)[4] = "species"
 
 # Check
 names(dataset2)
@@ -157,10 +152,14 @@ dataFormattingTable[,'Notes_countFormat'] =
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT TIME DATA ----
 #===============================================================================*
-# extract the sampling dates. 
+# Extract the sampling dates. 
 
 # name of the field
 datefield = 'Year'
+
+# What's the format
+
+dateformat = '%Y'
 
 # What is the format in which date data is recorded?
 class(dataset5$Year)
@@ -213,10 +212,9 @@ dataFormattingTable[,'subannualTgrain'] =
 #-------------------------------------------------------------------------------*
 # ---- MAKE DATA FRAME OF COUNT BY SITES, SPECIES, AND YEAR ----
 #===============================================================================*
-# Add the datasetID:
+# DatasetID already in dataset
 
-dataset6$datasetID = ds
-head(dataset6)
+names(dataset6)[1] = 'datasetID'
 
 # compiled dataframe:
 
@@ -237,7 +235,7 @@ summary(dataset7)
 
 # Update the data formatting table:
 
-dataFormattingTable = dataFormattingTableUpdate(ds)
+dataFormattingTable = dataFormattingTableUpdate(ds, dataset7)
 
 # Final look at the dataset:
 
@@ -246,7 +244,7 @@ summary (dataset7)
 
 # Write formatted data frame:
 
-write.csv(dataset7, "data/formatted_datasets/dataset_ds.csv", row.names = F)
+write.csv(dataset7, "data/formatted_datasets/dataset_173.csv", row.names = F)
 
 # !GIT-ADD-COMMIT-PUSH THE FORMATTED DATASET IN THE DATA FILE, THEN GIT-ADD-COMMIT-PUSH THE UPDATED DATA FOLDER!
 
