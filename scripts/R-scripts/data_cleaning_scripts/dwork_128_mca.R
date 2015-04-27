@@ -31,7 +31,7 @@ dataFormattingTable = read.csv('Reference/data_formatting_table.csv')
 # ---- EXPLORE THE DATASET ----
 #===============================================================================*
 
-head(dataset)
+head(dataset, 100)
 str(dataset)
 summary(dataset)
 

@@ -21,7 +21,7 @@ source('scripts/R-scripts/core-transient_functions.R')
 
 # Get data
 
-ds = 173 
+ds = 173
 
 list.files('data/raw_datasets')
 
@@ -38,6 +38,7 @@ dim(dataset)
 names(dataset)
 str(dataset)
 head(dataset)
+tail(dataset)
 summary(dataset)
 
 # Remove unwanted columns
@@ -62,6 +63,10 @@ dataFormattingTable[,'LatLong_sites'] =
 # Make site column
 
 dataset2 = dataset1
+
+# check indiv sites
+length(unique(dataset$SampleID))
+levels(dataset$SampleID)
 
 # just renamed only site column from "sampleID" to "site"
 
