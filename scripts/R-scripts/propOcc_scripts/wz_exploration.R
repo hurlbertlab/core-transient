@@ -5,7 +5,7 @@
 
 # Note: Prior to running "RichnessYearSubsetFrame", you must have created the nestedDataset using the function "getNestedDataset". The output of the getNestedDataset function is a list with the first list item being the dataset, expanded across all potential spatial and temporal grains and the second being a vector of the names of the site columns. The "i" in this function refers to the the value in the vector of site names. 
 
-RichnessYearSubsetFrame = function(spatialGrain, temporalGrain, minNYears = 10, minSpRich = 10){
+RichnessYearSubsetFrame = function(spatialGrain = 'site', temporalGrain = 'year', minNYears = 10, minSpRich = 10){
   # Extract the nested dataset:
     nestedDatasetDf = nestedDataset[[1]]
   # Add a column named siteID:
@@ -17,13 +17,16 @@ RichnessYearSubsetFrame = function(spatialGrain, temporalGrain, minNYears = 10, 
   # Subset to sites with a high enough species richness and year samples:
     goodSites = filter(siteSr_nTime, sr >= minSpRich & 
                          siteSr_nTime$nTime >= minNYears)$siteID
+  # If statement to return if there's no good sites:
+    if(length(goodSites) == 0) {return(print('No acceptable sites, rethink site definitions or temporal scale'))}
+  else {
   # Match good sites and the dataframe:
     outFrame = na.omit(nestedDatasetDf[nestedDatasetDf$siteID %in% goodSites,])
   # Add date column as a specific temporal grain:
     outFrame$date = outFrame[,temporalGrain]
   # Return output (note: "select(one_of" returns just the specified columns)
     return(select(outFrame,
-                  one_of(c('siteID','date','year', 'site', 'species','count'))))
+                  one_of(c('siteID','date','year', 'site', 'species','count'))))}
 }
 
 # head(RichnessYearSubsetFrame(spatialGrain = 'site1',temporalGrain = 'year_season'))
@@ -198,16 +201,6 @@ wzDataSubset = function(inData, zOutput, minNYears = 10, proportionalThreshold =
   return(list (data = outData, w = w, z = z))
 }
 
-#---
-head(nestedDataset[[1]])
-
-inData = RichnessYearSubsetFrame(spatialGrain = 'site1',temporalGrain = 'year_season')
-
-zOutput = zFinder(inData)
-
-test = wzDataSubset(inData, zOut)
-
-dim(test[[1]]) ; head(test[[1]])
 
 propOccFun = function(datasetID, spatialGrain, temporalGrain, minNYears = 10, minSpRich = 10){
   inData = RichnessYearSubsetFrame(spatialGrain = spatialGrain, temporalGrain = temporalGrain)
