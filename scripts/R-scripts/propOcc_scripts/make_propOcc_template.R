@@ -11,11 +11,13 @@ library(tidyr)
 
 source('scripts/R-scripts/core-transient_functions.R')
 
-dataset = read.csv("data/formatted_datasets/dataset_173.csv")
+dataset = read.csv("data/formatted_datasets/dataset_232.csv")
 
 dataFormattingTable = read.csv("Reference/data_formatting_table.csv")
 
-dataFormattingTable = subset(dataFormattingTable, dataset_ID == 173)
+dataFormattingTable = subset(dataFormattingTable, dataset_ID == 232)
+
+dataFormattingTable
 
 #===============================================================================*
 # ---- MAKE PROPORTIONAL OCCUPANCY AND DATA SUMMARY FRAMES ----
@@ -53,12 +55,28 @@ spatialGrains = nestedDataset[[2]]
 
 # SUBSET DATASET TO SITES WITH ADEQUATE TIME SAMPLES AND RICHNESS:
 
-test = RichnessYearSubsetFrame(spatialGrain = 'site',temporalGrain = 'year')
+DataSRTimeSub = RichnessYearSubsetFrame(temporalGrain = 'year_season', spatialGrain =  'location_web')
 
-wzList = list(length = length(spatialGrains))
-for(i in 1:length(spatialGrains)) wzList[[i]] = wzMaker(i)
-names(wzList) = spatialGrains
+# CALCULATE the Z-threshold:
 
+zThresh = zFinder(DataSRTimeSub, minNYears = 10, proportionalThreshold = .5)
+
+# Calculate W based on Z and sample data:
+
+dataListWZ = wzDataSubset(DataSRTimeSub, zThresh, minNYears = 10, proportionalThreshold = .5)
+
+datasetSubWZ = dataListWZ[[1]]
+
+# Make Prop_Occ:
+
+propOcc = propOccFun(232, spatialGrain = 'location_web',temporalGrain = 'year_season')
+
+
+write.csv(propOcc, 'data/propOcc_datasets/propOcc_d232.csv', row.names = F)
+
+#######################################################################################################
+#######################################################################################################
+#######################################################################################################
 
 # In this example, we will use the 3rd scale (siteID = site_block_treatment)
 
