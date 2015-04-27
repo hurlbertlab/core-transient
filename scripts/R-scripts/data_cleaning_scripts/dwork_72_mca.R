@@ -33,6 +33,7 @@ dataFormattingTable = read.csv('Reference/data_formatting_table.csv')
 
 names(dataset)
 head(dataset)
+tail(dataset)
 str(dataset)
 summary(dataset)
 
