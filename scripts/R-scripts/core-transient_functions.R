@@ -182,12 +182,15 @@ getNestedTimeDataset = function(dataset){
 # Wrapper function (spatial nesting is categorical, not lat-long):
 
 getNestedDataset = function(dataset){
+  if(dataFormattingTable$subannualTgrain == 'N' &
+       dataFormattingTable$spatial_scale_variable != T){
+    dataset = list(data, 'site')
+  }
   if(dataFormattingTable$subannualTgrain == 'Y'){
     dataset = getNestedTimeDataset(dataset)
   } else {if(dataFormattingTable$spatial_scale_variable == T &
                dataFormattingTable$LatLong_sites != 'Y'){
-    dataset = getNestedSiteDataset(dataset)
-  }}
+    dataset = getNestedSiteDataset(dataset)}}
   return(dataset)
 }
 
