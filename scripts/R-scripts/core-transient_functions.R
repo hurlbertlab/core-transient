@@ -370,20 +370,20 @@ datasetRoundLatLong = function(dataset, accuracy){
 
 # Function to summarize data to a given site level:
 
-getNestedSiteDataset = function(dataset = dataset, siteLevel = 'site'){
+getNestedSiteDataset = function(dataset = dataset, siteGrain = 'site'){
   # If sites are defined by lat-longs:
     if(dataFormattingTable$LatLong_sites == 'Y')
-      {dataset = datasetRoundLatLong(dataset, accuracy = siteLevel)
+      {dataset = datasetRoundLatLong(dataset, accuracy = siteGrain)
        return(dataset)} else {
   # If sites are categorical but nested ...
   # Get the definition for a site and store each level as separate columns:
-    siteLevels = strsplit(siteLevel, '_')[[1]]
+      siteLevels = strsplit(siteLevel, '_')[[1]]
   # Convert site data to a table and add names based on site definition:
-    siteTable = read.table(text = as.character(dataset$site), sep = '_', stringsAsFactors = F)
+      siteTable = read.table(text = as.character(dataset$site), sep = '_', stringsAsFactors = F)
       siteDefinition = dataFormattingTable$Raw_siteUnit
       names(siteTable) = strsplit(as.character(siteDefinition), '_')[[1]]
   # Get pre-determined site levels and maintain site based on match: 
-    siteLevels = strsplit(siteLevel, '_')[[1]]
+    siteLevels = strsplit(siteGrain, '_')[[1]]
     dataset$site = do.call('paste', c(siteTable[siteLevels], sep = '_'))
   # Summarize data to the new site Level:
     dataset = ddply(dataset, .(datasetID, site, date, species),
@@ -392,50 +392,41 @@ getNestedSiteDataset = function(dataset = dataset, siteLevel = 'site'){
     }
 }
 
-
-
 # Nested time dataset (spatial nesting is categorical, not lat-long):
 
-getNestedTimeDataset = function(dataset,  siteLevel = 'site', timeGrain = 'year'){
-  if(dataFormattingTable$spatial_scale_variable == 'Y') {
-    dataset = getNestedSiteDataset(dataset, siteLevel) }
-  
-  nestedSiteDataset$date = as.POSIXct(strptime(dataset$date, '%Y-%m-%d'))
-  nestedSiteDataset$year = as.numeric(format(nestedSiteDataset$date, '%Y'))
-  day = as.numeric(strftime(nestedSiteDataset$date, format = '%j'))
+getNestedTimeDataset = function(dataset,  timeGrain = 'season'){
+  dataset$date = as.POSIXct(strptime(dataset$date, '%Y-%m-%d'))
+  year = as.numeric(format(dataset$date, '%Y'))
+  day = as.numeric(strftime(dataset$date, format = '%j'))
   week = trunc(day/7)+1
   biweek = trunc(week/2)+1
-  month = as.numeric(format(nestedSiteDataset$date, '%m'))
+  month = as.numeric(format(dataset$date, '%m'))
   bimonth = trunc(month/2)+1
   season = ifelse(day < 80 |day >= 356, 1,
                   ifelse(day >= 80 & day < 172, 2,
                          ifelse(day >= 172 & day < 266, 3, 4)))
-  subYearList = list(week, biweek, month, bimonth,season)
-  names(subYearList) = c('week','biweek','month','bimonth','season')
-  outList = list(length = length(subYearList))
-  for(i in 1:length(subYearList)){
-    outFrame = data.frame(paste(nestedSiteDataset$year, subYearList[[i]], sep = '_'))
-    names(outFrame)  = paste('year', names(subYearList)[i], sep = '_')
-    outList[[i]] = outFrame
+  # Combine time data into a dataframe:
+    timeFrame = cbind(day, week, biweek, month, bimonth, season, year)
+  # Change date column to subyear at a given temporal grain:
+    dataset[,3] = paste(year, timeFrame[,timeGrain], sep ='_')
+      names(dataset)[3] = 'year'
+  # Summarize data to the new time scale:
+    dataset = ddply(dataset, .(datasetID, site, year, species),
+                  summarize, count = sum(count))
+    return(dataset)  
+}
+  
+# Wrapper function for nested data (if necessary):
+
+getNestedDataset = function(dataset, siteGrain = 'site', timeGrain = 'season'){
+    if(dataFormattingTable$spatial_scale_variable == 'Y'){
+      dataset = getNestedSiteDataset(dataset, siteGrain) }
+    if(dataFormattingTable$subannualTgrain == 'Y'){
+       dataset = getNestedTimeDataset(dataset, timeGrain)
+    }
+    return(dataset)
   }
-  subYearFrame = do.call(cbind, outList)
-  return(list(cbind(nestedSiteDataset, subYearFrame), nestedSiteLevels))
-}
 
-# Wrapper function (spatial nesting is categorical, not lat-long):
-
-getNestedDataset = function(dataset){
-  if(dataFormattingTable$subannualTgrain != 'Y' &
-       dataFormattingTable$spatial_scale_variable != T){
-    names(dataset)[3] = 'year'
-    dataset = list(dataset, 'site')}
-  if(dataFormattingTable$subannualTgrain == 'Y'){
-    dataset = getNestedTimeDataset(dataset)
-  } else {if(dataFormattingTable$spatial_scale_variable == T &
-               dataFormattingTable$LatLong_sites != 'Y'){
-    dataset = getNestedSiteDataset(dataset)}}
-  return(dataset)
-}
 
 #------------------------------------------------------------------------------------------------------*
 # Function to evaluate spatial and temporal sampling grain:
