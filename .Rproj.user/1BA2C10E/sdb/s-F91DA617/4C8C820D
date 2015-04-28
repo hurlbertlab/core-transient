@@ -1,0 +1,16 @@
+{
+    "contents" : "# Install raw datasets using the EcoData Retriever\n#\n# The EcoData Retriever will need to be installed on your system.\n# See: http://ecodataretriever.org\n\ndatasets = c(\"BBS\", \"MCDB\", \"PortalMammals\")\n\nfor (dataset in datasets) {\n    system(paste(\"retriever install sqlite\", dataset, \"-f ./data/coretrans_data.sqlite\"))\n}\n",
+    "created" : 1423074539255.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "2298354834",
+    "id" : "4C8C820D",
+    "lastKnownWriteTime" : 1412703522,
+    "path" : "~/core-transient/scripts/R-scripts/get_raw_data.r",
+    "project_path" : "scripts/R-scripts/get_raw_data.r",
+    "properties" : {
+    },
+    "source_on_save" : false,
+    "type" : "r_source"
+}
