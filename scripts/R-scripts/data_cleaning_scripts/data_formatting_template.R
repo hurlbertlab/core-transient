@@ -45,7 +45,7 @@ list.files('data/raw_datasets')
 
 dataset = read.csv(paste('data/raw_datasets/dataset_', ds, '.csv', sep = ''))
 
-dataFormattingTable = read.csv('Reference/data_formatting_table.csv')
+dataFormattingTable = read.csv('data_formatting_table.csv')
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE THE DATASET ----
