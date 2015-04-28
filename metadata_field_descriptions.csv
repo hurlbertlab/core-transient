@@ -1,13 +1,10 @@
 Field,Field_type,Field_notes
 dataset_ID,numeric,dataset ID's that are 200 and below are from Dornelas et al.
-data_obtained,factor,describes whether datasets have been downloaded and placed in the raw_datasets folder
-data_formatted,factor,describes whether datasets have been reduced to the necessary columns
+data_obtained,factor,describes whether datasets have been downloaded and placed in the raw_datasets folder (Y or N)
+data_formatted,factor,describes whether datasets have been reduced to the necessary columns  (Y or N)
 obtain_priority,numeric,"priority is valued between 0-5 and is based on current representation of the system (terrestrial, aquatic, marine) and taxa as well as the number of years and sites in the study"
-format_priority,numeric,"0 = Low priority: common system and taxa, less than 20 sites; 1 = Minor priority: common system and taxa, more than 20 sites -OR- uncommon system OR taxa less than 20 sites; 2 = Medium priority: Uncommon system OR taxa, more than 20 sites -OR- uncommon system AND taxa, less than 20 sites; 3 = high priority: Uncommon system AND taxa, more than 20 sites  "
-flag_code,numeric,"0 = not currently worked on, 1 = formatting complete, 2 = formatting in process, 3 = formatting halted, issue, 4 = data unavailable"
-spatial_sites,factor,Y or N. Whether sites are determined by lat and lon
 dataset_name,character,Name provided for the dataset
-retriever_code,factor,Whether the dataset was obtained using EcoData Retriever
+retriever_code,factor,Whether the dataset was obtained using EcoData Retriever (NA or the name of the retriever script)
 Availability,factor,Whether the data are publicly available or private
 data_source,character,The source from which the data were obtained
 system,factor,"Terrestrial, marine, or aquatic system – may be a combination."
@@ -17,11 +14,12 @@ organism,character,Sub-class of the taxonomic group if a more specific grouping 
 location,character,"Describes the spatial location of the data (e.g., Channel Islands, CA)"
 CentralLatitude,numeric,"The mean latitude of the samples – if lat lon data are not available, this may be estimated from the spatial location of the sampling location (e.g., Channel Islands)"
 CentralLongitude,numeric,The mean longitude of the samples
-LatLon_FLAG,numeric,"0 or 1; 0 = central lat and lon derived from provided lat lons associated with sites, 1 = central lat and lon estimated from the sampling location"
+CentralLatLon_FLAG,numeric,"0 or 1; 0 = central lat and lon derived from provided lat lons associated with sites, 1 = central lat and lon estimated from the sampling location"
 spatial_grain_value,numeric,reported minimum sampling size consistent across samples
 spatial_grain_unit,character,the units of the sampling grain
 spatial_grain_analysis_value,numeric,the grain at which core-transient analyses are conducted
 spatial_grain_analysis_unit,character,the units of the analysis grain
+spatial_grain_decision_notes,character,Information on any decision made in determining the appropriate spatial grain of the study
 spatial_sampling_method,character,the way the data were collected
 spatial_sampling_notes,character,any additional information on the grain of the samples
 spatial_extent,numeric,extent of study. Note that this column is not currently numeric and must be edited.
@@ -36,6 +34,7 @@ Temporal_grain,numeric,The temporal grain at which data were collected
 Temporal_grain_unit,factor,Units of Temporal_grain
 Analysis_grain_temporal,numeric,The temporal grain at which data were grouped for this study
 analysis_grain_temporal_unit,factor,Units of Analysis_grain_temporal
+temporal_grain_decision_notes,character,Information on any decision made in determining the appropriate temporal grain of the study
 start_year,numeric,First year a sample was collected
 end_year,numeric,Last year a sample was collected
 study_type,factor,Observational or Manipulative study
