@@ -87,7 +87,7 @@ dataset2 = dataset1
 # Raw_siteUnit 
 
 dataFormattingTable[,'Raw_siteUnit'] = 
-  dataFormattingTableFieldUpdate(ds, 'Raw_siteUnit', "station_samplinginfo") 
+  dataFormattingTableFieldUpdate(ds, 'Raw_siteUnit', "station_sampling_info") 
 
 # spatial_scale_variable
 
