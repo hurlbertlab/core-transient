@@ -67,24 +67,44 @@ tail(dataset1)
 
 levels(dataset1$site)
 
-# 'USA_GulfOfMexico' is consistent for all sites, so this information is not necessary.  
-# Substring it out
+# 'USA_GulfOfMexico_sitenumber' is consistent for all sites. Remove the lat_longs to get just site numbers as site identifiers.
+
+# Use read.table to separate the string by the underscores
+
+site = as.character(dataset1$site)
+siteTable = read.table(text = site, sep = "_")
+
+# check the table
+
+head(siteTable, 30)
+
+# All good, now paste first 3 columns together
+
+site = paste(siteTable$V1,siteTable$V2,siteTable$V3, sep = "_")
+
+# Check new site field
+
+unique(site)
+
+# Add new site field to the dataset
 
 dataset2 = dataset1
-dataset2$site = str_sub(dataset2$site, start = 18)
+dataset2$site = site
 
-head(dataset2)
+# Double check
+
+summary(dataset2)
+head(dataset2,20)
 
 # !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE SITE DATA WERE MODIFIED!
 
 # !DATA FORMATTING TABLE UPDATE! 
 
-# Raw_siteUnit. How a site is coded (i.e. if the field was concatenated such as this one, it was coded as "site_block_treatment_plot_quad"). Alternatively, if the site were concatenated from latitude and longitude fields, the encoding would be "lat_long". 
+# Raw_siteUnit. 
 
 dataFormattingTable[,'Raw_siteUnit'] = 
   dataFormattingTableFieldUpdate(ds, 'Raw_siteUnit', 
                                  'USA_GulfOfMexico_sitenumber_lat_long') 
-
 
 # spatial_scale_variable. Is a site potentially nested (e.g., plot within a quad or decimal lat longs that could be scaled up)? Y/N
 
@@ -94,7 +114,7 @@ dataFormattingTable[,'spatial_scale_variable'] =
 # Notes_siteFormat. Use this field to THOROUGHLY describe any changes made to the site field during formatting.
 
 dataFormattingTable[,'Notes_siteFormat'] = 
-  dataFormattingTableFieldUpdate(ds, 'Notes_siteFormat',  'all sites are in GOM, so removed that information from each site using substring.  Sites not have sitenumberand lat_long.  No sites were removed were made to the field.')
+  dataFormattingTableFieldUpdate(ds, 'Notes_siteFormat',  'all sites are listed as USA_GulfOfMexico_sitenumber_lat_longs. Using read.table and then paste, extracted just the USA_GulfOfMexico_sitenumber out and used that info for site determintation.  Lat_longs no longer included.')
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SPECIES DATA ----
