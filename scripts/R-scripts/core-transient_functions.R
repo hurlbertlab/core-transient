@@ -348,57 +348,58 @@ siteSummaryFun = function(dataset){
 # The following functions are used to evaluate scale for temporally or spatially nested data
 #------------------------------------------------------------------------------------------------------*
 
-# Nested site dataset (nesting is categorical, not lat-long):
+# Function to round dataset to lat and long and summarize data by the new rounded values:
 
-getNestedSiteDataset = function(dataset){
-  siteTable = read.table(text = as.character(dataset$site), sep = '_', stringsAsFactors = F)
-  siteDefinition = dataFormattingTable$Raw_siteUnit
-  siteUnitTable = read.table(text = as.character(siteDefinition), sep = '_', stringsAsFactors = F)
-  outList = list(length = ncol(siteTable))
-  for (i in 1:ncol(siteTable)){
-    siteUnit = paste(as.character(siteUnitTable[1,1:i]), collapse = '_')
-    if (siteUnit == siteUnitTable[,1]) {
-      site = data.frame(siteTable[,1])} else {
-        site = data.frame(factor(apply(siteTable[,1:i], 1, paste, collapse = '_')))
-      } 
-    names(site) = siteUnit
-    if(names(site) == 'site') names(site) = 'site1'
-    outList[[i]] = site
-  }
-  siteFrame = do.call(cbind, outList)
-  nestedSiteData = cbind(dataset, siteFrame)
-  return(list(nestedSiteData, names(siteFrame)))
-}
-
-getLLSiteDataset = function(dataset, accuracy){
+datasetRoundLatLong = function(dataset, accuracy){
   # Split LL column into a dataframe of lat and long:
-    siteLL = data.frame(do.call(rbind, strsplit(t, '_' )))
+  siteLL = data.frame(do.call(rbind, strsplit(t, '_' )))
   # Round to chosen accuracy:
-    roundLL = function(LatORLong){
-      LatorLongVector = as.numeric(as.character(siteLL[,LatORLong]))
-      return(round_any(LatorLongVector, accuracy,  f = floor))
-    }
-    lat = roundLL(1)
-    long = roundLL(2)
+  roundLL = function(LatORLong){
+    LatorLongVector = as.numeric(as.character(siteLL[,LatORLong]))
+    return(round_any(LatorLongVector, accuracy,  f = floor))
+  }
+  lat = roundLL(1)
+  long = roundLL(2)
   # Paste to a new site vector:
-    dataset$site = paste(lat, long, sep = '_')
+  dataset$site = paste(lat, long, sep = '_')
   # Summarize based on the new site definitions:
-    dataset = ddply(dataset, .(datasetID, site, date, species),
-                    summarize, count = sum(count))
-    return(dataset)  
+  dataset = ddply(dataset, .(datasetID, site, date, species),
+                  summarize, count = sum(count))
+  return(dataset)  
 }
+
+# Function to summarize data to a given site level:
+
+getNestedSiteDataset = function(dataset = dataset, siteLevel = 'site'){
+  # If sites are defined by lat-longs:
+    if(dataFormattingTable$LatLong_sites == 'Y')
+      {dataset = datasetRoundLatLong(dataset, accuracy = siteLevel)
+       return(dataset)} else {
+  # If sites are categorical but nested ...
+  # Get the definition for a site and store each level as separate columns:
+    siteLevels = strsplit(siteLevel, '_')[[1]]
+  # Convert site data to a table and add names based on site definition:
+    siteTable = read.table(text = as.character(dataset$site), sep = '_', stringsAsFactors = F)
+      siteDefinition = dataFormattingTable$Raw_siteUnit
+      names(siteTable) = strsplit(as.character(siteDefinition), '_')[[1]]
+  # Get pre-determined site levels and maintain site based on match: 
+    siteLevels = strsplit(siteLevel, '_')[[1]]
+    dataset$site = do.call('paste', c(siteTable[siteLevels], sep = '_'))
+  # Summarize data to the new site Level:
+    dataset = ddply(dataset, .(datasetID, site, date, species),
+                  summarize, count = sum(count))
+    return(dataset)  
+    }
+}
+
+
 
 # Nested time dataset (spatial nesting is categorical, not lat-long):
 
-getNestedTimeDataset = function(dataset){
+getNestedTimeDataset = function(dataset,  siteLevel = 'site', timeGrain = 'year'){
   if(dataFormattingTable$spatial_scale_variable == 'Y') {
-    nestedSiteData = getNestedSiteDataset(dataset)
-    nestedSiteLevels = nestedSiteData[[2]]
-    nestedSiteDataset = nestedSiteData[[1]]}
-  if(dataFormattingTable$spatial_scale_variable != 'Y'){
-    nestedSiteLevels = 'site'
-    nestedSiteDataset = dataset
-  }
+    dataset = getNestedSiteDataset(dataset, siteLevel) }
+  
   nestedSiteDataset$date = as.POSIXct(strptime(dataset$date, '%Y-%m-%d'))
   nestedSiteDataset$year = as.numeric(format(nestedSiteDataset$date, '%Y'))
   day = as.numeric(strftime(nestedSiteDataset$date, format = '%j'))
