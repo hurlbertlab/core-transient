@@ -2,22 +2,19 @@
 # CORE-TRANSIENT FUNCTIONS                                                         *
 ###################################################################################*
 # This script contains all of the functions used in the analyses that summarize
-# core-transient data by site (and across sites). It is divided in 3 parts:
-#   1. Bimodality summary statistics
-#   2. Summary output tables for a given site and across sites
-#   3. Plot output
+# core-transient data by site (and across sites).
 
-#==================================================================================*
+#======================================================================================================*
 # ---- GENERAL FUNCTIONS ----
-#==================================================================================*
+#======================================================================================================*
 
 # Standard error:
 
 se = function(x) sd(x)/sqrt(length(x))
 
-#==================================================================================*
+#======================================================================================================*
 # ---- FUNCTIONS FOR DATA FORMATTING ----
-#==================================================================================*
+#======================================================================================================*
 
 # This function modifies a value in the data formatting table for a 
 # specific field:
@@ -100,44 +97,47 @@ dataFormattingTableUpdate = function(datasetID, datasetFinal){
   return(dataFormattingTable)
 }
 
-#==================================================================================*
+#======================================================================================================*
 # ---- FUNCTIONS for making proportional occurrence dataframes ----
-#==================================================================================*
-#-------------------------------------------------------------------------------*
+#======================================================================================================*
+
+#------------------------------------------------------------------------------------------------------*
 # ---- SUBSET DATASET TO SITES WITH ADEQUATE TIME SAMPLES AND RICHNESS ----
-#-------------------------------------------------------------------------------*
+#------------------------------------------------------------------------------------------------------*
 
 # Note: Prior to running "RichnessYearSubsetFrame", you must have created the nestedDataset using the function "getNestedDataset". The output of the getNestedDataset function is a list with the first list item being the dataset, expanded across all potential spatial and temporal grains and the second being a vector of the names of the site columns. The "i" in this function refers to the the value in the vector of site names. 
 
-RichnessYearSubsetFrame = function(spatialGrain = 'site', temporalGrain = 'year', minNYears = 10, minSpRich = 10){
+RichnessYearSubsetFrame = function(dataset = dataset, spatialGrain = 'site', 
+                                   temporalGrain = 'year', minNYears = 10, minSpRich = 10){
+  # Get nested data:
+    nestedData = getNestedDataset(dataset)
+    spatialGrains = nestedDataset[[2]]
   # Extract the nested dataset:
-  nestedDatasetDf = nestedDataset[[1]]
+    nestedDatasetDf = nestedDataset[[1]]
   # Add a column named siteID:
-  nestedDatasetDf$siteID = nestedDatasetDf[,spatialGrain]
+    nestedDatasetDf$siteID = nestedDatasetDf[,spatialGrain]
   # Get the number of years and species richness for each site: 
-  siteSr_nTime = ddply(nestedDatasetDf, .(siteID), summarize,
+    siteSr_nTime = ddply(nestedDatasetDf, .(siteID), summarize,
                        sr = length(unique(species)), 
                        nTime = length(unique(year)))
   # Subset to sites with a high enough species richness and year samples:
-  goodSites = filter(siteSr_nTime, sr >= minSpRich & 
+    goodSites = filter(siteSr_nTime, sr >= minSpRich & 
                        siteSr_nTime$nTime >= minNYears)$siteID
   # If statement to return if there's no good sites:
-  if(length(goodSites) == 0) {return(print('No acceptable sites, rethink site definitions or temporal scale'))}
-  else {
-    # Match good sites and the dataframe:
-    outFrame = na.omit(nestedDatasetDf[nestedDatasetDf$siteID %in% goodSites,])
-    # Add date column as a specific temporal grain:
-    outFrame$date = outFrame[,temporalGrain]
-    # Return output (note: "select(one_of" returns just the specified columns)
-    return(select(outFrame,
-                  one_of(c('siteID','date','year', 'site', 'species','count'))))}
+    if(length(goodSites) == 0) {return(print('No acceptable sites, rethink site definitions or temporal scale'))}
+    else {
+      # Match good sites and the dataframe:
+      outFrame = na.omit(nestedDatasetDf[nestedDatasetDf$siteID %in% goodSites,])
+      # Add date column as a specific temporal grain:
+      outFrame$date = outFrame[,temporalGrain]
+      # Return output (note: "select(one_of" returns just the specified columns)
+      return(select(outFrame,
+                    one_of(c('siteID','date','year', 'site', 'species','count'))))}
 }
 
-# head(RichnessYearSubsetFrame(spatialGrain = 'site1',temporalGrain = 'year_season'))
-
-#-------------------------------------------------------------------------------*
+#------------------------------------------------------------------------------------------------------*
 # ---- CALCULATE the Z-threshold ----
-#-------------------------------------------------------------------------------*
+#------------------------------------------------------------------------------------------------------*
 # The Z-threshold refers to the maximum number of temporal subsamples that provide the most sites with greater than a minimum number of years of data. The following function returns this value.
 
 # Note: Prior to running "zFinder", you must have already run the function "RichnessYearSubsetFrame" for which "inData" is the function's output.  
@@ -187,9 +187,9 @@ zFinder = function(inData, minNYears = 10, proportionalThreshold = .5){
   return(list (z = z, zSites = zSites, zTable = data.frame(zMatrix)))
 }
 
-#-------------------------------------------------------------------------------*
+#------------------------------------------------------------------------------------------------------*
 # ---- CALCULATE the W-threshold, subset data ----
-#-------------------------------------------------------------------------------*
+#------------------------------------------------------------------------------------------------------*
 # The W-threshold refers to the maximum number of spatial subsamples that provide a given proprtion of siteYears.
 
 # Note: Prior to running "wzDataSubset", you must have already run the function "RichnessYearSubsetFrame" (inData) and the "zFinder" (zOutput).  
@@ -306,7 +306,7 @@ wzDataSubset = function(inData, zOutput, minNYears = 10, proportionalThreshold =
 }
 
 
-propOccFun = function(datasetID, spatialGrain, temporalGrain, minNYears = 10, minSpRich = 10){
+propOccFun = function(datasetID, spatialGrain = 'site', temporalGrain = 'year', minNYears = 10, minSpRich = 10){
   inData = RichnessYearSubsetFrame(spatialGrain = spatialGrain, temporalGrain = temporalGrain)
   zOutput = zFinder(inData)
   dataset = wzDataSubset(inData, zOutput)$data
@@ -324,18 +324,18 @@ propOccFun = function(datasetID, spatialGrain, temporalGrain, minNYears = 10, mi
 
 ###################################################################################
 
-#----------------------------------------------------------------------------------*
+#------------------------------------------------------------------------------------------------------*
 # Function to change date object to year:
-#----------------------------------------------------------------------------------*
+#------------------------------------------------------------------------------------------------------*
 
 getYear = function(date){
   if (class(date)[1] == 'factor') date = as.POSIXlt(date)
   return(as.numeric(format(date, '%Y')))
 }
 
-#----------------------------------------------------------------------------------*
+#------------------------------------------------------------------------------------------------------*
 # The following function is used to create and explore and extract the species richness and number of time samples for a site.
-#----------------------------------------------------------------------------------*
+#------------------------------------------------------------------------------------------------------*
 
 
 siteSummaryFun = function(dataset){
@@ -344,13 +344,13 @@ siteSummaryFun = function(dataset){
         nTime = length(unique(year)))
 }
 
-#----------------------------------------------------------------------------------*
+#------------------------------------------------------------------------------------------------------*
 # The following functions are used to evaluate scale for temporally or spatially nested data
-#----------------------------------------------------------------------------------*
+#------------------------------------------------------------------------------------------------------*
 
 # Nested site dataset (nesting is categorical, not lat-long):
 
-getNestedSiteDataset = function(dataset, i){
+getNestedSiteDataset = function(dataset){
   siteTable = read.table(text = as.character(dataset$site), sep = '_', stringsAsFactors = F)
   siteDefinition = dataFormattingTable$Raw_siteUnit
   siteUnitTable = read.table(text = as.character(siteDefinition), sep = '_', stringsAsFactors = F)
@@ -368,6 +368,24 @@ getNestedSiteDataset = function(dataset, i){
   siteFrame = do.call(cbind, outList)
   nestedSiteData = cbind(dataset, siteFrame)
   return(list(nestedSiteData, names(siteFrame)))
+}
+
+getLLSiteDataset = function(dataset, accuracy){
+  # Split LL column into a dataframe of lat and long:
+    siteLL = data.frame(do.call(rbind, strsplit(t, '_' )))
+  # Round to chosen accuracy:
+    roundLL = function(LatORLong){
+      LatorLongVector = as.numeric(as.character(siteLL[,LatORLong]))
+      return(round_any(LatorLongVector, accuracy,  f = floor))
+    }
+    lat = roundLL(1)
+    long = roundLL(2)
+  # Paste to a new site vector:
+    dataset$site = paste(lat, long, sep = '_')
+  # Summarize based on the new site definitions:
+    dataset = ddply(dataset, .(datasetID, site, date, species),
+                    summarize, count = sum(count))
+    return(dataset)  
 }
 
 # Nested time dataset (spatial nesting is categorical, not lat-long):
@@ -406,7 +424,7 @@ getNestedTimeDataset = function(dataset){
 # Wrapper function (spatial nesting is categorical, not lat-long):
 
 getNestedDataset = function(dataset){
-  if(dataFormattingTable$subannualTgrain == 'N' &
+  if(dataFormattingTable$subannualTgrain != 'Y' &
        dataFormattingTable$spatial_scale_variable != T){
     names(dataset)[3] = 'year'
     dataset = list(dataset, 'site')}
@@ -418,9 +436,9 @@ getNestedDataset = function(dataset){
   return(dataset)
 }
 
-#----------------------------------------------------------------------------------*
+#------------------------------------------------------------------------------------------------------*
 # Function to evaluate spatial and temporal sampling grain:
-#----------------------------------------------------------------------------------*
+#------------------------------------------------------------------------------------------------------*
 
 wzMaker = function(i, minNYears = 10, proportionalThreshold = .2){
   
@@ -486,9 +504,9 @@ wzMaker = function(i, minNYears = 10, proportionalThreshold = .2){
   return(wzMakerOutList)
 }
 
-#----------------------------------------------------------------------------------*
+#------------------------------------------------------------------------------------------------------*
 # The following function writes the proportional occurence data frame on sites.
-#----------------------------------------------------------------------------------*
+#------------------------------------------------------------------------------------------------------*
 
 propOccFun = function(dataset){
   spTime = ddply(dataset, .(datasetID, site, species), summarize, 
@@ -500,9 +518,9 @@ propOccFun = function(dataset){
   return(propOcc[,-c(4:5)])
 }
 
-#----------------------------------------------------------------------------------*
+#------------------------------------------------------------------------------------------------------*
 # ---- FUNCTIONS for proportional occurrence and site summary data frames  ----
-#==================================================================================*
+#======================================================================================================*
 
 nestedSiteValidity = function(dataset, i){
   siteUnit = paste(as.character(siteUnitTable[1,1:i]), collapse = '_')
@@ -545,9 +563,9 @@ nestedSiteValiditySummary = function(dataset){
 }
 
 
-#==================================================================================*
+#======================================================================================================*
 # ---- GET DATA ----
-#==================================================================================*
+#======================================================================================================*
 
 # The following function reads in the data and returns a list of the proportional 
 # occurence data frame, the site summary (sp richness and number of time samples
@@ -566,9 +584,9 @@ getDataList = function(datasetID){
               system = system, taxa = taxa))
 }
 
-#==================================================================================*
+#======================================================================================================*
 # ---- BIMODALILITY ----
-#==================================================================================*
+#======================================================================================================*
 # NOTE: For these functions to run, occProp, Ntime, and outSummary frames must
 # already be loaded and the "Sampling summary" lines of code MUST be run in the 
 # dashboard!
@@ -597,9 +615,9 @@ getDataList = function(datasetID){
 #     Inputs: Site
 #     Outputs: A vector of shape parameters (alpha and beta).
 # 
-#----------------------------------------------------------------------------------*
+#------------------------------------------------------------------------------------------------------*
 # ---- Function for calculating bimodality ----
-#==================================================================================*
+#======================================================================================================*
 # Note 1: Bimodality is the fraction of species occurring at either end of 
 # occupancy distribution. We use a randomization approach to test whether the 
 # distribution is significantly bimodal.
@@ -645,9 +663,9 @@ pBimodalFun = function(propOcc,nTime, reps){
   sum(randomBimod >= actualBimod)/(reps + 1)
 }
 
-#----------------------------------------------------------------------------------*
+#------------------------------------------------------------------------------------------------------*
 # ---- Function for fitting the beta distribution ----
-#==================================================================================*
+#======================================================================================================*
 # Required packages = MASS
 
 # Scale occupancy from [0,1] to (0,1) following Smithson and Verkuilen 2006
@@ -672,9 +690,9 @@ fitBeta = function(occProp, nTime) {
   } else c(NA, NA)
 }
 
-#==================================================================================*
+#======================================================================================================*
 # ---- CORE-TRANSIENT MODE STATISTICS ----
-#==================================================================================*
+#======================================================================================================*
 
 # Proportion of samples that are core or transient:
 
@@ -699,9 +717,9 @@ pModeFun = function(propOcc, nTime, mode, threshold, reps){
   return(pVal)
 }
 
-#==================================================================================*
+#======================================================================================================*
 # ---- DATASET SUMMARY FUNCTIONS ----
-#==================================================================================*
+#======================================================================================================*
 # NOTE: For these functions to run, occProp, Ntime, and outSummary frames must
 # already be loaded!
 #
@@ -720,9 +738,9 @@ pModeFun = function(propOcc, nTime, mode, threshold, reps){
 #     (Allen + Ethan formula), randomization-derived p-value, and the alpha and
 #     beta shape parameters for the beta distibution.
 #
-#----------------------------------------------------------------------------------*
+#------------------------------------------------------------------------------------------------------*
 # ---- Function to generate summary of sampling ----
-#==================================================================================*
+#======================================================================================================*
 
 # Summary stats for all sites in a dataset:
 
@@ -758,9 +776,9 @@ summaryStatsFun = function(datasetID, threshold, reps){
   return(rbind.fill(outList))
 }
 
-#----------------------------------------------------------------------------------*
+#------------------------------------------------------------------------------------------------------*
 # ---- MAKE SUMMARY STATS OF ANY NEW PROPOCC FILES ----
-#==================================================================================*
+#======================================================================================================*
 
 addNewSummariesFun = function(threshold, reps){
   currentSummaryData = read.csv('output/tabular_data/core-transient_summary.csv')
@@ -787,15 +805,15 @@ addNewSummariesFun = function(threshold, reps){
 # ---- UPDATE COMPLETE TO THIS POINT ----
 ###################################################################################*
 
-#==================================================================================*
+#======================================================================================================*
 # ---- PLOT FUNCTIONS ----
-#==================================================================================*
+#======================================================================================================*
 # NOTE: For these functions to run, occProp, Ntime, and outSummary frames must
 # already be loaded!
 
-#----------------------------------------------------------------------------------*
+#------------------------------------------------------------------------------------------------------*
 # ---- Custom themes ----
-#==================================================================================*
+#======================================================================================================*
 
 # Theme for plot with no background grid:
 
@@ -826,9 +844,9 @@ theme_CT_Grid = function(base_size = 12) {
         plot.margin = unit(c(0,.5,1.5,.5), 'lines'))
 }
 
-#----------------------------------------------------------------------------------*
+#------------------------------------------------------------------------------------------------------*
 # ---- Function to make core-transient histogram  ----
-#==================================================================================*
+#======================================================================================================*
 # This function creates a ct histogram for one site:
 
 ct.hist = function(site) {
