@@ -24,8 +24,6 @@ source('scripts/R-scripts/core-transient_functions.R')
 
 ds = 147
 
-list.files('data/raw_datasets')
-
 dataset = read.csv(paste('data/raw_datasets/dataset_', ds, '.csv', sep = ''))
 
 dataFormattingTable = read.csv('Reference/data_formatting_table.csv')
@@ -75,15 +73,35 @@ summary(dataset1)
 
 levels(dataset1$site)
 
-# sites are listed with a site name, number, and lat_long
-# All sites begin with 'Pacific', so that part can be removed
+# sites are listed as Pacific_sitenumber_lat_long
+# Lat_longs can be removed so that site numbers are the site designations
+
+# Use read.table to separate the string by the underscores
+
+site = as.character(dataset1$site)
+siteTable = read.table(text = site, sep = "_")
+
+# check the table
+
+head(siteTable, 20)
+
+# All good, now paste first 3 columns together
+
+site = paste(siteTable$V1,siteTable$V2, sep = "_")
+
+# Check sites then add new field to dataset
+
+unique(site)
 
 dataset2 = dataset1
-dataset2$site = str_sub(dataset2$site, start = 9)
 
-head(dataset2)
+dataset2$site = site
 
-# Looks good, sites now listed by number_lat_long
+# Check dataset
+
+head(dataset2,20)
+
+# Looks good, sites now listed by Pacific_sitenumber
 
 # !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE SITE DATA WERE MODIFIED!
 
@@ -103,7 +121,7 @@ dataFormattingTable[,'spatial_scale_variable'] =
 # Notes_siteFormat. 
 
 dataFormattingTable[,'Notes_siteFormat'] = 
-  dataFormattingTableFieldUpdate(ds, 'Notes_siteFormat', 'sites were all kept, but the name Pacific was removed from all sites so that sites are listed by number_lat_long')
+  dataFormattingTableFieldUpdate(ds, 'Notes_siteFormat', 'sites listed as Pacific_sitenumber_lat_longs, but only want to use site number as site designations.  Used read.table to separate string, then pasted together Pacific_sitenumbers as new site field."
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SPECIES DATA ----
