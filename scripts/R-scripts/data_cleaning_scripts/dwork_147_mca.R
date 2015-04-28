@@ -121,14 +121,14 @@ dataFormattingTable[,'spatial_scale_variable'] =
 # Notes_siteFormat. 
 
 dataFormattingTable[,'Notes_siteFormat'] = 
-  dataFormattingTableFieldUpdate(ds, 'Notes_siteFormat', 'sites listed as Pacific_sitenumber_lat_longs, but only want to use site number as site designations.  Used read.table to separate string, then pasted together Pacific_sitenumbers as new site field."
+  dataFormattingTableFieldUpdate(ds, 'Notes_siteFormat', 'sites listed as Pacific_sitenumber_lat_longs, but only want to use site number as site designations.  Used read.table to separate string, then pasted together Pacific_sitenumbers as new site field.')
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SPECIES DATA ----
 #===============================================================================*
 # Explore all the species
+# Rename field first
 
-    # Rename field first
 names(dataset2)[4] = 'species'
 
 levels(dataset2$species) 
@@ -230,6 +230,7 @@ dataset6$date = date
 # Check the results:
 
 head(dataset6)
+str(dataset6)
 
 # !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE DATE DATA WERE MODIFIED!
 
@@ -270,7 +271,7 @@ summary(dataset7)
 
 # Update the data formatting table
 
-dataFormattingTable = dataFormattingTableUpdate(ds)
+dataFormattingTable = dataFormattingTableUpdate(ds, dataset7)
 
 # final look at the dataset
 
@@ -281,7 +282,6 @@ summary (dataset7)
 # everything is looks okay, write formatted data frame
 
 write.csv(dataset7, "data/formatted_datasets/dataset_147.csv", row.names = F)
-
 
 # Update format flag and priority
 
