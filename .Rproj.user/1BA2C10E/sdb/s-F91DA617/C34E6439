@@ -1,0 +1,16 @@
+{
+    "contents" : "# \"Metadata\" maker\n# This function will compile the info from the summary table and put it into a text\n# file to be stored in the core-transient-datasets folder.\n\nmetaFun = function(dataset, working.directory) {\n  # Set working directory for output:\n      setwd(working.directory)\n  # Get summary_data_table from the core-transient GitHub site:\n      url = 'https://raw.githubusercontent.com/hurlbertlab/core-transient/master/data_source_table_csv'\n      df = read.csv('https://raw.githubusercontent.com/hurlbertlab/core-transient/master/data_source_table.csv')\n  # Subset data file to just the dataset of interest:\n      df1 = df[df$dataset_ID == dataset,]\n  # Create a name for the output\n      output = paste(dataset,'.txt',sep = '')\n      sink(output)\n  # Pull out the data summary columns:\n      cat(paste(names(df1[1]),': ', df1[,1], sep =''))\n      cat('\\n')\n      cat(paste(names(df1[2]),': ', df1[,2], sep =''))\n      cat('\\n')\n      cat(paste(names(df1[4]),': ', df1[,4], sep =''))\n      cat('\\n')\n      cat(paste(names(df1[9]),': ', df1[,9], sep =''))\n      cat('\\n\\n')\n      cat(paste(names(df1[6]),': ', df1[,6], sep =''))\n      cat('\\n')\n      cat(paste(names(df1[7]),': ', df1[,7], sep =''))\n      cat('\\n')\n      cat(paste(names(df1[8]),': ', df1[,8], sep =''))\n      cat('\\n\\n')\n      cat(paste(names(df1[10]),': ', df1[,10], sep =''))\n      cat('\\n')\n      cat(paste(names(df1[11]),': ', df1[,11], sep =''))\n      cat('\\n')\n      cat(paste(names(df1[12]),': ', df1[,12], sep =''))\n      cat('\\n')\n      cat(paste(names(df1[13]),': ', df1[,13], sep =''))\n      cat('\\n')\n      if (df1$end_year == 'present')\n        {cat(paste('Years: ', \n                  2014-as.numeric(df1$start_year), sep =''))} else \n        {cat(paste('Years: ', as.numeric(as.character(df1$end_year))-\n                     as.numeric(as.character(df1$start_year)), \n                   sep =''))}\n      cat('\\n\\n')\n      cat(paste(names(df1[18]),': ', df1[,18], sep =''))\n      sink()\n}\n\nmetaFun('COM02Q','C:/Users/Brian/Desktop')\n\nfile.show('COM02Q.txt')\n",
+    "created" : 1423074505681.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "2118151002",
+    "id" : "C34E6439",
+    "lastKnownWriteTime" : 1412703522,
+    "path" : "~/core-transient/scripts/R-scripts/metaFun.R",
+    "project_path" : "scripts/R-scripts/metaFun.R",
+    "properties" : {
+    },
+    "source_on_save" : false,
+    "type" : "r_source"
+}
