@@ -255,6 +255,7 @@ dataset6 = dataset6[, -which(names(dataset6) == datefield)]
 dataset6$date = date
 
 head(dataset6)
+str(dataset6)
 
 # !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE DATE DATA WERE MODIFIED!
 
@@ -279,6 +280,7 @@ dataFormattingTable[,'subannualTgrain'] =
 # Last look
 
 head(dataset6, 20)
+tail(dataset6, 20)
 
 # Make compiled dataframe
 
@@ -290,6 +292,7 @@ dataset7 = ddply(dataset6, .(datasetID, site, date, species), summarize,
 dim(dataset7)
 
 head(dataset7, 30)
+tail(dataset7, 30)
 
 summary(dataset7)
 
