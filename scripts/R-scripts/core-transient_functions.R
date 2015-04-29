@@ -35,31 +35,31 @@ dataFormattingTableUpdate = function(datasetID, datasetFinal){
   rowIndex = which(dataFormattingTable$dataset_ID == datasetID)
   dataFormattingTable[,'Raw_nRecs'] = 
     dataFormattingTableFieldUpdate(datasetID, 'Raw_nRecs',
-    nrow(dataset))
+                                   nrow(dataset))
   dataFormattingTable[,'Raw_nTime'] = 
     dataFormattingTableFieldUpdate(datasetID, 'Raw_nTime',
-    length(unique(dataset1$date)))
+                                   length(unique(dataset1$date)))
   dataFormattingTable[,'Raw_nSpecies'] = 
     dataFormattingTableFieldUpdate(datasetID, 'Raw_nSpecies', 
-    length(unique(dataset1$species)))
+                                   length(unique(dataset1$species)))
   dataFormattingTable[,'Raw_nSites'] = 
     dataFormattingTableFieldUpdate(datasetID, 'Raw_nSites', 
-    length(unique(dataset2$site)))
+                                   length(unique(dataset2$site)))
   if(dataFormattingTable[rowIndex, 'countFormat'] == 'count'){
     if(dataFormattingTable[rowIndex, 'subannualTgrain'] == 'Y'){
       datasetFinal$date = as.numeric(format(datasetFinal$date, '%Y'))
     }
     siteYearCounts = ddply(datasetFinal, .(site, date), 
-      summarize, tCount = sum(count))
+                           summarize, tCount = sum(count))
     dataFormattingTable[,'Raw_Mean_Individuals_perSiteYear'] = 
       dataFormattingTableFieldUpdate(datasetID, 'Raw_Mean_Individuals_perSiteYear', 
-      mean(siteYearCounts$tCount))
+                                     mean(siteYearCounts$tCount))
     dataFormattingTable[,'Raw_Min_Individuals_perSiteYear'] = 
       dataFormattingTableFieldUpdate(datasetID, 'Raw_Min_Individuals_perSiteYear', 
-      min(siteYearCounts$tCount))
+                                     min(siteYearCounts$tCount))
     dataFormattingTable[,'Raw_Max_Individuals_perSiteYear'] = 
       dataFormattingTableFieldUpdate(datasetID, 'Raw_Max_Individuals_perSiteYear', 
-      max(siteYearCounts$tCount))
+                                     max(siteYearCounts$tCount))
     siteYearCounts = ddply(datasetFinal, .(site, date), 
                            summarize, tCount = sum(count))
     dataFormattingTable[,'Formatted_Mean_Individuals_perSiteYear'] = 
@@ -71,20 +71,20 @@ dataFormattingTableUpdate = function(datasetID, datasetFinal){
     dataFormattingTable[,'Formatted_Max_Individuals_perSiteYear'] = 
       dataFormattingTableFieldUpdate(datasetID, 'Formatted_Max_Individuals_perSiteYear', 
                                      max(siteYearCounts$tCount))
-    } else {
-        dataFormattingTable[,'Raw_Mean_Individuals_perSiteYear'] = 
-          dataFormattingTableFieldUpdate(datasetID, 'Raw_Mean_Individuals_perSiteYear','NA')
-        dataFormattingTable[,'Raw_Min_Individuals_perSiteYear'] = 
-          dataFormattingTableFieldUpdate(datasetID, 'Raw_Min_Individuals_perSiteYear','NA')
-        dataFormattingTable[,'Raw_Max_Individuals_perSiteYear'] = 
-          dataFormattingTableFieldUpdate(datasetID, 'Raw_Max_Individuals_perSiteYear','NA')
-        dataFormattingTable[,'Formatted_Mean_Individuals_perSiteYear'] = 
-          dataFormattingTableFieldUpdate(datasetID, 'Formatted_Mean_Individuals_perSiteYear','NA')
-        dataFormattingTable[,'Formatted_Min_Individuals_perSiteYear'] = 
-          dataFormattingTableFieldUpdate(datasetID, 'Formatted_Min_Individuals_perSiteYear','NA')
-        dataFormattingTable[,'Formatted_Max_Individuals_perSiteYear'] = 
-          dataFormattingTableFieldUpdate(datasetID, 'Formatted_Max_Individuals_perSiteYear','NA') 
-      }
+  } else {
+    dataFormattingTable[,'Raw_Mean_Individuals_perSiteYear'] = 
+      dataFormattingTableFieldUpdate(datasetID, 'Raw_Mean_Individuals_perSiteYear','NA')
+    dataFormattingTable[,'Raw_Min_Individuals_perSiteYear'] = 
+      dataFormattingTableFieldUpdate(datasetID, 'Raw_Min_Individuals_perSiteYear','NA')
+    dataFormattingTable[,'Raw_Max_Individuals_perSiteYear'] = 
+      dataFormattingTableFieldUpdate(datasetID, 'Raw_Max_Individuals_perSiteYear','NA')
+    dataFormattingTable[,'Formatted_Mean_Individuals_perSiteYear'] = 
+      dataFormattingTableFieldUpdate(datasetID, 'Formatted_Mean_Individuals_perSiteYear','NA')
+    dataFormattingTable[,'Formatted_Min_Individuals_perSiteYear'] = 
+      dataFormattingTableFieldUpdate(datasetID, 'Formatted_Min_Individuals_perSiteYear','NA')
+    dataFormattingTable[,'Formatted_Max_Individuals_perSiteYear'] = 
+      dataFormattingTableFieldUpdate(datasetID, 'Formatted_Max_Individuals_perSiteYear','NA') 
+  }
   dataFormattingTable[,'Formatted_nRecs'] = 
     dataFormattingTableFieldUpdate(datasetID, 'Formatted_nRecs',
                                    nrow(datasetFinal))
@@ -102,38 +102,115 @@ dataFormattingTableUpdate = function(datasetID, datasetFinal){
 #======================================================================================================*
 
 #------------------------------------------------------------------------------------------------------*
-# ---- SUBSET DATASET TO SITES WITH ADEQUATE TIME SAMPLES AND RICHNESS ----
+# The following functions are used for temporally or spatially nested data
+#======================================================================================================*
+
 #------------------------------------------------------------------------------------------------------*
+# Function to round dataset to lat and long and summarize data by the new rounded values:
+#------------------------------------------------------------------------------------------------------*
+datasetRoundLatLong = function(dataset, accuracy){
+  # Split LL column into a dataframe of lat and long:
+  siteLL = data.frame(do.call(rbind, strsplit(t, '_' )))
+  # Round to chosen accuracy:
+  roundLL = function(LatORLong){
+    LatorLongVector = as.numeric(as.character(siteLL[,LatORLong]))
+    return(round_any(LatorLongVector, accuracy,  f = floor))
+  }
+  lat = roundLL(1)
+  long = roundLL(2)
+  # Paste to a new site vector and return dataset:
+  dataset$analysisSite = paste(lat, long, sep = '_')
+  return(dataset)  
+}
+
+#------------------------------------------------------------------------------------------------------*
+# Function to summarize data to a given site level:
+#------------------------------------------------------------------------------------------------------*
+getNestedSiteDataset = function(dataset, siteGrain = 'site'){
+  # If sites are not nested (lat-long or categorical):
+  if(dataFormattingTable$spatial_scale_variable == 'N'){
+    dataset$analysisSite = dataset$site
+    return(dataset)
+  } else {
+    # If sites are defined by lat-longs:
+    if(dataFormattingTable$LatLong_sites == 'Y')
+    {dataset = datasetRoundLatLong(dataset, accuracy = siteGrain)
+     return(dataset)} else {
+       # If sites are categorical but nested ...
+       # Get the definition for a site and store each level as separate columns:
+       siteLevels = strsplit(siteLevel, '_')[[1]]
+       # Convert site data to a table and add names based on site definition:
+       siteTable = read.table(text = as.character(dataset$site), sep = '_', stringsAsFactors = F)
+       siteDefinition = dataFormattingTable$Raw_siteUnit
+       names(siteTable) = strsplit(as.character(siteDefinition), '_')[[1]]
+       # Get pre-determined site levels and maintain site based on match: 
+       siteLevels = strsplit(siteGrain, '_')[[1]]
+       dataset$analysisSite = do.call('paste', c(siteTable[siteLevels], sep = '_'))
+       return(dataset)  
+     }}
+}
+
+#------------------------------------------------------------------------------------------------------*
+# Nested time dataset (spatial nesting is categorical, not lat-long):
+#------------------------------------------------------------------------------------------------------*
+getNestedTimeDataset = function(dataset,  temporalGrain){
+  if(dataFormattingTable$subannualTgrain == 'Y'){
+    dataset$date = as.POSIXct(strptime(dataset$date, '%Y-%m-%d'))
+    year = as.numeric(format(dataset$date, '%Y'))
+    day = as.numeric(strftime(dataset$date, format = '%j'))
+    week = trunc(day/7)+1
+    biweek = trunc(week/2)+1
+    month = as.numeric(format(dataset$date, '%m'))
+    bimonth = trunc(month/2)+1
+    season = ifelse(day < 80 |day >= 356, 1,
+                    ifelse(day >= 80 & day < 172, 2,
+                           ifelse(day >= 172 & day < 266, 3, 4)))
+    # Combine time data into a dataframe:
+    timeFrame = cbind(day, week, biweek, month, bimonth, season, year)
+    #   # Add analysisDate column at a given temporal grain and year:
+    dataset$analysisDate = paste(year, timeFrame[,temporalGrain], sep ='_')
+    dataset$year = year
+    # Summarize data to the new time scale:
+  } else {
+    dataset$analysisDate = dataset$date
+    dataset$year = dataset$date
+  }
+  return(dataset)
+}
+
+#------------------------------------------------------------------------------------------------------*
+# Wrapper function for nested data (if necessary):
+#------------------------------------------------------------------------------------------------------*
+getNestedDataset = function(dataset, siteGrain, temporalGrain){
+  datasetSpace = getNestedSiteDataset(dataset, siteGrain)
+  datasetTime = getNestedTimeDataset(datasetSpace, temporalGrain)
+  return(datasetTime)
+}
+
+#------------------------------------------------------------------------------------------------------*
+# ---- SUBSET DATASET TO SITES WITH ADEQUATE TIME SAMPLES AND RICHNESS ----
+#======================================================================================================*
 
 # Note: Prior to running "RichnessYearSubsetFrame", you must have created the nestedDataset using the function "getNestedDataset". The output of the getNestedDataset function is a list with the first list item being the dataset, expanded across all potential spatial and temporal grains and the second being a vector of the names of the site columns. The "i" in this function refers to the the value in the vector of site names. 
 
-RichnessYearSubsetFrame = function(dataset = dataset, spatialGrain = 'site', 
-                                   temporalGrain = 'year', minNYears = 10, minSpRich = 10){
-  # Get nested data:
-    nestedData = getNestedDataset(dataset)
-    spatialGrains = nestedDataset[[2]]
-  # Extract the nested dataset:
-    nestedDatasetDf = nestedDataset[[1]]
-  # Add a column named siteID:
-    nestedDatasetDf$siteID = nestedDatasetDf[,spatialGrain]
+richnessYearSubsetFun = function(dataset, spatialGrain, temporalGrain, 
+                                 minNYears = 10, minSpRich = 10){
+  dataset = getNestedDataset(dataset, spatialGrain, temporalGrain)
   # Get the number of years and species richness for each site: 
-    siteSr_nTime = ddply(nestedDatasetDf, .(siteID), summarize,
+  siteSr_nTime = ddply(dataset, .(analysisSite), summarize,
                        sr = length(unique(species)), 
                        nTime = length(unique(year)))
   # Subset to sites with a high enough species richness and year samples:
-    goodSites = filter(siteSr_nTime, sr >= minSpRich & 
-                       siteSr_nTime$nTime >= minNYears)$siteID
-  # If statement to return if there's no good sites:
-    if(length(goodSites) == 0) {return(print('No acceptable sites, rethink site definitions or temporal scale'))}
-    else {
-      # Match good sites and the dataframe:
-      outFrame = na.omit(nestedDatasetDf[nestedDatasetDf$siteID %in% goodSites,])
-      # Add date column as a specific temporal grain:
-      outFrame$date = outFrame[,temporalGrain]
-      # Return output (note: "select(one_of" returns just the specified columns)
-      return(select(outFrame,
-                    one_of(c('siteID','date','year', 'site', 'species','count'))))}
-}
+  goodSites = filter(siteSr_nTime, sr >= minSpRich & 
+                       siteSr_nTime$nTime >= minNYears)$analysisSite
+  # If statement to return if there are no good sites:
+  if(length(goodSites) == 0) {
+    return(print('No acceptable sites, rethink site definitions or temporal scale'))}
+  else {
+    # Match good sites and the dataframe:
+    outFrame = na.omit(dataset[dataset$site %in% goodSites,])
+    return(outFrame)
+  }}
 
 #------------------------------------------------------------------------------------------------------*
 # ---- CALCULATE the Z-threshold ----
@@ -142,50 +219,41 @@ RichnessYearSubsetFrame = function(dataset = dataset, spatialGrain = 'site',
 
 # Note: Prior to running "zFinder", you must have already run the function "RichnessYearSubsetFrame" for which "inData" is the function's output.  
 
-zFinder = function(inData, minNYears = 10, proportionalThreshold = .5){
+zFinder = function(inData, minNTime = 10, proportionalThreshold = .5){
   data = inData
   # Calculate the number of temporal samples per site and year: 
-  spaceTime = ddply(data, .(siteID, year),
+    spaceTime = ddply(data, .(analysisSite, year, analysisDate),
                     summarize, temporalSubsamples = length(unique(date)))
-  
   # zPossible is a potential threshold of temporal subsampling:
-  zPossible = sort(unique(spaceTime$temporalSubsamples))
-  
+    zPossible = sort(unique(spaceTime$temporalSubsamples))
   # Create an empty matrix to store summary data for possible Z-values:
-  zMatrix = matrix(ncol = 3, nrow = length(zPossible), 
+    zMatrix = matrix(ncol = 3, nrow = length(zPossible), 
                    dimnames = list(NULL, c('z','nSites','propSites')))
-  
   # Create an empty list of sites to store site names of good sites at a given Z-value:
-  zSiteList = list(length = length(zPossible))
-  
+    zSiteList = list(length = length(zPossible))
   # For loop to populate the zMatrix and zSite Lists:
-  
-  for(i in 1:length(zPossible)){
-    # Calculate the years in which the subsamplings was greater than equal to z for a given site:
-    siteYearsGTEz = ddply(filter(spaceTime, temporalSubsamples>=zPossible[i]),
-                          .(siteID), summarize, 
-                          yearsGTEz = length(unique(year)))
-    # Determine sites with a minimum number of 10 years of sampling >= z
-    goodSites = filter(siteYearsGTEz, yearsGTEz>=minNYears)$siteID
-    # Construct matrix of z values, the number and proportion of sites:
-    zMatrix[i,'z'] = zPossible[i]
-    zMatrix[i, 'nSites'] = length(goodSites)
-    zMatrix[i, 'propSites'] = length(goodSites)/length(unique(data$siteID))
-    # List the names of goodSites for a given Z-value:
-    zSiteList[[i]] = goodSites
-    # Name each list entry by the Z-value
-    names(zSiteList)[[i]] = zPossible[i]
-  }
-  
+    for(i in 1:length(zPossible)){
+      # Subset spaceTime to subsamples greater than or equal to z for a given site:
+        spaceTimeGTEz = filter(spaceTime, temporalSubsamples>=zPossible[i])
+      # Determine sites in which the temporal subsampling was greater than equal to z for at least the minimum time samples:
+        goodSites = ddply(spaceTimeGTEz, .(analysisSite), summarize, 
+                              length(unique(analysisDate) >= minNTime))$analysisSite
+      # Construct matrix of z values, the number and proportion of sites:
+        zMatrix[i,'z'] = zPossible[i]
+        zMatrix[i, 'nSites'] = length(goodSites)
+        zMatrix[i, 'propSites'] = length(goodSites)/length(unique(spaceTime$analysisSite))
+      # List the names of goodSites for a given Z-value:
+        zSiteList[[i]] = goodSites
+      # Name each list entry by the Z-value
+        names(zSiteList)[[i]] = zPossible[i]
+      }
   # Get the highest Z value with at least minNYears:
-  z = max(filter(data.frame(zMatrix), propSites >= proportionalThreshold)$z)
-  
+    z = max(filter(data.frame(zMatrix), propSites >= proportionalThreshold)$z)
   # Get the names of the sites that satisfy Z:
-  zSites = factor(zSiteList[[as.character(z)]])
-  
+    zSites = factor(zSiteList[[as.character(z)]])
   # Return the z value and site names 
-  return(list (z = z, zSites = zSites, zTable = data.frame(zMatrix)))
-}
+    return(list (z = z, zSites = zSites, zTable = data.frame(zMatrix)))
+  }
 
 #------------------------------------------------------------------------------------------------------*
 # ---- CALCULATE the W-threshold, subset data ----
@@ -200,17 +268,17 @@ wzDataSubset = function(inData, zOutput, minNYears = 10, proportionalThreshold =
   z = zOutput[[1]]
   
   # Add a siteYear column:
-  data$siteYear = paste(data$siteID, data$year, sep ='_')
+    data$siteYear = paste(data$siteID, data$year, sep ='_')
   
   # Subset data to just the sites that meet the z-threshold for each site:
-  dataZSiteSub = filter(data, siteID %in% zOutput$zSites)
+    dataZSiteSub = filter(data, siteID %in% zOutput$zSites)
   
   # Subset data to years that meet the z-threshold:
-  siteYearDates = distinct(select(dataZSiteSub, one_of(c('siteYear','date'))))
-  siteYearSummary = ddply(siteYearDates, .(siteYear), summarize, 
-                          temporalSubsamples = length(unique(date)))
-  siteYearZYearSub = filter(siteYearSummary, temporalSubsamples>=z)
-  dataZYearSub = filter(dataZSiteSub, siteYear %in% siteYearZYearSub$siteYear)
+    siteYearDates = distinct(select(dataZSiteSub, one_of(c('siteYear','date'))))
+    siteYearSummary = ddply(siteYearDates, .(siteYear), summarize, 
+                            temporalSubsamples = length(unique(date)))
+    siteYearZYearSub = filter(siteYearSummary, temporalSubsamples>=z)
+    dataZYearSub = filter(dataZSiteSub, siteYear %in% siteYearZYearSub$siteYear)
   
   # Add a column that concatenates site, year, and date:
   dataZYearSub$siteYearDate = paste(dataZYearSub$siteYear, dataZYearSub$date, sep = '_')
@@ -344,90 +412,9 @@ siteSummaryFun = function(dataset){
         nTime = length(unique(year)))
 }
 
-#------------------------------------------------------------------------------------------------------*
-# The following functions are used to evaluate scale for temporally or spatially nested data
-#------------------------------------------------------------------------------------------------------*
-
-# Function to round dataset to lat and long and summarize data by the new rounded values:
-
-datasetRoundLatLong = function(dataset, accuracy){
-  # Split LL column into a dataframe of lat and long:
-  siteLL = data.frame(do.call(rbind, strsplit(t, '_' )))
-  # Round to chosen accuracy:
-  roundLL = function(LatORLong){
-    LatorLongVector = as.numeric(as.character(siteLL[,LatORLong]))
-    return(round_any(LatorLongVector, accuracy,  f = floor))
-  }
-  lat = roundLL(1)
-  long = roundLL(2)
-  # Paste to a new site vector:
-  dataset$site = paste(lat, long, sep = '_')
-  # Summarize based on the new site definitions:
-  dataset = ddply(dataset, .(datasetID, site, date, species),
-                  summarize, count = sum(count))
-  return(dataset)  
-}
-
-# Function to summarize data to a given site level:
-
-getNestedSiteDataset = function(dataset = dataset, siteGrain = 'site'){
-  # If sites are defined by lat-longs:
-    if(dataFormattingTable$LatLong_sites == 'Y')
-      {dataset = datasetRoundLatLong(dataset, accuracy = siteGrain)
-       return(dataset)} else {
-  # If sites are categorical but nested ...
-  # Get the definition for a site and store each level as separate columns:
-      siteLevels = strsplit(siteLevel, '_')[[1]]
-  # Convert site data to a table and add names based on site definition:
-      siteTable = read.table(text = as.character(dataset$site), sep = '_', stringsAsFactors = F)
-      siteDefinition = dataFormattingTable$Raw_siteUnit
-      names(siteTable) = strsplit(as.character(siteDefinition), '_')[[1]]
-  # Get pre-determined site levels and maintain site based on match: 
-    siteLevels = strsplit(siteGrain, '_')[[1]]
-    dataset$site = do.call('paste', c(siteTable[siteLevels], sep = '_'))
-  # Summarize data to the new site Level:
-    dataset = ddply(dataset, .(datasetID, site, date, species),
-                  summarize, count = sum(count))
-    return(dataset)  
-    }
-}
-
-# Nested time dataset (spatial nesting is categorical, not lat-long):
-
-getNestedTimeDataset = function(dataset,  timeGrain = 'season'){
-  dataset$date = as.POSIXct(strptime(dataset$date, '%Y-%m-%d'))
-  year = as.numeric(format(dataset$date, '%Y'))
-  day = as.numeric(strftime(dataset$date, format = '%j'))
-  week = trunc(day/7)+1
-  biweek = trunc(week/2)+1
-  month = as.numeric(format(dataset$date, '%m'))
-  bimonth = trunc(month/2)+1
-  season = ifelse(day < 80 |day >= 356, 1,
-                  ifelse(day >= 80 & day < 172, 2,
-                         ifelse(day >= 172 & day < 266, 3, 4)))
-  # Combine time data into a dataframe:
-    timeFrame = cbind(day, week, biweek, month, bimonth, season, year)
-  # Change date column to subyear at a given temporal grain:
-    dataset[,3] = paste(year, timeFrame[,timeGrain], sep ='_')
-      names(dataset)[3] = 'year'
-  # Summarize data to the new time scale:
-    dataset = ddply(dataset, .(datasetID, site, year, species),
-                  summarize, count = sum(count))
-    return(dataset)  
-}
-  
-# Wrapper function for nested data (if necessary):
-
-getNestedDataset = function(dataset, siteGrain = 'site', timeGrain = 'season'){
-    if(dataFormattingTable$spatial_scale_variable == 'Y'){
-      dataset = getNestedSiteDataset(dataset, siteGrain) }
-    if(dataFormattingTable$subannualTgrain == 'Y'){
-       dataset = getNestedTimeDataset(dataset, timeGrain)
-    }
-    return(dataset)
-  }
 
 
+########################################################################################################
 #------------------------------------------------------------------------------------------------------*
 # Function to evaluate spatial and temporal sampling grain:
 #------------------------------------------------------------------------------------------------------*
@@ -676,9 +663,9 @@ occsScaledFun = function(occProp){
 fitBeta = function(occProp, nTime) {
   if (bimodalityFun(occProp,nTime)!= 0)
   {occs  = occsScaledFun(occProp)
-  shape.params = suppressWarnings(fitdistr(occs, "beta",
-                                  list(shape1 = 2, shape2 = 2)))
-  return(as.vector(shape.params$estimate))
+   shape.params = suppressWarnings(fitdistr(occs, "beta",
+                                            list(shape1 = 2, shape2 = 2)))
+   return(as.vector(shape.params$estimate))
   } else c(NA, NA)
 }
 
@@ -690,19 +677,19 @@ fitBeta = function(occProp, nTime) {
 
 modeProp = function(propOcc, mode, threshold) {
   if (mode == 'core') length(propOcc[propOcc >= 1-propOcc])/length(propOcc)
-    else length(propOcc[propOcc <= threshold])/length(propOcc)
+  else length(propOcc[propOcc <= threshold])/length(propOcc)
 }
 
 # Randomization test for a given mode (is the proportion of samples in core or
 # transient greater than we would expect by random chance):
 
 pModeFun = function(propOcc, nTime, mode, threshold, reps){
-    actualProp = modeProp(propOcc, mode, threshold)
+  actualProp = modeProp(propOcc, mode, threshold)
   # For loop to get random frequncies in the mode:
-    randomProps = numeric(length = reps)
-    for (i in 1:reps){
-      randomProps[i] = modeProp(randomOccsFun(propOcc, nTime), mode, threshold)
-    }
+  randomProps = numeric(length = reps)
+  for (i in 1:reps){
+    randomProps[i] = modeProp(randomOccsFun(propOcc, nTime), mode, threshold)
+  }
   # Calculate the p-value (proportion of sites with higher frequency than the
   # actual bimodality value):
   pVal = sum(randomProps >= actualProp)/(reps + 1)
@@ -757,8 +744,8 @@ summaryStatsFun = function(datasetID, threshold, reps){
     bimodality = bimodalityFun(propOcc, nTime)
     pBimodal = pBimodalFun(propOcc, nTime, reps)
     betaParms = fitBeta(propOcc, nTime)
-      alpha = betaParms[1]
-      beta = betaParms[2]   
+    alpha = betaParms[1]
+    beta = betaParms[2]   
     outList[[i]] = data.frame(datasetID, site = sites[i],
                               system = dataList$system, taxa = dataList$taxa,
                               nTime, spRichTotal, spRichCore, spRichTrans,
@@ -779,8 +766,8 @@ addNewSummariesFun = function(threshold, reps){
   # The following gets the integer values for the datasetID's from
   # "propOcc_##.csv" or "propOcc_###.csv":
   propOccDatasetIDs = read.table(text = 
-                  as.character(read.table(text = propOcc_datasets,
-                  sep =c('_'))[,2]),sep ='.')[,1]
+                                   as.character(read.table(text = propOcc_datasets,
+                                                           sep =c('_'))[,2]),sep ='.')[,1]
   # Find dataset IDs that are not yet summarized:
   newDatasetIDs = propOccDatasetIDs[!propOccDatasetIDs %in% currentDatasetIDs]
   # For loop to extract summary stats for new datasetIDs
@@ -843,39 +830,39 @@ theme_CT_Grid = function(base_size = 12) {
 
 ct.hist = function(site) {
   # Get data, subset to a given site:
-      occProp = occProp[as.character(occProp$site) == site,]
-      ct = ct[as.character(ct$site) == site, ]
+  occProp = occProp[as.character(occProp$site) == site,]
+  ct = ct[as.character(ct$site) == site, ]
   # Plot labels:
-    main = paste('Site ', site, paste('(',  as.character(ct$system),
-                   ', ', as.character(ct$taxa),')', sep = ''))
-    sub = bquote(b ~ '=' ~ .(round(ct$bimodal, 2)) ~ '    '~
-                   P['b'] ~ '=' ~ .(round(ct$bimodal.p, 3)) ~ '    '~
-                   mu ~ '=' ~ .(round(ct$mu, 2)) ~ '    '~
-                   t ~ '=' ~ .(ct$nTime))
-    sub2 = bquote(alpha ~ '=' ~ .(round(ct$alpha, 3)) ~ '    '~
-                   beta ~ '=' ~ .(round(ct$beta, 3)))
+  main = paste('Site ', site, paste('(',  as.character(ct$system),
+                                    ', ', as.character(ct$taxa),')', sep = ''))
+  sub = bquote(b ~ '=' ~ .(round(ct$bimodal, 2)) ~ '    '~
+                 P['b'] ~ '=' ~ .(round(ct$bimodal.p, 3)) ~ '    '~
+                 mu ~ '=' ~ .(round(ct$mu, 2)) ~ '    '~
+                 t ~ '=' ~ .(ct$nTime))
+  sub2 = bquote(alpha ~ '=' ~ .(round(ct$alpha, 3)) ~ '    '~
+                  beta ~ '=' ~ .(round(ct$beta, 3)))
   # Set band width, breaks and possible values of x for the histogram:
-    bw = 1/nTime#(max(occProp$occ)-min(occProp$occ))/10
-    brks = seq(min(occProp$occ), max(occProp$occ),bw)
-    x = seq(1/ct$nTime,1-1/ct$nTime, .01)
-    beta.df = data.frame(x = x, y = dbeta(x, ct$alpha, ct$beta))
+  bw = 1/nTime#(max(occProp$occ)-min(occProp$occ))/10
+  brks = seq(min(occProp$occ), max(occProp$occ),bw)
+  x = seq(1/ct$nTime,1-1/ct$nTime, .01)
+  beta.df = data.frame(x = x, y = dbeta(x, ct$alpha, ct$beta))
   # Plot data: 
-    out.plot = ggplot(occProp, aes(x=occ)) +
-      geom_histogram(aes(y = ..density..), binwidth = bw, breaks = brks, right = F,
-                     fill = 'gray', color = 1) +
-      xlim(1/nTime, 1) +
-      geom_line(data = beta.df, aes(x = x, y = y), color = 'red') +
-      # stat_function(fun = function(x) dbeta(x, ct$alpha, ct$beta), color = 'red') +
-      # Add labels:
-      xlab('Proportion of temporal samples') + ylab('Density') + 
-      ggtitle(bquote(atop(.(main), atop(.(sub), atop(.(sub2)))))) +
-      # Add themes:
-      theme(axis.text = element_text(size=14, color = 1),
-            axis.title.x = element_text(vjust = -1),
-            axis.title.y = element_text(vjust = 2),
-            title = element_text(size=16, vjust = -1),
-            axis.line = element_line(colour = "black"),
-            panel.background = element_blank(),
-            plot.margin = unit(c(.5,.5,1.5,1), "lines"))
-    return(out.plot)
-  }
+  out.plot = ggplot(occProp, aes(x=occ)) +
+    geom_histogram(aes(y = ..density..), binwidth = bw, breaks = brks, right = F,
+                   fill = 'gray', color = 1) +
+    xlim(1/nTime, 1) +
+    geom_line(data = beta.df, aes(x = x, y = y), color = 'red') +
+    # stat_function(fun = function(x) dbeta(x, ct$alpha, ct$beta), color = 'red') +
+    # Add labels:
+    xlab('Proportion of temporal samples') + ylab('Density') + 
+    ggtitle(bquote(atop(.(main), atop(.(sub), atop(.(sub2)))))) +
+    # Add themes:
+    theme(axis.text = element_text(size=14, color = 1),
+          axis.title.x = element_text(vjust = -1),
+          axis.title.y = element_text(vjust = 2),
+          title = element_text(size=16, vjust = -1),
+          axis.line = element_line(colour = "black"),
+          panel.background = element_blank(),
+          plot.margin = unit(c(.5,.5,1.5,1), "lines"))
+  return(out.plot)
+}
