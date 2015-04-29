@@ -73,9 +73,57 @@ length(unique(dataset1$site))
 levels(dataset1$site)
 
 # Sites are listed by USA_Atlantic_sitenumber
-# After looking through all sites, seem all good, so no changes to be made
+# Most sites are in intervals of 0.5, so round down to make whole numbers
+
+site = as.character(dataset1$site)
+
+# Make dataframe by separating string at underscores
+
+siteTable = read.table(text = site, sep = "_")
+head(siteTable)
+
+# Make the site number column numeric
+
+siteTable$V3 = as.numeric(siteTable$V3)
+str(siteTable)
+
+# Round the site numbers down to whole numbers
+
+siteTable$V3 = floor(siteTable$V3)
+
+# Check
+
+summary(siteTable)
+length(unique(siteTable$V3))
+unique(siteTable$V3)
+
+# All good, but there is a site listed as "0" so need to change back to character
+
+siteTable$V3 = as.character(siteTable$V3)
+summary(siteTable)
+head(siteTable,30)
+
+# Re-create site field
+
+site1 = paste(siteTable$V1, siteTable$V2, siteTable$V3, sep = "_")
+
+# Add new site field to dataset
 
 dataset2 = dataset1
+dataset2$site = site1
+
+# Check site uniques
+
+length(unique(site))
+length(unique(site1))
+
+# Check dataset with new sites
+
+head(dataset2, 20)
+tail(dataset2,20)
+summary(dataset2)
+
+# All looks good
 
 # !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE SITE DATA WERE MODIFIED!
 
@@ -84,8 +132,7 @@ dataset2 = dataset1
 # Raw_siteUnit. How a site is coded (i.e. if the field was concatenated such as this one, it was coded as "site_block_treatment_plot_quad"). Alternatively, if the site were concatenated from latitude and longitude fields, the encoding would be "lat_long". 
 
 dataFormattingTable[,'Raw_siteUnit'] = 
-  dataFormattingTableFieldUpdate(ds, 'Raw_siteUnit', 'Ocean_sitenumber') 
-
+  dataFormattingTableFieldUpdate(ds, 'Raw_siteUnit', 'ocean_sitenumber') 
 
 # spatial_scale_variable. Is a site potentially nested (e.g., plot within a quad or decimal lat longs that could be scaled up)? Y/N
 
@@ -95,7 +142,7 @@ dataFormattingTable[,'spatial_scale_variable'] =
 # Notes_siteFormat. Use this field to THOROUGHLY describe any changes made to the site field during formatting.
 
 dataFormattingTable[,'Notes_siteFormat'] = 
-  dataFormattingTableFieldUpdate(ds, 'Notes_siteFormat', 'No changes made.  sites are listed as USA_Atlantic_sitenumber.  site numbers go by intervals of 0.5, no metadata found to determine what these numbers represent.')
+  dataFormattingTableFieldUpdate(ds, 'Notes_siteFormat', 'sites are listed as USA_Atlantic_sitenumber.  Site numbers go by intervals of 0.5, so site units were separated and site numbers were rounded down to whole numbers.  Sites were then pasted back together and added back to dataset.')
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SPECIES DATA ----
