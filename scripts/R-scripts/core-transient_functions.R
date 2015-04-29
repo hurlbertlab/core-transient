@@ -194,22 +194,22 @@ getNestedDataset = function(dataset, siteGrain, temporalGrain){
 # Note: Prior to running "RichnessYearSubsetFrame", you must have created the nestedDataset using the function "getNestedDataset". The output of the getNestedDataset function is a list with the first list item being the dataset, expanded across all potential spatial and temporal grains and the second being a vector of the names of the site columns. The "i" in this function refers to the the value in the vector of site names. 
 
 richnessYearSubsetFun = function(dataset, spatialGrain, temporalGrain, minNYears = 10, minSpRich = 10){
-  dataset = getNestedDataset(dataset, spatialGrain, temporalGrain)
+    dataset = getNestedDataset(dataset, spatialGrain, temporalGrain)
   # Get the number of years and species richness for each site: 
-  siteSr_nTime = ddply(dataset, .(analysisSite), summarize,
-                       sr = length(unique(species)), 
-                       nTime = length(unique(year)))
+    siteSr_nTime = ddply(dataset, .(analysisSite), summarize,
+                         sr = length(unique(species)), 
+                         nTime = length(unique(year)))
   # Subset to sites with a high enough species richness and year samples:
-  goodSites = filter(siteSr_nTime, sr >= minSpRich & 
-                       siteSr_nTime$nTime >= minNYears)$analysisSite
+    goodSites = filter(siteSr_nTime, sr >= minSpRich & 
+                         siteSr_nTime$nTime >= minNYears)$analysisSite
   # If statement to return if there are no good sites:
-  if(length(goodSites) == 0) {
-    return(print('No acceptable sites, rethink site definitions or temporal scale'))}
-  else {
-    # Match good sites and the dataframe:
-    outFrame = na.omit(dataset[dataset$site %in% goodSites,])
-    return(outFrame)
-  }}
+    if(length(goodSites) == 0) {
+      return(print('No acceptable sites, rethink site definitions or temporal scale'))}
+    else {
+      # Match good sites and the dataframe:
+      outFrame = na.omit(dataset[dataset$site %in% goodSites,])
+      return(outFrame)
+    }}
 
 #------------------------------------------------------------------------------------------------------*
 # ---- CALCULATE the Z-threshold ----
