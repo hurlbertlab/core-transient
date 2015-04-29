@@ -255,120 +255,124 @@ zFinder = function(inData, minNTime = 10, proportionalThreshold = .5){
   }
 
 #------------------------------------------------------------------------------------------------------*
+# ---- Subset data based on z-threshold ----
+#------------------------------------------------------------------------------------------------------*
+
+dataZSubFun  = function(inData, minNTime = 10, proportionalThreshold = .5){
+  # Get z-values
+    zOutput = zFinder(inData, minNTime, proportionalThreshold)
+    z = zOutput[[1]]
+  # Add a siteTime column:
+    data = inData
+    data$siteTime = paste(data$analysisSite, data$analysisDate, sep ='_')
+  # Subset data to just the site-timeSamples that meet the z-threshold for temporal subsampling:  
+    spaceTime = ddply(data, .(siteTime), summarize, subTimeSamples = (length(unique(date))))
+    siteTimeZSub = filter(spaceTime, subTimeSamples >= z)$siteTime
+    dataZSub = filter(data, siteTime %in% siteTimeZSub)
+  # Add a column that concatenates siteTime and date:
+  dataZSub$siteTimeDate = paste(dataZSub$siteTime, dataZSub$date, sep = '_')
+  # For each siteID and time sample, sample z number of sub-sampling events:
+    siteTimes = unique(dataZSub$siteTime)
+    events = list(length = z*length(siteTimes))
+  
+    for(i in 1:length(siteTimes)){
+      # Subset to a given siteYear:
+        siteDateSub = filter(dataZSub, siteTime == siteTimes[i])
+      # Get unique frame of siteYearDates
+        siteDates = unique(siteDateSub$siteTimeDate)
+      # Sample the events by the Z-value:
+        siteTimeDateSample = sample(unique(siteDateSub$siteTimeDate), size = z)
+        events[[i]] = filter(siteDateSub, siteTimeDate %in% siteTimeDateSample )
+      }
+  # Subset data to sampled events:
+    dataZSub = rbind.fill(events)
+    return(dataZSub)
+  }
+#------------------------------------------------------------------------------------------------------*
+# ---- CALCULATE the W-threshold ----
+#------------------------------------------------------------------------------------------------------*
+# This returns a w-value and a list of siteDates that satisfy this value:
+
+
+#------------------------------------------------------------------------------------------------------*
 # ---- CALCULATE the W-threshold, subset data ----
 #------------------------------------------------------------------------------------------------------*
 # The W-threshold refers to the maximum number of spatial subsamples that provide a given proprtion of siteYears.
 
 # Note: Prior to running "wzDataSubset", you must have already run the function "RichnessYearSubsetFrame" (inData) and the "zFinder" (zOutput).  
 
-wzDataSubset = function(inData, zOutput, minNYears = 10, proportionalThreshold = .5){
-  #-Z-#
-  data = inData
-  z = zOutput[[1]]
-  
-  # Add a siteTime column:
-    data$siteTime = paste(data$analysisSite, data$analysisDate, sep ='_')
-  
-  # Subset data to just the site-timeSamples that meet the z-threshold for temporal subsampling:  
-    spaceTime = ddply(data, .(siteTime), summarize, subTimeSamples = (length(unique(date))))
-    siteTimeZSub = filter(spaceTime, subTimeSamples >= z)$siteTime
-    dataZSub = filter(data, siteTime %in% siteTimeZSub)
-    
-  # Add a column that concatenates siteTime and date:
-    dataZSub$siteTimeDate = paste(dataZSub$siteTime, dataZSub$date, sep = '_')
-  
-  # For each siteID and time sample, sample z number of sub-sampling events:
-
-  siteTimes = unique(dataZSub$siteTime)
-  events = list(length = z*length(siteTimes))
-
-  for(i in 1:length(siteTimes)){
-      # Subset to a given siteYear:
-        siteDateSub = filter(dataZSub, siteTime == siteTimes[i])
-      # Get unique frame of siteYearDates
-        siteDates = unique(siteDateSub$siteTimeDate) #distinct(data.frame(siteTimeDate = siteYearSub$siteYearDate))
-      # Sample the events by the Z-value:
-        siteTimeDateSample = sample(unique(siteDateSub$siteTimeDate), size = z)
-        events[[i]] = filter(siteDateSub, siteTimeDate %in% siteTimeDateSample )
-  }
-
-  # Subset data to sampled events:
-
-  dataZSub = rbind.fill(events)
-  
-  #-W-#
+wFinder = function(inData, minNTime = 10, proportionalThreshold = .5){
+  # Get data subset by Z-value:
+    dataZSub = dataZSubFun(inData, minNTime, proportionalThreshold)
   # Summarize number of spatial subsamples per siteTime :
-  
-  spaceTime = ddply(dataZSub, .(siteTimeDate), summarize, 
-                    spatialSubsamples = length(unique(site)))
-  
+    spaceTime = ddply(dataZSub, .(siteTimeDate), summarize, 
+                      spatialSubsamples = length(unique(site)))
   # Determine the number of siteTimes present:
-  nSiteTimeDates = nrow(spaceTime)
-  
+    nSiteTimeDates = nrow(spaceTime)
   # Get possible values for w:
-  wPossible = sort(unique(spaceTime$spatialSubsamples))
-  
+    wPossible = sort(unique(spaceTime$spatialSubsamples))
   # Create an empty matrix to store summary data for possible W-values:
-  wMatrix = matrix(ncol = 3, nrow = length(wPossible), 
-                   dimnames = list(NULL, c('w','nSiteTimeDates','propSiteTimeDates')))
-  
+    wMatrix = matrix(ncol = 3, nrow = length(wPossible), 
+                     dimnames = list(NULL, c('w','nSiteTimeDates','propSiteTimeDates')))
   # Create an empty list of sites to store site names of good sites at a given W-value:
-  wSiteYearDateList = list(length = length(wPossible))
-  
+    wSiteTimeDateList = list(length = length(wPossible))
   # For loop to populate the wMatrix and wSite Lists:
-  
-  for(i in 1:length(wPossible)){
-    # Calculate the years in which the subsamplings was greater than equal to w for a given site:
-    siteTimeDateGTEw = filter(spaceTime, spatialSubsamples>=wPossible[i])$siteTimeDate
-    # Construct matrix of w values, the number and proportion of sites:
-    wMatrix[i,'w'] = wPossible[i]
-    wMatrix[i, 'nSiteTimeDates'] = length(siteTimeDateGTEw)
-    wMatrix[i, 'propSiteTimeDates'] = length(siteTimeDateGTEw)/nrow(spaceTime)
-    # List the names of siteYears for a given W-value:
-    wSiteTimeDateList[[i]] = siteTimeDateGTEw
-    # Name each list entry by the Z-value
-    names(wSiteTimeDateList)[[i]] = wPossible[i]
-  }
-  
+    for(i in 1:length(wPossible)){
+      # Calculate the years in which the subsamplings was greater than equal to w for a given site:
+        siteTimeDateGTEw = filter(spaceTime, spatialSubsamples>=wPossible[i])$siteTimeDate
+      # Construct matrix of w values, the number and proportion of sites:
+        wMatrix[i,'w'] = wPossible[i]
+        wMatrix[i, 'nSiteTimeDates'] = length(siteTimeDateGTEw)
+        wMatrix[i, 'propSiteTimeDates'] = length(siteTimeDateGTEw)/nrow(spaceTime)
+      # List the names of siteYears for a given W-value:
+        wSiteTimeDateList[[i]] = siteTimeDateGTEw
+      # Name each list entry by the Z-value
+        names(wSiteTimeDateList)[[i]] = wPossible[i]
+    }
   # Get the highest W value that includes >= .5 of siteYears:
-  
-  wFrame = data.frame(wMatrix)
-  
-  w = max(filter(data.frame(wMatrix), propSiteTimeDates >= proportionalThreshold)$w)
-  
+    wFrame = data.frame(wMatrix)
+    w = max(filter(data.frame(wMatrix), propSiteTimeDates >= proportionalThreshold)$w)
   # Get the names of the siteYearDates that satisfy W:
-  wSiteTimeDates = factor(wSiteTimeDateList[[as.character(w)]])
-  
-  # Subset data
-  
-  dataW = filter(dataZSub, siteTimeDate %in% wSiteTimeDates)
-  
-  # For each siteYearDate, sample w sampling events:
-  siteTimeDateNames = unique(dataW$siteTimeDate)
-  events = list(length = w*length(siteTimeDateNames))
-  
-  for(i in 1:length(siteTimeDateNames)){
-    siteTimeDateSub = filter(dataW, siteTimeDate == siteTimeDateNames[i])
-    #       UniqueSiteTimeDate = distinct(select(siteTimeDateSub, one_of('site')))
-    #       sampledSite = sample_n(UniqueSiteTimeDate, w, replace = F)$site
-    UniqueSubsites = unique(siteTimeDateSub$site) 
-    sampledSubsites = sample(UniqueSubsites, w, replace = F)
-    events[[i]] = filter(siteTimeDateSub, site %in% sampledSubsites)
-  }
-  
-  outSampledData = rbind.fill(events)
-  
-  # Keep only pertinent columns:
-  
-  outData = select(outSampledData, one_of(c('analysisSite', 'analysisDate','species', 'count')))
-  
-  names(outData)[1:2] = c('site', 'year')
-  
-  # Return the w,z values and dataframe
-  
-  return(list (data = outData, w = w, z = z))
+    wSiteTimeDates = factor(wSiteTimeDateList[[as.character(w)]])
+  # Return list of necessary items for the subset:
+    outList = list(dataZSub, wSiteTimeDates, w)
+      names(outList) = c('dataZSub', 'wSiteTimeDates', 'w')
+    return(outList)
 }
 
+#------------------------------------------------------------------------------------------------------*
+# ---- Subset the data based on w and z values ----
+#------------------------------------------------------------------------------------------------------*
+
+wzSubsetFun = function(inData, minNTime = 10, proportionalThreshold = .5){
+  wOut = wFinder(inData, minNTime = 10, proportionalThreshold = .5)
+  # Subset data
+    dataW = filter(wOut$dataZSub, siteTimeDate %in% wOut$wSiteTimeDates) 
+  # For each siteYearDate, sample w sampling events:
+    siteTimeDateNames = unique(dataW$siteTimeDate)
+    events = list(length = wOut$w*length(siteTimeDateNames))
+  
+    for(i in 1:length(siteTimeDateNames)){
+      siteTimeDateSub = filter(dataW, siteTimeDate == siteTimeDateNames[i])
+      #       UniqueSiteTimeDate = distinct(select(siteTimeDateSub, one_of('site')))
+      #       sampledSite = sample_n(UniqueSiteTimeDate, w, replace = F)$site
+      UniqueSubsites = unique(siteTimeDateSub$site) 
+      sampledSubsites = sample(UniqueSubsites, wOut$w, replace = F)
+      events[[i]] = filter(siteTimeDateSub, site %in% sampledSubsites)
+    }
+  
+    outSampledData = rbind.fill(events)
+  
+  # Keep only pertinent columns:
+    outData = dplyr::select(outSampledData, one_of(c('analysisSite', 'analysisDate','species', 'count')))
+      names(outData)[1:2] = c('site', 'year') 
+  # Return the subsetted data frame:
+  return(outData)
+}
+
+#------------------------------------------------------------------------------------------------------*
+# ---- Subset the data based on w and z values ----
+#------------------------------------------------------------------------------------------------------*
 
 propOccFun = function(datasetID, spatialGrain = 'site', temporalGrain = 'year', minNYears = 10, minSpRich = 10){
   inData = RichnessYearSubsetFrame(spatialGrain = spatialGrain, temporalGrain = temporalGrain)
