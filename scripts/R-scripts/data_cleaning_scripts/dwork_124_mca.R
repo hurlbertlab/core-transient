@@ -76,10 +76,16 @@ summary(dataset1)
 
 levels(dataset1$site)
 
-# Sites are listed with a name (USA_Massachusetts or USA_Massachusetts_North_America_Atlantic) followed by a lat_long. Data with North_America_Atlantic also includes a number before the lat_long. Can get rid of the redundant 'USA_Massachusetts' so that at least some of the data will be just lat_longs.
+# Sites are listed with a name (USA_Massachusetts or USA_Massachusetts_North_America_Atlantic) followed by a lat_long. So just lat_long is the only relevant data in the site field
 
-dataset2 = dataset1
-dataset2$site = str_sub(dataset2$site, start = 21)
+# Substring out lat_longs
+
+site = dataset1$site
+site1 = str_sub(dataset1$site, start = 19)
+length(unique(site1))
+unique(site1)
+
+# Find a way to extract just lat_long data from sites
 
 # Check
 
