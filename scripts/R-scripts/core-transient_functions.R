@@ -118,11 +118,8 @@ datasetRoundLatLong = function(dataset, accuracy){
   }
   lat = roundLL(1)
   long = roundLL(2)
-  # Paste to a new site vector:
+  # Paste to a new site vector and return dataset:
   dataset$analysisSite = paste(lat, long, sep = '_')
-  # Summarize based on the new site definitions:
-  dataset = ddply(dataset, .(datasetID, site, analysisSite, date, species),
-                  summarize, count = sum(count))
   return(dataset)  
 }
 
