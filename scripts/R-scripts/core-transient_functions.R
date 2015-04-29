@@ -193,8 +193,7 @@ getNestedDataset = function(dataset, siteGrain, temporalGrain){
 
 # Note: Prior to running "RichnessYearSubsetFrame", you must have created the nestedDataset using the function "getNestedDataset". The output of the getNestedDataset function is a list with the first list item being the dataset, expanded across all potential spatial and temporal grains and the second being a vector of the names of the site columns. The "i" in this function refers to the the value in the vector of site names. 
 
-richnessYearSubsetFun = function(dataset, spatialGrain, temporalGrain, 
-                                 minNYears = 10, minSpRich = 10){
+richnessYearSubsetFun = function(dataset, spatialGrain, temporalGrain, minNYears = 10, minSpRich = 10){
   dataset = getNestedDataset(dataset, spatialGrain, temporalGrain)
   # Get the number of years and species richness for each site: 
   siteSr_nTime = ddply(dataset, .(analysisSite), summarize,
@@ -288,18 +287,13 @@ dataZSubFun  = function(inData, minNTime = 10, proportionalThreshold = .5){
     dataZSub = rbind.fill(events)
     return(dataZSub)
   }
+
 #------------------------------------------------------------------------------------------------------*
 # ---- CALCULATE the W-threshold ----
 #------------------------------------------------------------------------------------------------------*
-# This returns a w-value and a list of siteDates that satisfy this value:
-
-
-#------------------------------------------------------------------------------------------------------*
-# ---- CALCULATE the W-threshold, subset data ----
-#------------------------------------------------------------------------------------------------------*
 # The W-threshold refers to the maximum number of spatial subsamples that provide a given proprtion of siteYears.
-
-# Note: Prior to running "wzDataSubset", you must have already run the function "RichnessYearSubsetFrame" (inData) and the "zFinder" (zOutput).  
+# This returns a w-value and a list of siteDates that satisfy this value:
+# Note: Prior to running the "wFinder", you must have already run the function "RichnessYearSubsetFrame".
 
 wFinder = function(inData, minNTime = 10, proportionalThreshold = .5){
   # Get data subset by Z-value:
@@ -345,50 +339,49 @@ wFinder = function(inData, minNTime = 10, proportionalThreshold = .5){
 #------------------------------------------------------------------------------------------------------*
 
 wzSubsetFun = function(inData, minNTime = 10, proportionalThreshold = .5){
+  inData = richnessYearSubsetFun()
   wOut = wFinder(inData, minNTime = 10, proportionalThreshold = .5)
   # Subset data
     dataW = filter(wOut$dataZSub, siteTimeDate %in% wOut$wSiteTimeDates) 
   # For each siteYearDate, sample w sampling events:
     siteTimeDateNames = unique(dataW$siteTimeDate)
     events = list(length = wOut$w*length(siteTimeDateNames))
-  
     for(i in 1:length(siteTimeDateNames)){
       siteTimeDateSub = filter(dataW, siteTimeDate == siteTimeDateNames[i])
-      #       UniqueSiteTimeDate = distinct(select(siteTimeDateSub, one_of('site')))
-      #       sampledSite = sample_n(UniqueSiteTimeDate, w, replace = F)$site
       UniqueSubsites = unique(siteTimeDateSub$site) 
       sampledSubsites = sample(UniqueSubsites, wOut$w, replace = F)
       events[[i]] = filter(siteTimeDateSub, site %in% sampledSubsites)
     }
-  
     outSampledData = rbind.fill(events)
-  
   # Keep only pertinent columns:
     outData = dplyr::select(outSampledData, one_of(c('analysisSite', 'analysisDate','species', 'count')))
       names(outData)[1:2] = c('site', 'year') 
   # Return the subsetted data frame:
-  return(outData)
+    return(outData)
 }
 
 #------------------------------------------------------------------------------------------------------*
-# ---- Subset the data based on w and z values ----
+# ---- Make the proportional occurrence frame ----
 #------------------------------------------------------------------------------------------------------*
+# First, make sure to run the richnessYearSubsetFun, if there are no good sites, the proportional occurrence frame cannot be made!
 
-propOccFun = function(datasetID, spatialGrain = 'site', temporalGrain = 'year', minNYears = 10, minSpRich = 10){
-  inData = RichnessYearSubsetFrame(spatialGrain = spatialGrain, temporalGrain = temporalGrain)
-  zOutput = zFinder(inData)
-  dataset = wzDataSubset(inData, zOutput)$data
-  spTime = ddply(dataset, .(siteID, species), summarize, 
-                 spTime = length(unique(year)))
-  siteTime = ddply(dataset, .(siteID), summarize, 
-                   siteTime = length(unique(year)))
-  spSiteTime = merge(spTime, siteTime)
-  propOcc = data.frame(datasetID = datasetID, site = spSiteTime$siteID, 
-                       species = spSiteTime$species,
-                       propOcc = spSiteTime$spTime/spSiteTime$siteTime)
-  return(propOcc)
-}
+propOccFun = function(dataset, datasetID, spatialGrain, temporalGrain,
+                      minNYears = 10,  minNTime = 10, minSpRich = 10,
+                      proportionalThreshold = .5){
+    inData = richnessYearSubsetFun(dataset, spatialGrain, temporalGrain, minNYears, minSpRich)
+    wzDataSub = wzSubsetFun(inData, minNTime, proportionalThreshold)  
+    spTime = ddply(wzDataSub, .(site, species), summarize, 
+                   spTime = length(unique(year)))
+    siteTime = ddply(wzDataSub, .(site), summarize, 
+                     siteTime = length(unique(year)))
+    spSiteTime = merge(spTime, siteTime)
+    propOcc = data.frame(datasetID = datasetID, site = spSiteTime$site, 
+                         species = spSiteTime$species,
+                         propOcc = spSiteTime$spTime/spSiteTime$siteTime)
+    return(propOcc)
+  }
 
+test = propOccFun(dataset, 2, spatialGrain, temporalGrain)
 
 ###################################################################################
 
