@@ -195,7 +195,7 @@ getNestedDataset = function(dataset, siteGrain, temporalGrain){
 
 richnessYearSubsetFun = function(dataset, spatialGrain, temporalGrain, 
                                  minNYears = 10, minSpRich = 10){
-  dataset = getNestedDataset(dataset, spatialGrain, temporalGrain)#}
+  dataset = getNestedDataset(dataset, spatialGrain, temporalGrain)
   # Get the number of years and species richness for each site: 
   siteSr_nTime = ddply(dataset, .(analysisSite), summarize,
                        sr = length(unique(species)), 
@@ -219,50 +219,41 @@ richnessYearSubsetFun = function(dataset, spatialGrain, temporalGrain,
 
 # Note: Prior to running "zFinder", you must have already run the function "RichnessYearSubsetFrame" for which "inData" is the function's output.  
 
-zFinder = function(inData, minNYears = 10, proportionalThreshold = .5){
+zFinder = function(inData, minNTime = 10, proportionalThreshold = .5){
   data = inData
   # Calculate the number of temporal samples per site and year: 
-  spaceTime = ddply(data, .(siteID, year),
+    spaceTime = ddply(data, .(analysisSite, year, analysisDate),
                     summarize, temporalSubsamples = length(unique(date)))
-  
   # zPossible is a potential threshold of temporal subsampling:
-  zPossible = sort(unique(spaceTime$temporalSubsamples))
-  
+    zPossible = sort(unique(spaceTime$temporalSubsamples))
   # Create an empty matrix to store summary data for possible Z-values:
-  zMatrix = matrix(ncol = 3, nrow = length(zPossible), 
+    zMatrix = matrix(ncol = 3, nrow = length(zPossible), 
                    dimnames = list(NULL, c('z','nSites','propSites')))
-  
   # Create an empty list of sites to store site names of good sites at a given Z-value:
-  zSiteList = list(length = length(zPossible))
-  
+    zSiteList = list(length = length(zPossible))
   # For loop to populate the zMatrix and zSite Lists:
-  
-  for(i in 1:length(zPossible)){
-    # Calculate the years in which the subsamplings was greater than equal to z for a given site:
-    siteYearsGTEz = ddply(filter(spaceTime, temporalSubsamples>=zPossible[i]),
-                          .(siteID), summarize, 
-                          yearsGTEz = length(unique(year)))
-    # Determine sites with a minimum number of 10 years of sampling >= z
-    goodSites = filter(siteYearsGTEz, yearsGTEz>=minNYears)$siteID
-    # Construct matrix of z values, the number and proportion of sites:
-    zMatrix[i,'z'] = zPossible[i]
-    zMatrix[i, 'nSites'] = length(goodSites)
-    zMatrix[i, 'propSites'] = length(goodSites)/length(unique(data$siteID))
-    # List the names of goodSites for a given Z-value:
-    zSiteList[[i]] = goodSites
-    # Name each list entry by the Z-value
-    names(zSiteList)[[i]] = zPossible[i]
-  }
-  
+    for(i in 1:length(zPossible)){
+      # Subset spaceTime to subsamples greater than or equal to z for a given site:
+        spaceTimeGTEz = filter(spaceTime, temporalSubsamples>=zPossible[i])
+      # Determine sites in which the temporal subsampling was greater than equal to z for at least the minimum time samples:
+        goodSites = ddply(spaceTimeGTEz, .(analysisSite), summarize, 
+                              length(unique(analysisDate) >= minNTime))$analysisSite
+      # Construct matrix of z values, the number and proportion of sites:
+        zMatrix[i,'z'] = zPossible[i]
+        zMatrix[i, 'nSites'] = length(goodSites)
+        zMatrix[i, 'propSites'] = length(goodSites)/length(unique(spaceTime$analysisSite))
+      # List the names of goodSites for a given Z-value:
+        zSiteList[[i]] = goodSites
+      # Name each list entry by the Z-value
+        names(zSiteList)[[i]] = zPossible[i]
+      }
   # Get the highest Z value with at least minNYears:
-  z = max(filter(data.frame(zMatrix), propSites >= proportionalThreshold)$z)
-  
+    z = max(filter(data.frame(zMatrix), propSites >= proportionalThreshold)$z)
   # Get the names of the sites that satisfy Z:
-  zSites = factor(zSiteList[[as.character(z)]])
-  
+    zSites = factor(zSiteList[[as.character(z)]])
   # Return the z value and site names 
-  return(list (z = z, zSites = zSites, zTable = data.frame(zMatrix)))
-}
+    return(list (z = z, zSites = zSites, zTable = data.frame(zMatrix)))
+  }
 
 #------------------------------------------------------------------------------------------------------*
 # ---- CALCULATE the W-threshold, subset data ----
@@ -277,17 +268,17 @@ wzDataSubset = function(inData, zOutput, minNYears = 10, proportionalThreshold =
   z = zOutput[[1]]
   
   # Add a siteYear column:
-  data$siteYear = paste(data$siteID, data$year, sep ='_')
+    data$siteYear = paste(data$siteID, data$year, sep ='_')
   
   # Subset data to just the sites that meet the z-threshold for each site:
-  dataZSiteSub = filter(data, siteID %in% zOutput$zSites)
+    dataZSiteSub = filter(data, siteID %in% zOutput$zSites)
   
   # Subset data to years that meet the z-threshold:
-  siteYearDates = distinct(select(dataZSiteSub, one_of(c('siteYear','date'))))
-  siteYearSummary = ddply(siteYearDates, .(siteYear), summarize, 
-                          temporalSubsamples = length(unique(date)))
-  siteYearZYearSub = filter(siteYearSummary, temporalSubsamples>=z)
-  dataZYearSub = filter(dataZSiteSub, siteYear %in% siteYearZYearSub$siteYear)
+    siteYearDates = distinct(select(dataZSiteSub, one_of(c('siteYear','date'))))
+    siteYearSummary = ddply(siteYearDates, .(siteYear), summarize, 
+                            temporalSubsamples = length(unique(date)))
+    siteYearZYearSub = filter(siteYearSummary, temporalSubsamples>=z)
+    dataZYearSub = filter(dataZSiteSub, siteYear %in% siteYearZYearSub$siteYear)
   
   # Add a column that concatenates site, year, and date:
   dataZYearSub$siteYearDate = paste(dataZYearSub$siteYear, dataZYearSub$date, sep = '_')
