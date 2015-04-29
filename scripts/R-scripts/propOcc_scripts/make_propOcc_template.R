@@ -11,11 +11,19 @@ library(tidyr)
 
 source('scripts/R-scripts/core-transient_functions.R')
 
-dataset = read.csv("data/formatted_datasets/dataset_232.csv")
+dataID = 236
 
-dataFormattingTable = read.csv("Reference/data_formatting_table.csv")
+# Get formatted dataset:
 
-dataFormattingTable = subset(dataFormattingTable, dataset_ID == 232)
+dataset = read.csv(paste("data/formatted_datasets/dataset_",
+  dataID, ".csv", sep =''))
+
+# Get the data formatting table for that dataset:
+
+dataFormattingTable = subset(read.csv("data_formatting_table.csv"),
+                             dataset_ID == dataID)
+
+# Check table values:
 
 dataFormattingTable
 
@@ -25,6 +33,12 @@ dataFormattingTable
 # We have now formatted the dataset to the finest possible spatial and temporal
 # grain, removed bad species, and added the dataset ID. It's now to make some
 # scale decisions and determine the proportional occupancies.
+
+# We'll start with the function "richnessYearSubsetFun". This will subset the data to sites with an adequate number of years of sampling and species richness. If there are no adequate years, the function will return a custom error message.
+
+richnessYearsTest = richnessYearSubsetFun(dataset, spatialGrain = 'site', temporalGrain = 'season', 
+                                          minNYears = 10, minSpRich = 10)
+  
 
 #-------------------------------------------------------------------------------*
 # ---- SITE DATA ----
@@ -50,12 +64,12 @@ dataFormattingTable$LatLong_sites
 # If the spatial sampling grain is nested and site designations are not defined by lat-longs, it may be necessary to remove some observations and possibly extract samples from the data if the sampling is unevenly distributed. 
 
 nestedDataset = getNestedDataset(dataset)
-#timeGrains = c('date','year_week','year_biweek','year_month','year_bimonth','year_season','year')
+
 spatialGrains = nestedDataset[[2]]
 
 # SUBSET DATASET TO SITES WITH ADEQUATE TIME SAMPLES AND RICHNESS:
 
-DataSRTimeSub = RichnessYearSubsetFrame(temporalGrain = 'year_season', spatialGrain =  'location_web')
+DataSRTimeSub = RichnessYearSubsetFrame(temporalGrain = 'year', spatialGrain =  'site')
 
 # CALCULATE the Z-threshold:
 
@@ -69,10 +83,9 @@ datasetSubWZ = dataListWZ[[1]]
 
 # Make Prop_Occ:
 
-propOcc = propOccFun(232, spatialGrain = 'location_web',temporalGrain = 'year_season')
+propOcc = propOccFun(dataID, spatialGrain = 'site',temporalGrain = 'year')
 
-
-write.csv(propOcc, 'data/propOcc_datasets/propOcc_d232.csv', row.names = F)
+write.csv(propOcc, 'data/propOcc_datasets/propOcc_d70.csv', row.names = F)
 
 #######################################################################################################
 #######################################################################################################
