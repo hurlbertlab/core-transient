@@ -62,15 +62,39 @@ dataFormattingTable[,'LatLong_sites'] =
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SITE DATA ----
 #===============================================================================*
-# Explore
-length(unique(d$Replicate_Station))
-unique(d$Replicate_Station)
-class(d$Replicate_Station)
 
-# Change name
-names(d)[2] = "site"
-head (d)
-unique(d$site)
+# Explore
+
+length(unique(dataset1$site))
+unique(dataset1$site)
+
+# Sites are concatenated (in data before reading into R) as Replicate_Station.
+
+# No changes to be made to sites
+
+dataset2 = dataset1
+
+head(dataset2)
+
+# !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE SITE DATA WERE MODIFIED!
+
+# !DATA FORMATTING TABLE UPDATE! 
+
+# Raw_siteUnit. How a site is coded (i.e. if the field was concatenated such as this one, it was coded as "site_block_treatment_plot_quad"). Alternatively, if the site were concatenated from latitude and longitude fields, the encoding would be "lat_long". 
+
+dataFormattingTable[,'Raw_siteUnit'] = 
+  dataFormattingTableFieldUpdate(ds, 'Raw_siteUnit', 'Replicate_Station') 
+
+
+# spatial_scale_variable. Is a site potentially nested (e.g., plot within a quad or decimal lat longs that could be scaled up)? Y/N
+
+dataFormattingTable[,'spatial_scale_variable'] = 
+  dataFormattingTableFieldUpdate(ds, 'spatial_scale_variable','Y') 
+
+# Notes_siteFormat. Use this field to THOROUGHLY describe any changes made to the site field during formatting.
+
+dataFormattingTable[,'Notes_siteFormat'] = 
+  dataFormattingTableFieldUpdate(ds, 'Notes_siteFormat',  'site fields concatenated in data before reading into R. .')
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SPECIES DATA ----
