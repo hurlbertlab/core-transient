@@ -8,31 +8,56 @@
 
 library(stringr)
 library(plyr)
+library(ggplot2)
+library(grid)
+library(gridExtra)
+library(MASS)
 
 # Source the functions file:
 
 setwd('C:/Users/auriemma/core-transient/')
 source('scripts/R-scripts/core-transient_functions.R')
 
-# Get data:
+# Get data
 
-getwd()
+ds = 208 
 
-list.files('data/raw_datasets')
+dataset = read.csv(paste('data/raw_datasets/dataset_', ds, '.csv', sep = ''))
 
-d = read.csv('data/raw_datasets/dataset_208.csv')
+dataFormattingTable = read.csv('data_formatting_table.csv')
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE THE DATASET ----
 #===============================================================================*
-head(d)
-str(d)
-names(d)
 
-# Remove unwanted columns
-d1 = d[,-c(2,5,6,8,9)]
-names(d1)
-d = d1
+head(dataset)
+str(dataset)
+names(dataset)
+
+# Remove unused columns
+
+unusedFields = c(2,5,6,8,9)
+
+dataset1 = dataset[,-unusedFields]
+names(dataset1)
+head(dataset1)
+
+# Change field names
+
+names(dataset1)[c(1,2,3)] = c('date','site','species')
+names(dataset1)
+head(dataset1)
+
+# All good
+
+# !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE DATA WERE MODIFIED!
+
+#!DATA FORMATTING TABLE UPDATE! 
+# Are the ONLY site identifiers the latitude and longitude of the observation or 
+# sample? (I.e., there are no site names or site IDs or other designations) Y/N
+
+dataFormattingTable[,'LatLong_sites'] = 
+  dataFormattingTableFieldUpdate(ds, 'LatLong_sites', 'Y')
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SITE DATA ----
