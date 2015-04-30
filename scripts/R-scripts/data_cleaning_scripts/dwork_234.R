@@ -24,11 +24,9 @@ source('scripts/R-scripts/core-transient_functions.R')
 
 ds = 234
 
-list.files('data/raw_datasets')
-
 dataset = read.csv(paste('data/raw_datasets/dataset_', ds, '.csv', sep = ''))
 
-dataFormattingTable = read.csv('Reference/data_formatting_table.csv')
+dataFormattingTable = read.csv('data_formatting_table.csv')
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE THE DATASET ----
@@ -65,6 +63,19 @@ head(dataset1)
 site = dataset1$quadr
 head(site)
 
+# Check uniques 
+
+levels(site)
+
+# There is a blank site name, check to see if it is a typo
+
+siteTable = data.frame(table(site))
+siteTable
+
+# Plenty of records for that site, so give this site the name 'blank'
+
+## NEED TO WORK ON THIS!!
+
 # Add new column to dataset
 
 dataset2 = dataset1
@@ -97,12 +108,12 @@ dataFormattingTable[,'Raw_siteUnit'] =
 # Sites are different quadrats within a 1 ha grid, sp can be reduced to the whole grid
 
 dataFormattingTable[,'spatial_scale_variable'] = 
-  dataFormattingTableFieldUpdate(ds, 'spatial_scale_variable','Y')
+  dataFormattingTableFieldUpdate(ds, 'spatial_scale_variable','N')
 
 # Notes_siteFormat.
 
 dataFormattingTable[,'Notes_siteFormat'] = 
-  dataFormattingTableFieldUpdate(ds, 'Notes_siteFormat', 'sites are quadrats within a 1 ha plot.  No changes made to site data. Site data was checked for variation in number of sites sampled per year.  Varied from 99 sites to 105 sites, a negligible differece, so was ignored. There may be blank site names and other misnamed sites, but this can be ignored')
+  dataFormattingTableFieldUpdate(ds, 'Notes_siteFormat', 'sites are quadrats within a 1 ha plot.  No changes made to site data. Site data was checked for variation in number of sites sampled per year.  Varied from 99 sites to 105 sites, a negligible differece, so not important.  Because sites are within a 1 ha plot, this whole dataset can be looked at as only one site.')
 
 
 #-------------------------------------------------------------------------------*
@@ -119,12 +130,15 @@ levels(dataset2$species)
 bad_sp = c("","?")
 
 # Remove the bad species from dataset
+
 dataset3 = dataset2[!dataset2$species %in% bad_sp,]
 
 # Reset factor levels
+
 dataset3$species = factor(dataset3$species)
 
 # Check
+
 levels(dataset3$species)
 head(dataset3)
 
@@ -142,6 +156,7 @@ dataFormattingTable[,'Notes_spFormat'] =
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT COUNT DATA ----
 #===============================================================================*
+
 names(dataset3)
 head(dataset3, 30)
 
