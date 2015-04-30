@@ -186,165 +186,66 @@ dataFormattingTable[,'Notes_countFormat'] =
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT TIME DATA ----
 #===============================================================================*
-# Explore
-length(unique(d$Sample_Date))
-head(d$Sample_Date)
-tail(d$Sample_Date)
-class(d$Sample_Date)
+# Name date field
 
-# Change date column to date format
-d$date = strptime(d$Sample_Date, "%Y-%m-%d")
-head(d)
-class(d$date)
+datefield = 'date'
 
-# Worked so remove old column
-d = d[,-1]
-head(d)
+# Identify the date format
+
+dateformat = "%Y-%m-%d"
+
+# Make date object
+
+if (dateformat == '%Y' | dateformat == '%y') {
+  date = as.numeric(as.character(dataset5[, datefield]))
+} else {
+  date = as.POSIXct(strptime(dataset5[, datefield], dateformat))
+}
+
+# A check on the structure lets you know that date field is now a date object:
+
+class(date)
+
+# Give a double-check, if everything looks okay replace the column:
+
+head(dataset5[, datefield])
+
+head(date)
+
+dataset6 = dataset5
+
+# Delete the old date field
+
+dataset6 = dataset6[, -which(names(dataset6) == datefield)]
+
+# Assign the new date values in a field called 'date'
+
+dataset6$date = date
+
+# Check the results:
+
+head(dataset6)
+str(dataset6)
+
+# Looks good
+
+# !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE DATE DATA WERE MODIFIED!
+
+#!DATA FORMATTING TABLE UPDATE!
+
+# Notes_timeFormat. Provide a thorough description of any modifications that were made to the time field.
+
+dataFormattingTable[,'Notes_timeFormat'] = 
+  dataFormattingTableFieldUpdate(ds, 'Notes_timeFormat', 'temporal data provided as dates. The only modification to this field involved converting to a date object.')
+
+# subannualTgrain. After exploring the time data, was this dataset sampled at a sub-annual temporal grain? Y/N
+
+dataFormattingTable[,'subannualTgrain'] = 
+  dataFormattingTableFieldUpdate(ds, 'subannualTgrain','Y')
 
 #-------------------------------------------------------------------------------*
 # ---- MAKE DATA FRAME OF COUNT BY SITES, SPECIES, AND YEAR ----
 #===============================================================================*
-head(d)
-# Add datasetID column
-d$datasetID = rep(208, nrow(d))
-head(d)
 
-# check over dataset
-summary(d)
 
-# Change date back to factor
-d$date = factor(as.character(d$date))
-str(d)
 
-# Make dataframe
-d2 = ddply(d,.(datasetID, site, date, species), summarize, count = max(count))
-
-# Explore dataframe
-head(d2, 30)
-summary(d2)
-
-# Change date back to date object
-d2$date = as.Date(d2$date)
-head(d2, 40)
-summary(d2)
-
-# All good, revert back to d
-d = d2
-
-#-------------------------------------------------------------------------------*
-# ---- WRITE OUTPUT DATA FRAMES  ----
-#===============================================================================*
-head(d)
-class(d$date)
-
-# Write it
-write.csv(d, "data/formatted_datasets/dataset_208.csv", row.names = F)
-
-################################################################################*
-# ---- END CREATION OF FORMATTED DATA FRAME ----
-################################################################################*
-
-library(stringr)
-library(plyr)
-
-getwd()
-setwd('C:/Users/auriemma/core-transient/')
-source('scripts/R-scripts/core-transient_functions.R')
-
-dataset = read.csv("data/formatted_datasets/dataset_208.csv")
-
-head(dataset)
-
-#===============================================================================*
-# ---- MAKE PROPORTIONAL OCCUPANCY AND DATA SUMMARY FRAMES ----
-#===============================================================================*
-#-------------------------------------------------------------------------------*
-# ---- TIME DATA ----
-#===============================================================================*
-# Change to temporal grain default of year
-
-# Change date column to year:
-dataset$date = getYear(dataset$date)
-summary(dataset)
-head(dataset)
-
-# Change column name:
-
-names(dataset)[3] = 'year'
-
-#-------------------------------------------------------------------------------*
-# ---- SITE DATA ----
-#===============================================================================*
-# How many sites are there?
-length(unique(d$site))
-# only 30 different site
-
-# Find time and species sample sizes
-siteTable = ddply(dataset, .(site), summarize,
-                  nyear = length(unique(year)),
-                  nsp = length(unique(species)))
-# View table
-siteTable
-
-# All sites have adequate sample sizes (>5 Years, >10 species)
-
-# Double check for bad sites
-badSites = subset(siteSummaryFun(d), spRich < 10 | nTime < 5)$site
-length(badSites)
-
-# Length = 0, so no bad sites
-
-# Re-write the dataset summary with new temporal grain (no spacial grain change)
-dataset1 = ddply(dataset, .(datasetID, site, year, species), summarize, count = max(count))
-
-# Explore new data summary
-
-dim(dataset1)
-summary(dataset1)
-head(dataset1, 20)
-
-# All good, revert back to dataset
-dataset = dataset1
-
-# Explore more
-
-head(propOccFun(dataset), 20)
-head(siteSummaryFun(dataset), 20)
-summary(siteSummaryFun(dataset))
-
-#-------------------------------------------------------------------------------*
-# ---- WRITE OUTPUT DATA FRAMES  ----
-#===============================================================================*
-
-# Make proportional occurence data frame:
-
-write.csv(propOccFun(dataset), "data/propOcc_datasets/propOcc_208.csv", 
-          row.names = F)
-
-# site summary dataset:
-
-write.csv(siteSummaryFun(dataset), 'data/siteSummaries/siteSummary_208.csv', 
-          row.names = F)
-
-#-------------------------------------------------------------------------------*
-# ---- EXPLORE YOUR DATASET SUMMARY INFO AND UPDATE THE DATA SOURCE TABLE  ----
-#===============================================================================*
-
-# !!!At this point, go to the data source table and provide:
-#   -central lat and lon (if available, if so, LatLonFLAG = 0, if you couldn't do
-#    it, add a flag of 1)
-#   -spatial_grain columns (T through W)
-#   -nRecs, nSites, nTime, nSpecies
-#   -temporal_grain columns (AH to AK)
-#   -Start and end year
-#   -Any necessary notes
-#   -flag any issues and put issue on github
-#   -git-add-commit-push data_source_table.csv
-
-dim(dataset)
-
-length(unique(dataset$site))
-
-length(unique(dataset$year))
-
-length(unique(dataset$species))
