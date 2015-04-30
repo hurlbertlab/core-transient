@@ -94,50 +94,94 @@ dataFormattingTable[,'spatial_scale_variable'] =
 # Notes_siteFormat. Use this field to THOROUGHLY describe any changes made to the site field during formatting.
 
 dataFormattingTable[,'Notes_siteFormat'] = 
-  dataFormattingTableFieldUpdate(ds, 'Notes_siteFormat',  'site fields concatenated in data before reading into R. .')
+  dataFormattingTableFieldUpdate(ds, 'Notes_siteFormat',  'site fields concatenated in data before reading into R. Decided that replicate and station were the relevant site designations according to metadata.')
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SPECIES DATA ----
 #===============================================================================*
-# Find number unique species
-length(unique(d$Species))
-unique(d$Species)
+# Explore species 
 
-# Remove unwanted species
-badspp = c('something else')
-d1 = d[!d$Species %in% badspp,]
-dim(d1)
-dim(d)
-unique(d1$Species)
+length(unique(dataset2$species))
 
-d = d1
+# Look at all species 
 
-# Change name
-names(d)[3] = "species"
-names(d)
-unique(d$species)
+levels(dataset2$species)
+
+# Remove bad species
+
+bad_sp = c('something else')
+
+dataset3 = dataset2[!dataset2$species %in% bad_sp,]
+
+# reset factor levels
+
+dataset3$species = factor(dataset3$species)
+levels(dataset3$species)
+
+# All good
+
+head(dataset3)
+
+# !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE SPECIES DATA WERE MODIFIED!
+
+#!DATA FORMATTING TABLE UPDATE!
+
+# Column M. Notes_spFormat. Provide a THOROUGH description of any changes made
+# to the species field, including why any species were removed.
+
+dataFormattingTable[,'Notes_spFormat'] = 
+  dataFormattingTableFieldUpdate(ds, 'Notes_spFormat', "one bad species removed from data.")
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT COUNT DATA ----
 #===============================================================================*
-str(d)
-summary(d)
-unique(d$Adults)
+# Explore
 
-# Change to numeric
-d$Adults = as.character(d$Adults)
-d$Adults = as.numeric(d$Adults)
-str(d)
+names(dataset3)
 
-# Remove NAs
-d = na.omit(d)
-unique(d$Adults)
-length(unique(d$Adults))
+# Count field origin name
 
-# Change name from adults to count
-names(d)[4] = "count"
-head(d)
-unique(d$count)
+countfield = "Adults"
+
+# Renaming it
+
+names(dataset3)[which(names(dataset3) == countfield)] = 'count'
+
+# Now we will remove zero counts and NA's:
+
+summary(dataset3)
+str(dataset3)
+
+# Change count to numeric
+
+dataset3$count = as.numeric(dataset3$count)
+summary(dataset3)
+
+# No zeros in count field
+
+dataset4 = dataset3
+
+summary(dataset4)
+
+# Remove NA's
+
+dataset5 = na.omit(dataset4)
+
+# How does it look?
+
+head(dataset5)
+summary(dataset5)
+
+# !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE COUNT DATA WERE MODIFIED!
+
+#!DATA FORMATTING TABLE UPDATE!
+
+# Possible values for countFormat field are density, cover, and count.
+dataFormattingTable[,'countFormat'] = 
+  dataFormattingTableFieldUpdate(ds, 'countFormat', 'count')
+
+dataFormattingTable[,'Notes_countFormat'] = 
+  dataFormattingTableFieldUpdate(ds, 'Notes_countFormat', 'Data represents count of insect adults. There were no 0s that required removal, but several NAs removed.')
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT TIME DATA ----
