@@ -177,6 +177,20 @@ bad_sp = c('','NONE','UK1','UKFO1','UNK1','UNK2','UNK3','LAMIA', 'UNGR1','CACT1'
 
 dataset3 = dataset2[!dataset2$species %in% bad_sp,]
 
+# It may be useful to count the number of times each name occurs, as misspellings or typos will likely
+# only show up one time.
+
+table(dataset3$species)
+
+# If you find any potential typos, try to confirm that the "mispelling" isn't actually a valid name.
+# If not, then go ahead and replace all instances like this:
+
+typo_name = ''
+good_name = ''
+
+dataset3$species[dataset$species == typo_name] = good_name
+
+
 # Reset the factor levels:
 
 dataset3$species = factor(dataset3$species)
