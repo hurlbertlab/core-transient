@@ -412,6 +412,22 @@ siteSummaryFun = function(subsettedData){
         nTime = length(unique(year)))
 }
 
+#------------------------------------------------------------------------------------------------------*
+# Write files
+#------------------------------------------------------------------------------------------------------*
+# Note: This will not work if the temporal or spatial sampling is inadequate! Make sure to run richnessYearSubsetFun prior to to test whether the spatial and temporal scales are adequate!
+
+writePropOccSiteSummary = function(subsettedData){
+  propOcc = propOccFun(subsettedData)
+  siteSummary = siteSummaryFun(subsettedData)
+  datasetID = unique(siteSummary$datasetID)
+  write.csv(propOcc, 
+    paste('data/propOcc_datasets/propOcc_', datasetID, '.csv', sep = ''), row.names = F)
+  write.csv(propOcc, 
+    paste('data/siteSummaries/siteSummary_', datasetID, '.csv',  sep = ''), row.names = F)
+}
+
+
 #######################################################################################################*
 #######################################################################################################*
 # ---- END DATA PREPARATION ----
