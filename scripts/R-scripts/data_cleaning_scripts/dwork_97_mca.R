@@ -68,10 +68,26 @@ dataFormattingTable[,'LatLong_sites'] =
 length(unique(dataset1$site))
 
 # There are a lot of different sites with varying information available.  
-# sites have region names, site names, possible site names, and lat_longs
-# No changes will be made to the site information because of this 
+# sites have region names, site names, possible site numbers, sampling methods, and lat_longs, and others
+
+# Substring to cut out some of the unused info
+
+site = dataset1$site
+site1 = str_sub(site, start = -17)
+
+# Check
+
+head(site1,50)
+tail(site1, 50)
+
+# Still unwanted characters, need to trim down to just lat_longs
+# Add new site data
 
 dataset2 = dataset1
+
+dataset2$site = site1
+
+head(dataset2)
 
 # !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE SITE DATA WERE MODIFIED!
 
@@ -90,7 +106,7 @@ dataFormattingTable[,'spatial_scale_variable'] =
 # Notes_siteFormat.
 
 dataFormattingTable[,'Notes_siteFormat'] = 
-  dataFormattingTableFieldUpdate(ds, 'Notes_siteFormat', 'site data includes varying amounts of information. Region, station, site number, catch method, and lat_longs are included in most sites. No changes made')
+  dataFormattingTableFieldUpdate(ds, 'Notes_siteFormat', 'site data includes varying amounts of information. Region, station, site number, catch method, and lat_longs are included in most sites.  Needed to cut down to just lat_longs, but varying number of characters and groupings separated by underscores.  Used substring to cut down to last 17 characters.')
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SPECIES DATA ----
