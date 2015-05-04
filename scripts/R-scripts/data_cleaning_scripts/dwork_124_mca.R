@@ -24,8 +24,6 @@ source('scripts/R-scripts/core-transient_functions.R')
 
 ds = 124 
 
-list.files('data/raw_datasets')
-
 dataset = read.csv(paste('data/raw_datasets/dataset_', ds, '.csv', sep = ''))
 
 dataFormattingTable = read.csv('Reference/data_formatting_table.csv')
@@ -51,6 +49,10 @@ names(dataset1)[1] = 'datasetID'
 # Change name of site column
 
 names(dataset1)[3] = 'site'
+
+# change name of species column
+
+names(dataset1)[4] = 'species'
 
 head(dataset1)
 
@@ -78,18 +80,27 @@ levels(dataset1$site)
 
 # Sites are listed with a name (USA_Massachusetts or USA_Massachusetts_North_America_Atlantic) followed by a lat_long. So just lat_long is the only relevant data in the site field
 
-# Substring out lat_longs
+# Substring out last characters of string that includes lat_longs
 
 site = dataset1$site
-site1 = str_sub(dataset1$site, start = 19)
-length(unique(site1))
-unique(site1)
+site1 = str_sub(dataset1$site, start = -12)
 
-# Find a way to extract just lat_long data from sites
+site1 = as.factor(site1)
+levels(site1)
+
+# Sites are now either lat_long, sitenumber_lat_long, or _lat_long(with underscore in front)
+
+# Still need to find a way to get rid of these extra characters
+
+# Temporarily add this new site field
+
+dataset2 = dataset1
+
+dataset2$site = site1
 
 # Check
 
-head(dataset2,100)
+head(dataset2, 30)
 unique(dataset2$site)
 
 # All looks good; sites are now either just lat_long or read as 'rth_America_Atlantic_number_lat_long
@@ -111,7 +122,7 @@ dataFormattingTable[,'spatial_scale_variable'] =
 # Notes_siteFormat.
 
 dataFormattingTable[,'Notes_siteFormat'] = 
-  dataFormattingTableFieldUpdate(ds, 'Notes_siteFormat', "site fields were cut down using substring to delete the redundant site name USA_Massachusetts which was present in every site. Remaining are the sites as just lat_longs and also sites with rth_America_Atlantic followed by possibly a site number, then a lat_long")
+  dataFormattingTableFieldUpdate(ds, 'Notes_siteFormat', "site fields were cut down using substring to delete the unused information which was present in every site. Remaining are the sites as just lat_long, lat_longs with underscores in front, or a site number in front  of lat_long.")
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SPECIES DATA ----
@@ -119,7 +130,8 @@ dataFormattingTable[,'Notes_siteFormat'] =
 
 # Explore
 
-length(unique(dataset2$Species))
+length(unique(dataset2$species))
+
 # 654 unique species accounted for
 
 head(dataset2)
@@ -176,11 +188,6 @@ dataset3$species = as.factor(dataset3$species)
 # Check all species again
 
 levels(dataset3$species)
-head(dataset3)
-
-# Remove old species column
-
-dataset3 = dataset3[,-4]
 head(dataset3)
 
 # All good after check
@@ -243,11 +250,7 @@ dateformat = '%Y'
 
 str(dataset5)
 
-# First change to numeric format
-
-dataset5$Year = as.numeric(dataset5$Year)
-
-# Change to date object
+# Change to numeric format
 
 if (dateformat == '%Y' | dateformat == '%y') {
   date = as.numeric(as.character(dataset5[, datefield]))
