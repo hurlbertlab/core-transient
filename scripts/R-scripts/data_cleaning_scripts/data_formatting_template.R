@@ -175,11 +175,11 @@ levels(dataset2$species)
 
 dataset2$species = factor(toupper(dataset2$species))
 
-# Now explore the listed species themselves, again. 
+# Now explore the listed species themselves, again. A good trick here to finding problematic entries is to shrink the console below horizontally so that species names will appear in a single column.  This way you can more easily scan the species names (listed alphabetically) and identify potential misspellings, extra characters or blank space, or other issues.
 
 levels(dataset2$species)
 
-# If species names are coded (not scientific names) go back to study's metadata. 
+# If species names are coded (not scientific names) go back to study's metadata to learn what species should and shouldn't be in the data. 
 
 # In this example, a quick look at the metadata is not informative, unfortunately. Because of this, you should really stop here and post an issue on GitHub. With some more thorough digging, however, I've found the names represent "Kartez codes". Several species can be removed (double-checked with USDA plant codes at plants.usda.gov and another Sevilleta study (dataset 254) that provides species names for some codes). Some codes were identified with this pdf from White Sands: https://nhnm.unm.edu/sites/default/files/nonsensitive/publications/nhnm/U00MUL02NMUS.pdf
 
