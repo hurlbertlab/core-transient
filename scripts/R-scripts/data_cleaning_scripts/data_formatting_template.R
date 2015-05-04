@@ -277,6 +277,10 @@ datefield = 'date'
 
 dateformat = '%m/%d/%Y'
 
+# If date is only listed in years:
+
+dateformat = '%Y'
+
 # If the date is just a year, then make sure it is of class numeric
 # and not a factor. Otherwise change to a true date object.
 
@@ -307,6 +311,7 @@ dataset6$date = date
 # Check the results:
 
 head(dataset6)
+str(dataset6)
 
 # !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE DATE DATA WERE MODIFIED!
 
@@ -344,7 +349,7 @@ dataset7 = ddply(dataset6,.(datasetID, site, date, species),
 
 dim(dataset7)
 
-head(dataset7)
+head(dataset7, 15)
 
 summary(dataset7)
 
