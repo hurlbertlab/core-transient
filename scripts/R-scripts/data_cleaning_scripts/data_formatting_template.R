@@ -219,6 +219,7 @@ dataFormattingTable[,'Notes_spFormat'] =
 # Next, we need to explore the count records. For filling out the data formatting table, we need to change the name of the field which represents counts, densities, percent cover, etc to "count". Then we will clean up unnecessary values.
 
 names(dataset3)
+summary(dataset3)
 
 # Fill in the original field name here
 countfield = 'cover'
@@ -229,6 +230,8 @@ names(dataset3)[which(names(dataset3) == countfield)] = 'count'
 # Now we will remove zero counts and NA's:
 
 summary(dataset3)
+
+# Can usually tell if there are any zeros or NAs from that summary(). If there aren't any showing, still run these functions or continue with the update of dataset# so that you are consistent with this template.
 
 # Subset to records > 0 (if applicable):
 
