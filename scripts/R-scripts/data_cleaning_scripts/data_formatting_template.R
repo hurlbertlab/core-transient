@@ -175,17 +175,31 @@ levels(dataset2$species)
 
 dataset2$species = factor(toupper(dataset2$species))
 
-# Now explore the listed species themselves, again. 
+# Now explore the listed species themselves, again. A good trick here to finding problematic entries is to shrink the console below horizontally so that species names will appear in a single column.  This way you can more easily scan the species names (listed alphabetically) and identify potential misspellings, extra characters or blank space, or other issues.
 
 levels(dataset2$species)
 
-# If species names are coded (not scientific names) go back to study's metadata. 
+# If species names are coded (not scientific names) go back to study's metadata to learn what species should and shouldn't be in the data. 
 
 # In this example, a quick look at the metadata is not informative, unfortunately. Because of this, you should really stop here and post an issue on GitHub. With some more thorough digging, however, I've found the names represent "Kartez codes". Several species can be removed (double-checked with USDA plant codes at plants.usda.gov and another Sevilleta study (dataset 254) that provides species names for some codes). Some codes were identified with this pdf from White Sands: https://nhnm.unm.edu/sites/default/files/nonsensitive/publications/nhnm/U00MUL02NMUS.pdf
 
 bad_sp = c('','NONE','UK1','UKFO1','UNK1','UNK2','UNK3','LAMIA', 'UNGR1','CACT1','UNK','NONE','UNK2','UNK3', 'UNK1','FORB7', 'MISSING', '-888', 'DEAD','ERRO2', 'FORB1','FSEED', 'GSEED', 'MOSQ', 'SEED','SEEDS1','SEEDS2', 'SEFLF','SESPM','SPOR1')
 
 dataset3 = dataset2[!dataset2$species %in% bad_sp,]
+
+# It may be useful to count the number of times each name occurs, as misspellings or typos will likely
+# only show up one time.
+
+table(dataset3$species)
+
+# If you find any potential typos, try to confirm that the "mispelling" isn't actually a valid name.
+# If not, then go ahead and replace all instances like this:
+
+typo_name = ''
+good_name = ''
+
+dataset3$species[dataset$species == typo_name] = good_name
+
 
 # Reset the factor levels:
 
@@ -219,6 +233,7 @@ dataFormattingTable[,'Notes_spFormat'] =
 # Next, we need to explore the count records. For filling out the data formatting table, we need to change the name of the field which represents counts, densities, percent cover, etc to "count". Then we will clean up unnecessary values.
 
 names(dataset3)
+summary(dataset3)
 
 # Fill in the original field name here
 countfield = 'cover'
@@ -229,6 +244,8 @@ names(dataset3)[which(names(dataset3) == countfield)] = 'count'
 # Now we will remove zero counts and NA's:
 
 summary(dataset3)
+
+# Can usually tell if there are any zeros or NAs from that summary(). If there aren't any showing, still run these functions or continue with the update of dataset# so that you are consistent with this template.
 
 # Subset to records > 0 (if applicable):
 
@@ -274,6 +291,10 @@ datefield = 'date'
 
 dateformat = '%m/%d/%Y'
 
+# If date is only listed in years:
+
+dateformat = '%Y'
+
 # If the date is just a year, then make sure it is of class numeric
 # and not a factor. Otherwise change to a true date object.
 
@@ -304,6 +325,7 @@ dataset6$date = date
 # Check the results:
 
 head(dataset6)
+str(dataset6)
 
 # !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE DATE DATA WERE MODIFIED!
 
@@ -341,7 +363,7 @@ dataset7 = ddply(dataset6,.(datasetID, site, date, species),
 
 dim(dataset7)
 
-head(dataset7)
+head(dataset7, 15)
 
 summary(dataset7)
 
@@ -362,7 +384,7 @@ summary (dataset7)
 
 # If everything is looks okay we're ready to write formatted data frame:
 
-write.csv(dataset7, "data/formatted_datasets/dataset_ds.csv", row.names = F)
+write.csv(dataset7, paste("data/formatted_datasets/dataset_", ds, ".csv", sep = ""), row.names = F)
 
 # !GIT-ADD-COMMIT-PUSH THE FORMATTED DATASET IN THE DATA FILE, THEN GIT-ADD-COMMIT-PUSH THE UPDATED DATA FOLDER!
 
