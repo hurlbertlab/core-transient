@@ -12,12 +12,24 @@
 
 se = function(x) sd(x)/sqrt(length(x))
 
+# Function to change date object to year:
+
+getYear = function(date){
+  if (class(date)[1] == 'factor') date = as.POSIXlt(date)
+  return(as.numeric(format(date, '%Y')))
+}
+
+#######################################################################################################*
+# ---- DATA PREPARATION ----
+#######################################################################################################*
+
 #======================================================================================================*
 # ---- FUNCTIONS FOR DATA FORMATTING ----
 #======================================================================================================*
 
-# This function modifies a value in the data formatting table for a 
-# specific field:
+#------------------------------------------------------------------------------------------------------*
+#  ---- Functions to modify a value in the data formatting table for a specific field ----
+#------------------------------------------------------------------------------------------------------*
 
 dataFormattingTableFieldUpdate = function(datasetID, Field, Value){
   rowIndex = which(dataFormattingTable$dataset_ID == datasetID)
@@ -102,12 +114,9 @@ dataFormattingTableUpdate = function(datasetID, datasetFinal){
 #======================================================================================================*
 
 #------------------------------------------------------------------------------------------------------*
-# The following functions are used for temporally or spatially nested data
-#======================================================================================================*
-
-#------------------------------------------------------------------------------------------------------*
 # Function to round dataset to lat and long and summarize data by the new rounded values:
 #------------------------------------------------------------------------------------------------------*
+
 datasetRoundLatLong = function(dataset, accuracy){
   # Split LL column into a dataframe of lat and long:
   siteLL = data.frame(do.call(rbind, strsplit(t, '_' )))
@@ -126,6 +135,7 @@ datasetRoundLatLong = function(dataset, accuracy){
 #------------------------------------------------------------------------------------------------------*
 # Function to summarize data to a given site level:
 #------------------------------------------------------------------------------------------------------*
+
 getNestedSiteDataset = function(dataset, siteGrain = 'site'){
   # If sites are not nested (lat-long or categorical):
   if(dataFormattingTable$spatial_scale_variable == 'N'){
@@ -153,6 +163,7 @@ getNestedSiteDataset = function(dataset, siteGrain = 'site'){
 #------------------------------------------------------------------------------------------------------*
 # Nested time dataset (spatial nesting is categorical, not lat-long):
 #------------------------------------------------------------------------------------------------------*
+
 getNestedTimeDataset = function(dataset,  temporalGrain){
   if(dataFormattingTable$subannualTgrain == 'Y'){
     dataset$date = as.POSIXct(strptime(dataset$date, '%Y-%m-%d'))
@@ -181,6 +192,7 @@ getNestedTimeDataset = function(dataset,  temporalGrain){
 #------------------------------------------------------------------------------------------------------*
 # Wrapper function for nested data (if necessary):
 #------------------------------------------------------------------------------------------------------*
+
 getNestedDataset = function(dataset, siteGrain, temporalGrain){
   datasetSpace = getNestedSiteDataset(dataset, siteGrain)
   datasetTime = getNestedTimeDataset(datasetSpace, temporalGrain)
@@ -189,9 +201,7 @@ getNestedDataset = function(dataset, siteGrain, temporalGrain){
 
 #------------------------------------------------------------------------------------------------------*
 # ---- SUBSET DATASET TO SITES WITH ADEQUATE TIME SAMPLES AND RICHNESS ----
-#======================================================================================================*
-
-# Note: Prior to running "RichnessYearSubsetFrame", you must have created the nestedDataset using the function "getNestedDataset". The output of the getNestedDataset function is a list with the first list item being the dataset, expanded across all potential spatial and temporal grains and the second being a vector of the names of the site columns. The "i" in this function refers to the the value in the vector of site names. 
+#======================================================================================================* 
 
 richnessYearSubsetFun = function(dataset, spatialGrain, temporalGrain, minNYears = 10, minSpRich = 10){
     dataset = getNestedDataset(dataset, spatialGrain, temporalGrain)
@@ -339,8 +349,7 @@ wFinder = function(inData, minNTime = 10, proportionalThreshold = .5){
 #------------------------------------------------------------------------------------------------------*
 
 wzSubsetFun = function(inData, minNTime = 10, proportionalThreshold = .5){
-  inData = richnessYearSubsetFun()
-  wOut = wFinder(inData, minNTime = 10, proportionalThreshold = .5)
+  wOut = wFinder(inData, minNTime, proportionalThreshold)
   # Subset data
     dataW = filter(wOut$dataZSub, siteTimeDate %in% wOut$wSiteTimeDates) 
   # For each siteYearDate, sample w sampling events:
@@ -361,18 +370,29 @@ wzSubsetFun = function(inData, minNTime = 10, proportionalThreshold = .5){
 }
 
 #------------------------------------------------------------------------------------------------------*
+# ---- Function for getting the subsetted dataset ----
+#------------------------------------------------------------------------------------------------------*
+# The subsetted dataset is limited to sites above a minimum overall species richness and number of years and each site year is subset to w and z
+# Prior to running this function, make sure to run the richnessYearSubsetFun, if there are no good sites, the proportional occurrence frame cannot be made!
+
+subsetDataFun = function(dataset, datasetID, spatialGrain, temporalGrain,
+                         minNYears = 10,  minNTime = 10, minSpRich = 10,
+                         proportionalThreshold = .5){
+  inData = richnessYearSubsetFun(dataset, spatialGrain, temporalGrain, minNYears, minSpRich)
+  subsettedData = wzSubsetFun(inData, minNTime, proportionalThreshold)
+  outData = data.frame(datasetID = datasetID, site = subsettedData$site, year = subsettedData$year,
+                       species = subsettedData$species, count = subsettedData$count)
+  return(outData)
+}
+
+#------------------------------------------------------------------------------------------------------*
 # ---- Make the proportional occurrence frame ----
 #------------------------------------------------------------------------------------------------------*
-# First, make sure to run the richnessYearSubsetFun, if there are no good sites, the proportional occurrence frame cannot be made!
 
-propOccFun = function(dataset, datasetID, spatialGrain, temporalGrain,
-                      minNYears = 10,  minNTime = 10, minSpRich = 10,
-                      proportionalThreshold = .5){
-    inData = richnessYearSubsetFun(dataset, spatialGrain, temporalGrain, minNYears, minSpRich)
-    wzDataSub = wzSubsetFun(inData, minNTime, proportionalThreshold)  
-    spTime = ddply(wzDataSub, .(site, species), summarize, 
+propOccFun = function(subsettedData){
+    spTime = ddply(subsettedData, .(datasetID, site, species), summarize, 
                    spTime = length(unique(year)))
-    siteTime = ddply(wzDataSub, .(site), summarize, 
+    siteTime = ddply(subsettedData, .(site), summarize, 
                      siteTime = length(unique(year)))
     spSiteTime = merge(spTime, siteTime)
     propOcc = data.frame(datasetID = datasetID, site = spSiteTime$site, 
@@ -381,163 +401,46 @@ propOccFun = function(dataset, datasetID, spatialGrain, temporalGrain,
     return(propOcc)
   }
 
-test = propOccFun(dataset, 2, spatialGrain, temporalGrain)
-
-###################################################################################
-
-#------------------------------------------------------------------------------------------------------*
-# Function to change date object to year:
-#------------------------------------------------------------------------------------------------------*
-
-getYear = function(date){
-  if (class(date)[1] == 'factor') date = as.POSIXlt(date)
-  return(as.numeric(format(date, '%Y')))
-}
-
 #------------------------------------------------------------------------------------------------------*
 # The following function is used to create and explore and extract the species richness and number of time samples for a site.
 #------------------------------------------------------------------------------------------------------*
+# Note: because data are subset to w and z, some sites will no longer have a species richness or number of time samples greater than the decided upon minimum
 
-
-siteSummaryFun = function(dataset){
-  ddply(dataset, .(datasetID, site), summarize, 
+siteSummaryFun = function(subsettedData){
+  ddply(subsettedData, .(datasetID, site), summarize, 
         spRich = length(unique(species)), 
         nTime = length(unique(year)))
 }
 
-
-
-########################################################################################################
 #------------------------------------------------------------------------------------------------------*
-# Function to evaluate spatial and temporal sampling grain:
+# Write files
 #------------------------------------------------------------------------------------------------------*
+# Note: This will not work if the temporal or spatial sampling is inadequate! Make sure to run richnessYearSubsetFun prior to to test whether the spatial and temporal scales are adequate!
 
-wzMaker = function(i, minNYears = 10, proportionalThreshold = .2){
-  
-  siteID = nestedDataset[[2]][i]
-  nestedDatasetDf = nestedDataset[[1]]
-  nestedDatasetDf$siteID = nestedDatasetDf[,siteID]
-  
-  # Subset to sites with a high enough species richness and year samples:
-  
-  siteSr_nTime = ddply(nestedDatasetDf, .(siteID), summarize,
-                       sr = length(unique(species)), 
-                       nTime = length(unique(year)))
-  
-  goodSites = subset(siteSr_nTime, sr >= 10 & siteSr_nTime$nTime >= minNYears)$siteID
-  
-  d1 = nestedDatasetDf[nestedDatasetDf$siteID %in% goodSites,]
-  
-  # Get data frame of the number of spatial and temporal samples by site and year:
-  
-  spaceTime = ddply(d1,.(siteID, year), summarize,
-                    spatialSubsamples = length(unique(site)),
-                    temporalSubsamples = length(unique(date)))
-  
-  # Summarize, counting the length of years for a given site having a given number of spatial and temporal subsamples.
-  
-  spaceTimeSummary = ddply(spaceTime,.(siteID, spatialSubsamples, temporalSubsamples),
-                           summarize, years = length(year))
-  
-  # Get potential values for w and z:
-  
-  w = seq(min(spaceTime$spatialSubsamples), max(spaceTime$spatialSubsamples, by  = 1))
-  z = seq(min(spaceTime$temporalSubsamples), max(spaceTime$temporalSubsamples, by  = 1))
-  #wz = expand.grid(w = w, z = z)
-  
-  wz = distinct(expand.grid(w = spaceTime$spatialSubsamples, z = spaceTime$temporalSubsamples))
-  
-  # Out
-  outList = list(length = nrow(wz))
-  for(i in 1:nrow(wz)){
-    w = wz[i,1]
-    z = wz[i,2]
-    # Calculate the sum of w and z values relative to the max values of each:
-    wzScaledSum = w/max(wz$w) + z/max(wz$z)
-    # For each site and value of w and z, count the number of years sampled with time and spatial samples greater than or equal to the values of w and z:
-    wzSiteYearSum = ddply(subset(spaceTime, spatialSubsamples>=w & temporalSubsamples>=z),
-                          .(siteID), summarize, years = length(year))
-    # Determine the proportion of sites greater than the minimum number of years:
-    wzSiteProp = ifelse(nrow(wzSiteYearSum) == 0, 0, sum(wzSiteYearSum[,2]>=minNYears)/length(goodSites))
-    # Bind output
-    outList[[i]] = cbind(wz[i,], wzScaledSum, wzSiteProp)
-  }
-  
-  wzSiteSummary = rbind.fill(outList)
-  
-  # Subset to max w z values for site proportions greater than .2
-  
-  wzMax = subset(subset(wzSiteSummary, wzSiteProp >=proportionalThreshold), wzScaledSum == max(wzScaledSum))
-  
-  wz = subset(wzMax, wzSiteProp == max(wzSiteProp))[,1:2]
-  
-  wzMakerOutList = list(spaceTimeSummary, wzSiteSummary, wz)
-  names(wzMakerOutList) = c('spaceTimeSummary', 'wzSiteSummary', 'wzMax')
-  return(wzMakerOutList)
+writePropOccSiteSummary = function(subsettedData){
+  propOcc = propOccFun(subsettedData)
+  siteSummary = siteSummaryFun(subsettedData)
+  datasetID = unique(siteSummary$datasetID)
+  write.csv(propOcc, 
+    paste('data/propOcc_datasets/propOcc_', datasetID, '.csv', sep = ''), row.names = F)
+  write.csv(propOcc, 
+    paste('data/siteSummaries/siteSummary_', datasetID, '.csv',  sep = ''), row.names = F)
 }
 
-#------------------------------------------------------------------------------------------------------*
-# The following function writes the proportional occurence data frame on sites.
-#------------------------------------------------------------------------------------------------------*
 
-propOccFun = function(dataset){
-  spTime = ddply(dataset, .(datasetID, site, species), summarize, 
-                 spTime = length(unique(year)))
-  siteTime = ddply(dataset, .(datasetID, site), summarize, 
-                   siteTime = length(unique(year)))
-  propOcc = merge(spTime, siteTime)
-  propOcc$propOcc = propOcc$spTime / propOcc$siteTime
-  return(propOcc[,-c(4:5)])
-}
-
-#------------------------------------------------------------------------------------------------------*
-# ---- FUNCTIONS for proportional occurrence and site summary data frames  ----
-#======================================================================================================*
-
-nestedSiteValidity = function(dataset, i){
-  siteUnit = paste(as.character(siteUnitTable[1,1:i]), collapse = '_')
-  dataset$year = getYear(dataset$date)
-  if (siteUnit == siteUnitTable[,1]) {
-    dataset$site = siteTable[,1]} else {
-      dataset$site = factor(apply(siteTable[,1:i], 1, paste, collapse = '_'))
-    } 
-  siteSummary = ddply(dataset, .(site), summarize,
-                      timeSamples = length(unique(year)), 
-                      nSpecies = length(unique(species)))
-  nSite = nrow(siteSummary)
-  MEANnTime = mean(siteSummary$timeSamples)
-  MINnTime = min(siteSummary$timeSamples)
-  MAXnTime = max(siteSummary$timeSamples)
-  STDEVnTime = sd(siteSummary$timeSamples) 
-  nBadSiteTime = nrow(subset(siteSummary, timeSamples < 5))
-  nBadSiteSpecies = nrow(subset(siteSummary, nSpecies < 10))
-  nBadSites = nrow(subset(siteSummary, timeSamples < 5 | nSpecies < 10))
-  propBadSiteTime = nBadSiteTime/nRecs
-  propBadSiteSpecies = nBadSiteSpecies/nRecs
-  propBadSites = nBadSiteSpecies/nRecs
-  return(data.frame(siteUnit, nSite, 
-                    MEANnTime, MINnTime, MAXnTime, STDEVnTime,
-                    nBadSiteTime,nBadSiteSpecies,nBadSites,
-                    propBadSiteTime, propBadSiteSpecies, propBadSites))
-}
-
-# Function to calculate site validity across scales for nested sites:
-
-nestedSiteValiditySummary = function(dataset){
-  siteUnit = dataFormattingTable$Raw_siteUnit
-  siteUnitTable = read.table(text = as.character(siteUnit), sep = '_', stringsAsFactors = F)
-  siteTable = read.table(text = as.character(dataset$site), sep = '_', stringsAsFactors = F)
-  outList = list(length = ncol(siteTable))
-  for (i in 1:ncol(siteTable)){
-    outList[[i]] = nestedSiteValidity(dataset, i)
-  }
-  return(rbind.fill(outList))
-}
-
+#######################################################################################################*
+#######################################################################################################*
+# ---- END DATA PREPARATION ----
+#######################################################################################################*
+#######################################################################################################*
 
 #======================================================================================================*
+# ---- DATA ANALYSIS ----
+#======================================================================================================*
+
+#------------------------------------------------------------------------------------------------------*
 # ---- GET DATA ----
-#======================================================================================================*
+#------------------------------------------------------------------------------------------------------*
 
 # The following function reads in the data and returns a list of the proportional 
 # occurence data frame, the site summary (sp richness and number of time samples
