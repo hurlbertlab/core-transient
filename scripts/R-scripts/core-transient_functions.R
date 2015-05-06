@@ -119,7 +119,7 @@ dataFormattingTableUpdate = function(datasetID, datasetFinal){
 
 datasetRoundLatLong = function(dataset, accuracy){
   # Split LL column into a dataframe of lat and long:
-  siteLL = data.frame(do.call(rbind, strsplit(t, '_' )))
+  siteLL = data.frame(do.call(rbind, strsplit(as.character(dataset$site), '_' )))
   # Round to chosen accuracy:
   roundLL = function(LatORLong){
     LatorLongVector = as.numeric(as.character(siteLL[,LatORLong]))
