@@ -217,7 +217,7 @@ richnessYearSubsetFun = function(dataset, spatialGrain, temporalGrain, minNYears
       return(print('No acceptable sites, rethink site definitions or temporal scale'))}
     else {
       # Match good sites and the dataframe:
-      outFrame = na.omit(dataset[dataset$site %in% goodSites,])
+      outFrame = na.omit(dataset[dataset$analysisSite %in% goodSites,])
       return(outFrame)
     }}
 
