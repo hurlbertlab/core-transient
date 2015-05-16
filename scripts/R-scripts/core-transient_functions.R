@@ -148,7 +148,7 @@ getNestedSiteDataset = function(dataset, siteGrain = 'site'){
      return(dataset)} else {
        # If sites are categorical but nested ...
        # Get the definition for a site and store each level as separate columns:
-       siteLevels = strsplit(siteLevel, '_')[[1]]
+      # siteLevels = strsplit(siteGrain, '_')[[1]]
        # Convert site data to a table and add names based on site definition:
        siteTable = read.table(text = as.character(dataset$site), sep = '_', stringsAsFactors = F)
        siteDefinition = dataFormattingTable$Raw_siteUnit
@@ -232,35 +232,36 @@ zFinder = function(inData, minNTime = 10, proportionalThreshold = .5){
   # Calculate the number of temporal samples per site and year: 
     spaceTime = ddply(inData, .(analysisSite, year, analysisDate),
                     summarize, temporalSubsamples = length(unique(date)))
+    spaceTime$siteYear = paste(spaceTime$analysisSite, spaceTime$analysisDate, sep = '_')
   # zPossible is a potential threshold of temporal subsampling:
     zPossible = sort(unique(spaceTime$temporalSubsamples))
   # Create an empty matrix to store summary data for possible Z-values:
     zMatrix = matrix(ncol = 3, nrow = length(zPossible), 
-                   dimnames = list(NULL, c('z','nSites','propSites')))
+                   dimnames = list(NULL, c('z','nSiteYears','propSites')))
   # Create an empty list of sites to store site names of good sites at a given Z-value:
-    zSiteList = list(length = length(zPossible))
+    zSiteYearList = list(length = length(zPossible))
   # For loop to populate the zMatrix and zSite Lists:
     for(i in 1:length(zPossible)){
       # Subset spaceTime to subsamples greater than or equal to z for a given site:
         spaceTimeGTEz = filter(spaceTime, temporalSubsamples>=zPossible[i])
-      # Determine sites in which the temporal subsampling was greater than equal to z for at least the minimum time samples:
-        goodSites = ddply(spaceTimeGTEz, .(analysisSite), summarize, 
-                              length(unique(analysisDate) >= minNTime))$analysisSite
-      # Construct matrix of z values, the number and proportion of sites:
+      # Determine siteYears in which the temporal subsampling was greater than equal to z for at least the minimum time samples:
+        goodSiteYears = ddply(spaceTimeGTEz, .(analysisSite, siteYear), summarize, 
+                              length(unique(analysisDate) >= minNTime))$siteYear
+      # Construct matrix of z values, the number and proportion of siteYears with that level of subsampling:
         zMatrix[i,'z'] = zPossible[i]
-        zMatrix[i, 'nSites'] = length(goodSites)
-        zMatrix[i, 'propSites'] = length(goodSites)/length(unique(spaceTime$analysisSite))
+        zMatrix[i, 'nSiteYears'] = length(goodSiteYears)
+        zMatrix[i, 'propSites'] = length(goodSiteYears)/length(unique(spaceTime$siteYear))
       # List the names of goodSites for a given Z-value:
-        zSiteList[[i]] = goodSites
+        zSiteList[[i]] = goodSiteYears
       # Name each list entry by the Z-value
         names(zSiteList)[[i]] = zPossible[i]
       }
   # Get the highest Z value with at least minNYears:
     z = max(filter(data.frame(zMatrix), propSites >= proportionalThreshold)$z)
   # Get the names of the sites that satisfy Z:
-    zSites = factor(zSiteList[[as.character(z)]])
+    zSiteYears = factor(zSiteList[[as.character(z)]])
   # Return the z value and site names 
-    return(list (z = z, zSites = zSites, zTable = data.frame(zMatrix)))
+    return(list (z = z, zSites = zSiteYears, zTable = data.frame(zMatrix)))
   }
 
 #------------------------------------------------------------------------------------------------------*
