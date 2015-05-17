@@ -203,15 +203,15 @@ getNestedDataset = function(dataset, siteGrain, temporalGrain){
 # ---- SUBSET DATASET TO SITES WITH ADEQUATE TIME SAMPLES AND RICHNESS ----
 #======================================================================================================* 
 
-richnessYearSubsetFun = function(dataset, spatialGrain, temporalGrain, minNYears = 10, minSpRich = 10){
+richnessYearSubsetFun = function(dataset, spatialGrain, temporalGrain, minNTime = 10, minSpRich = 10){
     dataset = getNestedDataset(dataset, spatialGrain, temporalGrain)
   # Get the number of years and species richness for each site: 
     siteSr_nTime = ddply(dataset, .(analysisSite), summarize,
                          sr = length(unique(species)), 
-                         nTime = length(unique(year)))
+                         nTime = length(unique(analysisDate)))
   # Subset to sites with a high enough species richness and year samples:
     goodSites = filter(siteSr_nTime, sr >= minSpRich & 
-                         siteSr_nTime$nTime >= minNYears)$analysisSite
+                         siteSr_nTime$nTime >= minNTime)$analysisSite
   # If statement to return if there are no good sites:
     if(length(goodSites) == 0) {
       return(print('No acceptable sites, rethink site definitions or temporal scale'))}
@@ -230,38 +230,38 @@ richnessYearSubsetFun = function(dataset, spatialGrain, temporalGrain, minNYears
 
 zFinder = function(inData, minNTime = 10, proportionalThreshold = .5){
   # Calculate the number of temporal samples per site and year: 
-    spaceTime = ddply(inData, .(analysisSite, year, analysisDate),
+    spaceTime = ddply(inData, .(analysisSite, analysisDate),
                     summarize, temporalSubsamples = length(unique(date)))
-    spaceTime$siteYear = paste(spaceTime$analysisSite, spaceTime$analysisDate, sep = '_')
+    spaceTime$siteTime = paste(spaceTime$analysisSite, spaceTime$analysisDate, sep = '_')
   # zPossible is a potential threshold of temporal subsampling:
     zPossible = sort(unique(spaceTime$temporalSubsamples))
   # Create an empty matrix to store summary data for possible Z-values:
     zMatrix = matrix(ncol = 3, nrow = length(zPossible), 
-                   dimnames = list(NULL, c('z','nSiteYears','propSites')))
+                   dimnames = list(NULL, c('z','nSiteTimes','propSites')))
   # Create an empty list of sites to store site names of good sites at a given Z-value:
-    zSiteYearList = list(length = length(zPossible))
+    zSiteList = list(length = length(zPossible))
   # For loop to populate the zMatrix and zSite Lists:
     for(i in 1:length(zPossible)){
       # Subset spaceTime to subsamples greater than or equal to z for a given site:
         spaceTimeGTEz = filter(spaceTime, temporalSubsamples>=zPossible[i])
-      # Determine siteYears in which the temporal subsampling was greater than equal to z for at least the minimum time samples:
-        goodSiteYears = ddply(spaceTimeGTEz, .(analysisSite, siteYear), summarize, 
-                              length(unique(analysisDate) >= minNTime))$siteYear
+      # Determine siteTime in which the temporal subsampling was greater than equal to z for at least the minimum time samples:
+        goodSiteTimes = ddply(spaceTimeGTEz, .(analysisSite, siteTime), summarize, 
+                              length(unique(analysisDate) >= minNTime))$siteTime
       # Construct matrix of z values, the number and proportion of siteYears with that level of subsampling:
         zMatrix[i,'z'] = zPossible[i]
-        zMatrix[i, 'nSiteYears'] = length(goodSiteYears)
-        zMatrix[i, 'propSites'] = length(goodSiteYears)/length(unique(spaceTime$siteYear))
+        zMatrix[i, 'nSiteTimes'] = length(goodSiteTimes)
+        zMatrix[i, 'propSites'] = length(goodSiteTimes)/length(unique(spaceTime$siteTime))
       # List the names of goodSites for a given Z-value:
-        zSiteList[[i]] = goodSiteYears
+        zSiteList[[i]] = goodSiteTimes
       # Name each list entry by the Z-value
         names(zSiteList)[[i]] = zPossible[i]
       }
   # Get the highest Z value with at least minNYears:
     z = max(filter(data.frame(zMatrix), propSites >= proportionalThreshold)$z)
-  # Get the names of the sites that satisfy Z:
-    zSiteYears = factor(zSiteList[[as.character(z)]])
+  # Get the names of the site Times that satisfy Z:
+    zSiteTimes = factor(zSiteList[[as.character(z)]])
   # Return the z value and site names 
-    return(list (z = z, zSites = zSiteYears, zTable = data.frame(zMatrix)))
+    return(list (z = z, zSiteTimes = zSiteTimes, zTable = data.frame(zMatrix)))
   }
 
 #------------------------------------------------------------------------------------------------------*
@@ -280,7 +280,7 @@ dataZSubFun  = function(inData, minNTime = 10, proportionalThreshold = .5){
     siteTimeZSub = filter(spaceTime, subTimeSamples >= z)$siteTime
     dataZSub = filter(data, siteTime %in% siteTimeZSub)
   # Add a column that concatenates siteTime and date:
-  dataZSub$siteTimeDate = paste(dataZSub$siteTime, dataZSub$date, sep = '_')
+    dataZSub$siteTimeDate = paste(dataZSub$siteTime, dataZSub$date, sep = '_')
   # For each siteID and time sample, sample z number of sub-sampling events:
     siteTimes = unique(dataZSub$siteTime)
     events = list(length = z*length(siteTimes))
@@ -302,7 +302,7 @@ dataZSubFun  = function(inData, minNTime = 10, proportionalThreshold = .5){
 #------------------------------------------------------------------------------------------------------*
 # ---- CALCULATE the W-threshold ----
 #------------------------------------------------------------------------------------------------------*
-# The W-threshold refers to the maximum number of spatial subsamples that provide a given proprtion of siteYears.
+# The W-threshold refers to the maximum number of spatial subsamples that provide a given proportion of siteYears.
 # This returns a w-value and a list of siteDates that satisfy this value:
 # Note: Prior to running the "wFinder", you must have already run the function "RichnessYearSubsetFrame".
 
@@ -377,9 +377,9 @@ wzSubsetFun = function(inData, minNTime = 10, proportionalThreshold = .5){
 # Prior to running this function, make sure to run the richnessYearSubsetFun, if there are no good sites, the proportional occurrence frame cannot be made!
 
 subsetDataFun = function(dataset, datasetID, spatialGrain, temporalGrain,
-                         minNYears = 10,  minNTime = 10, minSpRich = 10,
+                         minNTime = 10, minSpRich = 10,
                          proportionalThreshold = .5){
-  inData = richnessYearSubsetFun(dataset, spatialGrain, temporalGrain, minNYears, minSpRich)
+  inData = richnessYearSubsetFun(dataset, spatialGrain, temporalGrain, minNTime, minSpRich)
   subsettedData = wzSubsetFun(inData, minNTime, proportionalThreshold)
   outData = data.frame(datasetID = datasetID, site = subsettedData$site, year = subsettedData$year,
                        species = subsettedData$species, count = subsettedData$count)
