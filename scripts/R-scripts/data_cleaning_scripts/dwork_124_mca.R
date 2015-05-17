@@ -17,7 +17,6 @@ library(MASS)
 # Source the functions file:
 
 getwd()
-setwd('C:/Users/auriemma//core-transient')
 source('scripts/R-scripts/core-transient_functions.R')
 
 # Get data. First specify the dataset number ('ds') you are working with.
@@ -26,7 +25,7 @@ ds = 124
 
 dataset = read.csv(paste('data/raw_datasets/dataset_', ds, '.csv', sep = ''))
 
-dataFormattingTable = read.csv('Reference/data_formatting_table.csv')
+dataFormattingTable = read.csv('data_formatting_table.csv')
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE THE DATASET ----
@@ -80,30 +79,28 @@ levels(dataset1$site)
 
 # Sites are listed with a name (USA_Massachusetts or USA_Massachusetts_North_America_Atlantic) followed by a lat_long. So just lat_long is the only relevant data in the site field
 
-# Substring out last characters of string that includes lat_longs
+# BSE: Lat long fix
 
-site = dataset1$site
-site1 = str_sub(dataset1$site, start = -12)
+site = as.character(dataset1$site)
 
-site1 = as.factor(site1)
-levels(site1)
+for(i in 1:length(site)){
+  siteNoAlpha = gsub("[[:alpha:]]", " ", site[i])
+  siteNoUnderscore = gsub('_',' ', siteNoAlpha)
+  siteNoLeadingOrTrailingBlank = str_trim(siteNoUnderscore)
+  siteUnderscore = gsub(' ', '_', siteNoLeadingOrTrailingBlank)
+  siteTable = read.table(text = siteUnderscore, sep = '_')
+  lon = as.character(siteTable[length(siteTable)])
+  lat = as.character(siteTable[length(siteTable)-1])
+  site[i] = paste(lat,lon, sep ='_')
+}
 
-# Sites are now either lat_long, sitenumber_lat_long, or _lat_long(with underscore in front)
-
-# Still need to find a way to get rid of these extra characters
-
-# Temporarily add this new site field
+dataset1$site = factor(site)
 
 dataset2 = dataset1
-
-dataset2$site = site1
 
 # Check
 
 head(dataset2, 30)
-unique(dataset2$site)
-
-# All looks good; sites are now either just lat_long or read as 'rth_America_Atlantic_number_lat_long
 
 # !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE SITE DATA WERE MODIFIED!
 
@@ -122,7 +119,7 @@ dataFormattingTable[,'spatial_scale_variable'] =
 # Notes_siteFormat.
 
 dataFormattingTable[,'Notes_siteFormat'] = 
-  dataFormattingTableFieldUpdate(ds, 'Notes_siteFormat', "site fields were cut down using substring to delete the unused information which was present in every site. Remaining are the sites as just lat_long, lat_longs with underscores in front, or a site number in front  of lat_long.")
+  dataFormattingTableFieldUpdate(ds, 'Notes_siteFormat', "site fields were cut down using substring to delete the unused information which was present in every site. Remaining are the sites as just lat_long.")
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SPECIES DATA ----
@@ -138,7 +135,7 @@ head(dataset2)
 
 # Upper and lower case could present an issue, so make new species column with all uppercase
 
-dataset2$species = toupper(dataset2$Species)
+dataset2$species = toupper(dataset2$species)
 head(dataset2)
 length(unique(dataset2$species))
 
@@ -151,14 +148,14 @@ dataset2$species = as.factor(dataset2$species)
 
 levels(dataset2$species)
 
-# Several species have repeats but followed by a typo of a symbol character (Â) and a space. Can be treated as typo and removed from the dataset.  
+# Several species have repeats but followed by a typo of a symbol character (?) and a space. Can be treated as typo and removed from the dataset.  
 
 # Trying functions seemed to work to remove these characters, but probably not the most efficient method. 
            
 spTest = levels(dataset2$species)
 spTest1 = str_trim(spTest)
 head(spTest1)
-spTest2 = gsub("Â", "", spTest1)
+spTest2 = gsub("?", "", spTest1)
 head(spTest2)
 length(unique(spTest))
 length(unique(spTest2))
@@ -171,9 +168,9 @@ unique(dataset3$species)
   
   # This worked to remove the trailing space on these typo species
 
-# Now to remove the symbol character (Â)
+# Now to remove the symbol character (?)
 
-dataset3$species = gsub("Â", "", dataset3$species)
+dataset3$species = gsub("?", "", dataset3$species)
 
 # Check to see if it worked
 
@@ -189,6 +186,13 @@ dataset3$species = as.factor(dataset3$species)
 
 levels(dataset3$species)
 head(dataset3)
+
+# BSE: There were some problems with punctuation
+
+species = gsub('[[:punct:]]',' ', dataset3$species)
+speciesTrim = str_trim(species)
+
+dataset3$species = speciesTrim
 
 # All good after check
 
@@ -342,7 +346,70 @@ write.csv(dataFormattingTable, 'Reference/data_formatting_table.csv', row.names 
 
 # !GIT-ADD-COMMIT-PUSH THE DATA FORMATTING TABLE!
 
+###################################################################################*
+# ---- END DATA FORMATTING. START PROPOCC AND DATA SUMMARY ----
+###################################################################################*
+# We have now formatted the dataset to the finest possible spatial and temporal grain, removed bad species, and added the dataset ID. It's now to make some scale decisions and determine the proportional occupancies.
+
+# Load additional required libraries and dataset:
+
+library(dplyr)
+library(tidyr)
+
+datasetID = ds
+
+# Get formatted dataset:
+
+dataset = read.csv(paste("data/formatted_datasets/dataset_",
+                         datasetID, ".csv", sep =''))
+
+# Have a look at the dimensions of the dataset and number of sites:
+
+dim(dataset)
+length(unique(dataset$site))
+head(dataset)
+
+# Get the data formatting table for that dataset:
+
+dataFormattingTable = subset(read.csv("data_formatting_table.csv"),
+                             dataset_ID == datasetID)
+
+# Check table values:
+
+dataFormattingTable
+
+# We'll start with the function "richnessYearSubsetFun". This will subset the data to sites with an adequate number of years of sampling and species richness. If there are no adequate years, the function will return a custom error message.
+
+richnessYearsTest = richnessYearSubsetFun(dataset, spatialGrain = 1, temporalGrain = 'year', 
+                                          minNYears = 5, minSpRich = 10)
+
+head(richnessYearsTest)
+dim(richnessYearsTest) ; dim(dataset)
+length(unique(richnessYearsTest$analysisSite))
+
+# All looks okay, so we'll now get the subsetted data (w and z and sites with adequate richness and time samples):
+
+subsettedData = subsetDataFun(dataset, datasetID, spatialGrain = .01, temporalGrain = 'year',
+                              minNYears = 10,  minNTime = 10, minSpRich = 10,
+                              proportionalThreshold = .5)
+
+# Take a look at the propOcc:
+
+head(propOccFun(subsettedData))
+
+hist(propOccFun(subsettedData)$propOcc)
+
+# Take a look at the site summary frame:
+
+siteSummaryFun(subsettedData)
+
+# If everything looks good, write the files:
+
+writePropOccSiteSummary(subsettedData)
+
 # Remove all objects except for functions from the environment:
 
 rm(list = setdiff(ls(), lsf.str()))
+
+
 
