@@ -285,6 +285,62 @@ write.csv(dataFormattingTable, 'Reference/data_formatting_table.csv', row.names 
 
 # !GIT-ADD-COMMIT-PUSH THE DATA FORMATTING TABLE!
 
+###################################################################################*
+# ---- END DATA FORMATTING. START PROPOCC AND DATA SUMMARY ----
+###################################################################################*
+# We have now formatted the dataset to the finest possible spatial and temporal grain, removed bad species, and added the dataset ID. It's now to make some scale decisions and determine the proportional occupancies.
+
+# Load additional required libraries and dataset:
+
+library(dplyr)
+library(tidyr)
+
+datasetID = ds
+
+# Get formatted dataset:
+
+dataset = read.csv(paste("data/formatted_datasets/dataset_",
+                         datasetID, ".csv", sep =''))
+
+# Get the data formatting table for that dataset:
+
+dataFormattingTable = subset(read.csv("data_formatting_table.csv"),
+                             dataset_ID == datasetID)
+
+# Check table values:
+
+dataFormattingTable
+
+# We'll start with the function "richnessYearSubsetFun". This will subset the data to sites with an adequate number of years of sampling and species richness. If there are no adequate years, the function will return a custom error message.
+
+richnessYearsTest = richnessYearSubsetFun(dataset, spatialGrain = .01, temporalGrain = 'year', 
+                                          minNYears = 10, minSpRich = 10)
+
+head(richnessYearsTest)
+dim(richnessYearsTest) ; dim(dataset)
+length(unique(richnessYearsTest$analysisSite))
+
+# All looks okay, so we'll now get the subsetted data (w and z and sites with adequate richness and time samples):
+
+subsettedData = subsetDataFun(dataset, datasetID, spatialGrain = .01, temporalGrain = 'year',
+                              minNYears = 10,  minNTime = 10, minSpRich = 10,
+                              proportionalThreshold = .5)
+
+# Take a look at the propOcc:
+
+head(propOccFun(subsettedData))
+
+hist(propOccFun(subsettedData)$propOcc)
+
+# Take a look at the site summary frame:
+
+siteSummaryFun(subsettedData)
+
+# If everything looks good, write the files:
+
+writePropOccSiteSummary(subsettedData)
+
 # Remove all objects except for functions from the environment:
 
 rm(list = setdiff(ls(), lsf.str()))
+
