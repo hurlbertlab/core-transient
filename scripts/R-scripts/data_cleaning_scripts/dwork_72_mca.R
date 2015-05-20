@@ -302,19 +302,38 @@ datasetID = ds
 dataset = read.csv(paste("data/formatted_datasets/dataset_",
                          datasetID, ".csv", sep =''))
 
+# Have a look at the dimensions of the dataset and number of sites:
+
+dim(dataset)
+length(unique(dataset$site))
+length(unique(dataset$date))
+head(dataset)
+
+# Start by checking the number of years of data. If less than 10, stop:
+
+length(unique(dataset$date))
+
+###!!! STOP !!!###
+
 # Get the data formatting table for that dataset:
 
 dataFormattingTable = subset(read.csv("data_formatting_table.csv"),
                              dataset_ID == datasetID)
 
-# Check table values:
+# Check relevant table values:
 
-dataFormattingTable
+dataFormattingTable$LatLong_sites
+
+dataFormattingTable$spatial_scale_variable
+
+dataFormattingTable$Raw_siteUnit
+
+dataFormattingTable$subannualTgrain
 
 # We'll start with the function "richnessYearSubsetFun". This will subset the data to sites with an adequate number of years of sampling and species richness. If there are no adequate years, the function will return a custom error message.
 
 richnessYearsTest = richnessYearSubsetFun(dataset, spatialGrain = .01, temporalGrain = 'year', 
-                                          minNYears = 10, minSpRich = 10)
+                                          minNTime = 10, minSpRich = 10)
 
 head(richnessYearsTest)
 dim(richnessYearsTest) ; dim(dataset)
