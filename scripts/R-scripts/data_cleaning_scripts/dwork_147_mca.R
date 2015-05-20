@@ -320,19 +320,44 @@ length(unique(dataset$site))
 length(unique(dataset$date))
 head(dataset)
 
+#### STOP! <10 YEARS OF DATA !!!! ####
+
 # Get the data formatting table for that dataset:
 
 dataFormattingTable = subset(read.csv("data_formatting_table.csv"),
                              dataset_ID == datasetID)
 
-# Check table values:
+# Check relevant table values:
 
-dataFormattingTable
+dataFormattingTable$LatLong_sites
+
+dataFormattingTable$spatial_scale_variable
+
+dataFormattingTable$Raw_siteUnit
+
+dataFormattingTable$subannualTgrain
+
+# Though sites are lat long, the number is embedded within a character string. This needs to be extracted:
+
+site = dataset$site
+
+siteFix = vector(length = length (site))
+
+for(i in 1:length(site)){
+  siteLL = unlist(strsplit(as.character(site[i]),split ='_'))
+  siteFix[i] = paste(siteLL[length(siteLL)-1], siteLL[length(siteLL)], sep ='_')
+}
+
+
+# Put the underscore back between the sites:
+
+dataset$site = siteFix
 
 # We'll start with the function "richnessYearSubsetFun". This will subset the data to sites with an adequate number of years of sampling and species richness. If there are no adequate years, the function will return a custom error message.
 
-richnessYearsTest = richnessYearSubsetFun(dataset, spatialGrain = 1, temporalGrain = 'year', 
-                                          minNYears = 10, minSpRich = 10)
+richnessYearsTest = richnessYearSubsetFun(dataset, spatialGrain = .1, 
+                                          temporalGrain = 'year', 
+                                          minNTime = 10, minSpRich = 10)
 
 head(richnessYearsTest)
 dim(richnessYearsTest) ; dim(dataset)
@@ -340,8 +365,8 @@ length(unique(richnessYearsTest$analysisSite))
 
 # All looks okay, so we'll now get the subsetted data (w and z and sites with adequate richness and time samples):
 
-subsettedData = subsetDataFun(dataset, datasetID, spatialGrain = .01, temporalGrain = 'year',
-                              minNYears = 10,  minNTime = 10, minSpRich = 10,
+subsettedData = subsetDataFun(dataset, datasetID, spatialGrain = 2, temporalGrain = 'year',
+                              minNTime = 10, minSpRich = 10,
                               proportionalThreshold = .5)
 
 # Take a look at the propOcc:
@@ -361,3 +386,4 @@ writePropOccSiteSummary(subsettedData)
 # Remove all objects except for functions from the environment:
 
 rm(list = setdiff(ls(), lsf.str()))
+
