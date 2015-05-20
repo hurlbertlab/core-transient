@@ -302,6 +302,7 @@ dataset = read.csv(paste("data/formatted_datasets/dataset_",
 
 dim(dataset)
 length(unique(dataset$site))
+length(unique(dataset$date))
 head(dataset)
 
 # Get the data formatting table for that dataset:
@@ -309,14 +310,27 @@ head(dataset)
 dataFormattingTable = subset(read.csv("data_formatting_table.csv"),
                              dataset_ID == datasetID)
 
-# Check table values:
+# Check relevant table values:
 
-dataFormattingTable
+dataFormattingTable$LatLong_sites
+
+dataFormattingTable$spatial_scale_variable
+
+dataFormattingTable$Raw_siteUnit
+
+dataFormattingTable$subannualTgrain
+
+# Are the number of time samples <10 across sites?
+
+length(unique(dataset$date))
+
+###!!! < 10 Time samples, halting formatting for now!!! ###
 
 # We'll start with the function "richnessYearSubsetFun". This will subset the data to sites with an adequate number of years of sampling and species richness. If there are no adequate years, the function will return a custom error message.
 
-richnessYearsTest = richnessYearSubsetFun(dataset, spatialGrain = .01, temporalGrain = 'year', 
-                                          minNYears = 10, minSpRich = 10)
+richnessYearsTest = richnessYearSubsetFun(dataset, spatialGrain = 2, 
+                                          temporalGrain = 'year', 
+                                          minNTime = 10, minSpRich = 10)
 
 head(richnessYearsTest)
 dim(richnessYearsTest) ; dim(dataset)
@@ -324,8 +338,8 @@ length(unique(richnessYearsTest$analysisSite))
 
 # All looks okay, so we'll now get the subsetted data (w and z and sites with adequate richness and time samples):
 
-subsettedData = subsetDataFun(dataset, datasetID, spatialGrain = .01, temporalGrain = 'year',
-                              minNYears = 10,  minNTime = 10, minSpRich = 10,
+subsettedData = subsetDataFun(dataset, datasetID, spatialGrain = 2, temporalGrain = 'year',
+                              minNTime = 10, minSpRich = 10,
                               proportionalThreshold = .5)
 
 # Take a look at the propOcc:
