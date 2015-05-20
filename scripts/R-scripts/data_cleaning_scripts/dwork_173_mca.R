@@ -290,19 +290,51 @@ length(unique(dataset$site))
 length(unique(dataset$date))
 head(dataset)
 
+#### STOP! <10 YEARS OF DATA !!!! ####
+
 # Get the data formatting table for that dataset:
 
 dataFormattingTable = subset(read.csv("data_formatting_table.csv"),
                              dataset_ID == datasetID)
 
-# Check table values:
+# Check relevant table values:
 
-dataFormattingTable
+dataFormattingTable$LatLong_sites
+
+dataFormattingTable$spatial_scale_variable
+
+dataFormattingTable$Raw_siteUnit
+
+dataFormattingTable$subannualTgrain
+
+# Though sites are lat long, the number is embedded within a character string. This needs to be extracted:
+
+site = dataset$site
+# Remove upper and lower case letters:
+
+siteNoNumbers = gsub('[0-9]','', site, ignore.case = T)
+
+# Remove underscores and replace with blanks
+
+siteNoUscores = gsub('_',' ',siteNoNumbers)
+
+# Trim:
+
+siteTrim = str_trim(siteNoUscores, side = 'both')
+
+# Put the underscore back between the sites:
+
+site1 = gsub(' ','_', siteTrim)
+
+unique(site1)
+
+dataset$site = site1
 
 # We'll start with the function "richnessYearSubsetFun". This will subset the data to sites with an adequate number of years of sampling and species richness. If there are no adequate years, the function will return a custom error message.
 
-richnessYearsTest = richnessYearSubsetFun(dataset, spatialGrain = 1, temporalGrain = 'year', 
-                                          minNYears = 10, minSpRich = 10)
+richnessYearsTest = richnessYearSubsetFun(dataset, spatialGrain = 'site', 
+                                          temporalGrain = 'year', 
+                                          minNTime = 10, minSpRich = 10)
 
 head(richnessYearsTest)
 dim(richnessYearsTest) ; dim(dataset)
@@ -310,8 +342,8 @@ length(unique(richnessYearsTest$analysisSite))
 
 # All looks okay, so we'll now get the subsetted data (w and z and sites with adequate richness and time samples):
 
-subsettedData = subsetDataFun(dataset, datasetID, spatialGrain = .01, temporalGrain = 'year',
-                              minNYears = 10,  minNTime = 10, minSpRich = 10,
+subsettedData = subsetDataFun(dataset, datasetID, spatialGrain = 2, temporalGrain = 'year',
+                              minNTime = 10, minSpRich = 10,
                               proportionalThreshold = .5)
 
 # Take a look at the propOcc:
