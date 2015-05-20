@@ -424,7 +424,7 @@ writePropOccSiteSummary = function(subsettedData){
   datasetID = unique(siteSummary$datasetID)
   write.csv(propOcc, 
     paste('data/propOcc_datasets/propOcc_', datasetID, '.csv', sep = ''), row.names = F)
-  write.csv(propOcc, 
+  write.csv(siteSummary, 
     paste('data/siteSummaries/siteSummary_', datasetID, '.csv',  sep = ''), row.names = F)
 }
 
