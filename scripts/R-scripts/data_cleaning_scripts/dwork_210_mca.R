@@ -104,7 +104,7 @@ head(dataset)
   # Time listed by year
 class(dataset$year)
 
-  # Change from integer to factor
+# Change from integer to factor
 dataset$year = factor(dataset$year)
 class(dataset$year)
 head(dataset)
@@ -299,9 +299,7 @@ head(dataset)
 dataFormattingTable = subset(read.csv("data_formatting_table.csv"),
                              dataset_ID == datasetID)
 
-# Check table values:
-
-dataFormattingTable
+# Check relevant table values:
 
 dataFormattingTable$LatLong_sites
 
@@ -313,7 +311,8 @@ dataFormattingTable$subannualTgrain
 
 # We'll start with the function "richnessYearSubsetFun". This will subset the data to sites with an adequate number of years of sampling and species richness. If there are no adequate years, the function will return a custom error message.
 
-richnessYearsTest = richnessYearSubsetFun(dataset, spatialGrain = 'Station_Replicate', temporalGrain = 'year', 
+richnessYearsTest = richnessYearSubsetFun(dataset, spatialGrain = 'field_plot', 
+                                          temporalGrain = 'year', 
                                           minNTime = 10, minSpRich = 10)
 
 head(richnessYearsTest)
@@ -322,7 +321,7 @@ length(unique(richnessYearsTest$analysisSite))
 
 # All looks okay, so we'll now get the subsetted data (w and z and sites with adequate richness and time samples):
 
-subsettedData = subsetDataFun(dataset, datasetID, spatialGrain = 'Station_Replicate', temporalGrain = 'year',
+subsettedData = subsetDataFun(dataset, datasetID, spatialGrain = 'field_plot', temporalGrain = 'year',
                               minNTime = 10, minSpRich = 10,
                               proportionalThreshold = .5)
 
@@ -343,3 +342,4 @@ writePropOccSiteSummary(subsettedData)
 # Remove all objects except for functions from the environment:
 
 rm(list = setdiff(ls(), lsf.str()))
+
