@@ -308,24 +308,61 @@ library(tidyr)
 
 datasetID = ds
 
+# Have a look at the dimensions of the dataset and number of sites:
+
+dim(dataset)
+length(unique(dataset$site))
+length(unique(dataset$date))
+head(dataset)
+
 # Get formatted dataset:
 
 dataset = read.csv(paste("data/formatted_datasets/dataset_",
                          datasetID, ".csv", sep =''))
+
+# There is a problem with the site definitions ... let's see if we can fix them:
+
+site = as.character(dataset$site)
+
+siteFrame = data.frame(site = site)
+
+# Only the sea's seemed to provide cosistent site information, thus:
+
+newSite = ifelse(unlist(regexec('Russia_White_Sea', site))> 0, 'White_Sea',
+            ifelse(unlist(regexec('Gorlo', site))> 0, 'Gorlo',
+            ifelse(unlist(regexec('Barents_Sea', site))> 0, 'Barents_Sea',
+            ifelse(unlist(regexec('Norwegian_Sea', site))> 0, 'Norwegian_Sea',site))))
+
+dataset$site = factor(newSite)
+
+# HOWEVER!!! NO SITES HAVE BEEN SAMPLED FOR ENOUGH YEARS!!!
+
+ddply(dataset,.(site), summarize, length(unique(date)))
+
+# Changing site to one value:
+
+dataset$site = 'A'
 
 # Get the data formatting table for that dataset:
 
 dataFormattingTable = subset(read.csv("data_formatting_table.csv"),
                              dataset_ID == datasetID)
 
-# Check table values:
+# Check relevant table values:
 
-dataFormattingTable
+dataFormattingTable$LatLong_sites
+
+dataFormattingTable$spatial_scale_variable
+
+dataFormattingTable$Raw_siteUnit
+
+dataFormattingTable$subannualTgrain
+
 
 # We'll start with the function "richnessYearSubsetFun". This will subset the data to sites with an adequate number of years of sampling and species richness. If there are no adequate years, the function will return a custom error message.
 
 richnessYearsTest = richnessYearSubsetFun(dataset, spatialGrain = .01, temporalGrain = 'year', 
-                                          minNYears = 10, minSpRich = 10)
+                                          minNTime = 10, minSpRich = 10)
 
 head(richnessYearsTest)
 dim(richnessYearsTest) ; dim(dataset)
@@ -334,7 +371,7 @@ length(unique(richnessYearsTest$analysisSite))
 # All looks okay, so we'll now get the subsetted data (w and z and sites with adequate richness and time samples):
 
 subsettedData = subsetDataFun(dataset, datasetID, spatialGrain = .01, temporalGrain = 'year',
-                              minNYears = 10,  minNTime = 10, minSpRich = 10,
+                              minNTime = 10, minSpRich = 10,
                               proportionalThreshold = .5)
 
 # Take a look at the propOcc:
