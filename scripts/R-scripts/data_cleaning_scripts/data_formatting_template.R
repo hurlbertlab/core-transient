@@ -357,7 +357,7 @@ dataset6$datasetID = ds
 # Now make the compiled dataframe:
 
 dataset7 = ddply(dataset6,.(datasetID, site, date, species),
-                 summarize, count = max(count))
+                 summarize, count = sum(count))
 
 # Explore the data frame:
 
