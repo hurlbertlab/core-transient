@@ -74,7 +74,7 @@ head(dataset)
 
 names(dataset)
 
-unusedFields = c(5,6,9)
+unusedFields = c(5,6,8,9)
 
 dataset1 = dataset[,-unusedFields]
 
@@ -100,7 +100,7 @@ head(dataset1, 10)
 dataFormattingTable[,'LatLong_sites'] = 
   dataFormattingTableFieldUpdate(ds, 'LatLong_sites',   # Fill value in below
                                  
-                                 'Y') 
+                                 'N') 
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SITE DATA ----
@@ -118,8 +118,7 @@ dataFormattingTable[,'LatLong_sites'] =
 # Here, we will concatenate all of the potential fields that describe the site 
 # in hierarchical order from largest to smallest grain:
 
-site = paste(dataset1$site, dataset1$block, dataset1$treatment, 
-             dataset1$plot, dataset1$quad, sep = '_')
+site = paste(dataset1$Treatment, dataset1$Replicate_Station, sep = '_')
 
 # Do some quality control by comparing the site fields in the dataset with the new vector of sites:
 
@@ -131,7 +130,7 @@ dataset2 = dataset1
 
 dataset2$site = factor(site)
 
-dataset2 = dataset2[,-c(2:5)]
+dataset2 = dataset2[c(6,1,4,5)]
 
 # Check the new dataset (are the columns as they should be?):
 
