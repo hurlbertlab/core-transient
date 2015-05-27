@@ -261,12 +261,12 @@ head(dataset5)
 dataFormattingTable[,'countFormat'] = 
   dataFormattingTableFieldUpdate(ds, 'countFormat',    # Fill value below in quotes
                                  
-                                 'cover')
+                                 'count')
 
 dataFormattingTable[,'Notes_countFormat'] = 
   dataFormattingTableFieldUpdate(ds, 'Notes_countFormat', # Fill value below in quotes
                                  
-                                 'Data represents cover. There were no NAs nor 0s that required removal')
+                                 'Data represents count of adults. Some NAs were omitted.')
 
 #-------------------------------------------------------------------------------*
 # ---- FORMAT TIME DATA ----
@@ -274,17 +274,13 @@ dataFormattingTable[,'Notes_countFormat'] =
 # Here, we need to extract the sampling dates. 
 
 # What is the name of the field that has information on sampling date?
-datefield = 'date'
+datefield = 'Sample_Date'
 
 # What is the format in which date data is recorded? For example, if it is
 # recorded as 5/30/94, then this would be '%m/%d/%y', while 1994-5-30 would
 # be '%Y-%m-%d'. Type "?strptime" for other examples of date formatting.
 
-dateformat = '%m/%d/%Y'
-
-# If date is only listed in years:
-
-dateformat = '%Y'
+dateformat = '%Y-%m-%d'
 
 # If the date is just a year, then make sure it is of class numeric
 # and not a factor. Otherwise change to a true date object.
