@@ -81,7 +81,6 @@ dataset1 = dataset[,-unusedFields]
 # Let's change the name of the "record_record_date" column to simply "date":
 
 names(dataset1)[1] = 'date'
-names(dataset1)[4] = 'species'
 
 # You also might want to change the names of the identified species field [to 'species'] and/or the identified site field [to 'site']. Just make sure you make specific comments on what the field name was before you made the change, as seen above.
 
@@ -145,7 +144,7 @@ head(dataset2)
 dataFormattingTable[,'Raw_siteUnit'] = 
   dataFormattingTableFieldUpdate(ds, 'Raw_siteUnit',       # Fill value below in quotes
                                  
-                                 'site_block_treatment_plot_quad') 
+                                 'treatment_replicate_station') 
 
 
 # spatial_scale_variable. Is a site potentially nested (e.g., plot within a quad or decimal lat longs that could be scaled up)? Y/N
@@ -160,7 +159,7 @@ dataFormattingTable[,'spatial_scale_variable'] =
 dataFormattingTable[,'Notes_siteFormat'] = 
   dataFormattingTableFieldUpdate(ds, 'Notes_siteFormat',  # Fill value below in quotes
                                  
-                                 'site fields concatenated. metadata suggests site-block-treatment-plot-quad describes the order of nested sites from small to large.')
+                                 'site fields concatenated. the metadata suggests that treatment is the largest site field, containing 6 replicates each, with each replicate containing 5 stations each')
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SPECIES DATA ----
@@ -169,6 +168,7 @@ dataFormattingTable[,'Notes_siteFormat'] =
 
 # Look at the individual species present:
 
+names(dataset2)[3] = "species"
 levels(dataset2$species) 
 
 # The first thing that I notice is that there are lower and upper case entries. Because R is case-sensitive, this will be coded as separate species. Modify this prior to continuing:
@@ -183,7 +183,7 @@ levels(dataset2$species)
 
 # In this example, a quick look at the metadata is not informative, unfortunately. Because of this, you should really stop here and post an issue on GitHub. With some more thorough digging, however, I've found the names represent "Kartez codes". Several species can be removed (double-checked with USDA plant codes at plants.usda.gov and another Sevilleta study (dataset 254) that provides species names for some codes). Some codes were identified with this pdf from White Sands: https://nhnm.unm.edu/sites/default/files/nonsensitive/publications/nhnm/U00MUL02NMUS.pdf
 
-bad_sp = c('','NONE','UK1','UKFO1','UNK1','UNK2','UNK3','LAMIA', 'UNGR1','CACT1','UNK','NONE','UNK2','UNK3', 'UNK1','FORB7', 'MISSING', '-888', 'DEAD','ERRO2', 'FORB1','FSEED', 'GSEED', 'MOSQ', 'SEED','SEEDS1','SEEDS2', 'SEFLF','SESPM','SPOR1')
+bad_sp = c('SOMETHING ELSE')
 
 dataset3 = dataset2[!dataset2$species %in% bad_sp,]
 
@@ -191,15 +191,6 @@ dataset3 = dataset2[!dataset2$species %in% bad_sp,]
 # only show up one time.
 
 table(dataset3$species)
-
-# If you find any potential typos, try to confirm that the "mispelling" isn't actually a valid name.
-# If not, then go ahead and replace all instances like this:
-
-typo_name = ''
-good_name = ''
-
-dataset3$species[dataset$species == typo_name] = good_name
-
 
 # Reset the factor levels:
 
