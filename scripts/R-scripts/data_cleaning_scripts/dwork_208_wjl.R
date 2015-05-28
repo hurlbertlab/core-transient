@@ -16,13 +16,6 @@
 # ---- SET-UP ----
 #===============================================================================*
 
-# This script is best viewed in RStudio. I like to reduced the size of my window
-# to roughly the width of the section lines (as above). Additionally, ensure 
-# that your global options are set to soft-wrap by selecting:
-# Tools/Global Options .../Code Editing/Soft-wrap R source files
-
-# Load libraries:
-
 library(stringr)
 library(plyr)
 library(ggplot2)
@@ -30,16 +23,15 @@ library(grid)
 library(gridExtra)
 library(MASS)
 
-
-# Source the functions file:
-
 getwd()
 
 source('scripts/R-scripts/core-transient_functions.R')
 
-# Get data. First specify the dataset number ('ds') you are working with.
+# Dataset number:
 
 ds = 208 
+
+# Get files
 
 list.files('data/raw_datasets')
 
@@ -50,47 +42,17 @@ dataFormattingTable = read.csv('data_formatting_table.csv')
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE THE DATASET ----
 #===============================================================================*
-# Here, you are predominantly interested in getting to know the dataset, and determine what the fields represent and  which fields are relavent.
-
-# View field names:
 
 names(dataset)
-
-# View how many records and fields:
-
 dim(dataset)
-
-# View the structure of the dataset:
-
 str(dataset)
-
-# View first 6 rows of the dataset:
-
 head(dataset)
 
-# Here, we can see that there are some fields that we won't use. Let's remove them, note that I've given a new name here "dataset1", this is to ensure that we don't have to go back to square 1 if we've miscoded anything.
+# Take out unneeded columns
 
-# If all fields will be used, then set unusedFields = 9999.
-
-names(dataset)
-
-unusedFields = c(5,6,8,9)
+unusedFields = c(6,7,9,10)
 
 dataset1 = dataset[,-unusedFields]
-
-# Let's change the name of the "record_record_date" column to simply "date":
-
-names(dataset1)[1] = 'date'
-
-# You also might want to change the names of the identified species field [to 'species'] and/or the identified site field [to 'site']. Just make sure you make specific comments on what the field name was before you made the change, as seen above.
-
-# Explore, if everything looks okay, you're ready to move forward. If not, retrace your steps to look for and fix errors. 
-
-head(dataset1, 10)
-
-# I've found it helpful to explore more than just the first 6 data points given with just a head(), so I used head(dataset#, 10) or even 20 to 50 to get a better snapshot of what the data looks like.  Do this periodically throughout the formatting process
-
-# !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE DATA WERE MODIFIED!
 
 #!DATA FORMATTING TABLE UPDATE! 
 # Are the ONLY site identifiers the latitude and longitude of the observation or 
@@ -104,38 +66,39 @@ dataFormattingTable[,'LatLong_sites'] =
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SITE DATA ----
 #===============================================================================*
-# From the previous head commmand, we can see that sites are broken up into (potentially) 5 fields. Find the metadata link in the data formatting table use that link to determine how sites are characterized.
 
-#  -- If sampling is nested (e.g., site, block, treatment, plot, quad as in this study), use each of the identifying fields and separate each field with an underscore. For nested samples be sure the order of concatenated columns goes from coarser to finer scales (e.g. "km_m_cm")
+# I found a description of the spatial data collection available here:
+# https://knb.ecoinformatics.org/#view/doi:10.5063/AA/mcolunga60.3.2
 
-# -- If sites are listed as lats and longs, use the finest available grain and separate lat and long fields with an underscore.
+# My reading of this is that the entire study site was divided into 6 blocks
+# ('Replicate', I think) and in each block there were 7 different 1-ha plots 
+# each receiving a different cropping system treatment ('Treatment', which 
+# in addition to 'T1' thru 'T7' also includes 'DF', 'CF', and 'SF' which I am 
+# unclear on). Within each plot there are 5 permanent trap locations. 
 
-# -- If the site definition is clear, make a new site column as necessary.
+# The spatial grain of analysis probably shouldn't be an individual sticky
+# trap location. Possibly the grain could be the plot (a set of 5 trap locations)
+# which would be the concatenation of Treatment and Replicate fields, or it 
+# could be the entire block of 7 different treatments (i.e., just the Replicate
+# field).
 
-# -- If the dataset is for just a single site, and there is no site column, then add one.
-
-# Here, we will concatenate all of the potential fields that describe the site 
-# in hierarchical order from largest to smallest grain:
-
-site = paste(dataset1$Treatment, dataset1$Replicate_Station, sep = '_')
-
-# Do some quality control by comparing the site fields in the dataset with the new vector of sites:
+site = paste(dataset1$Replicate, dataset1$Treatment, sep = '_')
 
 head(site)
 
-# All looks correct, so replace the site column in the dataset (as a factor) and remove the unnecessary fields, start by renaming the dataset to dataset2:
+# Replace site column
 
 dataset2 = dataset1
 
 dataset2$site = factor(site)
 
-dataset2 = dataset2[c(6,1,4,5)]
+# Rearrange columns
+
+dataset2 = dataset2[c(7,5,6,1)]
 
 # Check the new dataset (are the columns as they should be?):
 
 head(dataset2)
-
-# !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE SITE DATA WERE MODIFIED!
 
 # !DATA FORMATTING TABLE UPDATE! 
 
@@ -159,7 +122,7 @@ dataFormattingTable[,'spatial_scale_variable'] =
 dataFormattingTable[,'Notes_siteFormat'] = 
   dataFormattingTableFieldUpdate(ds, 'Notes_siteFormat',  # Fill value below in quotes
                                  
-                                 'site fields concatenated. the metadata suggests that treatment is the largest site field, containing 6 replicates each, with each replicate containing 5 stations each')
+                                 'site fields concatenated. the metadata suggests that there are 6 replicates with 7 treatments each')
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SPECIES DATA ----
