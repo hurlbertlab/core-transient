@@ -264,14 +264,6 @@ levels(dataset5$species)
 
 table(dataset5$species)
 
-# If you find any potential typos, try to confirm that the "mispelling" isn't actually a valid name.
-# If not, then go ahead and replace all instances like this:
-
-typo_name = ''
-good_name = ''
-
-dataset5$species[dataset$species == typo_name] = good_name
-
 
 # Reset the factor levels:
 
