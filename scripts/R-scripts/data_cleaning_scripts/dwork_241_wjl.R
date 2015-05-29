@@ -165,18 +165,19 @@ head(dataset3)
 dataFormattingTable[,'Notes_spFormat'] = 
   dataFormattingTableFieldUpdate(ds, 'Notes_spFormat',    # Fill value below in quotes
                                  
-  'several species removed. Metadata was relatively uninformative regarding what constitutes a true species sample for this study. Exploration of metadata from associated Sevilleta studies were more informative regarding which species needed to be removed. Species names are predominantly provided as Kartez codes, but not always. See: http://sev.lternet.edu/data/sev-212/5048. Some codes were identified with this pdf from White Sands: https://nhnm.unm.edu/sites/default/files/nonsensitive/publications/nhnm/U00MUL02NMUS.pdf')
+  'No changes made to species column')
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT COUNT DATA ----
 #===============================================================================*
+
 # Next, we need to explore the count records. For filling out the data formatting table, we need to change the name of the field which represents counts, densities, percent cover, etc to "count". Then we will clean up unnecessary values.
 
 names(dataset3)
 summary(dataset3)
 
 # Fill in the original field name here
-countfield = 'cover'
+countfield = 'density'
 
 # Renaming it
 names(dataset3)[which(names(dataset3) == countfield)] = 'count'
