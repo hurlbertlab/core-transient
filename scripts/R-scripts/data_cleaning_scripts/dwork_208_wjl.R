@@ -16,6 +16,19 @@
 # ---- SET-UP ----
 #===============================================================================*
 
+# Load libraries:
+
+library(stringr)
+library(plyr)
+library(ggplot2)
+library(grid)
+library(gridExtra)
+library(MASS)
+
+
+# Source the functions file:
+
+getwd()
 
 source('scripts/R-scripts/core-transient_functions.R')
 
@@ -221,7 +234,7 @@ dataFormattingTable[,'countFormat'] =
 dataFormattingTable[,'Notes_countFormat'] = 
   dataFormattingTableFieldUpdate(ds, 'Notes_countFormat', # Fill value below in quotes
                                  
-                                 'Data represents count of adults. Some NAs were omitted.')
+                                 'Data represents count of adults. Many 0s and some NAs were omitted.')
 
 #-------------------------------------------------------------------------------*
 # ---- FORMAT TIME DATA ----
