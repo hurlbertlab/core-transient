@@ -107,7 +107,7 @@ head(dataset2)
 dataFormattingTable[,'Raw_siteUnit'] = 
   dataFormattingTableFieldUpdate(ds, 'Raw_siteUnit',       # Fill value below in quotes
                                  
-                                 'site_block_treatment_plot_quad') 
+                                 'station_swath') 
 
 
 # spatial_scale_variable. Is a site potentially nested (e.g., plot within a quad or decimal lat longs that could be scaled up)? Y/N
@@ -122,52 +122,30 @@ dataFormattingTable[,'spatial_scale_variable'] =
 dataFormattingTable[,'Notes_siteFormat'] = 
   dataFormattingTableFieldUpdate(ds, 'Notes_siteFormat',  # Fill value below in quotes
                                  
-  'site fields concatenated. metadata suggests site-block-treatment-plot-quad describes the order of nested sites from small to large.')
+  'site fields concatenated. metadata suggests station_swath describes the order of nested sites from small to large.')
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SPECIES DATA ----
 #===============================================================================*
-# Here, your primary goal is to ensure that all of your species are valid. To do so, you need to look at the list of unique species very carefully. Avoid being too liberal in interpretation, if you notice an entry that MIGHT be a problem, but you can't say with certainty, create an issue on GitHub.
 
 # Look at the individual species present:
 
 levels(dataset2$species) 
 
-# The first thing that I notice is that there are lower and upper case entries. Because R is case-sensitive, this will be coded as separate species. Modify this prior to continuing:
+# Species entries are integers, change to factors:
 
-dataset2$species = factor(toupper(dataset2$species))
+dataset2$species = factor(dataset2$species)
 
-# Now explore the listed species themselves, again. A good trick here to finding problematic entries is to shrink the console below horizontally so that species names will appear in a single column.  This way you can more easily scan the species names (listed alphabetically) and identify potential misspellings, extra characters or blank space, or other issues.
+# Look for possible errors or unidentifieds, compare codes with metadata
 
 levels(dataset2$species)
+table(dataset2$species)
 
-# If species names are coded (not scientific names) go back to study's metadata to learn what species should and shouldn't be in the data. 
+# No problems
 
-# In this example, a quick look at the metadata is not informative, unfortunately. Because of this, you should really stop here and post an issue on GitHub. With some more thorough digging, however, I've found the names represent "Kartez codes". Several species can be removed (double-checked with USDA plant codes at plants.usda.gov and another Sevilleta study (dataset 254) that provides species names for some codes). Some codes were identified with this pdf from White Sands: https://nhnm.unm.edu/sites/default/files/nonsensitive/publications/nhnm/U00MUL02NMUS.pdf
+dataset3 = dataset2
 
-bad_sp = c('','NONE','UK1','UKFO1','UNK1','UNK2','UNK3','LAMIA', 'UNGR1','CACT1','UNK','NONE','UNK2','UNK3', 'UNK1','FORB7', 'MISSING', '-888', 'DEAD','ERRO2', 'FORB1','FSEED', 'GSEED', 'MOSQ', 'SEED','SEEDS1','SEEDS2', 'SEFLF','SESPM','SPOR1')
-
-dataset3 = dataset2[!dataset2$species %in% bad_sp,]
-
-# It may be useful to count the number of times each name occurs, as misspellings or typos will likely
-# only show up one time.
-
-table(dataset3$species)
-
-# If you find any potential typos, try to confirm that the "mispelling" isn't actually a valid name.
-# If not, then go ahead and replace all instances like this:
-
-typo_name = ''
-good_name = ''
-
-dataset3$species[dataset$species == typo_name] = good_name
-
-
-# Reset the factor levels:
-
-dataset3$species = factor(dataset3$species)
-
-# Let's look at how the removal of bad species and altered the length of the dataset:
+# Check new length of dataset to make sure nothing has changed:
 
 nrow(dataset2)
 
