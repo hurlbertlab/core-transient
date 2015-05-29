@@ -408,7 +408,11 @@ summary (dataset7)
 
 write.csv(dataset7, paste("data/formatted_datasets/dataset_", ds, ".csv", sep = ""), row.names = F)
 
-# !GIT-ADD-COMMIT-PUSH THE FORMATTED DATASET IN THE DATA FILE, THEN GIT-ADD-COMMIT-PUSH THE UPDATED DATA FOLDER!
+# !GIT-ADD-COMMIT-PUSH THE FORMATTED DATASET IN THE DATA FILE, 
+
+# AND THEN!!!!!! 
+
+# GIT-ADD-COMMIT-PUSH THE UPDATED DATA FOLDER!
 
 # As we've now successfully created the formatted dataset, we will now update the format priority and format flag fields. 
 
