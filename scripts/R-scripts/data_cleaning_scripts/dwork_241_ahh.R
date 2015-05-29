@@ -235,25 +235,29 @@ dataFormattingTable[,'Notes_countFormat'] =
 #===============================================================================*
 # Here, your primary goal is to ensure that all of your species are valid. To do so, you need to look at the list of unique species very carefully. Avoid being too liberal in interpretation, if you notice an entry that MIGHT be a problem, but you can't say with certainty, create an issue on GitHub.
 
-# Look at the individual species present:
+# If species names are coded (not scientific names) go back to study's metadata to learn what species should and shouldn't be in the data. 
 
-levels(dataset4$species) 
+# Looking at the supplementary table "Table4_Species_sampled.csv" file provided and 
+# examining only the species associated with the Benthic density dataset we made the
+# following modifications:
 
-# The first thing that I notice is that there are lower and upper case entries. Because R is case-sensitive, this will be coded as separate species. Modify this prior to continuing:
+# Code for large Macrocystis pyrifera (>1m) assigned to be the same as small M. pyrifera
 
-dataset4$species = factor(toupper(dataset4$species))
+dataset4$species[dataset4$species == '589'] = '557'
+
+# Remove "Young laminiariales" which could refer to any of 3 kelp species
+
+bad_sp = '558'
+
+dataset5 = dataset4[!dataset4$species %in% bad_sp,]
+
+# Convert integer species codes to factors
+
+dataset5$species = factor(dataset5$species)
 
 # Now explore the listed species themselves, again. A good trick here to finding problematic entries is to shrink the console below horizontally so that species names will appear in a single column.  This way you can more easily scan the species names (listed alphabetically) and identify potential misspellings, extra characters or blank space, or other issues.
 
-levels(dataset4$species)
-
-# If species names are coded (not scientific names) go back to study's metadata to learn what species should and shouldn't be in the data. 
-
-# In this example, a quick look at the metadata is not informative, unfortunately. Because of this, you should really stop here and post an issue on GitHub. With some more thorough digging, however, I've found the names represent "Kartez codes". Several species can be removed (double-checked with USDA plant codes at plants.usda.gov and another Sevilleta study (dataset 254) that provides species names for some codes). Some codes were identified with this pdf from White Sands: https://nhnm.unm.edu/sites/default/files/nonsensitive/publications/nhnm/U00MUL02NMUS.pdf
-
-bad_sp = c('','NONE','UK1','UKFO1','UNK1','UNK2','UNK3','LAMIA', 'UNGR1','CACT1','UNK','NONE','UNK2','UNK3', 'UNK1','FORB7', 'MISSING', '-888', 'DEAD','ERRO2', 'FORB1','FSEED', 'GSEED', 'MOSQ', 'SEED','SEEDS1','SEEDS2', 'SEFLF','SESPM','SPOR1')
-
-dataset5 = dataset4[!dataset4$species %in% bad_sp,]
+levels(dataset5$species)
 
 # It may be useful to count the number of times each name occurs, as misspellings or typos will likely
 # only show up one time.
@@ -293,7 +297,7 @@ head(dataset5)
 dataFormattingTable[,'Notes_spFormat'] = 
   dataFormattingTableFieldUpdate(ds, 'Notes_spFormat',    # Fill value below in quotes
                                  
-                                 'several species removed. Metadata was relatively uninformative regarding what constitutes a true species sample for this study. Exploration of metadata from associated Sevilleta studies were more informative regarding which species needed to be removed. Species names are predominantly provided as Kartez codes, but not always. See: http://sev.lternet.edu/data/sev-212/5048. Some codes were identified with this pdf from White Sands: https://nhnm.unm.edu/sites/default/files/nonsensitive/publications/nhnm/U00MUL02NMUS.pdf')
+                                 'Removed "Young laminiariales" which could refer to any of 3 kelp species, merged codes 558 and 589 to 558, both referring to M. pyrifera.')
 
 #-------------------------------------------------------------------------------*
 # ---- FORMAT TIME DATA ----
