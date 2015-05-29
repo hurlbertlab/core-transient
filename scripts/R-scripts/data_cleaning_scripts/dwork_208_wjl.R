@@ -16,14 +16,6 @@
 # ---- SET-UP ----
 #===============================================================================*
 
-library(stringr)
-library(plyr)
-library(ggplot2)
-library(grid)
-library(gridExtra)
-library(MASS)
-
-getwd()
 
 source('scripts/R-scripts/core-transient_functions.R')
 
@@ -131,7 +123,7 @@ dataFormattingTable[,'Notes_siteFormat'] =
 
 # Look at the individual species present:
 
-names(dataset2)[3] = "species"
+names(dataset2)[2] = "species"
 levels(dataset2$species) 
 
 # The first thing that I notice is that there are lower and upper case entries. Because R is case-sensitive, this will be coded as separate species. Modify this prior to continuing:
