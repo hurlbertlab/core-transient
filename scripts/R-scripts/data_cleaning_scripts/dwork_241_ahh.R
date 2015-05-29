@@ -66,9 +66,9 @@ head(dataset)
 
 names(dataset)
 
-# Here I exclude 'record_id', 'period', and 'density'
+# Here I exclude 'record_id' and 'period'
 
-unusedFields = c(1, 3, 7)
+unusedFields = c(1, 3)
 
 dataset1 = dataset[,-unusedFields]
 
@@ -94,16 +94,18 @@ head(dataset1, 20)
 dataFormattingTable[,'LatLong_sites'] = 
   dataFormattingTableFieldUpdate(ds, 'LatLong_sites',   # Fill value in below
   
-                                 'Y') 
+                                 'N') 
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SITE DATA ----
 #===============================================================================*
-# From the previous head commmand, we can see that sites are broken up into (potentially) 5 fields. Find the metadata link in the data formatting table use that link to determine how sites are characterized.
+# From the previous head commmand, we can see that sites are broken up into (potentially) 2 fields. Find the metadata link in the data formatting table use that link to determine how sites are characterized.
 
 #  -- If sampling is nested (e.g., site, block, treatment, plot, quad as in this study), use each of the identifying fields and separate each field with an underscore. For nested samples be sure the order of concatenated columns goes from coarser to finer scales (e.g. "km_m_cm")
 
-# -- If sites are listed as lats and longs, use the finest available grain and separate lat and long fields with an underscore.
+# In this dataset we have 5 swaths per station, and the swaths are at 5 different
+# points along a transect (10, 22, 32, 39, or 45 m) and can be on either the Right
+# or Left side of the transect.
 
 # -- If the site definition is clear, make a new site column as necessary.
 
@@ -112,20 +114,41 @@ dataFormattingTable[,'LatLong_sites'] =
 # Here, we will concatenate all of the potential fields that describe the site 
 # in hierarchical order from largest to smallest grain:
 
-site = paste(dataset1$site, dataset1$block, dataset1$treatment, 
-             dataset1$plot, dataset1$quad, sep = '_')
+site = paste(dataset1$station, dataset1$swath, sep = '_')
 
 # Do some quality control by comparing the site fields in the dataset with the new vector of sites:
 
 head(site)
 
+# Check how evenly represented all of the sites are in the dataset. If this is the
+# type of dataset where every site was sampled on a regular schedule, then you
+# expect to see similar values here across sites. Sites that only show up a small
+# percent of the time may reflect typos.
+
+dataset1$site = site
+data.frame(table(unique(dataset1[, c('site', 'date')])$site))
+
+# Looks like there are some sites that may be typos: 6_39R and 6_45R only have
+# 5 sampling events each. Since 6_39L has about 5 fewer events than most other
+# sites, we'll assume that all of the 6_39R instances were supposed to be 6_39L.
+
+dataset1$site[dataset1$site == '6_39R'] = '6_39L'
+
+# There are no other events listed for station 6 at 45 m, but there appear to be
+# extra sampling events at 6_22, which has 54 on the right side and 46 on the
+# left. Since there should only be EITHER a right or a left at any particular
+# meter mark, we'll assume that the 46 events at 6_22L are actually the missing
+# events from 6_45R.
+
+dataset1$site[dataset1$site == '6_22L'] = '6_45R'
+
 # All looks correct, so replace the site column in the dataset (as a factor) and remove the unnecessary fields, start by renaming the dataset to dataset2:
 
 dataset2 = dataset1
 
-dataset2$site = factor(site)
+dataset2$site = factor(dataset1$site)
 
-dataset2 = dataset2[,-c(2:5)]
+dataset2 = dataset2[,-c(1,3)]
 
 # Check the new dataset (are the columns as they should be?):
 
