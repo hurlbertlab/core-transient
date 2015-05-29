@@ -239,7 +239,6 @@ dataFormattingTable[,'Notes_countFormat'] =
 #-------------------------------------------------------------------------------*
 # ---- FORMAT TIME DATA ----
 #===============================================================================*
-# Here, we need to extract the sampling dates. 
 
 # What is the name of the field that has information on sampling date?
 datefield = 'Sample_Date'
@@ -248,7 +247,7 @@ datefield = 'Sample_Date'
 # recorded as 5/30/94, then this would be '%m/%d/%y', while 1994-5-30 would
 # be '%Y-%m-%d'. Type "?strptime" for other examples of date formatting.
 
-dateformat = '%Y-%m-%d'
+dateformat = '%m/%d/%Y'
 
 # If the date is just a year, then make sure it is of class numeric
 # and not a factor. Otherwise change to a true date object.
