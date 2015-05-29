@@ -311,11 +311,11 @@ datefield = 'date'
 # recorded as 5/30/94, then this would be '%m/%d/%y', while 1994-5-30 would
 # be '%Y-%m-%d'. Type "?strptime" for other examples of date formatting.
 
-dateformat = '%m/%d/%Y'
+dateformat = '%m/%d/%y'
 
 # If date is only listed in years:
 
-dateformat = '%Y'
+#dateformat = '%Y'
 
 # If the date is just a year, then make sure it is of class numeric
 # and not a factor. Otherwise change to a true date object.
