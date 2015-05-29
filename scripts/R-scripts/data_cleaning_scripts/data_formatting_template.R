@@ -124,6 +124,13 @@ site = paste(dataset1$site, dataset1$block, dataset1$treatment,
 
 head(site)
 
+# Check how evenly represented all of the sites are in the dataset. If this is the
+# type of dataset where every site was sampled on a regular schedule, then you
+# expect to see similar values here across sites. Sites that only show up a small
+# percent of the time may reflect typos.
+
+data.frame(table(site))
+
 # All looks correct, so replace the site column in the dataset (as a factor) and remove the unnecessary fields, start by renaming the dataset to dataset2:
 
 dataset2 = dataset1
