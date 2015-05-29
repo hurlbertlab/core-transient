@@ -1,16 +1,8 @@
 ################################################################################*
-#  DATA FORMATTING TEMPLATE
-################################################################################*
-# Start by opening the data formatting table (data_formatting_table.csv). To determine which dataset you should be working on, see the "format_priority" field. Choose the dataset with the highest format priority, but be sure to check out the format_flag field to see the current status of the dataset.
+# Dataset 241, San Nicolas Island benthos
+#
+# Data and metadata can be found here: http://esapubs.org/archive/ecol/E094/244
 
-# Flag codes are as follows:
-  # 0 = not currently worked on
-  # 1 = formatting complete
-  # 2 = formatting in process
-  # 3 = formatting halted, issue
-  # 4 = data unavailable
-
-# NOTE: All changes to the data formatting table will be done in R! Do not make changes directly to this table, this will create conflicting versions.
 
 #-------------------------------------------------------------------------------*
 # ---- SET-UP ----
@@ -39,7 +31,7 @@ source('scripts/R-scripts/core-transient_functions.R')
 
 # Get data. First specify the dataset number ('ds') you are working with.
 
-ds = 223 
+ds = 241 
 
 list.files('data/raw_datasets')
 
@@ -74,19 +66,22 @@ head(dataset)
 
 names(dataset)
 
-unusedFields = c(1, 2, 8, 9, 11,13, 14)
+# Here I exclude 'record_id', 'period', and 'density'
+
+unusedFields = c(1, 3, 7)
 
 dataset1 = dataset[,-unusedFields]
 
-# Let's change the name of the "record_record_date" column to simply "date":
+# Let's change the name of the "record_date" column to simply "date":
 
-names(dataset1)[8] = 'date'
+names(dataset1)[2] = 'date'
 
-# You also might want to change the names of the identified species field [to 'species'] and/or the identified site field [to 'site']. Just make sure you make specific comments on what the field name was before you made the change, as seen above.
+# Also change "speciescode" to "species"
+names(dataset1)[4] = 'species'
 
 # Explore, if everything looks okay, you're ready to move forward. If not, retrace your steps to look for and fix errors. 
 
-head(dataset1, 10)
+head(dataset1, 20)
 
 # I've found it helpful to explore more than just the first 6 data points given with just a head(), so I used head(dataset#, 10) or even 20 to 50 to get a better snapshot of what the data looks like.  Do this periodically throughout the formatting process
 
@@ -123,13 +118,6 @@ site = paste(dataset1$site, dataset1$block, dataset1$treatment,
 # Do some quality control by comparing the site fields in the dataset with the new vector of sites:
 
 head(site)
-
-# Check how evenly represented all of the sites are in the dataset. If this is the
-# type of dataset where every site was sampled on a regular schedule, then you
-# expect to see similar values here across sites. Sites that only show up a small
-# percent of the time may reflect typos.
-
-data.frame(table(site))
 
 # All looks correct, so replace the site column in the dataset (as a factor) and remove the unnecessary fields, start by renaming the dataset to dataset2:
 
