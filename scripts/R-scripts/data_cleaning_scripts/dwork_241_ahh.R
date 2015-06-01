@@ -163,7 +163,7 @@ head(dataset2)
 dataFormattingTable[,'Raw_siteUnit'] = 
   dataFormattingTableFieldUpdate(ds, 'Raw_siteUnit',       # Fill value below in quotes
                                  
-                                 'site_block_treatment_plot_quad') 
+                                 'station_swath') 
 
 
 # spatial_scale_variable. Is a site potentially nested (e.g., plot within a quad or decimal lat longs that could be scaled up)? Y/N
@@ -178,60 +178,106 @@ dataFormattingTable[,'spatial_scale_variable'] =
 dataFormattingTable[,'Notes_siteFormat'] = 
   dataFormattingTableFieldUpdate(ds, 'Notes_siteFormat',  # Fill value below in quotes
                                  
-  'site fields concatenated. metadata suggests site-block-treatment-plot-quad describes the order of nested sites from small to large.')
+  'There are seven stations around the island each of which has 5 swaths, so station and swath were concatenated together.')
+
+#-------------------------------------------------------------------------------*
+# ---- EXPLORE AND FORMAT COUNT DATA ----
+#===============================================================================*
+# Next, we need to explore the count records. For filling out the data formatting table, we need to change the name of the field which represents counts, densities, percent cover, etc to "count". Then we will clean up unnecessary values.
+
+names(dataset2)
+summary(dataset2)
+
+# Fill in the original field name here
+countfield = 'density'
+
+# Renaming it
+names(dataset2)[which(names(dataset2) == countfield)] = 'count'
+
+# Now we will remove zero counts and NA's:
+
+summary(dataset2)
+
+# Can usually tell if there are any zeros or NAs from that summary(). If there aren't any showing, still run these functions or continue with the update of dataset# so that you are consistent with this template.
+
+# Subset to records > 0 (if applicable):
+
+dataset3 = subset(dataset2, count > 0) 
+
+summary(dataset3)
+
+# Remove NA's:
+
+dataset4 = na.omit(dataset3)
+
+
+# How does it look?
+
+head(dataset4)
+
+# !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE COUNT DATA WERE MODIFIED!
+
+#!DATA FORMATTING TABLE UPDATE!
+
+# Possible values for countFormat field are density, cover, and count.
+dataFormattingTable[,'countFormat'] = 
+  dataFormattingTableFieldUpdate(ds, 'countFormat',    # Fill value below in quotes
+                                 
+                                 'density')
+
+dataFormattingTable[,'Notes_countFormat'] = 
+  dataFormattingTableFieldUpdate(ds, 'Notes_countFormat', # Fill value below in quotes
+                                 
+                                 'Density data for solitary benthic algae and macro-invertebrates are collected by counting the number of individuals in a fixed swath and dividing that count by the area sampled.')
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SPECIES DATA ----
 #===============================================================================*
 # Here, your primary goal is to ensure that all of your species are valid. To do so, you need to look at the list of unique species very carefully. Avoid being too liberal in interpretation, if you notice an entry that MIGHT be a problem, but you can't say with certainty, create an issue on GitHub.
 
-# Look at the individual species present:
+# If species names are coded (not scientific names) go back to study's metadata to learn what species should and shouldn't be in the data. 
 
-levels(dataset2$species) 
+# Looking at the supplementary table "Table4_Species_sampled.csv" file provided and 
+# examining only the species associated with the Benthic density dataset we made the
+# following modifications:
 
-# The first thing that I notice is that there are lower and upper case entries. Because R is case-sensitive, this will be coded as separate species. Modify this prior to continuing:
+# Code for large Macrocystis pyrifera (>1m) assigned to be the same as small M. pyrifera
 
-dataset2$species = factor(toupper(dataset2$species))
+dataset4$species[dataset4$species == '589'] = '557'
+
+# Remove "Young laminiariales" which could refer to any of 3 kelp species
+
+bad_sp = '558'
+
+dataset5 = dataset4[!dataset4$species %in% bad_sp,]
+
+# Convert integer species codes to factors
+
+dataset5$species = factor(dataset5$species)
 
 # Now explore the listed species themselves, again. A good trick here to finding problematic entries is to shrink the console below horizontally so that species names will appear in a single column.  This way you can more easily scan the species names (listed alphabetically) and identify potential misspellings, extra characters or blank space, or other issues.
 
-levels(dataset2$species)
-
-# If species names are coded (not scientific names) go back to study's metadata to learn what species should and shouldn't be in the data. 
-
-# In this example, a quick look at the metadata is not informative, unfortunately. Because of this, you should really stop here and post an issue on GitHub. With some more thorough digging, however, I've found the names represent "Kartez codes". Several species can be removed (double-checked with USDA plant codes at plants.usda.gov and another Sevilleta study (dataset 254) that provides species names for some codes). Some codes were identified with this pdf from White Sands: https://nhnm.unm.edu/sites/default/files/nonsensitive/publications/nhnm/U00MUL02NMUS.pdf
-
-bad_sp = c('','NONE','UK1','UKFO1','UNK1','UNK2','UNK3','LAMIA', 'UNGR1','CACT1','UNK','NONE','UNK2','UNK3', 'UNK1','FORB7', 'MISSING', '-888', 'DEAD','ERRO2', 'FORB1','FSEED', 'GSEED', 'MOSQ', 'SEED','SEEDS1','SEEDS2', 'SEFLF','SESPM','SPOR1')
-
-dataset3 = dataset2[!dataset2$species %in% bad_sp,]
+levels(dataset5$species)
 
 # It may be useful to count the number of times each name occurs, as misspellings or typos will likely
 # only show up one time.
 
-table(dataset3$species)
-
-# If you find any potential typos, try to confirm that the "mispelling" isn't actually a valid name.
-# If not, then go ahead and replace all instances like this:
-
-typo_name = ''
-good_name = ''
-
-dataset3$species[dataset$species == typo_name] = good_name
+table(dataset5$species)
 
 
 # Reset the factor levels:
 
-dataset3$species = factor(dataset3$species)
+dataset5$species = factor(dataset5$species)
 
 # Let's look at how the removal of bad species and altered the length of the dataset:
 
-nrow(dataset2)
+nrow(dataset4)
 
-nrow(dataset3)
+nrow(dataset5)
 
 # Look at the head of the dataset to ensure everything is correct:
 
-head(dataset3)
+head(dataset5)
 
 # !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE SPECIES DATA WERE MODIFIED!
 
@@ -243,57 +289,7 @@ head(dataset3)
 dataFormattingTable[,'Notes_spFormat'] = 
   dataFormattingTableFieldUpdate(ds, 'Notes_spFormat',    # Fill value below in quotes
                                  
-  'several species removed. Metadata was relatively uninformative regarding what constitutes a true species sample for this study. Exploration of metadata from associated Sevilleta studies were more informative regarding which species needed to be removed. Species names are predominantly provided as Kartez codes, but not always. See: http://sev.lternet.edu/data/sev-212/5048. Some codes were identified with this pdf from White Sands: https://nhnm.unm.edu/sites/default/files/nonsensitive/publications/nhnm/U00MUL02NMUS.pdf')
-
-#-------------------------------------------------------------------------------*
-# ---- EXPLORE AND FORMAT COUNT DATA ----
-#===============================================================================*
-# Next, we need to explore the count records. For filling out the data formatting table, we need to change the name of the field which represents counts, densities, percent cover, etc to "count". Then we will clean up unnecessary values.
-
-names(dataset3)
-summary(dataset3)
-
-# Fill in the original field name here
-countfield = 'cover'
-
-# Renaming it
-names(dataset3)[which(names(dataset3) == countfield)] = 'count'
-
-# Now we will remove zero counts and NA's:
-
-summary(dataset3)
-
-# Can usually tell if there are any zeros or NAs from that summary(). If there aren't any showing, still run these functions or continue with the update of dataset# so that you are consistent with this template.
-
-# Subset to records > 0 (if applicable):
-
-dataset4 = subset(dataset3, count > 0) 
-
-summary(dataset4)
-
-# Remove NA's:
-
-dataset5 = na.omit(dataset4)
-
-
-# How does it look?
-
-head(dataset5)
-
-# !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE COUNT DATA WERE MODIFIED!
-
-#!DATA FORMATTING TABLE UPDATE!
-
-# Possible values for countFormat field are density, cover, and count.
-dataFormattingTable[,'countFormat'] = 
-  dataFormattingTableFieldUpdate(ds, 'countFormat',    # Fill value below in quotes
-
-                                 'cover')
-
-dataFormattingTable[,'Notes_countFormat'] = 
-  dataFormattingTableFieldUpdate(ds, 'Notes_countFormat', # Fill value below in quotes
-
-   'Data represents cover. There were no NAs nor 0s that required removal')
+                                 'Removed "Young laminiariales" which could refer to any of 3 kelp species, merged codes 558 and 589 to 558, both referring to M. pyrifera.')
 
 #-------------------------------------------------------------------------------*
 # ---- FORMAT TIME DATA ----
@@ -307,11 +303,11 @@ datefield = 'date'
 # recorded as 5/30/94, then this would be '%m/%d/%y', while 1994-5-30 would
 # be '%Y-%m-%d'. Type "?strptime" for other examples of date formatting.
 
-dateformat = '%m/%d/%Y'
+dateformat = '%m/%d/%y'
 
 # If date is only listed in years:
 
-dateformat = '%Y'
+#dateformat = '%Y'
 
 # If the date is just a year, then make sure it is of class numeric
 # and not a factor. Otherwise change to a true date object.
@@ -404,7 +400,11 @@ summary (dataset7)
 
 write.csv(dataset7, paste("data/formatted_datasets/dataset_", ds, ".csv", sep = ""), row.names = F)
 
-# !GIT-ADD-COMMIT-PUSH THE FORMATTED DATASET IN THE DATA FILE, THEN GIT-ADD-COMMIT-PUSH THE UPDATED DATA FOLDER!
+# !GIT-ADD-COMMIT-PUSH THE FORMATTED DATASET IN THE DATA FILE, 
+
+# AND THEN!!!!!! 
+
+# GIT-ADD-COMMIT-PUSH THE UPDATED DATA FOLDER!
 
 # As we've now successfully created the formatted dataset, we will now update the format priority and format flag fields. 
 
