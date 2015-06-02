@@ -106,7 +106,7 @@ head(dataset2)
 dataFormattingTable[,'Raw_siteUnit'] = 
   dataFormattingTableFieldUpdate(ds, 'Raw_siteUnit',       # Fill value below in quotes
                                  
-                                 'site_block_treatment_plot_quad') 
+                                 'station_transect') 
 
 
 # spatial_scale_variable. Is a site potentially nested (e.g., plot within a quad or decimal lat longs that could be scaled up)? Y/N
@@ -121,27 +121,29 @@ dataFormattingTable[,'spatial_scale_variable'] =
 dataFormattingTable[,'Notes_siteFormat'] = 
   dataFormattingTableFieldUpdate(ds, 'Notes_siteFormat',  # Fill value below in quotes
                                  
-                                 'site fields concatenated. metadata suggests site-block-treatment-plot-quad describes the order of nested sites from small to large.')
+                                 'site fields concatenated. metadata suggests that there are 4-5 transects within each station.')
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT COUNT DATA ----
 #===============================================================================*
-# Next, we need to explore the count records. For filling out the data formatting table, we need to change the name of the field which represents counts, densities, percent cover, etc to "count". Then we will clean up unnecessary values.
 
 names(dataset2)
 summary(dataset2)
 
-# Fill in the original field name here
-countfield = 'cover'
+# In case it is decided that juvenile density should not be used: 
 
-# Renaming it
-names(dataset2)[which(names(dataset2) == countfield)] = 'count'
+# countfield = 'adultdensity'
+# names(dataset2)[which(names(dataset2) == countfield)] = 'count'
+
+# Otherwise, I will be adding the densities of adults and juveniles for each species
+
+dataset2$count = dataset2$adultdensity + dataset2$juvdensity
+
+dataset2 = dataset2[,-c(3,4)]
 
 # Now we will remove zero counts and NA's:
 
 summary(dataset2)
-
-# Can usually tell if there are any zeros or NAs from that summary(). If there aren't any showing, still run these functions or continue with the update of dataset# so that you are consistent with this template.
 
 # Subset to records > 0 (if applicable):
 
@@ -152,7 +154,6 @@ summary(dataset3)
 # Remove NA's:
 
 dataset4 = na.omit(dataset3)
-
 
 # How does it look?
 
