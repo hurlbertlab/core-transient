@@ -173,6 +173,8 @@ levels(dataset4$species)
 
 # Removing entries of 'Sebastes spp.' 
 # These could refer to any of the 9 species of Sebastes found in the study.
+# There were other entries with unidentified species, but each had a unique genus, so there was no overlap like with Sebastes.
+# Their species codes were 1031, 1032, 1034, 1038, 1040, 1052, 1060
 
 bad_sp = c('1051')
 
@@ -204,7 +206,8 @@ head(dataset5)
 dataFormattingTable[,'Notes_spFormat'] = 
   dataFormattingTableFieldUpdate(ds, 'Notes_spFormat',    # Fill value below in quotes
                                  
-                                 'several species removed. Metadata was relatively uninformative regarding what constitutes a true species sample for this study. Exploration of metadata from associated Sevilleta studies were more informative regarding which species needed to be removed. Species names are predominantly provided as Kartez codes, but not always. See: http://sev.lternet.edu/data/sev-212/5048. Some codes were identified with this pdf from White Sands: https://nhnm.unm.edu/sites/default/files/nonsensitive/publications/nhnm/U00MUL02NMUS.pdf')
+                                 'Removed all entries of Sebastes spp. because there were multiple other entries of the Sebastes genus that were identified to the species. There were other entries with unidentified species, but each had a unique genus, so there was no overlap, so they were kept.  ')
+
 
 #-------------------------------------------------------------------------------*
 # ---- FORMAT TIME DATA ----
@@ -218,11 +221,7 @@ datefield = 'date'
 # recorded as 5/30/94, then this would be '%m/%d/%y', while 1994-5-30 would
 # be '%Y-%m-%d'. Type "?strptime" for other examples of date formatting.
 
-dateformat = '%m/%d/%Y'
-
-# If date is only listed in years:
-
-dateformat = '%Y'
+dateformat = '%m/%d/%y'
 
 # If the date is just a year, then make sure it is of class numeric
 # and not a factor. Otherwise change to a true date object.
