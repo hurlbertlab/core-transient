@@ -34,11 +34,34 @@ dataFormattingTable
 # grain, removed bad species, and added the dataset ID. It's now to make some
 # scale decisions and determine the proportional occupancies.
 
-# We'll start with the function "richnessYearSubsetFun". This will subset the data to sites with an adequate number of years of sampling and species richness. If there are no adequate years, the function will return a custom error message.
+# We'll start with the function "richnessYearSubsetFun". This will subset the data to sites with an adequate number of years of sampling and species richness for specified spatial and temporal scales of analysis.
 
-richnessYearsTest = richnessYearSubsetFun(dataset, spatialGrain = 'site', temporalGrain = 'season', 
-                                          minNYears = 10, minSpRich = 10)
-  
+# temporalGrain must take on one of the following values:
+#      day, week, biweek, month, bimonth, season, year
+
+# spatialGrain should specify either
+#  (1) the spatial resolution in decimal degrees if sites will be defined purely by lat-long boxes;
+#  (2) the raw spatial grain of the data in the formatted dataset (specified by the Raw_siteUnit in the
+#      dataFormattingTable); this is the default;
+#  (3) a higher level grain using the dataset-specific labels concatenated by '_'. For example, if
+#      the data were collected at 'sites', 'plots', and 'quads' (Raw_siteUnit = 'site_plot_quad') but
+#      you wanted to analyze the data at the plot grain, you would specify 'site_plot'.
+
+# If there are no adequate years, the function will return a custom error message.
+
+# First take a look at the raw spatial grain of the formatted dataset
+Raw_siteUnit = as.character(dataFormattingTable$Raw_siteUnit)
+Raw_siteUnit
+
+# Modify Raw_siteUnit as necessary if you want to use a larger/coarser spatial grain
+#  - e.g.,  Raw_siteUnit = 'site_plot'
+#    instead of 'site_plot_quad'
+
+richnessYearsTest = richnessYearSubsetFun(dataset, 
+                                          spatialGrain = Raw_siteUnit, 
+                                          temporalGrain = 'year', 
+                                          minNTime = 10, minSpRich = 10)
+
 
 #-------------------------------------------------------------------------------*
 # ---- SITE DATA ----
