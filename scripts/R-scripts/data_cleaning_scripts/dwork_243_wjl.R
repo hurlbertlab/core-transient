@@ -66,28 +66,15 @@ head(dataset1, 10)
 dataFormattingTable[,'LatLong_sites'] = 
   dataFormattingTableFieldUpdate(ds, 'LatLong_sites',   # Fill value in below
                                  
-                                 'Y') 
+                                 'N') 
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SITE DATA ----
 #===============================================================================*
-# From the previous head commmand, we can see that sites are broken up into (potentially) 5 fields. Find the metadata link in the data formatting table use that link to determine how sites are characterized.
 
-#  -- If sampling is nested (e.g., site, block, treatment, plot, quad as in this study), use each of the identifying fields and separate each field with an underscore. For nested samples be sure the order of concatenated columns goes from coarser to finer scales (e.g. "km_m_cm")
+# Concatenate site fields
 
-# -- If sites are listed as lats and longs, use the finest available grain and separate lat and long fields with an underscore.
-
-# -- If the site definition is clear, make a new site column as necessary.
-
-# -- If the dataset is for just a single site, and there is no site column, then add one.
-
-# Here, we will concatenate all of the potential fields that describe the site 
-# in hierarchical order from largest to smallest grain:
-
-site = paste(dataset1$site, dataset1$block, dataset1$treatment, 
-             dataset1$plot, dataset1$quad, sep = '_')
-
-# Do some quality control by comparing the site fields in the dataset with the new vector of sites:
+site = paste(dataset1$station, dataset1$transect, sep = '_')
 
 head(site)
 
@@ -104,7 +91,7 @@ dataset2 = dataset1
 
 dataset2$site = factor(site)
 
-dataset2 = dataset2[,-c(2:5)]
+dataset2 = dataset2[,-c(1,3)]
 
 # Check the new dataset (are the columns as they should be?):
 
