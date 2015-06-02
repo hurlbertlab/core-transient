@@ -46,7 +46,9 @@ dataset1 = dataset[,-unusedFields]
 
 # Change 'record_date' to 'date':
 
-names(dataset1)[4] = 'date'
+names(dataset1)[2] = 'date'
+
+names(dataset1)[4] = 'species'
 
 head(dataset1, 10)
 
@@ -59,35 +61,18 @@ head(dataset1, 10)
 dataFormattingTable[,'LatLong_sites'] = 
   dataFormattingTableFieldUpdate(ds, 'LatLong_sites',   # Fill value in below
                                  
-                                 'Y') 
+                                 'N') 
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SITE DATA ----
 #===============================================================================*
 # From the previous head commmand, we can see that sites are broken up into (potentially) 5 fields. Find the metadata link in the data formatting table use that link to determine how sites are characterized.
 
-#  -- If sampling is nested (e.g., site, block, treatment, plot, quad as in this study), use each of the identifying fields and separate each field with an underscore. For nested samples be sure the order of concatenated columns goes from coarser to finer scales (e.g. "km_m_cm")
-
-# -- If sites are listed as lats and longs, use the finest available grain and separate lat and long fields with an underscore.
-
-# -- If the site definition is clear, make a new site column as necessary.
-
-# -- If the dataset is for just a single site, and there is no site column, then add one.
-
-# Here, we will concatenate all of the potential fields that describe the site 
-# in hierarchical order from largest to smallest grain:
-
-site = paste(dataset1$site, dataset1$block, dataset1$treatment, 
-             dataset1$plot, dataset1$quad, sep = '_')
+site = paste(dataset1$station, dataset1$transect, sep = '_')
 
 # Do some quality control by comparing the site fields in the dataset with the new vector of sites:
 
 head(site)
-
-# Check how evenly represented all of the sites are in the dataset. If this is the
-# type of dataset where every site was sampled on a regular schedule, then you
-# expect to see similar values here across sites. Sites that only show up a small
-# percent of the time may reflect typos.
 
 data.frame(table(site))
 
@@ -97,7 +82,7 @@ dataset2 = dataset1
 
 dataset2$site = factor(site)
 
-dataset2 = dataset2[,-c(2:5)]
+dataset2 = dataset2[, -c(1,3)]
 
 # Check the new dataset (are the columns as they should be?):
 
