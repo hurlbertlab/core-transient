@@ -330,7 +330,7 @@ dataFormattingTable[,'format_flag'] =
 
 # And update the data formatting table:
 
-write.csv(dataFormattingTable, 'Reference/data_formatting_table.csv', row.names = F)
+write.csv(dataFormattingTable, 'data_formatting_table.csv', row.names = F)
 
 # !GIT-ADD-COMMIT-PUSH THE DATA FORMATTING TABLE!
 
