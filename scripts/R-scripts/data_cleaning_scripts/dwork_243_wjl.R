@@ -225,7 +225,7 @@ head(dataset5)
 dataFormattingTable[,'Notes_spFormat'] = 
   dataFormattingTableFieldUpdate(ds, 'Notes_spFormat',    # Fill value below in quotes
                                  
-                                 'several species removed. Metadata was relatively uninformative regarding what constitutes a true species sample for this study. Exploration of metadata from associated Sevilleta studies were more informative regarding which species needed to be removed. Species names are predominantly provided as Kartez codes, but not always. See: http://sev.lternet.edu/data/sev-212/5048. Some codes were identified with this pdf from White Sands: https://nhnm.unm.edu/sites/default/files/nonsensitive/publications/nhnm/U00MUL02NMUS.pdf')
+                                 'Combined the female and male entries of Semicossyphus pulcher into species code 1006. Removed all entries of Sebastes spp. because there were multiple other entries of the Sebastes genus that were identified to the species. There were other entries with unidentified species, but each had a unique genus, so there was no overlap, so they were kept.')
 
 #-------------------------------------------------------------------------------*
 # ---- FORMAT TIME DATA ----
@@ -239,11 +239,7 @@ datefield = 'date'
 # recorded as 5/30/94, then this would be '%m/%d/%y', while 1994-5-30 would
 # be '%Y-%m-%d'. Type "?strptime" for other examples of date formatting.
 
-dateformat = '%m/%d/%Y'
-
-# If date is only listed in years:
-
-dateformat = '%Y'
+dateformat = '%m/%d/%y'
 
 # If the date is just a year, then make sure it is of class numeric
 # and not a factor. Otherwise change to a true date object.
