@@ -226,7 +226,7 @@ richnessYearSubsetFun = function(dataset, spatialGrain, temporalGrain, minNTime 
 #------------------------------------------------------------------------------------------------------*
 # The Z-threshold refers to the maximum number of temporal subsamples that provide the most sites with greater than a minimum number of years of data. The following function returns this value.
 
-# Note: Prior to running "zFinder", you must have already run the function "RichnessYearSubsetFrame" for which "inData" is the function's output.  
+# Note: Prior to running "zFinder", you must have already run the function "richnessYearSubsetFun" for which "inData" is the function's output.  
 
 zFinder = function(inData, minNTime = 10, proportionalThreshold = .5){
   # Calculate the number of temporal samples per site and year: 
@@ -304,7 +304,7 @@ dataZSubFun  = function(inData, minNTime = 10, proportionalThreshold = .5){
 #------------------------------------------------------------------------------------------------------*
 # The W-threshold refers to the maximum number of spatial subsamples that provide a given proportion of siteYears.
 # This returns a w-value and a list of siteDates that satisfy this value:
-# Note: Prior to running the "wFinder", you must have already run the function "RichnessYearSubsetFrame".
+# Note: Prior to running the "wFinder", you must have already run the function "richnessYearSubsetFun".
 
 wFinder = function(inData, minNTime = 10, proportionalThreshold = .5){
   # Get data subset by Z-value:

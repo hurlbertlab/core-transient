@@ -92,7 +92,7 @@ spatialGrains = nestedDataset[[2]]
 
 # SUBSET DATASET TO SITES WITH ADEQUATE TIME SAMPLES AND RICHNESS:
 
-DataSRTimeSub = RichnessYearSubsetFrame(temporalGrain = 'year', spatialGrain =  'site')
+DataSRTimeSub = richnessYearSubsetFun(temporalGrain = 'year', spatialGrain =  'site')
 
 # CALCULATE the Z-threshold:
 
