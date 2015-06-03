@@ -86,21 +86,24 @@ dataFormattingTable$LatLong_sites
 # Use this section IF sites are spacially nested but sites are not defined by lat-longs.
 # If the spatial sampling grain is nested and site designations are not defined by lat-longs, it may be necessary to remove some observations and possibly extract samples from the data if the sampling is unevenly distributed. 
 
-nestedDataset = getNestedDataset(dataset)
+# COMMENTED OUT THE ~4 LINES BELOW WHICH SEEM OBSOLETE. 
+# WHY NOT JUST USE THE richnessYearsTest DATAFRAME CREATED ABOVE?
 
-spatialGrains = nestedDataset[[2]]
-
+#nestedDataset = getNestedDataset(dataset)
+#spatialGrains = nestedDataset[[2]]
+#
 # SUBSET DATASET TO SITES WITH ADEQUATE TIME SAMPLES AND RICHNESS:
+#
+#DataSRTimeSub = richnessYearSubsetFun(temporalGrain = 'year', spatialGrain =  'site')
 
-DataSRTimeSub = richnessYearSubsetFun(temporalGrain = 'year', spatialGrain =  'site')
+# CALCULATE the Z-threshold (# of temporal samples per temporalGrain to be considered a
+#                            unit of analysis)
 
-# CALCULATE the Z-threshold:
-
-zThresh = zFinder(DataSRTimeSub, minNYears = 10, proportionalThreshold = .5)
+zThresh = zFinder(DataSRTimeSub, minNTime = 10, proportionalThreshold = .5)
 
 # Calculate W based on Z and sample data:
 
-dataListWZ = wzDataSubset(DataSRTimeSub, zThresh, minNYears = 10, proportionalThreshold = .5)
+dataListWZ = wzDataSubset(DataSRTimeSub, zThresh, minNTime = 10, proportionalThreshold = .5)
 
 datasetSubWZ = dataListWZ[[1]]
 
