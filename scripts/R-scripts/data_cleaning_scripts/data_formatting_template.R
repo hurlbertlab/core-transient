@@ -107,6 +107,75 @@ dataFormattingTable[,'LatLong_sites'] =
   
                                  'Y') 
 
+
+#-------------------------------------------------------------------------------*
+# ---- FORMAT TIME DATA ----
+#===============================================================================*
+# Here, we need to extract the sampling dates. 
+
+# What is the name of the field that has information on sampling date?
+datefield = 'date'
+
+# What is the format in which date data is recorded? For example, if it is
+# recorded as 5/30/94, then this would be '%m/%d/%y', while 1994-5-30 would
+# be '%Y-%m-%d'. Type "?strptime" for other examples of date formatting.
+
+dateformat = '%m/%d/%Y'
+
+# If date is only listed in years:
+
+dateformat = '%Y'
+
+# If the date is just a year, then make sure it is of class numeric
+# and not a factor. Otherwise change to a true date object.
+
+if (dateformat == '%Y' | dateformat == '%y') {
+  date = as.numeric(as.character(dataset1[, datefield]))
+} else {
+  date = as.POSIXct(strptime(dataset1[, datefield], dateformat))
+}
+
+# A check on the structure lets you know that date field is now a date object:
+
+class(date)
+
+# Give a double-check, if everything looks okay replace the column:
+
+head(dataset1[, datefield])
+
+head(date)
+
+dataset2 = dataset1
+
+# Delete the old date field
+dataset2 = dataset2[, -which(names(dataset2) == datefield)]
+
+# Assign the new date values in a field called 'date'
+dataset2$date = date
+
+# Check the results:
+
+head(dataset2)
+str(dataset2)
+
+# !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE DATE DATA WERE MODIFIED!
+
+#!DATA FORMATTING TABLE UPDATE!
+
+# Notes_timeFormat. Provide a thorough description of any modifications that were made to the time field.
+
+dataFormattingTable[,'Notes_timeFormat'] = 
+  dataFormattingTableFieldUpdate(ds, 'Notes_timeFormat',  # Fill value in below
+                                 
+                                 'temporal data provided as dates. The only modification to this field involved converting to a date object.')
+
+# subannualTgrain. After exploring the time data, was this dataset sampled at a sub-annual temporal grain? Y/N
+
+dataFormattingTable[,'subannualTgrain'] = 
+  dataFormattingTableFieldUpdate(ds, 'subannualTgrain',    # Fill value in below
+                                 
+                                 'Y')
+
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SITE DATA ----
 #===============================================================================*
@@ -122,8 +191,8 @@ dataFormattingTable[,'LatLong_sites'] =
 
 # BEFORE YOU CONTINUE. We need to make sure that there are at least minNTime for sites at the coarsest possilbe spatial grain. 
 
-siteCourse = dataset$site
-dateYear = format(as.POSIXct(strptime(dataset$record_record_date, dateformat)), '%Y')
+siteCourse = dataset2$site
+dateYear = format(as.POSIXct(strptime(dataset2$record_record_date, dateformat)), '%Y')
 
 datasetYearTest = data.frame(siteCourse, dateYear)
 
@@ -135,8 +204,8 @@ ddply(datasetYearTest, .(siteCourse), summarise,
 # Here, we will concatenate all of the potential fields that describe the site 
 # in hierarchical order from largest to smallest grain:
 
-site = paste(dataset1$site, dataset1$block, dataset1$treatment, 
-             dataset1$plot, dataset1$quad, sep = '_')
+site = paste(dataset2$site, dataset2$block, dataset2$treatment, 
+             dataset2$plot, dataset2$quad, sep = '_')
 
 # Do some quality control by comparing the site fields in the dataset with the new vector of sites:
 
@@ -151,15 +220,15 @@ data.frame(table(site))
 
 # All looks correct, so replace the site column in the dataset (as a factor) and remove the unnecessary fields, start by renaming the dataset to dataset2:
 
-dataset2 = dataset1
+dataset3 = dataset2
 
-dataset2$site = factor(site)
+dataset3$site = factor(site)
 
-dataset2 = dataset2[,-c(2:5)]
+dataset3 = dataset3[,-c(2:5)]
 
 # Check the new dataset (are the columns as they should be?):
 
-head(dataset2)
+head(dataset3)
 
 # !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE SITE DATA WERE MODIFIED!
 
@@ -193,35 +262,35 @@ dataFormattingTable[,'Notes_siteFormat'] =
 #===============================================================================*
 # Next, we need to explore the count records. For filling out the data formatting table, we need to change the name of the field which represents counts, densities, percent cover, etc to "count". Then we will clean up unnecessary values.
 
-names(dataset2)
-summary(dataset2)
+names(dataset3)
+summary(dataset3)
 
 # Fill in the original field name here
 countfield = 'cover'
 
 # Renaming it
-names(dataset2)[which(names(dataset2) == countfield)] = 'count'
+names(dataset3)[which(names(dataset3) == countfield)] = 'count'
 
 # Now we will remove zero counts and NA's:
 
-summary(dataset2)
+summary(dataset3)
 
 # Can usually tell if there are any zeros or NAs from that summary(). If there aren't any showing, still run these functions or continue with the update of dataset# so that you are consistent with this template.
 
 # Subset to records > 0 (if applicable):
 
-dataset3 = subset(dataset2, count > 0) 
+dataset4 = subset(dataset3, count > 0) 
 
-summary(dataset3)
+summary(dataset4)
 
 # Remove NA's:
 
-dataset4 = na.omit(dataset3)
+dataset5 = na.omit(dataset4)
 
 
 # How does it look?
 
-head(dataset4)
+head(dataset5)
 
 # !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE COUNT DATA WERE MODIFIED!
 
@@ -245,15 +314,15 @@ dataFormattingTable[,'Notes_countFormat'] =
 
 # Look at the individual species present:
 
-levels(dataset4$species) 
+levels(dataset5$species) 
 
 # The first thing that I notice is that there are lower and upper case entries. Because R is case-sensitive, this will be coded as separate species. Modify this prior to continuing:
 
-dataset4$species = factor(toupper(dataset4$species))
+dataset5$species = factor(toupper(dataset5$species))
 
 # Now explore the listed species themselves, again. A good trick here to finding problematic entries is to shrink the console below horizontally so that species names will appear in a single column.  This way you can more easily scan the species names (listed alphabetically) and identify potential misspellings, extra characters or blank space, or other issues.
 
-levels(dataset4$species)
+levels(dataset5$species)
 
 # If species names are coded (not scientific names) go back to study's metadata to learn what species should and shouldn't be in the data. 
 
@@ -261,12 +330,12 @@ levels(dataset4$species)
 
 bad_sp = c('','NONE','UK1','UKFO1','UNK1','UNK2','UNK3','LAMIA', 'UNGR1','CACT1','UNK','NONE','UNK2','UNK3', 'UNK1','FORB7', 'MISSING', '-888', 'DEAD','ERRO2', 'FORB1','FSEED', 'GSEED', 'MOSQ', 'SEED','SEEDS1','SEEDS2', 'SEFLF','SESPM','SPOR1')
 
-dataset5 = dataset4[!dataset4$species %in% bad_sp,]
+dataset6 = dataset5[!dataset5$species %in% bad_sp,]
 
 # It may be useful to count the number of times each name occurs, as misspellings or typos will likely
 # only show up one time.
 
-table(dataset5$species)
+table(dataset6$species)
 
 # If you find any potential typos, try to confirm that the "mispelling" isn't actually a valid name.
 # If not, then go ahead and replace all instances like this:
@@ -274,22 +343,22 @@ table(dataset5$species)
 typo_name = ''
 good_name = ''
 
-dataset5$species[dataset$species == typo_name] = good_name
+dataset6$species[dataset6$species == typo_name] = good_name
 
 
 # Reset the factor levels:
 
-dataset5$species = factor(dataset5$species)
+dataset6$species = factor(dataset6$species)
 
 # Let's look at how the removal of bad species and altered the length of the dataset:
 
-nrow(dataset4)
-
 nrow(dataset5)
+
+nrow(dataset6)
 
 # Look at the head of the dataset to ensure everything is correct:
 
-head(dataset5)
+head(dataset6)
 
 # !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE SPECIES DATA WERE MODIFIED!
 
@@ -302,74 +371,6 @@ dataFormattingTable[,'Notes_spFormat'] =
   dataFormattingTableFieldUpdate(ds, 'Notes_spFormat',    # Fill value below in quotes
                                  
   'several species removed. Metadata was relatively uninformative regarding what constitutes a true species sample for this study. Exploration of metadata from associated Sevilleta studies were more informative regarding which species needed to be removed. Species names are predominantly provided as Kartez codes, but not always. See: http://sev.lternet.edu/data/sev-212/5048. Some codes were identified with this pdf from White Sands: https://nhnm.unm.edu/sites/default/files/nonsensitive/publications/nhnm/U00MUL02NMUS.pdf')
-
-#-------------------------------------------------------------------------------*
-# ---- FORMAT TIME DATA ----
-#===============================================================================*
-# Here, we need to extract the sampling dates. 
-
-# What is the name of the field that has information on sampling date?
-datefield = 'date'
-
-# What is the format in which date data is recorded? For example, if it is
-# recorded as 5/30/94, then this would be '%m/%d/%y', while 1994-5-30 would
-# be '%Y-%m-%d'. Type "?strptime" for other examples of date formatting.
-
-dateformat = '%m/%d/%Y'
-
-# If date is only listed in years:
-
-dateformat = '%Y'
-
-# If the date is just a year, then make sure it is of class numeric
-# and not a factor. Otherwise change to a true date object.
-
-if (dateformat == '%Y' | dateformat == '%y') {
-  date = as.numeric(as.character(dataset5[, datefield]))
-} else {
-  date = as.POSIXct(strptime(dataset5[, datefield], dateformat))
-}
-
-# A check on the structure lets you know that date field is now a date object:
-
-class(date)
-
-# Give a double-check, if everything looks okay replace the column:
-
-head(dataset5[, datefield])
-
-head(date)
-
-dataset6 = dataset5
-
-# Delete the old date field
-dataset6 = dataset6[, -which(names(dataset6) == datefield)]
-
-# Assign the new date values in a field called 'date'
-dataset6$date = date
-
-# Check the results:
-
-head(dataset6)
-str(dataset6)
-
-# !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE DATE DATA WERE MODIFIED!
-
-#!DATA FORMATTING TABLE UPDATE!
-
-# Notes_timeFormat. Provide a thorough description of any modifications that were made to the time field.
-
-dataFormattingTable[,'Notes_timeFormat'] = 
-  dataFormattingTableFieldUpdate(ds, 'Notes_timeFormat',  # Fill value in below
-                                 
-                                 'temporal data provided as dates. The only modification to this field involved converting to a date object.')
-
-# subannualTgrain. After exploring the time data, was this dataset sampled at a sub-annual temporal grain? Y/N
-
-dataFormattingTable[,'subannualTgrain'] = 
-  dataFormattingTableFieldUpdate(ds, 'subannualTgrain',    # Fill value in below
-                                 
-                                 'Y')
 
 #-------------------------------------------------------------------------------*
 # ---- MAKE DATA FRAME OF COUNT BY SITES, SPECIES, AND YEAR ----
