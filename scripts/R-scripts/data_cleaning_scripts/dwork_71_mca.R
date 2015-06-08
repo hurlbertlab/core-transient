@@ -320,6 +320,21 @@ head(dataset)
 dataset = read.csv(paste("data/formatted_datasets/dataset_",
                          datasetID, ".csv", sep =''))
 
+# Get the data formatting table for that dataset:
+
+dataFormattingTable = subset(read.csv("data_formatting_table.csv"),
+                             dataset_ID == datasetID)
+
+# Check relevant table values:
+
+dataFormattingTable$LatLong_sites
+
+dataFormattingTable$spatial_scale_variable
+
+dataFormattingTable$Raw_siteUnit
+
+dataFormattingTable$subannualTgrain
+
 # There is a problem with the site definitions ... let's see if we can fix them:
 
 site = as.character(dataset$site)
@@ -343,25 +358,9 @@ ddply(dataset,.(site), summarize, length(unique(date)))
 
 dataset$site = 'A'
 
-# Get the data formatting table for that dataset:
-
-dataFormattingTable = subset(read.csv("data_formatting_table.csv"),
-                             dataset_ID == datasetID)
-
-# Check relevant table values:
-
-dataFormattingTable$LatLong_sites
-
-dataFormattingTable$spatial_scale_variable
-
-dataFormattingTable$Raw_siteUnit
-
-dataFormattingTable$subannualTgrain
-
-
 # We'll start with the function "richnessYearSubsetFun". This will subset the data to sites with an adequate number of years of sampling and species richness. If there are no adequate years, the function will return a custom error message.
 
-richnessYearsTest = richnessYearSubsetFun(dataset, spatialGrain = .01, temporalGrain = 'year', 
+richnessYearsTest = richnessYearSubsetFun(dataset, spatialGrain = 'region_site_sitenumber_', temporalGrain = 'year', 
                                           minNTime = 10, minSpRich = 10)
 
 head(richnessYearsTest)
@@ -370,7 +369,7 @@ length(unique(richnessYearsTest$analysisSite))
 
 # All looks okay, so we'll now get the subsetted data (w and z and sites with adequate richness and time samples):
 
-subsettedData = subsetDataFun(dataset, datasetID, spatialGrain = .01, temporalGrain = 'year',
+subsettedData = subsetDataFun(dataset, datasetID, spatialGrain = 'region_site_sitenumber_', temporalGrain = 'year',
                               minNTime = 10, minSpRich = 10,
                               proportionalThreshold = .5)
 
