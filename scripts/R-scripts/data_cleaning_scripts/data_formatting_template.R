@@ -47,6 +47,10 @@ dataset = read.csv(paste('data/raw_datasets/dataset_', ds, '.csv', sep = ''))
 
 dataFormattingTable = read.csv('data_formatting_table.csv')
 
+# Set the minimum number of time samples for analysis:
+
+minNTime = 10
+
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE THE DATASET ----
 #===============================================================================*
@@ -114,6 +118,18 @@ dataFormattingTable[,'LatLong_sites'] =
 
 # -- If the dataset is for just a single site, and there is no site column, then add one.
 
+# BEFORE YOU CONTINUE. We need to make sure that there are at least minNTime for sites at the coarsest possilbe spatial grain. 
+
+siteCourse = dataset$site
+dateYear = format(as.POSIXct(strptime(dataset$record_record_date, dateformat)), '%Y')
+
+datasetYearTest = data.frame(siteCourse, dateYear)
+
+ddply(datasetYearTest, .(siteCourse), summarise, 
+      lengthYears =  length(unique(dateYear)))
+
+# If the dataset has less than minNTime years per site, do not continue processing. 
+
 # Here, we will concatenate all of the potential fields that describe the site 
 # in hierarchical order from largest to smallest grain:
 
@@ -168,6 +184,7 @@ dataFormattingTable[,'Notes_siteFormat'] =
   dataFormattingTableFieldUpdate(ds, 'Notes_siteFormat',  # Fill value below in quotes
                                  
   'site fields concatenated. metadata suggests site-block-treatment-plot-quad describes the order of nested sites from small to large.')
+
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT COUNT DATA ----
