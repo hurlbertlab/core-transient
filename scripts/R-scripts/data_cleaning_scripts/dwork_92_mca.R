@@ -322,7 +322,7 @@ write.csv(dataFormattingTable, 'Reference/data_formatting_table.csv', row.names 
 library(dplyr)
 library(tidyr)
 
-datasetID = ds
+datasetID = 92
 
 # Get formatted dataset:
 
@@ -379,7 +379,7 @@ length(unique(richnessYearsTest$analysisSite))
 
 # All looks okay, so we'll now get the subsetted data (w and z and sites with adequate richness and time samples):
 
-subsettedData = subsetDataFun(dataset, datasetID, spatialGrain = 2, temporalGrain = 'year',
+subsettedData = subsetDataFun(dataset, datasetID, spatialGrain = .1, temporalGrain = 'year',
                               minNTime = 10, minSpRich = 10,
                               proportionalThreshold = .5)
 
