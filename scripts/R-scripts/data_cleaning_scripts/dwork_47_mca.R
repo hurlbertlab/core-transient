@@ -310,13 +310,13 @@ dataFormattingTable
 # We'll start with the function "richnessYearSubsetFun". This will subset the data to sites with an adequate number of years of sampling and species richness. If there are no adequate years, the function will return a custom error message.
 
 richnessYearsTest = richnessYearSubsetFun(dataset, spatialGrain = 'site', temporalGrain = 'year', 
-                                          minNYears = 10, minSpRich = 10)
-richnessYearsTest
+                                          minNTime = 10, minSpRich = 10)
+
 
 # All looks okay, so we'll now get the subsetted data (w and z and sites with adequate richness and time samples):
 
 subsettedData = subsetDataFun(dataset, datasetID, spatialGrain = 'site', temporalGrain = 'year',
-                              minNYears = 10,  minNTime = 10, minSpRich = 10,
+                              minNTime = 10, minSpRich = 10,
                               proportionalThreshold = .5)
 
 # Take a look at the propOcc frame:
