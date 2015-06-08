@@ -450,7 +450,7 @@ getDataList = function(datasetID){
                            datasetID, '.csv', sep = ''))
   siteSummary = read.csv(paste('data/siteSummaries/siteSummary_', 
                                datasetID, '.csv',  sep = ''))
-  metaData = subset(read.csv('data_source_table.csv'),
+  metaData = subset(read.csv('metadata.csv'),
                     dataset_ID == datasetID)
   system = metaData$system
   taxa = metaData$taxa
@@ -674,10 +674,6 @@ addNewSummariesFun = function(threshold, reps){
   updatedSummaryData = rbind(currentSummaryData, newSummaryData)
   return(updatedSummaryData[order(datasetID),])
 }
-
-###################################################################################*
-# ---- UPDATE COMPLETE TO THIS POINT ----
-###################################################################################*
 
 #======================================================================================================*
 # ---- PLOT FUNCTIONS ----
