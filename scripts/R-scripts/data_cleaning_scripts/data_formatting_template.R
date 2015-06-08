@@ -47,9 +47,11 @@ dataset = read.csv(paste('data/raw_datasets/dataset_', ds, '.csv', sep = ''))
 
 dataFormattingTable = read.csv('data_formatting_table.csv')
 
-# Set the minimum number of time samples for analysis:
+# Set the minimum number of time samples and number of species for analysis:
 
-minNTime = 10
+minNTime = 6
+
+minSpRich = 10
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE THE DATASET ----
@@ -477,7 +479,7 @@ dataFormattingTable$subannualTgrain
 
 richnessYearsTest = richnessYearSubsetFun(dataset, spatialGrain = 'location_web', 
                                           temporalGrain = 'season', 
-                                          minNTime = 10, minSpRich = 10)
+                                          minNTime = minNTime, minSpRich = minSpRich)
 
 head(richnessYearsTest)
 dim(richnessYearsTest) ; dim(dataset)
@@ -486,7 +488,7 @@ length(unique(richnessYearsTest$analysisSite))
 # All looks okay, so we'll now get the subsetted data (w and z and sites with adequate richness and time samples):
 
 subsettedData = subsetDataFun(dataset, datasetID, spatialGrain = 'location_web', temporalGrain = 'season',
-                              minNTime = 10, minSpRich = 10,
+                              minNTime = minNTime, minSpRich = minSpRich,
                               proportionalThreshold = .5)
 
 # Take a look at the propOcc:
