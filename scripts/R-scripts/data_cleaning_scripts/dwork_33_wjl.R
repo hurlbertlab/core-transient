@@ -189,7 +189,7 @@ head(dataset3)
 dataFormattingTable[,'Raw_siteUnit'] = 
   dataFormattingTableFieldUpdate(ds, 'Raw_siteUnit',       # Fill value below in quotes
                                  
-                                 'site_block_treatment_plot_quad') 
+                                 'station_sampling_info') 
 
 
 # spatial_scale_variable. Is a site potentially nested (e.g., plot within a quad or decimal lat longs that could be scaled up)? Y/N
@@ -197,14 +197,14 @@ dataFormattingTable[,'Raw_siteUnit'] =
 dataFormattingTable[,'spatial_scale_variable'] = 
   dataFormattingTableFieldUpdate(ds, 'spatial_scale_variable',
                                  
-                                 'Y') # Fill value here in quotes
+                                 'N') # Fill value here in quotes
 
 # Notes_siteFormat. Use this field to THOROUGHLY describe any changes made to the site field during formatting.
 
 dataFormattingTable[,'Notes_siteFormat'] = 
   dataFormattingTableFieldUpdate(ds, 'Notes_siteFormat',  # Fill value below in quotes
                                  
-                                 'site fields concatenated. metadata suggests site-block-treatment-plot-quad describes the order of nested sites from small to large.')
+                                 'Only one site in this dataset. The site name gives information on sample method. No changes made.')
 
 
 #-------------------------------------------------------------------------------*
@@ -216,7 +216,7 @@ names(dataset3)
 summary(dataset3)
 
 # Fill in the original field name here
-countfield = 'cover'
+countfield = 'count'
 
 # Renaming it
 names(dataset3)[which(names(dataset3) == countfield)] = 'count'
@@ -236,7 +236,6 @@ summary(dataset4)
 # Remove NA's:
 
 dataset5 = na.omit(dataset4)
-
 
 # How does it look?
 
