@@ -1,16 +1,6 @@
 ################################################################################*
-#  DATA FORMATTING TEMPLATE
+#  DATASET 208 FORMATTING
 ################################################################################*
-# Start by opening the data formatting table (data_formatting_table.csv). To determine which dataset you should be working on, see the "format_priority" field. Choose the dataset with the highest format priority, but be sure to check out the format_flag field to see the current status of the dataset.
-
-# Flag codes are as follows:
-# 0 = not currently worked on
-# 1 = formatting complete
-# 2 = formatting in process
-# 3 = formatting halted, issue
-# 4 = data unavailable
-
-# NOTE: All changes to the data formatting table will be done in R! Do not make changes directly to this table, this will create conflicting versions.
 
 #-------------------------------------------------------------------------------*
 # ---- SET-UP ----
@@ -32,17 +22,21 @@ getwd()
 
 source('scripts/R-scripts/core-transient_functions.R')
 
-# Dataset number:
+# Get data. First specify the dataset number ('ds') you are working with.
 
 ds = 208 
-
-# Get files
 
 list.files('data/raw_datasets')
 
 dataset = read.csv(paste('data/raw_datasets/dataset_', ds, '.csv', sep = ''))
 
 dataFormattingTable = read.csv('data_formatting_table.csv')
+
+# Set the minimum number of time samples and number of species for analysis:
+
+minNTime = 6
+
+minSpRich = 10
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE THE DATASET ----
@@ -59,6 +53,8 @@ unusedFields = c(6,7,9,10)
 
 dataset1 = dataset[,-unusedFields]
 
+names(dataset1)
+
 #!DATA FORMATTING TABLE UPDATE! 
 # Are the ONLY site identifiers the latitude and longitude of the observation or 
 # sample? (I.e., there are no site names or site IDs or other designations) Y/N
@@ -68,42 +64,115 @@ dataFormattingTable[,'LatLong_sites'] =
                                  
                                  'N') 
 
+
+#-------------------------------------------------------------------------------*
+# ---- FORMAT TIME DATA ----
+#===============================================================================*
+# Here, we need to extract the sampling dates. 
+
+# What is the name of the field that has information on sampling date?
+datefield = 'Sample_Date'
+
+# What is the format in which date data is recorded? For example, if it is
+# recorded as 5/30/94, then this would be '%m/%d/%y', while 1994-5-30 would
+# be '%Y-%m-%d'. Type "?strptime" for other examples of date formatting.
+
+dateformat = '%m/%d/%Y'
+
+# If the date is just a year, then make sure it is of class numeric
+# and not a factor. Otherwise change to a true date object.
+
+if (dateformat == '%Y' | dateformat == '%y') {
+  date = as.numeric(as.character(dataset1[, datefield]))
+} else {
+  date = as.POSIXct(strptime(dataset1[, datefield], dateformat))
+}
+
+# A check on the structure lets you know that date field is now a date object:
+
+class(date)
+
+# Give a double-check, if everything looks okay replace the column:
+
+head(dataset1[, datefield])
+
+head(date)
+
+dataset2 = dataset1
+
+# Delete the old date field
+dataset2 = dataset2[, -which(names(dataset2) == datefield)]
+
+# Assign the new date values in a field called 'date'
+dataset2$date = date
+
+# Check the results:
+
+head(dataset2)
+str(dataset2)
+
+#!DATA FORMATTING TABLE UPDATE!
+
+# Notes_timeFormat. Provide a thorough description of any modifications that were made to the time field.
+
+dataFormattingTable[,'Notes_timeFormat'] = 
+  dataFormattingTableFieldUpdate(ds, 'Notes_timeFormat',  # Fill value in below
+                                 
+                                 'temporal data provided as dates. The only modification to this field involved converting to a date object.')
+
+# subannualTgrain. After exploring the time data, was this dataset sampled at a sub-annual temporal grain? Y/N
+
+dataFormattingTable[,'subannualTgrain'] = 
+  dataFormattingTableFieldUpdate(ds, 'subannualTgrain',    # Fill value in below
+                                 
+                                 'Y')
+
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SITE DATA ----
 #===============================================================================*
+# From the previous head commmand, we can see that sites are broken up into (potentially) 5 fields. Find the metadata link in the data formatting table use that link to determine how sites are characterized.
 
-# I found a description of the spatial data collection available here:
-# https://knb.ecoinformatics.org/#view/doi:10.5063/AA/mcolunga60.3.2
+#  -- If sampling is nested (e.g., site, block, treatment, plot, quad as in this study), use each of the identifying fields and separate each field with an underscore. For nested samples be sure the order of concatenated columns goes from coarser to finer scales (e.g. "km_m_cm")
 
-# My reading of this is that the entire study site was divided into 6 blocks
-# ('Replicate', I think) and in each block there were 7 different 1-ha plots 
-# each receiving a different cropping system treatment ('Treatment', which 
-# in addition to 'T1' thru 'T7' also includes 'DF', 'CF', and 'SF' which I am 
-# unclear on). Within each plot there are 5 permanent trap locations. 
+# -- If sites are listed as lats and longs, use the finest available grain and separate lat and long fields with an underscore.
 
-# The spatial grain of analysis probably shouldn't be an individual sticky
-# trap location. Possibly the grain could be the plot (a set of 5 trap locations)
-# which would be the concatenation of Treatment and Replicate fields, or it 
-# could be the entire block of 7 different treatments (i.e., just the Replicate
-# field).
+# -- If the site definition is clear, make a new site column as necessary.
 
-site = paste(dataset1$Replicate, dataset1$Treatment, sep = '_')
+# -- If the dataset is for just a single site, and there is no site column, then add one.
+
+# Here, we will concatenate all of the potential fields that describe the site 
+# in hierarchical order from largest to smallest grain:
+
+site = paste(dataset2$Replicate, dataset2$Treatment, sep = '_')
 
 head(site)
 
 # Replace site column
 
-dataset2 = dataset1
+dataset3 = dataset2
 
-dataset2$site = factor(site)
+dataset3$site = factor(site)
 
 # Rearrange columns
 
-dataset2 = dataset2[c(7,5,6,1)]
+dataset3 = dataset3[c(7,5,6,4)]
 
 # Check the new dataset (are the columns as they should be?):
 
-head(dataset2)
+head(dataset3)
+
+
+# BEFORE YOU CONTINUE. We need to make sure that there are at least minNTime for sites at the coarsest possilbe spatial grain. 
+
+siteCourse = dataset3$site
+dateYear = format(dataset3$date,'%Y')
+
+datasetYearTest = data.frame(siteCourse, dateYear)
+
+ddply(datasetYearTest, .(siteCourse), summarise, 
+      lengthYears =  length(unique(dateYear)))
+
+# At least 21 years for each site, looks good 
 
 # !DATA FORMATTING TABLE UPDATE! 
 
@@ -128,63 +197,6 @@ dataFormattingTable[,'Notes_siteFormat'] =
   dataFormattingTableFieldUpdate(ds, 'Notes_siteFormat',  # Fill value below in quotes
                                  
                                  'site fields concatenated. the metadata suggests that there are 6 replicates with 7 treatments each')
-
-#-------------------------------------------------------------------------------*
-# ---- EXPLORE AND FORMAT SPECIES DATA ----
-#===============================================================================*
-# Here, your primary goal is to ensure that all of your species are valid. To do so, you need to look at the list of unique species very carefully. Avoid being too liberal in interpretation, if you notice an entry that MIGHT be a problem, but you can't say with certainty, create an issue on GitHub.
-
-# Look at the individual species present:
-
-names(dataset2)[2] = "species"
-levels(dataset2$species) 
-
-# The first thing that I notice is that there are lower and upper case entries. Because R is case-sensitive, this will be coded as separate species. Modify this prior to continuing:
-
-dataset2$species = factor(toupper(dataset2$species))
-
-# Now explore the listed species themselves, again. A good trick here to finding problematic entries is to shrink the console below horizontally so that species names will appear in a single column.  This way you can more easily scan the species names (listed alphabetically) and identify potential misspellings, extra characters or blank space, or other issues.
-
-levels(dataset2$species)
-
-# If species names are coded (not scientific names) go back to study's metadata to learn what species should and shouldn't be in the data. 
-
-# In this example, a quick look at the metadata is not informative, unfortunately. Because of this, you should really stop here and post an issue on GitHub. With some more thorough digging, however, I've found the names represent "Kartez codes". Several species can be removed (double-checked with USDA plant codes at plants.usda.gov and another Sevilleta study (dataset 254) that provides species names for some codes). Some codes were identified with this pdf from White Sands: https://nhnm.unm.edu/sites/default/files/nonsensitive/publications/nhnm/U00MUL02NMUS.pdf
-
-bad_sp = c('SOMETHING ELSE')
-
-dataset3 = dataset2[!dataset2$species %in% bad_sp,]
-
-# It may be useful to count the number of times each name occurs, as misspellings or typos will likely
-# only show up one time.
-
-table(dataset3$species)
-
-# Reset the factor levels:
-
-dataset3$species = factor(dataset3$species)
-
-# Let's look at how the removal of bad species and altered the length of the dataset:
-
-nrow(dataset2)
-
-nrow(dataset3)
-
-# Look at the head of the dataset to ensure everything is correct:
-
-head(dataset3)
-
-# !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE SPECIES DATA WERE MODIFIED!
-
-#!DATA FORMATTING TABLE UPDATE!
-
-# Column M. Notes_spFormat. Provide a THOROUGH description of any changes made
-# to the species field, including why any species were removed.
-
-dataFormattingTable[,'Notes_spFormat'] = 
-  dataFormattingTableFieldUpdate(ds, 'Notes_spFormat',    # Fill value below in quotes
-                                 
-                                 'Unidentified entries (input as "something else") were removed')
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT COUNT DATA ----
@@ -221,8 +233,6 @@ dataset5 = na.omit(dataset4)
 
 head(dataset5)
 
-# !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE COUNT DATA WERE MODIFIED!
-
 #!DATA FORMATTING TABLE UPDATE!
 
 # Possible values for countFormat field are density, cover, and count.
@@ -237,67 +247,62 @@ dataFormattingTable[,'Notes_countFormat'] =
                                  'Data represents count of adults. Many 0s and some NAs were omitted.')
 
 #-------------------------------------------------------------------------------*
-# ---- FORMAT TIME DATA ----
+# ---- EXPLORE AND FORMAT SPECIES DATA ----
 #===============================================================================*
+# Here, your primary goal is to ensure that all of your species are valid. To do so, you need to look at the list of unique species very carefully. Avoid being too liberal in interpretation, if you notice an entry that MIGHT be a problem, but you can't say with certainty, create an issue on GitHub.
 
-# What is the name of the field that has information on sampling date?
-datefield = 'Sample_Date'
+# Rename "Species" column to "species"
 
-# What is the format in which date data is recorded? For example, if it is
-# recorded as 5/30/94, then this would be '%m/%d/%y', while 1994-5-30 would
-# be '%Y-%m-%d'. Type "?strptime" for other examples of date formatting.
+names(dataset5)[4] = 'species'
 
-dateformat = '%m/%d/%Y'
+# Look at the individual species present:
 
-# If the date is just a year, then make sure it is of class numeric
-# and not a factor. Otherwise change to a true date object.
+levels(dataset5$species) 
 
-if (dateformat == '%Y' | dateformat == '%y') {
-  date = as.numeric(as.character(dataset5[, datefield]))
-} else {
-  date = as.POSIXct(strptime(dataset5[, datefield], dateformat))
-}
+# The first thing that I notice is that there are lower and upper case entries. Because R is case-sensitive, this will be coded as separate species. Modify this prior to continuing:
 
-# A check on the structure lets you know that date field is now a date object:
+dataset5$species = factor(toupper(dataset5$species))
 
-class(date)
+# Now explore the listed species themselves, again. A good trick here to finding problematic entries is to shrink the console below horizontally so that species names will appear in a single column.  This way you can more easily scan the species names (listed alphabetically) and identify potential misspellings, extra characters or blank space, or other issues.
 
-# Give a double-check, if everything looks okay replace the column:
+levels(dataset5$species)
 
-head(dataset5[, datefield])
+# If species names are coded (not scientific names) go back to study's metadata to learn what species should and shouldn't be in the data. 
 
-head(date)
+# In this example, a quick look at the metadata is not informative, unfortunately. Because of this, you should really stop here and post an issue on GitHub. With some more thorough digging, however, I've found the names represent "Kartez codes". Several species can be removed (double-checked with USDA plant codes at plants.usda.gov and another Sevilleta study (dataset 254) that provides species names for some codes). Some codes were identified with this pdf from White Sands: https://nhnm.unm.edu/sites/default/files/nonsensitive/publications/nhnm/U00MUL02NMUS.pdf
 
-dataset6 = dataset5
+bad_sp = c('SOMETHING ELSE')
 
-# Delete the old date field
-dataset6 = dataset6[, -which(names(dataset6) == datefield)]
+dataset6 = dataset5[!dataset5$species %in% bad_sp,]
 
-# Assign the new date values in a field called 'date'
-dataset6$date = date
+# It may be useful to count the number of times each name occurs, as misspellings or typos will likely
+# only show up one time.
 
-# Check the results:
+table(dataset6$species)
+
+# Reset the factor levels:
+
+dataset6$species = factor(dataset6$species)
+
+# Let's look at how the removal of bad species and altered the length of the dataset:
+
+nrow(dataset5)
+
+nrow(dataset6)
+
+# Look at the head of the dataset to ensure everything is correct:
 
 head(dataset6)
-str(dataset6)
-
-# !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE DATE DATA WERE MODIFIED!
 
 #!DATA FORMATTING TABLE UPDATE!
 
-# Notes_timeFormat. Provide a thorough description of any modifications that were made to the time field.
+# Column M. Notes_spFormat. Provide a THOROUGH description of any changes made
+# to the species field, including why any species were removed.
 
-dataFormattingTable[,'Notes_timeFormat'] = 
-  dataFormattingTableFieldUpdate(ds, 'Notes_timeFormat',  # Fill value in below
+dataFormattingTable[,'Notes_spFormat'] = 
+  dataFormattingTableFieldUpdate(ds, 'Notes_spFormat',    # Fill value below in quotes
                                  
-                                 'temporal data provided as dates. The only modification to this field involved converting to a date object.')
-
-# subannualTgrain. After exploring the time data, was this dataset sampled at a sub-annual temporal grain? Y/N
-
-dataFormattingTable[,'subannualTgrain'] = 
-  dataFormattingTableFieldUpdate(ds, 'subannualTgrain',    # Fill value in below
-                                 
-                                 'Y')
+                                 'Unidentified entries (input as "something else") were removed')
 
 #-------------------------------------------------------------------------------*
 # ---- MAKE DATA FRAME OF COUNT BY SITES, SPECIES, AND YEAR ----
@@ -306,7 +311,7 @@ dataFormattingTable[,'subannualTgrain'] =
 
 # First, lets add the datasetID:
 
-dataset6$datasetID = 208
+dataset6$datasetID = ds
 
 # Now make the compiled dataframe:
 
@@ -356,7 +361,7 @@ dataFormattingTable[,'format_flag'] =
 
 # And update the data formatting table:
 
-write.csv(dataFormattingTable, 'Reference/data_formatting_table.csv', row.names = F)
+write.csv(dataFormattingTable, 'data_formatting_table.csv', row.names = F)
 
 # !GIT-ADD-COMMIT-PUSH THE DATA FORMATTING TABLE!
 
@@ -364,3 +369,75 @@ write.csv(dataFormattingTable, 'Reference/data_formatting_table.csv', row.names 
 
 rm(list = setdiff(ls(), lsf.str()))
 
+###################################################################################*
+# ---- END DATA FORMATTING. START PROPOCC AND DATA SUMMARY ----
+###################################################################################*
+# We have now formatted the dataset to the finest possible spatial and temporal grain, removed bad species, and added the dataset ID. It's now to make some scale decisions and determine the proportional occupancies.
+
+# Load additional required libraries and dataset:
+
+library(dplyr)
+library(tidyr)
+
+datasetID = ds
+
+# Get formatted dataset:
+
+dataset = read.csv(paste("data/formatted_datasets/dataset_",
+                         datasetID, ".csv", sep =''))
+
+# Have a look at the dimensions of the dataset and number of sites:
+
+dim(dataset)
+length(unique(dataset$site))
+length(unique(dataset$date))
+head(dataset)
+
+# Get the data formatting table for that dataset:
+
+dataFormattingTable = subset(read.csv("data_formatting_table.csv"),
+                             dataset_ID == datasetID)
+
+# Check relevant table values:
+
+dataFormattingTable$LatLong_sites
+
+dataFormattingTable$spatial_scale_variable
+
+dataFormattingTable$Raw_siteUnit
+
+dataFormattingTable$subannualTgrain
+
+# We'll start with the function "richnessYearSubsetFun". This will subset the data to sites with an adequate number of years of sampling and species richness. If there are no adequate years, the function will return a custom error message.
+
+richnessYearsTest = richnessYearSubsetFun(dataset, spatialGrain = 'location_web', 
+                                          temporalGrain = 'season', 
+                                          minNTime = minNTime, minSpRich = minSpRich)
+
+head(richnessYearsTest)
+dim(richnessYearsTest) ; dim(dataset)
+length(unique(richnessYearsTest$analysisSite))
+
+# All looks okay, so we'll now get the subsetted data (w and z and sites with adequate richness and time samples):
+
+subsettedData = subsetDataFun(dataset, datasetID, spatialGrain = 'location_web', temporalGrain = 'season',
+                              minNTime = minNTime, minSpRich = minSpRich,
+                              proportionalThreshold = .5)
+
+# Take a look at the propOcc:
+
+head(propOccFun(subsettedData))
+
+hist(propOccFun(subsettedData)$propOcc)
+
+# Take a look at the site summary frame:
+
+siteSummaryFun(subsettedData)
+
+# If everything looks good, write the files:
+
+writePropOccSiteSummary(subsettedData)
+
+# Remove all objects except for functions from the environment:
+
+rm(list = setdiff(ls(), lsf.str()))
