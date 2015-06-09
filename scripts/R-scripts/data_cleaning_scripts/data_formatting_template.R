@@ -189,23 +189,36 @@ dataFormattingTable[,'subannualTgrain'] =
 
 # -- If the dataset is for just a single site, and there is no site column, then add one.
 
+# Here, we will concatenate all of the potential fields that describe the site 
+# in hierarchical order from largest to smallest grain. Based on the dataset,
+# fill in the fields that specify nested spatial grains below.
+
+site_grain_names = c("site", "block", "treatment", "plot", "quad")
+
+# We will now create the site field with these codes concatenated if there
+# are multiple grain fields. Otherwise, site will just be the single grain field.
+num_grains = length(site_grain_names)
+
+site = dataset2[, site_grain_names[1]]
+if (num_grains > 1) {
+  for (i in 2:num_grains) {
+    site = paste(site, dataset2[, site_grain_names[i]], sep = "_")
+  } 
+}
+
+
 # BEFORE YOU CONTINUE. We need to make sure that there are at least minNTime for sites at the coarsest possilbe spatial grain. 
 
-siteCourse = dataset2$site
-dateYear = format(as.POSIXct(strptime(dataset2$date, dateformat)), '%Y')
+siteCoarse = dataset2[, site_grain_names[1]]
+dateYear = format(dataset2$date, '%Y')
 
-datasetYearTest = data.frame(siteCourse, dateYear)
+datasetYearTest = data.frame(siteCoarse, dateYear)
 
-ddply(datasetYearTest, .(siteCourse), summarise, 
+ddply(datasetYearTest, .(siteCoarse), summarise, 
       lengthYears =  length(unique(dateYear)))
 
 # If the dataset has less than minNTime years per site, do not continue processing. 
 
-# Here, we will concatenate all of the potential fields that describe the site 
-# in hierarchical order from largest to smallest grain:
-
-site = paste(dataset2$site, dataset2$block, dataset2$treatment, 
-             dataset2$plot, dataset2$quad, sep = '_')
 
 # Do some quality control by comparing the site fields in the dataset with the new vector of sites:
 
@@ -478,8 +491,8 @@ dataFormattingTable$subannualTgrain
 
 # We'll start with the function "richnessYearSubsetFun". This will subset the data to sites with an adequate number of years of sampling and species richness. If there are no adequate years, the function will return a custom error message.
 
-richnessYearsTest = richnessYearSubsetFun(dataset, spatialGrain = 'location_web', 
-                                          temporalGrain = 'season', 
+richnessYearsTest = richnessYearSubsetFun(dataset, spatialGrain = 'site', 
+                                          temporalGrain = 'year', 
                                           minNTime = minNTime, minSpRich = minSpRich)
 
 head(richnessYearsTest)
