@@ -181,7 +181,7 @@ ddply(datasetYearTest, .(siteCourse), summarise,
 dataFormattingTable[,'Raw_siteUnit'] = 
   dataFormattingTableFieldUpdate(ds, 'Raw_siteUnit',       # Fill value below in quotes
                                  
-                                 'treatment_replicate_station') 
+                                 'Replicate_Treatment') 
 
 
 # spatial_scale_variable. Is a site potentially nested (e.g., plot within a quad or decimal lat longs that could be scaled up)? Y/N
