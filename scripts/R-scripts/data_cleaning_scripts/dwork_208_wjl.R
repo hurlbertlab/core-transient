@@ -143,9 +143,30 @@ dataFormattingTable[,'subannualTgrain'] =
 # Here, we will concatenate all of the potential fields that describe the site 
 # in hierarchical order from largest to smallest grain:
 
-site = paste(dataset2$Replicate, dataset2$Treatment, sep = '_')
+site_grain_names = c("Replicate", "Treatment")
 
-head(site)
+# We will now create the site field with these codes concatenated if there
+# are multiple grain fields. Otherwise, site will just be the single grain field.
+num_grains = length(site_grain_names)
+
+site = dataset2[, site_grain_names[1]]
+if (num_grains > 1) {
+  for (i in 2:num_grains) {
+    site = paste(site, dataset2[, site_grain_names[i]], sep = "_")
+  } 
+}
+
+# BEFORE YOU CONTINUE. We need to make sure that there are at least minNTime for sites at the coarsest possilbe spatial grain. 
+
+siteCoarse = dataset2[, site_grain_names[1]]
+dateYear = format(dataset2$date, '%Y')
+
+datasetYearTest = data.frame(siteCourse, dateYear)
+
+ddply(datasetYearTest, .(siteCourse), summarise, 
+      lengthYears =  length(unique(dateYear)))
+
+# At least 21 years for each site, looks good 
 
 # Replace site column
 
@@ -161,18 +182,6 @@ dataset3 = dataset3[c(7,5,6,4)]
 
 head(dataset3)
 
-
-# BEFORE YOU CONTINUE. We need to make sure that there are at least minNTime for sites at the coarsest possilbe spatial grain. 
-
-siteCourse = dataset3$site
-dateYear = format(dataset3$date,'%Y')
-
-datasetYearTest = data.frame(siteCourse, dateYear)
-
-ddply(datasetYearTest, .(siteCourse), summarise, 
-      lengthYears =  length(unique(dateYear)))
-
-# At least 21 years for each site, looks good 
 
 # !DATA FORMATTING TABLE UPDATE! 
 
