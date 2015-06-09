@@ -249,12 +249,12 @@ head(dataset5)
 dataFormattingTable[,'countFormat'] = 
   dataFormattingTableFieldUpdate(ds, 'countFormat',    # Fill value below in quotes
                                  
-                                 'cover')
+                                 'count')
 
 dataFormattingTable[,'Notes_countFormat'] = 
   dataFormattingTableFieldUpdate(ds, 'Notes_countFormat', # Fill value below in quotes
                                  
-                                 'Data represents cover. There were no NAs nor 0s that required removal')
+                                 'Data represents count. No changes made')
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SPECIES DATA ----
@@ -275,9 +275,7 @@ levels(dataset5$species)
 
 # If species names are coded (not scientific names) go back to study's metadata to learn what species should and shouldn't be in the data. 
 
-# In this example, a quick look at the metadata is not informative, unfortunately. Because of this, you should really stop here and post an issue on GitHub. With some more thorough digging, however, I've found the names represent "Kartez codes". Several species can be removed (double-checked with USDA plant codes at plants.usda.gov and another Sevilleta study (dataset 254) that provides species names for some codes). Some codes were identified with this pdf from White Sands: https://nhnm.unm.edu/sites/default/files/nonsensitive/publications/nhnm/U00MUL02NMUS.pdf
-
-bad_sp = c('','NONE','UK1','UKFO1','UNK1','UNK2','UNK3','LAMIA', 'UNGR1','CACT1','UNK','NONE','UNK2','UNK3', 'UNK1','FORB7', 'MISSING', '-888', 'DEAD','ERRO2', 'FORB1','FSEED', 'GSEED', 'MOSQ', 'SEED','SEEDS1','SEEDS2', 'SEFLF','SESPM','SPOR1')
+bad_sp = c(' DINOFLAGELLATE',' PHYTOFLAGELLATE',' DINOPHYSIS_SP._CF._PUNCTATA',' CHAETOCEROS_SPEC',' COCCOLITHOPHORIDAE',' GONYAULAX_SPEC',' NAVICULA_SPEC',' PLEUROSIGMA')
 
 dataset6 = dataset5[!dataset5$species %in% bad_sp,]
 
@@ -286,14 +284,12 @@ dataset6 = dataset5[!dataset5$species %in% bad_sp,]
 
 table(dataset6$species)
 
-# If you find any potential typos, try to confirm that the "mispelling" isn't actually a valid name.
-# If not, then go ahead and replace all instances like this:
+# Changing uncertain species to unidentified
+dataset6$species[dataset6$species == ' GYMNODINIUM_CF._CATENATUM'] = ' GYMNODINIUM_SPEC'
+dataset6$species[dataset6$species == ' GYMNODINIUM_CF._PYGMAEUM'] = ' GYMNODINIUM_SPEC'
 
-typo_name = ''
-good_name = ''
-
-dataset6$species[dataset6$species == typo_name] = good_name
-
+# Changing entry that is more specific than species
+dataset6$species[dataset6$species == ' PROBOSCIA_ALATA_SYN._FORMA_GRACILLIMA'] = ' PROBOSCIA_ALATA'
 
 # Reset the factor levels:
 
