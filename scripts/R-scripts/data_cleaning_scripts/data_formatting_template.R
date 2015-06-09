@@ -105,7 +105,7 @@ head(dataset1, 10)
 dataFormattingTable[,'LatLong_sites'] = 
   dataFormattingTableFieldUpdate(ds, 'LatLong_sites',   # Fill value in below
   
-                                 'Y') 
+                                 'N') 
 
 
 #-------------------------------------------------------------------------------*
