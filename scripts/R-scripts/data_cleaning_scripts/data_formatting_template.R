@@ -124,7 +124,7 @@ dateformat = '%m/%d/%Y'
 
 # If date is only listed in years:
 
-dateformat = '%Y'
+# dateformat = '%Y'
 
 # If the date is just a year, then make sure it is of class numeric
 # and not a factor. Otherwise change to a true date object.
@@ -192,7 +192,7 @@ dataFormattingTable[,'subannualTgrain'] =
 # BEFORE YOU CONTINUE. We need to make sure that there are at least minNTime for sites at the coarsest possilbe spatial grain. 
 
 siteCourse = dataset2$site
-dateYear = format(as.POSIXct(strptime(dataset2$record_record_date, dateformat)), '%Y')
+dateYear = format(as.POSIXct(strptime(dataset2$date, dateformat)), '%Y')
 
 datasetYearTest = data.frame(siteCourse, dateYear)
 
