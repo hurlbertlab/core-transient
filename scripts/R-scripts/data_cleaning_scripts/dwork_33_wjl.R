@@ -86,7 +86,7 @@ head(dataset1, 10)
 dataFormattingTable[,'LatLong_sites'] = 
   dataFormattingTableFieldUpdate(ds, 'LatLong_sites',   # Fill value in below
                                  
-                                 'Y') 
+                                 'N') 
 
 
 #-------------------------------------------------------------------------------*
@@ -96,14 +96,6 @@ dataFormattingTable[,'LatLong_sites'] =
 
 # What is the name of the field that has information on sampling date?
 datefield = 'date'
-
-# What is the format in which date data is recorded? For example, if it is
-# recorded as 5/30/94, then this would be '%m/%d/%y', while 1994-5-30 would
-# be '%Y-%m-%d'. Type "?strptime" for other examples of date formatting.
-
-dateformat = '%m/%d/%Y'
-
-# If date is only listed in years:
 
 dateformat = '%Y'
 
