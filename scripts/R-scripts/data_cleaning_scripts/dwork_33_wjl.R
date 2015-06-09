@@ -140,14 +140,14 @@ str(dataset2)
 dataFormattingTable[,'Notes_timeFormat'] = 
   dataFormattingTableFieldUpdate(ds, 'Notes_timeFormat',  # Fill value in below
                                  
-                                 'temporal data provided as dates. The only modification to this field involved converting to a date object.')
+                                 'temporal data provided as years, only modification was converting to a numeric object')
 
 # subannualTgrain. After exploring the time data, was this dataset sampled at a sub-annual temporal grain? Y/N
 
 dataFormattingTable[,'subannualTgrain'] = 
   dataFormattingTableFieldUpdate(ds, 'subannualTgrain',    # Fill value in below
                                  
-                                 'Y')
+                                 'N')
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SITE DATA ----
@@ -165,39 +165,16 @@ dataFormattingTable[,'subannualTgrain'] =
 # BEFORE YOU CONTINUE. We need to make sure that there are at least minNTime for sites at the coarsest possilbe spatial grain. 
 
 siteCourse = dataset2$site
-dateYear = format(as.POSIXct(strptime(dataset2$record_record_date, dateformat)), '%Y')
+dateYear = format(as.POSIXct(strptime(dataset2$date, dateformat)), '%Y')
 
 datasetYearTest = data.frame(siteCourse, dateYear)
 
 ddply(datasetYearTest, .(siteCourse), summarise, 
       lengthYears =  length(unique(dateYear)))
 
-# If the dataset has less than minNTime years per site, do not continue processing. 
-
-# Here, we will concatenate all of the potential fields that describe the site 
-# in hierarchical order from largest to smallest grain:
-
-site = paste(dataset2$site, dataset2$block, dataset2$treatment, 
-             dataset2$plot, dataset2$quad, sep = '_')
-
-# Do some quality control by comparing the site fields in the dataset with the new vector of sites:
-
-head(site)
-
-# Check how evenly represented all of the sites are in the dataset. If this is the
-# type of dataset where every site was sampled on a regular schedule, then you
-# expect to see similar values here across sites. Sites that only show up a small
-# percent of the time may reflect typos.
-
-data.frame(table(site))
-
-# All looks correct, so replace the site column in the dataset (as a factor) and remove the unnecessary fields, start by renaming the dataset to dataset2:
+# 18 time samples for one site, above minNTime
 
 dataset3 = dataset2
-
-dataset3$site = factor(site)
-
-dataset3 = dataset3[,-c(2:5)]
 
 # Check the new dataset (are the columns as they should be?):
 
