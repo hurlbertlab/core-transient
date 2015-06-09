@@ -288,7 +288,7 @@ table(dataset6$species)
 dataset6$species[dataset6$species == ' GYMNODINIUM_CF._CATENATUM'] = ' GYMNODINIUM_SPEC'
 dataset6$species[dataset6$species == ' GYMNODINIUM_CF._PYGMAEUM'] = ' GYMNODINIUM_SPEC'
 
-# Changing entry that is more specific than species
+# Changing entry that is more specific than species level
 dataset6$species[dataset6$species == ' PROBOSCIA_ALATA_SYN._FORMA_GRACILLIMA'] = ' PROBOSCIA_ALATA'
 
 # Reset the factor levels:
@@ -315,7 +315,7 @@ head(dataset6)
 dataFormattingTable[,'Notes_spFormat'] = 
   dataFormattingTableFieldUpdate(ds, 'Notes_spFormat',    # Fill value below in quotes
                                  
-                                 'several species removed. Metadata was relatively uninformative regarding what constitutes a true species sample for this study. Exploration of metadata from associated Sevilleta studies were more informative regarding which species needed to be removed. Species names are predominantly provided as Kartez codes, but not always. See: http://sev.lternet.edu/data/sev-212/5048. Some codes were identified with this pdf from White Sands: https://nhnm.unm.edu/sites/default/files/nonsensitive/publications/nhnm/U00MUL02NMUS.pdf')
+                                 'several species removed. Firstly, there were a few instances where a an entry was not identified down enough to be distinguished from other entries. For example, if one entry is only specified to the genus, but there are other entries of that genus that are narrowed down to the species, there is a possibility for overlap. Entries with uncertain species marked with cf. were renamed into "Genus sp." if there were multiple of those entries. Changed one entry that identified the organism to the form, which is more than specific than species, to just the species. ')
 
 #-------------------------------------------------------------------------------*
 # ---- MAKE DATA FRAME OF COUNT BY SITES, SPECIES, AND YEAR ----
