@@ -210,7 +210,12 @@ if (num_grains > 1) {
 # BEFORE YOU CONTINUE. We need to make sure that there are at least minNTime for sites at the coarsest possilbe spatial grain. 
 
 siteCoarse = dataset2[, site_grain_names[1]]
-dateYear = format(dataset2$date, '%Y')
+
+if (dateformat == '%Y' | dateformat == '%y') {
+  dateYear = dataset2$date
+} else {
+  dateYear = format(dataset2$date, '%Y')
+}
 
 datasetYearTest = data.frame(siteCoarse, dateYear)
 
