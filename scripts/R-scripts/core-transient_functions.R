@@ -136,14 +136,14 @@ datasetRoundLatLong = function(dataset, accuracy){
 # Function to summarize data to a given site level:
 #------------------------------------------------------------------------------------------------------*
 
-getNestedSiteDataset = function(dataset, siteGrain = 'site'){
+getNestedSiteDataset = function(dataset, siteGrain = 'site', dataDescription){
   # If sites are not nested (lat-long or categorical):
-  if(dataFormattingTable$spatial_scale_variable == 'N'){
+  if(dataDescription$spatial_scale_variable == 'N'){
     dataset$analysisSite = dataset$site
     return(dataset)
   } else {
     # If sites are defined by lat-longs:
-    if(dataFormattingTable$LatLong_sites == 'Y')
+    if(dataDescription$LatLong_sites == 'Y')
     {dataset = datasetRoundLatLong(dataset, accuracy = siteGrain)
      return(dataset)} else {
        # If sites are categorical but nested ...
@@ -151,7 +151,7 @@ getNestedSiteDataset = function(dataset, siteGrain = 'site'){
       # siteLevels = strsplit(siteGrain, '_')[[1]]
        # Convert site data to a table and add names based on site definition:
        siteTable = read.table(text = as.character(dataset$site), sep = '_', stringsAsFactors = F)
-       siteDefinition = dataFormattingTable$Raw_siteUnit
+       siteDefinition = dataDescription$Raw_siteUnit
        names(siteTable) = strsplit(as.character(siteDefinition), '_')[[1]]
        # Get pre-determined site levels and maintain site based on match: 
        siteLevels = strsplit(siteGrain, '_')[[1]]
@@ -164,8 +164,8 @@ getNestedSiteDataset = function(dataset, siteGrain = 'site'){
 # Nested time dataset (spatial nesting is categorical, not lat-long):
 #------------------------------------------------------------------------------------------------------*
 
-getNestedTimeDataset = function(dataset,  temporalGrain){
-  if(dataFormattingTable$subannualTgrain == 'Y'){
+getNestedTimeDataset = function(dataset,  temporalGrain, dataDescription){
+  if(dataDescription$subannualTgrain == 'Y'){
     dataset$date = as.POSIXct(strptime(dataset$date, '%Y-%m-%d'))
     year = as.numeric(format(dataset$date, '%Y'))
     day = as.numeric(strftime(dataset$date, format = '%j'))
@@ -193,9 +193,9 @@ getNestedTimeDataset = function(dataset,  temporalGrain){
 # Wrapper function for nested data (if necessary):
 #------------------------------------------------------------------------------------------------------*
 
-getNestedDataset = function(dataset, siteGrain, temporalGrain){
-  datasetSpace = getNestedSiteDataset(dataset, siteGrain)
-  datasetTime = getNestedTimeDataset(datasetSpace, temporalGrain)
+getNestedDataset = function(dataset, siteGrain, temporalGrain, dataDescription){
+  datasetSpace = getNestedSiteDataset(dataset, siteGrain, dataDescription)
+  datasetTime = getNestedTimeDataset(datasetSpace, temporalGrain, dataDescription)
   return(datasetTime)
 }
 
@@ -203,15 +203,15 @@ getNestedDataset = function(dataset, siteGrain, temporalGrain){
 # ---- SUBSET DATASET TO SITES WITH ADEQUATE TIME SAMPLES AND RICHNESS ----
 #======================================================================================================* 
 
-richnessYearSubsetFun = function(dataset, spatialGrain, temporalGrain, minNTime = 10, minSpRich = 10){
-    dataset = getNestedDataset(dataset, spatialGrain, temporalGrain)
+richnessYearSubsetFun = function(dataset, spatialGrain, temporalGrain, minNTime = 10, minSpRich = 10, dataDescription){
+    dataset = getNestedDataset(dataset, spatialGrain, temporalGrain, dataDescription)
   # Get the number of years and species richness for each site: 
     siteSr_nTime = ddply(dataset, .(analysisSite), summarize,
                          sr = length(unique(species)), 
                          nTime = length(unique(analysisDate)))
   # Subset to sites with a high enough species richness and year samples:
     goodSites = filter(siteSr_nTime, sr >= minSpRich & 
-                         siteSr_nTime$nTime >= minNTime)$analysisSite
+                         nTime >= minNTime)$analysisSite
   # If statement to return if there are no good sites:
     if(length(goodSites) == 0) {
       return(print('No acceptable sites, rethink site definitions or temporal scale'))}
@@ -378,8 +378,9 @@ wzSubsetFun = function(inData, minNTime = 10, proportionalThreshold = .5){
 
 subsetDataFun = function(dataset, datasetID, spatialGrain, temporalGrain,
                          minNTime = 10, minSpRich = 10,
-                         proportionalThreshold = .5){
-  inData = richnessYearSubsetFun(dataset, spatialGrain, temporalGrain, minNTime, minSpRich)
+                         proportionalThreshold = .5,
+                         dataDescription){
+  inData = richnessYearSubsetFun(dataset, spatialGrain, temporalGrain, minNTime, minSpRich, dataDescription)
   subsettedData = wzSubsetFun(inData, minNTime, proportionalThreshold)
   outData = data.frame(datasetID = datasetID, site = subsettedData$site, year = subsettedData$year,
                        species = subsettedData$species, count = subsettedData$count)

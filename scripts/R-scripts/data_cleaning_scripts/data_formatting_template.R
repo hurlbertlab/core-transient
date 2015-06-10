@@ -533,7 +533,9 @@ sGrain = 'site_block_treatment_plot'
 
 richnessYearsTest = richnessYearSubsetFun(dataset7, spatialGrain = sGrain, 
                                           temporalGrain = tGrain, 
-                                          minNTime = minNTime, minSpRich = minSpRich)
+                                          minNTime = minNTime, 
+                                          minSpRich = minSpRich,
+                                          dataDescription)
 
 head(richnessYearsTest)
 dim(richnessYearsTest) ; dim(dataset7)
@@ -556,7 +558,8 @@ length(unique(richnessYearsTest$analysisSite))
 subsettedData = subsetDataFun(dataset7, datasetID, spatialGrain = sGrain, 
                               temporalGrain = tGrain,
                               minNTime = minNTime, minSpRich = minSpRich,
-                              proportionalThreshold = topFractionSites)
+                              proportionalThreshold = topFractionSites,
+                              dataDescription)
 
 # Take a look at the propOcc:
 
