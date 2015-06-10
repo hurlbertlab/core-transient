@@ -47,13 +47,23 @@ dataset = read.csv(paste('data/raw_datasets/dataset_', datasetID, '.csv', sep = 
 
 dataFormattingTable = read.csv('data_formatting_table.csv')
 
-# Set the minimum number of time samples and number of species for analysis:
+########################################################
+# ANALYSIS CRITERIA                                    #  
+########################################################
 
+# Min number of time samples required 
 minNTime = 6
 
+# Min number of species required
 minSpRich = 10
 
+# Ultimately, the largest number of spatial and 
+# temporal subsamples will be chosen to characterize
+# an assemblage such that at least this fraction
+# of site-years will be represented.
+topFractionSites = 0.5
 
+#######################################################
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE THE DATASET ----
@@ -533,7 +543,7 @@ length(unique(richnessYearsTest$analysisSite))
 subsettedData = subsetDataFun(dataset7, datasetID, spatialGrain = sGrain, 
                               temporalGrain = tGrain,
                               minNTime = minNTime, minSpRich = minSpRich,
-                              proportionalThreshold = .5)
+                              proportionalThreshold = topFractionSites)
 
 # Take a look at the propOcc:
 
