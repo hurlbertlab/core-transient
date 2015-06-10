@@ -1,4 +1,9 @@
-# Formatting dataset 33
+################################################################################*
+#  DATASET 33: Marine phytoplankton in the Western English Channel
+#
+# Metadata can be found at http://plankt.oxfordjournals.org/content/32/5/643.full#sec-5
+
+
 
 #-------------------------------------------------------------------------------*
 # ---- SET-UP ----
@@ -21,19 +26,31 @@ source('scripts/R-scripts/core-transient_functions.R')
 
 # Get data. First specify the dataset number ('ds') you are working with.
 
-ds = 33
+datasetID = 33
 
 list.files('data/raw_datasets')
 
-dataset = read.csv(paste('data/raw_datasets/dataset_', ds, '.csv', sep = ''))
+dataset = read.csv(paste('data/raw_datasets/dataset_', datasetID, '.csv', sep = ''))
 
 dataFormattingTable = read.csv('data_formatting_table.csv')
 
-# Set the minimum number of time samples and number of species for analysis:
+########################################################
+# ANALYSIS CRITERIA                                    #  
+########################################################
 
+# Min number of time samples required 
 minNTime = 6
 
+# Min number of species required
 minSpRich = 10
+
+# Ultimately, the largest number of spatial and 
+# temporal subsamples will be chosen to characterize
+# an assemblage such that at least this fraction
+# of site-years will be represented.
+topFractionSites = 0.5
+
+#######################################################
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE THE DATASET ----
@@ -148,23 +165,15 @@ dataFormattingTable[,'subannualTgrain'] =
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SITE DATA ----
 #===============================================================================*
-# From the previous head commmand, we can see that sites are broken up into (potentially) 5 fields. Find the metadata link in the data formatting table use that link to determine how sites are characterized.
+head(dataset2)
 
-#  -- If sampling is nested (e.g., site, block, treatment, plot, quad as in this study), use each of the identifying fields and separate each field with an underscore. For nested samples be sure the order of concatenated columns goes from coarser to finer scales (e.g. "km_m_cm")
-
-# -- If sites are listed as lats and longs, use the finest available grain and separate lat and long fields with an underscore.
-
-# -- If the site definition is clear, make a new site column as necessary.
-
-# -- If the dataset is for just a single site, and there is no site column, then add one.
-
-# Here, we will concatenate all of the potential fields that describe the site 
-# in hierarchical order from largest to smallest grain:
+# Only one site, no nesting
 
 site_grain_names = c("SampleID")
 
 # We will now create the site field with these codes concatenated if there
 # are multiple grain fields. Otherwise, site will just be the single grain field.
+
 num_grains = length(site_grain_names)
 
 site = dataset2[, site_grain_names[1]]
@@ -193,6 +202,10 @@ ddply(datasetYearTest, .(siteCoarse), summarise,
 # 18 time samples for one site, above minNTime
 
 dataset3 = dataset2
+
+dataset3$site = factor(site)
+
+dataset3 = dataset3[,-c(1)]
 
 # Check the new dataset (are the columns as they should be?):
 
@@ -291,25 +304,22 @@ dataset5$species = factor(toupper(dataset5$species))
 
 levels(dataset5$species)
 
-# If species names are coded (not scientific names) go back to study's metadata to learn what species should and shouldn't be in the data. 
+table(dataset5$species)
+
+# Changing uncertain species to unidentified
+dataset5$species[dataset5$species == ' GYMNODINIUM_CF._CATENATUM'] = ' GYMNODINIUM_SPEC'
+dataset5$species[dataset5$species == ' GYMNODINIUM_CF._PYGMAEUM'] = ' GYMNODINIUM_SPEC'
+
+# Changing entry that is more specific than species level
+dataset5$species[dataset5$species == ' PROBOSCIA_ALATA_SYN._FORMA_GRACILLIMA'] = ' PROBOSCIA_ALATA'
+
+# Reset the factor levels:
 
 bad_sp = c(' DINOFLAGELLATE',' PHYTOFLAGELLATE',' DINOPHYSIS_SP._CF._PUNCTATA',' CHAETOCEROS_SPEC',' COCCOLITHOPHORIDAE',' GONYAULAX_SPEC',' NAVICULA_SPEC',' PLEUROSIGMA')
 
 dataset6 = dataset5[!dataset5$species %in% bad_sp,]
 
-# It may be useful to count the number of times each name occurs, as misspellings or typos will likely
-# only show up one time.
-
-table(dataset6$species)
-
-# Changing uncertain species to unidentified
-dataset6$species[dataset6$species == ' GYMNODINIUM_CF._CATENATUM'] = ' GYMNODINIUM_SPEC'
-dataset6$species[dataset6$species == ' GYMNODINIUM_CF._PYGMAEUM'] = ' GYMNODINIUM_SPEC'
-
-# Changing entry that is more specific than species level
-dataset6$species[dataset6$species == ' PROBOSCIA_ALATA_SYN._FORMA_GRACILLIMA'] = ' PROBOSCIA_ALATA'
-
-# Reset the factor levels:
+# Reset factor levels
 
 dataset6$species = factor(dataset6$species)
 
@@ -342,7 +352,7 @@ dataFormattingTable[,'Notes_spFormat'] =
 
 # First, lets add the datasetID:
 
-dataset6$datasetID = ds
+dataset6$datasetID = datasetID
 
 # Now make the compiled dataframe:
 
@@ -364,7 +374,7 @@ summary(dataset7)
 
 # Update the data formatting table (this may take a moment to process). Note that the inputs for this are 'ds', the datasetID and the dataset form that you consider to be fully formatted.
 
-dataFormattingTable = dataFormattingTableUpdate(ds, dataset7)
+dataFormattingTable = dataFormattingTableUpdate(datasetID, dataset7)
 
 # Take a final look at the dataset:
 
@@ -374,19 +384,19 @@ summary (dataset7)
 
 # If everything is looks okay we're ready to write formatted data frame:
 
-write.csv(dataset7, paste("data/formatted_datasets/dataset_", ds, ".csv", sep = ""), row.names = F)
+write.csv(dataset7, paste("data/formatted_datasets/dataset_", datasetID, ".csv", sep = ""), row.names = F)
 
 # !GIT-ADD-COMMIT-PUSH THE FORMATTED DATASET IN THE DATA FILE, THEN GIT-ADD-COMMIT-PUSH THE UPDATED DATA FOLDER!
 
 # As we've now successfully created the formatted dataset, we will now update the format priority and format flag fields. 
 
 dataFormattingTable[,'format_priority'] = 
-  dataFormattingTableFieldUpdate(ds, 'format_priority',    # Fill value below in quotes 
+  dataFormattingTableFieldUpdate(datasetID, 'format_priority',    # Fill value below in quotes 
                                  
                                  'NA')
 
 dataFormattingTable[,'format_flag'] = 
-  dataFormattingTableFieldUpdate(ds, 'format_flag',    # Fill value below
+  dataFormattingTableFieldUpdate(datasetID, 'format_flag',    # Fill value below
                                  
                                  1)
 
@@ -398,8 +408,6 @@ write.csv(dataFormattingTable, 'data_formatting_table.csv', row.names = F)
 
 # Remove all objects except for functions from the environment:
 
-rm(list = setdiff(ls(), lsf.str()))
-
 ###################################################################################*
 # ---- END DATA FORMATTING. START PROPOCC AND DATA SUMMARY ----
 ###################################################################################*
@@ -410,50 +418,91 @@ rm(list = setdiff(ls(), lsf.str()))
 library(dplyr)
 library(tidyr)
 
-datasetID = ds
+# Read in formatted dataset if skipping above formatting code (lines 1-450).
 
-# Get formatted dataset:
-
-dataset = read.csv(paste("data/formatted_datasets/dataset_",
-                         datasetID, ".csv", sep =''))
+#dataset7 = read.csv(paste("data/formatted_datasets/dataset_",
+#                         datasetID, ".csv", sep =''))
 
 # Have a look at the dimensions of the dataset and number of sites:
 
-dim(dataset)
-length(unique(dataset$site))
-length(unique(dataset$date))
-head(dataset)
+dim(dataset7)
+length(unique(dataset7$site))
+length(unique(dataset7$date))
+head(dataset7)
 
 # Get the data formatting table for that dataset:
 
-dataFormattingTable = subset(read.csv("data_formatting_table.csv"),
-                             dataset_ID == datasetID)
+dataDescription = dataFormattingTable[dataFormattingTable$dataset_ID == datasetID,]
+
+# or read it in from the saved data_formatting_table.csv if skipping lines 1-450.
+
+#dataDescription = subset(read.csv("data_formatting_table.csv"),
+#                             dataset_ID == datasetID)
 
 # Check relevant table values:
 
-dataFormattingTable$LatLong_sites
+dataDescription$LatLong_sites
 
-dataFormattingTable$spatial_scale_variable
+dataDescription$spatial_scale_variable
 
-dataFormattingTable$Raw_siteUnit
+dataDescription$Raw_siteUnit
 
-dataFormattingTable$subannualTgrain
+dataDescription$subannualTgrain
 
-# We'll start with the function "richnessYearSubsetFun". This will subset the data to sites with an adequate number of years of sampling and species richness. If there are no adequate years, the function will return a custom error message.
+# Before proceeding, we need to make decisions about the spatial and temporal grains at
+# which we will conduct our analyses. Except in unusual circumstances, the temporal
+# grain will almost always be 'year', but the spatial grain that best represents the
+# scale of a "community" will  vary based on the sampling design and the taxonomic 
+# group. Justify your spatial scale below with a comment.
 
-richnessYearsTest = richnessYearSubsetFun(dataset, spatialGrain = 'location_web', 
-                                          temporalGrain = 'season', 
-                                          minNTime = minNTime, minSpRich = minSpRich)
+tGrain = 'year'
+
+# Refresh your memory about the spatial grain names
+
+site_grain_names
+
+sGrain = 'site'
+
+# There is only one level of site
+
+# The function "richnessYearSubsetFun" below will subset the data to sites with an 
+# adequate number of years of sampling and species richness. If there are no 
+# adequate years, the function will return a custom error message and you can
+# try resetting sGrain above to something coarser. Keep trying until this
+# runs without an error. If a particular sGrain value led to an error in this 
+# function, you can make a note of that in the spatial grain justification comment
+# above. If this function fails for ALL spatial grains, then this dataset will
+# not be suitable for analysis and you can STOP HERE.
+
+richnessYearsTest = richnessYearSubsetFun(dataset7, spatialGrain = sGrain, 
+                                          temporalGrain = tGrain, 
+                                          minNTime = minNTime, 
+                                          minSpRich = minSpRich,
+                                          dataDescription)
 
 head(richnessYearsTest)
-dim(richnessYearsTest) ; dim(dataset)
+dim(richnessYearsTest) ; dim(dataset7)
 length(unique(richnessYearsTest$analysisSite))
 
-# All looks okay, so we'll now get the subsetted data (w and z and sites with adequate richness and time samples):
+# Once we've settled on spatial and temporal grains that pass our test above,
+# we then need to 1) figure out what levels of spatial and temporal subsampling
+# we should use to characterize that analysis grain, and 2) subset the
+# formatted dataset down to that standardized level of subsampling.
 
-subsettedData = subsetDataFun(dataset, datasetID, spatialGrain = 'location_web', temporalGrain = 'season',
+# For example, if some sites had 20 spatial subsamples (e.g. quads) per year while
+# others had only 16, or 10, we would identify the level of subsampling that 
+# at least 'topFractionSites' of sites met (with a default of 50%). We would 
+# discard "poorly subsampled" sites (based on this criterion) from further analysis. 
+# For the "well-sampled" sites, the function below randomly samples the 
+# appropriate number of subsamples for each year or site,
+# and bases the characterization of the community in that site-year based on
+# the aggregate of those standardized subsamples.
+
+subsettedData = subsetDataFun(dataset7, datasetID, spatialGrain = sGrain, 
+                              temporalGrain = tGrain,
                               minNTime = minNTime, minSpRich = minSpRich,
-                              proportionalThreshold = .5)
+                              proportionalThreshold = topFractionSites,
+                              dataDescription)
 
 # Take a look at the propOcc:
 
