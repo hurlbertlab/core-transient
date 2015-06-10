@@ -37,13 +37,13 @@ getwd()
 
 source('scripts/R-scripts/core-transient_functions.R')
 
-# Get data. First specify the dataset number ('ds') you are working with.
+# Get data. First specify the dataset number ('datasetID') you are working with.
 
-ds = 223 
+datasetID = 223 
 
 list.files('data/raw_datasets')
 
-dataset = read.csv(paste('data/raw_datasets/dataset_', ds, '.csv', sep = ''))
+dataset = read.csv(paste('data/raw_datasets/dataset_', datasetID, '.csv', sep = ''))
 
 dataFormattingTable = read.csv('data_formatting_table.csv')
 
@@ -103,7 +103,7 @@ head(dataset1, 10)
 # sample? (I.e., there are no site names or site IDs or other designations) Y/N
 
 dataFormattingTable[,'LatLong_sites'] = 
-  dataFormattingTableFieldUpdate(ds, 'LatLong_sites',   # Fill value in below
+  dataFormattingTableFieldUpdate(datasetID, 'LatLong_sites',   # Fill value in below
   
                                  'N') 
 
@@ -165,14 +165,14 @@ str(dataset2)
 # Notes_timeFormat. Provide a thorough description of any modifications that were made to the time field.
 
 dataFormattingTable[,'Notes_timeFormat'] = 
-  dataFormattingTableFieldUpdate(ds, 'Notes_timeFormat',  # Fill value in below
+  dataFormattingTableFieldUpdate(datasetID, 'Notes_timeFormat',  # Fill value in below
                                  
                                  'temporal data provided as dates. The only modification to this field involved converting to a date object.')
 
 # subannualTgrain. After exploring the time data, was this dataset sampled at a sub-annual temporal grain? Y/N
 
 dataFormattingTable[,'subannualTgrain'] = 
-  dataFormattingTableFieldUpdate(ds, 'subannualTgrain',    # Fill value in below
+  dataFormattingTableFieldUpdate(datasetID, 'subannualTgrain',    # Fill value in below
                                  
                                  'Y')
 
@@ -250,7 +250,7 @@ head(dataset3)
 # Raw_siteUnit. How a site is coded (i.e. if the field was concatenated such as this one, it was coded as "site_block_treatment_plot_quad"). Alternatively, if the site were concatenated from latitude and longitude fields, the encoding would be "lat_long". 
 
 dataFormattingTable[,'Raw_siteUnit'] = 
-  dataFormattingTableFieldUpdate(ds, 'Raw_siteUnit',       # Fill value below in quotes
+  dataFormattingTableFieldUpdate(datasetID, 'Raw_siteUnit',       # Fill value below in quotes
                                  
                                  'site_block_treatment_plot_quad') 
 
@@ -258,14 +258,14 @@ dataFormattingTable[,'Raw_siteUnit'] =
 # spatial_scale_variable. Is a site potentially nested (e.g., plot within a quad or decimal lat longs that could be scaled up)? Y/N
 
 dataFormattingTable[,'spatial_scale_variable'] = 
-  dataFormattingTableFieldUpdate(ds, 'spatial_scale_variable',
+  dataFormattingTableFieldUpdate(datasetID, 'spatial_scale_variable',
                                  
                                  'Y') # Fill value here in quotes
 
 # Notes_siteFormat. Use this field to THOROUGHLY describe any changes made to the site field during formatting.
 
 dataFormattingTable[,'Notes_siteFormat'] = 
-  dataFormattingTableFieldUpdate(ds, 'Notes_siteFormat',  # Fill value below in quotes
+  dataFormattingTableFieldUpdate(datasetID, 'Notes_siteFormat',  # Fill value below in quotes
                                  
   'site fields concatenated. metadata suggests site-block-treatment-plot-quad describes the order of nested sites from small to large.')
 
@@ -311,12 +311,12 @@ head(dataset5)
 
 # Possible values for countFormat field are density, cover, and count.
 dataFormattingTable[,'countFormat'] = 
-  dataFormattingTableFieldUpdate(ds, 'countFormat',    # Fill value below in quotes
+  dataFormattingTableFieldUpdate(datasetID, 'countFormat',    # Fill value below in quotes
                                  
                                  'cover')
 
 dataFormattingTable[,'Notes_countFormat'] = 
-  dataFormattingTableFieldUpdate(ds, 'Notes_countFormat', # Fill value below in quotes
+  dataFormattingTableFieldUpdate(datasetID, 'Notes_countFormat', # Fill value below in quotes
                                  
                                  'Data represents cover. There were no NAs nor 0s that required removal')
 
@@ -381,7 +381,7 @@ head(dataset6)
 # to the species field, including why any species were removed.
 
 dataFormattingTable[,'Notes_spFormat'] = 
-  dataFormattingTableFieldUpdate(ds, 'Notes_spFormat',    # Fill value below in quotes
+  dataFormattingTableFieldUpdate(datasetID, 'Notes_spFormat',    # Fill value below in quotes
                                  
   'several species removed. Metadata was relatively uninformative regarding what constitutes a true species sample for this study. Exploration of metadata from associated Sevilleta studies were more informative regarding which species needed to be removed. Species names are predominantly provided as Kartez codes, but not always. See: http://sev.lternet.edu/data/sev-212/5048. Some codes were identified with this pdf from White Sands: https://nhnm.unm.edu/sites/default/files/nonsensitive/publications/nhnm/U00MUL02NMUS.pdf')
 
@@ -392,7 +392,7 @@ dataFormattingTable[,'Notes_spFormat'] =
 
 # First, lets add the datasetID:
 
-dataset6$datasetID = ds
+dataset6$datasetID = datasetID
   
 # Now make the compiled dataframe:
 
@@ -412,9 +412,9 @@ summary(dataset7)
 # ---- UPDATE THE DATA FORMATTING TABLE AND WRITE OUTPUT DATA FRAMES  ----
 #===============================================================================*
 
-# Update the data formatting table (this may take a moment to process). Note that the inputs for this are 'ds', the datasetID and the dataset form that you consider to be fully formatted.
+# Update the data formatting table (this may take a moment to process). Note that the inputs for this are 'datasetID', the datasetID and the dataset form that you consider to be fully formatted.
 
-dataFormattingTable = dataFormattingTableUpdate(ds, dataset7)
+dataFormattingTable = dataFormattingTableUpdate(datasetID, dataset7)
 
 # Take a final look at the dataset:
 
@@ -424,19 +424,19 @@ summary (dataset7)
 
 # If everything is looks okay we're ready to write formatted data frame:
 
-write.csv(dataset7, paste("data/formatted_datasets/dataset_", ds, ".csv", sep = ""), row.names = F)
+write.csv(dataset7, paste("data/formatted_datasets/dataset_", datasetID, ".csv", sep = ""), row.names = F)
 
 # !GIT-ADD-COMMIT-PUSH THE FORMATTED DATASET IN THE DATA FILE, THEN GIT-ADD-COMMIT-PUSH THE UPDATED DATA FOLDER!
 
 # As we've now successfully created the formatted dataset, we will now update the format priority and format flag fields. 
 
 dataFormattingTable[,'format_priority'] = 
-  dataFormattingTableFieldUpdate(ds, 'format_priority',    # Fill value below in quotes 
+  dataFormattingTableFieldUpdate(datasetID, 'format_priority',    # Fill value below in quotes 
                                  
                                  'NA')
 
 dataFormattingTable[,'format_flag'] = 
-  dataFormattingTableFieldUpdate(ds, 'format_flag',    # Fill value below
+  dataFormattingTableFieldUpdate(datasetID, 'format_flag',    # Fill value below
                                  
                                  1)
 
@@ -445,10 +445,6 @@ dataFormattingTable[,'format_flag'] =
 write.csv(dataFormattingTable, 'data_formatting_table.csv', row.names = F)
 
 # !GIT-ADD-COMMIT-PUSH THE DATA FORMATTING TABLE!
-
-# Remove all objects except for functions from the environment:
-
-rm(list = setdiff(ls(), lsf.str()))
 
 ###################################################################################*
 # ---- END DATA FORMATTING. START PROPOCC AND DATA SUMMARY ----
@@ -460,48 +456,50 @@ rm(list = setdiff(ls(), lsf.str()))
 library(dplyr)
 library(tidyr)
 
-datasetID = ds
+# Read in formatted dataset if skipping above formatting code (lines 1-450).
 
-# Get formatted dataset:
-
-dataset = read.csv(paste("data/formatted_datasets/dataset_",
-                         datasetID, ".csv", sep =''))
+#dataset7 = read.csv(paste("data/formatted_datasets/dataset_",
+#                         datasetID, ".csv", sep =''))
 
 # Have a look at the dimensions of the dataset and number of sites:
 
-dim(dataset)
-length(unique(dataset$site))
-length(unique(dataset$date))
-head(dataset)
+dim(dataset7)
+length(unique(dataset7$site))
+length(unique(dataset7$date))
+head(dataset7)
 
 # Get the data formatting table for that dataset:
 
-dataFormattingTable = subset(read.csv("data_formatting_table.csv"),
-                             dataset_ID == datasetID)
+dataDescription = dataFormattingTable[dataFormattingTable$dataset_ID == datasetID,]
+
+# or read it in from the saved data_formatting_table.csv if skipping lines 1-450.
+
+#dataDescription = subset(read.csv("data_formatting_table.csv"),
+#                             dataset_ID == datasetID)
 
 # Check relevant table values:
 
-dataFormattingTable$LatLong_sites
+dataDescription$LatLong_sites
 
-dataFormattingTable$spatial_scale_variable
+dataDescription$spatial_scale_variable
 
-dataFormattingTable$Raw_siteUnit
+dataDescription$Raw_siteUnit
 
-dataFormattingTable$subannualTgrain
+dataDescription$subannualTgrain
 
 # We'll start with the function "richnessYearSubsetFun". This will subset the data to sites with an adequate number of years of sampling and species richness. If there are no adequate years, the function will return a custom error message.
 
-richnessYearsTest = richnessYearSubsetFun(dataset, spatialGrain = 'site', 
+richnessYearsTest = richnessYearSubsetFun(dataset7, spatialGrain = 'site', 
                                           temporalGrain = 'year', 
                                           minNTime = minNTime, minSpRich = minSpRich)
 
 head(richnessYearsTest)
-dim(richnessYearsTest) ; dim(dataset)
+dim(richnessYearsTest) ; dim(dataset7)
 length(unique(richnessYearsTest$analysisSite))
 
 # All looks okay, so we'll now get the subsetted data (w and z and sites with adequate richness and time samples):
 
-subsettedData = subsetDataFun(dataset, datasetID, spatialGrain = 'location_web', temporalGrain = 'season',
+subsettedData = subsetDataFun(dataset7, datasetID, spatialGrain = 'location_web', temporalGrain = 'season',
                               minNTime = minNTime, minSpRich = minSpRich,
                               proportionalThreshold = .5)
 
