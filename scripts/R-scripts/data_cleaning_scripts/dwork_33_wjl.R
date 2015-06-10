@@ -61,10 +61,6 @@ names(dataset1)
 
 names(dataset1)[1] = 'date'
 
-# Change name of "SampleID" column to "site"
-
-names(dataset1)[2] = 'site'
-
 # Change name of "Species" column to "species"
 
 names(dataset1)[3] = 'species'
@@ -162,14 +158,30 @@ dataFormattingTable[,'subannualTgrain'] =
 
 # -- If the dataset is for just a single site, and there is no site column, then add one.
 
+# Here, we will concatenate all of the potential fields that describe the site 
+# in hierarchical order from largest to smallest grain:
+
+site_grain_names = c("SampleID")
+
+# We will now create the site field with these codes concatenated if there
+# are multiple grain fields. Otherwise, site will just be the single grain field.
+num_grains = length(site_grain_names)
+
+site = dataset2[, site_grain_names[1]]
+if (num_grains > 1) {
+  for (i in 2:num_grains) {
+    site = paste(site, dataset2[, site_grain_names[i]], sep = "_")
+  } 
+}
+
 # BEFORE YOU CONTINUE. We need to make sure that there are at least minNTime for sites at the coarsest possilbe spatial grain. 
 
-siteCourse = dataset2$site
+siteCoarse = dataset2[, site_grain_names[1]]
 dateYear = format(as.POSIXct(strptime(dataset2$date, dateformat)), '%Y')
 
-datasetYearTest = data.frame(siteCourse, dateYear)
+datasetYearTest = data.frame(siteCoarse, dateYear)
 
-ddply(datasetYearTest, .(siteCourse), summarise, 
+ddply(datasetYearTest, .(siteCoarse), summarise, 
       lengthYears =  length(unique(dateYear)))
 
 # 18 time samples for one site, above minNTime
