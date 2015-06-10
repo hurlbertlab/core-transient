@@ -161,12 +161,12 @@ if (num_grains > 1) {
 siteCoarse = dataset2[, site_grain_names[1]]
 dateYear = format(dataset2$date, '%Y')
 
-datasetYearTest = data.frame(siteCourse, dateYear)
+datasetYearTest = data.frame(siteCoarse, dateYear)
 
-ddply(datasetYearTest, .(siteCourse), summarise, 
+ddply(datasetYearTest, .(siteCoarse), summarise, 
       lengthYears =  length(unique(dateYear)))
 
-# At least 21 years for each site, looks good 
+# 25 years for each site, looks good
 
 # Replace site column
 
