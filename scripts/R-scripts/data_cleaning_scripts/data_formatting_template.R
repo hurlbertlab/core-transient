@@ -53,6 +53,8 @@ minNTime = 6
 
 minSpRich = 10
 
+
+
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE THE DATASET ----
 #===============================================================================*
@@ -492,10 +494,34 @@ dataDescription$Raw_siteUnit
 
 dataDescription$subannualTgrain
 
-# We'll start with the function "richnessYearSubsetFun". This will subset the data to sites with an adequate number of years of sampling and species richness. If there are no adequate years, the function will return a custom error message.
+# Before proceeding, we need to make decisions about the spatial and temporal grains at
+# which we will conduct our analyses. Except in unusual circumstances, the temporal
+# grain will almost always be 'year', but the spatial grain that best represents the
+# scale of a "community" will  vary based on the sampling design and the taxonomic 
+# group. Justify your spatial scale below with a comment.
 
-richnessYearsTest = richnessYearSubsetFun(dataset7, spatialGrain = 'site', 
-                                          temporalGrain = 'year', 
+tGrain = 'year'
+
+# Refresh your memory about the spatial grain names
+
+site_grain_names
+
+sGrain = 'site_block_treatment_plot'
+
+# This is a reasonable choice of spatial grain because ...
+# ...for sessile plant communities a plot (~ 4m^2) encompasses scores to hundreds
+# of individuals.
+
+# The function "richnessYearSubsetFun" below will subset the data to sites with an 
+# adequate number of years of sampling and species richness. If there are no 
+# adequate years, the function will return a custom error message and you can
+# try resetting sGrain above to something coarser. Keep trying until this
+# runs without an error. If a particular sGrain value led to an error in this 
+# function, you can make a note of that in the spatial grain justification comment
+# above.
+
+richnessYearsTest = richnessYearSubsetFun(dataset7, spatialGrain = sGrain, 
+                                          temporalGrain = tGrain, 
                                           minNTime = minNTime, minSpRich = minSpRich)
 
 head(richnessYearsTest)
@@ -504,7 +530,8 @@ length(unique(richnessYearsTest$analysisSite))
 
 # All looks okay, so we'll now get the subsetted data (w and z and sites with adequate richness and time samples):
 
-subsettedData = subsetDataFun(dataset7, datasetID, spatialGrain = 'location_web', temporalGrain = 'season',
+subsettedData = subsetDataFun(dataset7, datasetID, spatialGrain = sGrain, 
+                              temporalGrain = tGrain,
                               minNTime = minNTime, minSpRich = minSpRich,
                               proportionalThreshold = .5)
 
