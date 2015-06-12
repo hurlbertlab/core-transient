@@ -72,7 +72,7 @@
 205,NA,"4","","",NA,NA,NA,"","",NA,"","",NA,NA,NA,"","",NA,NA,NA,NA,NA,NA,"","",NA,""
 206,NA,"4","","",NA,NA,NA,"","",NA,"","",NA,NA,NA,"","",NA,NA,NA,NA,NA,NA,"","",NA,""
 207,NA,"4","","",NA,NA,NA,"","",NA,"","",NA,NA,NA,"","",NA,NA,NA,NA,NA,NA,"","",NA,""
-208,NA,"1","http://lter.kbs.msu.edu/datatables/67","N","31432","765","21","Replicate_Treatment","Y","30","site fields concatenated. the metadata suggests that there are 6 replicates with 7 treatments each","Unidentified entries (input as ""something else"") were removed","83.824",NA,NA,"count","Data represents count of adults. Many 0s and some NAs were omitted.","31432",NA,NA,NA,NA,NA,"temporal data provided as dates. The only modification to this field involved converting to a date object.","Y",NA,""
+208,"NA","1","http://lter.kbs.msu.edu/datatables/67","N","795027","0","0","Replicate_Treatment_Station","Y","0","site fields concatenated. the metadata suggests that there are 6 replicates with 7 treatments each. 5 stations are within each treatment. ","Unidentified entries (input as ""something else"") were removed","15.4397078804348","1","145","count","Data represents count of adults. Many 0s and some NAs were omitted.","47838","255","21","15.4397078804348","1","145","temporal data provided as dates. The only modification to this field involved converting to a date object.","Y",NA,""
 209,NA,"4","","",NA,NA,NA,"","",NA,"","",NA,NA,NA,"","",NA,NA,NA,NA,NA,NA,"","",NA,""
 210,"2","0","http://www.myxyz.org/phmurphy/dog/Tilman-1987.pdf","N","40792","30","245","field_plot","Y","207","","",NA,NA,NA,"","",NA,NA,NA,NA,NA,NA,"","",NA,""
 211,NA,"4","","",NA,NA,NA,"","",NA,"","",NA,NA,NA,"","",NA,NA,NA,NA,NA,NA,"","",NA,""
