@@ -575,9 +575,15 @@ fitBeta = function(occProp, nTime) {
 
 # Proportion of samples that are core or transient:
 
+# For these functions, mode argument takes either "core" or "transient".
+# The threshold argument specifies the maximum occupancy to be considered
+# transient, and therefore (1 - threshold) is the minimum occupancy to be 
+# considered core.
+
 modeProp = function(propOcc, mode, threshold) {
-  if (mode == 'core') length(propOcc[propOcc >= 1-propOcc])/length(propOcc)
-  else length(propOcc[propOcc <= threshold])/length(propOcc)
+  if (mode == 'core') sum(propOcc >= 1 - threshold)/length(propOcc)
+  else if (mode == 'transient') sum(propOcc <= threshold)/length(propOcc)
+  else return(print('Invalid mode'))
 }
 
 # Randomization test for a given mode (is the proportion of samples in core or
@@ -639,7 +645,7 @@ summaryStatsFun = function(datasetID, threshold, reps){
     propCore = spRichCore/spRichTotal
     propCore_pVal = pModeFun(propOcc, nTime, 'core', threshold, reps)
     propTrans = spRichTrans/spRichTotal
-    propTrans_pVal = pModeFun(propOcc, nTime, 'trans', threshold, reps)
+    propTrans_pVal = pModeFun(propOcc, nTime, 'transient', threshold, reps)
     mu = mean(propOcc)
     bimodality = bimodalityFun(propOcc, nTime)
     pBimodal = pBimodalFun(propOcc, nTime, reps)
