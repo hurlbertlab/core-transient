@@ -499,6 +499,10 @@ getDataList = function(datasetID){
 # Note 2: To run this function the number of time samples for the site (nt) needs
 # to be specified. This is done so in the wrapper summary table function.
 
+# In these functions, propOcc refers to a vector of occupancy values for the
+# species at a single site, and nTime is the number of time samples (typically
+# years) as an integer.
+
 
 bimodalityFun = function(propOcc_or_RandomPropOcc, nTime){
   occs = propOcc_or_RandomPropOcc
