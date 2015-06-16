@@ -665,7 +665,7 @@ summaryStatsFun = function(datasetID, threshold, reps){
 # ---- MAKE SUMMARY STATS OF ANY NEW PROPOCC FILES ----
 #======================================================================================================*
 
-addNewSummariesFun = function(threshold, reps){
+addNewSummariesFun = function(threshold, reps, write = FALSE){
   if (file.exists('output/tabular_data/core-transient_summary.csv')) {
     currentSummaryData = read.csv('output/tabular_data/core-transient_summary.csv')
     currentDatasetIDs = unique(currentSummaryData$datasetID)
@@ -688,6 +688,10 @@ addNewSummariesFun = function(threshold, reps){
   }
   newSummaryData = rbind.fill(outList)
   updatedSummaryData = rbind(currentSummaryData, newSummaryData)
+  if (write) {
+    write.csv(updatedSummaryData[order(datasetID),], 
+              'output/tabular_data/core-transient_summary.csv', row.names = F)
+  }
   return(updatedSummaryData[order(datasetID),])
 }
 
