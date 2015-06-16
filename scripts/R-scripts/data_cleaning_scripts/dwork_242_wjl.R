@@ -1,6 +1,7 @@
 ################################################################################*
-#  Dataset 242
-################################################################################*
+#  Dataset 242 San Nicolas Island Benthic Fish
+#
+# Data and metadata can be found here: http://esapubs.org/archive/ecol/E094/244
 
 #-------------------------------------------------------------------------------*
 # ---- SET-UP ----
@@ -435,21 +436,64 @@ dataDescription$Raw_siteUnit
 
 dataDescription$subannualTgrain
 
-# We'll start with the function "richnessYearSubsetFun". This will subset the data to sites with an adequate number of years of sampling and species richness. If there are no adequate years, the function will return a custom error message.
+# Before proceeding, we need to make decisions about the spatial and temporal grains at
+# which we will conduct our analyses. Except in unusual circumstances, the temporal
+# grain will almost always be 'year', but the spatial grain that best represents the
+# scale of a "community" will  vary based on the sampling design and the taxonomic 
+# group. Justify your spatial scale below with a comment.
 
-richnessYearsTest = richnessYearSubsetFun(dataset7, spatialGrain = 'site', 
-                                          temporalGrain = 'year', 
-                                          minNTime = minNTime, minSpRich = minSpRich)
+tGrain = 'year'
+
+# Refresh your memory about the spatial grain names
+
+site_grain_names
+
+sGrain = 'station'
+
+# This is a reasonable choice of spatial grain because though there is a finer grained site value, the transect, it is too small (at 50m x 5m) to represent a community"
+
+# The function "richnessYearSubsetFun" below will subset the data to sites with an 
+# adequate number of years of sampling and species richness. If there are no 
+# adequate years, the function will return a custom error message and you can
+# try resetting sGrain above to something coarser. Keep trying until this
+# runs without an error. If a particular sGrain value led to an error in this 
+# function, you can make a note of that in the spatial grain justification comment
+# above. If this function fails for ALL spatial grains, then this dataset will
+# not be suitable for analysis and you can STOP HERE.
+
+richnessYearsTest = richnessYearSubsetFun(dataset7, spatialGrain = sGrain, 
+                                          temporalGrain = tGrain, 
+                                          minNTime = minNTime, 
+                                          minSpRich = minSpRich,
+                                          dataDescription)
 
 head(richnessYearsTest)
 dim(richnessYearsTest) ; dim(dataset7)
 length(unique(richnessYearsTest$analysisSite))
 
-# All looks okay, so we'll now get the subsetted data (w and z and sites with adequate richness and time samples):
+# Temporary fix for the richnesYearSubsetFun issue where analysisdate gets listed as "year_year" instead of "year"
 
-subsettedData = subsetDataFun(dataset7, datasetID, spatialGrain = 'location_web', temporalGrain = 'season',
+richnessYearsTest$analysisDate = substr(richnessYearsTest$analysisDate, start = 1, stop = 4)
+
+# Once we've settled on spatial and temporal grains that pass our test above,
+# we then need to 1) figure out what levels of spatial and temporal subsampling
+# we should use to characterize that analysis grain, and 2) subset the
+# formatted dataset down to that standardized level of subsampling.
+
+# For example, if some sites had 20 spatial subsamples (e.g. quads) per year while
+# others had only 16, or 10, we would identify the level of subsampling that 
+# at least 'topFractionSites' of sites met (with a default of 50%). We would 
+# discard "poorly subsampled" sites (based on this criterion) from further analysis. 
+# For the "well-sampled" sites, the function below randomly samples the 
+# appropriate number of subsamples for each year or site,
+# and bases the characterization of the community in that site-year based on
+# the aggregate of those standardized subsamples.
+
+subsettedData = subsetDataFun(dataset7, datasetID, spatialGrain = sGrain, 
+                              temporalGrain = tGrain,
                               minNTime = minNTime, minSpRich = minSpRich,
-                              proportionalThreshold = .5)
+                              proportionalThreshold = topFractionSites,
+                              dataDescription)
 
 # Take a look at the propOcc:
 
