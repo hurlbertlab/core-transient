@@ -678,7 +678,7 @@ addNewSummariesFun = function(threshold, reps){
   # "propOcc_##.csv" or "propOcc_###.csv":
   propOccDatasetIDs = read.table(text = 
                                    as.character(read.table(text = propOcc_datasets,
-                                                           sep =c('_'))[,2]),sep ='.')[,1]
+                                                           sep ='_')[,2]),sep ='.')[,1]
   # Find dataset IDs that are not yet summarized:
   newDatasetIDs = propOccDatasetIDs[!propOccDatasetIDs %in% currentDatasetIDs]
   # For loop to extract summary stats for new datasetIDs
