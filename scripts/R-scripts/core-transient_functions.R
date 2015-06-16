@@ -666,8 +666,13 @@ summaryStatsFun = function(datasetID, threshold, reps){
 #======================================================================================================*
 
 addNewSummariesFun = function(threshold, reps){
-  currentSummaryData = read.csv('output/tabular_data/core-transient_summary.csv')
-  currentDatasetIDs = unique(currentSummaryData$datasetID)
+  if (file.exists('output/tabular_data/core-transient_summary.csv')) {
+    currentSummaryData = read.csv('output/tabular_data/core-transient_summary.csv')
+    currentDatasetIDs = unique(currentSummaryData$datasetID)
+  } else {
+    currentSummaryData = c()
+    currentDatasetIds = c()
+  }
   propOcc_datasets = list.files('data/propOcc_datasets')
   # The following gets the integer values for the datasetID's from
   # "propOcc_##.csv" or "propOcc_###.csv":
