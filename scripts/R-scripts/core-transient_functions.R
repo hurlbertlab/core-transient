@@ -629,7 +629,7 @@ pModeFun = function(propOcc, nTime, mode, threshold, reps){
 
 # Summary stats for all sites in a dataset:
 
-summaryStatsFun = function(datasetID, threshold, reps){
+summaryStatsFun = function(datasetID, threshold, reps, write = FALSE){
   # Get data:
   dataList = getDataList(datasetID)
   sites  = dataList$siteSummary$site
@@ -658,7 +658,11 @@ summaryStatsFun = function(datasetID, threshold, reps){
                               propCore, propCore_pVal,  propTrans, propTrans_pVal,
                               mu, bimodality, pBimodal, alpha, beta)
   }
-  return(rbind.fill(outList))
+  output = rbind.fill(outList)
+  if (write) {
+    write.csv(output, 'output/tabular_data/core-transient_summary.csv', row.names = F)
+  }
+  return(output)
 }
 
 #------------------------------------------------------------------------------------------------------*
