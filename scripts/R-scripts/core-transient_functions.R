@@ -47,16 +47,16 @@ dataFormattingTableUpdate = function(datasetID, datasetFinal){
   rowIndex = which(dataFormattingTable$dataset_ID == datasetID)
   dataFormattingTable[,'Raw_nRecs'] = 
     dataFormattingTableFieldUpdate(datasetID, 'Raw_nRecs',
-                                   nrow(dataset))
+                                   nrow(datasetFinal))
   dataFormattingTable[,'Raw_nTime'] = 
     dataFormattingTableFieldUpdate(datasetID, 'Raw_nTime',
-                                   length(unique(dataset1$date)))
+                                   length(unique(datasetFinal$date)))
   dataFormattingTable[,'Raw_nSpecies'] = 
     dataFormattingTableFieldUpdate(datasetID, 'Raw_nSpecies', 
-                                   length(unique(dataset1$species)))
+                                   length(unique(datasetFinal$species)))
   dataFormattingTable[,'Raw_nSites'] = 
     dataFormattingTableFieldUpdate(datasetID, 'Raw_nSites', 
-                                   length(unique(dataset2$site)))
+                                   length(unique(datasetFinal$site)))
   if(dataFormattingTable[rowIndex, 'countFormat'] == 'count'){
     if(dataFormattingTable[rowIndex, 'subannualTgrain'] == 'Y'){
       datasetFinal$date = as.numeric(format(datasetFinal$date, '%Y'))
