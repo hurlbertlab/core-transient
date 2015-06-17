@@ -24,7 +24,7 @@ getwd()
 
 source('scripts/R-scripts/core-transient_functions.R')
 
-# Get data. First specify the dataset number ('ds') you are working with.
+# Get data. First specify the dataset number ('datasetID') you are working with.
 
 datasetID = 33
 
@@ -97,7 +97,7 @@ head(dataset1, 10)
 # sample? (I.e., there are no site names or site IDs or other designations) Y/N
 
 dataFormattingTable[,'LatLong_sites'] = 
-  dataFormattingTableFieldUpdate(ds, 'LatLong_sites',   # Fill value in below
+  dataFormattingTableFieldUpdate(datasetID, 'LatLong_sites',   # Fill value in below
                                  
                                  'N') 
 
@@ -151,14 +151,14 @@ str(dataset2)
 # Notes_timeFormat. Provide a thorough description of any modifications that were made to the time field.
 
 dataFormattingTable[,'Notes_timeFormat'] = 
-  dataFormattingTableFieldUpdate(ds, 'Notes_timeFormat',  # Fill value in below
+  dataFormattingTableFieldUpdate(datasetID, 'Notes_timeFormat',  # Fill value in below
                                  
                                  'temporal data provided as years, only modification was converting to a numeric object')
 
 # subannualTgrain. After exploring the time data, was this dataset sampled at a sub-annual temporal grain? Y/N
 
 dataFormattingTable[,'subannualTgrain'] = 
-  dataFormattingTableFieldUpdate(ds, 'subannualTgrain',    # Fill value in below
+  dataFormattingTableFieldUpdate(datasetID, 'subannualTgrain',    # Fill value in below
                                  
                                  'N')
 
@@ -218,7 +218,7 @@ head(dataset3)
 # Raw_siteUnit. How a site is coded (i.e. if the field was concatenated such as this one, it was coded as "site_block_treatment_plot_quad"). Alternatively, if the site were concatenated from latitude and longitude fields, the encoding would be "lat_long". 
 
 dataFormattingTable[,'Raw_siteUnit'] = 
-  dataFormattingTableFieldUpdate(ds, 'Raw_siteUnit',       # Fill value below in quotes
+  dataFormattingTableFieldUpdate(datasetID, 'Raw_siteUnit',       # Fill value below in quotes
                                  
                                  'station_sampling_info') 
 
@@ -226,14 +226,14 @@ dataFormattingTable[,'Raw_siteUnit'] =
 # spatial_scale_variable. Is a site potentially nested (e.g., plot within a quad or decimal lat longs that could be scaled up)? Y/N
 
 dataFormattingTable[,'spatial_scale_variable'] = 
-  dataFormattingTableFieldUpdate(ds, 'spatial_scale_variable',
+  dataFormattingTableFieldUpdate(datasetID, 'spatial_scale_variable',
                                  
                                  'N') # Fill value here in quotes
 
 # Notes_siteFormat. Use this field to THOROUGHLY describe any changes made to the site field during formatting.
 
 dataFormattingTable[,'Notes_siteFormat'] = 
-  dataFormattingTableFieldUpdate(ds, 'Notes_siteFormat',  # Fill value below in quotes
+  dataFormattingTableFieldUpdate(datasetID, 'Notes_siteFormat',  # Fill value below in quotes
                                  
                                  'Only one site in this dataset. The site name gives information on sample method. No changes made.')
 
@@ -278,12 +278,12 @@ head(dataset5)
 
 # Possible values for countFormat field are density, cover, and count.
 dataFormattingTable[,'countFormat'] = 
-  dataFormattingTableFieldUpdate(ds, 'countFormat',    # Fill value below in quotes
+  dataFormattingTableFieldUpdate(datasetID, 'countFormat',    # Fill value below in quotes
                                  
                                  'count')
 
 dataFormattingTable[,'Notes_countFormat'] = 
-  dataFormattingTableFieldUpdate(ds, 'Notes_countFormat', # Fill value below in quotes
+  dataFormattingTableFieldUpdate(datasetID, 'Notes_countFormat', # Fill value below in quotes
                                  
                                  'Data represents count. No changes made')
 
@@ -341,7 +341,7 @@ head(dataset6)
 # to the species field, including why any species were removed.
 
 dataFormattingTable[,'Notes_spFormat'] = 
-  dataFormattingTableFieldUpdate(ds, 'Notes_spFormat',    # Fill value below in quotes
+  dataFormattingTableFieldUpdate(datasetID, 'Notes_spFormat',    # Fill value below in quotes
                                  
                                  'several species removed. Firstly, there were a few instances where a an entry was not identified down enough to be distinguished from other entries. For example, if one entry is only specified to the genus, but there are other entries of that genus that are narrowed down to the species, there is a possibility for overlap. Entries with uncertain species marked with cf. were renamed into "Genus sp." if there were multiple of those entries. Changed one entry that identified the organism to the form, which is more than specific than species, to just the species. ')
 

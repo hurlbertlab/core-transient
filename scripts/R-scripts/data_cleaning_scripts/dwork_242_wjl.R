@@ -74,7 +74,7 @@ head(dataset1, 10)
 # sample? (I.e., there are no site names or site IDs or other designations) Y/N
 
 dataFormattingTable[,'LatLong_sites'] = 
-  dataFormattingTableFieldUpdate(ds, 'LatLong_sites',   # Fill value in below
+  dataFormattingTableFieldUpdate(datasetID, 'LatLong_sites',   # Fill value in below
                                  
                                  'N') 
 
@@ -134,14 +134,14 @@ str(dataset2)
 # Notes_timeFormat. Provide a thorough description of any modifications that were made to the time field.
 
 dataFormattingTable[,'Notes_timeFormat'] = 
-  dataFormattingTableFieldUpdate(ds, 'Notes_timeFormat',  # Fill value in below
+  dataFormattingTableFieldUpdate(datasetID, 'Notes_timeFormat',  # Fill value in below
                                  
                                  'temporal data provided as dates. The only modification to this field involved converting to a date object.')
 
 # subannualTgrain. After exploring the time data, was this dataset sampled at a sub-annual temporal grain? Y/N
 
 dataFormattingTable[,'subannualTgrain'] = 
-  dataFormattingTableFieldUpdate(ds, 'subannualTgrain',    # Fill value in below
+  dataFormattingTableFieldUpdate(datasetID, 'subannualTgrain',    # Fill value in below
                                  
                                  'Y')
 
@@ -221,7 +221,7 @@ head(dataset3)
 # Raw_siteUnit. How a site is coded (i.e. if the field was concatenated such as this one, it was coded as "site_block_treatment_plot_quad"). Alternatively, if the site were concatenated from latitude and longitude fields, the encoding would be "lat_long". 
 
 dataFormattingTable[,'Raw_siteUnit'] = 
-  dataFormattingTableFieldUpdate(ds, 'Raw_siteUnit',       
+  dataFormattingTableFieldUpdate(datasetID, 'Raw_siteUnit',       
                                  
                                  'station_transect') 
 
@@ -229,14 +229,14 @@ dataFormattingTable[,'Raw_siteUnit'] =
 # spatial_scale_variable. Is a site potentially nested (e.g., plot within a quad or decimal lat longs that could be scaled up)? Y/N
 
 dataFormattingTable[,'spatial_scale_variable'] = 
-  dataFormattingTableFieldUpdate(ds, 'spatial_scale_variable',
+  dataFormattingTableFieldUpdate(datasetID, 'spatial_scale_variable',
                                  
                                  'Y') 
 
 # Notes_siteFormat. Use this field to THOROUGHLY describe any changes made to the site field during formatting.
 
 dataFormattingTable[,'Notes_siteFormat'] = 
-  dataFormattingTableFieldUpdate(ds, 'Notes_siteFormat',  
+  dataFormattingTableFieldUpdate(datasetID, 'Notes_siteFormat',  
                                  
                                  'site fields concatenated. metadata suggests that there are 4-5 transects within each station.')
 
@@ -282,12 +282,12 @@ head(dataset5)
 
 # Possible values for countFormat field are density, cover, and count.
 dataFormattingTable[,'countFormat'] = 
-  dataFormattingTableFieldUpdate(ds, 'countFormat',    # Fill value below in quotes
+  dataFormattingTableFieldUpdate(datasetID, 'countFormat',    # Fill value below in quotes
                                  
                                  'density')
 
 dataFormattingTable[,'Notes_countFormat'] = 
-  dataFormattingTableFieldUpdate(ds, 'Notes_countFormat', # Fill value below in quotes
+  dataFormattingTableFieldUpdate(datasetID, 'Notes_countFormat', # Fill value below in quotes
                                  
                                  'Data represents density. In the raw data, adult and juvenile densities were in separate columns. These were added together in count column.')
 
@@ -330,7 +330,7 @@ head(dataset6)
 # to the species field, including why any species were removed.
 
 dataFormattingTable[,'Notes_spFormat'] = 
-  dataFormattingTableFieldUpdate(ds, 'Notes_spFormat',    # Fill value below in quotes
+  dataFormattingTableFieldUpdate(datasetID, 'Notes_spFormat',    # Fill value below in quotes
                                  
                                  'Removed all entries of Sebastes spp. because there were multiple other entries of the Sebastes genus that were identified to the species. There were other entries with unidentified species, but each had a unique genus, so there was no overlap, so they were kept.  ')
 
