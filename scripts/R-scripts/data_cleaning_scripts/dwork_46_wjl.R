@@ -118,14 +118,7 @@ datefield = 'date'
 # recorded as 5/30/94, then this would be '%m/%d/%y', while 1994-5-30 would
 # be '%Y-%m-%d'. Type "?strptime" for other examples of date formatting.
 
-dateformat = '%m/%d/%Y'
-
-# If date is only listed in years:
-
-# dateformat = '%Y'
-
-# If the date is just a year, then make sure it is of class numeric
-# and not a factor. Otherwise change to a true date object.
+dateformat = '%Y'
 
 if (dateformat == '%Y' | dateformat == '%y') {
   date = as.numeric(as.character(dataset1[, datefield]))
@@ -165,14 +158,14 @@ str(dataset2)
 dataFormattingTable[,'Notes_timeFormat'] = 
   dataFormattingTableFieldUpdate(datasetID, 'Notes_timeFormat',  # Fill value in below
                                  
-                                 'temporal data provided as dates. The only modification to this field involved converting to a date object.')
+                                 'temporal data provided as years. Only modification was converting it to numerical object')
 
 # subannualTgrain. After exploring the time data, was this dataset sampled at a sub-annual temporal grain? Y/N
 
 dataFormattingTable[,'subannualTgrain'] = 
   dataFormattingTableFieldUpdate(datasetID, 'subannualTgrain',    # Fill value in below
                                  
-                                 'Y')
+                                 'N')
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SITE DATA ----
