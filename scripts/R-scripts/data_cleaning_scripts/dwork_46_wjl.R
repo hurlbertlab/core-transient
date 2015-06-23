@@ -1,7 +1,8 @@
 ################################################################################*
 #  DATASET 46: Birds in Skokholm Island, Wales, UK
 #
-#  
+#  Metadata can be found at http://ecologicaldata.org/wiki/skokholm-bird-observatory
+
 
 #-------------------------------------------------------------------------------*
 # ---- SET-UP ----
@@ -495,8 +496,7 @@ site_grain_names
 sGrain = 'site'
 
 # This is a reasonable choice of spatial grain because ...
-# ...for sessile plant communities a plot (~ 4m^2) encompasses scores to hundreds
-# of individuals.
+# ... there is one level of spatial grain, and it is a 1 km^2 island, which is big enough to represent a bird community. 
 
 # The function "richnessYearSubsetFun" below will subset the data to sites with an 
 # adequate number of years of sampling and species richness. If there are no 
