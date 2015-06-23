@@ -406,6 +406,9 @@ good_name[14] = 'CHLIDONIAS_LEUCOPTERUS'
 typo_name[15] = 'LUGENSA_(PTERODROMA)_'
 good_name[15] = 'LUGENSA BREVIROSTRIS'
 
+typo_name[16] = 'PHALACROCORAX_CAPENSI'
+good_name[16] = 'PHALACROCORAX_CAPENSIS'
+
 levels(dataset6$species) = c(levels(dataset6$species), good_name)
 
 for (i in 1:length(typo_name)) {dataset6$species[dataset6$species == typo_name[i]] = good_name[i]}
@@ -551,7 +554,7 @@ tGrain = 'year'
 
 site_grain_names
 
-sGrain = 'site_block_treatment_plot'
+sGrain = 'SampleID'
 
 # This is a reasonable choice of spatial grain because ...
 # ...for sessile plant communities a plot (~ 4m^2) encompasses scores to hundreds
