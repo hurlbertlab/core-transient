@@ -494,8 +494,7 @@ site_grain_names
 sGrain = 'site'
 
 # This is a reasonable choice of spatial grain because ...
-# ...for sessile plant communities a plot (~ 4m^2) encompasses scores to hundreds
-# of individuals.
+# ... it is the only choice of spatial grain, and study area is 0.2 x 64.4 km which is most likely big enough to represent a bird community. 
 
 # The function "richnessYearSubsetFun" below will subset the data to sites with an 
 # adequate number of years of sampling and species richness. If there are no 

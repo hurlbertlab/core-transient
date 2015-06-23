@@ -488,8 +488,7 @@ site_grain_names
 sGrain = 'sampleID'
 
 # This is a reasonable choice of spatial grain because ...
-# ...for sessile plant communities a plot (~ 4m^2) encompasses scores to hundreds
-# of individuals.
+# ... there is only one level of spatial grain and the site is 69 acres, which is big enough to represent the range of a bird community.
 
 # The function "richnessYearSubsetFun" below will subset the data to sites with an 
 # adequate number of years of sampling and species richness. If there are no 
