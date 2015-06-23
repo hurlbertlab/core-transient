@@ -290,7 +290,7 @@ dataFormattingTable[,'spatial_scale_variable'] =
 dataFormattingTable[,'Notes_siteFormat'] = 
   dataFormattingTableFieldUpdate(datasetID, 'Notes_siteFormat',  # Fill value below in quotes
                                  
-  'site field is a concatenation of lat and long for some sites, but for others is a provided sitename. The scale of these sites is variable as this is an amalgamation of heterogeneous datasets.')
+                                 'site field is a concatenation of lat and long for some sites, but for others is a provided sitename. The scale of these sites is variable as this is an amalgamation of heterogeneous datasets.')
 
 
 #-------------------------------------------------------------------------------*
@@ -302,7 +302,7 @@ names(dataset3)
 summary(dataset3)
 
 # Fill in the original field name here
-countfield = 'cover'
+countfield = 'individualcount'
 
 # Renaming it
 names(dataset3)[which(names(dataset3) == countfield)] = 'count'
