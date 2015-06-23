@@ -359,10 +359,6 @@ dataFormattingTable[,'Notes_countFormat'] =
 
 levels(dataset5$species) 
 
-# The first thing that I notice is that there are lower and upper case entries. Because R is case-sensitive, this will be coded as separate species. Modify this prior to continuing:
-
-dataset5$species = factor(toupper(dataset5$species))
-
 # Now explore the listed species themselves, again. A good trick here to finding problematic entries is to shrink the console below horizontally so that species names will appear in a single column.  This way you can more easily scan the species names (listed alphabetically) and identify potential misspellings, extra characters or blank space, or other issues.
 
 levels(dataset5$species)
