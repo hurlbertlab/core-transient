@@ -8,18 +8,7 @@
 #===============================================================================*
 
 # Load libraries:
-
-library(stringr)
-library(plyr)
-library(ggplot2)
-library(grid)
-library(gridExtra)
-library(MASS)
-
-
-# Source the functions file:
-
-getwd()
+setwd
 
 source('scripts/R-scripts/core-transient_functions.R')
 
@@ -184,7 +173,7 @@ dataFormattingTable[,'subannualTgrain'] =
 # in hierarchical order from largest to smallest grain. Based on the dataset,
 # fill in the fields that specify nested spatial grains below.
 
-site_grain_names = c("site", "block", "treatment", "plot", "quad")
+site_grain_names = c("SampleID")
 
 # We will now create the site field with these codes concatenated if there
 # are multiple grain fields. Otherwise, site will just be the single grain field.
@@ -196,7 +185,6 @@ if (num_grains > 1) {
     site = paste(site, dataset2[, site_grain_names[i]], sep = "_")
   } 
 }
-
 
 # BEFORE YOU CONTINUE. We need to make sure that there are at least minNTime for sites at the coarsest possilbe spatial grain. 
 
@@ -215,6 +203,10 @@ ddply(datasetYearTest, .(siteCoarse), summarise,
 
 # If the dataset has less than minNTime years per site, do not continue processing. 
 
+# SampleID column is just the sample year in this dataset. 
+# Changing to 'Skokholm'
+
+site = rep('Skokholm', length(site))
 
 # Do some quality control by comparing the site fields in the dataset with the new vector of sites:
 
@@ -233,7 +225,7 @@ dataset3 = dataset2
 
 dataset3$site = factor(site)
 
-dataset3 = dataset3[,-c(2:5)]
+dataset3 = dataset3[,-c(1)]
 
 # Check the new dataset (are the columns as they should be?):
 
@@ -248,7 +240,7 @@ head(dataset3)
 dataFormattingTable[,'Raw_siteUnit'] = 
   dataFormattingTableFieldUpdate(datasetID, 'Raw_siteUnit',       # Fill value below in quotes
                                  
-                                 'site_block_treatment_plot_quad') 
+                                 'site') 
 
 
 # spatial_scale_variable. Is a site potentially nested (e.g., plot within a quad or decimal lat longs that could be scaled up)? Y/N
@@ -256,14 +248,14 @@ dataFormattingTable[,'Raw_siteUnit'] =
 dataFormattingTable[,'spatial_scale_variable'] = 
   dataFormattingTableFieldUpdate(datasetID, 'spatial_scale_variable',
                                  
-                                 'Y') # Fill value here in quotes
+                                 'N') # Fill value here in quotes
 
 # Notes_siteFormat. Use this field to THOROUGHLY describe any changes made to the site field during formatting.
 
 dataFormattingTable[,'Notes_siteFormat'] = 
   dataFormattingTableFieldUpdate(datasetID, 'Notes_siteFormat',  # Fill value below in quotes
                                  
-                                 'site fields concatenated. metadata suggests site-block-treatment-plot-quad describes the order of nested sites from small to large.')
+                                 'SampleID column from raw dataset just contains the year sampled. There is only one site for this dataset, so all site column entries were changed to "Skokholm')
 
 
 #-------------------------------------------------------------------------------*
@@ -275,7 +267,7 @@ names(dataset3)
 summary(dataset3)
 
 # Fill in the original field name here
-countfield = 'cover'
+countfield = 'Abundance'
 
 # Renaming it
 names(dataset3)[which(names(dataset3) == countfield)] = 'count'
@@ -309,12 +301,12 @@ head(dataset5)
 dataFormattingTable[,'countFormat'] = 
   dataFormattingTableFieldUpdate(datasetID, 'countFormat',    # Fill value below in quotes
                                  
-                                 'cover')
+                                 'count')
 
 dataFormattingTable[,'Notes_countFormat'] = 
   dataFormattingTableFieldUpdate(datasetID, 'Notes_countFormat', # Fill value below in quotes
                                  
-                                 'Data represents cover. There were no NAs nor 0s that required removal')
+                                 'Data represents count. There were no NAs nor 0s that required removal')
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SPECIES DATA ----
