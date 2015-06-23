@@ -131,6 +131,13 @@ dataFormattingTable[,'LatLong_sites'] =
 #===============================================================================*
 # Here, we need to extract the sampling dates. 
 
+# First, I noticed that while most records have month and day info, for 666
+# records those values are set to 0. This will cause problems converting to
+# date format, so I replace those values with 1.
+
+dataset1$month[dataset1$month == 0] = 1
+dataset1$day[dataset1$day == 0] = 1
+
 # Date info is in multiple columns, so let's combine them 
 dataset1$date = as.Date(paste(dataset1$year, dataset1$month, dataset1$day, sep = "-"),
                         format = "%Y-%m-%d")
@@ -336,12 +343,12 @@ head(dataset5)
 dataFormattingTable[,'countFormat'] = 
   dataFormattingTableFieldUpdate(datasetID, 'countFormat',    # Fill value below in quotes
                                  
-                                 'cover')
+                                 'count')
 
 dataFormattingTable[,'Notes_countFormat'] = 
   dataFormattingTableFieldUpdate(datasetID, 'Notes_countFormat', # Fill value below in quotes
                                  
-                                 'Data represents cover. There were no NAs nor 0s that required removal')
+                                 'No 0s or NAs. Count is a count of adult individuals')
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SPECIES DATA ----
