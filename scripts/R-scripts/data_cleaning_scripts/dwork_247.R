@@ -1,16 +1,7 @@
 ################################################################################*
 #  DATA FORMATTING TEMPLATE
 ################################################################################*
-# Start by opening the data formatting table (data_formatting_table.csv). To determine which dataset you should be working on, see the "format_priority" field. Choose the dataset with the highest format priority, but be sure to check out the format_flag field to see the current status of the dataset.
 
-# Flag codes are as follows:
-  # 0 = not currently worked on
-  # 1 = formatting complete
-  # 2 = formatting in process
-  # 3 = formatting halted, issue
-  # 4 = data unavailable
-
-# NOTE: All changes to the data formatting table will be done in R! Do not make changes directly to this table, this will create conflicting versions.
 
 #-------------------------------------------------------------------------------*
 # ---- SET-UP ----
@@ -39,11 +30,14 @@ source('scripts/R-scripts/core-transient_functions.R')
 
 # Get data. First specify the dataset number ('datasetID') you are working with.
 
-datasetID = 223 
+datasetID = 247
 
 list.files('data/raw_datasets')
 
-dataset = read.csv(paste('data/raw_datasets/dataset_', datasetID, '.csv', sep = ''))
+# Note: this particular dataset is very large and is stored as a zipfile,
+# so we have an extra function here to unzip it
+
+dataset = read.csv(unzip('data/raw_datasets/dataset_247.zip'))
 
 dataFormattingTable = read.csv('data_formatting_table.csv')
 
@@ -92,15 +86,27 @@ head(dataset)
 
 names(dataset)
 
-unusedFields = c(1, 2, 8, 9, 11,13, 14)
+unusedFields = c(1, 3:6, 10:14, 16, 19:21)
 
-dataset1 = dataset[,-unusedFields]
+# In addition to weeding out unusedFields, we also restrict data to Adult
+# lifestages and eliminate records with no site info
+dataset1 = dataset[dataset$lifestage == 'Adult' &
+                   !(dataset$verbatimlocality == "UNKNOWN" &
+                     dataset$verbatimlatitude == "UNKNOWN" &
+                     dataset$verbatimlongitude == "UNKNOWN"),
+                   -unusedFields]
 
-# Let's change the name of the "record_record_date" column to simply "date":
+# Let's simplify the species field name:
 
-names(dataset1)[8] = 'date'
+names(dataset1)[8] = 'species'
 
-# You also might want to change the names of the identified species field [to 'species'] and/or the identified site field [to 'site']. Just make sure you make specific comments on what the field name was before you made the change, as seen above.
+# Let's also add a site field that is either a concatenation of lat and long
+# or the verbatimlocality
+
+dataset1$site = paste(dataset1$verbatimlatitude, dataset1$verbatimlongitude, 
+                      sep = "_")
+unknown_index = which(dataset1$site == "UNKNOWN_UNKNOWN")
+dataset1$site[unknown_index] = as.character(dataset1$verbatimlocality[unknown_index])
 
 # Explore, if everything looks okay, you're ready to move forward. If not, retrace your steps to look for and fix errors. 
 
@@ -125,6 +131,10 @@ dataFormattingTable[,'LatLong_sites'] =
 #===============================================================================*
 # Here, we need to extract the sampling dates. 
 
+# Date info is in multiple columns, so let's combine them 
+dataset1$date = as.Date(paste(dataset1$year, dataset1$month, dataset1$day, sep = "-"),
+                        format = "%Y-%m-%d")
+
 # What is the name of the field that has information on sampling date?
 datefield = 'date'
 
@@ -132,11 +142,7 @@ datefield = 'date'
 # recorded as 5/30/94, then this would be '%m/%d/%y', while 1994-5-30 would
 # be '%Y-%m-%d'. Type "?strptime" for other examples of date formatting.
 
-dateformat = '%m/%d/%Y'
-
-# If date is only listed in years:
-
-# dateformat = '%Y'
+dateformat = '%Y-%m-%d'
 
 # If the date is just a year, then make sure it is of class numeric
 # and not a factor. Otherwise change to a true date object.
