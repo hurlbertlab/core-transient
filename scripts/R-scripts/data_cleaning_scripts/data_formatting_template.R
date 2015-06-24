@@ -549,6 +549,8 @@ richnessYearsTest = richnessYearSubsetFun(dataset7, spatialGrain = sGrain,
 
 head(richnessYearsTest)
 dim(richnessYearsTest) ; dim(dataset7)
+
+#Number of unique sites meeting criteria
 length(unique(richnessYearsTest$analysisSite))
 
 # Once we've settled on spatial and temporal grains that pass our test above,

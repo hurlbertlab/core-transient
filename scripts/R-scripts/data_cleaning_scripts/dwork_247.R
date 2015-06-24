@@ -1,5 +1,9 @@
 ################################################################################*
-#  DATA FORMATTING TEMPLATE
+#  Dataset 247, Mosquito DB
+#  
+#  Aggregation of mosquito occurrence datasets by Hellman et al. 2013
+#  http://esapubs.org/archive/ecol/E094/126/metadata.php
+#
 ################################################################################*
 
 
@@ -549,11 +553,12 @@ tGrain = 'year'
 
 site_grain_names
 
-sGrain = 'site_block_treatment_plot'
+sGrain = 'site'
 
 # This is a reasonable choice of spatial grain because ...
-# ...for sessile plant communities a plot (~ 4m^2) encompasses scores to hundreds
-# of individuals.
+# ...it is the only scale at which data are reported although this scale
+# may vary across the dataset. I am guessing that typically this scale is
+# the individual trap.
 
 # The function "richnessYearSubsetFun" below will subset the data to sites with an 
 # adequate number of years of sampling and species richness. If there are no 
@@ -572,6 +577,8 @@ richnessYearsTest = richnessYearSubsetFun(dataset7, spatialGrain = sGrain,
 
 head(richnessYearsTest)
 dim(richnessYearsTest) ; dim(dataset7)
+
+#Number of unique sites meeting criteria
 length(unique(richnessYearsTest$analysisSite))
 
 # Once we've settled on spatial and temporal grains that pass our test above,
