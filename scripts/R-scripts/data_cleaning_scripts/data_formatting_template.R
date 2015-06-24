@@ -522,7 +522,11 @@ dataDescription$subannualTgrain
 
 tGrain = 'year'
 
-# Refresh your memory about the spatial grain names
+# Refresh your memory about the spatial grain names if this is NOT a lat-long-only
+# based dataset. Set sGrain = to the hierarchical scale for analysis.
+
+# HOWEVER, if the sites are purely defined by lat-longs, then sGrain should equal
+# a numerical value specifying the block size in degrees latitude for analysis.
 
 site_grain_names
 

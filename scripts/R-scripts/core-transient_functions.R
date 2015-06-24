@@ -136,7 +136,12 @@ datasetRoundLatLong = function(dataset, accuracy){
 # Function to summarize data to a given site level:
 #------------------------------------------------------------------------------------------------------*
 
-getNestedSiteDataset = function(dataset, siteGrain = 'site', dataDescription){
+getNestedSiteDataset = function(dataset, siteGrain, dataDescription){
+  
+  #NOTE THAT siteGrain CAN BE EITHER A CHARACTER STRING NAMING THE
+  #CATEGORICAL SCALE FOR ANALYSIS, OR A NUMERIC VALUE INDICATING THE
+  #SPATIAL SCALE IN DEGREES LAT-LONG.
+  
   # If sites are not nested (lat-long or categorical):
   if(dataDescription$spatial_scale_variable == 'N'){
     dataset$analysisSite = dataset$site
