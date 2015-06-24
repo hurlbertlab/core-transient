@@ -368,7 +368,8 @@ dataset6 = dataset5[!dataset5$species %in% bad_sp,]
 table(dataset6$species)
 
 # If you find any potential typos, try to confirm that the "mispelling" isn't actually a valid name.
-# If not, then go ahead and replace all instances like this:
+# If not, then list the typos in typo_name, and the correct spellings in good_name,
+# and then replace them using the for loop below:
 
 typo_name = c('Aedes solicitans',
               'Aedes stricticus',
