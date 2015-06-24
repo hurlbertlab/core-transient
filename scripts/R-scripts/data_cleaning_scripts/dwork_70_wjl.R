@@ -350,8 +350,6 @@ levels(dataset5$species)
 
 # If species names are coded (not scientific names) go back to study's metadata to learn what species should and shouldn't be in the data. 
 
-# In this example, a quick look at the metadata is not informative, unfortunately. Because of this, you should really stop here and post an issue on GitHub. With some more thorough digging, however, I've found the names represent "Kartez codes". Several species can be removed (double-checked with USDA plant codes at plants.usda.gov and another Sevilleta study (dataset 254) that provides species names for some codes). Some codes were identified with this pdf from White Sands: https://nhnm.unm.edu/sites/default/files/nonsensitive/publications/nhnm/U00MUL02NMUS.pdf
-
 bad_sp = c('')
 
 dataset6 = dataset5[!dataset5$species %in% bad_sp,]
@@ -360,15 +358,6 @@ dataset6 = dataset5[!dataset5$species %in% bad_sp,]
 # only show up one time.
 
 table(dataset6$species)
-
-# If you find any potential typos, try to confirm that the "mispelling" isn't actually a valid name.
-# If not, then go ahead and replace all instances like this:
-
-# typo_name = ''
-# good_name = ''
-
-# dataset6$species[dataset6$species == typo_name] = good_name
-
 
 # Reset the factor levels:
 
@@ -510,11 +499,10 @@ tGrain = 'year'
 
 site_grain_names
 
-sGrain = 'site_block_treatment_plot'
+sGrain = 'SampleID'
 
 # This is a reasonable choice of spatial grain because ...
-# ...for sessile plant communities a plot (~ 4m^2) encompasses scores to hundreds
-# of individuals.
+# ... there is only one site. The metadata cannot be accessed, so this may need to be looked at again to ensure that the site is adequate. 
 
 # The function "richnessYearSubsetFun" below will subset the data to sites with an 
 # adequate number of years of sampling and species richness. If there are no 
