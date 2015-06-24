@@ -271,7 +271,7 @@ dataFormattingTable[,'Raw_siteUnit'] =
 dataFormattingTable[,'spatial_scale_variable'] = 
   dataFormattingTableFieldUpdate(datasetID, 'spatial_scale_variable',
                                  
-                                 'N') # Fill value here in quotes
+                                 'Y') # Fill value here in quotes
 
 # Notes_siteFormat. Use this field to THOROUGHLY describe any changes made to the site field during formatting.
 
@@ -550,15 +550,18 @@ dataDescription$subannualTgrain
 
 tGrain = 'year'
 
-# Refresh your memory about the spatial grain names
+# Refresh your memory about the spatial grain names if this is NOT a lat-long-only
+# based dataset. Set sGrain = to the hierarchical scale for analysis.
+
+# HOWEVER, if the sites are purely defined by lat-longs, then sGrain should equal
+# a numerical value specifying the block size in degrees latitude for analysis.
 
 site_grain_names
 
-sGrain = 'SampleID'
+sGrain = 2
 
 # This is a reasonable choice of spatial grain because ...
-# ...for sessile plant communities a plot (~ 4m^2) encompasses scores to hundreds
-# of individuals.
+# ... rounding the latitude and longitude of each site to multiples of 2 creates blocks that are large enough to represent a bird community. 
 
 # The function "richnessYearSubsetFun" below will subset the data to sites with an 
 # adequate number of years of sampling and species richness. If there are no 
