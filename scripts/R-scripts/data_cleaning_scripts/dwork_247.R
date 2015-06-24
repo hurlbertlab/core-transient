@@ -365,9 +365,9 @@ levels(dataset5$species)
 
 # If species names are coded (not scientific names) go back to study's metadata to learn what species should and shouldn't be in the data. 
 
-# In this example, a quick look at the metadata is not informative, unfortunately. Because of this, you should really stop here and post an issue on GitHub. With some more thorough digging, however, I've found the names represent "Kartez codes". Several species can be removed (double-checked with USDA plant codes at plants.usda.gov and another Sevilleta study (dataset 254) that provides species names for some codes). Some codes were identified with this pdf from White Sands: https://nhnm.unm.edu/sites/default/files/nonsensitive/publications/nhnm/U00MUL02NMUS.pdf
-
-bad_sp = c('','NONE','UK1','UKFO1','UNK1','UNK2','UNK3','LAMIA', 'UNGR1','CACT1','UNK','NONE','UNK2','UNK3', 'UNK1','FORB7', 'MISSING', '-888', 'DEAD','ERRO2', 'FORB1','FSEED', 'GSEED', 'MOSQ', 'SEED','SEEDS1','SEEDS2', 'SEFLF','SESPM','SPOR1')
+bad_sp = c('Aedes sp.', 'Aedes spp.', 'Anopheles sp.', 'Anopheles spp.',
+           'Culex sp.', 'Culex spp.', 'Culiseta sp.', 'Culiseta spp.',
+           'Psorophora sp.', 'Psorophora spp.', 'Unknown', 'UNKNOWN')
 
 dataset6 = dataset5[!dataset5$species %in% bad_sp,]
 
@@ -379,10 +379,34 @@ table(dataset6$species)
 # If you find any potential typos, try to confirm that the "mispelling" isn't actually a valid name.
 # If not, then go ahead and replace all instances like this:
 
-# typo_name = ''
-# good_name = ''
+typo_name = c('Aedes solicitans',
+              'Aedes stricticus',
+              'Aedes trivitatus',
+              'Aedes trivittatas',
+              'Anopheles perplexens',
+              'Anopheles quadrimaculatas',
+              'Coquillettidia pertutbans',
+              'Coquilletidia perturbans',
+              'Coquillettidia spp.',
+              'Psorophora howardi')
 
-# dataset6$species[dataset6$species == typo_name] = good_name
+
+good_name = c('Aedes sollicitans',
+              'Aedes sticticus',
+              'Aedes trivittatus',
+              'Aedes trivittatus',
+              'Anopheles perplexans',
+              'Anopheles quadrimaculatus',
+              'Coquillettidia perturbans',
+              'Coquillettidia perturbans',
+              'Coquillettidia perturbans',
+              'Psorophora howardii')
+
+if (length(typo_name) > 0) {
+  for (n in 1:length(typo_name)) {
+    dataset6$species[dataset6$species == typo_name[n]] = good_name[n]
+  }
+}
 
 
 # Reset the factor levels:
