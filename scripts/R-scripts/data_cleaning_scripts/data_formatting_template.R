@@ -370,10 +370,19 @@ table(dataset6$species)
 # If you find any potential typos, try to confirm that the "mispelling" isn't actually a valid name.
 # If not, then go ahead and replace all instances like this:
 
-# typo_name = ''
-# good_name = ''
+typo_name = c('Aedes solicitans',
+              'Aedes stricticus',
+              'Aedes trivitatus')
 
-# dataset6$species[dataset6$species == typo_name] = good_name
+good_name = c('Aedes sollicitans',
+              'Aedes sticticus',
+              'Aedes trivittatus')
+
+if (length(typo_name) > 0) {
+  for (n in 1:length(typo_name)) {
+    dataset6$species[dataset6$species == typo_name[n]] = good_name[n]
+  }
+}
 
 
 # Reset the factor levels:
