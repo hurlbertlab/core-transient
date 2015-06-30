@@ -1,16 +1,10 @@
 ################################################################################*
-#  DATA FORMATTING TEMPLATE
-################################################################################*
-# Start by opening the data formatting table (data_formatting_table.csv). To determine which dataset you should be working on, see the "format_priority" field. Choose the dataset with the highest format priority, but be sure to check out the format_flag field to see the current status of the dataset.
+#  DATASET 85: North Sea Macrobenthos
+#
+#  Metadata can be found at http://www.emodnet-biology.eu/data-catalog?module=dataset&dasid=1037
 
-# Flag codes are as follows:
-# 0 = not currently worked on
-# 1 = formatting complete
-# 2 = formatting in process
-# 3 = formatting halted, issue
-# 4 = data unavailable
 
-# NOTE: All changes to the data formatting table will be done in R! Do not make changes directly to this table, this will create conflicting versions.
+
 
 #-------------------------------------------------------------------------------*
 # ---- SET-UP ----
@@ -39,7 +33,7 @@ source('scripts/R-scripts/core-transient_functions.R')
 
 # Get data. First specify the dataset number ('datasetID') you are working with.
 
-datasetID = 223 
+datasetID = 85
 
 list.files('data/raw_datasets')
 
@@ -92,13 +86,13 @@ head(dataset)
 
 names(dataset)
 
-unusedFields = c(1, 2, 8, 9, 11,13, 14)
+unusedFields = c(1, 2)
 
 dataset1 = dataset[,-unusedFields]
 
-# Let's change the name of the "record_record_date" column to simply "date":
+# Let's change the name of the "Species" column to simply "species":
 
-names(dataset1)[8] = 'date'
+names(dataset1)[3] = 'species'
 
 # You also might want to change the names of the identified species field [to 'species'] and/or the identified site field [to 'site']. Just make sure you make specific comments on what the field name was before you made the change, as seen above.
 
@@ -126,17 +120,13 @@ dataFormattingTable[,'LatLong_sites'] =
 # Here, we need to extract the sampling dates. 
 
 # What is the name of the field that has information on sampling date?
-datefield = 'date'
+datefield = 'Year'
 
 # What is the format in which date data is recorded? For example, if it is
 # recorded as 5/30/94, then this would be '%m/%d/%y', while 1994-5-30 would
 # be '%Y-%m-%d'. Type "?strptime" for other examples of date formatting.
 
-dateformat = '%m/%d/%Y'
-
-# If date is only listed in years:
-
-# dateformat = '%Y'
+dateformat = '%Y'
 
 # If the date is just a year, then make sure it is of class numeric
 # and not a factor. Otherwise change to a true date object.
@@ -179,14 +169,14 @@ str(dataset2)
 dataFormattingTable[,'Notes_timeFormat'] = 
   dataFormattingTableFieldUpdate(datasetID, 'Notes_timeFormat',  # Fill value in below
                                  
-                                 'temporal data provided as dates. The only modification to this field involved converting to a date object.')
+                                 'temporal data provided as years. The only modification to this field involved converting to a numeric object.')
 
 # subannualTgrain. After exploring the time data, was this dataset sampled at a sub-annual temporal grain? Y/N
 
 dataFormattingTable[,'subannualTgrain'] = 
   dataFormattingTableFieldUpdate(datasetID, 'subannualTgrain',    # Fill value in below
                                  
-                                 'Y')
+                                 'N')
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SITE DATA ----
