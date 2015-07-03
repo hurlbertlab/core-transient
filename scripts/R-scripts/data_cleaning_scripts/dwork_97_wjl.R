@@ -274,7 +274,7 @@ names(dataset3)
 summary(dataset3)
 
 # Fill in the original field name here
-countfield = 'cover'
+countfield = 'Abundance'
 
 # Renaming it
 names(dataset3)[which(names(dataset3) == countfield)] = 'count'
@@ -283,7 +283,7 @@ names(dataset3)[which(names(dataset3) == countfield)] = 'count'
 
 summary(dataset3)
 
-# Can usually tell if there are any zeros or NAs from that summary(). If there aren't any showing, still run these functions or continue with the update of dataset# so that you are consistent with this template.
+# Summary says that the minimum value for count is 0.0, but that is just because the values are so small (as small as 1x10^-4) and the summary function rounds to the 1st decimal place. 
 
 # Subset to records > 0 (if applicable):
 
@@ -308,17 +308,16 @@ head(dataset5)
 dataFormattingTable[,'countFormat'] = 
   dataFormattingTableFieldUpdate(datasetID, 'countFormat',    # Fill value below in quotes
                                  
-                                 'cover')
+                                 'count')
 
 dataFormattingTable[,'Notes_countFormat'] = 
   dataFormattingTableFieldUpdate(datasetID, 'Notes_countFormat', # Fill value below in quotes
                                  
-                                 'Data represents cover. There were no NAs nor 0s that required removal')
+                                 'Data represents count. There were no NAs or 0s were present')
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SPECIES DATA ----
 #===============================================================================*
-# Here, your primary goal is to ensure that all of your species are valid. To do so, you need to look at the list of unique species very carefully. Avoid being too liberal in interpretation, if you notice an entry that MIGHT be a problem, but you can't say with certainty, create an issue on GitHub.
 
 # Look at the individual species present:
 
@@ -332,16 +331,30 @@ dataset5$species = factor(toupper(dataset5$species))
 
 levels(dataset5$species)
 
+# First of all, there are many entries where there is an extra underscore at the end. These must be removed. 
+
+for (i in 1:length(dataset5$species)){
+  if (str_sub(dataset5$species[i], -1) == '_'){
+    
+    levels(dataset5$species) = c(levels(dataset5$species),str_sub(dataset5$species[i],1,nchar(as.character(dataset5$species[i]))-1))
+    
+    dataset5$species[i] = str_sub(dataset5$species[i],1,nchar(as.character(dataset5$species[i]))-1)
+    
+  } 
+  
+  
+}
+
 # If there are entries that only specify the genus while there are others that specify the species in addition to that same genus, they need to be regrouped in order to avoid ambiguity. For example, if there are entries of 'Cygnus', 'Cygnus_columbianus', and 'Cygnus_cygnus', 'Cygnus' could refer to either species, but the observer could not identify it. This causes ambiguity in the data, and must be fixed by either 1. deleting the genus-only entry altogether, or 2. renaming the genus-species entries to just the genus-only entry. 
 # This decision can be fairly subjective, but generally if less than 25% of the entries are genus-only, then they can be deleted (using bad_sp). If more than 25% of the entries for that genus are only specified to the genus, then the genus-species entries should be renamed to be genus-only (using typo_name). 
 
 table(dataset5$species)
 
-# If species names are coded (not scientific names) go back to study's metadata to learn what species should and shouldn't be in the data. 
+# There are many (about 100) instances where some genus-only entries have been identified to the species level, but not all. I am putting this script on hold until I can make a decision about all of these inconsistencies in identification.   
 
-# In this example, a quick look at the metadata is not informative, unfortunately. Because of this, you should really stop here and post an issue on GitHub. With some more thorough digging, however, I've found the names represent "Kartez codes". Several species can be removed (double-checked with USDA plant codes at plants.usda.gov and another Sevilleta study (dataset 254) that provides species names for some codes). Some codes were identified with this pdf from White Sands: https://nhnm.unm.edu/sites/default/files/nonsensitive/publications/nhnm/U00MUL02NMUS.pdf
 
-bad_sp = c('','NONE','UK1','UKFO1','UNK1','UNK2','UNK3','LAMIA', 'UNGR1','CACT1','UNK','NONE','UNK2','UNK3', 'UNK1','FORB7', 'MISSING', '-888', 'DEAD','ERRO2', 'FORB1','FSEED', 'GSEED', 'MOSQ', 'SEED','SEEDS1','SEEDS2', 'SEFLF','SESPM','SPOR1')
+
+bad_sp = c()
 
 dataset6 = dataset5[!dataset5$species %in% bad_sp,]
 
