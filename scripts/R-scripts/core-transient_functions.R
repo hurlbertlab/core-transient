@@ -241,46 +241,34 @@ zFinder = function(inData, minNTime = 10, proportionalThreshold = .5){
   # zPossible is a potential threshold of temporal subsampling:
     zPossible = sort(unique(spaceTime$temporalSubsamples))
   # Create an empty matrix to store summary data for possible Z-values:
-    zMatrix = matrix(ncol = 5, nrow = length(zPossible), 
-                   dimnames = list(NULL, c('z','nSiteTimes','propSiteTimes',
-                                           'nSites','propSites')))
+    zMatrix = matrix(ncol = 3, nrow = length(zPossible), 
+                   dimnames = list(NULL, c('z','nSiteTimes','propSites')))
   # Create an empty list of sites to store site names of good sites at a given Z-value:
-    zSiteTimeList = list(length = length(zPossible))
     zSiteList = list(length = length(zPossible))
   # For loop to populate the zMatrix and zSite Lists:
     for(i in 1:length(zPossible)){
       # Subset spaceTime to subsamples greater than or equal to z for a given site:
         spaceTimeGTEz = filter(spaceTime, temporalSubsamples>=zPossible[i])
-      # Determine siteTime in which the temporal subsampling was greater than equal to z for at least the minimum time samples:
-        goodSiteTimes = ddply(spaceTimeGTEz, .(analysisSite, siteTime), summarize, 
-                              length(unique(analysisDate) >= minNTime))$siteTime
-        #Count number of years of data at each site with at least z time samples:
+      # Determine sites and siteTimes in which the temporal subsampling was greater 
+      # than equal to z for at least the minimum time samples:
         yearCountBySiteGTEz = count(spaceTimeGTEz, analysisSite)
         goodSites = yearCountBySiteGTEz$analysisSite[yearCountBySiteGTEz$n >= minNTime]
+        goodSiteTimes = spaceTimeGTEz$siteTime[spaceTimeGTEz$analysisSite %in% goodSites]
       # Construct matrix of z values, the number and proportion of siteYears with that level of subsampling:
         zMatrix[i,'z'] = zPossible[i]
         zMatrix[i, 'nSiteTimes'] = length(goodSiteTimes)
-        zMatrix[i, 'propSiteTimes'] = length(goodSiteTimes)/length(unique(spaceTime$siteTime))
-        zMatrix[i, 'nSites'] = length(goodSites)
-        zMatrix[i, 'propSites'] = length(goodSites)/length(unique(spaceTime$analysisSite))
-      # List the names of goodSiteTimes for a given Z-value:
-        zSiteTimeList[[i]] = goodSiteTimes
+        zMatrix[i, 'propSites'] = length(goodSiteTimes)/length(unique(spaceTime$siteTime))
+      # List the names of goodSites for a given Z-value:
+        zSiteList[[i]] = goodSiteTimes
       # Name each list entry by the Z-value
-        names(zSiteTimeList)[[i]] = zPossible[i]
-        # List the names of goodSites for a given Z-value:
-        zSiteList[[i]] = goodSites
-        # Name each list entry by the Z-value
         names(zSiteList)[[i]] = zPossible[i]
       }
   # Get the highest Z value with at least minNYears:
     z = max(filter(data.frame(zMatrix), propSites >= proportionalThreshold)$z)
   # Get the names of the site Times that satisfy Z:
-    zSiteTimes = factor(zSiteTimeList[[as.character(z)]])
-  # Get the names of the sites that have at least minNTime years satisfying z
-    zSites = factor(zSiteList[[as.character(z)]])
+    zSiteTimes = factor(zSiteList[[as.character(z)]])
   # Return the z value and site names 
-    return(list (z = z, zSiteTimes = zSiteTimes, zSites = zSites, 
-                 zTable = data.frame(zMatrix)))
+    return(list (z = z, zSiteTimes = zSiteTimes, zTable = data.frame(zMatrix)))
   }
 
 #------------------------------------------------------------------------------------------------------*
@@ -295,9 +283,7 @@ dataZSubFun  = function(inData, minNTime = 10, proportionalThreshold = .5){
     data = inData
     data$siteTime = paste(data$analysisSite, data$analysisDate, sep ='_')
   # Subset data to just the site-timeSamples that meet the z-threshold for temporal subsampling:  
-    spaceTime = ddply(data, .(siteTime), summarize, subTimeSamples = (length(unique(date))))
-    siteTimeZSub = filter(spaceTime, subTimeSamples >= z)$siteTime
-    dataZSub = filter(data, siteTime %in% siteTimeZSub)
+    dataZSub = filter(data, siteTime %in% zOutput$zSiteTimes)
   # Add a column that concatenates siteTime and date:
     dataZSub$siteTimeDate = paste(dataZSub$siteTime, dataZSub$date, sep = '_')
   # For each siteID and time sample, sample z number of sub-sampling events:
