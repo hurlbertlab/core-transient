@@ -9,6 +9,7 @@
   # 2 = formatting in process
   # 3 = formatting halted, issue
   # 4 = data unavailable
+  # 5 = data insufficient for generating occupancy data
 
 # NOTE: All changes to the data formatting table will be done in R! Do not make changes directly to this table, this will create conflicting versions.
 
