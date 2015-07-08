@@ -350,11 +350,69 @@ for (i in 1:length(dataset5$species)){
 
 table(dataset5$species)
 
-# There are many (about 100) instances where some genus-only entries have been identified to the species level, but not all. I am putting this script on hold until I can make a decision about all of these inconsistencies in identification.   
+### Entries where the genus-only entry is removed (# of genus of entries; # of species1 entries, # of species2 entries, etc.):
+
+# Acartia: 27; 39, 172
+# ??? Aetideidae: 62; 15; 9, 20, 1, 46, 1 ???
+# Calanus: 132; 3, 639, 125, 367, 3
+# Centropages: 4; 1, 26, 1
+# Chiridius: 4; 69, 1
+# Chiridiella: 30; 2, 4, 2, 16
+# Conchoecia: 89; 31, 12, 3
+# Eucalanus: 10; 3, 12
+# Fritillaria: 106; 304, 1
+# Gaetanus: 53; 66; 92
+# Jaschnovia: 4; 10, 58
+# Leprotinnitus: 10; 13, 1
+# Limacina: 5; 227, 27
+# Lucicutia: 34; 9, 1, 1, 40
+# Metridinae (family and genus to be removed): 3; 35; 380, 1, 79, 1, 7
+# Microcalanus: 59; 12, 319
+# Oikopleura: 304; 2, 64, 82
+# Oithona: 103: 1, 68, 602
+# Oncaea: 74; 171, 1, 24, 32
+# Paraeuchaeta: 135; 17, 152, 69, 25, 1
+# Parafavella: 29; 5, 80, 1, 4, 15
+# Sabinea: 1; 1, 2
+# Sarsia: 15; 20, 2
+# Scaphocalanus: 44; 88, 77, 3, 1, 14
+# Spinocalanidae (family and genus to be removed): 11; 60; 65, 10, 51, 86, 5, 60, 1
+# Themisto: 15; 76, 15, 60
+# Thysanoessa: 11; 51, 52, 18
+# Tintinnoidea (family and genus to be removed): 5; 81; 13, 4, 25, 1, 5, 1
+# Xanthocalanus: 19; 1, 3
 
 
 
-bad_sp = c()
+
+### Entries where the species entries are consolidated into the genus-only entries, renaming them all to genus-only entry. 
+
+# Aglantha: 10; 113
+# Amphipoda (order): 84; 1
+# Echinodermata (phylum): 1; 1; 2 
+# Beroe: 20; 24
+# Catablema: 1; 6
+# Clione: 48; 159
+# Cyclopoida (order): 62; 3; 4
+# Daphnia: 13; 5
+# Dimophyes: 2; 119
+# Eukrohnia: 9; 134
+# Euphausiacea (order): 157; 5; 2
+# Euphysea: 4; 61
+# Eusirus: 1; 3
+# Evadne: 3; 28
+# Gammaridae: 31; 5
+# Globigerina: 27; 2
+# Halitholus: 1; 49
+# Harpacticoida: 145; 17; 11; 11
+# Heterorhabdus: 13; 75
+# Hyperiidae: 102; 8; 14
+# Keratella: 1; 2
+# 
+
+
+
+bad_sp = c('MALACOSTRACA','')
 
 dataset6 = dataset5[!dataset5$species %in% bad_sp,]
 
