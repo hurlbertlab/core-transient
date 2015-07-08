@@ -225,6 +225,11 @@ dataFormattingTable[,'format_priority'] =
 dataFormattingTable[,'format_flag'] = 
   dataFormattingTableFieldUpdate(datasetID, 'format_flag',    # Fill value below
                                  
-                                 5)
+                                 5) # code 5 for aborting cleaning 
 
+# And update the data formatting table:
+
+write.csv(dataFormattingTable, 'data_formatting_table.csv', row.names = F)
+
+# !GIT-ADD-COMMIT-PUSH THE DATA FORMATTING TABLE!
 
