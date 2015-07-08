@@ -187,16 +187,24 @@ site = dataset2[, site_grain_names[1]]
 
 # Site entries have lots of unimportant info separated by underscores. Extracting region, island, and lat/long
 
-site = paste( word(site,2,sep="_"), 
-              word(site,4,sep="_"),
-              word(site,-2,sep="_"),
-              word(site,-1,sep="_"),
-              sep= "_")
+newsite = c()
+
+for (i in 1:length(site)){
+
+
+  
+newsite = c(newsite,paste( word(site[i],2,sep="_"), 
+              paste(word(site[i],4:(sapply(strsplit(as.character(site[i]), "_"), length)-3),sep="_"),collapse = ""),
+              word(site[i],-2,sep="_"),
+              word(site[i],-1,sep="_"),
+              sep= "_"))
+
+}
 
 
 # BEFORE YOU CONTINUE. We need to make sure that there are at least minNTime for sites at the coarsest possilbe spatial grain. 
 
-siteCoarse = dataset2[, site_grain_names[1]]
+siteCoarse = paste(word(newsite,1,sep="_"),word(newsite,2,sep="_"))
 
 if (dateformat == '%Y' | dateformat == '%y') {
   dateYear = dataset2$date
@@ -209,25 +217,27 @@ datasetYearTest = data.frame(siteCoarse, dateYear)
 ddply(datasetYearTest, .(siteCoarse), summarise, 
       lengthYears =  length(unique(dateYear)))
 
-# If the dataset has less than minNTime years per site, do not continue processing. 
+### DATASET HAS LESS THAN MINNTIME YEARS FOR ALL SITES, AND THE LAT/LONGS ARE NOT SUFFICIENT EITHER. DATASET PROCESSING WILL NOT CONTINUE ###
+
+finalsite = paste(word(newsite,-2,sep="_"),word(newsite,-1,sep="_"), sep="_")
 
 
 # Do some quality control by comparing the site fields in the dataset with the new vector of sites:
 
-head(site)
+head(finalsite)
 
 # Check how evenly represented all of the sites are in the dataset. If this is the
 # type of dataset where every site was sampled on a regular schedule, then you
 # expect to see similar values here across sites. Sites that only show up a small
 # percent of the time may reflect typos.
 
-data.frame(table(site))
+data.frame(table(finalsite))
 
 # All looks correct, so replace the site column in the dataset (as a factor) and remove the unnecessary fields, start by renaming the dataset to dataset2:
 
 dataset3 = dataset2
 
-dataset3$site = factor(site)
+dataset3$site = factor(finalsite)
 
 dataset3 = dataset3[,-c(1)]
 
@@ -244,7 +254,7 @@ head(dataset3)
 dataFormattingTable[,'Raw_siteUnit'] = 
   dataFormattingTableFieldUpdate(datasetID, 'Raw_siteUnit',       # Fill value below in quotes
                                  
-                                 'site_block_treatment_plot_quad') 
+                                 'region_site_lat_long') 
 
 
 # spatial_scale_variable. Is a site potentially nested (e.g., plot within a quad or decimal lat longs that could be scaled up)? Y/N
@@ -259,7 +269,7 @@ dataFormattingTable[,'spatial_scale_variable'] =
 dataFormattingTable[,'Notes_siteFormat'] = 
   dataFormattingTableFieldUpdate(datasetID, 'Notes_siteFormat',  # Fill value below in quotes
                                  
-                                 'site fields concatenated. metadata suggests site-block-treatment-plot-quad describes the order of nested sites from small to large.')
+                                 'site field had some unneccessary info (like depth) spearated out by underscores. after editing the site entries, the result was region_site_lat_long.' )
 
 
 #-------------------------------------------------------------------------------*
@@ -271,7 +281,7 @@ names(dataset3)
 summary(dataset3)
 
 # Fill in the original field name here
-countfield = 'cover'
+countfield = 'Abundance'
 
 # Renaming it
 names(dataset3)[which(names(dataset3) == countfield)] = 'count'
@@ -310,7 +320,7 @@ dataFormattingTable[,'countFormat'] =
 dataFormattingTable[,'Notes_countFormat'] = 
   dataFormattingTableFieldUpdate(datasetID, 'Notes_countFormat', # Fill value below in quotes
                                  
-                                 'Data represents cover. There were no NAs nor 0s that required removal')
+                                 'Data represents count. There were no NAs nor 0s that required removal')
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SPECIES DATA ----
@@ -320,10 +330,6 @@ dataFormattingTable[,'Notes_countFormat'] =
 # Look at the individual species present:
 
 levels(dataset5$species) 
-
-# The first thing that I notice is that there are lower and upper case entries. Because R is case-sensitive, this will be coded as separate species. Modify this prior to continuing:
-
-dataset5$species = factor(toupper(dataset5$species))
 
 # Now explore the listed species themselves, again. A good trick here to finding problematic entries is to shrink the console below horizontally so that species names will appear in a single column.  This way you can more easily scan the species names (listed alphabetically) and identify potential misspellings, extra characters or blank space, or other issues.
 
@@ -338,7 +344,73 @@ table(dataset5$species)
 
 # In this example, a quick look at the metadata is not informative, unfortunately. Because of this, you should really stop here and post an issue on GitHub. With some more thorough digging, however, I've found the names represent "Kartez codes". Several species can be removed (double-checked with USDA plant codes at plants.usda.gov and another Sevilleta study (dataset 254) that provides species names for some codes). Some codes were identified with this pdf from White Sands: https://nhnm.unm.edu/sites/default/files/nonsensitive/publications/nhnm/U00MUL02NMUS.pdf
 
-bad_sp = c('','NONE','UK1','UKFO1','UNK1','UNK2','UNK3','LAMIA', 'UNGR1','CACT1','UNK','NONE','UNK2','UNK3', 'UNK1','FORB7', 'MISSING', '-888', 'DEAD','ERRO2', 'FORB1','FSEED', 'GSEED', 'MOSQ', 'SEED','SEEDS1','SEEDS2', 'SEFLF','SESPM','SPOR1')
+### Genus-only entry removals or species moves (with number of genus-only and species entries):
+
+#RG# Acanthophora: 2; 36, 1
+
+#?# Amphiroa: 160; 1, 3, 20
+
+#?# Avrainvillea: 79; 5, 3, 20
+
+#RG# Boodlea: 45; 10, 19
+
+#RG# Botryocladia: 9; 14, 1
+
+#RG# Caulerpa: 224; 1, 3, 6, 1, 19, 2, 6, 653, 8, 9, 24, 76, 18, 28, 11, 6, 71, 5
+
+# Cheilosporum: 36; 1, 3, 8
+
+# Chlorodesmis: 106; 10, 29, 3
+
+# Codium: 31; 12, 1, 11, 1
+
+# Dasya: 48; 78, 2, 2 
+
+# Dictyosphaeria: 236; 118, 173
+
+# Dictyota: 313; 1, 5, 47, 54, 4
+
+# Galaxura: 125; 8, 10, 4, 6, 2, 5
+
+# Gelid (family): 127; 3; 2, 15
+
+# Gibsmithia: 12; 6, 72
+
+# Halimeda: 568; 3, 96, 6, 21, 1, 1, 1, 9, 2, 2, 2, 1, 1, 149, 41, 121
+
+# Halymenia: 23; 1, 3, 5, 7
+
+# Hypnea: 52; 1, 5, 1
+
+# Martensia: 51; 29, 8
+
+#RG# Microdictyon: 110; 8, 150, 19
+
+#MS# Neomeris: 279; 109, 3
+
+#MS# Padina: 188; 14, 28
+
+#RG# Portiera: 31; 2, 95
+
+#RG# Tolypiocladia: 7; 10, 49
+
+#RG# Turbinaria: 23; 1, 89
+
+# Valonia: 68; 12, 5
+
+
+
+
+
+### Genus has one genus-only and one species entry, combined both to just genus-only entry.
+
+# Actinotrichia, Amansia, Asparagopsis, Boergesenia, Bryopsis, Chondrophycus, Derbesia, Dictyopteris
+# Dotyella, Halichrysis, Haloplegma, Hydroclathrus, Jania, Kallymenia, Laurencia, Lobophora
+# Peyssonnelia, Plocamium, Pterocladiella, Sporochnus, Stypopodium, Trichogloea, Tricleocarpa
+# Tydemania, Udotea, Wrangelia
+
+
+bad_sp = c('Acanthophora' )
 
 dataset6 = dataset5[!dataset5$species %in% bad_sp,]
 
@@ -351,13 +423,64 @@ table(dataset6$species)
 # If not, then list the typos in typo_name, and the correct spellings in good_name,
 # and then replace them using the for loop below:
 
-typo_name = c('Aedes solicitans',
-              'Aedes stricticus',
-              'Aedes trivitatus')
 
-good_name = c('Aedes sollicitans',
-              'Aedes sticticus',
-              'Aedes trivittatus')
+typo_name = c('Actinotrichia_fragilis',
+              'Amansia_rhodantha',
+              'Asparagopsis_taxiformis',
+              'Boergesenia_forbesii',
+              'Bryopsis_pennata',
+              'Champia_viellardii',
+              'Chondrophycus_parvipapillatus',
+              'Derbesia_marina',
+              'Dictyopteris_palagiogramma',
+              'Dotyella_hawaiiensis',
+              'Halichrysis_coalescens',
+              'Haloplegma_duperreyi',
+              'Hydroclathrus_clathratus',
+              'Jania_capillacea',
+              'Kallymenia_sessilis',
+              'Laurencia_galtsoffii',
+              'Lobophora_variegata',
+              'Peyssonnelia_inamoena',
+              'Plocamium_sandvicense',
+              'Predaea_weldii',
+              'Pterocladiella_capillacea',
+              'Sporochnus_dotyi',
+              'Stypopodium_flabelliforme',
+              'Trichogloea_requienii',
+              'Tricleocarpa_fragilis',
+              'Tydemania_expeditionis',
+              'Udotea_argenta',
+              'Wrangelia_anastomosans')
+
+good_name = c('Actinotrichia',
+              'Amansia',
+              'Asparagopsis',
+              'Boergesenia',
+              'Bryopsis',
+              'Champia',
+              'Chondrophycus',
+              'Derbesia',
+              'Dictyopteris',
+              'Dotyella',
+              'Halichrysis',
+              'Haloplegma',
+              'Hydroclathrus',
+              'Jania',
+              'Kallymenia',
+              'Laurencia',
+              'Lobophora',
+              'Peyssonnelia',
+              'Plocamium',
+              'Predaea',
+              'Pterocladiella',
+              'Sporochnus',
+              'Stypopodium',
+              'Trichogloea',
+              'Tricleocarpa',
+              'Tydemania',
+              'Udotea',
+              'Wrangelia')
 
 if (length(typo_name) > 0) {
   for (n in 1:length(typo_name)) {
@@ -390,7 +513,7 @@ head(dataset6)
 dataFormattingTable[,'Notes_spFormat'] = 
   dataFormattingTableFieldUpdate(datasetID, 'Notes_spFormat',    # Fill value below in quotes
                                  
-                                 'several species removed. Metadata was relatively uninformative regarding what constitutes a true species sample for this study. Exploration of metadata from associated Sevilleta studies were more informative regarding which species needed to be removed. Species names are predominantly provided as Kartez codes, but not always. See: http://sev.lternet.edu/data/sev-212/5048. Some codes were identified with this pdf from White Sands: https://nhnm.unm.edu/sites/default/files/nonsensitive/publications/nhnm/U00MUL02NMUS.pdf')
+                                 'there were many instances where there were genus-only entries with other entries of that genus that go to the species level. They were removed or renamed according to the script.')
 
 #-------------------------------------------------------------------------------*
 # ---- MAKE DATA FRAME OF COUNT BY SITES, SPECIES, AND YEAR ----
@@ -445,7 +568,7 @@ dataFormattingTable[,'format_priority'] =
 dataFormattingTable[,'format_flag'] = 
   dataFormattingTableFieldUpdate(datasetID, 'format_flag',    # Fill value below
                                  
-                                 1)
+                                 5)
 
 # And update the data formatting table:
 
@@ -510,7 +633,7 @@ tGrain = 'year'
 
 site_grain_names
 
-sGrain = 'site_block_treatment_plot'
+sGrain = 20
 
 # This is a reasonable choice of spatial grain because ...
 # ...for sessile plant communities a plot (~ 4m^2) encompasses scores to hundreds
