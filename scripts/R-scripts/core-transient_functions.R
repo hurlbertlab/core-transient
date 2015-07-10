@@ -209,20 +209,20 @@ getNestedDataset = function(dataset, siteGrain, temporalGrain, dataDescription){
 #======================================================================================================* 
 
 richnessYearSubsetFun = function(dataset, spatialGrain, temporalGrain, minNTime = 10, minSpRich = 10, dataDescription){
-    dataset = getNestedDataset(dataset, spatialGrain, temporalGrain, dataDescription)
+    dataset1 = getNestedDataset(dataset, spatialGrain, temporalGrain, dataDescription)
   # Get the number of years and species richness for each site: 
-    siteSr_nTime = ddply(dataset, .(analysisSite), summarize,
+    siteSr_nTime = ddply(dataset1, .(analysisSite), summarize,
                          sr = length(unique(species)), 
                          nTime = length(unique(analysisDate)))
   # Subset to sites with a high enough species richness and year samples:
-    goodSites = filter(siteSr_nTime, sr >= minSpRich & 
-                         nTime >= minNTime)$analysisSite
+    goodSites = siteSr_nTime$analysisSite[siteSr_nTime$sr >= minSpRich & 
+                                          siteSr_nTime$nTime >= minNTime]
   # If statement to return if there are no good sites:
     if(length(goodSites) == 0) {
       return(print('No acceptable sites, rethink site definitions or temporal scale'))}
     else {
       # Match good sites and the dataframe:
-      outFrame = na.omit(dataset[dataset$analysisSite %in% goodSites,])
+      outFrame = na.omit(dataset1[dataset1$analysisSite %in% goodSites,])
       return(outFrame)
     }}
 
@@ -566,7 +566,8 @@ occsScaledFun = function(occProp){
 # Fit beta distribution:
 
 fitBeta = function(occProp, nTime) {
-  if (bimodalityFun(occProp,nTime)!= 0)
+  bi = bimodalityFun(occProp,nTime)
+  if (bi != 0 & !is.na(bi))
   {occs  = occsScaledFun(occProp)
    shape.params = suppressWarnings(fitdistr(occs, "beta",
                                             list(shape1 = 2, shape2 = 2)))
@@ -669,6 +670,8 @@ summaryStatsFun = function(datasetID, threshold, reps){
 #------------------------------------------------------------------------------------------------------*
 # ---- MAKE SUMMARY STATS OF ANY NEW PROPOCC FILES ----
 #======================================================================================================*
+require(MASS)
+require(plyr)
 
 addNewSummariesFun = function(threshold, reps, write = FALSE){
   if (file.exists('output/tabular_data/core-transient_summary.csv')) {
@@ -693,11 +696,12 @@ addNewSummariesFun = function(threshold, reps, write = FALSE){
   }
   newSummaryData = rbind.fill(outList)
   updatedSummaryData = rbind(currentSummaryData, newSummaryData)
+  updatedSummaryData = updatedSummaryData[order(updatedSummaryData$datasetID),]
   if (write) {
-    write.csv(updatedSummaryData[order(datasetID),], 
+    write.csv(updatedSummaryData, 
               'output/tabular_data/core-transient_summary.csv', row.names = F)
   }
-  return(updatedSummaryData[order(datasetID),])
+  return(updatedSummaryData)
 }
 
 #======================================================================================================*
