@@ -209,20 +209,20 @@ getNestedDataset = function(dataset, siteGrain, temporalGrain, dataDescription){
 #======================================================================================================* 
 
 richnessYearSubsetFun = function(dataset, spatialGrain, temporalGrain, minNTime = 10, minSpRich = 10, dataDescription){
-    dataset = getNestedDataset(dataset, spatialGrain, temporalGrain, dataDescription)
+    dataset1 = getNestedDataset(dataset, spatialGrain, temporalGrain, dataDescription)
   # Get the number of years and species richness for each site: 
-    siteSr_nTime = ddply(dataset, .(analysisSite), summarize,
+    siteSr_nTime = ddply(dataset1, .(analysisSite), summarize,
                          sr = length(unique(species)), 
                          nTime = length(unique(analysisDate)))
   # Subset to sites with a high enough species richness and year samples:
-    goodSites = filter(siteSr_nTime, sr >= minSpRich & 
-                         nTime >= minNTime)$analysisSite
+    goodSites = siteSr_nTime$analysisSite[siteSr_nTime$sr >= minSpRich & 
+                                          siteSr_nTime$nTime >= minNTime]
   # If statement to return if there are no good sites:
     if(length(goodSites) == 0) {
       return(print('No acceptable sites, rethink site definitions or temporal scale'))}
     else {
       # Match good sites and the dataframe:
-      outFrame = na.omit(dataset[dataset$analysisSite %in% goodSites,])
+      outFrame = na.omit(dataset1[dataset1$analysisSite %in% goodSites,])
       return(outFrame)
     }}
 
