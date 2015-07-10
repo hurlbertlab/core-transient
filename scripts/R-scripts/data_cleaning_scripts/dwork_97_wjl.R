@@ -308,12 +308,12 @@ head(dataset5)
 dataFormattingTable[,'countFormat'] = 
   dataFormattingTableFieldUpdate(datasetID, 'countFormat',    # Fill value below in quotes
                                  
-                                 'count')
+                                 'density')
 
 dataFormattingTable[,'Notes_countFormat'] = 
   dataFormattingTableFieldUpdate(datasetID, 'Notes_countFormat', # Fill value below in quotes
                                  
-                                 'Data represents count. There were no NAs or 0s were present')
+                                 'Data represents density. There were no NAs or 0s were present')
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SPECIES DATA ----
@@ -353,7 +353,7 @@ table(dataset5$species)
 ### Entries where the genus-only entry is removed (# of genus of entries; # of species1 entries, # of species2 entries, etc.):
 
 # Acartia: 27; 39, 172
-# ??? Aetideidae: 62; 15; 9, 20, 1, 46, 1 ???
+# Aetideidae (family and genus 'Aetidopsis' to be removed): 62; 15; 9, 20, 1, 46, 1 
 # Calanus: 132; 3, 639, 125, 367, 3
 # Centropages: 4; 1, 26, 1
 # Chiridius: 4; 69, 1
@@ -362,33 +362,37 @@ table(dataset5$species)
 # Eucalanus: 10; 3, 12
 # Fritillaria: 106; 304, 1
 # Gaetanus: 53; 66; 92
+# Hyperiidae (family): 102; 8; 14, 4
 # Jaschnovia: 4; 10, 58
 # Leprotinnitus: 10; 13, 1
 # Limacina: 5; 227, 27
 # Lucicutia: 34; 9, 1, 1, 40
-# Metridinae (family and genus to be removed): 3; 35; 380, 1, 79, 1, 7
+# Metridinae (family and genus 'Metridia' to be removed): 3; 35; 380, 1, 79, 1, 7
 # Microcalanus: 59; 12, 319
 # Oikopleura: 304; 2, 64, 82
 # Oithona: 103: 1, 68, 602
 # Oncaea: 74; 171, 1, 24, 32
 # Paraeuchaeta: 135; 17, 152, 69, 25, 1
 # Parafavella: 29; 5, 80, 1, 4, 15
+# Pseudocalanus: 586; 1, 1, 2, 90, 108
 # Sabinea: 1; 1, 2
 # Sarsia: 15; 20, 2
 # Scaphocalanus: 44; 88, 77, 3, 1, 14
-# Spinocalanidae (family and genus to be removed): 11; 60; 65, 10, 51, 86, 5, 60, 1
+# Spinocalanidae (family and genus 'Spinocalanus' to be removed): 11; 60; 65, 10, 51, 86, 5, 60, 1
 # Themisto: 15; 76, 15, 60
 # Thysanoessa: 11; 51, 52, 18
-# Tintinnoidea (family and genus to be removed): 5; 81; 13, 4, 25, 1, 5, 1
+# Tintinnoidea (family and genus 'Tintinnopsis' to be removed): 5; 81; 13, 4, 25, 1, 5, 1
 # Xanthocalanus: 19; 1, 3
 
+bad_sp = toupper(c('Acartia', 'Aetideidae', 'Aetidopsis','Calanus','Centropages','Chiridius','Chiridiella','Conchoecia','Eucalanus','Fritillaria','Gaetanus','Jaschnovia','Hyperiidae'  ,'Leprotinnitus','Limacina','Lucicutia' ,'Metridinae' ,'Metridia' ,'Microcalanus' ,'Oikopleura' ,'Oithona' ,'Ocaea' ,'Paraeuchaeta' ,'Parafavella' ,'Pseudocalanus' ,'Sabinea' ,'Sarsia' ,'Scaphocalanus' ,'Spinocalanidae' ,'Spinocalanus' ,'Themisto' ,'Thysanoessa' ,'Tintinnoidea' ,'Xanthocalanus', 'Malacostraca'))
 
+dataset6 = dataset5[!dataset5$species %in% bad_sp,]
 
 
 ### Entries where the species entries are consolidated into the genus-only entries, renaming them all to genus-only entry. 
 
 # Aglantha: 10; 113
-# Amphipoda (order): 84; 1
+# Amphipoda (order): 84; 1, 2
 # Echinodermata (phylum): 1; 1; 2 
 # Beroe: 20; 24
 # Catablema: 1; 6
@@ -398,40 +402,97 @@ table(dataset5$species)
 # Dimophyes: 2; 119
 # Eukrohnia: 9; 134
 # Euphausiacea (order): 157; 5; 2
-# Euphysea: 4; 61
+# Euphysa: 4; 61
 # Eusirus: 1; 3
 # Evadne: 3; 28
-# Gammaridae: 31; 5
+# Gammaridae (family): 31; 5
 # Globigerina: 27; 2
 # Halitholus: 1; 49
-# Harpacticoida: 145; 17; 11; 11
+# Harpacticoida (family): 145; 17; 11; 11
 # Heterorhabdus: 13; 75
-# Hyperiidae: 102; 8; 14
 # Keratella: 1; 2
-# 
+# Lubbockia: 2; 61
+# Mertensia: 6; 12
+# Microsetella: 19; 117
+# Mormonilla: 2; 69
+# Mysidae: (family): 15; 3; 41
+# Neocalanus: 6; 8
+# Nereidae (family): 1; 5
+# Obelia: 2; 27
+# Onchocalanus: 2; 2
+# Ophiuroidea: 8; 16
+# Pelagobia: 1; 1
+# Physophora: 1; 2
+# Pseudochirella: 3; 42
+# Ptychocylis: 39; 12
+# Sagitta: 220; 107
+# Scolecitrichidae (family): 51; 3; 97
+# Sida: 1; 6
+# Spiratellidae (family): 2; 2
+# Spongotrochus: 1; 1
+# Temora: 2; 33
 
+# Moving species to genus level:
 
+genuslist = toupper(c('Aglantha','Beroe','Catablema','Clione','Daphnia','Dimophyes','Eukrohnia','Euphysa','Eusirus','Evadne','Globigerina','Halitholus','Heterorhabdus','Keratella','Lubbockia','Mertensia','Microsetella','Mormonilla','Neocalanus','Obelia','Onchocalanus','Ophiuroidea','Pelagobia','Physophora','Pseudochirella','Ptychocylis','Sagitta','Sida','Spongotrochus','Temora'))
 
-bad_sp = c('MALACOSTRACA','')
+for (i in 1:length(dataset6$species)){
+  
+  
+  if (any((word(dataset6$species[i],1,sep="_")) == genuslist)){
+    
+    dataset6$species[i] = (word(dataset6$species[i],1,sep="_"))
+    # print((word(dataset6$species[i],1,sep="_")))
+    
+    
+  
+  }
+  
+}
 
-dataset6 = dataset5[!dataset5$species %in% bad_sp,]
+# For other issues (to family or above):
 
-# It may be useful to count the number of times each name occurs, as misspellings or typos will likely
-# only show up one time.
+typo_name = c('AMPHITHOPSIS_LONGICAUDATA',
+              'CYCLOCARIS',
+              'ASTERIAS',
+              'ASTEROIDEA',
+              'CYCLOPIDAE',
+              'CYCLOPS',
+              'EUPHAUSIA',
+              'EUPHAUSIIDAE',
+              'GAMMARIDEA',
+              'GAMMARUS_WILKITZKII',
+              'HARPACTICIDAE',
+              'HARPACTICUS',
+              'HARPACTICUS_UNIREMIS',
+              'MYSIS',
+              'MYSIS_OCULATA',
+              'NEREIS',
+              'SCOLECITHRICELLA_MINOR',
+              'SCOLECITHRICELLA',
+              'SPIRATELLA')
 
-table(dataset6$species)
+good_name = c('AMPHIPODA',
+              'AMPHIPODA',
+              'ECHINODERMATA',
+              'ECHINODERMATA',
+              'CYCLOPOIDA',
+              'CYCLOPOIDA',
+              'EUPHAUSIACEA',
+              'EUPHAUSIACEA',
+              'GAMMARIDAE',
+              'GAMMARIDAE',
+              'HARPACTICOIDA',
+              'HARPACTICOIDA',
+              'HARPACTICOIDA',
+              'MYSIDAE',
+              'MYSIDAE',
+              'NEREIDAE',
+              'SCOLECITRICHIDAE',
+              'SCOLECITRICHIDAE',
+              'SPIRATELLIDAE')
 
-# If you find any potential typos, try to confirm that the "mispelling" isn't actually a valid name.
-# If not, then list the typos in typo_name, and the correct spellings in good_name,
-# and then replace them using the for loop below:
-
-typo_name = c('Aedes solicitans',
-              'Aedes stricticus',
-              'Aedes trivitatus')
-
-good_name = c('Aedes sollicitans',
-              'Aedes sticticus',
-              'Aedes trivittatus')
+levels(dataset6$species) = c(levels(dataset6$species), typo_name)
 
 if (length(typo_name) > 0) {
   for (n in 1:length(typo_name)) {
@@ -464,7 +525,7 @@ head(dataset6)
 dataFormattingTable[,'Notes_spFormat'] = 
   dataFormattingTableFieldUpdate(datasetID, 'Notes_spFormat',    # Fill value below in quotes
                                  
-                                 'several species removed. Metadata was relatively uninformative regarding what constitutes a true species sample for this study. Exploration of metadata from associated Sevilleta studies were more informative regarding which species needed to be removed. Species names are predominantly provided as Kartez codes, but not always. See: http://sev.lternet.edu/data/sev-212/5048. Some codes were identified with this pdf from White Sands: https://nhnm.unm.edu/sites/default/files/nonsensitive/publications/nhnm/U00MUL02NMUS.pdf')
+                                 'several species removed. There were many instances where some entries were identified down to the species while others were not, leaving possible overlap. If there is one species under the genus-only entry, it is combined with the genus only entry, but if there is more than one species entry under a genus-only entry, the genus only entries are deleted. ')
 
 #-------------------------------------------------------------------------------*
 # ---- MAKE DATA FRAME OF COUNT BY SITES, SPECIES, AND YEAR ----
@@ -584,11 +645,9 @@ tGrain = 'year'
 
 site_grain_names
 
-sGrain = 'site_block_treatment_plot'
+sGrain = 5
 
-# This is a reasonable choice of spatial grain because ...
-# ...for sessile plant communities a plot (~ 4m^2) encompasses scores to hundreds
-# of individuals.
+# This is a reasonable choice of spatial grain because it is the finest possible grain size that yields 3 sites. 
 
 # The function "richnessYearSubsetFun" below will subset the data to sites with an 
 # adequate number of years of sampling and species richness. If there are no 
