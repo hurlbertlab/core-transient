@@ -416,7 +416,8 @@ propOccFun = function(subsettedData){
 siteSummaryFun = function(subsettedData){
   ddply(subsettedData, .(datasetID, site), summarize, 
         spRich = length(unique(species)), 
-        nTime = length(unique(year)))
+        nTime = length(unique(year)),
+        meanAbundance = sum(count)/length(unique(year)))
 }
 
 #------------------------------------------------------------------------------------------------------*
@@ -652,6 +653,7 @@ summaryStatsFun = function(datasetID, threshold, reps){
     propCore_pVal = pModeFun(propOcc, nTime, 'core', threshold, reps)
     propTrans = spRichTrans/spRichTotal
     propTrans_pVal = pModeFun(propOcc, nTime, 'transient', threshold, reps)
+    meanAbundance = siteSummary$meanAbundance
     mu = mean(propOcc)
     bimodality = bimodalityFun(propOcc, nTime)
     pBimodal = pBimodalFun(propOcc, nTime, reps)
@@ -662,7 +664,7 @@ summaryStatsFun = function(datasetID, threshold, reps){
                               system = dataList$system, taxa = dataList$taxa,
                               nTime, spRichTotal, spRichCore, spRichTrans,
                               propCore, propCore_pVal,  propTrans, propTrans_pVal,
-                              mu, bimodality, pBimodal, alpha, beta)
+                              meanAbundance, mu, bimodality, pBimodal, alpha, beta)
   }
   return(rbind.fill(outList))
 }
