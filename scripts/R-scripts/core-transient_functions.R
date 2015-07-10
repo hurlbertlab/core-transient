@@ -566,7 +566,8 @@ occsScaledFun = function(occProp){
 # Fit beta distribution:
 
 fitBeta = function(occProp, nTime) {
-  if (bimodalityFun(occProp,nTime)!= 0)
+  bi = bimodalityFun(occProp,nTime)
+  if (bi != 0 & !is.na(bi))
   {occs  = occsScaledFun(occProp)
    shape.params = suppressWarnings(fitdistr(occs, "beta",
                                             list(shape1 = 2, shape2 = 2)))
@@ -669,6 +670,8 @@ summaryStatsFun = function(datasetID, threshold, reps){
 #------------------------------------------------------------------------------------------------------*
 # ---- MAKE SUMMARY STATS OF ANY NEW PROPOCC FILES ----
 #======================================================================================================*
+require(MASS)
+require(plyr)
 
 addNewSummariesFun = function(threshold, reps, write = FALSE){
   if (file.exists('output/tabular_data/core-transient_summary.csv')) {
@@ -693,11 +696,12 @@ addNewSummariesFun = function(threshold, reps, write = FALSE){
   }
   newSummaryData = rbind.fill(outList)
   updatedSummaryData = rbind(currentSummaryData, newSummaryData)
+  updatedSummaryData = updatedSummaryData[order(updatedSummaryData$datasetID),]
   if (write) {
-    write.csv(updatedSummaryData[order(datasetID),], 
+    write.csv(updatedSummaryData, 
               'output/tabular_data/core-transient_summary.csv', row.names = F)
   }
-  return(updatedSummaryData[order(datasetID),])
+  return(updatedSummaryData)
 }
 
 #======================================================================================================*
