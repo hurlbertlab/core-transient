@@ -104,14 +104,6 @@ dataset1 = dataset[dataset$lifestage == 'Adult' &
 
 names(dataset1)[8] = 'species'
 
-# Let's also add a site field that is either a concatenation of lat and long
-# or the verbatimlocality
-
-dataset1$site = paste(dataset1$verbatimlatitude, dataset1$verbatimlongitude, 
-                      sep = "_")
-unknown_index = which(dataset1$site == "UNKNOWN_UNKNOWN")
-dataset1$site[unknown_index] = as.character(dataset1$verbatimlocality[unknown_index])
-
 # Explore, if everything looks okay, you're ready to move forward. If not, retrace your steps to look for and fix errors. 
 
 head(dataset1, 10)
@@ -208,15 +200,26 @@ dataFormattingTable[,'subannualTgrain'] =
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SITE DATA ----
 #===============================================================================*
-# From the previous head commmand, we can see that sites are broken up into (potentially) 5 fields. Find the metadata link in the data formatting table use that link to determine how sites are characterized.
-
-#  -- If sampling is nested (e.g., site, block, treatment, plot, quad as in this study), use each of the identifying fields and separate each field with an underscore. For nested samples be sure the order of concatenated columns goes from coarser to finer scales (e.g. "km_m_cm")
 
 # -- If sites are listed as lats and longs, use the finest available grain and separate lat and long fields with an underscore.
 
 # -- If the site definition is clear, make a new site column as necessary.
 
 # -- If the dataset is for just a single site, and there is no site column, then add one.
+
+# I noticed that some latitudes seem to have been read in with "s and \t. These
+# characters will be removed and the latitude converted to numeric.
+
+dataset2$verbatimlatitude = gsub('\\t"', '', dataset2$verbatimlatitude)
+dataset2$verbatimlatitude = gsub('"', '', dataset2$verbatimlatitude)
+
+# Let's also add a site field that is either a concatenation of lat and long
+# or the verbatimlocality
+
+dataset2$site = paste(dataset2$verbatimlatitude, dataset2$verbatimlongitude, 
+                      sep = "_")
+unknown_index = which(dataset2$site == "UNKNOWN_UNKNOWN")
+dataset2$site[unknown_index] = as.character(dataset2$verbatimlocality[unknown_index])
 
 # Here, we will concatenate all of the potential fields that describe the site 
 # in hierarchical order from largest to smallest grain. Based on the dataset,
