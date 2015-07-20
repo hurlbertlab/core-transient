@@ -362,10 +362,6 @@ dataFormattingTable[,'Notes_countFormat'] =
 #===============================================================================*
 # Here, your primary goal is to ensure that all of your species are valid. To do so, you need to look at the list of unique species very carefully. Avoid being too liberal in interpretation, if you notice an entry that MIGHT be a problem, but you can't say with certainty, create an issue on GitHub.
 
-# Look at the individual species present:
-
-levels(dataset5$species) 
-
 # Now explore the listed species themselves, again. A good trick here to finding problematic entries is to shrink the console below horizontally so that species names will appear in a single column.  This way you can more easily scan the species names (listed alphabetically) and identify potential misspellings, extra characters or blank space, or other issues.
 
 levels(dataset5$species)
