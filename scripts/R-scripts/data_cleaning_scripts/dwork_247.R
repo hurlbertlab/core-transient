@@ -479,7 +479,7 @@ summary (dataset7)
 
 write.csv(dataset7, paste("data/formatted_datasets/dataset_", datasetID, ".csv", sep = ""), row.names = F)
 
-# !GIT-ADD-COMMIT-PUSH THE FORMATTED DATASET IN THE DATA FILE, THEN GIT-ADD-COMMIT-PUSH THE UPDATED DATA FOLDER!
+# !GIT-ADD-COMMIT-PUSH THE FORMATTED DATASET IN THE DATA SUBREPOSITORY, THEN GIT-ADD-COMMIT-PUSH FROM THE MAIN REPO!
 
 # As we've now successfully created the formatted dataset, we will now update the format priority and format flag fields. 
 
@@ -492,6 +492,14 @@ dataFormattingTable[,'format_flag'] =
   dataFormattingTableFieldUpdate(datasetID, 'format_flag',    # Fill value below
                                  
                                  1)
+# Flag codes are as follows:
+# 0 = not currently worked on
+# 1 = formatting complete
+# 2 = formatting in process
+# 3 = formatting halted, issue
+# 4 = data unavailable
+# 5 = data insufficient for generating occupancy data
+
 
 # And update the data formatting table:
 
