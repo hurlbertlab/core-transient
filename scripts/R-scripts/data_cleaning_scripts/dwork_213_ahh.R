@@ -1,17 +1,7 @@
 ################################################################################*
-#  DATA FORMATTING TEMPLATE
-################################################################################*
-# Start by opening the data formatting table (data_formatting_table.csv). To determine which dataset you should be working on, see the "format_priority" field. Choose the dataset with the highest format priority, but be sure to check out the format_flag field to see the current status of the dataset.
-
-# Flag codes are as follows:
-  # 0 = not currently worked on
-  # 1 = formatting complete
-  # 2 = formatting in process
-  # 3 = formatting halted, issue
-  # 4 = data unavailable
-  # 5 = data insufficient for generating occupancy data
-
-# NOTE: All changes to the data formatting table will be done in R! Do not make changes directly to this table, this will create conflicting versions.
+# Dataset 213, Kansas prairie plants, Adler et al. 2007
+#
+# Data and metadata available here: http://esapubs.org/archive/ecol/E088/161/
 
 #-------------------------------------------------------------------------------*
 # ---- SET-UP ----
@@ -40,7 +30,7 @@ source('scripts/R-scripts/core-transient_functions.R')
 
 # Get data. First specify the dataset number ('datasetID') you are working with.
 
-datasetID = 223 
+datasetID = 213 
 
 list.files('data/raw_datasets')
 
@@ -89,17 +79,19 @@ head(dataset)
 
 # Here, we can see that there are some fields that we won't use. Let's remove them, note that I've given a new name here "dataset1", this is to ensure that we don't have to go back to square 1 if we've miscoded anything.
 
-# If all fields will be used, then set unusedFields = 9999.
 
 names(dataset)
 
-unusedFields = c(1, 2, 8, 9, 11,13, 14)
+unusedFields = c(1, 3, 6, 7)
 
 dataset1 = dataset[,-unusedFields]
 
-# Let's change the name of the "record_record_date" column to simply "date":
-
-names(dataset1)[8] = 'date'
+# Separate out plot and year from the plotyear field
+dataset1$plotyear = as.character(dataset1$plotyear)
+dataset1$site = substr(dataset1$plotyear, 1, (nchar(dataset1$plotyear) - 2))
+dataset1$date = as.numeric(substr(dataset1$plotyear, (nchar(dataset1$plotyear) - 1), 
+                       nchar(dataset1$plotyear))) + 1900
+dataset1 = dataset1[, -1]
 
 # You also might want to change the names of the identified species field [to 'species'] and/or the identified site field [to 'site']. Just make sure you make specific comments on what the field name was before you made the change, as seen above.
 
