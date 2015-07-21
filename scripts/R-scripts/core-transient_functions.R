@@ -683,7 +683,7 @@ addNewSummariesFun = function(threshold, reps, write = FALSE){
     currentDatasetIDs = unique(currentSummaryData$datasetID)
   } else {
     currentSummaryData = c()
-    currentDatasetIds = c()
+    currentDatasetIDs = c()
   }
   propOcc_datasets = list.files('data/propOcc_datasets')
   # The following gets the integer values for the datasetID's from
