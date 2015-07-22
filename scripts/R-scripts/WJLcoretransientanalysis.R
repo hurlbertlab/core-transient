@@ -3,11 +3,11 @@
 # Metadata can be found at http://esapubs.org/archive/ecol/E094/084/metadata.php
 ##########################################################
 
-# setwd('C:/git/core-transient')
+# setwd('C:/Users/wlarsen/Desktop')
 
 # Get propOcc dataset:
 
-dataset = read.csv('data/propOcc_datasets/propOcc_236.csv')
+dataset = read.csv('propOcc_236wjl.csv')
 
 # Only want control plots, remove experimental plots
 
@@ -71,17 +71,20 @@ for (i in 1:length(avgdataset$speclist)){
 # Plot
 barplot(avgdataset$avgpropOcc, names.arg = avgdataset$speccodes)
 
-# setwd('C:/Users/wlarsen/Downloads')
-
 # Dryad dataset
 dryad = read.csv('Data4Dryad.csv')
 dryadm = dryad[dryad$TAXON %in% 'mammals',]
+dryadm$SPECIES = gsub("_"," ",dryadm$SPECIES)
 dryadmsp = dryadm[dryadm$SPECIES %in% speclist,]
 dryadmsp = dryadmsp[c(4,5,1,6,2,8,3,7),]
+dryadmsp = dryadmsp[-1]
 # Does not have an entry for Octodon degus
 
 # Ernest life history dataset
 lifehist = read.csv('Mammal_lifehistories_v2.csv')
+lifehist$scientificname = paste(lifehist$Genus,lifehist$species,sep=" ")
+lifehist = lifehist[c(15,5:14)]
+lifehistsp = lifehist[lifehist$scientificname %in% speclist,]
 # Does not have an entry for Abrothrix genus
 
 pantheria = read.csv('PanTHERIA_1-0_WR05_Aug2008.csv')
