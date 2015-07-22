@@ -41,7 +41,7 @@ dataFormattingTable = read.csv('data_formatting_table.csv')
 minNTime = 6
 
 # Min number of species required
-minSpRich = 8
+minSpRich = 10
 
 # Ultimately, the largest number of spatial and 
 # temporal subsamples will be chosen to characterize
@@ -493,9 +493,7 @@ site_grain_names
 
 sGrain = 'gr'
 
-# This is a reasonable choice of spatial grain because ...
-# ...for sessile plant communities a plot (~ 4m^2) encompasses scores to hundreds
-# of individuals.
+# This is a reasonable choice of spatial grain because the other choice of grain is too fine (gr_rowcol) and would not provide enough data for each site.
 
 # The function "richnessYearSubsetFun" below will subset the data to sites with an 
 # adequate number of years of sampling and species richness. If there are no 
