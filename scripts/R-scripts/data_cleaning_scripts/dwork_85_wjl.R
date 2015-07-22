@@ -521,11 +521,9 @@ tGrain = 'year'
 
 site_grain_names
 
-sGrain = 'site_block_treatment_plot'
+sGrain = .5
 
-# This is a reasonable choice of spatial grain because ...
-# ...for sessile plant communities a plot (~ 4m^2) encompasses scores to hundreds
-# of individuals.
+# This is a reasonable choice of spatial grain because it is one of the smaller block sizes that still yields most of the entries after rounding. 
 
 # The function "richnessYearSubsetFun" below will subset the data to sites with an 
 # adequate number of years of sampling and species richness. If there are no 
