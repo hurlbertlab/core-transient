@@ -620,6 +620,9 @@ pModeFun = function(propOcc, nTime, mode, threshold, reps){
 # Functions:
 # - summaryStats: Produces summary sampling data for one site. 
 #     Inputs: Site and the threshold value for core and transient designation.
+#             Threshold is the value of occupancy below which a species is
+#             considered transient, and therefore (1 - threshold) is the min
+#             value for a species to be considered core.
 #     Outputs: A one-row dataframe with dataset ID, site ID, threshold used,
 #       the system, taxa, # of time samples, total, core, and transient richness
 #       proportion of core and transient species, and the average proportion of 
