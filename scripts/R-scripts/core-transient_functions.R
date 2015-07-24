@@ -680,8 +680,9 @@ summaryStatsFun = function(datasetID, threshold, reps){
 require(MASS)
 require(plyr)
 
-addNewSummariesFun = function(threshold, reps, write = FALSE){
-  if (file.exists('output/tabular_data/core-transient_summary.csv')) {
+addNewSummariesFun = function(threshold, reps, write = FALSE, allNew = FALSE){
+  if (allNew == FALSE & 
+      file.exists('output/tabular_data/core-transient_summary.csv')) {
     currentSummaryData = read.csv('output/tabular_data/core-transient_summary.csv')
     currentDatasetIDs = unique(currentSummaryData$datasetID)
   } else {
