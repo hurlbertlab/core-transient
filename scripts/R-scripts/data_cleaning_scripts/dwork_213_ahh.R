@@ -196,7 +196,7 @@ dataFormattingTable[,'subannualTgrain'] =
 # in hierarchical order from largest to smallest grain. Based on the dataset,
 # fill in the fields that specify nested spatial grains below.
 
-site_grain_names = c("site", "block", "treatment", "plot", "quad")
+site_grain_names = c("site")
 
 # We will now create the site field with these codes concatenated if there
 # are multiple grain fields. Otherwise, site will just be the single grain field.
@@ -245,8 +245,6 @@ dataset3 = dataset2
 
 dataset3$site = factor(site)
 
-dataset3 = dataset3[,-c(2:5)]
-
 # Check the new dataset (are the columns as they should be?):
 
 head(dataset3)
@@ -260,7 +258,7 @@ head(dataset3)
 dataFormattingTable[,'Raw_siteUnit'] = 
   dataFormattingTableFieldUpdate(datasetID, 'Raw_siteUnit',       # Fill value below in quotes
                                  
-                                 'site_block_treatment_plot_quad') 
+                                 'site') 
 
 
 # spatial_scale_variable. Is a site potentially nested (e.g., plot within a quad or decimal lat longs that could be scaled up)? Y/N
@@ -268,14 +266,15 @@ dataFormattingTable[,'Raw_siteUnit'] =
 dataFormattingTable[,'spatial_scale_variable'] = 
   dataFormattingTableFieldUpdate(datasetID, 'spatial_scale_variable',
                                  
-                                 'Y') # Fill value here in quotes
+                                 'N') # Fill value here in quotes
 
 # Notes_siteFormat. Use this field to THOROUGHLY describe any changes made to the site field during formatting.
 
 dataFormattingTable[,'Notes_siteFormat'] = 
   dataFormattingTableFieldUpdate(datasetID, 'Notes_siteFormat',  # Fill value below in quotes
                                  
-  'site fields concatenated. metadata suggests site-block-treatment-plot-quad describes the order of nested sites from small to large.')
+  'quadrats (sites) are potentially nested into two livestock exclosures and XY coords are provided, but this is not a 
+  regular hierarhical nesting and I dont think it would be useful to analyze that way.')
 
 
 #-------------------------------------------------------------------------------*
