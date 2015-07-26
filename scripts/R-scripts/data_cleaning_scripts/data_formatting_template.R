@@ -140,7 +140,7 @@ dataFormattingTable[,'LatLong_sites'] =
 dateFieldName = c('record_record_date')
 
 # If necessary, paste together date info from multiple columns into single field
-if (length(datefield) > 1) {
+if (length(dateFieldName) > 1) {
   newDateField = dataset1[, datefield[1]]
   for (i in datefield[2:length(datefield)]) { newDateField = paste(newDateField, dataset[,i], sep = "-") }
   dataset1$date = newDateField
