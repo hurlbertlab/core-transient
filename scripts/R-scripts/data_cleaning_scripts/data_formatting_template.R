@@ -255,6 +255,7 @@ dataset3 = dataset2
 
 dataset3$site = factor(site)
 
+# Remove any hierarchical site related fields that are no longer needed, IF NECESSARY.
 dataset3 = dataset3[,-c(2:5)]
 
 # Check the new dataset (are the columns as they should be?):
