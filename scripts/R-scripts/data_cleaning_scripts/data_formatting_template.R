@@ -182,7 +182,7 @@ head(date)
 dataset2 = dataset1
 
 # Delete the old date field
-dataset2 = dataset2[, -which(names(dataset2) == datefield)]
+dataset2 = dataset2[, -which(names(dataset2) %in% dateFieldName)]
 
 # Assign the new date values in a field called 'date'
 dataset2$date = date
