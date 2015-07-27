@@ -322,6 +322,22 @@ names(dataset5)[1] = 'species'
 
 data.frame(table(dataset5$species))
 
+# There are 1791 species entries to go through, and a good percentage of those have genus-only or even family-only entries associated with them. Because this dataset is low priority, it will be put on hold for another time. 
+
+dataFormattingTable[,'format_flag'] = 
+  dataFormattingTableFieldUpdate(datasetID, 'format_flag',    # Fill value below
+                                 
+                                 #####                                 
+                                 2)
+
+write.csv(dataFormattingTable, 'data_formatting_table.csv', row.names = F)
+
+
+
+
+
+
+
 # If there are entries that only specify the genus while there are others that specify the species in addition to that same genus, they need to be regrouped in order to avoid ambiguity. For example, if there are entries of 'Cygnus', 'Cygnus_columbianus', and 'Cygnus_cygnus', 'Cygnus' could refer to either species, but the observer could not identify it. This causes ambiguity in the data, and must be fixed by either 1. deleting the genus-only entry altogether, or 2. renaming the genus-species entries to just the genus-only entry. 
 # This decision can be fairly subjective, but generally if less than 25% of the entries are genus-only, then they can be deleted (using bad_sp). If more than 25% of the entries for that genus are only specified to the genus, then the genus-species entries should be renamed to be genus-only (using typo_name). 
 
@@ -444,7 +460,7 @@ dataFormattingTable[,'format_flag'] =
   dataFormattingTableFieldUpdate(datasetID, 'format_flag',    # Fill value below
                                  
                                  #####                                 
-                                 1)
+                                 2)
 
 # Flag codes are as follows:
 # 0 = not currently worked on
