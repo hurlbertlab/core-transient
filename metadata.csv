@@ -97,7 +97,7 @@ dataset_ID,data_obtained,data_formatted,obtain_priority,dataset_name,retriever_c
 229,N,N,1,Christmas Bird Count,,Upon request,,Terrestrial,Temperate,Bird,Bird,,,,,,,,,,,,,,,,,,,,,,20+ years,,,,,,,
 230,N,N,1,Ammarnas,,Public,,Terrestrial,,Bird,Bird,,,,,,,,,,,,,,,,,,,,,,20 years,Enemar et al 1984,,,,,,
 231,N,N,3,Konza LTER,,Public,,Terrestrial,Temperate,Mammal,Mammal,,,,,,,,,,,,,,,,,,,,,,16 years,,,,,,,
-232,Y,Y,NA,Sevilleta LTER,,Public,,Terrestrial,Temperate,Mammal,Mammal,,,,,,,,,,,,,,,,,,,,,,10-20 years, Ernest et al. 2000,,,,,,
+232,Y,Y,NA,Sevilleta LTER mammals,,Public,,Terrestrial,Temperate,Mammal,Mammal,,,,,,,,,,,,,,,,,,,,,,10-20 years, Ernest et al. 2000,,,,,,
 233,N,N,0,Lake Manyara Megaherbivores,,Public,http://www.jstor.org/stable/4219351?seq=1#page_scan_tab_contents,Terrestrial,Temperate,Mammal,Mammal,"Lake Manyara National Park, Tanzania",3.5,35.75,0,100,km2,100,km2,,counts,,100,km2,,,,,,,,,25 years, Prins and Douglas-Hamilton 1990,,,,,,
 234,Y,Y,NA,Powdermill,,Public,http://ecologicaldata.org/wiki/powdermill-biological-station-small-mammal-database,Terrestrial,Temperate,Mammal,Mammal,"Powdermill Biological Station, Pennsylvania, USA",40.17074,-79.26017761,,10,m,,,,,,1 ha,,0.5,month,0.25,year,,1979,1999,,20+ years,Merritt J. 1999. Long Term Mammal Data from Powdermill Biological Station 1979-1999 knb-lter-vcr.67.17 (http://tropical.lternet.edu/knb/metacat/knb-lter-vcr.67.17/lter),,,,,,
 235,N,N,2,Plant and small-Mammal responses to large-herbivore exclusion in an African savanna: five years of the UHURU experiment. Ecology 95:787.,,Public,http://esapubs.org/archive/ecol/E095/064/,Terrestrial,Tropical,Plant,Plant,"Mpala research center, Kenya",,,,,,,,,,,Local,,1,year,,,,1998,2013,Experimental,Mammal exclosure experiment,Kartzinel et al. 2014,,,,,,
@@ -123,3 +123,4 @@ dataset_ID,data_obtained,data_formatted,obtain_priority,dataset_name,retriever_c
 255,,,,Hinkley Point fish,,Public,,Marine,Temperate,Fish,Fish,"Hinkley Point, Bristol Channel, UK",,,,,,,,,,,,,,,,,,,,,,Magurran and Henderson 2003,,,,,,
 256,,,,Elba island butterflies,,Public,,Terrestrial,Temperate,Insect,Butterflies,"Elba island, Italy",,,,,,,,,,,,,,,,,,,,,,Dapporto 2009,,,,,,
 257,,,,Ireland amphipods,,,,Marine,Temperate,Invertebrate,Amphipods,"Lough Hyne, Ireland",,,,,,,,,,,,,,,,,,,,,,Costello and Myers 1996,,,,,,
+258,Y,N,NA,"2003 Prescribed Burn Effect on Chihuahuan Desert Grasses and Shrubs at the Sevilleta National Wildlife Refuge, New Mexico: Species Composition Study (2004- ) ",,Public,http://sev.lternet.edu/data/sev-166,Terrestrial,Temperate,Plant,Plant,"Sevilleta LTER, NM",,,,,,,,,,,,,,,,,,,,,,,,,,,,
