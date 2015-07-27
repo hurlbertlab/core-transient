@@ -6,6 +6,14 @@
 # "Raw dataset" created using the dataset_221RAW/preformatting_221.R script
 # from true raw files.
 
+# FIXME:
+#
+# Currently some quadrats have bare ground and so no entries in this long format.
+# This impacts the assessment of spatial subsampling, as the functions think
+# that surveys with bare ground only were simply not surveyed, resulting in 
+# a smaller number of Plot-Years getting included.
+
+
 #-------------------------------------------------------------------------------*
 # ---- SET-UP ----
 #===============================================================================*
