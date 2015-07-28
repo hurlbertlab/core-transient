@@ -6,13 +6,6 @@
 # "Raw dataset" created using the dataset_221RAW/preformatting_221.R script
 # from true raw files.
 
-# FIXME:
-#
-# Currently some quadrats have bare ground and so no entries in this long format.
-# This impacts the assessment of spatial subsampling, as the functions think
-# that surveys with bare ground only were simply not surveyed, resulting in 
-# a smaller number of Plot-Years getting included.
-
 
 #-------------------------------------------------------------------------------*
 # ---- SET-UP ----
@@ -341,7 +334,16 @@ summary(dataset3)
 
 # Subset to records > 0 (if applicable):
 
-dataset4 = subset(dataset3, count > 0) 
+# SPECIAL NOTE: BECAUSE SOME SAMPLES HAVE BAREGROUND ONLY, REMOVING ALL RECORDS
+# WITH COUNT==0 WILL RESULT IN THE LOSS OF INFORMATION ABOUT THE SAMPLING
+# EVENT ITSELF. AS OF 28 JULY 2015, propOccFun and siteSummaryFun BELOW HAVE
+# BEEN MODIFIED TO REMOVE ALL DATA WITH COUNT==0, SO WE DO NOT REMOVE THEM HERE.
+# HOWEVER, WE DO REMOVE COUNT == -99 WHICH REFERS TO SPECIES THAT WERE NOT
+# CENSUSED (USUALLY UNIDENTIFIED SPECIES).
+
+# THIS DOES MEAN THAT THE SCRIPT TAKES AWHILE (~20 min) TO RUN.
+
+dataset4 = subset(dataset3, count > -99) 
 
 summary(dataset4)
 
