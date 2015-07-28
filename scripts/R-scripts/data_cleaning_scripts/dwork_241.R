@@ -89,7 +89,7 @@ head(dataset)
 names(dataset)
 
 #####
-unusedFieldNames = c('period')
+unusedFieldNames = c('Period')
 
 
 unusedFields = which(names(dataset) %in% unusedFieldNames)
@@ -217,16 +217,15 @@ dataFormattingTable[,'subannualTgrain'] =
 
 # -- If the dataset is for just a single site, and there is no site column, then add one.
 
-# In this dataset we have 5 swaths per station, and the swaths are at 5 different
-# points along a transect (10, 22, 32, 39, or 45 m) and can be on either the Right
-# or Left side of the transect.
+# In this dataset we have 10 quadrats per station, distributed along
+# a 50 m transect.
 
 # Here, we will concatenate all of the potential fields that describe the site 
 # in hierarchical order from largest to smallest grain. Based on the dataset,
 # fill in the fields that specify nested spatial grains below.
 
 #####
-site_grain_names = c("station", "swath")
+site_grain_names = c("Station", "Quadrat")
 
 # We will now create the site field with these codes concatenated if there
 # are multiple grain fields. Otherwise, site will just be the single grain field.
@@ -304,7 +303,7 @@ dataFormattingTable[,'Raw_siteUnit'] =
   dataFormattingTableFieldUpdate(datasetID, 'Raw_siteUnit',       # Fill value below in quotes
 
 #####
-                                 'station_swath') 
+                                 'Station_Quadrat') 
 
 
 # spatial_scale_variable. Is a site potentially nested (e.g., plot within a quad or decimal lat longs that could be scaled up)? Y/N
@@ -321,7 +320,7 @@ dataFormattingTable[,'Notes_siteFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_siteFormat',  # Fill value below in quotes
 
 #####
-  'Site fields concatenated. Each station has 5 swaths.')
+  'Site fields concatenated. Each station has 10 quadrats.')
 
 
 #-------------------------------------------------------------------------------*
@@ -335,7 +334,7 @@ summary(dataset3)
 # Fill in the original field name here
 
 #####
-countfield = 'density'
+countfield = 'Cover'
 
 # Renaming it
 names(dataset3)[which(names(dataset3) == countfield)] = 'count'
@@ -348,7 +347,10 @@ summary(dataset3)
 
 # Subset to records > 0 (if applicable):
 
-dataset4 = subset(dataset3, count > 0) 
+# Raw data is long form of a site x species matrix that had 0's. Keeping 0's
+# because there is at least one sampling event for which there were no 
+# individuals.
+dataset4 = subset(dataset3, count >= 0) 
 
 summary(dataset4)
 
@@ -377,12 +379,22 @@ dataFormattingTable[,'Notes_countFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_countFormat', # Fill value below in quotes
                                  
 #####                                 
-                                 'Data represents cover. There were no NAs nor 0s that required removal')
+                                 'Data represents cover in 1-m2 permanent quadrats, estimated by 
+                                  intercepts at 20 fixed points. ')
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SPECIES DATA ----
 #===============================================================================*
 # Here, your primary goal is to ensure that all of your species are valid. To do so, you need to look at the list of unique species very carefully. Avoid being too liberal in interpretation, if you notice an entry that MIGHT be a problem, but you can't say with certainty, create an issue on GitHub.
+
+# First, what is the field name in which species or taxonomic data are stored? 
+# It will get converted to 'species'
+
+#####
+speciesField = 'SpeciesCode'
+
+dataset5$species = dataset5[, speciesField]
+dataset5 = dataset5[, -which(names(dataset5) == speciesField)]
 
 # Look at the individual species present and how frequently they occur: This way you can more easily scan the species names (listed alphabetically) and identify potential misspellings, extra characters or blank space, or other issues.
 
@@ -395,11 +407,31 @@ table(dataset5$species)
 
 # If species names are coded (not scientific names) go back to study's metadata to learn what species should and shouldn't be in the data. 
 
-# In this example, a quick look at the metadata is not informative, unfortunately. Because of this, you should really stop here and post an issue on GitHub. With some more thorough digging, however, I've found the names represent "Kartez codes". Several species can be removed (double-checked with USDA plant codes at plants.usda.gov and another Sevilleta study (dataset 254) that provides species names for some codes). Some codes were identified with this pdf from White Sands: https://nhnm.unm.edu/sites/default/files/nonsensitive/publications/nhnm/U00MUL02NMUS.pdf
-
+# Species information is available in Table4_Species_sampled.csv from 
+# http://esapubs.org/archive/ecol/E094/244/metadata.php
 
 #####
-bad_sp = c('558') # Remove "Young laminiariales" which could refer to any of 3 kelp species
+bad_sp = c(0,   #Bare substratum
+           70,  #barnacle
+           79,  #unknown sponge
+           97,  #unknown tunicate
+           98,  #Serpulid worm
+           108, #unidentified species
+           110, #mucus tube
+           111, #worm tube sand
+           148, #rubble, shell
+           151, #unidentified ophiuroid
+           507, #Gigartina spp.
+           521, #filamentous red algae
+           542, #sand
+           551, #red algae spp.
+           555, #kelp holdfast
+           558, #young Laminariales
+           579, #diatom film
+           585, #filamentous brown
+           595, #filamentous green algae
+           533) #Laurencia spp.
+           
 
 dataset6 = dataset5[!dataset5$species %in% bad_sp,]
 
@@ -413,10 +445,21 @@ table(dataset6$species)
 # and then replace them using the for loop below:
 
 #####
-# Code for large Macrocystis pyrifera (>1m, 589) assigned to be the same as small M. pyrifera (557)
-typo_name = c('589')
+typo_name = c(589, #large Macrocystis pyrifera)
+              117, #Anthopleura spp.
+              522, #Cladophora spp.
+              78,  #Dodecaceria spp.
+              501, #Gelidium spp.
+              556) #Laminaria spp.
 #####
-good_name = c('557')
+good_name = c(557, #combined with small M. pyrifera)
+              2,   #combined with Anthopleura sola (only member of Anthopleura in dataset)
+              572, #combined with Cladophora graminea
+              12,  #combined with Dodecaceria fewkesi
+              568, #combined with Gelidium robustum
+              616) #combined with Laminaria setchellii
+              
+              
 
 if (length(typo_name) > 0) {
   for (n in 1:length(typo_name)) {
@@ -451,8 +494,9 @@ dataFormattingTable[,'Notes_spFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_spFormat',    # Fill value below in quotes
 
 #####                                 
-  '"Young laminiariales" removed (species code 558) which could refer to any of 3 kelp species;
-   two size classes of Macrocystis pyrifera lumped together')
+  'A number of non-organismal cover classes, and taxa not identified to species were
+   removed while several "spp" taxa were assigned to the only species of that genus
+   in the dataset.')
 
 #-------------------------------------------------------------------------------*
 # ---- MAKE DATA FRAME OF COUNT BY SITES, SPECIES, AND YEAR ----
@@ -584,11 +628,12 @@ tGrain = 'year'
 site_grain_names
 
 #####
-sGrain = 'station'
+sGrain = 'Station'
 
 # This is a reasonable choice of spatial grain because ...
-# ...for sessile plant communities a plot (~ 4m^2) encompasses scores to hundreds
-# of individuals.
+# ...a 1m2 quadrat is probably too small given the size of some of these
+# organisms. A 50 m transect characterized by 10 quadrats seems more appropriate,
+# while aggregating all 7 Stations which are many km apart would be inappropriate.
 
 # The function "richnessYearSubsetFun" below will subset the data to sites with an 
 # adequate number of years of sampling and species richness. If there are no 
