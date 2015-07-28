@@ -98,7 +98,7 @@ head(dataset)
 names(dataset)
 
 #####
-unusedFieldNames = c('record_id','userid','cond','season','height','comments','tapeid')
+unusedFieldNames = c('record_id','userid','treatment','cond','season','height','comments','tapeid')
 
 
 unusedFields = which(names(dataset) %in% unusedFieldNames)
@@ -218,7 +218,7 @@ dataFormattingTable[,'subannualTgrain'] =
 #===============================================================================*
 # From the previous head commmand, we can see that sites are broken up into (potentially) 5 fields. Find the metadata link in the data formatting table use that link to determine how sites are characterized.
 
-#  -- If sampling is nested (e.g., site, block, treatment, plot, quad as in this study), use each of the identifying fields and separate each field with an underscore. For nested samples be sure the order of concatenated columns goes from coarser to finer scales (e.g. "km_m_cm")
+#  -- If sampling is nested (e.g., site, block, plot, quad as in this study), use each of the identifying fields and separate each field with an underscore. For nested samples be sure the order of concatenated columns goes from coarser to finer scales (e.g. "km_m_cm")
 
 # -- If sites are listed as lats and longs, use the finest available grain and separate lat and long fields with an underscore.
 
@@ -231,7 +231,7 @@ dataFormattingTable[,'subannualTgrain'] =
 # fill in the fields that specify nested spatial grains below.
 
 #####
-site_grain_names = c("site", "block", "treatment", "plot", "quad")
+site_grain_names = c("site", "block", "plot", "quad")
 
 # We will now create the site field with these codes concatenated if there
 # are multiple grain fields. Otherwise, site will just be the single grain field.
@@ -293,13 +293,13 @@ head(dataset3)
 
 # !DATA FORMATTING TABLE UPDATE! 
 
-# Raw_siteUnit. How a site is coded (i.e. if the field was concatenated such as this one, it was coded as "site_block_treatment_plot_quad"). Alternatively, if the site were concatenated from latitude and longitude fields, the encoding would be "lat_long". 
+# Raw_siteUnit. How a site is coded (i.e. if the field was concatenated such as this one, it was coded as "site_block_plot_quad"). Alternatively, if the site were concatenated from latitude and longitude fields, the encoding would be "lat_long". 
 
 dataFormattingTable[,'Raw_siteUnit'] = 
   dataFormattingTableFieldUpdate(datasetID, 'Raw_siteUnit',       # Fill value below in quotes
 
 #####
-                                 'site_block_treatment_plot_quad') 
+                                 'site_block_plot_quad') 
 
 
 # spatial_scale_variable. Is a site potentially nested (e.g., plot within a quad or decimal lat longs that could be scaled up)? Y/N
@@ -316,7 +316,7 @@ dataFormattingTable[,'Notes_siteFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_siteFormat',  # Fill value below in quotes
 
 #####
-  'site fields concatenated. metadata suggests site-block-treatment-plot-quad describes the order of nested sites from small to large.')
+  'site fields concatenated. metadata suggests site-block-plot-quad describes the order of nested sites from large area to small area')
 
 
 #-------------------------------------------------------------------------------*
@@ -580,7 +580,7 @@ tGrain = 'year'
 site_grain_names
 
 #####
-sGrain = 'site_block_treatment_plot'
+sGrain = 'site_block_plot'
 
 # This is a reasonable choice of spatial grain because ...
 # ...for sessile plant communities a plot (~ 4m^2) encompasses scores to hundreds
