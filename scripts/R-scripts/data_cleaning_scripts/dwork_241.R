@@ -1,20 +1,11 @@
 ################################################################################*
-#  DATA FORMATTING TEMPLATE
-################################################################################*
-# Start by opening the data formatting table (data_formatting_table.csv). To determine which dataset you should be working on, see the "format_priority" field. Choose the dataset with the highest format priority, but be sure to check out the format_flag field to see the current status of the dataset.
-
-# Flag codes are as follows:
-  # 0 = not currently worked on
-  # 1 = formatting complete
-  # 2 = formatting in process
-  # 3 = formatting halted, issue
-  # 4 = data unavailable
-  # 5 = data insufficient for generating occupancy data
-
-# NOTE: All changes to the data formatting table will be done in R! Do not make changes directly to this table, this will create conflicting versions.
-
-# YOU WILL NEED TO ENTER DATASET-SPECIFIC INFO IN EVERY LINE OF CODE PRECEDED
-# BY '#####'. YOU SHOULD RUN, BUT NOT OTHERWISE MODIFY, ALL OTHER LINES OF CODE.
+# Dataset 241, San Nicolas Island benthos
+#
+# Data and metadata can be found here: http://esapubs.org/archive/ecol/E094/244
+#
+# Note that this is the Benthic Cover raw data, NOT Benthic Density which
+# was only focused on 19 target species and so is not useful for core-
+# transient analysis.
 
 #-------------------------------------------------------------------------------*
 # ---- SET-UP ----
@@ -44,7 +35,7 @@ source('scripts/R-scripts/core-transient_functions.R')
 # Get data. First specify the dataset number ('datasetID') you are working with.
 
 #####
-datasetID = 223 
+datasetID = 241 
 
 list.files('data/raw_datasets')
 
@@ -98,7 +89,7 @@ head(dataset)
 names(dataset)
 
 #####
-unusedFieldNames = c('record_id','userid','treatment','cond','season','height','comments','tapeid')
+unusedFieldNames = c('period')
 
 
 unusedFields = which(names(dataset) %in% unusedFieldNames)
@@ -137,7 +128,7 @@ dataFormattingTable[,'LatLong_sites'] =
 # then write these field names as a vector from largest to smallest temporal grain.
 
 #####
-dateFieldName = c('record_record_date')
+dateFieldName = c('Date')
 
 # If necessary, paste together date info from multiple columns into single field
 if (length(dateFieldName) > 1) {
@@ -226,12 +217,16 @@ dataFormattingTable[,'subannualTgrain'] =
 
 # -- If the dataset is for just a single site, and there is no site column, then add one.
 
+# In this dataset we have 5 swaths per station, and the swaths are at 5 different
+# points along a transect (10, 22, 32, 39, or 45 m) and can be on either the Right
+# or Left side of the transect.
+
 # Here, we will concatenate all of the potential fields that describe the site 
 # in hierarchical order from largest to smallest grain. Based on the dataset,
 # fill in the fields that specify nested spatial grains below.
 
 #####
-site_grain_names = c("site", "block", "plot", "quad")
+site_grain_names = c("station", "swath")
 
 # We will now create the site field with these codes concatenated if there
 # are multiple grain fields. Otherwise, site will just be the single grain field.
@@ -274,6 +269,16 @@ head(site)
 
 data.frame(table(site))
 
+# Note that several swaths occur with much less frequency than others. 
+# Mike Kenner, one of the data authors says via email:
+# "I don't have the data at my fingertips but the explanation actually lies in 
+# the fact that site 6 was lost to sand inundation around 1982 or 83. When it was
+# recovered those two swaths were changed. 22 L was established to make up for 
+# the loss if 45 R and 39 was switched from R to L (or the reverse, can't recall
+# which we sample now). Anyway, that's the story with the odd swath count history 
+# there." 
+
+
 # All looks correct, so replace the site column in the dataset (as a factor) and remove the unnecessary fields, start by renaming the dataset to dataset2:
 
 dataset3 = dataset2
@@ -283,7 +288,7 @@ dataset3$site = factor(site)
 # Remove any hierarchical site related fields that are no longer needed, IF NECESSARY.
 
 #####
-dataset3 = dataset3[,-c(2:5)]
+dataset3 = dataset3[,-c(1:2)]
 
 # Check the new dataset (are the columns as they should be?):
 
@@ -299,7 +304,7 @@ dataFormattingTable[,'Raw_siteUnit'] =
   dataFormattingTableFieldUpdate(datasetID, 'Raw_siteUnit',       # Fill value below in quotes
 
 #####
-                                 'site_block_plot_quad') 
+                                 'station_swath') 
 
 
 # spatial_scale_variable. Is a site potentially nested (e.g., plot within a quad or decimal lat longs that could be scaled up)? Y/N
@@ -316,7 +321,7 @@ dataFormattingTable[,'Notes_siteFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_siteFormat',  # Fill value below in quotes
 
 #####
-  'site fields concatenated. metadata suggests site-block-plot-quad describes the order of nested sites from large area to small area')
+  'Site fields concatenated. Each station has 5 swaths.')
 
 
 #-------------------------------------------------------------------------------*
@@ -330,7 +335,7 @@ summary(dataset3)
 # Fill in the original field name here
 
 #####
-countfield = 'cover'
+countfield = 'density'
 
 # Renaming it
 names(dataset3)[which(names(dataset3) == countfield)] = 'count'
@@ -392,8 +397,9 @@ table(dataset5$species)
 
 # In this example, a quick look at the metadata is not informative, unfortunately. Because of this, you should really stop here and post an issue on GitHub. With some more thorough digging, however, I've found the names represent "Kartez codes". Several species can be removed (double-checked with USDA plant codes at plants.usda.gov and another Sevilleta study (dataset 254) that provides species names for some codes). Some codes were identified with this pdf from White Sands: https://nhnm.unm.edu/sites/default/files/nonsensitive/publications/nhnm/U00MUL02NMUS.pdf
 
+
 #####
-bad_sp = c('','NONE','UK1','UKFO1','UNK1','UNK2','UNK3','LAMIA', 'UNGR1','CACT1','UNK','NONE','UNK2','UNK3', 'UNK1','FORB7', 'MISSING', '-888', 'DEAD','ERRO2', 'FORB1','FSEED', 'GSEED', 'MOSQ', 'SEED','SEEDS1','SEEDS2', 'SEFLF','SESPM','SPOR1')
+bad_sp = c('558') # Remove "Young laminiariales" which could refer to any of 3 kelp species
 
 dataset6 = dataset5[!dataset5$species %in% bad_sp,]
 
@@ -407,13 +413,10 @@ table(dataset6$species)
 # and then replace them using the for loop below:
 
 #####
-typo_name = c('Aedes solicitans',
-              'Aedes stricticus',
-              'Aedes trivitatus')
+# Code for large Macrocystis pyrifera (>1m, 589) assigned to be the same as small M. pyrifera (557)
+typo_name = c('589')
 #####
-good_name = c('Aedes sollicitans',
-              'Aedes sticticus',
-              'Aedes trivittatus')
+good_name = c('557')
 
 if (length(typo_name) > 0) {
   for (n in 1:length(typo_name)) {
@@ -448,7 +451,8 @@ dataFormattingTable[,'Notes_spFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_spFormat',    # Fill value below in quotes
 
 #####                                 
-  'several species removed. Metadata was relatively uninformative regarding what constitutes a true species sample for this study. Exploration of metadata from associated Sevilleta studies were more informative regarding which species needed to be removed. Species names are predominantly provided as Kartez codes, but not always. See: http://sev.lternet.edu/data/sev-212/5048. Some codes were identified with this pdf from White Sands: https://nhnm.unm.edu/sites/default/files/nonsensitive/publications/nhnm/U00MUL02NMUS.pdf')
+  '"Young laminiariales" removed (species code 558) which could refer to any of 3 kelp species;
+   two size classes of Macrocystis pyrifera lumped together')
 
 #-------------------------------------------------------------------------------*
 # ---- MAKE DATA FRAME OF COUNT BY SITES, SPECIES, AND YEAR ----
@@ -580,7 +584,7 @@ tGrain = 'year'
 site_grain_names
 
 #####
-sGrain = 'site_block_plot'
+sGrain = 'station'
 
 # This is a reasonable choice of spatial grain because ...
 # ...for sessile plant communities a plot (~ 4m^2) encompasses scores to hundreds
