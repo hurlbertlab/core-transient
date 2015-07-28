@@ -399,9 +399,10 @@ subsetDataFun = function(dataset, datasetID, spatialGrain, temporalGrain,
 #------------------------------------------------------------------------------------------------------*
 
 propOccFun = function(subsettedData){
-    spTime = ddply(subsettedData, .(datasetID, site, species), summarize, 
+    subsettedData1 = subset(subsettedData, count > 0)
+    spTime = ddply(subsettedData1, .(datasetID, site, species), summarize, 
                    spTime = length(unique(year)))
-    siteTime = ddply(subsettedData, .(site), summarize, 
+    siteTime = ddply(subsettedData1, .(site), summarize, 
                      siteTime = length(unique(year)))
     spSiteTime = merge(spTime, siteTime)
     propOcc = data.frame(datasetID = datasetID, site = spSiteTime$site, 
@@ -416,7 +417,8 @@ propOccFun = function(subsettedData){
 # Note: because data are subset to w and z, some sites will no longer have a species richness or number of time samples greater than the decided upon minimum
 
 siteSummaryFun = function(subsettedData){
-  ddply(subsettedData, .(datasetID, site), summarize, 
+  subsettedData1 = subset(subsettedData, count > 0)
+  ddply(subsettedData1, .(datasetID, site), summarize, 
         spRich = length(unique(species)), 
         nTime = length(unique(year)),
         meanAbundance = sum(count)/length(unique(year)))
