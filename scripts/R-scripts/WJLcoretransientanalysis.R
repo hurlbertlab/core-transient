@@ -78,9 +78,9 @@ barplot(avgdataset$avgpropOcc, names.arg = avgdataset$speccodes)
 ### Dryad dataset
 dryad = read.csv('Data4Dryad.csv')
 dryadsp = dryad[dryad$TAXON %in% 'mammals',]
-dryadsp$SPECIES = gsub("_"," ",dryadm$SPECIES)
+dryadsp$SPECIES = gsub("_"," ",dryadsp$SPECIES)
 # Extract needed species
-dryadsp = dryadm[dryadsp$SPECIES %in% speclist,]
+dryadsp = dryadsp[dryadsp$SPECIES %in% speclist,]
 # Remove unneccessary columns
 dryadsp = dryadsp[-1]
 head(dryadsp)
@@ -168,5 +168,8 @@ abline(lm(datasetm$RAINFALL.UNPREDICTABILITY~datasetm$avgpropOcc))
 
 plot(datasetm$avgpropOcc,datasetm$RESIDUAL.BODY.SIZE)
 abline(lm(datasetm$RESIDUAL.BODY.SIZE~datasetm$avgpropOcc))
+
+plot(datasetm$avgpropOcc,datasetm$X6.1_DietBreadth)
+abline(lm(datasetm$X6.1_DietBreadth~datasetm$avgpropOcc))
 
 
