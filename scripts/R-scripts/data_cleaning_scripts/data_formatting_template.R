@@ -379,6 +379,15 @@ dataFormattingTable[,'Notes_countFormat'] =
 #===============================================================================*
 # Here, your primary goal is to ensure that all of your species are valid. To do so, you need to look at the list of unique species very carefully. Avoid being too liberal in interpretation, if you notice an entry that MIGHT be a problem, but you can't say with certainty, create an issue on GitHub.
 
+# First, what is the field name in which species or taxonomic data are stored? 
+# It will get converted to 'species'
+
+#####
+speciesField = 'SpeciesCode'
+
+dataset5$species = dataset5[, speciesField]
+dataset5 = dataset5[, -which(names(dataset5) == speciesField)]
+
 # Look at the individual species present and how frequently they occur: This way you can more easily scan the species names (listed alphabetically) and identify potential misspellings, extra characters or blank space, or other issues.
 
 data.frame(table(dataset5$species))
