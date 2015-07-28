@@ -1,9 +1,9 @@
 ################################################################################*
-# Dataset 221, Portal plants, summer (both annuals and perennials)
+# Dataset 259, Portal plants, winter (both annuals and perennials)
 #
 # Metadata and raw data available here: http://esapubs.org/archive/ecol/E090/118/
 #
-# "Raw dataset" created using the dataset_221RAW/preformatting_221.R script
+# "Raw dataset" created using the dataset_259RAW/preformatting_259.R script
 # from true raw files.
 
 
@@ -35,7 +35,7 @@ source('scripts/R-scripts/core-transient_functions.R')
 # Get data. First specify the dataset number ('datasetID') you are working with.
 
 #####
-datasetID = 221
+datasetID = 259
 
 list.files('data/raw_datasets')
 
@@ -393,8 +393,8 @@ table(dataset5$species)
 # We primarily eliminate taxa that were not identified down to species
 
 #####
-bad_sp = c('Aris_sp', 'Boer_sp', 'Bout_sp', 'Cusc_sp', 'grass_sp', 'grass_unk',
-           'mesquite', 'Moll_sp', 'Pani_sp', 'Port_sp', 'Sida_sp', 'Tali_sp', 'unkn_sp')
+bad_sp = c('Aris_sp', 'Astr_spp', 'Lupi_sp', 'mesquite', 'Oeno_sp', 'Opunt_sp',
+           'Pect_sp', 'Ukn_grass', 'unk1', 'unk2', 'unk3', 'unk4', 'unk5', 'Zinn_sp')
 
 dataset6 = dataset5[!dataset5$species %in% bad_sp,]
 
@@ -445,7 +445,8 @@ dataFormattingTable[,'Notes_spFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_spFormat',    # Fill value below in quotes
 
 #####                                 
-  'All taxa not identified to species were removed, resulting in the loss of 896 records')
+  'All taxa not identified to species were removed, except those reflecting particular
+   morphotypes (e.g. Cryp_sp3 and Cryp_sp4 were kept while Astr_spp was dropped.')
 
 #-------------------------------------------------------------------------------*
 # ---- MAKE DATA FRAME OF COUNT BY SITES, SPECIES, AND YEAR ----
