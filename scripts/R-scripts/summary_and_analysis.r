@@ -49,3 +49,20 @@ write.csv(summaries, 'output/tabular_data/core-transient_summary.csv',
 # datasets with formatted data.
 
 addNewSummariesFun(threshold, reps, write = TRUE)
+
+
+#####################
+
+# Plotting summary results across datasets for Core-Transient analysis
+
+summ = read.csv('output/tabular_data/core-transient_summary.csv', header=T)
+summ$taxa = factor(summ$taxa)
+summ$system = factor(summ$system)
+dsets = unique(summ[, c('datasetID', 'system','taxa')])
+
+
+par(mfrow = c(2, 2), mar = c(1,1,1,1))
+pie(table(dsets$system), main = paste("By dataset ( n =", nrow(dsets), ")"))
+pie(table(summ$system), main = paste("By site ( n =", nrow(summ), ")"))
+pie(table(dsets$taxa))
+pie(table(summ$taxa))
