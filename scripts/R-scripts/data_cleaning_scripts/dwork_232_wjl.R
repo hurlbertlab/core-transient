@@ -369,8 +369,9 @@ table(dataset5$species)
 
 # Some species codes only specifiy genus e.g. nesp = Neotoma sp.
 
+
 #####
-bad_sp = c('pgsp','dipo','nesp','onsp','pesp','resp')
+bad_sp = c('pgsp','dipo','nesp','onsp','pesp','resp','pmsp')
 
 dataset6 = dataset5[!dataset5$species %in% bad_sp,]
 
@@ -379,9 +380,9 @@ dataset6 = dataset5[!dataset5$species %in% bad_sp,]
 # and then replace them using the for loop below:
 
 #####
-typo_name = c()
+typo_name = c('dime ')
 #####
-good_name = c()
+good_name = c('dime')
 
 if (length(typo_name) > 0) {
   for (n in 1:length(typo_name)) {
@@ -416,7 +417,7 @@ dataFormattingTable[,'Notes_spFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_spFormat',    # Fill value below in quotes
                                  
                                  #####                                 
-                                 'some species removed because they were genus-only and there were many species entries associated with that genus')
+                                 'some species removed because they were genus-only and there were many species entries associated with that genus. There were also a few entries with a space at the end, which were replaced with the correct value')
 
 #-------------------------------------------------------------------------------*
 # ---- MAKE DATA FRAME OF COUNT BY SITES, SPECIES, AND YEAR ----
