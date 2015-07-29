@@ -371,21 +371,34 @@ table(dataset5$species)
 
 
 #####
-bad_sp = c('pgsp','dipo','nesp','onsp','pesp','resp','pmsp')
+bad_sp = c('pgsp','dipo','nesp','onsp','pesp','resp','pmsp','')
 
 dataset6 = dataset5[!dataset5$species %in% bad_sp,]
 
-# If you find any potential typos, try to confirm that the "mispelling" isn't actually a valid name.
-# If not, then list the typos in typo_name, and the correct spellings in good_name,
-# and then replace them using the for loop below:
+# Some 'dipo' entries had a space on the end, removing that
+# In the metadata, the codes for peromyscus begin with 'pe' e.g. 'peer' for Peromyscus difficilis, but in this dataset, most begin with 'pm'
+# Changing all entries to match with metadata codes
 
 #####
-typo_name = c('dime ')
+typo_name = c('dime ',
+              'pmbo',
+              'pmdi',
+              'pmer',
+              'pmle',
+              'pmma',
+              'pmtr')
 #####
-good_name = c('dime')
+good_name = c('dime',
+              'pebo',
+              'pedi',
+              'peer',
+              'pele',
+              'pema',
+              'petr')
 
 if (length(typo_name) > 0) {
   for (n in 1:length(typo_name)) {
+    levels(dataset6$species) = c(levels(dataset6$species),good_name[n])
     dataset6$species[dataset6$species == typo_name[n]] = good_name[n]
   }
 }
@@ -417,7 +430,7 @@ dataFormattingTable[,'Notes_spFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_spFormat',    # Fill value below in quotes
                                  
                                  #####                                 
-                                 'some species removed because they were genus-only and there were many species entries associated with that genus. There were also a few entries with a space at the end, which were replaced with the correct value')
+                                 'some species removed because they were genus-only and there were many species entries associated with that genus. There were also a few entries with a space at the end, which were replaced with the correct value. The Peromyscus species codes were changed from "pm__" to "pe__" because that is how the metadata lists them')
 
 #-------------------------------------------------------------------------------*
 # ---- MAKE DATA FRAME OF COUNT BY SITES, SPECIES, AND YEAR ----
