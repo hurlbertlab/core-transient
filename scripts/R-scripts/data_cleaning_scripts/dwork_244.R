@@ -3,11 +3,25 @@
 #
 # Data and metadata can be found here: http://esapubs.org/archive/ecol/E094/245
 #
-# Note that this is the Benthic Cover raw data, NOT Benthic Density which
-# was only focused on 19 target species and so is not useful for core-
-# transient analysis.
+# Note that this is the Benthic Density data, which includes more species than
+# the Benthic Cover data within this dataset.
 
-# IN PROGRESS....
+# NOTE:
+# "Some species have been added to the monitoring protocols during the 30+ years 
+# of monitoring. Thus the absence of these species from the data early in 
+# monitoring cannot be taken as evidence of absence. For this reason, instead of
+# a 0 or blank, the code "NA" is entered into the dataset as the density for 
+# species in years they were not counted."
+
+# So need to make sure functions will accurately assess annual occupancy vector
+# of c(NA, NA, 1, 0, 1, 1) as 0.75, not 0.5, and consider whether it is a fair 
+# comparison to another species that was sampled over the full period with a
+# vector of c(1, 1, 1, 0, 1, 1) at the same site. For that second species,
+# should we use all data available to us (occ = 0.83), or the time series 
+# matching the other species (occ = 0.75). Finally, make sure that number of 
+# years each site is sampled is not affected by this...
+
+# Script in progress
 
 #-------------------------------------------------------------------------------*
 # ---- SET-UP ----
@@ -37,7 +51,7 @@ source('scripts/R-scripts/core-transient_functions.R')
 # Get data. First specify the dataset number ('datasetID') you are working with.
 
 #####
-datasetID = 241 
+datasetID = 244 
 
 list.files('data/raw_datasets')
 
@@ -91,7 +105,7 @@ head(dataset)
 names(dataset)
 
 #####
-unusedFieldNames = c('Period')
+unusedFieldNames = c('record_id', 'replicates', 'areaperreplicate', 'densityse')
 
 
 unusedFields = which(names(dataset) %in% unusedFieldNames)
@@ -130,7 +144,7 @@ dataFormattingTable[,'LatLong_sites'] =
 # then write these field names as a vector from largest to smallest temporal grain.
 
 #####
-dateFieldName = c('Date')
+dateFieldName = c('record_date')
 
 # If necessary, paste together date info from multiple columns into single field
 if (length(dateFieldName) > 1) {
@@ -147,7 +161,7 @@ if (length(dateFieldName) > 1) {
 # be '%Y-%m-%d'. Type "?strptime" for other examples of date formatting.
 
 #####
-dateformat = '%m/%d/%Y'
+dateformat = '%d-%b-%Y'
 
 # If date is only listed in years:
 
@@ -185,6 +199,13 @@ dataset2$date = date
 head(dataset2)
 str(dataset2)
 
+# In this dataset, a number of taxa 
+siteinfo = read.csv('Table1_Monitoring_sites.csv', header=T)
+years = 1982:2011
+numSitesEachYear = sapply(years, function(x) sum(siteinfo$StartYear <= x))
+numNAsEachYear = aggregate(dataset2$densitymean, by = list(dataset2$species, dataset2$year),
+                           function(x) sum(is.na(x)))
+
 # !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE DATE DATA WERE MODIFIED!
 
 #!DATA FORMATTING TABLE UPDATE!
@@ -195,7 +216,7 @@ dataFormattingTable[,'Notes_timeFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_timeFormat',  # Fill value in below
 
 #####
-                                 'temporal data provided as dates. The only modification to this field involved converting to a date object.')
+                                 'Temporal data provided as sampling dates')
 
 # subannualTgrain. After exploring the time data, was this dataset sampled at a sub-annual temporal grain? Y/N
 
@@ -227,7 +248,7 @@ dataFormattingTable[,'subannualTgrain'] =
 # fill in the fields that specify nested spatial grains below.
 
 #####
-site_grain_names = c("Station", "Quadrat")
+site_grain_names = c("site")
 
 # We will now create the site field with these codes concatenated if there
 # are multiple grain fields. Otherwise, site will just be the single grain field.
