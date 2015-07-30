@@ -65,8 +65,8 @@ dsetsByTaxa = table(dsets$taxa)
 sitesBySystem = table(summ$system)
 sitesByTaxa = table(summ$taxa)
 
-colors8 = c(rgb(98/255, 83/255, 108/255),
-            rgb(125/255, 73/255, 67/255),
+colors7 = c(rgb(98/255, 83/255, 108/255),
+            #rgb(125/255, 73/255, 67/255),
             rgb(120/255, 21/255, 21/255),
             rgb(171/255, 167/255, 46/255),
             rgb(186/255, 103/255, 30/255),
@@ -75,7 +75,9 @@ colors8 = c(rgb(98/255, 83/255, 108/255),
             rgb(86/255, 141/255, 27/255))
 
 par(mfrow = c(2, 2), mar = c(1,1,1,1), cex = 1.25)
-pie(dsetsBySystem, main = paste("By dataset (n = ", nrow(dsets), ")", sep = ""))
-pie(sitesBySystem, main = paste("By site (n = ", nrow(summ), ")", sep = ""))
-pie(dsetsByTaxa, col = colors8, init.angle = 30)
-pie(sitesByTaxa, col = colors8, init.angle = 60)
+pie(dsetsBySystem, main = paste("By dataset (n = ", nrow(dsets), ")", sep = ""),
+    col = c('skyblue', 'burlywood'))
+pie(sitesBySystem, main = paste("By site (n = ", nrow(summ), ")", sep = ""),
+    col = c('skyblue', 'burlywood'))
+pie(dsetsByTaxa, col = colors7, init.angle = 30)
+pie(sitesByTaxa, col = colors7, init.angle = 60)
