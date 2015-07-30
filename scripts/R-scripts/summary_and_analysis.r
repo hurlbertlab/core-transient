@@ -61,8 +61,17 @@ summ$system = factor(summ$system)
 dsets = unique(summ[, c('datasetID', 'system','taxa')])
 
 
+colors8 = c(rgb(98/255, 83/255, 108/255),
+            rgb(125/255, 73/255, 67/255),
+            rgb(120/255, 21/255, 21/255),
+            rgb(171/255, 167/255, 46/255),
+            rgb(186/255, 103/255, 30/255),
+            rgb(0, 54/255, 117/255),
+            rgb(29/255, 106/255, 155/255),
+            rgb(86/255, 141/255, 27/255))
+
 par(mfrow = c(2, 2), mar = c(1,1,1,1))
-pie(table(dsets$system), main = paste("By dataset ( n =", nrow(dsets), ")"))
-pie(table(summ$system), main = paste("By site ( n =", nrow(summ), ")"))
-pie(table(dsets$taxa))
-pie(table(summ$taxa))
+pie(table(dsets$system), main = paste("By dataset (n = ", nrow(dsets), ")", sep = ""))
+pie(table(summ$system), main = paste("By site (n = ", nrow(summ), ")", sep = ""))
+pie(table(dsets$taxa), col = colors8)
+pie(table(summ$taxa), col = colors8)
