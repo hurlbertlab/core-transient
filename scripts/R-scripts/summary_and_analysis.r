@@ -48,7 +48,7 @@ write.csv(summaries, 'output/tabular_data/core-transient_summary.csv',
 # create the 'core-transient_summary.csv' file from scratch for all
 # datasets with formatted data.
 
-addNewSummariesFun(threshold, reps, write = TRUE)
+summ = addNewSummariesFun(threshold, reps, write = TRUE)
 
 
 #####################
@@ -81,3 +81,32 @@ pie(sitesBySystem, main = paste("By site (n = ", nrow(summ), ")", sep = ""),
     col = c('skyblue', 'burlywood'))
 pie(dsetsByTaxa, col = colors7, init.angle = 30)
 pie(sitesByTaxa, col = colors7, init.angle = 60)
+
+
+summ$propNeither = 1 - summ$propCore - summ$propTrans
+
+coreCol = 'blue'
+nonCol = 'gray'
+transCol = 'red'
+
+meanCoreByTaxa = aggregate(summ$propCore, by = list(summ$taxa), mean)
+uniqTaxa = meanCoreByTaxa$Group.1[order(meanCoreByTaxa$x, decreasing = T)]
+
+par(mfrow = c(1,1), mar = c(5, 5, 1, 1), mgp = c(3, 1, 0))
+boxplot(summ$propCore, xlim = c(0, (3*length(uniqTaxa)-2)), ylim = c(0, 1), 
+        border = 'white', col = 'white', ylab = "Occupancy", cex.lab = 2, las = 1, 
+        cex.axis = 1.25)
+for (i in 1:length(uniqTaxa)) {
+  tax = uniqTaxa[i]
+  boxplot(summ$propTrans[summ$taxa == tax], add = T, col = transCol, 
+          at = 3*(i-1), yaxt = "n")
+  boxplot(summ$propNeither[summ$taxa == tax], add =T, col = nonCol,
+          at = 3*(i-1)+.5, yaxt = "n")
+  boxplot(summ$propCore[summ$taxa == tax], add =T, col = coreCol,
+          at = 3*(i-1)+1, yaxt = "n")
+}
+axis(1, uniqTaxa, at = 3*(1:7)-2.5, cex.axis = 1.3)
+
+  
+  
+
