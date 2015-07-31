@@ -222,7 +222,11 @@ dataset2 = subset(dataset2, str_sub(dataset2$quadr,1,1) %in% c('A','B','b','C','
 # Remove entries with numbers that are too high (over 10)
 dataset2 = subset(dataset2, as.numeric(str_sub(dataset2$quadr,2,-1))<=10 | dataset2$quadr == 'blank')
 
-site_grain_names = c("quadr")
+# Adding plot column so that later, all quads can be treated as one site
+
+dataset2$plot = rep(1, length(dataset2$quadr))
+
+site_grain_names = c("plot", "quadr")
 
 # We will now create the site field with these codes concatenated if there
 # are multiple grain fields. Otherwise, site will just be the single grain field.
@@ -274,7 +278,7 @@ dataset3$site = factor(site)
 # Remove any hierarchical site related fields that are no longer needed, IF NECESSARY.
 
 #####
-dataset3 = dataset3[,-c(2)]
+dataset3 = dataset3[,-c(2,5)]
 
 # Check the new dataset (are the columns as they should be?):
 
@@ -318,23 +322,16 @@ dataFormattingTable[,'Notes_siteFormat'] =
 names(dataset3)
 summary(dataset3)
 
-# Fill in the original field name here
+# Dataset does not have a count column, have to add up all occurences of a species at a specific date and site
 
-#####
-countfield = 'cover'
+dataset_count = data.frame(table(dataset3[,c('species','date','site')]))
+dataset_count = dataset_count[dataset_count$Freq!=0, ]
 
-# Renaming it
-names(dataset3)[which(names(dataset3) == countfield)] = 'count'
+head(dataset_count)
 
-# Now we will remove zero counts and NA's:
+names(dataset_count)[4] = 'count' 
 
-summary(dataset3)
-
-# Can usually tell if there are any zeros or NAs from that summary(). If there aren't any showing, still run these functions or continue with the update of dataset# so that you are consistent with this template.
-
-# Subset to records > 0 (if applicable):
-
-dataset4 = subset(dataset3, count > 0) 
+dataset4 = dataset_count
 
 summary(dataset4)
 
@@ -357,27 +354,18 @@ dataFormattingTable[,'countFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'countFormat',    # Fill value below in quotes
                                  
                                  #####                                 
-                                 'cover')
+                                 'count')
 
 dataFormattingTable[,'Notes_countFormat'] = 
   dataFormattingTableFieldUpdate(datasetID, 'Notes_countFormat', # Fill value below in quotes
                                  
                                  #####                                 
-                                 'Data represents cover. There were no NAs nor 0s that required removal')
+                                 'Data represents count. There was no count column to begin with, so the occurences of each species at a spefici site and date were added up using table(). Many 0s, but no NAs were removed ')
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SPECIES DATA ----
 #===============================================================================*
 # Here, your primary goal is to ensure that all of your species are valid. To do so, you need to look at the list of unique species very carefully. Avoid being too liberal in interpretation, if you notice an entry that MIGHT be a problem, but you can't say with certainty, create an issue on GitHub.
-
-# First, what is the field name in which species or taxonomic data are stored? 
-# It will get converted to 'species'
-
-#####
-speciesField = 'SpeciesCode'
-
-dataset5$species = dataset5[, speciesField]
-dataset5 = dataset5[, -which(names(dataset5) == speciesField)]
 
 # Look at the individual species present and how frequently they occur: This way you can more easily scan the species names (listed alphabetically) and identify potential misspellings, extra characters or blank space, or other issues.
 
@@ -393,7 +381,7 @@ table(dataset5$species)
 # In this example, a quick look at the metadata is not informative, unfortunately. Because of this, you should really stop here and post an issue on GitHub. With some more thorough digging, however, I've found the names represent "Kartez codes". Several species can be removed (double-checked with USDA plant codes at plants.usda.gov and another Sevilleta study (dataset 254) that provides species names for some codes). Some codes were identified with this pdf from White Sands: https://nhnm.unm.edu/sites/default/files/nonsensitive/publications/nhnm/U00MUL02NMUS.pdf
 
 #####
-bad_sp = c('','NONE','UK1','UKFO1','UNK1','UNK2','UNK3','LAMIA', 'UNGR1','CACT1','UNK','NONE','UNK2','UNK3', 'UNK1','FORB7', 'MISSING', '-888', 'DEAD','ERRO2', 'FORB1','FSEED', 'GSEED', 'MOSQ', 'SEED','SEEDS1','SEEDS2', 'SEFLF','SESPM','SPOR1')
+bad_sp = c('','?')
 
 dataset6 = dataset5[!dataset5$species %in% bad_sp,]
 
@@ -407,13 +395,9 @@ table(dataset6$species)
 # and then replace them using the for loop below:
 
 #####
-typo_name = c('Aedes solicitans',
-              'Aedes stricticus',
-              'Aedes trivitatus')
+typo_name = c('')
 #####
-good_name = c('Aedes sollicitans',
-              'Aedes sticticus',
-              'Aedes trivittatus')
+good_name = c('')
 
 if (length(typo_name) > 0) {
   for (n in 1:length(typo_name)) {
@@ -448,7 +432,7 @@ dataFormattingTable[,'Notes_spFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_spFormat',    # Fill value below in quotes
                                  
                                  #####                                 
-                                 'several species removed. Metadata was relatively uninformative regarding what constitutes a true species sample for this study. Exploration of metadata from associated Sevilleta studies were more informative regarding which species needed to be removed. Species names are predominantly provided as Kartez codes, but not always. See: http://sev.lternet.edu/data/sev-212/5048. Some codes were identified with this pdf from White Sands: https://nhnm.unm.edu/sites/default/files/nonsensitive/publications/nhnm/U00MUL02NMUS.pdf')
+                                 'two species codes removed: one was just blank and one was a question mark. two species codes were questionable because of low frequency, but were kept because the metadata provided does not list species codes: "MM" and "ZH" ')
 
 #-------------------------------------------------------------------------------*
 # ---- MAKE DATA FRAME OF COUNT BY SITES, SPECIES, AND YEAR ----
@@ -580,11 +564,9 @@ tGrain = 'year'
 site_grain_names
 
 #####
-sGrain = 'site_block_plot'
+sGrain = 'plot'
 
-# This is a reasonable choice of spatial grain because ...
-# ...for sessile plant communities a plot (~ 4m^2) encompasses scores to hundreds
-# of individuals.
+# This is a reasonable choice of spatial grain because it is 1 hectare, which most likely encompasses the small mammal communtiy level
 
 # The function "richnessYearSubsetFun" below will subset the data to sites with an 
 # adequate number of years of sampling and species richness. If there are no 
