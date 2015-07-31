@@ -1,8 +1,8 @@
 ################################################################################*
-# Data cleaning script for dataset 255, Magurran and Henderson 2003 fish
-#                                          at Hinkley Point
+# Data cleaning script for dataset 260, Dolan et al. 2009 
+#                                       Planktonic tintinnid ciliates
 #
-# http://www.nature.com/nature/journal/v422/n6933/full/nature01547.html
+# http://onlinelibrary.wiley.com/doi/10.1111/j.1365-2699.2008.02046.x/abstract
 #
 # Data are extracted from published figures in the form of counts of number
 # of species occurring with different frequencies (temporal occupancy).
@@ -15,7 +15,7 @@
 # raw dataset.
 
 
-datasetID = 255
+datasetID = 260
 
 dataset = read.csv(paste('data/raw_datasets/dataset_', datasetID, '.csv', sep = ''))
 
@@ -44,10 +44,10 @@ write.csv(dataset1, paste('data/propOcc_datasets/propOcc_', datasetID, '.csv', s
 ##########################################
 # Site summary
 
-meanN = 96000/21 #report of >96,000 individuals over 21 year dataset
+meanN = 17000/18 #report of >17,000 individuals over 18 dates
 
 summary = data.frame(datasetID = datasetID, 
-                     site = 1, 
+                     site = 1,
                      spRich = sum(dataset$numSpp),
                      nTime = max(dataset$numYrs),
                      meanAbundance = meanN)
