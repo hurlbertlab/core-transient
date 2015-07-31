@@ -48,6 +48,7 @@ meanN = 96000/21 #report of >96,000 individuals over 21 year dataset
 
 summary = data.frame(datasetID = datasetID, 
                      site = 1, 
+                     spRich = sum(dataset$numSpp),
                      nTime = max(dataset$numYrs),
                      meanAbundance = meanN)
 
