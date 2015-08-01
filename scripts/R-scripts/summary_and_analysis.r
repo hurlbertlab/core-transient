@@ -83,18 +83,24 @@ pie(dsetsByTaxa, col = colors7, init.angle = 30)
 pie(sitesByTaxa, col = colors7, init.angle = 60)
 
 
+
+#####################################################
+# Boxplots showing distribution of core and transient
+# species by taxon.
+library(wesanderson)
+
 summ$propNeither = 1 - summ$propCore - summ$propTrans
 
-coreCol = 'blue'
-nonCol = 'gray'
-transCol = 'red'
+coreCol = wes_palette("FantasticFox")[1] 
+nonCol = wes_palette("FantasticFox")[2] 
+transCol = wes_palette("FantasticFox")[3] 
 
 meanCoreByTaxa = aggregate(summ$propCore, by = list(summ$taxa), mean)
 uniqTaxa = meanCoreByTaxa$Group.1[order(meanCoreByTaxa$x, decreasing = T)]
 
 par(mfrow = c(1,1), mar = c(5, 5, 1, 1), mgp = c(3, 1, 0))
-boxplot(summ$propCore, xlim = c(0, (3*length(uniqTaxa)-2)), ylim = c(0, 1), 
-        border = 'white', col = 'white', ylab = "Occupancy", cex.lab = 2, las = 1, 
+boxplot(summ$propCore, xlim = c(0, (3*length(uniqTaxa)-2)), ylim = c(0, 1.2), 
+        border = 'white', col = 'white', ylab = "Fraction of species", cex.lab = 2, las = 1, 
         cex.axis = 1.25)
 for (i in 1:length(uniqTaxa)) {
   tax = uniqTaxa[i]
@@ -105,8 +111,36 @@ for (i in 1:length(uniqTaxa)) {
   boxplot(summ$propCore[summ$taxa == tax], add =T, col = coreCol,
           at = 3*(i-1)+1, yaxt = "n")
 }
-axis(1, uniqTaxa, at = 3*(1:7)-2.5, cex.axis = 1.3)
+axis(1, uniqTaxa, at = 3*(1:7)-2.5, cex.axis = 1.4)
+rect(.5, 1.1, 1.5, 1.2, col = transCol, border=F)
+rect(6.5, 1.1, 7.5, 1.2, col = nonCol, border=F)  
+rect(12.5, 1.1, 13.5, 1.2, col = coreCol, border=F)  
+text(c(3.4, 9, 14.5), c(1.15, 1.15, 1.15), c('Transient', 'Neither', 'Core'), cex = 1.75)
 
-  
-  
+
+#####################################################
+# Boxplots showing distribution of core and transient
+# species by system (terrestrial/marine).
+
+meanCoreBySystem = aggregate(summ$propCore, by = list(summ$system), mean)
+uniqsystem = meanCoreBySystem$Group.1[order(meanCoreBySystem$x, decreasing = T)]
+
+par(mfrow = c(1,1), mar = c(5, 5, 1, 1), mgp = c(3, 1, 0))
+boxplot(summ$propCore, xlim = c(0.25, 4.75), ylim = c(0, 1.2), 
+        border = 'white', col = 'white', ylab = "Fraction of species", cex.lab = 2, las = 1, 
+        cex.axis = 1.25)
+for (i in 1:length(uniqsystem)) {
+  syst = uniqsystem[i]
+  boxplot(summ$propTrans[summ$system == syst], add = T, col = transCol, #width = 0.1, 
+          at = 3*(i-1)+.5, yaxt = "n")
+  boxplot(summ$propNeither[summ$system == syst], add =T, col = nonCol, #width = 0.2,
+          at = 3*(i-1)+1, yaxt = "n")
+  boxplot(summ$propCore[summ$system == syst], add =T, col = coreCol, #width = 1,
+          at = 3*(i-1)+1.5, yaxt = "n")
+}
+axis(1, uniqsystem, at = 3*(1:2 - 1)+1, cex.axis = 2)
+rect(.2, 1.1, .45, 1.2, col = transCol, border=F)
+rect(1.5, 1.1, 1.75, 1.2, col = nonCol, border=F)  
+rect(2.7, 1.1, 2.95, 1.2, col = coreCol, border=F)  
+text(c(.9, 2.1, 3.15), c(1.15, 1.15, 1.15), c('Transient', 'Neither', 'Core'), cex = 1.75)
 
