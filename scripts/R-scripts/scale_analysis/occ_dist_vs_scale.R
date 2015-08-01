@@ -32,6 +32,9 @@ hist(md10.rt.occ2$Freq, main="", xlab="", ylab="", col = 'green')
 #Scale of 1 BBS point count stop (specifically stop 1)
 fifty = read.csv('scripts/R-scripts/scale_analysis/BBS_fiftystop_MD_CO_1996-2010.csv')
 routes = read.csv('scripts/R-scripts/scale_analysis/routes.csv')
+routes$stateroute = 1000*routes$statenum + routes$Route
+routesCO = subset(routes, statenum == 17)
+routesCO_SWcorner = subset(routesCO, Longi < -106 & Lati < 39)
 
 fiftyMD1 = subset(fifty, stateroute %in% unique(md10.rt.occ$stateroute) & year > 1995 & year < 2011 & Stop1!=0, 
                   select = c('stateroute','year','AOU','Stop1'))
