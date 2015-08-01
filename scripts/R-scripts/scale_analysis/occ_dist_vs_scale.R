@@ -4,12 +4,15 @@
 # 2) BBS route, 3) aggregate of 27 BBS routes within state of MD.
 
 library(raster)
-load("z:/Lab/Coyle/Projects/BBS Core/BBS Core Final Analysis.Rdata")
+counts5 = read.csv('data/raw_datasets/dataset_1_full.csv', header=T)
+occupancy.matrix = as.matrix(
+  read.csv('scripts/R-scripts/scale_analysis/occ_matrix_BBS.csv', header=T, row.names = 1))
+
+md.counts = subset(counts5, statenum==46)
+md.occ.mat = occupancy.matrix[floor(as.numeric(row.names(occupancy.matrix))/1000)==46,]
 
 par(mfrow=c(5,6), mgp=c(2,1,1),mar=c(2,2,1,1))
 for (i in 1:27){hist(md.occ.mat[i,],main="",xlab="",ylab="")}
-md.counts = subset(counts5, statenum==46)
-md.occ.mat = occupancy.matrix[floor(as.numeric(row.names(occupancy.matrix))/1000)==46,]
 
 #Statewide temporal occupancy
 md.uniq = unique(md.counts[,c('Year','Aou')])
@@ -27,7 +30,9 @@ md10.rt.occ2 = md10.rt.occ[md10.rt.occ$Freq!=0,]
 hist(md10.rt.occ2$Freq, main="", xlab="", ylab="", col = 'green')
 
 #Scale of 1 BBS point count stop (specifically stop 1)
-fifty = read.csv('//bioark.bio.unc.edu/hurlbertlab/databases/bbs/fiftystopdata/fiftystop_thru2010_goodspp_goodrtes.csv',header=T)
+fifty = read.csv('scripts/R-scripts/scale_analysis/BBS_fiftystop_MD_CO_1996-2010.csv')
+routes = read.csv('scripts/R-scripts/scale_analysis/routes.csv')
+
 fiftyMD1 = subset(fifty, stateroute %in% unique(md10.rt.occ$stateroute) & year > 1995 & year < 2011 & Stop1!=0, 
                   select = c('stateroute','year','AOU','Stop1'))
 md1.rt.occ = data.frame(table(fiftyMD1[,c('stateroute','AOU')])/15)
