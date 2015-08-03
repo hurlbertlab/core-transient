@@ -171,7 +171,8 @@ meanSpatScale = c(scale.1stop*50*497, #area of 497 BBS routes
                   scale.1stop*50,     #area of 1 BBS route
                   scale.1stop*10,     #area of 10 point count stops
                   scale.1stop)        #area of 1 point count stop
-plot(log10(meanSpatScale), meanOcc, xlab = expression(paste(plain(log)[10]," Spatial scale (km^2)")), 
+plot(log10(meanSpatScale), meanOcc, 
+     xlab = expression(paste(plain(log)[10]," Spatial scale (", plain(km)^2, ")")), 
      ylab = 'Mean occupancy', pch = 16, col = c('white', col1, col2, col3, col4), 
      cex = 4, ylim = c(0.1, 1.15), xlim = c(-1,4))
 
