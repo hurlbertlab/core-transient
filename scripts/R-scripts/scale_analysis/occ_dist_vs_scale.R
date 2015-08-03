@@ -9,7 +9,11 @@ occupancy.matrix = as.matrix(
   read.csv('scripts/R-scripts/scale_analysis/occ_matrix_BBS.csv', header=T, row.names = 1))
 fifty = read.csv('scripts/R-scripts/scale_analysis/BBS_fiftystop_MD_CO_CA_OR_1996-2010.csv')
 routes = read.csv('scripts/R-scripts/scale_analysis/routes.csv')
+routes$stateroute = 1000*routes$statenum + routes$Route
 
+# All-BBS scale:
+uniqSpYr = unique(counts5[, c('Year', 'Aou')])
+BBS.occ = data.frame(table(uniqSpYr$Aou)/15)
 
 # MD BBS data
 md.counts = subset(counts5, statenum==46)
@@ -29,6 +33,14 @@ fiftyMD1 = subset(fifty, stateroute %in% unique(md10.rt.occ$stateroute) & year >
 md1.rt.occ = data.frame(table(fiftyMD1[,c('stateroute','AOU')])/15)
 md1.rt.occ2 = md1.rt.occ[md1.rt.occ$Freq!=0,]
 
+
+fiftyMD1 = subset(fifty, stateroute %in% unique(md10.rt.occ$stateroute) & year > 1995 & year < 2011 & Stop1!=0, 
+                  select = c('stateroute','year','AOU','Stop1'))
+md1.rt.occ = data.frame(table(fiftyMD1[,c('stateroute','AOU')])/15)
+md1.rt.occ2 = md1.rt.occ[md1.rt.occ$Freq!=0,]
+
+
+# OTHER REGIONS ##########################################################################
 
 # CA/OR BBS data
 ca.counts = subset(counts5, statenum==14 | statenum == 69)
@@ -51,31 +63,13 @@ ca1.rt.occ2 = ca1.rt.occ[ca1.rt.occ$Freq!=0,]
 
 
 
-
-co.counts = subset(counts5, statenum==17)
-co.occ.mat = occupancy.matrix[floor(as.numeric(row.names(occupancy.matrix))/1000)==17,]
-
-
-par(mfrow=c(5,6), mgp=c(2,1,1),mar=c(2,2,1,1))
-for (i in 1:27){hist(md.occ.mat[i,],main="",xlab="",ylab="")}
-
-#Statewide temporal occupancy
-md.uniq = unique(md.counts[,c('Year','Aou')])
-md.occ = data.frame(table(md.uniq$Aou)/15)
-hist(md.occ$Freq,main="",xlab="",ylab="",col='red')
-
-#Histogram of all occupancy values from all species on all routes (rough equivalent of mean
-#occupancy distribution at the route scale)
-hist(md.occ.mat,main="",xlab="",ylab="",col='blue')
-
-#Scale of 10 BBS point count stops (specifically stops 1-10)
-md10 = unique(md.counts[md.counts$Count10!=0,c('stateroute','Year','Aou')])
-md10.rt.occ = data.frame(table(md10[,c('stateroute','Aou')])/15)
-md10.rt.occ2 = md10.rt.occ[md10.rt.occ$Freq!=0,]
-hist(md10.rt.occ2$Freq, main="", xlab="", ylab="", col = 'green')
-
-
 #Colorado route
+routesCO = subset(routes, statenum == 17)
+routesCO_SWcorner = subset(routesCO, Longi < -106 & Lati < 39)
+
+co.counts = subset(counts5, stateroute %in% routesCO_SWcorner$stateroute)
+co.occ.mat = occupancy.matrix[as.numeric(row.names(occupancy.matrix)) %in% routesCO_SWcorner$stateroute,]
+
 co.uniq = unique(co.counts[,c('Year','Aou')])
 co.occ = data.frame(table(co.uniq$Aou)/15)
 
@@ -84,25 +78,14 @@ co10 = unique(co.counts[co.counts$Count10!=0,c('stateroute','Year','Aou')])
 co10.rt.occ = data.frame(table(co10[,c('stateroute','Aou')])/15)
 co10.rt.occ2 = co10.rt.occ[co10.rt.occ$Freq!=0,]
 
-
-
-
 #Scale of 1 BBS point count stop (specifically stop 1)
-routes$stateroute = 1000*routes$statenum + routes$Route
-routesCO = subset(routes, statenum == 17)
-routesCO_SWcorner = subset(routesCO, Longi < -106 & Lati < 39)
 
-fiftyMD1 = subset(fifty, stateroute %in% unique(md10.rt.occ$stateroute) & year > 1995 & year < 2011 & Stop1!=0, 
-                  select = c('stateroute','year','AOU','Stop1'))
-md1.rt.occ = data.frame(table(fiftyMD1[,c('stateroute','AOU')])/15)
-md1.rt.occ2 = md1.rt.occ[md1.rt.occ$Freq!=0,]
-
-# Colorado
 fiftyCO1 = subset(fifty, stateroute %in% unique(co10.rt.occ$stateroute) & year > 1995 & year < 2011 & Stop1!=0, 
                   select = c('stateroute','year','AOU','Stop1'))
 co1.rt.occ = data.frame(table(fiftyCO1[,c('stateroute','AOU')])/15)
 co1.rt.occ2 = co1.rt.occ[co1.rt.occ$Freq!=0,]
 
+########################################################################################
 
 #density plots
 par(mfrow=c(1,1), mgp = c(2,1,0), mar = c(4,4,1,1))
@@ -110,6 +93,81 @@ col1 = 'darkblue'
 col2 = 'blue'
 col3 = colors()[128]
 col4 = colors()[431]
+
+# 5 scales, sequentially adding layers
+# BBS route
+pdf('output/plots/occupancy_vs_scale_BBS1.pdf', height = 6, width = 7.5)
+par(mfrow = c(1, 1), mar = c(6, 6, 1, 3), mgp = c(4, 1, 0), 
+    oma = c(0,0,3,0), cex.axis = 1.5, cex.lab = 2, las = 1)
+plot(density(md.occ.mat[!is.na(md.occ.mat)]), main="", xlab = "Temporal Occupancy", ylab = "Density", 
+     col=col2, ylim = c(0, 5.5), xlim = c(-.1, 1.1), lwd = 4)
+dev.off()
+
+# BBS route + 10 stops
+pdf('output/plots/occupancy_vs_scale_BBS2.pdf', height = 6, width = 7.5)
+par(mfrow = c(1, 1), mar = c(6, 6, 1, 3), mgp = c(4, 1, 0), 
+    oma = c(0,0,3,0), cex.axis = 1.5, cex.lab = 2, las = 1)
+plot(density(md.occ.mat[!is.na(md.occ.mat)]), main="", xlab = "Temporal Occupancy", ylab = "Density", 
+     col=col2, ylim = c(0, 5.5), xlim = c(-.1, 1.1), lwd = 4)
+points(density(md10.rt.occ2$Freq), col=col3, type='l', lwd = 4)
+dev.off()
+
+# BBS route + 10 stops + 1 stop
+pdf('output/plots/occupancy_vs_scale_BBS3.pdf', height = 6, width = 7.5)
+par(mfrow = c(1, 1), mar = c(6, 6, 1, 3), mgp = c(4, 1, 0), 
+    oma = c(0,0,3,0), cex.axis = 1.5, cex.lab = 2, las = 1)
+plot(density(md.occ.mat[!is.na(md.occ.mat)]), main="", xlab = "Temporal Occupancy", ylab = "Density", 
+     col=col2, ylim = c(0, 5.5), xlim = c(-.1, 1.1), lwd = 4)
+points(density(md10.rt.occ2$Freq), col=col3, type='l', lwd = 4)
+points(density(md1.rt.occ2$Freq), col=col4, type='l', lwd = 4)
+dev.off()
+
+# BBS route + 10 stops + 1 stop + MD
+pdf('output/plots/occupancy_vs_scale_BBS4.pdf', height = 6, width = 7.5)
+par(mfrow = c(1, 1), mar = c(6, 6, 1, 3), mgp = c(4, 1, 0), 
+    oma = c(0,0,3,0), cex.axis = 1.5, cex.lab = 2, las = 1)
+plot(density(md.occ.mat[!is.na(md.occ.mat)]), main="", xlab = "Temporal Occupancy", ylab = "Density", 
+     col=col2, ylim = c(0, 5.5), xlim = c(-.1, 1.1), lwd = 4)
+points(density(md10.rt.occ2$Freq), col=col3, type='l', lwd = 4)
+points(density(md1.rt.occ2$Freq), col=col4, type='l', lwd = 4)
+points(density(md.occ$Freq), col = col1, type = 'l', lwd = 4)
+dev.off()
+
+# BBS route + 10 stops + 1 stop + MD + all BBS
+pdf('output/plots/occupancy_vs_scale_BBS5.pdf', height = 6, width = 7.5)
+par(mfrow = c(1, 1), mar = c(6, 6, 1, 3), mgp = c(4, 1, 0), 
+    oma = c(0,0,3,0), cex.axis = 1.5, cex.lab = 2, las = 1)
+plot(density(md.occ.mat[!is.na(md.occ.mat)]), main="", xlab = "Temporal Occupancy", ylab = "Density", 
+     col=col2, ylim = c(0, 5.5), xlim = c(-.1, 1.1), lwd = 4)
+points(density(md10.rt.occ2$Freq), col=col3, type='l', lwd = 4)
+points(density(md1.rt.occ2$Freq), col=col4, type='l', lwd = 4)
+points(density(md.occ$Freq), col = col1, type = 'l', lwd = 4)
+points(density(BBS.occ$Freq), type = 'l', lwd = 4, lty = 'dashed')
+legend('topleft',
+       c('United States (497 BBS routes)', 'Maryland (27 BBS routes)','Single BBS route (50 stops)','10 point count stops','1 point count stop'),
+       col = c('black', col1, col2, col3, col4), lty = c('dashed', rep('solid', 4)), cex = 1.25, lwd = 4)
+dev.off()
+
+# BBS route + 10 stops + 1 stop + MD + all BBS, No legend
+pdf('output/plots/occupancy_vs_scale_BBS5_nolegend.pdf', height = 6, width = 7.5)
+par(mfrow = c(1, 1), mar = c(6, 6, 1, 3), mgp = c(4, 1, 0), 
+    oma = c(0,0,3,0), cex.axis = 1.5, cex.lab = 2, las = 1)
+plot(density(md.occ.mat[!is.na(md.occ.mat)]), main="", xlab = "Temporal Occupancy", ylab = "Density", 
+     col=col2, ylim = c(0, 5.5), xlim = c(-.1, 1.1), lwd = 4)
+points(density(md10.rt.occ2$Freq), col=col3, type='l', lwd = 4)
+points(density(md1.rt.occ2$Freq), col=col4, type='l', lwd = 4)
+points(density(md.occ$Freq), col = col1, type = 'l', lwd = 4)
+points(density(BBS.occ$Freq), type = 'l', lwd = 4, lty = 'dashed')
+dev.off()
+
+
+
+
+
+
+
+
+
 
 # Read in community size vs mean occupancy data for example datasets
 setwd('//bioark.bio.unc.edu/hurlbertallen/proposals/coreoccasional/analyses/')
