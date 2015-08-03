@@ -160,6 +160,53 @@ points(density(md.occ$Freq), col = col1, type = 'l', lwd = 4)
 points(density(BBS.occ$Freq), type = 'l', lwd = 4, lty = 'dashed')
 dev.off()
 
+####################################################################################
+# Get mean community size (per year) for each of the above scales of BBS data
+numMDroutes = length(unique(md.counts$stateroute))
+
+meanN.allBBS = sum(counts5$SpeciesTotal)/15
+meanN.MD = sum(md.counts$SpeciesTotal)/15
+meanN.singleBBS = meanN.MD/numMDroutes
+meanN.MD10 = sum(md.counts$Count10)/15/numMDroutes
+meanN.MD01 = sum(fiftyMD1$Stop1)/15/numMDroutes
+
+meanN = c(meanN.allBBS, meanN.MD, meanN.singleBBS, meanN.MD10, meanN.MD01)
+
+meanOcc.allBBS = mean(BBS.occ$Freq)
+meanOcc.MD = mean(md.occ$Freq)
+meanOcc.singleBBS = mean(md.occ.mat[!is.na(md.occ.mat)])
+meanOcc.MD10 = mean(md10.rt.occ2$Freq)
+meanOcc.MD01 = mean(md1.rt.occ2$Freq)
+
+meanOcc = c(meanOcc.allBBS, meanOcc.MD, meanOcc.singleBBS, meanOcc.MD10, meanOcc.MD01)
+
+# Get summary data for all other datasets
+summ = read.csv('output/tabular_data/core-transient_summary.csv')
+
+colors7 = c(rgb(29/255, 106/255, 155/255),
+            rgb(98/255, 83/255, 108/255),
+            rgb(120/255, 21/255, 21/255),
+            rgb(171/255, 167/255, 46/255),
+           
+            rgb(0, 54/255, 117/255),
+            
+            rgb(86/255, 141/255, 27/255),
+            rgb(186/255, 103/255, 30/255))
+
+symbols7 = c(16:18,15, 17, 16,18)
+
+taxcolors = data.frame(taxa = unique(summ$taxa), color = colors7, pch = symbols7)
+summ2 = merge(summ, taxcolors, by = 'taxa', all.x = T)
+summ2$color = as.character(summ2$color)
+summ3 = subset(summ2, datasetID != 1)
+
+par(mar = c(6, 6, 1, 1), las = 1)
+plot(log10(meanN), meanOcc, xlab = expression(paste(plain(log)[10]," Community Size")), 
+     ylab = 'Mean occupancy', pch = 16, col = c('black', col1, col2, col3, col4), 
+     cex = 4, ylim = c(0.1, 1.15), xlim = c(.8,5))
+
+points(log10(summ3$meanAbundance), summ3$mu, pch = summ3$pch, cex = 2, col = summ3$color)
+legend('topleft', legend = unique(summ$taxa), pch = symbols7, col = colors7, pt.cex = 2)
 
 
 
@@ -169,11 +216,23 @@ dev.off()
 
 
 
-# Read in community size vs mean occupancy data for example datasets
-setwd('//bioark.bio.unc.edu/hurlbertallen/proposals/coreoccasional/analyses/')
-occsize = read.table('example_taxa_meanocc_vs_commsize.txt', header=T, sep='\t', as.is = c(1,5,6))
+# Panel b - occupancy vs community size
+plot(log10(occsize$N), occsize$meanocc, xlab = expression(paste(plain(log)[10]," Community Size")), ylab = 'Mean occupancy', 
+     pch = occsize$pch, col = occsize$col, cex = 3, ylim = c(0.2, 1.05), xlim = c(.8,5))
+text(log10(occsize$N) + occsize$offset.x, occsize$meanocc + .08*occsize$offset.y, occsize$Organism, col = occsize$col, cex = 2)
+text(log10(occsize$N), occsize$meanocc + .03*occsize$offset.y, occsize$scale, col = occsize$col, cex = 1.5)
+mtext("(b)", 3, outer = T, adj = 0.5, cex = 3)
+dev.off()
 
-pdf('c:/git/core-transient/output/plots/occupancy_vs_scale.pdf',height=6,width=15)
+
+
+
+
+
+
+
+
+pdf('output/plots/occupancy_vs_scale.pdf',height=6,width=15)
 par(mfrow = c(1, 2), mar = c(6, 6, 1, 3), mgp = c(4, 1, 0), 
     oma = c(0,0,3,0), cex.axis = 2, cex.lab = 3, las = 1)
 # Panel a - kernel density estimates of occupancy for 4 scales of bird data
@@ -194,7 +253,7 @@ col6 = 'red'
 col7 = colors()[527]
 col8 = colors()[421]
 
-# Panel (b) - Colorado
+# Panel (b) - CA/OR
 plot(density(ca.occ$Freq), main="", xlab = "Temporal Occupancy", ylab = "Density", 
      col=col5, ylim = c(0, 4.5), lwd = 4)
 points(density(ca.occ.mat[!is.na(ca.occ.mat)]), col=col6, type='l', lwd = 4)
@@ -204,40 +263,6 @@ text(0.2, 4.3,'California/Oregon', cex = 1.5)
 dev.off()
 
 
-# 4-panel comparison of MD vs CA/OR
-pdf('c:/git/core-transient/output/plots/occupancy_vs_scale_8panel.pdf',height=6,width=15)
-par(mfrow = c(2, 2), mar = c(3, 3, 2, 3), mgp = c(4, 1, 0), 
-    oma = c(4,4,3,0), cex.axis = 2, cex.lab = 3, las = 1)
-plot(density(md.occ$Freq), main="State", xlab = "", ylab = "", 
-     col=col1, ylim = c(0, 4.5), lwd = 4)
-points(density(ca.occ$Freq), col=col5, lwd = 4)
-legend("topleft", c("Maryland", "California/Oregon"), lty= "solid", col = c(col1, col5), lwd = 3)
-
-
-plot(density(md.occ.mat[!is.na(md.occ.mat)]), col=col2, type='l', lwd = 4, 
-     main="BBS route", xlab = "", ylab = "")
-points(density(ca.occ.mat[!is.na(ca.occ.mat)]), col=col6, type='l', lwd = 4)
-
-
-plot(density(md10.rt.occ2$Freq), col=col3, type='l', lwd = 4,
-     main="10 point count stops", xlab = "", ylab = "")
-points(density(ca10.rt.occ2$Freq), col=col7, type='l', lwd = 4)
-
-
-plot(density(md1.rt.occ2$Freq), col=col4, type='l', lwd = 4,
-     main="1 point count stop", xlab = "", ylab = "")
-points(density(ca1.rt.occ2$Freq), col=col8, type='l', lwd = 4)
-mtext("Temporal Occupancy", 1, at = .5, cex = 2, outer = T, line= 1.3)
-mtext("Density", 2, at = .5, cex = 2, outer = T, las = 0, line = 1.3)
-dev.off()
-
-
-
-# Panel (b) - Colorado
-plot(density(ca.occ$Freq), main="", xlab = "Temporal Occupancy", ylab = "Density", 
-     col=col5, ylim = c(0, 4.5), lwd = 4)
-text(0.2, 4.3,'California/Oregon', cex = 1.5)
-dev.off()
 
 
 
@@ -255,25 +280,4 @@ dev.off()
 
 
 
-# Panel b - occupancy vs community size
-plot(log10(occsize$N), occsize$meanocc, xlab = expression(paste(plain(log)[10]," Community Size")), ylab = 'Mean occupancy', 
-     pch = occsize$pch, col = occsize$col, cex = 3, ylim = c(0.2, 1.05), xlim = c(.8,5))
-text(log10(occsize$N) + occsize$offset.x, occsize$meanocc + .08*occsize$offset.y, occsize$Organism, col = occsize$col, cex = 2)
-text(log10(occsize$N), occsize$meanocc + .03*occsize$offset.y, occsize$scale, col = occsize$col, cex = 1.5)
-mtext("(b)", 3, outer = T, adj = 0.5, cex = 3)
-dev.off()
 
-
-# Mean number of individuals at each scale
-MD.1stop = aggregate(fiftyMD1$Stop1, by = list(fiftyMD1$stateroute, fiftyMD1$year), sum)
-meanN.1stop = mean(MD.1stop$x)
-fiftyMD10 = subset(md.counts, stateroute %in% unique(md10.rt.occ$stateroute) & Year > 1995 & Year < 2011 & Count10!=0, 
-                  select = c('stateroute','Year','Aou','Count10'))
-MD.10stop = aggregate(fiftyMD10$Count10, by = list(fiftyMD10$stateroute, fiftyMD10$Year), sum)
-meanN.10stop = mean(MD.10stop$x)
-fiftyMD50 = subset(md.counts, stateroute %in% unique(md10.rt.occ$stateroute) & Year > 1995 & Year < 2011 & Count10!=0, 
-                   select = c('stateroute','Year','Aou','SpeciesTotal'))
-MD.50stop = aggregate(fiftyMD50$SpeciesTotal, by = list(fiftyMD50$stateroute, fiftyMD50$Year), sum)
-meanN.50stop = mean(MD.50stop$x)
-MD.27rtes = aggregate(md.counts$SpeciesTotal, by = list(md.counts$Year), sum)
-meanN.27rtes = mean(MD.27rtes$x)
