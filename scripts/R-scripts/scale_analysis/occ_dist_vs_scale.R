@@ -160,7 +160,23 @@ points(density(md.occ$Freq), col = col1, type = 'l', lwd = 4)
 points(density(BBS.occ$Freq), type = 'l', lwd = 4, lty = 'dashed')
 dev.off()
 
+
+
+
 ####################################################################################
+# Mean spatial scale of each of the BBS scales
+scale.1stop = pi*0.4^2 # in square kilometers
+meanSpatScale = c(scale.1stop*50*497, #area of 497 BBS routes
+                  scale.1stop*50*27,  #area of 27 BBS routes (in MD)
+                  scale.1stop*50,     #area of 1 BBS route
+                  scale.1stop*10,     #area of 10 point count stops
+                  scale.1stop)        #area of 1 point count stop
+plot(log10(meanSpatScale), meanOcc, xlab = expression(paste(plain(log)[10]," Spatial scale (km^2)")), 
+     ylab = 'Mean occupancy', pch = 16, col = c('white', col1, col2, col3, col4), 
+     cex = 4, ylim = c(0.1, 1.15), xlim = c(-1,4))
+
+
+#####################################################################################
 # Get mean community size (per year) for each of the above scales of BBS data
 numMDroutes = length(unique(md.counts$stateroute))
 
@@ -198,14 +214,18 @@ symbols7 = c(16:18,15, 17, 16,18)
 taxcolors = data.frame(taxa = unique(summ$taxa), color = colors7, pch = symbols7)
 summ2 = merge(summ, taxcolors, by = 'taxa', all.x = T)
 summ2$color = as.character(summ2$color)
-summ3 = subset(summ2, datasetID != 1)
+summ3 = subset(summ2, !datasetID %in% c(1, 99))
+bbssumm = subset(summ2, datasetID==1)
 
 par(mar = c(6, 6, 1, 1), las = 1)
 plot(log10(meanN), meanOcc, xlab = expression(paste(plain(log)[10]," Community Size")), 
      ylab = 'Mean occupancy', pch = 16, col = c('black', col1, col2, col3, col4), 
      cex = 4, ylim = c(0.1, 1.15), xlim = c(.8,5))
+points(log10(bbssumm$meanAbundance), bbssumm$mu, pch = 16, cex = 2, col = colors7[1])
+points(log10(meanN), meanOcc, pch = 16, col = c('black', col1, col2, col3, col4), cex = 4)
 
-points(log10(summ3$meanAbundance), summ3$mu, pch = summ3$pch, cex = 2, col = summ3$color)
+points(log10(summ3$meanAbundance), summ3$mu, pch = summ3$pch, cex = 2, col = summ3$color, font = 5)
+points(log10(meanN), meanOcc, pch = 16, col = c('black', col1, col2, col3, col4), cex = 4)
 legend('topleft', legend = unique(summ$taxa), pch = symbols7, col = colors7, pt.cex = 2)
 
 
