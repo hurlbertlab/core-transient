@@ -105,11 +105,11 @@ boxplot(summ4$propCore, xlim = c(0, (3*length(uniqTaxa)-2)), ylim = c(0, 1.2),
         cex.axis = 1.25)
 for (i in 1:length(uniqTaxa)) {
   tax = uniqTaxa[i]
-  boxplot(summ4$propTrans[summ4$taxa == tax], add = T, col = transCol, 
+  boxplot(summ4$propTrans[summ4$taxa == tax], add = T, col = transCol, staplewex = 0, outline = F,
           at = 3*(i-1), yaxt = "n")
-  boxplot(summ4$propNeither[summ4$taxa == tax], add =T, col = nonCol,
+  boxplot(summ4$propNeither[summ4$taxa == tax], add =T, col = nonCol, staplewex = 0, outline = F,
           at = 3*(i-1)+.5, yaxt = "n")
-  boxplot(summ4$propCore[summ4$taxa == tax], add =T, col = coreCol,
+  boxplot(summ4$propCore[summ4$taxa == tax], add =T, col = coreCol, staplewex = 0, outline = F,
           at = 3*(i-1)+1, yaxt = "n")
 }
 axis(1, uniqTaxa, at = 3*(1:7)-2.5, cex.axis = 1.4)

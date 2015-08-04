@@ -206,14 +206,12 @@ meanOcc = c(meanOcc.allBBS, meanOcc.MD, meanOcc.singleBBS, meanOcc.MD10, meanOcc
 summ = read.csv('output/tabular_data/core-transient_summary.csv')
 
 colors7 = c(rgb(29/255, 106/255, 155/255),
-            rgb(98/255, 83/255, 108/255),
-            rgb(120/255, 21/255, 21/255),
-            rgb(171/255, 167/255, 46/255),
-           
+            colors()[612],
+            colors()[552],
+            colors()[144],
             rgb(0, 54/255, 117/255),
-            
             rgb(86/255, 141/255, 27/255),
-            rgb(186/255, 103/255, 30/255))
+            colors()[547])
 
 symbols7 = c(16:18,15, 17, 167,18)
 
