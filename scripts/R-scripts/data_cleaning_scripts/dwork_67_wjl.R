@@ -298,6 +298,24 @@ dataFormattingTable[,'Notes_siteFormat'] =
 #===============================================================================*
 # Next, we need to explore the count records. For filling out the data formatting table, we need to change the name of the field which represents counts, densities, percent cover, etc to "count". Then we will clean up unnecessary values.
 
+# In this dataset, the count field only varies between 1-12 which raises
+# important questions about this information given the fact that many of the
+# waterbirds being censused are gregarious and/or colonial.
+
+# I cannot find the source of the original data serving as the raw dataset.
+# A re-download from OBIS (OBIS ID 603) has no abundance/count field at all.
+# I suspect that whoever compiled our "raw dataset" file assigned an
+# abundance of 1 to each record, and these values were summed when counts
+# were surveyed up to monthly within a year.
+
+# Abundance data IS collected and available from the CWAC website
+# (http://cwac.adu.org.za/sites.php, click on a site, then click on small
+# set of 3 index cards above and to the left of the table), but obtaining
+# data across all sites and 'cards' will require a special request.
+
+# Until then, meanAbundance will be manually changed to NA down in the 
+# siteSummary below.
+
 names(dataset3)
 summary(dataset3)
 
@@ -341,7 +359,9 @@ dataFormattingTable[,'countFormat'] =
 dataFormattingTable[,'Notes_countFormat'] = 
   dataFormattingTableFieldUpdate(datasetID, 'Notes_countFormat', 
                                  
-                                 "Data represents abundance. no changes or removals necessary")
+                                 "Count data are suspected to be sums of binary presence data across surveys
+                                 within any one year. They should not be relied on for estimates of abundance
+                                 or mean abundance.")
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SPECIES DATA ----
@@ -615,11 +635,15 @@ hist(propOccFun(subsettedData)$propOcc)
 
 # Take a look at the site summary frame:
 
-siteSummaryFun(subsettedData)
+summ = siteSummaryFun(subsettedData)
 
 # If everything looks good, write the files:
 
 writePropOccSiteSummary(subsettedData)
+
+# REMOVE meanAbundance info which is unreliable (see notes above)
+summ$meanAbundance = NA
+write.csv(summ, 'data/siteSummaries/siteSummary_67.csv', row.names = F)
 
 # Remove all objects except for functions from the environment:
 
