@@ -58,12 +58,13 @@ summ = addNewSummariesFun(threshold, reps, write = TRUE)
 summ = read.csv('output/tabular_data/core-transient_summary.csv', header=T)
 summ$taxa = factor(summ$taxa)
 summ$system = factor(summ$system)
-dsets = unique(summ[, c('datasetID', 'system','taxa')])
+summ4 = subset(summ, datasetID != 99)
+dsets = unique(summ4[, c('datasetID', 'system','taxa')])
 
 dsetsBySystem = table(dsets$system)
 dsetsByTaxa = table(dsets$taxa)
-sitesBySystem = table(summ$system)
-sitesByTaxa = table(summ$taxa)
+sitesBySystem = table(summ4$system)
+sitesByTaxa = table(summ4$taxa)
 
 colors7 = c(rgb(98/255, 83/255, 108/255),
             #rgb(125/255, 73/255, 67/255),
@@ -77,7 +78,7 @@ colors7 = c(rgb(98/255, 83/255, 108/255),
 par(mfrow = c(2, 2), mar = c(1,1,1,1), cex = 1.25)
 pie(dsetsBySystem, main = paste("By dataset (n = ", nrow(dsets), ")", sep = ""),
     col = c('skyblue', 'burlywood'))
-pie(sitesBySystem, main = paste("By site (n = ", nrow(summ), ")", sep = ""),
+pie(sitesBySystem, main = paste("By site (n = ", nrow(summ4), ")", sep = ""),
     col = c('skyblue', 'burlywood'))
 pie(dsetsByTaxa, col = colors7, init.angle = 30)
 pie(sitesByTaxa, col = colors7, init.angle = 60)
@@ -89,26 +90,26 @@ pie(sitesByTaxa, col = colors7, init.angle = 60)
 # species by taxon.
 library(wesanderson)
 
-summ$propNeither = 1 - summ$propCore - summ$propTrans
+summ4$propNeither = 1 - summ4$propCore - summ4$propTrans
 
-coreCol = wes_palette("FantasticFox")[1] 
-nonCol = wes_palette("FantasticFox")[2] 
-transCol = wes_palette("FantasticFox")[3] 
+coreCol = rgb(102/255, 102/255, 255/255, alpha = 1)
+nonCol = 'gray70'
+transCol = rgb(204/255, 88/255, 0, alpha = 1)
 
-meanCoreByTaxa = aggregate(summ$propCore, by = list(summ$taxa), mean)
+meanCoreByTaxa = aggregate(summ4$propCore, by = list(summ4$taxa), mean)
 uniqTaxa = meanCoreByTaxa$Group.1[order(meanCoreByTaxa$x, decreasing = T)]
 
 par(mfrow = c(1,1), mar = c(5, 5, 1, 1), mgp = c(3, 1, 0))
-boxplot(summ$propCore, xlim = c(0, (3*length(uniqTaxa)-2)), ylim = c(0, 1.2), 
+boxplot(summ4$propCore, xlim = c(0, (3*length(uniqTaxa)-2)), ylim = c(0, 1.2), 
         border = 'white', col = 'white', ylab = "Fraction of species", cex.lab = 2, las = 1, 
         cex.axis = 1.25)
 for (i in 1:length(uniqTaxa)) {
   tax = uniqTaxa[i]
-  boxplot(summ$propTrans[summ$taxa == tax], add = T, col = transCol, 
+  boxplot(summ4$propTrans[summ4$taxa == tax], add = T, col = transCol, 
           at = 3*(i-1), yaxt = "n")
-  boxplot(summ$propNeither[summ$taxa == tax], add =T, col = nonCol,
+  boxplot(summ4$propNeither[summ4$taxa == tax], add =T, col = nonCol,
           at = 3*(i-1)+.5, yaxt = "n")
-  boxplot(summ$propCore[summ$taxa == tax], add =T, col = coreCol,
+  boxplot(summ4$propCore[summ4$taxa == tax], add =T, col = coreCol,
           at = 3*(i-1)+1, yaxt = "n")
 }
 axis(1, uniqTaxa, at = 3*(1:7)-2.5, cex.axis = 1.4)

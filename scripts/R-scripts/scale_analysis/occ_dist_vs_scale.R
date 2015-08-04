@@ -171,10 +171,15 @@ meanSpatScale = c(scale.1stop*50*497, #area of 497 BBS routes
                   scale.1stop*50,     #area of 1 BBS route
                   scale.1stop*10,     #area of 10 point count stops
                   scale.1stop)        #area of 1 point count stop
+par(mar = c(6, 6, 1, 1), mgp = c(4, 1, 0), cex.lab = 2.5)
 plot(log10(meanSpatScale), meanOcc, 
      xlab = expression(paste(plain(log)[10]," Spatial scale (", plain(km)^2, ")")), 
      ylab = 'Mean occupancy', pch = 16, col = c('white', col1, col2, col3, col4), 
      cex = 4, ylim = c(0.1, 1.15), xlim = c(-1,4))
+legend('topleft',
+       c('Maryland (27 BBS routes)',
+         'Single BBS route (50 stops)','10 point count stops','1 point count stop'),
+       col = c(col1, col2, col3, col4), pch = 16, cex = 1.5, pt.cex = 2)
 
 
 #####################################################################################
@@ -210,7 +215,7 @@ colors7 = c(rgb(29/255, 106/255, 155/255),
             rgb(86/255, 141/255, 27/255),
             rgb(186/255, 103/255, 30/255))
 
-symbols7 = c(16:18,15, 17, 16,18)
+symbols7 = c(16:18,15, 17, 167,18)
 
 taxcolors = data.frame(taxa = unique(summ$taxa), color = colors7, pch = symbols7)
 summ2 = merge(summ, taxcolors, by = 'taxa', all.x = T)
@@ -227,70 +232,9 @@ points(log10(meanN), meanOcc, pch = 16, col = c('black', col1, col2, col3, col4)
 
 points(log10(summ3$meanAbundance), summ3$mu, pch = summ3$pch, cex = 2, col = summ3$color, font = 5)
 points(log10(meanN), meanOcc, pch = 16, col = c('black', col1, col2, col3, col4), cex = 4)
-legend('topleft', legend = unique(summ$taxa), pch = symbols7, col = colors7, pt.cex = 2)
-
-
-
-
-
-
-
-
-
-# Panel b - occupancy vs community size
-plot(log10(occsize$N), occsize$meanocc, xlab = expression(paste(plain(log)[10]," Community Size")), ylab = 'Mean occupancy', 
-     pch = occsize$pch, col = occsize$col, cex = 3, ylim = c(0.2, 1.05), xlim = c(.8,5))
-text(log10(occsize$N) + occsize$offset.x, occsize$meanocc + .08*occsize$offset.y, occsize$Organism, col = occsize$col, cex = 2)
-text(log10(occsize$N), occsize$meanocc + .03*occsize$offset.y, occsize$scale, col = occsize$col, cex = 1.5)
-mtext("(b)", 3, outer = T, adj = 0.5, cex = 3)
-dev.off()
-
-
-
-
-
-
-
-
-
-pdf('output/plots/occupancy_vs_scale.pdf',height=6,width=15)
-par(mfrow = c(1, 2), mar = c(6, 6, 1, 3), mgp = c(4, 1, 0), 
-    oma = c(0,0,3,0), cex.axis = 2, cex.lab = 3, las = 1)
-# Panel a - kernel density estimates of occupancy for 4 scales of bird data
-plot(density(md.occ$Freq), main="", xlab = "Temporal Occupancy", ylab = "Density", 
-     col=col1, ylim = c(0, 4.5), lwd = 4)
-points(density(md.occ.mat[!is.na(md.occ.mat)]), col=col2, type='l', lwd = 4)
-points(density(md10.rt.occ2$Freq), col=col3, type='l', lwd = 4)
-points(density(md1.rt.occ2$Freq), col=col4, type='l', lwd = 4)
-
-legend('topleft',
-       c('Maryland (27 BBS routes)','Single BBS route (50 stops)','10 point count stops','1 point count stop'),
-       col = c(col1,col2,col3,col4), cex = 1.5, lwd = 4)
-#mtext("(a)", 3, outer = T, adj = 0, cex = 3)
-
-
-col5 = 'darkred'
-col6 = 'red'
-col7 = colors()[527]
-col8 = colors()[421]
-
-# Panel (b) - CA/OR
-plot(density(ca.occ$Freq), main="", xlab = "Temporal Occupancy", ylab = "Density", 
-     col=col5, ylim = c(0, 4.5), lwd = 4)
-points(density(ca.occ.mat[!is.na(ca.occ.mat)]), col=col6, type='l', lwd = 4)
-points(density(ca10.rt.occ2$Freq), col=col7, type='l', lwd = 4)
-points(density(ca1.rt.occ2$Freq), col=col8, type='l', lwd = 4)
-text(0.2, 4.3,'California/Oregon', cex = 1.5)
-dev.off()
-
-
-
-
-
-
-
-
-
+legend('topleft', legend = unique(summ$taxa), pch = symbols7, 
+       col = c(colors7[1:5], 'white', colors7[7]), pt.cex = 2)
+points(0.73, 0.963, pch = symbols7[6], font = 5, col = colors7[6], cex = 2)
 
 
 
