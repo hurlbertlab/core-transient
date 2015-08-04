@@ -61,19 +61,25 @@ summ$system = factor(summ$system)
 summ4 = subset(summ, datasetID != 99)
 dsets = unique(summ4[, c('datasetID', 'system','taxa')])
 
+taxorder = c('Bird', 'Plankton', 'Arthropod', 'Benthos', 'Fish', 'Plant', 'Mammal')
+
 dsetsBySystem = table(dsets$system)
 dsetsByTaxa = table(dsets$taxa)
 sitesBySystem = table(summ4$system)
 sitesByTaxa = table(summ4$taxa)
 
-colors7 = c(rgb(98/255, 83/255, 108/255),
-            #rgb(125/255, 73/255, 67/255),
-            rgb(120/255, 21/255, 21/255),
-            rgb(171/255, 167/255, 46/255),
-            rgb(186/255, 103/255, 30/255),
+dsetsByTaxa = dsetsByTaxa[taxorder]
+sitesByTaxa = sitesByTaxa[taxorder]
+
+colors7 = c(rgb(29/255, 106/255, 155/255),
+            colors()[612],
+            colors()[552],
+            colors()[144],
             rgb(0, 54/255, 117/255),
-            rgb(29/255, 106/255, 155/255),
-            rgb(86/255, 141/255, 27/255))
+            rgb(86/255, 141/255, 27/255),
+            colors()[547])
+
+symbols7 = c(16:18,15, 17, 167,18)
 
 par(mfrow = c(2, 2), mar = c(1,1,1,1), cex = 1.25)
 pie(dsetsBySystem, main = paste("By dataset (n = ", nrow(dsets), ")", sep = ""),
@@ -117,6 +123,43 @@ rect(.5, 1.1, 1.5, 1.2, col = transCol, border=F)
 rect(6.5, 1.1, 7.5, 1.2, col = nonCol, border=F)  
 rect(12.5, 1.1, 13.5, 1.2, col = coreCol, border=F)  
 text(c(3.4, 9, 14.5), c(1.15, 1.15, 1.15), c('Transient', 'Neither', 'Core'), cex = 1.75)
+
+
+#########################################################################################
+# Summarizing datasets based on beta distribution parameters
+par(mfrow = c(1,1), mar = c(6,6,1,1), mgp = c(4,1, 0))
+plot(summ3$alpha, summ3$beta, type = "n", xlim = c(0,4), xlab = "alpha", ylab = "beta")
+points(summ3$alpha, summ3$beta, pch = summ3$pch, col = summ3$color, font = 5, cex = 2)
+abline(a=0, b=1, lty = 'dotted', lwd = 2)
+rect(-1, -1, 1, 1, lty = 'dashed', lwd = 4)
+legend('topleft', legend = unique(summ$taxa), pch = symbols7, 
+       col = c(colors7[1:5], 'white', colors7[7]), pt.cex = 2, cex = 1.5)
+points(-.025, 3.3, pch = symbols7[6], font = 5, col = colors7[6], cex = 2)
+
+# Example beta distributions
+bimodist = dbeta(0:100/100, 0.8, 0.8)
+coredist = dbeta(0:100/100, 5, 1.2)
+trandist = dbeta(0:100/100, 1.2, 5)
+
+par(mfrow = c(1,1), mar = c(6, 6, .4, .4), mgp = c(2, 0, 0))
+plot(bimodist, type = 'l', lwd = 6, xaxt = "n", yaxt = "n", xlab = "Occupancy",
+     ylab = "Frequency", cex.lab = 4)
+plot(coredist, type = 'l', lwd = 6, xaxt = "n", yaxt = "n", xlab = "Occupancy",
+     ylab = "Frequency", cex.lab = 4)
+plot(trandist, type = 'l', lwd = 6, xaxt = "n", yaxt = "n", xlab = "Occupancy",
+     ylab = "Frequency", cex.lab = 4)
+
+
+
+####################################################################################
+# Summary of other distribution statistics by taxa
+
+par(mfrow = c(1,1), mar = c(6, 6, 1, 1), mgp = c(4, 1, 0))
+summ4$taxa = with(summ4, reorder(taxa, bimodality, function(x) mean(x, na.rm = T)))
+boxplot(summ4$bimodality ~ summ4$taxa, cex.axis = 1.25, ylab = "Bimodality", boxwex = .6)
+summ5 = summ4
+summ5$taxa = with(summ5, reorder(taxa, pBimodal, function(x) mean(x, na.rm = T)))
+boxplot(summ5$pBimodal ~ summ5$taxa, cex.axis = 1.25, ylab = "p (Bimodal)", boxwex = .6)
 
 
 #####################################################

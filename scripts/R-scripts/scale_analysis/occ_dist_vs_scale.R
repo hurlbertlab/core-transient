@@ -229,7 +229,6 @@ points(log10(bbssumm$meanAbundance), bbssumm$mu, pch = 16, cex = 2, col = colors
 points(log10(meanN), meanOcc, pch = 16, col = c('black', col1, col2, col3, col4), cex = 4)
 
 points(log10(summ3$meanAbundance), summ3$mu, pch = summ3$pch, cex = 2, col = summ3$color, font = 5)
-points(log10(meanN), meanOcc, pch = 16, col = c('black', col1, col2, col3, col4), cex = 4)
 legend('topleft', legend = unique(summ$taxa), pch = symbols7, 
        col = c(colors7[1:5], 'white', colors7[7]), pt.cex = 2, cex = 1.5)
 points(0.76, 0.85, pch = symbols7[6], font = 5, col = colors7[6], cex = 2)
