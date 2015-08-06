@@ -58,15 +58,15 @@ summ = addNewSummariesFun(threshold, reps, write = TRUE)
 summ = read.csv('output/tabular_data/core-transient_summary.csv', header=T)
 summ$taxa = factor(summ$taxa)
 summ$system = factor(summ$system)
-summ4 = subset(summ, !datasetID %in% c(99, 85, 90, 91, 92, 97, 124))
-dsets = unique(summ4[, c('datasetID', 'system','taxa')])
+summ2 = subset(summ, !datasetID %in% c(99, 85, 90, 91, 92, 97, 124))
+dsets = unique(summ2[, c('datasetID', 'system','taxa')])
 
 taxorder = c('Bird', 'Plant', 'Mammal', 'Fish', 'Arthropod', 'Benthos', 'Plankton')
 
 dsetsBySystem = table(dsets$system)
 dsetsByTaxa = table(dsets$taxa)
-sitesBySystem = table(summ4$system)
-sitesByTaxa = table(summ4$taxa)
+sitesBySystem = table(summ2$system)
+sitesByTaxa = table(summ2$taxa)
 
 colors7 = c(rgb(29/255, 106/255, 155/255),
             colors()[612],
@@ -107,45 +107,68 @@ dev.off()
 # Boxplots showing distribution of core and transient
 # species by taxon.
 
-summ4$propNeither = 1 - summ4$propCore - summ4$propTrans
+summ2$propNeither = 1 - summ2$propCore - summ2$propTrans
 
 coreCol = rgb(102/255, 102/255, 255/255, alpha = 1)
 nonCol = 'gray70'
 transCol = rgb(204/255, 88/255, 0, alpha = 1)
 
-meanCoreByTaxa = aggregate(summ4$propCore, by = list(summ4$taxa), mean)
+meanCoreByTaxa = aggregate(summ2$propCore, by = list(summ2$taxa), mean)
 uniqTaxa = meanCoreByTaxa$Group.1[order(meanCoreByTaxa$x, decreasing = T)]
 
-par(mfrow = c(1,1), mar = c(5, 5, 1, 1), mgp = c(3, 1, 0))
-boxplot(summ4$propCore, xlim = c(0, (3*length(uniqTaxa)-2)), ylim = c(0, 1.2), 
-        border = 'white', col = 'white', ylab = "Fraction of species", cex.lab = 2, las = 1, 
+pdf('output/plots/CT_boxplots_byTaxa.pdf', height = 6, width = 8)
+par(mfrow = c(1,1), mar = c(6, 5, 1, 1), mgp = c(3, 1, 0), oma = c(0,0,0,0))
+box1 = boxplot(summ2$propCore, xlim = c(0, (3*length(uniqTaxa)-2)), ylim = c(0, 1), 
+        border = 'white', col = 'white', ylab = "Fraction of species", cex.lab = 1.5, las = 1, 
         cex.axis = 1.25)
 for (i in 1:length(uniqTaxa)) {
   tax = uniqTaxa[i]
-  boxplot(summ4$propTrans[summ4$taxa == tax], add = T, col = transCol, staplewex = 0, outline = F,
+  boxplot(summ2$propTrans[summ2$taxa == tax], add = T, col = transCol, staplewex = 0, outline = F,
           at = 3*(i-1), yaxt = "n")
-  boxplot(summ4$propNeither[summ4$taxa == tax], add =T, col = nonCol, staplewex = 0, outline = F,
+  boxplot(summ2$propNeither[summ2$taxa == tax], add =T, col = nonCol, staplewex = 0, outline = F,
           at = 3*(i-1)+.5, yaxt = "n")
-  boxplot(summ4$propCore[summ4$taxa == tax], add =T, col = coreCol, staplewex = 0, outline = F,
+  boxplot(summ2$propCore[summ2$taxa == tax], add =T, col = coreCol, staplewex = 0, outline = F,
           at = 3*(i-1)+1, yaxt = "n")
 }
-axis(1, uniqTaxa, at = 3*(1:7)-2.5, cex.axis = 1.4)
-rect(.5, 1.1, 1.5, 1.2, col = transCol, border=F)
-rect(6.5, 1.1, 7.5, 1.2, col = nonCol, border=F)  
-rect(12.5, 1.1, 13.5, 1.2, col = coreCol, border=F)  
-text(c(3.4, 9, 14.5), c(1.15, 1.15, 1.15), c('Transient', 'Neither', 'Core'), cex = 1.75)
+text(3*(1:7)-2.5, par("usr")[3], uniqTaxa, srt = 45, xpd = T, cex = 1.25, adj = c(1.1,1.1))
+rect(.5, 0.9, 1.5, 1.0, col = transCol, border=F)
+rect(6.5, 0.9, 7.5, 1.0, col = nonCol, border=F)  
+rect(12.5, 0.9, 13.5, 1.0, col = coreCol, border=F)  
+text(c(3.4, 9, 14.5), c(0.95, 0.95, 0.95), c('Transient', 'Neither', 'Core'), cex = 1.5)
+dev.off()
+
+
+##################################################
+# Merge taxa color and symbol codes into summary data
+summ3 = merge(summ2, taxcolors, by = 'taxa', all.x = T)
+summ3$color = as.character(summ3$color)
+notbbs = subset(summ3, datasetID != 1)
+bbssumm = subset(summ3, datasetID == 1)
+
 
 
 #########################################################################################
 # Summarizing datasets based on beta distribution parameters
-par(mfrow = c(1,1), mar = c(6,6,1,1), mgp = c(4,1, 0))
-plot(summ3$alpha, summ3$beta, type = "n", xlim = c(0,4), xlab = "alpha", ylab = "beta")
-points(summ3$alpha, summ3$beta, pch = summ3$pch, col = summ3$color, font = 5, cex = 2)
-abline(a=0, b=1, lty = 'dotted', lwd = 2)
-rect(-1, -1, 1, 1, lty = 'dashed', lwd = 4)
+pdf('output/plots/alpha_vs_beta.pdf', height = 6, width = 8)
+par(mfrow = c(1,1), mar = c(5,5,1,1), mgp = c(3,1, 0), cex.axis = 1.25, cex.lab = 2, las = 1)
+plot(summ3$alpha, summ3$beta, type = "n", xlim = c(-0.25,3.5), xlab = "alpha", ylab = "beta",
+     ylim = c(0,4), yaxt = "n")
+axis(2, 0:4, cex = 1.25)
+points(summ3$alpha, summ3$beta, pch = summ3$pch, col = summ3$color, font = 5, cex = 1.5)
+abline(a=0, b=1, lty = 'dotted', lwd = 4)
+rect(-1, -1, 1, 1, lty = 'dashed', lwd = 2)
 legend('topleft', legend = unique(summ$taxa), pch = symbols7, 
-       col = c(colors7[1:5], 'white', colors7[7]), pt.cex = 2, cex = 1.5)
-points(-.025, 3.3, pch = symbols7[6], font = 5, col = colors7[6], cex = 2)
+       col = c(colors7[1:5], 'white', colors7[7]), pt.cex = 2, cex = 1.4)
+points(-.2, 2.5, pch = symbols7[6], font = 5, col = colors7[6], cex = 1.7)
+text(3,3.2, substitute(paste(alpha, " = ", beta)), srt = 40, cex = 2)
+dev.off()
+
+# Tally fraction of sites in each of 3 groups
+# Fraction bimodal
+nrow(summ3[summ3$alpha < 1 & summ3$beta < 1,])/nrow(summ3)
+# Fraction core-dominated
+nrow(summ3[summ3$alpha >= 1 & summ3$beta < summ3$alpha,])/nrow(summ3)
+nrow(summ3[summ3$beta >= 1 & summ3$beta > summ3$alpha,])/nrow(summ3)
 
 # Example beta distributions
 bimodist = dbeta(0:100/100, 0.8, 0.8)
