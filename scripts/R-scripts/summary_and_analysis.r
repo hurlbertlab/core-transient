@@ -61,15 +61,12 @@ summ$system = factor(summ$system)
 summ4 = subset(summ, !datasetID %in% c(99, 85, 90, 91, 92, 97, 124))
 dsets = unique(summ4[, c('datasetID', 'system','taxa')])
 
-taxorder = c('Bird', 'Plankton', 'Arthropod', 'Benthos', 'Fish', 'Plant', 'Mammal')
+taxorder = c('Bird', 'Plant', 'Mammal', 'Fish', 'Arthropod', 'Benthos', 'Plankton')
 
 dsetsBySystem = table(dsets$system)
 dsetsByTaxa = table(dsets$taxa)
 sitesBySystem = table(summ4$system)
 sitesByTaxa = table(summ4$taxa)
-
-dsetsByTaxa = dsetsByTaxa[taxorder]
-sitesByTaxa = sitesByTaxa[taxorder]
 
 colors7 = c(rgb(29/255, 106/255, 155/255),
             colors()[612],
@@ -81,13 +78,28 @@ colors7 = c(rgb(29/255, 106/255, 155/255),
 
 symbols7 = c(16:18,15, 17, 167,18)
 
-par(mfrow = c(2, 2), mar = c(1,1,1,1), cex = 1.25)
-pie(dsetsBySystem, main = paste("By dataset (n = ", nrow(dsets), ")", sep = ""),
-    col = c('skyblue', 'burlywood'))
-pie(sitesBySystem, main = paste("By site (n = ", nrow(summ4), ")", sep = ""),
-    col = c('skyblue', 'burlywood'))
-pie(dsetsByTaxa, col = colors7, init.angle = 30)
-pie(sitesByTaxa, col = colors7, init.angle = 60)
+taxcolors = data.frame(taxa = unique(summ$taxa), color = colors7, pch = symbols7)
+
+pdf('output/plots/data_summary_hists.pdf', height = 8, width = 10)
+par(mfrow = c(2, 2), mar = c(6,6,1,1), cex = 1.25, oma = c(0,0,0,0), las = 1,
+    cex.lab = 1.5)
+barplot(dsetsBySystem, col = c('skyblue', 'burlywood'), cex.names = 1.5)
+mtext("# Datasets", 2, cex = 1.5, las = 0, line = 2.5)
+barplot(log10(sitesBySystem), col = c('skyblue', 'burlywood'), cex.names = 1.25,
+        yaxt = "n", ylim = c(0,3))
+axis(2, 0:3)
+mtext(expression(log[10] ~ " # Assemblages"), 2, cex = 1.5, las = 0, line = 2.5)
+bar1 = barplot(dsetsByTaxa[taxorder], xaxt = "n", axisnames = F,
+        col = as.character(taxcolors$color[match(taxorder, taxcolors$taxa)]))
+text(bar1, par("usr")[3], taxorder, srt = 60, adj = c(1, 1), xpd = TRUE, cex = 1.25)
+axis(2, 0:5)
+mtext("# Datasets", 2, cex = 1.5, las = 0, line = 2.5)
+bar2 = barplot(log10(sitesByTaxa[taxorder]), axes = F, axisnames = F, ylim = c(0,3),
+        col = as.character(taxcolors$color[match(taxorder, taxcolors$taxa)]))
+text(bar2, par("usr")[3], taxorder, srt = 60, adj = c(1, 1), xpd = TRUE, cex = 1.25)
+axis(2, 0:3)
+mtext(expression(log[10] ~ " # Assemblages"), 2, cex = 1.5, las = 0, line = 2.5)
+dev.off()
 
 
 
