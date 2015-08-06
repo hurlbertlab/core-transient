@@ -159,7 +159,7 @@ abline(a=0, b=1, lty = 'dotted', lwd = 4)
 rect(-1, -1, 1, 1, lty = 'dashed', lwd = 2)
 legend('topleft', legend = unique(summ$taxa), pch = symbols7, 
        col = c(colors7[1:5], 'white', colors7[7]), pt.cex = 2, cex = 1.4)
-points(-.2, 2.5, pch = symbols7[6], font = 5, col = colors7[6], cex = 1.7)
+points(-.28, 2.65, pch = symbols7[6], font = 5, col = colors7[6], cex = 1.7)
 text(3,3.2, substitute(paste(alpha, " = ", beta)), srt = 40, cex = 2)
 dev.off()
 
