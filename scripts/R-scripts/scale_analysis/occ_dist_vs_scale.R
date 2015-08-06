@@ -235,7 +235,23 @@ points(0.76, 0.85, pch = symbols7[6], font = 5, col = colors7[6], cex = 2)
 
 
 
+##########################################################################
+# Explaining variation in mean occupancy within BBS
 
+env = read.csv('data/raw_datasets/dataset_1RAW/env_data.csv')
+bbsumm = merge(bbssumm, env, by.x = 'site', by.y = 'stateroute')
+
+par(mfrow = c(2,1), mar = c(6, 4, 1, 1), mgp = c(3, 1, 0), 
+    oma = c(0, 4, 0, 0), las = 1, cex.axis = 1.5, cex.lab = 2)
+plot(bbsumm$sum.NDVI.mean, bbsumm$mu, xlab = "NDVI", ylab = "", pch = 16, col = 'gray40')
+lm.ndvi = lm(mu ~ sum.NDVI.mean, data = bbsumm)
+abline(lm.ndvi, col = 'red', lty = 'dashed', lwd = 4)
+text(0.25, 0.85, bquote(R^2 ~ "=" ~ .(round(summary(lm.ndvi)$r.squared, 2))), cex = 1.5)
+plot(bbsumm$elev.mean, bbsumm$mu, xlab = "Elevation (m)", ylab = "", pch = 16, col = 'gray40')
+lm.elev = lm(mu ~ elev.mean, data = bbsumm)
+abline(lm.elev, col = 'red', lty = 'dashed', lwd = 4)
+text(2600, 0.85, bquote(R^2 ~ "=" ~ .(round(summary(lm.elev)$r.squared, 2))), cex = 1.5)
+mtext("Mean occupancy", 2, outer = T, cex = 2, las = 0)
 
 
 
