@@ -273,8 +273,8 @@ dataFormattingTable[,'spatial_scale_variable'] =
 dataFormattingTable[,'Notes_siteFormat'] = 
   dataFormattingTableFieldUpdate(datasetID, 'Notes_siteFormat',  # Fill value below in quotes
                                  
-  'quadrats (sites) are potentially nested into two livestock exclosures and XY coords are provided, but this is not a 
-  regular hierarhical nesting and I dont think it would be useful to analyze that way.')
+  'quadrats (sites) are potentially nested into two livestock exclosures and XY coords are provided; 
+  it may be useful to create 3 or 4 coarser grain site codes based on the spatial arrangement.')
 
 
 #-------------------------------------------------------------------------------*
@@ -288,8 +288,12 @@ summary(dataset3)
 # Fill in the original field name here
 countfield = 'area'
 
-# Renaming it
-names(dataset3)[which(names(dataset3) == countfield)] = 'count'
+# Note that the value in this field is area in cm2, referring to contiguous area
+# occupied by a single individual or clone. So we will create a count field
+# of 1 for every record in the dataset (all records have area > 0).
+
+dataset3$count = 1
+
 
 # Now we will remove zero counts and NA's:
 
@@ -320,12 +324,14 @@ head(dataset5)
 dataFormattingTable[,'countFormat'] = 
   dataFormattingTableFieldUpdate(datasetID, 'countFormat',    # Fill value below in quotes
                                  
-                                 'cover')
+                                 'count')
 
 dataFormattingTable[,'Notes_countFormat'] = 
   dataFormattingTableFieldUpdate(datasetID, 'Notes_countFormat', # Fill value below in quotes
                                  
-                                 'Data represents basal cover in cm^2. There were no NAs nor 0s that required removal')
+                                 'Each record is counted as one individual, which may be underestimate
+                                 the true number, but is more appropriate than using the coverage area
+                                 when comparing to other datasets.')
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SPECIES DATA ----
