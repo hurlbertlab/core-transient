@@ -328,7 +328,8 @@ meanSpatScale = c(scale.1stop*50*497, #area of 497 BBS routes
                   scale.1stop)        #area of 1 point count stop
 
 pdf('output/plots/occ_vs_spatialScale_BBS.pdf', height = 6, width = 7.5)
-par(mar = c(6, 6, 1, 1), mgp = c(4, 1, 0), cex.lab = 2.5)
+par(mfrow = c(1, 1), mar = c(6, 6, 1, 1), mgp = c(4, 1, 0), 
+    cex.axis = 1.5, cex.lab = 2, las = 1)
 plot(log10(meanSpatScale), meanOcc, 
      xlab = expression(paste(plain(log)[10]," Spatial scale (", plain(km)^2, ")")), 
      ylab = 'Mean occupancy', pch = 16, col = c('white', col1, col2, col3, col4), 
@@ -353,6 +354,22 @@ meanN = c(meanN.allBBS, meanN.MD, meanN.singleBBS, meanN.MD10, meanN.MD01)
 
 # Regression not including all BBS scale
 BBS.lm = lm(meanOcc[2:5] ~ log10(meanN[2:5]))
+
+# Mean occupancy vs community size for BBS
+pdf('output/plots/occ_vs_communitySize_BBS.pdf', height = 6, width = 7.5)
+par(mfrow = c(1, 1), mar = c(6, 6, 1, 1), mgp = c(4, 1, 0), 
+    cex.axis = 1.5, cex.lab = 2, las = 1)
+plot(log10(meanN), meanOcc, 
+     xlab = expression(paste(plain(log)[10], " Community size")), 
+     ylab = 'Mean occupancy', pch = 16, col = c('white', col1, col2, col3, col4), 
+     cex = 4, ylim = c(0.1, 1.15), xlim = c(0.8,5))
+legend('topleft',
+       c('Maryland (27 BBS routes)',
+         'Single BBS route (50 stops)','10 point count stops','1 point count stop'),
+       col = c(col1, col2, col3, col4), pch = 16, cex = 1.5, pt.cex = 2)
+dev.off()
+
+
 
 # Dataset-level means of community abundance and occupancy
 datasetMeanN = aggregate(summ3$meanAbundance, by = list(summ3$datasetID), mean)
@@ -398,8 +415,8 @@ par(mfrow = c(1, 1), mar = c(6, 6, 1, 1), mgp = c(4, 1, 0),
 plot(log10(meanN), meanOcc, xlab = expression(paste(plain(log)[10]," Community Size")), 
      ylab = 'Mean occupancy', pch = 16, col = c('black', col1, col2, col3, col4), 
      cex = 4, ylim = c(0.2, 1.15), xlim = c(.8,5))
-lines(range(log10(meanN)), predict(BBS.lm, data.frame(x = range(log10(meanN)))), lwd = 4, lty = 'dashed')
-#points(log10(bbssumm$meanAbundance), bbssumm$mu, pch = 16, cex = 2, col = colors7[1])
+lines(range(log10(meanN[2:5])), range(log10(meanN[2:5]))*BBS.lm$coefficients[2] + BBS.lm$coefficients[1],
+      lwd = 4, lty = 'dashed')
 points(log10(meanN), meanOcc, pch = 16, col = c('black', col1, col2, col3, col4), cex = 4)
 
 points(log10(datasetMean$meanN), datasetMean$meanOcc, pch = datasetMean$pch, 
