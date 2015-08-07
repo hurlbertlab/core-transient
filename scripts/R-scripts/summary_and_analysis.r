@@ -327,7 +327,7 @@ meanSpatScale = c(scale.1stop*50*497, #area of 497 BBS routes
                   scale.1stop*10,     #area of 10 point count stops
                   scale.1stop)        #area of 1 point count stop
 
-pdf('output/plots/occ_vs_spatialScale_BBS.pdf', height = 6.06*8/7, width = 8)
+pdf('output/plots/occ_vs_spatialScale_BBS.pdf', height = 6, width = 7.5)
 par(mar = c(6, 6, 1, 1), mgp = c(4, 1, 0), cex.lab = 2.5)
 plot(log10(meanSpatScale), meanOcc, 
      xlab = expression(paste(plain(log)[10]," Spatial scale (", plain(km)^2, ")")), 
@@ -351,6 +351,38 @@ meanN.MD01 = sum(fiftyMD1$Stop1)/15/numMDroutes
 
 meanN = c(meanN.allBBS, meanN.MD, meanN.singleBBS, meanN.MD10, meanN.MD01)
 
+# Regression not including all BBS scale
+BBS.lm = lm(meanOcc[2:5] ~ log10(meanN[2:5]))
+
+# Dataset-level means of community abundance and occupancy
+datasetMeanN = aggregate(summ3$meanAbundance, by = list(summ3$datasetID), mean)
+datasetMeanOcc = aggregate(summ3$mu, by = list(summ3$datasetID), mean)
+datasetMean = merge(datasetMeanN, datasetMeanOcc, by = 'Group.1', all = T)
+names(datasetMean) = c('datasetID', 'meanN', 'meanOcc') 
+datasetMean = merge(datasetMean, unique(summ3[, c('datasetID', 'taxa', 'color', 'pch')]), 
+                    by = 'datasetID')
+
+# Dataset level linear relationship between log10 size and occupancy by taxa
+mean.lm = lm(meanOcc ~ log10(meanN) + taxa + taxa*log10(meanN), data = datasetMean)
+
+# Arthropods are the baseline group so they need to be dealt with separately,
+# but other taxa can be plotted using the function below.
+arthXrange = log10(range(datasetMean$meanN[datasetMean$taxa == 'Arthropod']))
+arthYpred = mean.lm$coefficients[1] + arthXrange * mean.lm$coefficients[2]
+
+plotRegLine = function(data, lmObject, taxon) {
+  xrange = log10(range(data$meanN[data$taxa == taxon]))
+  ypred = lmObject$coefficients[1] + 
+          lmObject$coefficients[paste("taxa", taxon, sep = "")] +
+          (lmObject$coefficients[2] +
+             lmObject$coefficients[paste("log10(meanN):taxa", taxon, sep = "")])*
+          xrange
+  lines(xrange, ypred, lwd = 3, col = as.character(data$color[data$taxa == taxon][1]))
+}
+
+  
+}
+
 #########
 #########
 # TO DO #
@@ -359,8 +391,42 @@ meanN = c(meanN.allBBS, meanN.MD, meanN.singleBBS, meanN.MD10, meanN.MD01)
 # (and therefore immediately above) and create a figure that
 # plots dataset means.
 
+# Plot dataset level means along with BBS
+pdf('output/plots/occ_vs_communitySize_byDataset.pdf', height = 6, width = 7.5)
+par(mfrow = c(1, 1), mar = c(6, 6, 1, 1), mgp = c(4, 1, 0), 
+    cex.axis = 1.5, cex.lab = 2, las = 1)
+plot(log10(meanN), meanOcc, xlab = expression(paste(plain(log)[10]," Community Size")), 
+     ylab = 'Mean occupancy', pch = 16, col = c('black', col1, col2, col3, col4), 
+     cex = 4, ylim = c(0.2, 1.15), xlim = c(.8,5))
+lines(range(log10(meanN)), predict(BBS.lm, data.frame(x = range(log10(meanN)))), lwd = 4, lty = 'dashed')
+#points(log10(bbssumm$meanAbundance), bbssumm$mu, pch = 16, cex = 2, col = colors7[1])
+points(log10(meanN), meanOcc, pch = 16, col = c('black', col1, col2, col3, col4), cex = 4)
 
-# Get summary data for all other datasets
+points(log10(datasetMean$meanN), datasetMean$meanOcc, pch = datasetMean$pch, 
+       cex = 3, col = datasetMean$color, font = 5)
+# Plot regression lines
+lines(arthXrange, arthYpred, lwd = 3, 
+      col = as.character(datasetMean$color[datasetMean$taxa == 'Arthropod'][1]))
+for (s in unique(datasetMean$taxa)) {
+  plotRegLine(datasetMean, mean.lm, s)
+}
+
+legend('topleft', legend = unique(summ$taxa), pch = symbols7, 
+       col = c(colors7[1:5], 'white', colors7[7]), pt.cex = 2, cex = 1.5)
+points(0.79, 0.79, pch = symbols7[6], font = 5, col = colors7[6], cex = 2)
+dev.off()
+
+
+
+
+
+
+
+
+
+
+
+# Get summary data for ALL SITES of all other datasets
 pdf('output/plots/occ_vs_communitySize_allDatasets.pdf', height = 6.06*8/7, width = 8)
 par(mar = c(6, 6, 1, 1), las = 1)
 plot(log10(meanN), meanOcc, xlab = expression(paste(plain(log)[10]," Community Size")), 
