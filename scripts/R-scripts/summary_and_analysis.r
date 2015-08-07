@@ -333,7 +333,7 @@ par(mfrow = c(1, 1), mar = c(6, 6, 1, 1), mgp = c(4, 1, 0),
 plot(log10(meanSpatScale), meanOcc, 
      xlab = expression(paste(plain(log)[10]," Spatial scale (", plain(km)^2, ")")), 
      ylab = 'Mean occupancy', pch = 16, col = c('white', col1, col2, col3, col4), 
-     cex = 4, ylim = c(0.1, 1.15), xlim = c(-1,4))
+     cex = 4, ylim = c(0.2, 1.15), xlim = c(-1,4))
 legend('topleft',
        c('Maryland (27 BBS routes)',
          'Single BBS route (50 stops)','10 point count stops','1 point count stop'),
@@ -362,7 +362,9 @@ par(mfrow = c(1, 1), mar = c(6, 6, 1, 1), mgp = c(4, 1, 0),
 plot(log10(meanN), meanOcc, 
      xlab = expression(paste(plain(log)[10], " Community size")), 
      ylab = 'Mean occupancy', pch = 16, col = c('white', col1, col2, col3, col4), 
-     cex = 4, ylim = c(0.1, 1.15), xlim = c(0.8,5))
+     cex = 4, ylim = c(0.2, 1.15), xlim = c(0.8,5))
+lines(range(log10(meanN[2:5])), range(log10(meanN[2:5]))*BBS.lm$coefficients[2] + BBS.lm$coefficients[1],
+      lwd = 4, lty = 'dashed')
 legend('topleft',
        c('Maryland (27 BBS routes)',
          'Single BBS route (50 stops)','10 point count stops','1 point count stop'),
@@ -397,19 +399,29 @@ plotRegLine = function(data, lmObject, taxon) {
   lines(xrange, ypred, lwd = 3, col = as.character(data$color[data$taxa == taxon][1]))
 }
 
-  
-}
 
-#########
-#########
-# TO DO #
-############################
-# Figure out appropriate scale/dimensions for the figure below
-# (and therefore immediately above) and create a figure that
-# plots dataset means.
 
 # Plot dataset level means along with BBS
-pdf('output/plots/occ_vs_communitySize_byDataset.pdf', height = 6, width = 7.5)
+pdf('output/plots/occ_vs_communitySize_byDataset_noLines.pdf', height = 6, width = 7.5)
+par(mfrow = c(1, 1), mar = c(6, 6, 1, 1), mgp = c(4, 1, 0), 
+    cex.axis = 1.5, cex.lab = 2, las = 1)
+plot(log10(meanN), meanOcc, xlab = expression(paste(plain(log)[10]," Community Size")), 
+     ylab = 'Mean occupancy', pch = 16, col = c('black', col1, col2, col3, col4), 
+     cex = 4, ylim = c(0.2, 1.15), xlim = c(.8,5))
+lines(range(log10(meanN[2:5])), range(log10(meanN[2:5]))*BBS.lm$coefficients[2] + BBS.lm$coefficients[1],
+      lwd = 4, lty = 'dashed')
+points(log10(meanN), meanOcc, pch = 16, col = c('black', col1, col2, col3, col4), cex = 4)
+
+points(log10(datasetMean$meanN), datasetMean$meanOcc, pch = datasetMean$pch, 
+       cex = 3, col = datasetMean$color, font = 5)
+legend('topleft', legend = unique(summ$taxa), pch = symbols7, 
+       col = c(colors7[1:5], 'white', colors7[7]), pt.cex = 2, cex = 1.5)
+points(0.79, 0.79, pch = symbols7[6], font = 5, col = colors7[6], cex = 2)
+dev.off()
+
+
+# Plot dataset level means along with BBS (with regression lines)
+pdf('output/plots/occ_vs_communitySize_byDataset_withLines.pdf', height = 6, width = 7.5)
 par(mfrow = c(1, 1), mar = c(6, 6, 1, 1), mgp = c(4, 1, 0), 
     cex.axis = 1.5, cex.lab = 2, las = 1)
 plot(log10(meanN), meanOcc, xlab = expression(paste(plain(log)[10]," Community Size")), 
@@ -427,15 +439,32 @@ lines(arthXrange, arthYpred, lwd = 3,
 for (s in unique(datasetMean$taxa)) {
   plotRegLine(datasetMean, mean.lm, s)
 }
-
 legend('topleft', legend = unique(summ$taxa), pch = symbols7, 
        col = c(colors7[1:5], 'white', colors7[7]), pt.cex = 2, cex = 1.5)
 points(0.79, 0.79, pch = symbols7[6], font = 5, col = colors7[6], cex = 2)
 dev.off()
 
 
+# Plot occupancy vs community size across datasets, illustrating within BBS variation
+pdf('output/plots/occ_vs_communitySize_byDataset_withinBBSvariation.pdf', height = 6, width = 7.5)
+par(mfrow = c(1, 1), mar = c(6, 6, 1, 1), mgp = c(4, 1, 0), 
+    cex.axis = 1.5, cex.lab = 2, las = 1)
+plot(log10(meanN), meanOcc, xlab = expression(paste(plain(log)[10]," Community Size")), 
+     ylab = 'Mean occupancy', pch = 16, col = c('black', col1, col2, col3, col4), 
+     cex = 4, ylim = c(0.2, 1.15), xlim = c(.8,5))
+lines(range(log10(meanN[2:5])), range(log10(meanN[2:5]))*BBS.lm$coefficients[2] + BBS.lm$coefficients[1],
+      lwd = 4, lty = 'dashed')
+points(log10(meanN), meanOcc, pch = 16, col = c('black', col1, col2, col3, col4), cex = 4)
 
-
+points(log10(datasetMean$meanN), datasetMean$meanOcc, pch = datasetMean$pch, 
+       cex = 3, col = 'gray80', font = 5)
+#Add BBS points
+points(log10(bbssumm$meanAbundance), bbssumm$mu, pch = 16, cex = 1, 
+       col = as.character(taxcolors$color[taxcolors$taxa == "Bird"]))
+legend('topleft', legend = unique(summ$taxa), pch = symbols7, 
+       col = c(colors7[1], rep('gray80', 4), 'white', 'gray80'), pt.cex = 2, cex = 1.5)
+points(0.79, 0.79, pch = symbols7[6], font = 5, col = 'gray80', cex = 2)
+dev.off()
 
 
 
