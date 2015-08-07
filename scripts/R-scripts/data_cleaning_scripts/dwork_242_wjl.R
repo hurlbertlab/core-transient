@@ -3,6 +3,9 @@
 #
 # Data and metadata can be found here: http://esapubs.org/archive/ecol/E094/244
 
+# File "Benthic fish density raw data.csv", from fish surveys along transects
+# 50 m long x 2 m wide (between the bottom and 2 m above bottom).
+
 #-------------------------------------------------------------------------------*
 # ---- SET-UP ----
 #===============================================================================*
@@ -262,6 +265,12 @@ head(dataset3)
 
 dataset3 = dataset3[,-c(2,3)]
 
+# The density field is calculated from 50 m × 2 m fish transects
+# Let's replace it with a count of expected number of individuals per transect by 
+# multiplying by 100.
+
+dataset3$count = dataset3$count*100
+
 # Now we will remove zero counts and NA's:
 
 summary(dataset3)
@@ -271,6 +280,22 @@ summary(dataset3)
 dataset4 = subset(dataset3, count > 0) 
 
 summary(dataset4)
+
+# Check to make sure that by removing 0's that you haven't completely removed
+# any sampling events in which nothing was observed. Compare the number of 
+# unique site-dates in dataset3 and dataset4.
+
+# If there are no sampling events lost, then we can go ahead and use the 
+# smaller dataset4 which could save some time in subsequent analyses.
+# If there are sampling events lost, then we'll keep the 0's (use dataset3).
+numEventsd3 = nrow(unique(dataset3[, c('site', 'date')]))
+numEventsd4 = nrow(unique(dataset4[, c('site', 'date')]))
+if(numEventsd3 > numEventsd4) {
+  dataset4 = dataset3
+} else {
+  dataset4 = dataset4
+}
+
 
 # Remove NA's:
 
