@@ -347,6 +347,22 @@ dataset4 = subset(dataset3, count > 0)
 
 summary(dataset4)
 
+# Check to make sure that by removing 0's that you haven't completely removed
+# any sampling events in which nothing was observed. Compare the number of 
+# unique site-dates in dataset3 and dataset4.
+
+# If there are no sampling events lost, then we can go ahead and use the 
+# smaller dataset4 which could save some time in subsequent analyses.
+# If there are sampling events lost, then we'll keep the 0's (use dataset3).
+numEventsd3 = nrow(unique(dataset3[, c('site', 'date')]))
+numEventsd4 = nrow(unique(dataset4[, c('site', 'date')]))
+if(numEventsd3 > numEventsd4) {
+  dataset4 = dataset3
+} else {
+  dataset4 = dataset4
+}
+
+
 # Remove NA's:
 
 dataset5 = na.omit(dataset4)
