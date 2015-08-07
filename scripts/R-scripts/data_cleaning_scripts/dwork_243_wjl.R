@@ -3,6 +3,10 @@
 #
 # Data and metadata can be found here: http://esapubs.org/archive/ecol/E094/244
 
+# Midwater fish communities (surface to 2 m above bottom) censused by 
+# surveying 50 m x 5 m transects
+
+# File: 'Midwater fish density raw data.csv'
 
 #-------------------------------------------------------------------------------*
 # ---- SET-UP ----
@@ -273,6 +277,12 @@ head(dataset3)
 
 dataset3 = dataset3[,-c(2,3)]
 
+# The density field is calculated from 50 m × 5 m fish transects
+# Let's replace it with a count of expected number of individuals per transect by 
+# multiplying by 250.
+
+dataset3$count = dataset3$count*250
+
 # Now we will remove zero counts and NA's:
 
 summary(dataset3)
@@ -282,6 +292,22 @@ summary(dataset3)
 dataset4 = subset(dataset3, count > 0) 
 
 summary(dataset4)
+
+# Check to make sure that by removing 0's that you haven't completely removed
+# any sampling events in which nothing was observed. Compare the number of 
+# unique site-dates in dataset3 and dataset4.
+
+# If there are no sampling events lost, then we can go ahead and use the 
+# smaller dataset4 which could save some time in subsequent analyses.
+# If there are sampling events lost, then we'll keep the 0's (use dataset3).
+numEventsd3 = nrow(unique(dataset3[, c('site', 'date')]))
+numEventsd4 = nrow(unique(dataset4[, c('site', 'date')]))
+if(numEventsd3 > numEventsd4) {
+  dataset4 = dataset3
+} else {
+  dataset4 = dataset4
+}
+
 
 # Remove NA's:
 
@@ -299,12 +325,12 @@ head(dataset5)
 dataFormattingTable[,'countFormat'] = 
   dataFormattingTableFieldUpdate(datasetID, 'countFormat',    # Fill value below in quotes
                                  
-                                 'density')
+                                 'count')
 
 dataFormattingTable[,'Notes_countFormat'] = 
   dataFormattingTableFieldUpdate(datasetID, 'Notes_countFormat', # Fill value below in quotes
                                  
-                                 'Data represents density. In the raw data, adult and juvenile densities were in separate columns. These were added together in count column.')
+                                 'Raw data represents density, and adult and juvenile densities were in separate columns. These were added together in count column and multiplied by 250 to get count of individuals in 50 x 5 m transect.')
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SPECIES DATA ----
