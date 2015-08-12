@@ -399,9 +399,10 @@ subsetDataFun = function(dataset, datasetID, spatialGrain, temporalGrain,
 #------------------------------------------------------------------------------------------------------*
 
 propOccFun = function(subsettedData){
-    spTime = ddply(subsettedData, .(datasetID, site, species), summarize, 
+    subsettedData1 = subset(subsettedData, count > 0)
+    spTime = ddply(subsettedData1, .(datasetID, site, species), summarize, 
                    spTime = length(unique(year)))
-    siteTime = ddply(subsettedData, .(site), summarize, 
+    siteTime = ddply(subsettedData1, .(site), summarize, 
                      siteTime = length(unique(year)))
     spSiteTime = merge(spTime, siteTime)
     propOcc = data.frame(datasetID = datasetID, site = spSiteTime$site, 
@@ -416,7 +417,8 @@ propOccFun = function(subsettedData){
 # Note: because data are subset to w and z, some sites will no longer have a species richness or number of time samples greater than the decided upon minimum
 
 siteSummaryFun = function(subsettedData){
-  ddply(subsettedData, .(datasetID, site), summarize, 
+  subsettedData1 = subset(subsettedData, count > 0)
+  ddply(subsettedData1, .(datasetID, site), summarize, 
         spRich = length(unique(species)), 
         nTime = length(unique(year)),
         meanAbundance = sum(count)/length(unique(year)))
@@ -620,6 +622,9 @@ pModeFun = function(propOcc, nTime, mode, threshold, reps){
 # Functions:
 # - summaryStats: Produces summary sampling data for one site. 
 #     Inputs: Site and the threshold value for core and transient designation.
+#             Threshold is the value of occupancy below which a species is
+#             considered transient, and therefore (1 - threshold) is the min
+#             value for a species to be considered core.
 #     Outputs: A one-row dataframe with dataset ID, site ID, threshold used,
 #       the system, taxa, # of time samples, total, core, and transient richness
 #       proportion of core and transient species, and the average proportion of 
@@ -677,13 +682,14 @@ summaryStatsFun = function(datasetID, threshold, reps){
 require(MASS)
 require(plyr)
 
-addNewSummariesFun = function(threshold, reps, write = FALSE){
-  if (file.exists('output/tabular_data/core-transient_summary.csv')) {
+addNewSummariesFun = function(threshold, reps, write = FALSE, allNew = FALSE){
+  if (allNew == FALSE & 
+      file.exists('output/tabular_data/core-transient_summary.csv')) {
     currentSummaryData = read.csv('output/tabular_data/core-transient_summary.csv')
     currentDatasetIDs = unique(currentSummaryData$datasetID)
   } else {
     currentSummaryData = c()
-    currentDatasetIds = c()
+    currentDatasetIDs = c()
   }
   propOcc_datasets = list.files('data/propOcc_datasets')
   # The following gets the integer values for the datasetID's from

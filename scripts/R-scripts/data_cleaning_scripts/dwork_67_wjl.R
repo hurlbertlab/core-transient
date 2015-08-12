@@ -3,6 +3,9 @@
 #
 #  Metadata can be found at http://www.vliz.be/en/imis?module=dataset&dasid=3738
 
+# More specific information about the Coordinated Waterbird Counts can be 
+# found here: http://cwac.adu.org.za/docs.php
+
 #-------------------------------------------------------------------------------*
 # ---- SET-UP ----
 #===============================================================================*
@@ -108,7 +111,7 @@ head(dataset1, 10)
 dataFormattingTable[,'LatLong_sites'] = 
   dataFormattingTableFieldUpdate(datasetID, 'LatLong_sites',   # Fill value in below
                                  
-                                 'Y') 
+                                 'N') #technically YES, but see comments in *Site* section
 
 
 #-------------------------------------------------------------------------------*
@@ -204,7 +207,15 @@ if (num_grains > 1) {
 }
 
 # 423 sites listed as "South_Africa_Lat_Long"
-# Can remove the 'South Africa' portion leaving just lat-longs
+# From the project website (http://cwac.adu.org.za/sites.php), sites are
+# wetlands of varying size that are revisited time and again, and these
+# wetlands all have names.
+
+# The data available from OBIS however has no site names, only lat-longs.
+# Because these lat-longs should correspond to specific sites (unlike
+# lat-longs in say, a marine trawling dataset), we will treat them
+# as discrete sites. Unfortunately, we do not have data on the spatial
+# scale of each of these sites which varies considerably.
 
 site = str_sub(site, start = 14)
 
@@ -263,7 +274,7 @@ head(dataset3)
 dataFormattingTable[,'Raw_siteUnit'] = 
   dataFormattingTableFieldUpdate(datasetID, 'Raw_siteUnit',       # Fill value below in quotes
                                  
-                                 'lat_long') 
+                                 'SampleID') 
 
 
 # spatial_scale_variable. Is a site potentially nested (e.g., plot within a quad or decimal lat longs that could be scaled up)? Y/N
@@ -271,20 +282,39 @@ dataFormattingTable[,'Raw_siteUnit'] =
 dataFormattingTable[,'spatial_scale_variable'] = 
   dataFormattingTableFieldUpdate(datasetID, 'spatial_scale_variable',
                                  
-                                 'Y') # Fill value here in quotes
+                                 'N') # Fill value here in quotes
 
 # Notes_siteFormat. Use this field to THOROUGHLY describe any changes made to the site field during formatting.
 
 dataFormattingTable[,'Notes_siteFormat'] = 
   dataFormattingTableFieldUpdate(datasetID, 'Notes_siteFormat',  # Fill value below in quotes
                                  
-                                 'sites were listed as South_Africa_lat_long, so I used substring to remove the South Africa text, leaving only lat_long data. No changes or removals were made to the actual data.')
+                                 'Sites are listed as lat_long, but each lat_long corresponds to a specific wetland. 
+                                 Thus we are NOT treating this like a lat-long dataset that could be spatially aggregated.')
 
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT COUNT DATA ----
 #===============================================================================*
 # Next, we need to explore the count records. For filling out the data formatting table, we need to change the name of the field which represents counts, densities, percent cover, etc to "count". Then we will clean up unnecessary values.
+
+# In this dataset, the count field only varies between 1-12 which raises
+# important questions about this information given the fact that many of the
+# waterbirds being censused are gregarious and/or colonial.
+
+# I cannot find the source of the original data serving as the raw dataset.
+# A re-download from OBIS (OBIS ID 603) has no abundance/count field at all.
+# I suspect that whoever compiled our "raw dataset" file assigned an
+# abundance of 1 to each record, and these values were summed when counts
+# were surveyed up to monthly within a year.
+
+# Abundance data IS collected and available from the CWAC website
+# (http://cwac.adu.org.za/sites.php, click on a site, then click on small
+# set of 3 index cards above and to the left of the table), but obtaining
+# data across all sites and 'cards' will require a special request.
+
+# Until then, meanAbundance will be manually changed to NA down in the 
+# siteSummary below.
 
 names(dataset3)
 summary(dataset3)
@@ -327,28 +357,23 @@ dataFormattingTable[,'countFormat'] =
                                  'count')
 
 dataFormattingTable[,'Notes_countFormat'] = 
-  dataFormattingTableFieldUpdate(datasetID, 'Notes_countFormat', "Data represents abundance. no changes or removals necessary")
+  dataFormattingTableFieldUpdate(datasetID, 'Notes_countFormat', 
+                                 
+                                 "Count data are suspected to be sums of binary presence data across surveys
+                                 within any one year. They should not be relied on for estimates of abundance
+                                 or mean abundance.")
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SPECIES DATA ----
 #===============================================================================*
 # Here, your primary goal is to ensure that all of your species are valid. To do so, you need to look at the list of unique species very carefully. Avoid being too liberal in interpretation, if you notice an entry that MIGHT be a problem, but you can't say with certainty, create an issue on GitHub.
 
-# Look at the individual species present:
-
-levels(dataset5$species) 
-
-# Change all to uppercase
-
-dataset5$species = factor(toupper(dataset5$species))
-
 # Now explore the listed species themselves, again. A good trick here to finding problematic entries is to shrink the console below horizontally so that species names will appear in a single column.  This way you can more easily scan the species names (listed alphabetically) and identify potential misspellings, extra characters or blank space, or other issues.
-
+dataset5$species = toupper(dataset5$species)
 levels(dataset5$species)
+data.frame(table(dataset5$species))
 
 # If species names are coded (not scientific names) go back to study's metadata to learn what species should and shouldn't be in the data. 
-
-# In this example, a quick look at the metadata is not informative, unfortunately. Because of this, you should really stop here and post an issue on GitHub. With some more thorough digging, however, I've found the names represent "Kartez codes". Several species can be removed (double-checked with USDA plant codes at plants.usda.gov and another Sevilleta study (dataset 254) that provides species names for some codes). Some codes were identified with this pdf from White Sands: https://nhnm.unm.edu/sites/default/files/nonsensitive/publications/nhnm/U00MUL02NMUS.pdf
 
 bad_sp = c('LESSER-CRESTED_X_SAND','KERMADEC_X_ROUND_ISLA')
 
@@ -558,7 +583,7 @@ tGrain = 'year'
 
 site_grain_names
 
-sGrain = 2
+sGrain = 'SampleID'
 
 # This is a reasonable choice of spatial grain because ...
 # ... rounding the latitude and longitude of each site to multiples of 2 creates blocks that are large enough to represent a bird community. 
@@ -610,11 +635,15 @@ hist(propOccFun(subsettedData)$propOcc)
 
 # Take a look at the site summary frame:
 
-siteSummaryFun(subsettedData)
+summ = siteSummaryFun(subsettedData)
 
 # If everything looks good, write the files:
 
 writePropOccSiteSummary(subsettedData)
+
+# REMOVE meanAbundance info which is unreliable (see notes above)
+summ$meanAbundance = NA
+write.csv(summ, 'data/siteSummaries/siteSummary_67.csv', row.names = F)
 
 # Remove all objects except for functions from the environment:
 

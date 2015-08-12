@@ -80,19 +80,17 @@ str(dataset)
 
 head(dataset)
 
-# Here, we can see that there are some fields that we won't use. Let's remove them, note that I've given a new name here "dataset1", this is to ensure that we don't have to go back to square 1 if we've miscoded anything.
-
-# If all fields will be used, then set unusedFields = 9999.
-
 names(dataset)
 
-unusedFields = c(1, 2)
+# Extract only the fields to be used
 
-dataset1 = dataset[,-unusedFields]
+usedFields = c(6,28,49,52,67)
+
+dataset1 = dataset[,usedFields]
 
 # Let's change the name of the "Species" column to simply "species":
 
-names(dataset1)[3] = 'species'
+names(dataset1)[1] = 'species'
 
 # You also might want to change the names of the identified species field [to 'species'] and/or the identified site field [to 'site']. Just make sure you make specific comments on what the field name was before you made the change, as seen above.
 
@@ -111,7 +109,7 @@ head(dataset1, 10)
 dataFormattingTable[,'LatLong_sites'] = 
   dataFormattingTableFieldUpdate(datasetID, 'LatLong_sites',   # Fill value in below
                                  
-                                 'N') 
+                                 'Y') 
 
 
 #-------------------------------------------------------------------------------*
@@ -120,11 +118,7 @@ dataFormattingTable[,'LatLong_sites'] =
 # Here, we need to extract the sampling dates. 
 
 # What is the name of the field that has information on sampling date?
-datefield = 'Year'
-
-# What is the format in which date data is recorded? For example, if it is
-# recorded as 5/30/94, then this would be '%m/%d/%y', while 1994-5-30 would
-# be '%Y-%m-%d'. Type "?strptime" for other examples of date formatting.
+datefield = 'YearCollected'
 
 dateformat = '%Y'
 
@@ -181,7 +175,6 @@ dataFormattingTable[,'subannualTgrain'] =
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SITE DATA ----
 #===============================================================================*
-# From the previous head commmand, we can see that sites are broken up into (potentially) 5 fields. Find the metadata link in the data formatting table use that link to determine how sites are characterized.
 
 #  -- If sampling is nested (e.g., site, block, treatment, plot, quad as in this study), use each of the identifying fields and separate each field with an underscore. For nested samples be sure the order of concatenated columns goes from coarser to finer scales (e.g. "km_m_cm")
 
@@ -195,18 +188,18 @@ dataFormattingTable[,'subannualTgrain'] =
 # in hierarchical order from largest to smallest grain. Based on the dataset,
 # fill in the fields that specify nested spatial grains below.
 
-site_grain_names = c("site", "block", "treatment", "plot", "quad")
+site_grain_names = c("Longitude","Latitude")
 
 # We will now create the site field with these codes concatenated if there
 # are multiple grain fields. Otherwise, site will just be the single grain field.
 num_grains = length(site_grain_names)
 
-site = dataset2[, site_grain_names[1]]
-if (num_grains > 1) {
-  for (i in 2:num_grains) {
-    site = paste(site, dataset2[, site_grain_names[i]], sep = "_")
-  } 
-}
+# Switching to Latitude THEN Longitude
+
+site = dataset2[, site_grain_names[2]]
+
+site = paste(site, dataset2[, site_grain_names[1]], sep = "_")
+
 
 
 # BEFORE YOU CONTINUE. We need to make sure that there are at least minNTime for sites at the coarsest possilbe spatial grain. 
@@ -224,7 +217,7 @@ datasetYearTest = data.frame(siteCoarse, dateYear)
 ddply(datasetYearTest, .(siteCoarse), summarise, 
       lengthYears =  length(unique(dateYear)))
 
-# If the dataset has less than minNTime years per site, do not continue processing. 
+# Dataset has lat/long sites, which will be rounded appropriately during propOcc creation
 
 
 # Do some quality control by comparing the site fields in the dataset with the new vector of sites:
@@ -244,7 +237,7 @@ dataset3 = dataset2
 
 dataset3$site = factor(site)
 
-dataset3 = dataset3[,-c(2:5)]
+dataset3 = dataset3[,-c(2:3)]
 
 # Check the new dataset (are the columns as they should be?):
 
@@ -259,7 +252,7 @@ head(dataset3)
 dataFormattingTable[,'Raw_siteUnit'] = 
   dataFormattingTableFieldUpdate(datasetID, 'Raw_siteUnit',       # Fill value below in quotes
                                  
-                                 'site_block_treatment_plot_quad') 
+                                 'Latitude_Longitude') 
 
 
 # spatial_scale_variable. Is a site potentially nested (e.g., plot within a quad or decimal lat longs that could be scaled up)? Y/N
@@ -274,7 +267,7 @@ dataFormattingTable[,'spatial_scale_variable'] =
 dataFormattingTable[,'Notes_siteFormat'] = 
   dataFormattingTableFieldUpdate(datasetID, 'Notes_siteFormat',  # Fill value below in quotes
                                  
-                                 'site fields concatenated. metadata suggests site-block-treatment-plot-quad describes the order of nested sites from small to large.')
+                                 'site fields were just lat long, and they were concatenated.')
 
 
 #-------------------------------------------------------------------------------*
@@ -286,7 +279,7 @@ names(dataset3)
 summary(dataset3)
 
 # Fill in the original field name here
-countfield = 'cover'
+countfield = 'IndividualCount'
 
 # Renaming it
 names(dataset3)[which(names(dataset3) == countfield)] = 'count'
@@ -320,12 +313,12 @@ head(dataset5)
 dataFormattingTable[,'countFormat'] = 
   dataFormattingTableFieldUpdate(datasetID, 'countFormat',    # Fill value below in quotes
                                  
-                                 'cover')
+                                 'count')
 
 dataFormattingTable[,'Notes_countFormat'] = 
   dataFormattingTableFieldUpdate(datasetID, 'Notes_countFormat', # Fill value below in quotes
                                  
-                                 'Data represents cover. There were no NAs nor 0s that required removal')
+                                 'Data represents count. No 0s or NAs removed')
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SPECIES DATA ----
@@ -336,19 +329,25 @@ dataFormattingTable[,'Notes_countFormat'] =
 
 levels(dataset5$species) 
 
-# The first thing that I notice is that there are lower and upper case entries. Because R is case-sensitive, this will be coded as separate species. Modify this prior to continuing:
-
-dataset5$species = factor(toupper(dataset5$species))
-
-# Now explore the listed species themselves, again. A good trick here to finding problematic entries is to shrink the console below horizontally so that species names will appear in a single column.  This way you can more easily scan the species names (listed alphabetically) and identify potential misspellings, extra characters or blank space, or other issues.
-
-levels(dataset5$species)
-
 # If species names are coded (not scientific names) go back to study's metadata to learn what species should and shouldn't be in the data. 
 
-# In this example, a quick look at the metadata is not informative, unfortunately. Because of this, you should really stop here and post an issue on GitHub. With some more thorough digging, however, I've found the names represent "Kartez codes". Several species can be removed (double-checked with USDA plant codes at plants.usda.gov and another Sevilleta study (dataset 254) that provides species names for some codes). Some codes were identified with this pdf from White Sands: https://nhnm.unm.edu/sites/default/files/nonsensitive/publications/nhnm/U00MUL02NMUS.pdf
 
-bad_sp = c('','NONE','UK1','UKFO1','UNK1','UNK2','UNK3','LAMIA', 'UNGR1','CACT1','UNK','NONE','UNK2','UNK3', 'UNK1','FORB7', 'MISSING', '-888', 'DEAD','ERRO2', 'FORB1','FSEED', 'GSEED', 'MOSQ', 'SEED','SEEDS1','SEEDS2', 'SEFLF','SESPM','SPOR1')
+for (i in 1:length(dataset5$species)){
+  
+  if(length(strsplit(as.character(dataset5$species[i]), ' ')[[1]])>1){
+    levels(dataset5$species) = c(levels(dataset5$species),paste(word(dataset5$species[i],1,sep=" "),word(dataset5$species[i],2,sep=" "),sep="_"))
+    dataset5$species[i] = paste(word(dataset5$species[i],1,sep=" "),word(dataset5$species[i],2,sep=" "),sep="_")
+  }
+    
+}
+  
+
+
+dataset5$species = factor(dataset5$species)
+
+# These entries were genus-only while there were many species specific entries of that genus. The organisms in these entries could be one of many possible species, so they will be deleted.
+
+bad_sp = c('Ophiuroidae_indet','Nephtys_spec','Glycera_spec')
 
 dataset6 = dataset5[!dataset5$species %in% bad_sp,]
 
@@ -357,17 +356,19 @@ dataset6 = dataset5[!dataset5$species %in% bad_sp,]
 
 table(dataset6$species)
 
-# If you find any potential typos, try to confirm that the "mispelling" isn't actually a valid name.
-# If not, then list the typos in typo_name, and the correct spellings in good_name,
-# and then replace them using the for loop below:
+# There were some instances where there was only one species under a genus-only entry. These were consolidated into the genus-only entry. 
 
-typo_name = c('Aedes solicitans',
-              'Aedes stricticus',
-              'Aedes trivitatus')
+typo_name = c('Ebalia_tumefacta',
+              'Ampharete_finmarchica',
+              'Urothoe_elegans',
+              'Spio_goniocephala',
+              'Magelona_filiformis')
 
-good_name = c('Aedes sollicitans',
-              'Aedes sticticus',
-              'Aedes trivittatus')
+good_name = c('Ebalia_spec',
+              'Ampharete_spec',
+              'Urothoe_spec',
+              'Spio_spec',
+              'Magelona_spec')
 
 if (length(typo_name) > 0) {
   for (n in 1:length(typo_name)) {
@@ -400,7 +401,7 @@ head(dataset6)
 dataFormattingTable[,'Notes_spFormat'] = 
   dataFormattingTableFieldUpdate(datasetID, 'Notes_spFormat',    # Fill value below in quotes
                                  
-                                 'several species removed. Metadata was relatively uninformative regarding what constitutes a true species sample for this study. Exploration of metadata from associated Sevilleta studies were more informative regarding which species needed to be removed. Species names are predominantly provided as Kartez codes, but not always. See: http://sev.lternet.edu/data/sev-212/5048. Some codes were identified with this pdf from White Sands: https://nhnm.unm.edu/sites/default/files/nonsensitive/publications/nhnm/U00MUL02NMUS.pdf')
+                                 'species entries frequently listed a paper after the species e.g. Golfingia elongata (Keferstein, 1862). The first two words were extracted from each of these to list only the scientific name.  several genus-only entries were removed because there were moany species specific entries benath that genus. Several species specific entries were consolidated into the genus-only entry of that genus if there was only one possible species.')
 
 #-------------------------------------------------------------------------------*
 # ---- MAKE DATA FRAME OF COUNT BY SITES, SPECIES, AND YEAR ----
@@ -520,11 +521,9 @@ tGrain = 'year'
 
 site_grain_names
 
-sGrain = 'site_block_treatment_plot'
+sGrain = .5
 
-# This is a reasonable choice of spatial grain because ...
-# ...for sessile plant communities a plot (~ 4m^2) encompasses scores to hundreds
-# of individuals.
+# This is a reasonable choice of spatial grain because it is one of the smaller block sizes that still yields most of the entries after rounding. 
 
 # The function "richnessYearSubsetFun" below will subset the data to sites with an 
 # adequate number of years of sampling and species richness. If there are no 
