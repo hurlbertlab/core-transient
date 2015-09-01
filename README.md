@@ -29,6 +29,13 @@ Early attempts to automate the process of formatting the datasets were met with 
         - Exploring and formatting species data: This task predominantly includes removing bad species (e.g., “bare ground” or “unknown”) and fixing mispellings or inconsistent capitalization in species names.
         - Exploring and formatting time data: All time data are formatted either as year (if this is the finest available temporal grain or as a POSIX date object)
     - Making **proportional occurrence** and **site summary** frames: Here, the data formatter will need to further explore potential scale issues in order to make proportional occurrence data frames (and summary files) that reflect as little sampling bias as possible. This first involves testing whether there the species richness and number of time samples at a given set is above a user defined theshold. If this is not the case, the user may have to vary the temporal or spatial grain of the analysis, if this option is available. The script then uses a function in the core-transient-functions folder to subset the data such that all sites meet the species richness and time sample criteria as well subsamples (in terms of spatially and/or temporally nested data) each site to ensure that sampling intensity is equivalent across all site-years. Once this occurs, the data formatter runs canned functions that create and write both the proportional occurrence and site summary datasets.
+
+## Tests
+A test of the functions which decide what levels of spatial and temporal subsampling to use (if any) can be run in R by typing:
+```
+source('scripts/R-scripts/tests/data_subsampling_test.R')
+```
+This should be run any time any of the functions in 'core-transient_functions.R' are modified to ensure that data is still being subsampled as expected. This set of tests may not be exhaustive...
     
 ## Project status
 
