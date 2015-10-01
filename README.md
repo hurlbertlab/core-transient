@@ -72,11 +72,11 @@ Terrestrial or Aquatic
 
 ## *Format flag codes*
 
- 0 = not currently worked on  
+ 0 = not yet examined
  1 = formatting complete  
  2 = formatting in process  
  3 = formatting halted, issue  
  4 = data unavailable  
- 5 = data insufficient for generating occupancy data  
+ 5 = data inadequate for project aims  
 
 
