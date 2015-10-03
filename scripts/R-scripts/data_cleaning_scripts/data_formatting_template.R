@@ -63,6 +63,19 @@ dataset = read.csv(paste('data/raw_datasets/dataset_', datasetID, '.csv', sep = 
 
 dataFormattingTable = read.csv('data_formatting_table.csv')
 
+# Make sure the original name of the raw data file is saved in the data formatting table.
+# Check the data source link (available in the table, and hopefully posted above) if
+# the data is available online. If the data come from a published paper and there is
+# no file that was downloaded, enter "NA".
+
+dataFormattingTable[,'Raw_datafile_name'] = 
+  dataFormattingTableFieldUpdate(datasetID, 'Raw_datafile_name',   # Fill value in below
+                                 
+#--! PROVIDE INFO !--#
+  'north_temperate_lakes_lter__macrophyte_species_at_quadrat_level_-_trout_lake.csv') 
+
+
+
 ########################################################
 # ANALYSIS CRITERIA                                    #  
 ########################################################
@@ -577,7 +590,9 @@ summary(dataset7)
 # ---- UPDATE THE DATA FORMATTING TABLE AND WRITE OUTPUT DATA FRAMES  ----
 #===============================================================================*
 
-# Update the data formatting table (this may take a moment to process). Note that the inputs for this are 'datasetID', the datasetID and the dataset form that you consider to be fully formatted.
+# Update the data formatting table (this may take a moment to process). Note that
+# the inputs for this are 'datasetID', the datasetID and the dataset form that you 
+# consider to be fully formatted.
 
 dataFormattingTable = dataFormattingTableUpdate(datasetID, dataset7)
 
