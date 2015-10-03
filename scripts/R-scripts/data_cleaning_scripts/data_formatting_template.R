@@ -1,7 +1,12 @@
 ################################################################################*
 #  DATA FORMATTING TEMPLATE
 ################################################################################*
-# Start by opening the data formatting table (data_formatting_table.csv). To determine which dataset you should be working on, see the "format_priority" field. Choose the dataset with the highest format priority, but be sure to check out the format_flag field to see the current status of the dataset.
+#
+# Dataset name:
+# Dataset source (link):
+#
+# Start by opening the data formatting table (data_formatting_table.csv). 
+# Datasets to be worked on will have a 'format_flag' of 0.
 
 # Flag codes are as follows:
   # 0 = not currently worked on
@@ -11,10 +16,13 @@
   # 4 = data unavailable
   # 5 = data insufficient for generating occupancy data
 
-# NOTE: All changes to the data formatting table will be done in R! Do not make changes directly to this table, this will create conflicting versions.
+# NOTE: All changes to the data formatting table will be done in R! 
+# Do not make changes directly to this table, this will create conflicting versions.
 
 # YOU WILL NEED TO ENTER DATASET-SPECIFIC INFO IN EVERY LINE OF CODE PRECEDED
-# BY '#####'. YOU SHOULD RUN, BUT NOT OTHERWISE MODIFY, ALL OTHER LINES OF CODE.
+# BY "#--! PROVIDE INFO !--#". 
+
+# YOU SHOULD RUN, BUT NOT OTHERWISE MODIFY, ALL OTHER LINES OF CODE.
 
 #-------------------------------------------------------------------------------*
 # ---- SET-UP ----
@@ -39,12 +47,15 @@ library(MASS)
 
 getwd()
 
+# Set your working directory to be in the home of the core-transient repository
+# e.g., setwd('C:/git/core-transient')
+
 source('scripts/R-scripts/core-transient_functions.R')
 
 # Get data. First specify the dataset number ('datasetID') you are working with.
 
-#####
-datasetID = 223 
+#--! PROVIDE INFO !--#
+datasetID = 282 
 
 list.files('data/raw_datasets')
 
@@ -97,8 +108,8 @@ head(dataset)
 
 names(dataset)
 
-#####
-unusedFieldNames = c('record_id','userid','treatment','cond','season','height','comments','tapeid')
+#--! PROVIDE INFO !--#
+unusedFieldNames = c('lakeid', 'min_depth', 'max_depth', 'year4')
 
 
 unusedFields = which(names(dataset) %in% unusedFieldNames)
@@ -123,7 +134,7 @@ head(dataset1, 10)
 dataFormattingTable[,'LatLong_sites'] = 
   dataFormattingTableFieldUpdate(datasetID, 'LatLong_sites',   # Fill value in below
 
-#####
+#--! PROVIDE INFO !--#
                                  'N') 
 
 
@@ -135,9 +146,10 @@ dataFormattingTable[,'LatLong_sites'] =
 # What is the name of the field that has information on sampling date?
 # If date info is in separate columns (e.g., 'day', 'month', and 'year' cols),
 # then write these field names as a vector from largest to smallest temporal grain.
+# E.g., c('year', 'month', 'day')
 
-#####
-dateFieldName = c('record_record_date')
+#--! PROVIDE INFO !--#
+dateFieldName = c('sampledate')
 
 # If necessary, paste together date info from multiple columns into single field
 if (length(dateFieldName) > 1) {
@@ -153,8 +165,8 @@ if (length(dateFieldName) > 1) {
 # recorded as 5/30/94, then this would be '%m/%d/%y', while 1994-5-30 would
 # be '%Y-%m-%d'. Type "?strptime" for other examples of date formatting.
 
-#####
-dateformat = '%m/%d/%Y'
+#--! PROVIDE INFO !--#
+dateformat = '%m/%d/%Y %H:%M'
 
 # If date is only listed in years:
 
@@ -201,26 +213,32 @@ str(dataset2)
 dataFormattingTable[,'Notes_timeFormat'] = 
   dataFormattingTableFieldUpdate(datasetID, 'Notes_timeFormat',  # Fill value in below
 
-#####
-                                 'temporal data provided as dates. The only modification to this field involved converting to a date object.')
+#--! PROVIDE INFO !--#
+                                 'The only modification to this field involved converting to a date object.')
+
 
 # subannualTgrain. After exploring the time data, was this dataset sampled at a sub-annual temporal grain? Y/N
-
 
 dataFormattingTable[,'subannualTgrain'] = 
   dataFormattingTableFieldUpdate(datasetID, 'subannualTgrain',    # Fill value in below
 
-#####                                 
+#--! PROVIDE INFO !--#                                 
                                  'Y')
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SITE DATA ----
 #===============================================================================*
-# From the previous head commmand, we can see that sites are broken up into (potentially) 5 fields. Find the metadata link in the data formatting table use that link to determine how sites are characterized.
+# From the previous head commmand, we can see that sites are broken up into 
+# (potentially) 2 fields. Find the metadata link in the data formatting table use 
+# that link to determine how sites are characterized.
 
-#  -- If sampling is nested (e.g., site, block, plot, quad as in this study), use each of the identifying fields and separate each field with an underscore. For nested samples be sure the order of concatenated columns goes from coarser to finer scales (e.g. "km_m_cm")
+#  -- If sampling is nested (e.g., quadrats within sites as in this study), use 
+#     each of the identifying fields and separate each field with an underscore. 
+#     For nested samples be sure the order of concatenated columns goes from 
+#     coarser to finer scales (e.g. "km_m_cm")
 
-# -- If sites are listed as lats and longs, use the finest available grain and separate lat and long fields with an underscore.
+# -- If sites are listed as lats and longs, use the finest available grain and 
+#    separate lat and long fields with an underscore.
 
 # -- If the site definition is clear, make a new site column as necessary.
 
@@ -230,8 +248,8 @@ dataFormattingTable[,'subannualTgrain'] =
 # in hierarchical order from largest to smallest grain. Based on the dataset,
 # fill in the fields that specify nested spatial grains below.
 
-#####
-site_grain_names = c("site", "block", "plot", "quad")
+#--! PROVIDE INFO !--#
+site_grain_names = c("site", "quadrat")
 
 # We will now create the site field with these codes concatenated if there
 # are multiple grain fields. Otherwise, site will just be the single grain field.
@@ -245,7 +263,8 @@ if (num_grains > 1) {
 }
 
 
-# BEFORE YOU CONTINUE. We need to make sure that there are at least minNTime for sites at the coarsest possilbe spatial grain. 
+# BEFORE YOU CONTINUE. We need to make sure that there are at least minNTime for 
+# sites at the coarsest possible spatial grain. 
 
 siteCoarse = dataset2[, site_grain_names[1]]
 
@@ -282,8 +301,8 @@ dataset3$site = factor(site)
 
 # Remove any hierarchical site related fields that are no longer needed, IF NECESSARY.
 
-#####
-dataset3 = dataset3[,-c(2:5)]
+#--! PROVIDE INFO !--#
+dataset3 = dataset3[,-4]
 
 # Check the new dataset (are the columns as they should be?):
 
@@ -293,30 +312,34 @@ head(dataset3)
 
 # !DATA FORMATTING TABLE UPDATE! 
 
-# Raw_siteUnit. How a site is coded (i.e. if the field was concatenated such as this one, it was coded as "site_block_plot_quad"). Alternatively, if the site were concatenated from latitude and longitude fields, the encoding would be "lat_long". 
+# Raw_siteUnit. How a site is coded (i.e. if the field was concatenated such as this 
+# one, it was coded as "site_quadrat"). Alternatively, if the site were concatenated 
+# from latitude and longitude fields, the encoding would be "lat_long". 
 
 dataFormattingTable[,'Raw_siteUnit'] = 
   dataFormattingTableFieldUpdate(datasetID, 'Raw_siteUnit',       # Fill value below in quotes
 
-#####
-                                 'site_block_plot_quad') 
+#--! PROVIDE INFO !--#
+                                 'site_quadrat') 
 
 
-# spatial_scale_variable. Is a site potentially nested (e.g., plot within a quad or decimal lat longs that could be scaled up)? Y/N
+# spatial_scale_variable. Is a site potentially nested (e.g., plot within a quad or 
+# decimal lat longs that could be scaled up)? Y/N
 
 dataFormattingTable[,'spatial_scale_variable'] = 
   dataFormattingTableFieldUpdate(datasetID, 'spatial_scale_variable',
 
-#####
+#--! PROVIDE INFO !--#
                                  'Y') # Fill value here in quotes
 
-# Notes_siteFormat. Use this field to THOROUGHLY describe any changes made to the site field during formatting.
+# Notes_siteFormat. Use this field to THOROUGHLY describe any changes made to the 
+# site field during formatting.
 
 dataFormattingTable[,'Notes_siteFormat'] = 
   dataFormattingTableFieldUpdate(datasetID, 'Notes_siteFormat',  # Fill value below in quotes
 
-#####
-  'site fields concatenated. metadata suggests site-block-plot-quad describes the order of nested sites from large area to small area')
+#--! PROVIDE INFO !--#
+  'The site field is a concatenation of site and quadrat.')
 
 
 #-------------------------------------------------------------------------------*
@@ -327,13 +350,18 @@ dataFormattingTable[,'Notes_siteFormat'] =
 names(dataset3)
 summary(dataset3)
 
-# Fill in the original field name here
+# Fill in the original field name for the count or abundance data here. 
+# If there is no countfield, set this equal to "".
 
-#####
-countfield = 'cover'
+#--! PROVIDE INFO !--#
+countfield = ""
 
 # Renaming it
-names(dataset3)[which(names(dataset3) == countfield)] = 'count'
+if (countfield == "") {
+  dataset3$count = 1
+} else {
+  names(dataset3)[which(names(dataset3) == countfield)] = 'count'
+}
 
 # Now we will remove zero counts and NA's:
 
@@ -381,44 +409,58 @@ head(dataset5)
 dataFormattingTable[,'countFormat'] = 
   dataFormattingTableFieldUpdate(datasetID, 'countFormat',    # Fill value below in quotes
 
-#####                                 
-                                 'cover')
+#--! PROVIDE INFO !--#                                 
+                                 'presence')
 
 dataFormattingTable[,'Notes_countFormat'] = 
   dataFormattingTableFieldUpdate(datasetID, 'Notes_countFormat', # Fill value below in quotes
                                  
-#####                                 
-                                 'Data represents cover. There were no NAs nor 0s that required removal')
+#--! PROVIDE INFO !--#                                 
+                                 'No count data provided, so 1s added to indicate presence')
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SPECIES DATA ----
 #===============================================================================*
-# Here, your primary goal is to ensure that all of your species are valid. To do so, you need to look at the list of unique species very carefully. Avoid being too liberal in interpretation, if you notice an entry that MIGHT be a problem, but you can't say with certainty, create an issue on GitHub.
+# Here, your primary goal is to ensure that all of your species are valid. To do so, 
+# you need to look at the list of unique species very carefully. Avoid being too 
+# liberal in interpretation, if you notice an entry that MIGHT be a problem, but 
+# you can't say with certainty, create an issue on GitHub.
 
 # First, what is the field name in which species or taxonomic data are stored? 
 # It will get converted to 'species'
 
-#####
-speciesField = 'SpeciesCode'
+#--! PROVIDE INFO !--#
+speciesField = 'species_name'
 
 dataset5$species = dataset5[, speciesField]
 dataset5 = dataset5[, -which(names(dataset5) == speciesField)]
 
-# Look at the individual species present and how frequently they occur: This way you can more easily scan the species names (listed alphabetically) and identify potential misspellings, extra characters or blank space, or other issues.
+# Look at the individual species present and how frequently they occur: This way 
+# you can more easily scan the species names (listed alphabetically) and identify 
+# potential misspellings, extra characters or blank space, or other issues.
 
 data.frame(table(dataset5$species))
 
-# If there are entries that only specify the genus while there are others that specify the species in addition to that same genus, they need to be regrouped in order to avoid ambiguity. For example, if there are entries of 'Cygnus', 'Cygnus_columbianus', and 'Cygnus_cygnus', 'Cygnus' could refer to either species, but the observer could not identify it. This causes ambiguity in the data, and must be fixed by either 1. deleting the genus-only entry altogether, or 2. renaming the genus-species entries to just the genus-only entry. 
-# This decision can be fairly subjective, but generally if less than 25% of the entries are genus-only, then they can be deleted (using bad_sp). If more than 25% of the entries for that genus are only specified to the genus, then the genus-species entries should be renamed to be genus-only (using typo_name). 
+# If there are entries that only specify the genus while there are others that 
+# specify the species in addition to that same genus, they need to be regrouped 
+# in order to avoid ambiguity. For example, if there are entries of 'Cygnus', 
+# 'Cygnus_columbianus', and 'Cygnus_cygnus', 'Cygnus' could refer to either 
+# species, but the observer could not identify it. This causes ambiguity in the 
+# data, and must be fixed by either 1. deleting the genus-only entry altogether, 
+# or 2. renaming the genus-species entries to just the genus-only entry. 
+# This decision can be fairly subjective, but generally if less than 25% of the 
+# entries are genus-only, then they can be deleted (using bad_sp). If more than 
+# 25% of the entries for that genus are only specified to the genus, then the 
+# genus-species entries should be renamed to be genus-only (using typo_name). 
 
-table(dataset5$species)
+# If species names are coded (not scientific names) go back to study's metadata 
+# to learn what species should and shouldn't be in the data. 
 
-# If species names are coded (not scientific names) go back to study's metadata to learn what species should and shouldn't be in the data. 
+# In this example, a quick look at the metadata is not informative, unfortunately. 
+# Because of this, you should really stop here and post an issue on GitHub. 
 
-# In this example, a quick look at the metadata is not informative, unfortunately. Because of this, you should really stop here and post an issue on GitHub. With some more thorough digging, however, I've found the names represent "Kartez codes". Several species can be removed (double-checked with USDA plant codes at plants.usda.gov and another Sevilleta study (dataset 254) that provides species names for some codes). Some codes were identified with this pdf from White Sands: https://nhnm.unm.edu/sites/default/files/nonsensitive/publications/nhnm/U00MUL02NMUS.pdf
-
-#####
-bad_sp = c('','NONE','UK1','UKFO1','UNK1','UNK2','UNK3','LAMIA', 'UNGR1','CACT1','UNK','NONE','UNK2','UNK3', 'UNK1','FORB7', 'MISSING', '-888', 'DEAD','ERRO2', 'FORB1','FSEED', 'GSEED', 'MOSQ', 'SEED','SEEDS1','SEEDS2', 'SEFLF','SESPM','SPOR1')
+#--! PROVIDE INFO !--#
+bad_sp = c('')
 
 dataset6 = dataset5[!dataset5$species %in% bad_sp,]
 
@@ -431,14 +473,47 @@ table(dataset6$species)
 # If not, then list the typos in typo_name, and the correct spellings in good_name,
 # and then replace them using the for loop below:
 
-#####
-typo_name = c('Aedes solicitans',
-              'Aedes stricticus',
-              'Aedes trivitatus')
-#####
-good_name = c('Aedes sollicitans',
-              'Aedes sticticus',
-              'Aedes trivittatus')
+#--! PROVIDE INFO !--#
+typo_name = c('CERATOPHYLLUM',
+              'CHARA',
+              'ELEOCHARIS',
+              'ELODEA',
+              'ISOETES',
+              'JUNCUS',
+              'LITTORELLA',
+              'LOBELIA',
+              'MYRIO. ALT.',
+              'MYRIO. SIBIR.',
+              'MYRIO. TENELLUM',
+              'MYRIO. VERT.',
+              'NAJAS',
+              'P. AMPLIFOLIUS',
+              'P. GRAMINEUS', 
+              'P. RICHARDSONII',
+              'P. ROBBINSII',
+              'SAJ.',           #no other genus begins with these letters
+              'VAL.')           #no other genus begins with these letters
+
+#--! PROVIDE INFO !--#
+good_name = c('CERATOPHYLLUM DEMERSUM',
+              'CHARA SP',
+              'ELEOCHARIS SP',
+              'ELODEA CANADENSIS',
+              'ISOETES SP',
+              'JUNCUS SP',
+              'LITTORELLA UNIFLORA ASCH. VAR. AMERICANA',
+              'LOBELIA DORTMANNA',
+              'MYRIOPHYLLUM ALTERNIFLORUM',
+              'MYRIOPHYLLUM SIBIRICUM',
+              'MYRIOPHYLLUM TENELLUM',
+              'MYRIOPHYLLUM VERTICILLATUM',
+              'NAJAS FLEXILIS',
+              'POTAMOGETON AMPLIFOLIUS',
+              'POTAMOGETON GRAMINEUS',
+              'POTAMOGETON RICHARDSONII',
+              'POTAMOGETON ROBBINSII',
+              'SAGITTARIA LATIFOLIA',
+              'VALLISNERIA AMERICANA')
 
 if (length(typo_name) > 0) {
   for (n in 1:length(typo_name)) {
@@ -473,7 +548,7 @@ dataFormattingTable[,'Notes_spFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_spFormat',    # Fill value below in quotes
 
 #####                                 
-  'several species removed. Metadata was relatively uninformative regarding what constitutes a true species sample for this study. Exploration of metadata from associated Sevilleta studies were more informative regarding which species needed to be removed. Species names are predominantly provided as Kartez codes, but not always. See: http://sev.lternet.edu/data/sev-212/5048. Some codes were identified with this pdf from White Sands: https://nhnm.unm.edu/sites/default/files/nonsensitive/publications/nhnm/U00MUL02NMUS.pdf')
+  'A number of names represented in two obvious forms; 2 names (SAJ and VAL) assumed to be shorthand for Sagitarria and Vallisneria.')
 
 #-------------------------------------------------------------------------------*
 # ---- MAKE DATA FRAME OF COUNT BY SITES, SPECIES, AND YEAR ----
@@ -593,7 +668,7 @@ dataDescription$subannualTgrain
 # scale of a "community" will  vary based on the sampling design and the taxonomic 
 # group. Justify your spatial scale below with a comment.
 
-#####
+#--! PROVIDE INFO !--#
 tGrain = 'year'
 
 # Refresh your memory about the spatial grain names if this is NOT a lat-long-only
@@ -604,7 +679,7 @@ tGrain = 'year'
 
 site_grain_names
 
-#####
+#--! PROVIDE INFO !--#
 sGrain = 'site_block_plot'
 
 # This is a reasonable choice of spatial grain because ...
