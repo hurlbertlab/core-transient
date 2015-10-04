@@ -37,7 +37,9 @@ dataFormattingTableFieldUpdate = function(datasetID, Field, Value){
     dataFormattingTable[,Field] = as.character(dataFormattingTable[,Field])
     dataFormattingTable[rowIndex, Field] = Value
     dataFormattingTable[,Field] = factor(dataFormattingTable[,Field])
-  } else {dataFormattingTable[,Field] = factor(dataFormattingTable[,Field])}
+  } else {
+    dataFormattingTable[rowIndex, Field] = Value
+  }
   return(dataFormattingTable[,Field])
 }
 
