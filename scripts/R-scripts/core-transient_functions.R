@@ -101,13 +101,13 @@ dataFormattingTableUpdate = function(datasetID, datasetFinal){
 
 dataFormattingTableUpdateFinished = function(datasetID, datasetFinal){
   rowIndex = which(dataFormattingTable$dataset_ID == datasetID)
-  year = as.numeric(substr(datasetFinal$date, 1, 4))
+  year = as.numeric(substr(datasetFinal$year, 1, 4))
   dataFormattingTable[,'Formatted_nRecs'] = 
     dataFormattingTableFieldUpdate(datasetID, 'Formatted_nRecs',
                                    nrow(datasetFinal))
   dataFormattingTable[,'Formatted_nTime'] = 
     dataFormattingTableFieldUpdate(datasetID, 'Formatted_nTime',
-                                   length(unique(datasetFinal$date)))
+                                   length(unique(datasetFinal$year)))
   dataFormattingTable[,'Formatted_nSpecies'] = 
     dataFormattingTableFieldUpdate(datasetID, 'Formatted_nSpecies', 
                                    length(unique(datasetFinal$species)))
@@ -124,7 +124,7 @@ dataFormattingTableUpdateFinished = function(datasetID, datasetFinal){
     if(dataFormattingTable[rowIndex, 'subannualTgrain'] == 'Y'){
       datasetFinal$date = as.numeric(format(datasetFinal$date, '%Y'))
     }
-    siteYearCounts = ddply(datasetFinal, .(site, date), 
+    siteYearCounts = ddply(datasetFinal, .(site, year), 
                            summarize, tCount = sum(count))
     dataFormattingTable[,'Formatted_Mean_Individuals_perSiteYear'] = 
       dataFormattingTableFieldUpdate(datasetID, 'Formatted_Mean_Individuals_perSiteYear', 
