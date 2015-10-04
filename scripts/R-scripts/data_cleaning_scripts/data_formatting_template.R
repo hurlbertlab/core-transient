@@ -275,6 +275,21 @@ if (num_grains > 1) {
   } 
 }
 
+# What is the spatial grain of the finest sampling scale? For example, this might be
+# a 0.25 m2 quadrat, or a 5 m transect, or a 50 ml water sample.
+
+dataFormattingTable[,'Raw_spatial_grain'] = 
+  dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain',       # Fill value below in quotes
+                                 
+#--! PROVIDE INFO !--#
+                                 0.25) 
+
+dataFormattingTable[,'Raw_spatial_grain_unit'] = 
+  dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain',       # Fill value below in quotes
+                                 
+#--! PROVIDE INFO !--#
+                                 'm2') 
+
 
 # BEFORE YOU CONTINUE. We need to make sure that there are at least minNTime for 
 # sites at the coarsest possible spatial grain. 
