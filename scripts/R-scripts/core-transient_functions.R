@@ -41,7 +41,8 @@ dataFormattingTableFieldUpdate = function(datasetID, Field, Value){
   return(dataFormattingTable[,Field])
 }
 
-# This function modifies numeric summary values:
+# This function fills in numeric summary values for the cleaned raw dataset
+# in the data formatting table.
 
 dataFormattingTableUpdate = function(datasetID, datasetFinal){
   rowIndex = which(dataFormattingTable$dataset_ID == datasetID)
@@ -91,6 +92,60 @@ dataFormattingTableUpdate = function(datasetID, datasetFinal){
   }
   return(dataFormattingTable)
 }
+
+
+# This function fills in numeric summary values for the formatted dataset subsetted
+# to standardized levels of spatial and temporal subsampling in the data formatting table.
+
+dataFormattingTableUpdateFinished = function(datasetID, datasetFinal){
+  rowIndex = which(dataFormattingTable$dataset_ID == datasetID)
+  year = as.numeric(substr(datasetFinal$date, 1, 4))
+  dataFormattingTable[,'Formatted_nRecs'] = 
+    dataFormattingTableFieldUpdate(datasetID, 'Formatted_nRecs',
+                                   nrow(datasetFinal))
+  dataFormattingTable[,'Formatted_nTime'] = 
+    dataFormattingTableFieldUpdate(datasetID, 'Formatted_nTime',
+                                   length(unique(datasetFinal$date)))
+  dataFormattingTable[,'Formatted_nSpecies'] = 
+    dataFormattingTableFieldUpdate(datasetID, 'Formatted_nSpecies', 
+                                   length(unique(datasetFinal$species)))
+  dataFormattingTable[,'Formatted_nSites'] = 
+    dataFormattingTableFieldUpdate(datasetID, 'Formatted_nSites', 
+                                   length(unique(datasetFinal$site)))
+  dataFormattingTable[,'Formatted_start_year'] = 
+    dataFormattingTableFieldUpdate(datasetID, 'Formatted_start_year', 
+                                   min(year))
+  dataFormattingTable[,'Formatted_end_year'] = 
+    dataFormattingTableFieldUpdate(datasetID, 'Formatted_end_year', 
+                                   max(year))
+  if(dataFormattingTable[rowIndex, 'countFormat'] == 'count'){
+    if(dataFormattingTable[rowIndex, 'subannualTgrain'] == 'Y'){
+      datasetFinal$date = as.numeric(format(datasetFinal$date, '%Y'))
+    }
+    siteYearCounts = ddply(datasetFinal, .(site, date), 
+                           summarize, tCount = sum(count))
+    dataFormattingTable[,'Formatted_Mean_Individuals_perSiteYear'] = 
+      dataFormattingTableFieldUpdate(datasetID, 'Formatted_Mean_Individuals_perSiteYear', 
+                                     mean(siteYearCounts$tCount))
+    dataFormattingTable[,'Formatted_Min_Individuals_perSiteYear'] = 
+      dataFormattingTableFieldUpdate(datasetID, 'Formatted_Min_Individuals_perSiteYear', 
+                                     min(siteYearCounts$tCount))
+    dataFormattingTable[,'Formatted_Max_Individuals_perSiteYear'] = 
+      dataFormattingTableFieldUpdate(datasetID, 'Formatted_Max_Individuals_perSiteYear', 
+                                     max(siteYearCounts$tCount))
+    siteYearCounts = ddply(datasetFinal, .(site, date), 
+                           summarize, tCount = sum(count))
+  } else {
+    dataFormattingTable[,'Formatted_Mean_Individuals_perSiteYear'] = 
+      dataFormattingTableFieldUpdate(datasetID, 'Formatted_Mean_Individuals_perSiteYear','NA')
+    dataFormattingTable[,'Formatted_Min_Individuals_perSiteYear'] = 
+      dataFormattingTableFieldUpdate(datasetID, 'Formatted_Min_Individuals_perSiteYear','NA')
+    dataFormattingTable[,'Formatted_Max_Individuals_perSiteYear'] = 
+      dataFormattingTableFieldUpdate(datasetID, 'Formatted_Max_Individuals_perSiteYear','NA')
+  }
+  return(dataFormattingTable)
+}
+
 
 #======================================================================================================*
 # ---- FUNCTIONS for making proportional occurrence dataframes ----
