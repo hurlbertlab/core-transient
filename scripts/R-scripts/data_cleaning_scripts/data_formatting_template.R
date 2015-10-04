@@ -315,7 +315,7 @@ dataset3$site = factor(site)
 # Remove any hierarchical site related fields that are no longer needed, IF NECESSARY.
 
 #--! PROVIDE INFO !--#
-dataset3 = dataset3[,-4]
+# dataset3 = dataset3[,-4]
 
 # Check the new dataset (are the columns as they should be?):
 
