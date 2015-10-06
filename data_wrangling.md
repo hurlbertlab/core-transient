@@ -61,6 +61,32 @@ the sampling scale, did they have hierarchical sampling levels like quadrats
 within plots, how frequently did they sample, etc). You will be constantly 
 referring back to the paper or website that describes the study.
 
+*Step 7:*  
+When you are finished formatting the dataset (or if you have finished your
+work for the day), be sure to save it. We now need to commit all of the changes
+we have made to the repository, including the creation of new files (like
+the formatted dataset, and a siteSummary file, etc). Try the following in the 
+Git bash window, filling in the appropriate datasetID for XXX:
+
+```
+cd data
+git status
+git add formatted_datasets/dataset_XXX.csv
+git add siteSummaries/siteSummary_XXX.csv
+git add propOcc_datasets/propOcc_XXX.csv
+git commit -am "added formatted dataset, site summary, and propOcc for dXXX"
+
+cd ..
+git add scripts/R-scripts/data_cleaning_scripts/dwork_XXX_III.R
+git add data_formatting_table.csv
+git commit -m "added cleaning script for dXXX and modified formatting table"
+git commit -am "updated data subrepo with data and summary files for dXXX"
+git push origin master
+git status
+```
+
+All of your changes have now been pushed to the master repository!
+
 FEEL FREE TO ASK QUESTIONS AT ANY TIME IF SOMETHING IS UNCLEAR. ALMOST ALL
 DATASETS HAVE *something* WEIRD OR UNCLEAR ABOUT THEM!
 
