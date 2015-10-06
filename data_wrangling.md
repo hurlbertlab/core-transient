@@ -52,7 +52,7 @@ depending on where on your machine you have cloned the core-transient repository
 You should run each line of code, and read along with the comments so you
 understand what each section is doing. Whenever you see a comment like this:
 
-#--! PROVIDE INFO !--#
+\#--! PROVIDE INFO !--\#
 
 this means you are expected to fill in or modify the subsequent line of code
 based on the dataset you are working on. Filling in some of this information
