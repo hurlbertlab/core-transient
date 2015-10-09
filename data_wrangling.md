@@ -5,9 +5,22 @@ that will facilitate its analysis under our core vs transient species framework.
 Thanks! Below is a guide describing the organization of the repository and 
 the steps you are expected to follow.
 
-These steps assume that you have already cloned the core-transient repository
-onto your local machine, and that you have set your working directory in R
-to that repository using setwd().
+*Step 0:*  
+Open Git Bash (on Windows) or a Terminal (on Mac). Create a folder (using mkdir) 
+where you will download the core-transient repository and then navigate to it
+(using cd). Then clone the repository into this space. Finally, navigate to
+the core-transient folder that has now been created and type the two git commands
+below to link to the data subrepository.
+```
+mkdir /c/git
+cd /c/git
+git clone https://github.com/hurlbertlab/core-transient.git
+cd core-transient
+git submodule init
+git submodule update
+```
+WARNING: This repository takes up 1+ GB of space!
+
 
 *Step 1:*  
 Identify a dataset to work on. For the Sprint, choose from the datasets
