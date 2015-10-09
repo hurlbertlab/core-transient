@@ -352,7 +352,6 @@ dataset3$site = factor(site)
 # Check the new dataset (are the columns as they should be?):
 
 head(dataset3)
-tail(dataset3)
 
 # !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE SITE DATA WERE MODIFIED!
 
@@ -366,7 +365,7 @@ dataFormattingTable[,'Raw_siteUnit'] =
   dataFormattingTableFieldUpdate(datasetID, 'Raw_siteUnit',  
 
 #--! PROVIDE INFO !--#
-                                 'site_quadrat') 
+                                 'site_transect') 
 
 
 # spatial_scale_variable. Is a site potentially nested (e.g., plot within a quad or 
@@ -385,7 +384,7 @@ dataFormattingTable[,'Notes_siteFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_siteFormat', 
 
 #--! PROVIDE INFO !--#
-  'The site field is a concatenation of site and quadrat.')
+  'The site field has been relabeled from "watershed".')
 
 
 #-------------------------------------------------------------------------------*
@@ -402,7 +401,7 @@ summary(dataset3)
 # If there is no countfield, set this equal to "".
 
 #--! PROVIDE INFO !--#
-countfield = ""
+countfield = "total"
 
 # Renaming it
 if (countfield == "") {
@@ -420,7 +419,7 @@ summary(dataset3)
 # dataset# so that you are consistent with this template.
 
 # Subset to records > 0 (if applicable):
-
+dataset3$count<-as.numeric(dataset3$count)
 dataset4 = subset(dataset3, count > 0) 
 
 summary(dataset4)
@@ -460,13 +459,13 @@ dataFormattingTable[,'countFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'countFormat',  
 
 #--! PROVIDE INFO !--#                                 
-                                 'presence')
+                                 'count')
 
 dataFormattingTable[,'Notes_countFormat'] = 
   dataFormattingTableFieldUpdate(datasetID, 'Notes_countFormat', 
                                  
 #--! PROVIDE INFO !--#                                 
-              'No count data provided, so 1s added to indicate presence')
+              'total count data provided')
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SPECIES DATA ----
