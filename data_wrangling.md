@@ -7,10 +7,11 @@ the steps you are expected to follow.
 
 *Step 0:*  
 Open Git Bash (on Windows) or a Terminal (on Mac). Create a folder (using mkdir) 
-where you will download the core-transient repository and then navigate to it
+where you will download the core-transient repository (in this example I created
+a folder called "git" on my C: drive--modify as needed) and then navigate to it
 (using cd). Then clone the repository into this space. Finally, navigate to
 the core-transient folder that has now been created and type the two git commands
-below to link to the data subrepository.
+below to link to the data submodule.
 ```
 mkdir /c/git
 cd /c/git
