@@ -352,6 +352,7 @@ dataset3$site = factor(site)
 # Check the new dataset (are the columns as they should be?):
 
 head(dataset3)
+tail(dataset3)
 
 # !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE SITE DATA WERE MODIFIED!
 
