@@ -2,9 +2,9 @@
 #  DATA FORMATTING TEMPLATE
 ################################################################################*
 #
-# Dataset name: dataset_274
-# Dataset source (link): http://www.konza.ksu.edu/knz/pages/data/KnzEntity.aspx?id=CGR022
-# Formatted by: Kate Augustine
+# Dataset name: Luquillo LTER bird point counts
+# Dataset source (link): http://luq.lternet.edu/data/luqmetadata23
+# Formatted by: Tracie Hayes
 #
 # Start by opening the data formatting table (data_formatting_table.csv). 
 # Datasets to be worked on will have a 'format_flag' of 0.
@@ -48,18 +48,15 @@ library(MASS)
 
 getwd()
 
-
 # Set your working directory to be in the home of the core-transient repository
 # e.g., setwd('C:/git/core-transient')
-
-setwd('c:/git/core-transient/')
 
 source('scripts/R-scripts/core-transient_functions.R')
 
 # Get data. First specify the dataset number ('datasetID') you are working with.
 
 #--! PROVIDE INFO !--#
-datasetID = 274 
+datasetID = 276 
 
 list.files('data/raw_datasets')
 
@@ -76,7 +73,8 @@ dataFormattingTable[,'Raw_datafile_name'] =
   dataFormattingTableFieldUpdate(datasetID, 'Raw_datafile_name',  
                                  
 #--! PROVIDE INFO !--#
-  'CGR022.dat')
+  'ALL_ElVerde_GT_25m.csv and ALL_ElVerde_LT_25m.csv') 
+
 
 
 ########################################################
@@ -128,20 +126,18 @@ head(dataset)
 names(dataset)
 
 #--! PROVIDE INFO !--#
-unusedFieldNames = c('ROWID', 'DATACODE', 'RECTYPE', 'SOILTYPE', 'REPSITE', 'SPCODE', 'S1', 'S2', 'S3', 'S4', 'S5', 'S6', 'S7', 'S8', 'S9', 'S10', 'COMMENTS' )
+unusedFieldNames = c('X', 'WEATHER', 'WIND', 'RAIN')
 
 
 unusedFields = which(names(dataset) %in% unusedFieldNames)
 
 dataset1 = dataset[,-unusedFields]
 
+
 # You also might want to change the names of the identified species field [to 
 # 'species'] and/or the identified site field [to 'site']. Just make sure you 
 # make specific comments on what the field name was before you made the change, 
 # as seen above.
-
-# "WATERSHED" was relabeled to "SITE" and "SPECIES" was relabeled to "species" and "total"
-colnames(dataset1)<-c("RECYEAR", "RECMONTH", "RECDAY", "site", "species", "total")
 
 # Explore, if everything looks okay, you're ready to move forward. If not, 
 # retrace your steps to look for and fix errors. 
@@ -177,7 +173,7 @@ dataFormattingTable[,'LatLong_sites'] =
 # E.g., c('year', 'month', 'day')
 
 #--! PROVIDE INFO !--#
-dateFieldName = c('RECYEAR', 'RECMONTH', 'RECDAY')
+dateFieldName = c('sampledate')
 
 # If necessary, paste together date info from multiple columns into single field
 if (length(dateFieldName) > 1) {
@@ -194,7 +190,7 @@ if (length(dateFieldName) > 1) {
 # be '%Y-%m-%d'. Type "?strptime" for other examples of date formatting.
 
 #--! PROVIDE INFO !--#
-dateformat = '%Y-%m-%d'
+dateformat = '%m/%d/%Y %H:%M'
 
 # If date is only listed in years:
 
@@ -279,7 +275,7 @@ dataFormattingTable[,'subannualTgrain'] =
 # fill in the fields that specify nested spatial grains below.
 
 #--! PROVIDE INFO !--#
-site_grain_names = c("site")
+site_grain_names = c("site", "quadrat")
 
 # We will now create the site field with these codes concatenated if there
 # are multiple grain fields. Otherwise, site will just be the single grain field.
@@ -299,13 +295,13 @@ dataFormattingTable[,'Raw_spatial_grain'] =
   dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain',  
                                  
 #--! PROVIDE INFO !--#
-                                 20) 
+                                 0.25) 
 
 dataFormattingTable[,'Raw_spatial_grain_unit'] = 
   dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain',  
                                  
 #--! PROVIDE INFO !--#
-                                 'm') 
+                                 'm2') 
 
 
 # BEFORE YOU CONTINUE. We need to make sure that there are at least minNTime for 
@@ -365,7 +361,7 @@ dataFormattingTable[,'Raw_siteUnit'] =
   dataFormattingTableFieldUpdate(datasetID, 'Raw_siteUnit',  
 
 #--! PROVIDE INFO !--#
-                                 'site_transect') 
+                                 'site_quadrat') 
 
 
 # spatial_scale_variable. Is a site potentially nested (e.g., plot within a quad or 
@@ -384,7 +380,7 @@ dataFormattingTable[,'Notes_siteFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_siteFormat', 
 
 #--! PROVIDE INFO !--#
-  'The site field has been relabeled from "watershed".')
+  'The site field is a concatenation of site and quadrat.')
 
 
 #-------------------------------------------------------------------------------*
@@ -401,7 +397,7 @@ summary(dataset3)
 # If there is no countfield, set this equal to "".
 
 #--! PROVIDE INFO !--#
-countfield = "total"
+countfield = ""
 
 # Renaming it
 if (countfield == "") {
@@ -419,7 +415,7 @@ summary(dataset3)
 # dataset# so that you are consistent with this template.
 
 # Subset to records > 0 (if applicable):
-dataset3$count<-as.numeric(dataset3$count)
+
 dataset4 = subset(dataset3, count > 0) 
 
 summary(dataset4)
@@ -459,13 +455,13 @@ dataFormattingTable[,'countFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'countFormat',  
 
 #--! PROVIDE INFO !--#                                 
-                                 'count')
+                                 'presence')
 
 dataFormattingTable[,'Notes_countFormat'] = 
   dataFormattingTableFieldUpdate(datasetID, 'Notes_countFormat', 
                                  
 #--! PROVIDE INFO !--#                                 
-              'total count data provided')
+              'No count data provided, so 1s added to indicate presence')
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SPECIES DATA ----
