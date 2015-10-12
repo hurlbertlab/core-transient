@@ -6,20 +6,9 @@ Thanks! Below is a guide describing the organization of the repository and
 the steps you are expected to follow.
 
 *Step 0:*  
-Open Git Bash (on Windows) or a Terminal (on Mac). Create a folder (using mkdir) 
-where you will download the core-transient repository (in this example I created
-a folder called "git" on my C: drive--modify as needed) and then navigate to it
-(using cd). Then clone the repository into this space. Finally, navigate to
-the core-transient folder that has now been created and type the two git commands
-below to link to the data submodule.
-```
-mkdir /c/git
-cd /c/git
-git clone https://github.com/hurlbertlab/core-transient.git
-cd core-transient
-git submodule init
-git submodule update
-```
+Follow the instructions [here](https://github.com/hurlbertlab/core-transient/blob/master/Reference/git_generate_ssh_windows.md) to set up (clone) the core-transient repository and data submodule for 
+the first time. This involves getting a ssh key prior to using `git clone` and 
+`git submodule`.
 WARNING: This repository takes up 1+ GB of space!
 
 
@@ -46,17 +35,35 @@ from this link. Regardless, this link should take you either to a published pape
 or a data repository that has a description of the dataset including all of
 the relevant methods that will be useful in understanding that dataset.
 
-*Step 4:*  
+*Step 4:*
+Save the raw dataset (if it wasn't already there) into the /data/raw_datasets 
+folder with the name dataset_XXX.csv where XXX is the datasetID. You then need
+to update the git repository by adding, committing, and pushing from inside
+the data submodule, as well as by adding, committing, and pushing from the main
+repository. Do the following:
+```
+cd data
+git status
+git add raw_datasets/dataset_XXX.csv [modify as appropriate]
+git commit -m "adding raw dataset XXX to submodule"
+git push origin master
+cd ..
+git add data
+git commit -m "updating data submodule with new raw dataset"
+git push origin master
+```
+
+*Step 5:*  
 Using RStudio, open the 'data_formatting_template.R' which can be found in
 /scripts/R-scripts/data_cleaning_scripts/. Immediately click on Save As and 
 rename the file as 'dwork_XXX_III.R' where XXX is the datasetID and III are your
 initials.
 
-*Step 5:*  
+*Step 6:*  
 Fill in the the dataset name, paste in the data_source link from the Data
 Formatting Table, and add your name in the top commented section.
 
-*Step 6:*  
+*Step 7:*  
 Follow instructions in the data_formatting_template file. You will first want to
 set your working directory in R using something like:
 
@@ -75,7 +82,17 @@ the sampling scale, did they have hierarchical sampling levels like quadrats
 within plots, how frequently did they sample, etc). You will be constantly 
 referring back to the paper or website that describes the study.
 
-*Step 7:*  
+*Step 7a:*
+Throughout the data_formatting_template you are asked to git add-commit-push to
+save your changes and keep the file up to date in the git repository. This means
+at each prompting you should do this (making sure you are in the core-transient 
+folder, not the data folder).
+```
+git commit -am "<short informative message about your changes>"
+git push origin master
+```
+
+*Step 8:*  
 When you are finished formatting the dataset (or if you have finished your
 work for the day), be sure to save it. We now need to commit all of the changes
 we have made to the repository, including the creation of new files (like
