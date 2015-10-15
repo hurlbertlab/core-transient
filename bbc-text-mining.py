@@ -8,7 +8,7 @@ from glob import glob
 def convert_pdf_to_images(filename):
     """Convert a pdf to images"""
     filename = os.path.splitext(filename)[0]
-    os.system("convert -density 350 {0}.pdf {0}.png".format(filename))
+    os.system("convert -density 350 -crop 0x0+0+315 {0}.pdf {0}.png".format(filename))
 
 def ocr(filename):
     """OCR a file using tesseract"""
