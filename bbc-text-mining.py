@@ -63,15 +63,52 @@ def sorted_nicely(l):
     alphanum_key = lambda key: [ convert(c) for c in re.split('([0-9]+)', key) ] 
     return sorted(l, key = alphanum_key)
 
+def get_site(inputstring):
+    """Check if line is location data and if so return location"""
+    site_re = "^([1-9]{1,2})\. ([A-z ]+)"
+    site_search = re.search(site_re, inputstring)
+    if site_search:
+        return (site_search.group(1), site_search.group(2))
+
+def is_start_main_block(inputstring):
+    """Check if line is the first line of the main block of data"""
+    return inputstring.startswith("Location: ")
+
+def parse_block(block, site_name):
+    """Parse a main data block from a BBC file"""
+    p = re.compile(r'((?:Location|Continuity|Size|Description of Plot|Edge|Topograph and Elevation|Weather|Coverage|Census|Total|Visitors|Remarks|Acknowledgments)):')
+    split_block = p.split(block)[1:] #discard first value; an empty string
+    block_dict = {split_block[i]: split_block[i+1] for i in range(0, len(split_block), 2)}
+    block_dict['SiteName'] = site_name
+    return block_dict
+
+def parse_txt_file(infile):
+    """Parse a BBC text file"""
+    first_site = True
+    recording = False
+    data = dict()
+    for line in infile:
+        site_info = get_site(line)
+        if site_info:
+            if not first_site:
+                data[site_num] = parse_block(main_block, site_name)
+            first_site = False
+            site_num, site_name = site_info
+            site_num = int(site_num)
+            recording = False
+        elif is_start_main_block(line):
+            main_block = ''
+            recording = True
+        if recording:
+            if line.strip():
+                main_block += line
+    return(data)
+
 para_starts = {1988: 4, 1989: 6, 1990: 6, 1991: 6,
                1992: 7, 1993: 7, 1994: 7, 1995: 6}
 data_path = "./data/raw_datasets/BBC_pdfs/"
 convert_pdfs_to_text(data_path)
 cleanup_nonpara_pages(data_path, para_starts)
 combine_txt_files_by_yr(data_path, para_starts.keys())
-
-p = re.compile(r'((?:Location|Continuity|Size|Description of Plot|Edge|Topograph and Elevation|Weather|Coverage|Census|Total|Remarks|Acknowledgments)):')
 with open(os.path.join(data_path, "bbc_combined_1990.txt")) as infile:
-    lines = infile.read()
-    splitlines = lines.split("\n\n") # Break into one line per major chunk of data
-    p.split(splitlines[5])
+    data = parse_txt_file(infile)
