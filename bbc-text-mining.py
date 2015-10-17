@@ -119,6 +119,27 @@ def get_latlong(location):
         long_decdeg = long_deg + long_min / 60.0
         return (lat_decdeg, long_decdeg)
 
+def split_census(census_data):
+    """Split the Census text block into species and counts"""
+    census_data = re.sub(r'\([^)]+\)', '', census_data) # remove parentheticals (which include ;)
+    census_data = census_data.replace('territories', '')
+    census_data = census_data.split(';')
+    split_data = dict()
+    for record in census_data:
+        if record.strip(): # Avoid occasional blank lines
+            try:
+                species, count = record.split(',')
+                # Clean up line breaks
+                species = species.strip().replace('-\n', '-')
+                species = species.replace('\n', ' ')
+                split_data[species] = count.strip(' .\n')
+            except:
+                # there are special cases where OCR or other issues prevent parsing
+                # send these back to a human to deal with
+                return "Error splitting data"
+    return split_data
+
+
 para_starts = {1988: 4, 1989: 6, 1990: 6, 1991: 6,
                1992: 7, 1993: 7, 1994: 7, 1995: 6}
 data_path = "./data/raw_datasets/BBC_pdfs/"
@@ -130,4 +151,4 @@ with open(os.path.join(data_path, "bbc_combined_1990.txt")) as infile:
     for site in data:
         print(site)
         data[site]['latitude'], data[site]['longitude'] = get_latlong(data[site]['Location'])
-        data[site]['Census'] = data[site]['Census'].split(';')
+        data[site]['Census'] = split_census(data[site]['Census'])
