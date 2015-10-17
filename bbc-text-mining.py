@@ -135,8 +135,7 @@ def split_census(census_data):
             try:
                 species, count = record.split(',')
                 # Clean up line breaks
-                species = species.strip().replace('-\n', '-')
-                species = species.replace('\n', ' ')
+                species = get_cleaned_string(species)
                 split_data[species] = count.strip(' .\n')
             except:
                 # there are special cases where OCR or other issues prevent parsing
@@ -148,6 +147,26 @@ def get_clean_size(size_data):
     """Remove units and whitespace"""
     return float(size_data.strip(' ha.\n'))
 
+def get_cleaned_string(string_data):
+    """Do basic cleanup on string data
+
+    1. Remove \n's
+    2. Strip whitespace
+
+    """
+
+    string_data = string_data.strip().replace('-\n', '-')
+    string_data = string_data.replace('\n', ' ')
+    string_data = string_data.strip()
+    return string_data
+
+def clean_string_fields(site_data):
+    """Do basic cleanup on simple string fields for a site"""
+    string_fields = ['Location', 'Remarks', 'SiteName']
+    for field in string_fields:
+        if field in site_data:
+            site_data[field] = get_cleaned_string(site_data[field])
+    return site_data
 
 para_starts = {1988: 4, 1989: 6, 1990: 6, 1991: 6,
                1992: 7, 1993: 7, 1994: 7, 1995: 6}
@@ -162,3 +181,4 @@ with open(os.path.join(data_path, "bbc_combined_1990.txt")) as infile:
         data[site]['latitude'], data[site]['longitude'] = get_latlong(data[site]['Location'])
         data[site]['Census'] = split_census(data[site]['Census'])
         data[site]['Size'] = get_clean_size(data[site]['Size'])
+        data[site] = clean_string_fields(data[site])
