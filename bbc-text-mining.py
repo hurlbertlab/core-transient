@@ -76,12 +76,15 @@ def is_start_main_block(inputstring):
 
 def parse_block(block, site_name):
     """Parse a main data block from a BBC file"""
-    p = re.compile(r'((?:Location|Continuity|Size|Description of Plot|Edge|Topograph and Elevation|Weather|Coverage|Census|Cemus|Total|Visitors|Remarks|Acknowledgments)):') # 'Cemus' included as a mis-OCR of Census
+    ### Cleanup difficult issues manually
+    replacements = {'Cemus': 'Census',
+                    'Description\nof Plot': 'Description of Plot',
+                    'De-\nscription of Plot': 'Description of Plot'}
+    for replace in replacements:
+        block = block.replace(replace, replacements[replace])
+    p = re.compile(r'((?:Location|Continuity|Size|Description of Plot|Edge|Topograph and Elevation|Weather|Coverage|Census|Total|Visitors|Remarks|Acknowledgments)):') # 'Cemus' included as a mis-OCR of Census
     split_block = p.split(block)[1:] #discard first value; an empty string
     block_dict = {split_block[i]: split_block[i+1] for i in range(0, len(split_block), 2)}
-    if 'Cemus' in block_dict.keys():
-        block_dict['Census'] = block_dict['Cemus']
-        del block_dict['Cemus']
     block_dict['SiteName'] = site_name
     return block_dict
 
