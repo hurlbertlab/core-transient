@@ -139,6 +139,10 @@ def split_census(census_data):
                 return "Error splitting data"
     return split_data
 
+def get_clean_size(size_data):
+    """Remove units and whitespace"""
+    return float(size_data.strip(' ha.'))
+
 
 para_starts = {1988: 4, 1989: 6, 1990: 6, 1991: 6,
                1992: 7, 1993: 7, 1994: 7, 1995: 6}
@@ -152,3 +156,4 @@ with open(os.path.join(data_path, "bbc_combined_1990.txt")) as infile:
         print(site)
         data[site]['latitude'], data[site]['longitude'] = get_latlong(data[site]['Location'])
         data[site]['Census'] = split_census(data[site]['Census'])
+        data[site]['Size'] = get_clean_size(data[site]['Size'])
