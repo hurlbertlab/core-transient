@@ -162,11 +162,31 @@ def get_cleaned_string(string_data):
 
 def clean_string_fields(site_data):
     """Do basic cleanup on simple string fields for a site"""
-    string_fields = ['Location', 'Remarks', 'SiteName']
+    string_fields = ['Description of Plot', 'Edge', 'Location', 'Remarks', 'SiteName']
     for field in string_fields:
         if field in site_data:
             site_data[field] = get_cleaned_string(site_data[field])
     return site_data
+
+def extract_coverage(coverage):
+    """Extract number of hours and number of visits from Coverage"""
+    coverage = get_cleaned_string(coverage)
+    extracted = dict()
+    re_with_times = '([0-9]{1,3}\.{0,1}[0-9]{0,2}) h; ([0-9]{1,2}) [V|v]isits \(([^)]+)\);(.*)'
+    re_no_times = '([0-9]{1,3}\.{0,1}[0-9]{0,2}) h; ([0-9]{1,2}) [V|v]isits;(.*)'
+    search = re.search(re_with_times, coverage)
+    if search:
+        extracted['hours'] = float(search.group(1))
+        extracted['visits'] = int(search.group(2))
+        extracted['times'] = search.group(3)
+        extracted['notes'] = search.group(4)
+    else:
+        search = re.search(re_no_times, coverage)
+        extracted['hours'] = float(search.group(1))
+        extracted['visits'] = int(search.group(2))
+        extracted['notes'] = search.group(3)
+    return extracted
+
 
 para_starts = {1988: 4, 1989: 6, 1990: 6, 1991: 6,
                1992: 7, 1993: 7, 1994: 7, 1995: 6}
@@ -181,4 +201,5 @@ with open(os.path.join(data_path, "bbc_combined_1990.txt")) as infile:
         data[site]['latitude'], data[site]['longitude'] = get_latlong(data[site]['Location'])
         data[site]['Census'] = split_census(data[site]['Census'])
         data[site]['Size'] = get_clean_size(data[site]['Size'])
+        data[site]['Coverage'] = extract_coverage(data[site]['Coverage'])
         data[site] = clean_string_fields(data[site])
