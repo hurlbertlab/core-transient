@@ -65,7 +65,7 @@ def sorted_nicely(l):
 
 def get_site(inputstring):
     """Check if line is location data and if so return location"""
-    site_re = "^([1-9]{1,2})\. ([A-z ]+)"
+    site_re = "^([0-9]{1,2})\. ([A-Z —-]{2,})"
     site_search = re.search(site_re, inputstring)
     if site_search:
         return (site_search.group(1), site_search.group(2))
@@ -76,9 +76,12 @@ def is_start_main_block(inputstring):
 
 def parse_block(block, site_name):
     """Parse a main data block from a BBC file"""
-    p = re.compile(r'((?:Location|Continuity|Size|Description of Plot|Edge|Topograph and Elevation|Weather|Coverage|Census|Total|Visitors|Remarks|Acknowledgments)):')
+    p = re.compile(r'((?:Location|Continuity|Size|Description of Plot|Edge|Topograph and Elevation|Weather|Coverage|Census|Cemus|Total|Visitors|Remarks|Acknowledgments)):') # 'Cemus' included as a mis-OCR of Census
     split_block = p.split(block)[1:] #discard first value; an empty string
     block_dict = {split_block[i]: split_block[i+1] for i in range(0, len(split_block), 2)}
+    if 'Cemus' in block_dict.keys():
+        block_dict['Census'] = block_dict['Cemus']
+        del block_dict['Cemus']
     block_dict['SiteName'] = site_name
     return block_dict
 
@@ -90,6 +93,7 @@ def parse_txt_file(infile):
     for line in infile:
         site_info = get_site(line)
         if site_info:
+            print(site_info)
             if not first_site:
                 data[site_num] = parse_block(main_block, site_name)
             first_site = False
@@ -104,11 +108,26 @@ def parse_txt_file(infile):
                 main_block += line
     return(data)
 
+def get_latlong(location):
+    """Extract the latitude and longitude from the Location data"""
+    regex = "([0-9]{1,3})°([0-9]{1,2})[ ]*[’|'|‘]N,[ |\\n]([0-9]{2,3})°([0-9]{1,2})[’|'|‘]W"
+    search = re.search(regex, location)
+    if search:
+        lat_deg, lat_min = int(search.group(1)), int(search.group(2))
+        long_deg, long_min = int(search.group(3)), int(search.group(4))
+        lat_decdeg = lat_deg + lat_min / 60.0
+        long_decdeg = long_deg + long_min / 60.0
+        return (lat_decdeg, long_decdeg)
+
 para_starts = {1988: 4, 1989: 6, 1990: 6, 1991: 6,
                1992: 7, 1993: 7, 1994: 7, 1995: 6}
 data_path = "./data/raw_datasets/BBC_pdfs/"
-convert_pdfs_to_text(data_path)
-cleanup_nonpara_pages(data_path, para_starts)
-combine_txt_files_by_yr(data_path, para_starts.keys())
+#convert_pdfs_to_text(data_path)
+#cleanup_nonpara_pages(data_path, para_starts)
+#combine_txt_files_by_yr(data_path, para_starts.keys())
 with open(os.path.join(data_path, "bbc_combined_1990.txt")) as infile:
     data = parse_txt_file(infile)
+    for site in data:
+        print(site)
+        data[site]['latitude'], data[site]['longitude'] = get_latlong(data[site]['Location'])
+        data[site]['Census'] = data[site]['Census'].split(';')
