@@ -79,7 +79,9 @@ def parse_block(block, site_name):
     ### Cleanup difficult issues manually
     replacements = {'Cemus': 'Census',
                     'Description\nof Plot': 'Description of Plot',
-                    'De-\nscription of Plot': 'Description of Plot'}
+                    'De-\nscription of Plot': 'Description of Plot',
+                    'Description of\nPlot': 'Description of Plot',
+                    'Descrip-\ntion of Plot': 'Description of Plot'}
     for replace in replacements:
         block = block.replace(replace, replacements[replace])
     p = re.compile(r'((?:Location|Continuity|Size|Description of Plot|Edge|Topograph and Elevation|Weather|Coverage|Census|Total|Visitors|Remarks|Acknowledgments)):') # 'Cemus' included as a mis-OCR of Census
