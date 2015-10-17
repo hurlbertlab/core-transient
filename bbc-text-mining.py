@@ -144,7 +144,7 @@ def split_census(census_data):
 
 def get_clean_size(size_data):
     """Remove units and whitespace"""
-    return float(size_data.strip(' ha.'))
+    return float(size_data.strip(' ha.\n'))
 
 
 para_starts = {1988: 4, 1989: 6, 1990: 6, 1991: 6,
