@@ -5,6 +5,8 @@ import re
 import string
 from glob import glob
 
+import pandas as pd
+
 def convert_pdf_to_images(filename):
     """Convert a pdf to images"""
     filename = os.path.splitext(filename)[0]
@@ -128,25 +130,44 @@ def get_latlong(location):
         long_decdeg = long_deg + long_min / 60.0
         return (lat_decdeg, long_decdeg)
 
-def split_census(census_data):
+def extract_counts(data):
     """Split the Census text block into species and counts"""
+    census_data = data['Census']
     census_data = re.sub(r'\([^)]+\)', '', census_data) # remove parentheticals (which include ;)
     census_data = census_data.replace('territories', '')
     census_data = census_data.split(';')
-    split_data = dict()
+    counts_data = pd.DataFrame(columns = ['species', 'counts', 'status'])
     for record in census_data:
         if record.strip(): # Avoid occasional blank lines
             species, count = record.split(',')
-            # Clean up line breaks
-            species = species.strip().replace('-\n', '-')
-            species = species.replace('\n', ' ')
-            species = species.strip()
-            split_data[species] = count.strip(' .\n')
-    return split_data
+            species = get_cleaned_species(species)
+            counts_record = pd.DataFrame({'species': [species],
+                                         'counts': [count.strip(' .\n')],
+                                          'status': ['resident']})
+            counts_data = counts_data.append(counts_record, ignore_index = True)
+
+    if 'Visitors' in data:
+        visitor_data = data['Visitors'].split(',')
+        for species in visitor_data:
+            species = get_cleaned_species(species)
+            counts_record = pd.DataFrame({'species': [species],
+                                          'counts': [None],
+                                          'status': ['visitor']})
+            counts_data = counts_data.append(counts_record, ignore_index = True)
+    
+    return counts_data
 
 def get_clean_size(size_data):
     """Remove units and whitespace"""
     return float(size_data.strip(' ha.\n'))
+
+def get_cleaned_species(species):
+    """Cleanup species names"""
+    species = species.strip().replace('-\n', '-')
+    species = species.replace('\n', ' ')
+    species = species.strip()
+    return species
+
 
 def get_cleaned_string(string_data):
     """Do basic cleanup on string data
@@ -205,12 +226,13 @@ data_path = "./data/raw_datasets/BBC_pdfs/"
 #convert_pdfs_to_text(data_path)
 #cleanup_nonpara_pages(data_path, para_starts)
 #combine_txt_files_by_yr(data_path, para_starts.keys())
+
 with open(os.path.join(data_path, "bbc_combined_1990.txt")) as infile:
     data = parse_txt_file(infile)
     for site in data:
         print(site)
         data[site]['latitude'], data[site]['longitude'] = get_latlong(data[site]['Location'])
-        data[site]['Census'] = split_census(data[site]['Census'])
+        data[site]['Census'] = extract_counts(data[site])
         data[site]['Size'] = get_clean_size(data[site]['Size'])
         data[site]['Coverage'] = extract_coverage(data[site]['Coverage'])
         data[site]['Total'] = extract_total(data[site]['Total'])
