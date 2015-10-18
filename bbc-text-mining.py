@@ -130,19 +130,21 @@ def get_latlong(location):
         long_decdeg = long_deg + long_min / 60.0
         return (lat_decdeg, long_decdeg)
 
-def extract_counts(data):
+def extract_counts(data, site, year):
     """Split the Census text block into species and counts"""
     census_data = data['Census']
     census_data = re.sub(r'\([^)]+\)', '', census_data) # remove parentheticals (which include ;)
     census_data = census_data.replace('territories', '')
     census_data = census_data.split(';')
-    counts_data = pd.DataFrame(columns = ['species', 'counts', 'status'])
+    counts_data = pd.DataFrame(columns = ['site', 'year', 'species', 'count', 'status'])
     for record in census_data:
         if record.strip(): # Avoid occasional blank lines
             species, count = record.split(',')
             species = get_cleaned_species(species)
-            counts_record = pd.DataFrame({'species': [species],
-                                         'counts': [count.strip(' .\n')],
+            counts_record = pd.DataFrame({'year': year,
+                                          'site': site,
+                                          'species': [species],
+                                          'count': [count.strip(' .\n')],
                                           'status': ['resident']})
             counts_data = counts_data.append(counts_record, ignore_index = True)
 
@@ -151,7 +153,7 @@ def extract_counts(data):
         for species in visitor_data:
             species = get_cleaned_species(species)
             counts_record = pd.DataFrame({'species': [species],
-                                          'counts': [None],
+                                          'count': [None],
                                           'status': ['visitor']})
             counts_data = counts_data.append(counts_record, ignore_index = True)
     
@@ -227,13 +229,18 @@ data_path = "./data/raw_datasets/BBC_pdfs/"
 #cleanup_nonpara_pages(data_path, para_starts)
 #combine_txt_files_by_yr(data_path, para_starts.keys())
 
-with open(os.path.join(data_path, "bbc_combined_1990.txt")) as infile:
-    data = parse_txt_file(infile)
-    for site in data:
-        print(site)
-        data[site]['latitude'], data[site]['longitude'] = get_latlong(data[site]['Location'])
-        data[site]['Census'] = extract_counts(data[site])
-        data[site]['Size'] = get_clean_size(data[site]['Size'])
-        data[site]['Coverage'] = extract_coverage(data[site]['Coverage'])
-        data[site]['Total'] = extract_total(data[site]['Total'])
-        data[site] = clean_string_fields(data[site])
+counts_table = pd.DataFrame(columns = ['site', 'year', 'species', 'count', 'status'])
+years = [1990,]
+
+for year in years:
+    datafile = os.path.join(data_path, "bbc_combined_{}.txt".format(year))
+    with open(datafile) as infile:
+        data = parse_txt_file(infile)
+        for site in data:
+            print(site)
+            data[site]['latitude'], data[site]['longitude'] = get_latlong(data[site]['Location'])
+            counts_table = counts_table.append(extract_counts(data[site], site, year))
+            data[site]['Size'] = get_clean_size(data[site]['Size'])
+            data[site]['Coverage'] = extract_coverage(data[site]['Coverage'])
+            data[site]['Total'] = extract_total(data[site]['Total'])
+            data[site] = clean_string_fields(data[site])
