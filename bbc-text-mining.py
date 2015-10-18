@@ -253,6 +253,25 @@ def get_sites_table(site_data):
                                 'description': [site_data['Description of Plot']]})
     return sites_table
 
+def get_census_table(site_data, year):
+    """Put census level data into a dataframe"""
+    census_table = pd.DataFrame({'siteID': [site_data['SiteNumInCensus']],
+                                 'sitename': [site_data['SiteName']],
+                                 'siteNumInCensus': [site_data['SiteNumInCensus']],
+                                 'year': [year],
+                                 'established': [site_data['Continuity']['established']],
+                                 'ts_length': [site_data['Continuity']['length']],
+                                 'cov_hours': [site_data['Coverage']['hours']],
+                                 'cov_visits': [site_data['Coverage']['visits']],
+                                 'cov_times': [site_data['Coverage'].get('times', None)],
+                                 'cov_notes': [site_data['Coverage']['notes']],
+                                 'richness': [site_data['Total']['total_species']],
+                                 'territories': [site_data['Total']['total_territories']],
+                                 'terr_notes': [site_data['Total']['total_terr_notes']],
+                                 'weather': [site_data['Weather']]
+                             })
+    return census_table
+
 para_starts = {1988: 4, 1989: 6, 1990: 6, 1991: 6,
                1992: 7, 1993: 7, 1994: 7, 1995: 6}
 data_path = "./data/raw_datasets/BBC_pdfs/"
@@ -260,8 +279,15 @@ data_path = "./data/raw_datasets/BBC_pdfs/"
 #cleanup_nonpara_pages(data_path, para_starts)
 #combine_txt_files_by_yr(data_path, para_starts.keys())
 
-counts_table = pd.DataFrame(columns = ['site', 'year', 'species', 'count', 'status'])
-site_table = pd.DataFrame(columns = ['siteID', 'latitude', 'longitude', 'location', 'description'])
+counts_table = pd.DataFrame(columns = ['siteID', 'year', 'species',
+                                       'count', 'status'])
+site_table = pd.DataFrame(columns = ['siteID', 'latitude', 'longitude',
+                                     'location', 'description'])
+census_table = pd.DataFrame(columns = ['siteID', 'sitename', 'siteNumInCensus',
+                                       'year', 'established', 'ts_length', 'cov_hours',
+                                       'cov_visits', 'cov_times', 'cov_notes',
+                                       'richness', 'territories', 'terr_notes',
+                                       'weather'])
 years = [1990,]
 
 for year in years:
@@ -274,12 +300,25 @@ for year in years:
             data[site]['Size'] = get_clean_size(data[site]['Size'])
             data[site]['Coverage'] = extract_coverage(data[site]['Coverage'])
             data[site]['Total'] = extract_total(data[site]['Total'])
+            data[site]['Continuity'] = extract_continuity(data[site]['Continuity'], year)
             data[site] = clean_string_fields(data[site])
             counts_table = counts_table.append(extract_counts(data[site], site, year),
                                                ignore_index=True)
             site_table = site_table.append(get_sites_table(data[site]),
                                            ignore_index=True)
+            census_table = census_table.append(get_census_table(data[site], year),
+                                               ignore_index=True)
 
+counts_table = counts_table[['siteID', 'year', 'species', 'count', 'status']]
+site_table = site_table[['siteID', 'latitude', 'longitude',
+                         'location', 'description']]
+census_table = census_table[['siteID', 'sitename', 'siteNumInCensus',
+                                       'year', 'established', 'ts_length', 'cov_hours',
+                                       'cov_visits', 'cov_times', 'cov_notes',
+                                       'richness', 'territories', 'terr_notes',
+                                       'weather']]
 
+#TODO:
 
-#TODO: site numbers need to be converted to siteIDs based on lat/long or name
+# 1. Site numbers need to be converted to siteIDs based on lat/long/name.
+#    Multiple sites share the same lat/long, so it is insufficient on it's own
