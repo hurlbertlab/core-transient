@@ -143,7 +143,7 @@ def extract_counts(data, site, year):
             species, count = record.split(',')
             species = get_cleaned_species(species)
             counts_record = pd.DataFrame({'year': year,
-                                          'site': site,
+                                          'siteID': site,
                                           'species': [species],
                                           'count': [count.strip(' .\n')],
                                           'status': ['resident']})
@@ -154,7 +154,7 @@ def extract_counts(data, site, year):
         for species in visitor_data:
             species = get_cleaned_species(species)
             counts_record = pd.DataFrame({'year': year,
-                                          'site': site,
+                                          'siteID': site,
                                           'species': [species],
                                           'count': [None],
                                           'status': ['visitor']})
