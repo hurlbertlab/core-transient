@@ -76,7 +76,7 @@ def is_start_main_block(inputstring):
     """Check if line is the first line of the main block of data"""
     return inputstring.startswith("Location: ")
 
-def parse_block(block, site_name):
+def parse_block(block, site_name, site_num):
     """Parse a main data block from a BBC file"""
     # Cleanup difficult issues manually
     # Combination of difficult \n's and OCR mistakes
@@ -90,10 +90,11 @@ def parse_block(block, site_name):
                     'Bobolink; 9.0 territories': 'Bobolink, 9.0 territories'}
     for replace in replacements:
         block = block.replace(replace, replacements[replace])
-    p = re.compile(r'((?:Location|Continuity|Size|Description of Plot|Edge|Topography and Elevation|Weather|Coverage|Census|Total|Visitors|Remarks|Acknowledgments)):') # 'Cemus' included as a mis-OCR of Census
+    p = re.compile(r'((?:Location|Continuity|Size|Description of Plot|Edge|Topography and Elevation|Weather|Coverage|Census|Total|Visitors|Remarks|Other Observers|Acknowledgments)):') # 'Cemus' included as a mis-OCR of Census
     split_block = p.split(block)[1:] #discard first value; an empty string
     block_dict = {split_block[i]: split_block[i+1] for i in range(0, len(split_block), 2)}
     block_dict['SiteName'] = site_name
+    block_dict['SiteNumInCensus'] = site_num
     return block_dict
 
 def parse_txt_file(infile):
@@ -106,7 +107,7 @@ def parse_txt_file(infile):
         if site_info:
             print(site_info)
             if not first_site:
-                data[site_num] = parse_block(main_block, site_name)
+                data[site_num] = parse_block(main_block, site_name, site_num)
             first_site = False
             site_num, site_name = site_info
             site_num = int(site_num)
