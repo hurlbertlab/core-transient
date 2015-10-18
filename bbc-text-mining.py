@@ -153,7 +153,9 @@ def extract_counts(data, site, year):
         visitor_data = data['Visitors'].split(',')
         for species in visitor_data:
             species = get_cleaned_species(species)
-            counts_record = pd.DataFrame({'species': [species],
+            counts_record = pd.DataFrame({'year': year,
+                                          'site': site,
+                                          'species': [species],
                                           'count': [None],
                                           'status': ['visitor']})
             counts_data = counts_data.append(counts_record, ignore_index = True)
@@ -240,8 +242,12 @@ for year in years:
         for site in data:
             print(site)
             data[site]['latitude'], data[site]['longitude'] = get_latlong(data[site]['Location'])
-            counts_table = counts_table.append(extract_counts(data[site], site, year))
+            counts_table = counts_table.append(extract_counts(data[site], site, year),
+                                               ignore_index=True)
             data[site]['Size'] = get_clean_size(data[site]['Size'])
             data[site]['Coverage'] = extract_coverage(data[site]['Coverage'])
             data[site]['Total'] = extract_total(data[site]['Total'])
             data[site] = clean_string_fields(data[site])
+
+
+#TODO: site numbers need to be converted to siteIDs based on lat/long or name
