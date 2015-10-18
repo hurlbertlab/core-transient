@@ -188,6 +188,16 @@ def extract_coverage(coverage):
         extracted['notes'] = search.group(3)
     return extracted
 
+def extract_total(total):
+    """Extract the total number of species and total territories"""
+    total = get_cleaned_string(total)
+    extracted = dict()
+    regex = '([0-9]{1,3}) species; ([0-9]{1,4}\.{0,1}[0-9]{0,1}) territories \(([^)]+)\).'
+    search = re.search(regex, total)
+    extracted['total_species'] = int(search.group(1))
+    extracted['total_territories'] = float(search.group(2))
+    extracted['total_terr_notes'] = search.group(3)
+    return extracted
 
 para_starts = {1988: 4, 1989: 6, 1990: 6, 1991: 6,
                1992: 7, 1993: 7, 1994: 7, 1995: 6}
@@ -203,4 +213,5 @@ with open(os.path.join(data_path, "bbc_combined_1990.txt")) as infile:
         data[site]['Census'] = split_census(data[site]['Census'])
         data[site]['Size'] = get_clean_size(data[site]['Size'])
         data[site]['Coverage'] = extract_coverage(data[site]['Coverage'])
+        data[site]['Total'] = extract_total(data[site]['Total'])
         data[site] = clean_string_fields(data[site])
