@@ -136,15 +136,12 @@ def split_census(census_data):
     split_data = dict()
     for record in census_data:
         if record.strip(): # Avoid occasional blank lines
-            try:
-                species, count = record.split(',')
-                # Clean up line breaks
-                species = get_cleaned_string(species)
-                split_data[species] = count.strip(' .\n')
-            except:
-                # there are special cases where OCR or other issues prevent parsing
-                # send these back to a human to deal with
-                return "Error splitting data"
+            species, count = record.split(',')
+            # Clean up line breaks
+            species = species.strip().replace('-\n', '-')
+            species = species.replace('\n', ' ')
+            species = species.strip()
+            split_data[species] = count.strip(' .\n')
     return split_data
 
 def get_clean_size(size_data):
@@ -159,7 +156,7 @@ def get_cleaned_string(string_data):
 
     """
 
-    string_data = string_data.strip().replace('-\n', '-')
+    string_data = string_data.strip().replace('-\n', '')
     string_data = string_data.replace('\n', ' ')
     string_data = string_data.strip()
     return string_data
