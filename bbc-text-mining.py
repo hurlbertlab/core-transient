@@ -225,6 +225,15 @@ def extract_total(total):
     extracted['total_terr_notes'] = search.group(3)
     return extracted
 
+def get_sites_table(site_data):
+    """Put site level data into a dataframe"""
+    sites_table = pd.DataFrame({'siteID': [site_data['SiteNumInCensus']],
+                                'latitude': [site_data['Latitude']],
+                                'longitude': [site_data['Longitude']],
+                                'location': [site_data['Location']],
+                                'description': [site_data['Description of Plot']]})
+    return sites_table
+
 para_starts = {1988: 4, 1989: 6, 1990: 6, 1991: 6,
                1992: 7, 1993: 7, 1994: 7, 1995: 6}
 data_path = "./data/raw_datasets/BBC_pdfs/"
@@ -233,6 +242,7 @@ data_path = "./data/raw_datasets/BBC_pdfs/"
 #combine_txt_files_by_yr(data_path, para_starts.keys())
 
 counts_table = pd.DataFrame(columns = ['site', 'year', 'species', 'count', 'status'])
+site_table = pd.DataFrame(columns = ['siteID', 'latitude', 'longitude', 'location', 'description'])
 years = [1990,]
 
 for year in years:
@@ -241,13 +251,16 @@ for year in years:
         data = parse_txt_file(infile)
         for site in data:
             print(site)
-            data[site]['latitude'], data[site]['longitude'] = get_latlong(data[site]['Location'])
-            counts_table = counts_table.append(extract_counts(data[site], site, year),
-                                               ignore_index=True)
+            data[site]['Latitude'], data[site]['Longitude'] = get_latlong(data[site]['Location'])
             data[site]['Size'] = get_clean_size(data[site]['Size'])
             data[site]['Coverage'] = extract_coverage(data[site]['Coverage'])
             data[site]['Total'] = extract_total(data[site]['Total'])
             data[site] = clean_string_fields(data[site])
+            counts_table = counts_table.append(extract_counts(data[site], site, year),
+                                               ignore_index=True)
+            site_table = site_table.append(get_sites_table(data[site]),
+                                           ignore_index=True)
+
 
 
 #TODO: site numbers need to be converted to siteIDs based on lat/long or name
