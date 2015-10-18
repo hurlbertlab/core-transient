@@ -225,6 +225,25 @@ def extract_total(total):
     extracted['total_terr_notes'] = search.group(3)
     return extracted
 
+def extract_continuity(continuity, year):
+    """Extract establishment year and number of years surveyed"""
+    continuity = get_cleaned_string(continuity)
+    extracted = dict()
+    if 'New' in continuity:
+        extracted['established'] = year
+        extracted['length'] = 1
+    else:
+        if ';' in continuity:
+            established, length = continuity.split(';')
+        else:
+            # some ; delimiters are mis-OCR'd as ,
+            established, length = continuity.split(',')
+        established = established.replace('Established', '').strip()
+        length = length.replace('yr.', '').replace('consecutive', '').replace('intermittent', '').strip()
+        extracted['established'] = established
+        extracted['length'] = length
+    return extracted
+
 def get_sites_table(site_data):
     """Put site level data into a dataframe"""
     sites_table = pd.DataFrame({'siteID': [site_data['SiteNumInCensus']],
