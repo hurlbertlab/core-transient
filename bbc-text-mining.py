@@ -74,7 +74,7 @@ def get_site(inputstring):
 
 def is_start_main_block(inputstring):
     """Check if line is the first line of the main block of data"""
-    return inputstring.startswith("Location: ")
+    return inputstring.startswith("Location: ") or inputstring.startswith('Site Number: ')
 
 def parse_block(block, site_name, site_num):
     """Parse a main data block from a BBC file"""
@@ -83,6 +83,8 @@ def parse_block(block, site_name, site_num):
     replacements = {'Cemus': 'Census',
                     'Cov-\nerage': 'Coverage',
                     'Cov—\nerage': 'Coverage',
+                    'Con-\ntinuity': 'Continuity',
+                    'Conti-\nnuity': 'Continuity',
                     'Description\nof Plot': 'Description of Plot',
                     'De-\nscription of Plot': 'Description of Plot',
                     'Description of\nPlot': 'Description of Plot',
@@ -95,11 +97,12 @@ def parse_block(block, site_name, site_num):
                     'Common\nYellowthroat, 4.5, Northern Flicker, 3.0': 'Common\nYellowthroat, 4.5; Northern Flicker, 3.0',
                     '\nWinter 1992\n': ' ', #One header line in one file got OCR'd for some reason
                     '20.9 h; 8 Visits (8 sunrise), 8, 15, 22, 29 April; 6, 13, 20, 27\nMay.': '20.9 h; 8 Visits (8 sunrise); 8, 15, 22, 29 April; 6, 13, 20, 27\nMay.',
-                    'Anna’s Hummingbird, 2,0': 'Anna’s Hummingbird, 2.0'
+                    'Anna’s Hummingbird, 2,0': 'Anna’s Hummingbird, 2.0',
+                    '19.3 h; 11 visits (11 sunrise;': '19.3 h; 11 visits (11 sunrise);'
     }
     for replace in replacements:
         block = block.replace(replace, replacements[replace])
-    p = re.compile(r'((?:Location|Continuity|Size|Description of Plot|Edge|Topography and Elevation|Weather|Coverage|Census|Total|Visitors|Remarks|Other Observers|Acknowledgments)):') # 'Cemus' included as a mis-OCR of Census
+    p = re.compile(r'((?:Site Number|Location|Continuity|Size|Description of Plot|Edge|Topography and Elevation|Weather|Coverage|Census|Total|Visitors|Remarks|Other Observers|Acknowledgments)):') # 'Cemus' included as a mis-OCR of Census
     split_block = p.split(block)[1:] #discard first value; an empty string
     block_dict = {split_block[i]: split_block[i+1] for i in range(0, len(split_block), 2)}
     block_dict['SiteName'] = site_name
@@ -267,6 +270,7 @@ def extract_site_data(site_data):
 def get_sites_table(site_data):
     """Put site level data into a dataframe"""
     sites_table = pd.DataFrame({'siteID': [site_data['SiteNumInCensus']],
+                                'sitename': [site_data['SiteName']],
                                 'latitude': [site_data['Latitude']],
                                 'longitude': [site_data['Longitude']],
                                 'location': [site_data['Location']],
