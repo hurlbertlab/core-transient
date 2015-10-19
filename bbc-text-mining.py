@@ -244,6 +244,16 @@ def extract_continuity(continuity, year):
         extracted['length'] = length
     return extracted
 
+def extract_site_data(site_data):
+    """Extract data for a site"""
+    site_data['Latitude'], site_data['Longitude'] = get_latlong(site_data['Location'])
+    site_data['Size'] = get_clean_size(site_data['Size'])
+    site_data['Coverage'] = extract_coverage(site_data['Coverage'])
+    site_data['Total'] = extract_total(site_data['Total'])
+    site_data['Continuity'] = extract_continuity(site_data['Continuity'], year)
+    site_data = clean_string_fields(site_data)
+    return site_data
+
 def get_sites_table(site_data):
     """Put site level data into a dataframe"""
     sites_table = pd.DataFrame({'siteID': [site_data['SiteNumInCensus']],
@@ -272,6 +282,7 @@ def get_census_table(site_data, year):
                              })
     return census_table
 
+
 para_starts = {1988: 4, 1989: 6, 1990: 6, 1991: 6,
                1992: 7, 1993: 7, 1994: 7, 1995: 6}
 data_path = "./data/raw_datasets/BBC_pdfs/"
@@ -296,12 +307,7 @@ for year in years:
         data = parse_txt_file(infile)
         for site in data:
             print(site)
-            data[site]['Latitude'], data[site]['Longitude'] = get_latlong(data[site]['Location'])
-            data[site]['Size'] = get_clean_size(data[site]['Size'])
-            data[site]['Coverage'] = extract_coverage(data[site]['Coverage'])
-            data[site]['Total'] = extract_total(data[site]['Total'])
-            data[site]['Continuity'] = extract_continuity(data[site]['Continuity'], year)
-            data[site] = clean_string_fields(data[site])
+            data[site] = extract_site_data(data[site])
             counts_table = counts_table.append(extract_counts(data[site], site, year),
                                                ignore_index=True)
             site_table = site_table.append(get_sites_table(data[site]),
