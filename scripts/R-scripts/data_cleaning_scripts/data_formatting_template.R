@@ -134,11 +134,6 @@ unusedFields = which(names(dataset) %in% unusedFieldNames)
 dataset1 = dataset[,-unusedFields]
 
 
-# You also might want to change the names of the identified species field [to 
-# 'species'] and/or the identified site field [to 'site']. Just make sure you 
-# make specific comments on what the field name was before you made the change, 
-# as seen above.
-
 # Explore, if everything looks okay, you're ready to move forward. If not, 
 # retrace your steps to look for and fix errors. 
 
@@ -407,6 +402,8 @@ if (countfield == "") {
 }
 
 # Now we will remove zero counts and NA's:
+# But first, let's make sure the count field is numeric:
+dataset4$count = as.numeric(as.character(dataset4$count))
 
 summary(dataset3)
 
@@ -415,7 +412,6 @@ summary(dataset3)
 # dataset# so that you are consistent with this template.
 
 # Subset to records > 0 (if applicable):
-
 dataset4 = subset(dataset3, count > 0) 
 
 summary(dataset4)
