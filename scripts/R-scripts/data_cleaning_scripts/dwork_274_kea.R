@@ -508,7 +508,9 @@ data.frame(table(dataset5$species))
 
 #--! PROVIDE INFO !--#
 bad_sp = c('', '** INVALID SPEC CODE', '** total', '**INVALID SPEC CODE*',
-           '**total', 'total', 'unknown')
+           '**total', 'total', 'unknown', 'arphia     species', 'arphia     spp.',
+           'melanoplus different', 'melanoplus species', 'melanoplus spp.',
+           'mermeria   species', 'mermiria   species', 'mermiria   spp.')
 
 dataset6 = dataset5[!dataset5$species %in% bad_sp,]
 
@@ -522,10 +524,39 @@ table(dataset6$species)
 # correct spellings in good_name, and then replace them using the for loop below:
 
 #--! PROVIDE INFO !--#
-typo_name = c()
+typo_name = c('agenotteti deorum',
+              'camplyacan olivacea',
+              'chartophag  viridifa',
+              'eritettix  simplex',
+              # hesperotet 
+              'melanoplus bivittata',
+              'melanoplus keel luri',
+              'merm       bivitt.??',
+              'mermeria   bivitatta',
+              'mermeria   bivitattu',
+              'mermeria   bivittata',
+              'mermeria   bivittatu',
+              'mermiria   bivitatau',
+              'mermiria   bivitatta',
+              'mermiria   bivitattu',
+              )
 
 #--! PROVIDE INFO !--#
-good_name = c()
+good_name = c('ageneotett deorum',
+              'campylacan olivacea',
+              'chortophag viridifas',
+              'eritettix simplex',
+              # hesperotet
+              'melanoplus bivittatu',
+              'melanoplus keeleri',
+              'mermiria   bivittata',
+              'mermiria   bivittata',
+              'mermiria   bivittata',
+              'mermiria   bivittata',
+              'mermiria   bivittata',
+              'mermiria   bivittata',
+              'mermiria   bivittata',
+              'mermiria   bivittata',)
 
 if (length(typo_name) > 0) {
   for (n in 1:length(typo_name)) {
