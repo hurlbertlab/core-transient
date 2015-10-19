@@ -306,14 +306,14 @@ data_path = "./data/raw_datasets/BBC_pdfs/"
 
 counts_table = pd.DataFrame(columns = ['siteID', 'year', 'species',
                                        'count', 'status'])
-site_table = pd.DataFrame(columns = ['siteID', 'latitude', 'longitude',
-                                     'location', 'description'])
+site_table = pd.DataFrame(columns = ['siteID', 'sitename', 'latitude',
+                                     'longitude', 'location', 'description'])
 census_table = pd.DataFrame(columns = ['siteID', 'sitename', 'siteNumInCensus',
                                        'year', 'established', 'ts_length', 'cov_hours',
                                        'cov_visits', 'cov_times', 'cov_notes',
                                        'richness', 'territories', 'terr_notes',
                                        'weather'])
-years = [1991,]
+years = [1990, 1991]
 
 for year in years:
     datafile = os.path.join(data_path, "bbc_combined_{}.txt".format(year))
@@ -329,9 +329,10 @@ for year in years:
             census_table = census_table.append(get_census_table(data[site], year),
                                                ignore_index=True)
 
+unique_site_names = site_table['sitename'].drop_duplicates()
 counts_table = counts_table[['siteID', 'year', 'species', 'count', 'status']]
-site_table = site_table[['siteID', 'latitude', 'longitude',
-                         'location', 'description']]
+site_table = site_table[['siteID', 'sitename', 'latitude',
+                         'longitude', 'location', 'description']]
 census_table = census_table[['siteID', 'sitename', 'siteNumInCensus',
                                        'year', 'established', 'ts_length', 'cov_hours',
                                        'cov_visits', 'cov_times', 'cov_notes',
