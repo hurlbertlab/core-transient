@@ -414,7 +414,9 @@ summary(dataset3)
 # Subset to records > 0 (if applicable):
 dataset3$count<-as.numeric(as.character(dataset3$count))
 
-# Warning message, NAs created. Investigation finds that 
+# Warning message, NAs created because some species are listed but with no
+# numeric values for any of the sweeps and no value in the count field.
+# NEED TO INQUIRE ABOUT THESE SCENARIOS WITH DATA AUTHORS.
 
 dataset4 = subset(dataset3, count > 0) 
 
@@ -461,7 +463,7 @@ dataFormattingTable[,'Notes_countFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_countFormat', 
                                  
 #--! PROVIDE INFO !--#                                 
-              'total count data provided')
+              'Count is the sum of individuals seen over 10 sets of sweep-net samples')
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SPECIES DATA ----
@@ -475,7 +477,7 @@ dataFormattingTable[,'Notes_countFormat'] =
 # It will get converted to 'species'
 
 #--! PROVIDE INFO !--#
-speciesField = 'species_name'
+speciesField = 'SPECIES'
 
 dataset5$species = dataset5[, speciesField]
 dataset5 = dataset5[, -which(names(dataset5) == speciesField)]
@@ -505,7 +507,8 @@ data.frame(table(dataset5$species))
 # Because of this, you should really stop here and post an issue on GitHub. 
 
 #--! PROVIDE INFO !--#
-bad_sp = c('')
+bad_sp = c('', '** INVALID SPEC CODE', '** total', '**INVALID SPEC CODE*',
+           '**total', 'total', 'unknown')
 
 dataset6 = dataset5[!dataset5$species %in% bad_sp,]
 
@@ -519,46 +522,10 @@ table(dataset6$species)
 # correct spellings in good_name, and then replace them using the for loop below:
 
 #--! PROVIDE INFO !--#
-typo_name = c('CERATOPHYLLUM',
-              'CHARA',
-              'ELEOCHARIS',
-              'ELODEA',
-              'ISOETES',
-              'JUNCUS',
-              'LITTORELLA',
-              'LOBELIA',
-              'MYRIO. ALT.',
-              'MYRIO. SIBIR.',
-              'MYRIO. TENELLUM',
-              'MYRIO. VERT.',
-              'NAJAS',
-              'P. AMPLIFOLIUS',
-              'P. GRAMINEUS', 
-              'P. RICHARDSONII',
-              'P. ROBBINSII',
-              'SAJ.',           #no other genus begins with these letters
-              'VAL.')           #no other genus begins with these letters
+typo_name = c()
 
 #--! PROVIDE INFO !--#
-good_name = c('CERATOPHYLLUM DEMERSUM',
-              'CHARA SP',
-              'ELEOCHARIS SP',
-              'ELODEA CANADENSIS',
-              'ISOETES SP',
-              'JUNCUS SP',
-              'LITTORELLA UNIFLORA ASCH. VAR. AMERICANA',
-              'LOBELIA DORTMANNA',
-              'MYRIOPHYLLUM ALTERNIFLORUM',
-              'MYRIOPHYLLUM SIBIRICUM',
-              'MYRIOPHYLLUM TENELLUM',
-              'MYRIOPHYLLUM VERTICILLATUM',
-              'NAJAS FLEXILIS',
-              'POTAMOGETON AMPLIFOLIUS',
-              'POTAMOGETON GRAMINEUS',
-              'POTAMOGETON RICHARDSONII',
-              'POTAMOGETON ROBBINSII',
-              'SAGITTARIA LATIFOLIA',
-              'VALLISNERIA AMERICANA')
+good_name = c()
 
 if (length(typo_name) > 0) {
   for (n in 1:length(typo_name)) {
