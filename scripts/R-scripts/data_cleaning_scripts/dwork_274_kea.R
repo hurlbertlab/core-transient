@@ -52,7 +52,7 @@ getwd()
 # Set your working directory to be in the home of the core-transient repository
 # e.g., setwd('C:/git/core-transient')
 
-setwd('c:/git/core-transient/')
+# setwd('c:/git/core-transient/')
 
 source('scripts/R-scripts/core-transient_functions.R')
 
@@ -128,20 +128,12 @@ head(dataset)
 names(dataset)
 
 #--! PROVIDE INFO !--#
-unusedFieldNames = c('ROWID', 'DATACODE', 'RECTYPE', 'SOILTYPE', 'REPSITE', 'SPCODE', 'S1', 'S2', 'S3', 'S4', 'S5', 'S6', 'S7', 'S8', 'S9', 'S10', 'COMMENTS' )
+unusedFieldNames = c('ROWID', 'DATACODE', 'RECTYPE', 'SOILTYPE', 'SPCODE', 'S1', 'S2', 'S3', 'S4', 'S5', 'S6', 'S7', 'S8', 'S9', 'S10', 'COMMENTS' )
 
 
 unusedFields = which(names(dataset) %in% unusedFieldNames)
 
 dataset1 = dataset[,-unusedFields]
-
-# You also might want to change the names of the identified species field [to 
-# 'species'] and/or the identified site field [to 'site']. Just make sure you 
-# make specific comments on what the field name was before you made the change, 
-# as seen above.
-
-# "WATERSHED" was relabeled to "SITE" and "SPECIES" was relabeled to "species" and "total"
-colnames(dataset1)<-c("RECYEAR", "RECMONTH", "RECDAY", "site", "species", "total")
 
 # Explore, if everything looks okay, you're ready to move forward. If not, 
 # retrace your steps to look for and fix errors. 
@@ -243,7 +235,7 @@ dataFormattingTable[,'Notes_timeFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_timeFormat', 
 
 #--! PROVIDE INFO !--#
-    'The only modification to this field involved converting to a date object.')
+    'Separate year, month, and day fields were combined into a date object.')
 
 
 # subannualTgrain. After exploring the time data, was this dataset sampled at a 
@@ -273,13 +265,14 @@ dataFormattingTable[,'subannualTgrain'] =
 # -- If the site definition is clear, make a new site column as necessary.
 
 # -- If the dataset is for just a single site, and there is no site column, then add one.
+#    E.g., dataset2$site = 1
 
 # Here, we will concatenate all of the potential fields that describe the site 
 # in hierarchical order from largest to smallest grain. Based on the dataset,
 # fill in the fields that specify nested spatial grains below.
 
 #--! PROVIDE INFO !--#
-site_grain_names = c("site")
+site_grain_names = c("WATERSHED", "REPSITE")
 
 # We will now create the site field with these codes concatenated if there
 # are multiple grain fields. Otherwise, site will just be the single grain field.
@@ -347,7 +340,7 @@ dataset3$site = factor(site)
 # Remove any hierarchical site related fields that are no longer needed, IF NECESSARY.
 
 #--! PROVIDE INFO !--#
-# dataset3 = dataset3[,-4]
+dataset3 = dataset3[,-(1:2)]
 
 # Check the new dataset (are the columns as they should be?):
 
@@ -365,7 +358,7 @@ dataFormattingTable[,'Raw_siteUnit'] =
   dataFormattingTableFieldUpdate(datasetID, 'Raw_siteUnit',  
 
 #--! PROVIDE INFO !--#
-                                 'site_transect') 
+                                 'WATERSHED_REPSITE') 
 
 
 # spatial_scale_variable. Is a site potentially nested (e.g., plot within a quad or 
@@ -384,7 +377,7 @@ dataFormattingTable[,'Notes_siteFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_siteFormat', 
 
 #--! PROVIDE INFO !--#
-  'The site field has been relabeled from "watershed".')
+  'The site field reflects both the WATERSHED and REPSITE within each watershed.')
 
 
 #-------------------------------------------------------------------------------*
@@ -401,7 +394,7 @@ summary(dataset3)
 # If there is no countfield, set this equal to "".
 
 #--! PROVIDE INFO !--#
-countfield = "total"
+countfield = "TOTAL"
 
 # Renaming it
 if (countfield == "") {
@@ -419,7 +412,10 @@ summary(dataset3)
 # dataset# so that you are consistent with this template.
 
 # Subset to records > 0 (if applicable):
-dataset3$count<-as.numeric(dataset3$count)
+dataset3$count<-as.numeric(as.character(dataset3$count))
+
+# Warning message, NAs created. Investigation finds that 
+
 dataset4 = subset(dataset3, count > 0) 
 
 summary(dataset4)
