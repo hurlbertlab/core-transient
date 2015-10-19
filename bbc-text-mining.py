@@ -81,13 +81,22 @@ def parse_block(block, site_name, site_num):
     # Cleanup difficult issues manually
     # Combination of difficult \n's and OCR mistakes
     replacements = {'Cemus': 'Census',
+                    'Cov-\nerage': 'Coverage',
+                    'Cov—\nerage': 'Coverage',
                     'Description\nof Plot': 'Description of Plot',
                     'De-\nscription of Plot': 'Description of Plot',
                     'Description of\nPlot': 'Description of Plot',
                     'Descrip-\ntion of Plot': 'Description of Plot',
                     'Solitary Vireo, 1,0;': 'Solitary Vireo, 1.0;',
                     'Common Yellowthroat, 14,0': 'Common Yellowthroat, 14.0',
-                    'Bobolink; 9.0 territories': 'Bobolink, 9.0 territories'}
+                    'Bobolink; 9.0 territories': 'Bobolink, 9.0 territories',
+                    "37°38'N,\n121°46lW": "37°38'N,\n121°46'W",
+                    'Downy Wood-\npecker, 1,5': 'Downy Wood-\npecker, 1.5',
+                    'Common\nYellowthroat, 4.5, Northern Flicker, 3.0': 'Common\nYellowthroat, 4.5; Northern Flicker, 3.0',
+                    '\nWinter 1992\n': ' ', #One header line in one file got OCR'd for some reason
+                    '20.9 h; 8 Visits (8 sunrise), 8, 15, 22, 29 April; 6, 13, 20, 27\nMay.': '20.9 h; 8 Visits (8 sunrise); 8, 15, 22, 29 April; 6, 13, 20, 27\nMay.',
+                    'Anna’s Hummingbird, 2,0': 'Anna’s Hummingbird, 2.0'
+    }
     for replace in replacements:
         block = block.replace(replace, replacements[replace])
     p = re.compile(r'((?:Location|Continuity|Size|Description of Plot|Edge|Topography and Elevation|Weather|Coverage|Census|Total|Visitors|Remarks|Other Observers|Acknowledgments)):') # 'Cemus' included as a mis-OCR of Census
@@ -163,8 +172,9 @@ def extract_counts(data, site, year):
     return counts_data
 
 def get_clean_size(size_data):
-    """Remove units and whitespace"""
-    return float(size_data.strip(' ha.\n'))
+    """Remove units, notes, and whitespace"""
+    size = size_data.split('ha')[0]
+    return float(size.strip(' .\n'))
 
 def get_cleaned_species(species):
     """Cleanup species names"""
@@ -299,7 +309,7 @@ census_table = pd.DataFrame(columns = ['siteID', 'sitename', 'siteNumInCensus',
                                        'cov_visits', 'cov_times', 'cov_notes',
                                        'richness', 'territories', 'terr_notes',
                                        'weather'])
-years = [1990,]
+years = [1991,]
 
 for year in years:
     datafile = os.path.join(data_path, "bbc_combined_{}.txt".format(year))
