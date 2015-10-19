@@ -297,7 +297,7 @@ def get_census_table(site_data, year):
     return census_table
 
 
-para_starts = {1988: 4, 1989: 6, 1990: 6, 1991: 6,
+para_starts = {1988: 4, 1989: 6, 1990: 6, 1991: 7,
                1992: 7, 1993: 7, 1994: 7, 1995: 6}
 data_path = "./data/raw_datasets/BBC_pdfs/"
 #convert_pdfs_to_text(data_path)
