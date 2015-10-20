@@ -400,10 +400,12 @@ if (countfield == "") {
   names(dataset3)[which(names(dataset3) == countfield)] = 'count'
 }
 
-# Now we will remove zero counts and NA's:
-# But first, let's make sure the count field is numeric:
-dataset4$count = as.numeric(as.character(dataset4$count))
+# Check that the count field is numeric or integer, and convert if necessary
+class(dataset3$count)
+# For example, dataset3$count = as.numeric(as.character(dataset3$count))
 
+
+# Now we will remove zero counts and NA's:
 summary(dataset3)
 
 # Can usually tell if there are any zeros or NAs from that summary(). If there 
@@ -472,8 +474,7 @@ dataFormattingTable[,'Notes_countFormat'] =
 #--! PROVIDE INFO !--#
 speciesField = 'species_name'
 
-dataset5$species = dataset5[, speciesField]
-dataset5 = dataset5[, -which(names(dataset5) == speciesField)]
+names(dataset5)[names(dataset5) == speciesField] = 'species'
 
 # Look at the individual species present and how frequently they occur: This way 
 # you can more easily scan the species names (listed alphabetically) and identify 
