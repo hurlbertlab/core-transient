@@ -42,7 +42,7 @@ library(ggplot2)
 library(grid)
 library(gridExtra)
 library(MASS)
-
+library(lubridate)
 
 # Source the functions file:
 
@@ -126,18 +126,12 @@ head(dataset)
 names(dataset)
 
 #--! PROVIDE INFO !--#
-unusedFieldNames = c('X', 'WEATHER', 'WIND', 'RAIN')
+unusedFieldNames = c('X', 'WEATHER', 'JULIAN', 'WIND', 'RAIN', 'TIME', 'YEAR')
 
 
 unusedFields = which(names(dataset) %in% unusedFieldNames)
 
 dataset1 = dataset[,-unusedFields]
-
-
-# You also might want to change the names of the identified species field [to 
-# 'species'] and/or the identified site field [to 'site']. Just make sure you 
-# make specific comments on what the field name was before you made the change, 
-# as seen above.
 
 # Explore, if everything looks okay, you're ready to move forward. If not, 
 # retrace your steps to look for and fix errors. 
@@ -173,7 +167,7 @@ dataFormattingTable[,'LatLong_sites'] =
 # E.g., c('year', 'month', 'day')
 
 #--! PROVIDE INFO !--#
-dateFieldName = c('sampledate')
+dateFieldName = c('DATE')
 
 # If necessary, paste together date info from multiple columns into single field
 if (length(dateFieldName) > 1) {
@@ -190,7 +184,7 @@ if (length(dateFieldName) > 1) {
 # be '%Y-%m-%d'. Type "?strptime" for other examples of date formatting.
 
 #--! PROVIDE INFO !--#
-dateformat = '%m/%d/%Y %H:%M'
+dateformat = '%m/%d/%Y'
 
 # If date is only listed in years:
 
@@ -228,6 +222,27 @@ dataset2$date = date
 head(dataset2)
 str(dataset2)
 
+# Noticed in reading metadata that first year the sampling grid was smaller.
+# This code counts # unique sampling stations by year and confirms it:
+sapply(1989:2012, function(x) nrow(unique(dataset[dataset$YEAR==x, c('PLOT1', 'PLOT2')])))
+
+# Should remove 1989, as well as 1996 which also has data from few points
+# Will first see whether these years get removed automatically through out
+# subsampling threshold analysis below.
+
+# I also notice (since Julian day was provided in the original dataset), that
+# the time of year surveys were conducted was quite variable early on:
+plot(dataset$YEAR, dataset$JULIAN)
+abline(h = c(128, 170), lty= 'dotted', col = 'red')
+
+# Since for the majority of the time series, surveys were conducted within the 6-wk
+# period between julian days 128 and 170, I will be throwing out surveys outside this
+# window which are almost all from 1994 and earlier.
+
+# Have to recalc this because julian days were missing from 2011-12 in original data
+dataset2$julian = yday(dataset2$date) 
+dataset2 = subset(dataset2, julian >= 128 & julian <=170)
+
 # !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE DATE DATA WERE MODIFIED!
 
 #!DATA FORMATTING TABLE UPDATE!
@@ -239,7 +254,7 @@ dataFormattingTable[,'Notes_timeFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_timeFormat', 
 
 #--! PROVIDE INFO !--#
-    'The only modification to this field involved converting to a date object.')
+    'Converted to date object, removed surveys outside of julian day range 128-170')
 
 
 # subannualTgrain. After exploring the time data, was this dataset sampled at a 
@@ -275,7 +290,11 @@ dataFormattingTable[,'subannualTgrain'] =
 # fill in the fields that specify nested spatial grains below.
 
 #--! PROVIDE INFO !--#
-site_grain_names = c("site", "quadrat")
+
+# Realized from below that there is a typo in the 'PLACE' field, so correcting:
+dataset2$PLACE[dataset2$PLACE == 'ELVERDE'] = 'EL VERDE'
+dataset2$gridpoint = paste(dataset2$PLOT1, dataset2$PLOT2, sep = "_")
+site_grain_names = c("PLACE", "gridpoint")
 
 # We will now create the site field with these codes concatenated if there
 # are multiple grain fields. Otherwise, site will just be the single grain field.
@@ -288,14 +307,15 @@ if (num_grains > 1) {
   } 
 }
 
-# What is the spatial grain of the finest sampling scale? For example, this might be
-# a 0.25 m2 quadrat, or a 5 m transect, or a 50 ml water sample.
+# What is the spatial grain of the finest sampling scale? 
+# Point counts are at least 60 m away from each other, so assuming
+# circle of radius 30 m:
 
 dataFormattingTable[,'Raw_spatial_grain'] = 
   dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain',  
                                  
 #--! PROVIDE INFO !--#
-                                 0.25) 
+                                 2827) 
 
 dataFormattingTable[,'Raw_spatial_grain_unit'] = 
   dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain',  
@@ -341,6 +361,8 @@ dataset3 = dataset2
 dataset3$site = factor(site)
 
 # Remove any hierarchical site related fields that are no longer needed, IF NECESSARY.
+dataset3 = dataset3[, !names(dataset3) %in% c('PLACE', 'PLOT1', 'PLOT2', 'gridpoint')]
+
 
 #--! PROVIDE INFO !--#
 # dataset3 = dataset3[,-4]
@@ -361,7 +383,7 @@ dataFormattingTable[,'Raw_siteUnit'] =
   dataFormattingTableFieldUpdate(datasetID, 'Raw_siteUnit',  
 
 #--! PROVIDE INFO !--#
-                                 'site_quadrat') 
+                                 'PLACE_gridpoint') 
 
 
 # spatial_scale_variable. Is a site potentially nested (e.g., plot within a quad or 
@@ -371,7 +393,7 @@ dataFormattingTable[,'spatial_scale_variable'] =
   dataFormattingTableFieldUpdate(datasetID, 'spatial_scale_variable',
 
 #--! PROVIDE INFO !--#
-                                 'Y') # Fill value here in quotes
+                                 'Y') 
 
 # Notes_siteFormat. Use this field to THOROUGHLY describe any changes made to the 
 # site field during formatting.
@@ -380,7 +402,7 @@ dataFormattingTable[,'Notes_siteFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_siteFormat', 
 
 #--! PROVIDE INFO !--#
-  'The site field is a concatenation of site and quadrat.')
+  'The site field is a concatenation of PLACE and gridpoint, which is a concatenation of PLOT1 and PLOT2 coordinates.')
 
 
 #-------------------------------------------------------------------------------*
@@ -397,7 +419,7 @@ summary(dataset3)
 # If there is no countfield, set this equal to "".
 
 #--! PROVIDE INFO !--#
-countfield = ""
+countfield = "count"
 
 # Renaming it
 if (countfield == "") {
@@ -405,6 +427,9 @@ if (countfield == "") {
 } else {
   names(dataset3)[which(names(dataset3) == countfield)] = 'count'
 }
+
+# Check that the count field is numeric or integer, and convert if necessary
+class(dataset3$count)
 
 # Now we will remove zero counts and NA's:
 
@@ -455,13 +480,13 @@ dataFormattingTable[,'countFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'countFormat',  
 
 #--! PROVIDE INFO !--#                                 
-                                 'presence')
+                                 'count')
 
 dataFormattingTable[,'Notes_countFormat'] = 
   dataFormattingTableFieldUpdate(datasetID, 'Notes_countFormat', 
                                  
 #--! PROVIDE INFO !--#                                 
-              'No count data provided, so 1s added to indicate presence')
+              'Number of individuals recorded on point counts')
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SPECIES DATA ----
@@ -475,10 +500,9 @@ dataFormattingTable[,'Notes_countFormat'] =
 # It will get converted to 'species'
 
 #--! PROVIDE INFO !--#
-speciesField = 'species_name'
+speciesField = 'species'
 
-dataset5$species = dataset5[, speciesField]
-dataset5 = dataset5[, -which(names(dataset5) == speciesField)]
+names(dataset5)[names(dataset5) == speciesField] = 'species'
 
 # Look at the individual species present and how frequently they occur: This way 
 # you can more easily scan the species names (listed alphabetically) and identify 
@@ -505,7 +529,12 @@ data.frame(table(dataset5$species))
 # Because of this, you should really stop here and post an issue on GitHub. 
 
 #--! PROVIDE INFO !--#
-bad_sp = c('')
+bad_sp = c('TOTAL', 'UNKNO', 'UNWAR')
+
+# These correspond to 1) total number of individuals seen at a point, 2) unknown
+# species, and 3) unknown warbler (I think, should verify).
+# Note that there are two TOTAL entries per survey/date because this file
+# binded together two raw data files, birds seen <25 m away and those >25 m away.
 
 dataset6 = dataset5[!dataset5$species %in% bad_sp,]
 
@@ -519,46 +548,10 @@ table(dataset6$species)
 # correct spellings in good_name, and then replace them using the for loop below:
 
 #--! PROVIDE INFO !--#
-typo_name = c('CERATOPHYLLUM',
-              'CHARA',
-              'ELEOCHARIS',
-              'ELODEA',
-              'ISOETES',
-              'JUNCUS',
-              'LITTORELLA',
-              'LOBELIA',
-              'MYRIO. ALT.',
-              'MYRIO. SIBIR.',
-              'MYRIO. TENELLUM',
-              'MYRIO. VERT.',
-              'NAJAS',
-              'P. AMPLIFOLIUS',
-              'P. GRAMINEUS', 
-              'P. RICHARDSONII',
-              'P. ROBBINSII',
-              'SAJ.',           #no other genus begins with these letters
-              'VAL.')           #no other genus begins with these letters
+typo_name = c('')
 
 #--! PROVIDE INFO !--#
-good_name = c('CERATOPHYLLUM DEMERSUM',
-              'CHARA SP',
-              'ELEOCHARIS SP',
-              'ELODEA CANADENSIS',
-              'ISOETES SP',
-              'JUNCUS SP',
-              'LITTORELLA UNIFLORA ASCH. VAR. AMERICANA',
-              'LOBELIA DORTMANNA',
-              'MYRIOPHYLLUM ALTERNIFLORUM',
-              'MYRIOPHYLLUM SIBIRICUM',
-              'MYRIOPHYLLUM TENELLUM',
-              'MYRIOPHYLLUM VERTICILLATUM',
-              'NAJAS FLEXILIS',
-              'POTAMOGETON AMPLIFOLIUS',
-              'POTAMOGETON GRAMINEUS',
-              'POTAMOGETON RICHARDSONII',
-              'POTAMOGETON ROBBINSII',
-              'SAGITTARIA LATIFOLIA',
-              'VALLISNERIA AMERICANA')
+good_name = c('')
 
 if (length(typo_name) > 0) {
   for (n in 1:length(typo_name)) {
@@ -593,7 +586,7 @@ dataFormattingTable[,'Notes_spFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_spFormat',  
 
 #--! PROVIDE INFO !--#                                 
-  'A number of names represented in two obvious forms; 2 names (SAJ and VAL) assumed to be shorthand for Sagitarria and Vallisneria.')
+  'Totals (sums across spp) and two unknown categories were removed')
 
 #-------------------------------------------------------------------------------*
 # ---- MAKE DATA FRAME OF COUNT BY SITES, SPECIES, AND YEAR ----
@@ -723,13 +716,12 @@ tGrain = 'year'
 site_grain_names
 
 #--! PROVIDE INFO !--#
-sGrain = 'site'
+sGrain = 'PLACE'
 
 # This is a reasonable choice of spatial grain because ...
 #--! PROVIDE INFO !--#
-# quadrats are only 0.25 m2 and record presence absence, whereas sites encompass
-# 28-52 quadrats per depth interval providing a greater sample and an effective
-# abundance measure.
+# ...it includes the entire Luquillo Forest Dynamics Plots grid of ~16 ha
+# which is a reasonable area over which to characterize a bird community.
 
 # The function "richnessYearSubsetFun" below will subset the data to sites with an 
 # adequate number of years of sampling and species richness. If there are no 
@@ -771,6 +763,12 @@ subsettedData = subsetDataFun(dataset7, datasetID, spatialGrain = sGrain,
                               minNTime = minNTime, minSpRich = minSpRich,
                               proportionalThreshold = topFractionSites,
                               dataDescription)
+
+# See what years are in the subsetted data. Expected years were dropped (i.e., 
+# 1989 and 1996), but so were some unexpected years: 1999, 2000, and 2002.
+# Still not sure why.
+unique(subsettedData$year)
+
 
 # Take a look at the propOcc:
 
