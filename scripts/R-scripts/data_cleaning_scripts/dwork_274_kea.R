@@ -495,9 +495,9 @@ data.frame(table(dataset5$species))
 # species, but the observer could not identify it. This causes ambiguity in the 
 # data, and must be fixed by either 1. deleting the genus-only entry altogether, 
 # or 2. renaming the genus-species entries to just the genus-only entry. 
-# This decision can be fairly subjective, but generally if less than 25% of the 
+# This decision can be fairly subjective, but generally if less than 50% of the 
 # entries are genus-only, then they can be deleted (using bad_sp). If more than 
-# 25% of the entries for that genus are only specified to the genus, then the 
+# 50% of the entries for that genus are only specified to the genus, then the 
 # genus-species entries should be renamed to be genus-only (using typo_name). 
 
 # If species names are coded (not scientific names) go back to study's metadata 
@@ -508,9 +508,9 @@ data.frame(table(dataset5$species))
 
 #--! PROVIDE INFO !--#
 bad_sp = c('', '** INVALID SPEC CODE', '** total', '**INVALID SPEC CODE*',
-           '**total', 'total', 'unknown', 'arphia     species', 'arphia     spp.',
-           'melanoplus different', 'melanoplus species', 'melanoplus spp.',
-           'mermeria   species', 'mermiria   species', 'mermiria   spp.')
+           '**total', 'total', 'unknown', 'melanoplus different', 
+           'melanoplus species', 'melanoplus spp.', 'mermeria   species', 
+           'mermiria   species', 'mermiria   spp.', 'pardalopho species')
 
 dataset6 = dataset5[!dataset5$species %in% bad_sp,]
 
@@ -525,10 +525,16 @@ table(dataset6$species)
 
 #--! PROVIDE INFO !--#
 typo_name = c('agenotteti deorum',
+              'arphia     conspersa',
+              'arphia     simplex',
+              'arphia     spp.',
+              'arphia     xanthopte',
               'camplyacan olivacea',
               'chartophag  viridifa',
               'eritettix  simplex',
-              # hesperotet 
+              'hesperotet speciosus',
+              'hesperotet spp.',
+              'hesperotet viridis',
               'melanoplus bivittata',
               'melanoplus keel luri',
               'merm       bivitt.??',
@@ -539,14 +545,26 @@ typo_name = c('agenotteti deorum',
               'mermiria   bivitatau',
               'mermiria   bivitatta',
               'mermiria   bivitattu',
-              )
+              'mermeria   picta',
+              'paratylota brunneri',
+              'srybula    admirabil',
+              'sybula     admiribil',
+              'syrbual    admiribil',
+              'syrbula    admirabi',
+              'syrbula    admiribil')
 
 #--! PROVIDE INFO !--#
 good_name = c('ageneotett deorum',
+              'arphia     species', # 109/203 in genus are unidentified
+              'arphia     species',
+              'arphia     species',
+              'arphia     species',
               'campylacan olivacea',
               'chortophag viridifas',
               'eritettix simplex',
-              # hesperotet
+              'hesperotet species', # 442/701 in genus are unidentified
+              'hesperotet species',
+              'hesperotet species',
               'melanoplus bivittatu',
               'melanoplus keeleri',
               'mermiria   bivittata',
@@ -556,7 +574,14 @@ good_name = c('ageneotett deorum',
               'mermiria   bivittata',
               'mermiria   bivittata',
               'mermiria   bivittata',
-              'mermiria   bivittata',)
+              'mermiria   bivittata',
+              'mermiria   picta',
+              'paratylotr brunneri',   # no idea what taxon this is
+              'syrbula    admirabil',
+              'syrbula    admirabil',
+              'syrbula    admirabil',
+              'syrbula    admirabil',
+              'syrbula    admirabil')
 
 if (length(typo_name) > 0) {
   for (n in 1:length(typo_name)) {
@@ -591,7 +616,8 @@ dataFormattingTable[,'Notes_spFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_spFormat',  
 
 #--! PROVIDE INFO !--#                                 
-  'A number of names represented in two obvious forms; 2 names (SAJ and VAL) assumed to be shorthand for Sagitarria and Vallisneria.')
+  'Several names had multiple typo forms; some unknown spp eliminated while some 
+species were merged to the genus name if frequently listed as unknown')
 
 #-------------------------------------------------------------------------------*
 # ---- MAKE DATA FRAME OF COUNT BY SITES, SPECIES, AND YEAR ----
@@ -672,7 +698,7 @@ dataFormattingTable[,'format_flag'] =
 library(dplyr)
 library(tidyr)
 
-# Read in formatted dataset if skipping above formatting code (lines 1-450).
+# Read in formatted dataset if skipping above formatting code (lines 1-690).
 
 #dataset7 = read.csv(paste("data/formatted_datasets/dataset_",
 #                         datasetID, ".csv", sep =''))
@@ -688,7 +714,7 @@ head(dataset7)
 
 dataDescription = dataFormattingTable[dataFormattingTable$dataset_ID == datasetID,]
 
-# or read it in from the saved data_formatting_table.csv if skipping lines 1-450.
+# or read it in from the saved data_formatting_table.csv if skipping lines 1-660.
 
 #dataDescription = subset(read.csv("data_formatting_table.csv"),
 #                             dataset_ID == datasetID)
@@ -713,7 +739,10 @@ dataDescription$subannualTgrain
 tGrain = 'year'
 
 # Refresh your memory about the spatial grain names if this is NOT a lat-long-only
-# based dataset. Set sGrain = to the hierarchical scale for analysis.
+# based dataset. Set sGrain = to the hierarchical scale for analysis, including
+# the higher levels separated by underscore. E.g., for a dataset with quads within
+# plots within the site, sGrain = 'site_plot_quad' or sGrain = 'site_plot' or
+# sGrain = 'site'.
 
 # HOWEVER, if the sites are purely defined by lat-longs, then sGrain should equal
 # a numerical value specifying the block size in degrees latitude for analysis.
@@ -721,13 +750,12 @@ tGrain = 'year'
 site_grain_names
 
 #--! PROVIDE INFO !--#
-sGrain = 'site'
+sGrain = 'WATERSHED_REPSITE'
 
 # This is a reasonable choice of spatial grain because ...
 #--! PROVIDE INFO !--#
-# quadrats are only 0.25 m2 and record presence absence, whereas sites encompass
-# 28-52 quadrats per depth interval providing a greater sample and an effective
-# abundance measure.
+# ...the REPSITE scale consists of  10 sets of sweep-nets, each of which includes
+# 20 sweeps, and spans a transect of ~50 meters.
 
 # The function "richnessYearSubsetFun" below will subset the data to sites with an 
 # adequate number of years of sampling and species richness. If there are no 
