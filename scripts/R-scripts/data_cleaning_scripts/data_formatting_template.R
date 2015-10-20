@@ -489,9 +489,9 @@ data.frame(table(dataset5$species))
 # species, but the observer could not identify it. This causes ambiguity in the 
 # data, and must be fixed by either 1. deleting the genus-only entry altogether, 
 # or 2. renaming the genus-species entries to just the genus-only entry. 
-# This decision can be fairly subjective, but generally if less than 25% of the 
+# This decision can be fairly subjective, but generally if less than 50% of the 
 # entries are genus-only, then they can be deleted (using bad_sp). If more than 
-# 25% of the entries for that genus are only specified to the genus, then the 
+# 50% of the entries for that genus are only specified to the genus, then the 
 # genus-species entries should be renamed to be genus-only (using typo_name). 
 
 # If species names are coded (not scientific names) go back to study's metadata 
@@ -670,7 +670,7 @@ dataFormattingTable[,'format_flag'] =
 library(dplyr)
 library(tidyr)
 
-# Read in formatted dataset if skipping above formatting code (lines 1-450).
+# Read in formatted dataset if skipping above formatting code (lines 1-660).
 
 #dataset7 = read.csv(paste("data/formatted_datasets/dataset_",
 #                         datasetID, ".csv", sep =''))
@@ -686,7 +686,7 @@ head(dataset7)
 
 dataDescription = dataFormattingTable[dataFormattingTable$dataset_ID == datasetID,]
 
-# or read it in from the saved data_formatting_table.csv if skipping lines 1-450.
+# or read it in from the saved data_formatting_table.csv if skipping lines 1-660.
 
 #dataDescription = subset(read.csv("data_formatting_table.csv"),
 #                             dataset_ID == datasetID)
@@ -711,7 +711,10 @@ dataDescription$subannualTgrain
 tGrain = 'year'
 
 # Refresh your memory about the spatial grain names if this is NOT a lat-long-only
-# based dataset. Set sGrain = to the hierarchical scale for analysis.
+# based dataset. Set sGrain = to the hierarchical scale for analysis, including
+# the higher levels separated by underscore. E.g., for a dataset with quads within
+# plots within the site, sGrain = 'site_plot_quad' or sGrain = 'site_plot' or
+# sGrain = 'site'.
 
 # HOWEVER, if the sites are purely defined by lat-longs, then sGrain should equal
 # a numerical value specifying the block size in degrees latitude for analysis.
