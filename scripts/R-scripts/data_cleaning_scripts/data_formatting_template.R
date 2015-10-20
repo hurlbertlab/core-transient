@@ -117,22 +117,21 @@ str(dataset)
 
 head(dataset)
 
-# Here, we can see that there are some fields that we won't use. Let's remove 
-# them, note that I've given a new name here "dataset1", this is to ensure that 
-# we don't have to go back to square 1 if we've miscoded anything.
+# Here, we can see that there are some fields that we won't use. These might be
+# fields describing weather, observer ID's, or duplicate information like year
+# or month when there is already a complete date column.
 
-# If all fields will be used, then set unusedFields = 9999.
+# If all fields will be used, then set unusedFieldNames = ""
 
 names(dataset)
 
 #--! PROVIDE INFO !--#
 unusedFieldNames = c('lakeid', 'min_depth', 'max_depth', 'year4')
 
+dataset1 = dataset[, !names(dataset) %in% unusedFieldNames]
 
-unusedFields = which(names(dataset) %in% unusedFieldNames)
-
-dataset1 = dataset[,-unusedFields]
-
+# Note that I've given a new name here "dataset1", this is to ensure that 
+# we don't have to go back to square 1 if we've miscoded anything.
 
 # Explore, if everything looks okay, you're ready to move forward. If not, 
 # retrace your steps to look for and fix errors. 
