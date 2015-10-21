@@ -100,8 +100,10 @@ def parse_block(block, site_name, site_num):
                     'Anna’s Hummingbird, 2,0': 'Anna’s Hummingbird, 2.0',
                     '19.3 h; 11 visits (11 sunrise;': '19.3 h; 11 visits (11 sunrise);'
     }
-    for replace in replacements:
-        block = block.replace(replace, replacements[replace])
+    for replacement in replacements:
+        if replacement in block:
+            print("Replacing {} with {}".format(replacements[replacement], replacement))
+            block = block.replace(replacement, replacements[replacement])
     p = re.compile(r'((?:Site Number|Location|Continuity|Size|Description of Plot|Edge|Topography and Elevation|Weather|Coverage|Census|Total|Visitors|Remarks|Other Observers|Acknowledgments)):') # 'Cemus' included as a mis-OCR of Census
     split_block = p.split(block)[1:] #discard first value; an empty string
     block_dict = {split_block[i]: split_block[i+1] for i in range(0, len(split_block), 2)}
