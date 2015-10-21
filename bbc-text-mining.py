@@ -85,20 +85,20 @@ def parse_block(block, site_name, site_num):
                     'Cov—\nerage': 'Coverage',
                     'Con-\ntinuity': 'Continuity',
                     'Conti-\nnuity': 'Continuity',
+                    'Con—\ntinuity': 'Continuity',
                     'Description\nof Plot': 'Description of Plot',
                     'De-\nscription of Plot': 'Description of Plot',
                     'Description of\nPlot': 'Description of Plot',
                     'Descrip-\ntion of Plot': 'Description of Plot',
-                    'Solitary Vireo, 1,0;': 'Solitary Vireo, 1.0;',
-                    'Common Yellowthroat, 14,0': 'Common Yellowthroat, 14.0',
                     'Bobolink; 9.0 territories': 'Bobolink, 9.0 territories',
                     "37°38'N,\n121°46lW": "37°38'N,\n121°46'W",
-                    'Downy Wood-\npecker, 1,5': 'Downy Wood-\npecker, 1.5',
                     'Common\nYellowthroat, 4.5, Northern Flicker, 3.0': 'Common\nYellowthroat, 4.5; Northern Flicker, 3.0',
                     '\nWinter 1992\n': ' ', #One header line in one file got OCR'd for some reason
                     '20.9 h; 8 Visits (8 sunrise), 8, 15, 22, 29 April; 6, 13, 20, 27\nMay.': '20.9 h; 8 Visits (8 sunrise); 8, 15, 22, 29 April; 6, 13, 20, 27\nMay.',
-                    'Anna’s Hummingbird, 2,0': 'Anna’s Hummingbird, 2.0',
-                    '19.3 h; 11 visits (11 sunrise;': '19.3 h; 11 visits (11 sunrise);'
+                    '19.3 h; 11 visits (11 sunrise;': '19.3 h; 11 visits (11 sunrise);',
+                    'Foster Plantation;\n42"7’N': 'Foster Plantation;\n42°7’N',
+                    'Hermit Thrush, 4.5 (18), Black-throatcd Green Warbler': 'Hermit Thrush, 4.5 (18); Black-throated Green Warbler', # Fixes both delimiter and selling of throated
+                    '41°43’N, 73°12’VV': '41°43’N, 73°12’W',
     }
     for replacement in replacements:
         if replacement in block:
@@ -151,10 +151,17 @@ def extract_counts(data, site, year):
     census_data = re.sub(r'\([^)]+\)', '', census_data) # remove parentheticals (which include ;)
     census_data = census_data.replace('territories', '')
     census_data = census_data.split(';')
+    comma_decimal_re = ', ([0-9]{1,2}),([0-9])'
     counts_data = pd.DataFrame(columns = ['site', 'year', 'species', 'count', 'status'])
     for record in census_data:
         if record.strip(): # Avoid occasional blank lines
-            species, count = record.split(',')
+            if record.count(',') == 2: # Typically a mis-OCR'd decimal in the count
+                search = re.search(comma_decimal_re, record)
+                if search:
+                    species = record.split(',')[0]
+                    count = '{}.{}'.format(search.group(1), search.group(2))
+            else:
+                species, count = record.split(',')
             species = get_cleaned_species(species)
             counts_record = pd.DataFrame({'year': year,
                                           'siteID': site,
