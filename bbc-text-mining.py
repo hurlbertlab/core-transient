@@ -76,7 +76,7 @@ def is_start_main_block(inputstring):
     """Check if line is the first line of the main block of data"""
     return inputstring.startswith("Location: ") or inputstring.startswith('Site Number: ')
 
-def parse_block(block, site_name, site_num):
+def parse_block(block, site_name, site_num, year):
     """Parse a main data block from a BBC file"""
     # Cleanup difficult issues manually
     # Combination of difficult \n's and OCR mistakes
@@ -108,10 +108,10 @@ def parse_block(block, site_name, site_num):
     split_block = p.split(block)[1:] #discard first value; an empty string
     block_dict = {split_block[i]: split_block[i+1] for i in range(0, len(split_block), 2)}
     block_dict['SiteName'] = site_name
-    block_dict['SiteNumInCensus'] = site_num
+    block_dict['SiteNumInCensus'] = site_num * 10000 + year
     return block_dict
 
-def parse_txt_file(infile):
+def parse_txt_file(infile, year):
     """Parse a BBC text file"""
     first_site = True
     recording = False
@@ -121,7 +121,7 @@ def parse_txt_file(infile):
         if site_info:
             print(site_info)
             if not first_site:
-                data[site_num] = parse_block(main_block, site_name, site_num)
+                data[site_num] = parse_block(main_block, site_name, site_num, year)
             first_site = False
             site_num, site_name = site_info
             site_num = int(site_num)
@@ -145,14 +145,14 @@ def get_latlong(location):
         long_decdeg = long_deg + long_min / 60.0
         return (lat_decdeg, long_decdeg)
 
-def extract_counts(data, site, year):
+def extract_counts(data, year):
     """Split the Census text block into species and counts"""
     census_data = data['Census']
     census_data = re.sub(r'\([^)]+\)', '', census_data) # remove parentheticals (which include ;)
     census_data = census_data.replace('territories', '')
     census_data = census_data.split(';')
     comma_decimal_re = ', ([0-9]{1,2}),([0-9])'
-    counts_data = pd.DataFrame(columns = ['site', 'year', 'species', 'count', 'status'])
+    counts_data = pd.DataFrame(columns = ['siteID', 'year', 'species', 'count', 'status'])
     for record in census_data:
         if record.strip(): # Avoid occasional blank lines
             if record.count(',') == 2: # Typically a mis-OCR'd decimal in the count
@@ -164,7 +164,7 @@ def extract_counts(data, site, year):
                 species, count = record.split(',')
             species = get_cleaned_species(species)
             counts_record = pd.DataFrame({'year': year,
-                                          'siteID': site,
+                                          'siteID': data['SiteNumInCensus'],
                                           'species': [species],
                                           'count': [count.strip(' .\n')],
                                           'status': ['resident']})
@@ -175,7 +175,7 @@ def extract_counts(data, site, year):
         for species in visitor_data:
             species = get_cleaned_species(species)
             counts_record = pd.DataFrame({'year': year,
-                                          'siteID': site,
+                                          'siteID': data['SiteNumInCensus'],
                                           'species': [species],
                                           'count': [None],
                                           'status': ['visitor']})
@@ -327,22 +327,31 @@ years = [1990, 1991]
 for year in years:
     datafile = os.path.join(data_path, "bbc_combined_{}.txt".format(year))
     with open(datafile) as infile:
-        data = parse_txt_file(infile)
+        data = parse_txt_file(infile, year)
         for site in data:
             print(site)
             data[site] = extract_site_data(data[site])
-            counts_table = counts_table.append(extract_counts(data[site], site, year),
+            counts_table = counts_table.append(extract_counts(data[site], year),
                                                ignore_index=True)
             site_table = site_table.append(get_sites_table(data[site]),
                                            ignore_index=True)
             census_table = census_table.append(get_census_table(data[site], year),
                                                ignore_index=True)
 
-unique_site_names = site_table['sitename'].drop_duplicates()
-counts_table = counts_table[['siteID', 'year', 'species', 'count', 'status']]
-site_table = site_table[['siteID', 'sitename', 'latitude',
+site_table_simp = site_table[['sitename', 'latitude', 'longitude']]
+unique_sites = site_table_simp.drop_duplicates().reset_index(drop=True)
+unique_sites['siteID'] = unique_sites.index
+site_table = pd.merge(unique_sites, site_table, on = ['sitename', 'latitude', 'longitude'])
+site_table['siteIDfinal'] = site_table['siteID_x']
+site_table['siteID'] = site_table['siteID_y']
+siteID_links = site_table[['siteID', 'siteIDfinal']]
+counts_table = pd.merge(counts_table, siteID_links, on = ["siteID"])
+census_table = pd.merge(census_table, siteID_links, on = ["siteID"])
+
+counts_table = counts_table[['siteIDfinal', 'year', 'species', 'count', 'status']]
+site_table = site_table[['siteIDfinal', 'sitename', 'latitude',
                          'longitude', 'location', 'description']]
-census_table = census_table[['siteID', 'sitename', 'siteNumInCensus',
+census_table = census_table[['siteIDfinal', 'sitename', 'siteNumInCensus',
                                        'year', 'established', 'ts_length', 'cov_hours',
                                        'cov_visits', 'cov_times', 'cov_notes',
                                        'richness', 'territories', 'terr_notes',
