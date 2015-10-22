@@ -210,7 +210,7 @@ getNestedSiteDataset = function(dataset, siteGrain, dataDescription){
 #------------------------------------------------------------------------------------------------------*
 
 getNestedTimeDataset = function(dataset,  temporalGrain, dataDescription){
-  if(dataDescription$subannualTgrain == 'Y'){
+  if(temporalGrain != 'year'){
     dataset$date = as.POSIXct(strptime(dataset$date, '%Y-%m-%d'))
     year = as.numeric(format(dataset$date, '%Y'))
     day = as.numeric(strftime(dataset$date, format = '%j'))
