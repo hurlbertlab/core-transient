@@ -210,7 +210,7 @@ getNestedSiteDataset = function(dataset, siteGrain, dataDescription){
 #------------------------------------------------------------------------------------------------------*
 
 getNestedTimeDataset = function(dataset,  temporalGrain, dataDescription){
-  if(temporalGrain != 'year'){
+  if(temporalGrain != 'year'){ # if analysis will be performed at fine temporal grain
     dataset$date = as.POSIXct(strptime(dataset$date, '%Y-%m-%d'))
     year = as.numeric(format(dataset$date, '%Y'))
     day = as.numeric(strftime(dataset$date, format = '%j'))
@@ -227,9 +227,9 @@ getNestedTimeDataset = function(dataset,  temporalGrain, dataDescription){
     dataset$analysisDate = paste(year, timeFrame[,temporalGrain], sep ='_')
     dataset$year = year
     # Summarize data to the new time scale:
-  } else {
-    dataset$analysisDate = dataset$date
-    dataset$year = dataset$date
+  } else { # if analysis will be performed at annual resolution
+    dataset$analysisDate = as.numeric(format(dataset$date, "%Y"))
+    dataset$year = as.numeric(format(dataset$date, "%Y"))
   }
   return(dataset)
 }
