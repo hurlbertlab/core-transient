@@ -86,6 +86,7 @@ def parse_block(block, site_name, site_num, year):
                     'Con-\ntinuity': 'Continuity',
                     'Conti-\nnuity': 'Continuity',
                     'Con—\ntinuity': 'Continuity',
+                    'Con-\ntinnity': 'Continuity',
                     'Description\nof Plot': 'Description of Plot',
                     'De-\nscription of Plot': 'Description of Plot',
                     'Description of\nPlot': 'Description of Plot',
@@ -93,18 +94,33 @@ def parse_block(block, site_name, site_num, year):
                     'Bobolink; 9.0 territories': 'Bobolink, 9.0 territories',
                     "37°38'N,\n121°46lW": "37°38'N,\n121°46'W",
                     'Common\nYellowthroat, 4.5, Northern Flicker, 3.0': 'Common\nYellowthroat, 4.5; Northern Flicker, 3.0',
+                    'Red-bellied Woodpecker, 2.0, Carolina\nChickadee, 2.0': 'Red-bellied Woodpecker, 2.0; Carolina\nChickadee, 2.0',
                     '\nWinter 1992\n': ' ', #One header line in one file got OCR'd for some reason
                     '20.9 h; 8 Visits (8 sunrise), 8, 15, 22, 29 April; 6, 13, 20, 27\nMay.': '20.9 h; 8 Visits (8 sunrise); 8, 15, 22, 29 April; 6, 13, 20, 27\nMay.',
                     '19.3 h; 11 visits (11 sunrise;': '19.3 h; 11 visits (11 sunrise);',
                     'Foster Plantation;\n42"7’N': 'Foster Plantation;\n42°7’N',
                     'Hermit Thrush, 4.5 (18), Black-throatcd Green Warbler': 'Hermit Thrush, 4.5 (18); Black-throated Green Warbler', # Fixes both delimiter and selling of throated
-                    '41°43’N, 73°12’VV': '41°43’N, 73°12’W',
+                    '39"] 2‘N, 76°54’W': '39°12‘N, 76°54’W',
+                    "42°“7'N, 77°45’W": "42°7'N, 77°45’W",
+                    '41°4\'N, 76"7’W': "41°4'N, 76°7’W",
+                    'w‘sits': 'visits',
+                    'Weath-\ner': 'Weather',
+                    '79513’W': '79°13’W',
+                    'Continuity.': 'Continuity:',
+                    'Continuity"': 'Continuity:',
+                    "40°44'N,\n7 D50’W": "40°44'N,\n75°50’W",
+                    "41350'N, 71°33'W": "41°50'N, 71°33'W",
+                    '44°57’N, 68D41’W': '44°57’N, 68°41’W',
+                    '18.8 11; 11 Visits': '18.8 h; 11 Visits',
+                    "Descripn'on of Plot": "Description of Plot",
+                    '41 c’42’N, 73°13’VV': '41°42’N, 73°13’VV',
+                    'Northern Rough-winged Swallow. 0.5': 'Northern Rough-winged Swallow, 0.5',
     }
     for replacement in replacements:
         if replacement in block:
             print("Replacing {} with {}".format(replacements[replacement], replacement))
             block = block.replace(replacement, replacements[replacement])
-    p = re.compile(r'((?:Site Number|Location|Continuity|Size|Description of Plot|Edge|Topography and Elevation|Weather|Coverage|Census|Total|Visitors|Remarks|Other Observers|Acknowledgments)):') # 'Cemus' included as a mis-OCR of Census
+    p = re.compile(r'((?:Site Number|Location|Continuity|Size|Description of Plot|Edge|Topography and Elevation|Weather|Coverage|Census|Total|Visitors|Remarks|Other Observers|Acknowledgments)):')
     split_block = p.split(block)[1:] #discard first value; an empty string
     block_dict = {split_block[i]: split_block[i+1] for i in range(0, len(split_block), 2)}
     block_dict['SiteName'] = site_name
@@ -136,7 +152,7 @@ def parse_txt_file(infile, year):
 
 def get_latlong(location):
     """Extract the latitude and longitude from the Location data"""
-    regex = "([0-9]{1,3})°([0-9]{1,2})[ ]*[’|'|‘]N,[ |\\n]([0-9]{2,3})°([0-9]{1,2})[’|'|‘]W"
+    regex = "([0-9]{1,2})[ ]*[°05C]([0-9]{1,2})[ ]*[’|'|‘][ ]*N,[ |\\n]([0-9]{2,3})[ ]*[°05C]([0-9]{1,2})[ ]*[’|'|‘][W|V]"
     search = re.search(regex, location)
     if search:
         lat_deg, lat_min = int(search.group(1)), int(search.group(2))
@@ -152,6 +168,7 @@ def extract_counts(data, year):
     census_data = census_data.replace('territories', '')
     census_data = census_data.split(';')
     comma_decimal_re = ', ([0-9]{1,2}),([0-9])'
+    period_delimiter_re = ''
     counts_data = pd.DataFrame(columns = ['siteID', 'year', 'species', 'count', 'status'])
     for record in census_data:
         if record.strip(): # Avoid occasional blank lines
@@ -160,6 +177,8 @@ def extract_counts(data, year):
                 if search:
                     species = record.split(',')[0]
                     count = '{}.{}'.format(search.group(1), search.group(2))
+            elif record.count(',') == 0 and record.count('.') == 2: # Comma mis-OCR'd as period
+                species, count = record.split('.', maxsplit=1)
             else:
                 species, count = record.split(',')
             species = get_cleaned_species(species)
@@ -186,6 +205,8 @@ def extract_counts(data, year):
 def get_clean_size(size_data):
     """Remove units, notes, and whitespace"""
     size = size_data.split('ha')[0]
+    size = size.replace('.]', '1')
+    size = size.replace('.?)', '3')
     return float(size.strip(' .\n'))
 
 def get_cleaned_species(species):
@@ -205,13 +226,16 @@ def get_cleaned_string(string_data):
     """
 
     string_data = string_data.strip().replace('-\n', '')
+    string_data = string_data.strip().replace('—\n', '')
     string_data = string_data.replace('\n', ' ')
+    string_data = string_data.replace('.?)', '.3')
     string_data = string_data.strip()
     return string_data
 
 def clean_string_fields(site_data):
     """Do basic cleanup on simple string fields for a site"""
-    string_fields = ['Description of Plot', 'Edge', 'Location', 'Remarks', 'SiteName']
+    string_fields = ['Description of Plot', 'Edge', 'Location', 'Remarks',
+                     'SiteName', 'Weather']
     for field in string_fields:
         if field in site_data:
             site_data[field] = get_cleaned_string(site_data[field])
@@ -221,19 +245,25 @@ def extract_coverage(coverage):
     """Extract number of hours and number of visits from Coverage"""
     coverage = get_cleaned_string(coverage)
     extracted = dict()
-    re_with_times = '([0-9]{1,3}\.{0,1}[0-9]{0,2}) h; ([0-9]{1,2}) [V|v]isits \(([^)]+)\);(.*)'
-    re_no_times = '([0-9]{1,3}\.{0,1}[0-9]{0,2}) h; ([0-9]{1,2}) [V|v]isits;(.*)'
+    re_with_times = '([0-9]{1,3}\.{0,1}[0-9]{0,2}) h; ([0-9]{1,2}) [V|v]isits \(([^)]+)\)(.*)'
+    re_no_times = '([0-9]{1,3}\.{0,1}[0-9]{0,2}) h; ([0-9]{1,2}) [V|v]isits(.*)'
+    re_no_visits = '([0-9]{1,3}\.{0,1}[0-9]{0,2}) h'
     search = re.search(re_with_times, coverage)
     if search:
         extracted['hours'] = float(search.group(1))
         extracted['visits'] = int(search.group(2))
         extracted['times'] = search.group(3)
         extracted['notes'] = search.group(4)
-    else:
+    elif re.search(re_no_times, coverage):
         search = re.search(re_no_times, coverage)
         extracted['hours'] = float(search.group(1))
         extracted['visits'] = int(search.group(2))
         extracted['notes'] = search.group(3)
+    else:
+        search = re.search(re_no_visits, coverage)
+        extracted['hours'] = float(search.group(1))
+        extracted['visits'] = None
+        extracted['notes'] = None
     return extracted
 
 def extract_total(total):
@@ -322,14 +352,14 @@ census_table = pd.DataFrame(columns = ['siteID', 'sitename', 'siteNumInCensus',
                                        'cov_visits', 'cov_times', 'cov_notes',
                                        'richness', 'territories', 'terr_notes',
                                        'weather'])
-years = [1990, 1991]
+years = range(1990, 1996)
 
 for year in years:
     datafile = os.path.join(data_path, "bbc_combined_{}.txt".format(year))
     with open(datafile) as infile:
         data = parse_txt_file(infile, year)
         for site in data:
-            print(site)
+            print(year, site)
             data[site] = extract_site_data(data[site])
             counts_table = counts_table.append(extract_counts(data[site], year),
                                                ignore_index=True)
