@@ -87,10 +87,12 @@ def parse_block(block, site_name, site_num, year):
                     'Conti-\nnuity': 'Continuity',
                     'Con—\ntinuity': 'Continuity',
                     'Con-\ntinnity': 'Continuity',
+                    'Conti—\nnuity': 'Continuity',
                     'Description\nof Plot': 'Description of Plot',
                     'De-\nscription of Plot': 'Description of Plot',
                     'Description of\nPlot': 'Description of Plot',
                     'Descrip-\ntion of Plot': 'Description of Plot',
+                    'De—\nscription of Plot': 'Description of Plot',
                     'Bobolink; 9.0 territories': 'Bobolink, 9.0 territories',
                     "37°38'N,\n121°46lW": "37°38'N,\n121°46'W",
                     'Common\nYellowthroat, 4.5, Northern Flicker, 3.0': 'Common\nYellowthroat, 4.5; Northern Flicker, 3.0',
@@ -115,12 +117,16 @@ def parse_block(block, site_name, site_num, year):
                     "Descripn'on of Plot": "Description of Plot",
                     '41 c’42’N, 73°13’VV': '41°42’N, 73°13’VV',
                     'Northern Rough-winged Swallow. 0.5': 'Northern Rough-winged Swallow, 0.5',
+                    'study-\nhours': 'study-hours',
+                    'Warbling Vireo, 1.0, Northern Cardinal, 1.0': 'Warbling Vireo, 1.0; Northern Cardinal, 1.0',
+                    'Wood Thrush, 3.0 (18),\nAmerican Redstart, 3.0': 'Wood Thrush, 3.0; American Redstart, 3.0',
+                    'study-hrs': 'study-hours',
     }
     for replacement in replacements:
         if replacement in block:
             print("Replacing {} with {}".format(replacements[replacement], replacement))
             block = block.replace(replacement, replacements[replacement])
-    p = re.compile(r'((?:Site Number|Location|Continuity|Size|Description of Plot|Edge|Topography and Elevation|Weather|Coverage|Census|Total|Visitors|Remarks|Other Observers|Acknowledgments)):')
+    p = re.compile(r'((?:Site Number|Location|Continuity|Size|Description of Plot|Edge|Topography and Elevation|Weather|Coverage|Census|Total|Visitors|Nests Found|Remarks|Other Observers|Acknowledgments)):')
     split_block = p.split(block)[1:] #discard first value; an empty string
     block_dict = {split_block[i]: split_block[i+1] for i in range(0, len(split_block), 2)}
     block_dict['SiteName'] = site_name
@@ -152,8 +158,11 @@ def parse_txt_file(infile, year):
 
 def get_latlong(location):
     """Extract the latitude and longitude from the Location data"""
-    regex = "([0-9]{1,2})[ ]*[°05C]([0-9]{1,2})[ ]*[’|'|‘][ ]*N,[ |\\n]([0-9]{2,3})[ ]*[°05C]([0-9]{1,2})[ ]*[’|'|‘][W|V]"
+    regex = "([0-9]{1,2})[ ]*[°05C]([0-9]{1,2})[ ]*[’|'|‘][ ]*N,[ |\\n]([0-9]{2,3})[ ]*[°05C]([0-9]{1,2})[ ]*[’|'|‘][W|V|;|.]"
+    regex_seconds = """([0-9]{1,2})[ ]*[°05C]([0-9]{1,2})[ ]*[’|'|‘][0-9]{1,2}["|”]N,[ |\\n]([0-9]{2,3})[ ]*[°05C]([0-9]{1,2})[ ]*[’|'|‘][0-9]{1,2}["|”][W|V|;]"""
     search = re.search(regex, location)
+    if not search: #try with seconds
+        search = re.search(regex_seconds, location)
     if search:
         lat_deg, lat_min = int(search.group(1)), int(search.group(2))
         long_deg, long_min = int(search.group(3)), int(search.group(4))
@@ -245,23 +254,22 @@ def extract_coverage(coverage):
     """Extract number of hours and number of visits from Coverage"""
     coverage = get_cleaned_string(coverage)
     extracted = dict()
-    re_with_times = '([0-9]{1,3}\.{0,1}[0-9]{0,2}) h; ([0-9]{1,2}) [V|v]isits \(([^)]+)\)(.*)'
-    re_no_times = '([0-9]{1,3}\.{0,1}[0-9]{0,2}) h; ([0-9]{1,2}) [V|v]isits(.*)'
-    re_no_visits = '([0-9]{1,3}\.{0,1}[0-9]{0,2}) h'
-    search = re.search(re_with_times, coverage)
+    re_modern = '([0-9]{1,3}\.{0,1}[0-9]{0,2}) h; ([0-9]{1,2}) [V|v]isits(.*)'
+    re_modern_no_visits = '([0-9]{1,3}\.{0,1}[0-9]{0,2}) h'
+    re_1988 = '([0-9]{1,3}) [V|v]isits; ([0-9]{1,3}) study[-|—]hours;(.*)'
+    re_1988_no_visits = '([0-9]{1,3}) study[-|—]hours[;. ](.*)'
+    if year > 1988:
+        search = re.search(re_modern, coverage)
+        search_no_visits = re.search(re_modern_no_visits, coverage)
+    else:
+        search = re.search(re_1988, coverage)
+        search_no_visits = re.search(re_1988_no_visits, coverage)
     if search:
-        extracted['hours'] = float(search.group(1))
-        extracted['visits'] = int(search.group(2))
-        extracted['times'] = search.group(3)
-        extracted['notes'] = search.group(4)
-    elif re.search(re_no_times, coverage):
-        search = re.search(re_no_times, coverage)
         extracted['hours'] = float(search.group(1))
         extracted['visits'] = int(search.group(2))
         extracted['notes'] = search.group(3)
     else:
-        search = re.search(re_no_visits, coverage)
-        extracted['hours'] = float(search.group(1))
+        extracted['hours'] = float(search_no_visits.group(1))
         extracted['visits'] = None
         extracted['notes'] = None
     return extracted
@@ -270,11 +278,11 @@ def extract_total(total):
     """Extract the total number of species and total territories"""
     total = get_cleaned_string(total)
     extracted = dict()
-    regex = '([0-9]{1,3}) species; ([0-9]{1,4}\.{0,1}[0-9]{0,1}) territories \(([^)]+)\).'
+    regex = '([0-9]{1,3}) species; ([0-9]{1,4}\.{0,1}[0-9]{0,1}) (territories|territorial males) \(([^)]+)\).'
     search = re.search(regex, total)
     extracted['total_species'] = int(search.group(1))
     extracted['total_territories'] = float(search.group(2))
-    extracted['total_terr_notes'] = search.group(3)
+    extracted['total_terr_notes'] = search.group(4)
     return extracted
 
 def extract_continuity(continuity, year):
@@ -287,9 +295,12 @@ def extract_continuity(continuity, year):
     else:
         if ';' in continuity:
             established, length = continuity.split(';')
-        else:
+        elif ',' in continuity:
             # some ; delimiters are mis-OCR'd as ,
             established, length = continuity.split(',')
+        else:
+            # pre-1989 these are just space delimited
+            established, length = continuity.split(' ')
         established = established.replace('Established', '').strip()
         length = length.replace('yr.', '').replace('consecutive', '').replace('intermittent', '').strip()
         extracted['established'] = established
@@ -300,7 +311,10 @@ def extract_site_data(site_data):
     """Extract data for a site"""
     site_data['Latitude'], site_data['Longitude'] = get_latlong(site_data['Location'])
     site_data['Size'] = get_clean_size(site_data['Size'])
-    site_data['Coverage'] = extract_coverage(site_data['Coverage'])
+    if 'Coverage' in site_data:
+        site_data['Coverage'] = extract_coverage(site_data['Coverage'])
+    else:
+        site_data['Coverage'] = dict()
     site_data['Total'] = extract_total(site_data['Total'])
     site_data['Continuity'] = extract_continuity(site_data['Continuity'], year)
     site_data = clean_string_fields(site_data)
@@ -318,20 +332,22 @@ def get_sites_table(site_data):
 
 def get_census_table(site_data, year):
     """Put census level data into a dataframe"""
+    #sometimes Weather doesn't exist before 1989
+    weather = site_data['Weather'] if 'Weather' in site_data else None
     census_table = pd.DataFrame({'siteID': [site_data['SiteNumInCensus']],
                                  'sitename': [site_data['SiteName']],
                                  'siteNumInCensus': [site_data['SiteNumInCensus']],
                                  'year': [year],
                                  'established': [site_data['Continuity']['established']],
                                  'ts_length': [site_data['Continuity']['length']],
-                                 'cov_hours': [site_data['Coverage']['hours']],
-                                 'cov_visits': [site_data['Coverage']['visits']],
+                                 'cov_hours': [site_data['Coverage'].get('hours', None)],
+                                 'cov_visits': [site_data['Coverage'].get('visits', None)],
                                  'cov_times': [site_data['Coverage'].get('times', None)],
-                                 'cov_notes': [site_data['Coverage']['notes']],
+                                 'cov_notes': [site_data['Coverage'].get('notes', None)],
                                  'richness': [site_data['Total']['total_species']],
                                  'territories': [site_data['Total']['total_territories']],
                                  'terr_notes': [site_data['Total']['total_terr_notes']],
-                                 'weather': [site_data['Weather']]
+                                 'weather': [weather]
                              })
     return census_table
 
@@ -352,7 +368,7 @@ census_table = pd.DataFrame(columns = ['siteID', 'sitename', 'siteNumInCensus',
                                        'cov_visits', 'cov_times', 'cov_notes',
                                        'richness', 'territories', 'terr_notes',
                                        'weather'])
-years = range(1990, 1996)
+years = range(1988, 1996)
 
 for year in years:
     datafile = os.path.join(data_path, "bbc_combined_{}.txt".format(year))
