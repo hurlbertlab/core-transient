@@ -181,7 +181,7 @@ def extract_counts(data, year):
     census_data = census_data.split(';')
     comma_decimal_re = ', ([0-9]{1,2}),([0-9])'
     period_delimiter_re = ''
-    counts_data = pd.DataFrame(columns = ['siteID', 'year', 'species', 'count', 'status'])
+    counts_data = pd.DataFrame(columns = ['siteNumInCensus', 'year', 'species', 'count', 'status'])
     for record in census_data:
         if record.strip(): # Avoid occasional blank lines
             if record.count(',') == 2: # Typically a mis-OCR'd decimal in the count
@@ -197,7 +197,7 @@ def extract_counts(data, year):
                 species, count = record.split(',')
             species = get_cleaned_species(species)
             counts_record = pd.DataFrame({'year': year,
-                                          'siteID': data['SiteNumInCensus'],
+                                          'siteNumInCensus': data['SiteNumInCensus'],
                                           'species': [species],
                                           'count': [count.strip(' .\n')],
                                           'status': ['resident']})
@@ -208,7 +208,7 @@ def extract_counts(data, year):
         for species in visitor_data:
             species = get_cleaned_species(species)
             counts_record = pd.DataFrame({'year': year,
-                                          'siteID': data['SiteNumInCensus'],
+                                          'siteNumInCensus': data['SiteNumInCensus'],
                                           'species': [species],
                                           'count': [None],
                                           'status': ['visitor']})
@@ -327,7 +327,7 @@ def extract_site_data(site_data):
 
 def get_sites_table(site_data):
     """Put site level data into a dataframe"""
-    sites_table = pd.DataFrame({'siteID': [site_data['SiteNumInCensus']],
+    sites_table = pd.DataFrame({'siteNumInCensus': [site_data['SiteNumInCensus']],
                                 'sitename': [site_data['SiteName']],
                                 'latitude': [site_data['Latitude']],
                                 'longitude': [site_data['Longitude']],
@@ -339,8 +339,7 @@ def get_census_table(site_data, year):
     """Put census level data into a dataframe"""
     #sometimes Weather doesn't exist before 1989
     weather = site_data['Weather'] if 'Weather' in site_data else None
-    census_table = pd.DataFrame({'siteID': [site_data['SiteNumInCensus']],
-                                 'sitename': [site_data['SiteName']],
+    census_table = pd.DataFrame({'sitename': [site_data['SiteName']],
                                  'siteNumInCensus': [site_data['SiteNumInCensus']],
                                  'year': [year],
                                  'established': [site_data['Continuity']['established']],
@@ -364,11 +363,11 @@ data_path = "./data/raw_datasets/BBC_pdfs/"
 #cleanup_nonpara_pages(data_path, para_starts)
 #combine_txt_files_by_yr(data_path, para_starts.keys())
 
-counts_table = pd.DataFrame(columns = ['siteID', 'year', 'species',
+counts_table = pd.DataFrame(columns = ['siteNumInCensus', 'year', 'species',
                                        'count', 'status'])
-site_table = pd.DataFrame(columns = ['siteID', 'sitename', 'latitude',
+site_table = pd.DataFrame(columns = ['siteNumInCensus', 'sitename', 'latitude',
                                      'longitude', 'location', 'description'])
-census_table = pd.DataFrame(columns = ['siteID', 'sitename', 'siteNumInCensus',
+census_table = pd.DataFrame(columns = ['sitename', 'siteNumInCensus',
                                        'year', 'established', 'ts_length', 'cov_hours',
                                        'cov_visits', 'cov_times', 'cov_notes',
                                        'richness', 'territories', 'terr_notes',
@@ -391,24 +390,17 @@ for year in years:
 
 site_table_simp = site_table[['sitename', 'latitude', 'longitude']]
 unique_sites = site_table_simp.drop_duplicates().reset_index(drop=True)
-unique_sites['siteID'] = unique_sites.index
+unique_sites['siteID'] = unique_sites.index + 1
 site_table = pd.merge(unique_sites, site_table, on = ['sitename', 'latitude', 'longitude'])
-site_table['siteIDfinal'] = site_table['siteID_x']
-site_table['siteID'] = site_table['siteID_y']
-siteID_links = site_table[['siteID', 'siteIDfinal']]
-counts_table = pd.merge(counts_table, siteID_links, on = ["siteID"])
-census_table = pd.merge(census_table, siteID_links, on = ["siteID"])
+siteID_links = site_table[['siteNumInCensus', 'siteID']]
+counts_table = pd.merge(counts_table, siteID_links, on = ["siteNumInCensus"])
+census_table = pd.merge(census_table, siteID_links, on = ["siteNumInCensus"])
 
-counts_table = counts_table[['siteIDfinal', 'year', 'species', 'count', 'status']]
-site_table = site_table[['siteIDfinal', 'sitename', 'latitude',
+counts_table = counts_table[['siteID', 'year', 'species', 'count', 'status']]
+site_table = site_table[['siteID', 'sitename', 'latitude',
                          'longitude', 'location', 'description']]
-census_table = census_table[['siteIDfinal', 'sitename', 'siteNumInCensus',
+census_table = census_table[['siteID', 'sitename', 'siteNumInCensus',
                                        'year', 'established', 'ts_length', 'cov_hours',
                                        'cov_visits', 'cov_times', 'cov_notes',
                                        'richness', 'territories', 'terr_notes',
                                        'weather']]
-
-#TODO:
-
-# 1. Site numbers need to be converted to siteIDs based on lat/long/name.
-#    Multiple sites share the same lat/long, so it is insufficient on it's own
