@@ -181,7 +181,7 @@ def extract_counts(data, year):
     census_data = census_data.split(';')
     comma_decimal_re = ', ([0-9]{1,2}),([0-9])'
     period_delimiter_re = ''
-    counts_data = pd.DataFrame(columns = ['siteNumInCensus', 'year', 'species', 'count', 'status'])
+    counts_results = []
     for record in census_data:
         if record.strip(): # Avoid occasional blank lines
             if record.count(',') == 2: # Typically a mis-OCR'd decimal in the count
@@ -196,24 +196,23 @@ def extract_counts(data, year):
             else:
                 species, count = record.split(',')
             species = get_cleaned_species(species)
-            counts_record = pd.DataFrame({'year': year,
-                                          'siteNumInCensus': data['SiteNumInCensus'],
-                                          'species': [species],
-                                          'count': [count.strip(' .\n')],
-                                          'status': ['resident']})
-            counts_data = counts_data.append(counts_record, ignore_index = True)
+            counts_record = [year, data['SiteNumInCensus'], species,
+                             count.strip(' .\n'), 'resident']
+            counts_results.append(counts_record)
 
     if 'Visitors' in data:
         visitor_data = data['Visitors'].split(',')
         for species in visitor_data:
             species = get_cleaned_species(species)
-            counts_record = pd.DataFrame({'year': year,
-                                          'siteNumInCensus': data['SiteNumInCensus'],
-                                          'species': [species],
-                                          'count': [None],
-                                          'status': ['visitor']})
-            counts_data = counts_data.append(counts_record, ignore_index = True)
-    
+            counts_record = [year, data['SiteNumInCensus'], species,
+                             None, 'visitor']
+            counts_results.append(counts_record)
+
+    counts_data = pd.DataFrame(counts_results, columns=['year',
+                                                        'siteNumInCensus',
+                                                        'species',
+                                                        'count',
+                                                        'status'])
     return counts_data
 
 def get_clean_size(size_data):
