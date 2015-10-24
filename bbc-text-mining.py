@@ -227,7 +227,7 @@ def get_cleaned_species(species):
     """Cleanup species names"""
     species = species.strip().replace('-\n', '-')
     species = species.replace('\n', ' ')
-    species = species.strip()
+    species = species.strip(' .')
     return species
 
 
