@@ -185,6 +185,8 @@ def extract_counts(data, year):
                     count = '{}.{}'.format(search.group(1), search.group(2))
             elif record.count(',') == 0 and record.count('.') == 2: # Comma mis-OCR'd as period
                 species, count = record.split('.', maxsplit=1)
+            elif record.count(',') == 0 and record.count('\n') == 1:
+                species, count = record.split('\n')
             else:
                 species, count = record.split(',')
             species = get_cleaned_species(species)
