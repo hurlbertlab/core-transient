@@ -93,6 +93,7 @@ def parse_block(block, site_name, site_num, year):
                     'Description of\nPlot': 'Description of Plot',
                     'Descrip-\ntion of Plot': 'Description of Plot',
                     'De—\nscription of Plot': 'Description of Plot',
+                    'Description\nOi Plot': 'Description of Plot',
                     'Bobolink; 9.0 territories': 'Bobolink, 9.0 territories',
                     "37°38'N,\n121°46lW": "37°38'N,\n121°46'W",
                     'Common\nYellowthroat, 4.5, Northern Flicker, 3.0': 'Common\nYellowthroat, 4.5; Northern Flicker, 3.0',
@@ -121,6 +122,11 @@ def parse_block(block, site_name, site_num, year):
                     'Warbling Vireo, 1.0, Northern Cardinal, 1.0': 'Warbling Vireo, 1.0; Northern Cardinal, 1.0',
                     'Wood Thrush, 3.0 (18),\nAmerican Redstart, 3.0': 'Wood Thrush, 3.0; American Redstart, 3.0',
                     'study-hrs': 'study-hours',
+                    'Nuttall’s Woodpecker, 3 (9; 2N),':'Nuttall’s Woodpecker, 3 (9; 2N);',
+                    '38°35’45”N\', 76°45’46"W': '38°35’45”N, 76°45’46"W',
+                    'Northern Parula 8': 'Northern Parula, 8',
+                    '47°08’N, 99°] 5’ W': '47°08’N, 99°15’ W',
+                    'Yellow Warbler, 1,’ Clay-colored Sparrow, 1,-\nSavannah Sparrow, 1;': 'Yellow Warbler, 1; Clay-colored Sparrow, 1; Savannah Sparrow, 1;',
     }
     for replacement in replacements:
         if replacement in block:
