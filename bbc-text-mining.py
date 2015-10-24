@@ -292,6 +292,10 @@ def extract_total(total):
 def extract_continuity(continuity, year):
     """Extract establishment year and number of years surveyed"""
     continuity = get_cleaned_string(continuity)
+    removals = ['Established', 'years', 'yrs', 'yr', 'consecutive', 'intermittent']
+    for removal in removals:
+        continuity = continuity.replace(removal, '').strip(' \n.')
+    continuity = re.sub('\(([^)]+)\)', '', continuity)
     extracted = dict()
     if 'New' in continuity:
         extracted['established'] = year
@@ -302,13 +306,15 @@ def extract_continuity(continuity, year):
         elif ',' in continuity:
             # some ; delimiters are mis-OCR'd as ,
             established, length = continuity.split(',')
-        else:
+        elif ' ' in continuity:
             # pre-1989 these are just space delimited
             established, length = continuity.split(' ')
-        established = established.replace('Established', '').strip()
-        length = length.replace('yr.', '').replace('consecutive', '').replace('intermittent', '').strip()
-        extracted['established'] = established
-        extracted['length'] = length
+        else:
+            # If there is only a year value
+            established = continuity
+            length = None
+        extracted['established'] = int(established)
+        extracted['length'] = int(length) if length else None
     return extracted
 
 def extract_site_data(site_data):
