@@ -158,11 +158,8 @@ def parse_txt_file(infile, year):
 
 def get_latlong(location):
     """Extract the latitude and longitude from the Location data"""
-    regex = "([0-9]{1,2})[ ]*[°05C]([0-9]{1,2})[ ]*[’|'|‘][ ]*N,[ |\\n]([0-9]{2,3})[ ]*[°05C]([0-9]{1,2})[ ]*[’|'|‘][W|V|;|.]"
-    regex_seconds = """([0-9]{1,2})[ ]*[°05C]([0-9]{1,2})[ ]*[’|'|‘][0-9]{1,2}["|”]N,[ |\\n]([0-9]{2,3})[ ]*[°05C]([0-9]{1,2})[ ]*[’|'|‘][0-9]{1,2}["|”][W|V|;]"""
+    regex =  """([0-9]{1,2})[ ]*[°05C]([0-9]{1,2})[ ]*[’|'|‘][0-9]{0,2}["|”]{0,1}N,[ |\\n]([0-9]{2,3})[ ]*[°05C]([0-9]{1,2})[ ]*[’|'|‘][0-9]{0,2}["|”]{0,1}[W|V|;|.]"""
     search = re.search(regex, location)
-    if not search: #try with seconds
-        search = re.search(regex_seconds, location)
     if search:
         lat_deg, lat_min = int(search.group(1)), int(search.group(2))
         long_deg, long_min = int(search.group(3)), int(search.group(4))
