@@ -235,7 +235,7 @@ def get_cleaned_string(string_data):
     string_data = string_data.strip().replace('—\n', '')
     string_data = string_data.replace('\n', ' ')
     string_data = string_data.replace('.?)', '.3')
-    string_data = string_data.strip()
+    string_data = string_data.strip(' \n,')
     return string_data
 
 def clean_string_fields(site_data):
