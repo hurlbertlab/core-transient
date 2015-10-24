@@ -349,6 +349,7 @@ def get_census_table(site_data, year):
     """Put census level data into a dataframe"""
     #sometimes Weather doesn't exist before 1989
     weather = site_data['Weather'] if 'Weather' in site_data else None
+    previously_called = site_data['Previously called'] if 'Previously called' in site_data else None
     census_table = pd.DataFrame({'sitename': [site_data['SiteName']],
                                  'siteNumInCensus': [site_data['SiteNumInCensus']],
                                  'year': [year],
@@ -361,7 +362,8 @@ def get_census_table(site_data, year):
                                  'richness': [site_data['Total']['total_species']],
                                  'territories': [site_data['Total']['total_territories']],
                                  'terr_notes': [site_data['Total']['total_terr_notes']],
-                                 'weather': [weather]
+                                 'weather': [weather],
+                                 'previously_called': [previously_called]
                              })
     return census_table
 
