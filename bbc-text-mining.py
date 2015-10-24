@@ -88,6 +88,7 @@ def parse_block(block, site_name, site_num, year):
                     'Con—\ntinuity': 'Continuity',
                     'Con-\ntinnity': 'Continuity',
                     'Conti—\nnuity': 'Continuity',
+                    'Previ-\nously called': 'Previously called',
                     'Description\nof Plot': 'Description of Plot',
                     'De-\nscription of Plot': 'Description of Plot',
                     'Description of\nPlot': 'Description of Plot',
@@ -127,12 +128,16 @@ def parse_block(block, site_name, site_num, year):
                     'Northern Parula 8': 'Northern Parula, 8',
                     '47°08’N, 99°] 5’ W': '47°08’N, 99°15’ W',
                     'Yellow Warbler, 1,’ Clay-colored Sparrow, 1,-\nSavannah Sparrow, 1;': 'Yellow Warbler, 1; Clay-colored Sparrow, 1; Savannah Sparrow, 1;',
+                    'Estab-\nlished 1993; 2 )n‘.': 'Estab-\nlished 1993; 2.',
+                    'Established l983': 'Established 1983',
+                    'Established 1978;\n18 you': 'Established 1978;\n18 yr.',
+                    'This plot is part of a larger plot that was ﬁrst censused in 1981.': ''
     }
     for replacement in replacements:
         if replacement in block:
             print("Replacing {} with {}".format(replacements[replacement], replacement))
             block = block.replace(replacement, replacements[replacement])
-    p = re.compile(r'((?:Site Number|Location|Continuity|Size|Description of Plot|Edge|Topography and Elevation|Weather|Coverage|Census|Total|Visitors|Nests Found|Remarks|Other Observers|Acknowledgments)):')
+    p = re.compile(r'((?:Site Number|Location|Continuity|Previously called|Size|Description of Plot|Edge|Topography and Elevation|Weather|Coverage|Census|Total|Visitors|Nests Found|Remarks|Other Observers|Acknowledgments)):')
     split_block = p.split(block)[1:] #discard first value; an empty string
     block_dict = {split_block[i]: split_block[i+1] for i in range(0, len(split_block), 2)}
     block_dict['SiteName'] = site_name
