@@ -83,6 +83,7 @@ def parse_block(block, site_name, site_num, year):
     replacements = {'—': '-',
                     'km3': 'km2',
                     'kmz': 'km2',
+                    'ﬁ': 'fi',
                     'Cemus': 'Census',
                     'Cov-\nerage': 'Coverage',
                     'Cov—\nerage': 'Coverage',
@@ -134,7 +135,7 @@ def parse_block(block, site_name, site_num, year):
                     'Estab-\nlished 1993; 2 )n‘.': 'Estab-\nlished 1993; 2.',
                     'Established l983': 'Established 1983',
                     'Established 1978;\n18 you': 'Established 1978;\n18 yr.',
-                    'This plot is part of a larger plot that was ﬁrst censused in 1981.': ''
+                    'This plot is part of a larger plot that was first censused in 1981.': ''
     }
     for replacement in replacements:
         if replacement in block:
