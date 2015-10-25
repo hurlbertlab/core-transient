@@ -202,7 +202,7 @@ def extract_counts(data, year):
                 species, count = record.split(',')
             species = get_cleaned_species(species)
             counts_record = [year, data['SiteNumInCensus'], species,
-                             count.strip(' .\n'), 'resident']
+                             count.strip(' .\n'), 'breeder']
             counts_results.append(counts_record)
 
     if 'Visitors' in data:
