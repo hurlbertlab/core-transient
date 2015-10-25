@@ -81,6 +81,10 @@ def parse_block(block, site_name, site_num, year):
     # Cleanup difficult issues manually
     # Combination of difficult \n's and OCR mistakes
     replacements = {'—': '-',
+                    "’": "'",
+                    "‘": "'",
+                    '”': '"',
+                    '“': '"',
                     'km3': 'km2',
                     'kmz': 'km2',
                     'ﬁ': 'fi',
