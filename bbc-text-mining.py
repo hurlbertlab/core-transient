@@ -144,7 +144,7 @@ def parse_block(block, site_name, site_num, year):
             print("Replacing {} with {}".format(replacement, replacements[replacement]))
             block = block.replace(replacement, replacements[replacement])
     block = get_clean_block(block)
-    p = re.compile(r'((?:Site Number|Location|Continuity|Previously called|Size|Description of Plot|Edge|Topography and Elevation|Weather|Coverage|Census|Total|Visitors|Nests Found|Remarks|Other Observers|Acknowledgments)):')
+    p = re.compile(r'((?:Site Number|Location|Continuity|Previously called|Size|Description of Plot|Edge|Topography and Elevation|Weather|Coverage|Census|Total|Visitors|Nests Found|Remarks|Observers|Other Observers|Acknowledgments)):')
     split_block = p.split(block)[1:] #discard first value; an empty string
     block_dict = {split_block[i]: split_block[i+1] for i in range(0, len(split_block), 2)}
     block_dict['SiteName'] = site_name
