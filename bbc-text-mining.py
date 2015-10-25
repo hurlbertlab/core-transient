@@ -205,6 +205,11 @@ def extract_counts(data, year):
     if 'Visitors' in data:
         visitor_data = data['Visitors'].split(',')
         for species in visitor_data:
+            if ' and ' in species:
+                new_species = species.split(' and ')
+                census_data.append(new_species[0])
+                census_data.append(new_species[1])
+                continue
             species = get_cleaned_species(species)
             counts_record = [year, data['SiteNumInCensus'], species,
                              None, 'visitor']
