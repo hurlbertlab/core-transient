@@ -80,7 +80,10 @@ def parse_block(block, site_name, site_num, year):
     """Parse a main data block from a BBC file"""
     # Cleanup difficult issues manually
     # Combination of difficult \n's and OCR mistakes
-    replacements = {'Cemus': 'Census',
+    replacements = {'—': '-',
+                    'km3': 'km2',
+                    'kmz': 'km2',
+                    'Cemus': 'Census',
                     'Cov-\nerage': 'Coverage',
                     'Cov—\nerage': 'Coverage',
                     'Con-\ntinuity': 'Continuity',
