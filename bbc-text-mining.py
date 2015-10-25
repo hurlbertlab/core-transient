@@ -133,7 +133,11 @@ def parse_block(block, site_name, site_num, year):
                     'Estab-\nlished 1993; 2 )n‘.': 'Estab-\nlished 1993; 2.',
                     'Established l983': 'Established 1983',
                     'Established 1978;\n18 you': 'Established 1978;\n18 yr.',
-                    'This plot is part of a larger plot that was ﬁrst censused in 1981.': ''
+                    'This plot is part of a larger plot that was ﬁrst censused in 1981.': '',
+                    'Ruby-throatcd Hummingbird': 'Ruby-throated Hummingbird',
+                    'RuHed Grouse': 'Ruffed Grouse',
+                    '\Varbler': "Warbler",
+                    'VVarbler': "Warbler"
     }
     for replacement in replacements:
         if replacement in block:
