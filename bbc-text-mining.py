@@ -154,6 +154,7 @@ def parse_txt_file(infile, year):
                 data[site_num] = parse_block(main_block, site_name, site_num, year)
             first_site = False
             site_num, site_name = site_info
+            site_name = site_name.replace('—', '-')
             site_num = int(site_num)
             recording = False
         elif is_start_main_block(line):
