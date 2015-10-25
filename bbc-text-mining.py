@@ -359,6 +359,7 @@ def get_census_table(site_data, year):
                                  'cov_visits': [site_data['Coverage'].get('visits', None)],
                                  'cov_times': [site_data['Coverage'].get('times', None)],
                                  'cov_notes': [site_data['Coverage'].get('notes', None)],
+                                 'area': [site_data['Size']],
                                  'richness': [site_data['Total']['total_species']],
                                  'territories': [site_data['Total']['total_territories']],
                                  'terr_notes': [site_data['Total']['total_terr_notes']],
@@ -381,7 +382,7 @@ site_table = pd.DataFrame(columns = ['siteNumInCensus', 'sitename', 'latitude',
                                      'longitude', 'location', 'description'])
 census_table = pd.DataFrame(columns = ['sitename', 'siteNumInCensus',
                                        'year', 'established', 'ts_length', 'cov_hours',
-                                       'cov_visits', 'cov_times', 'cov_notes',
+                                       'cov_visits', 'cov_times', 'cov_notes', 'area',
                                        'richness', 'territories', 'terr_notes',
                                        'weather'])
 years = range(1988, 1996)
@@ -413,7 +414,7 @@ site_table = site_table[['siteID', 'sitename', 'latitude',
                          'longitude', 'location', 'description']]
 census_table = census_table[['siteID', 'sitename', 'siteNumInCensus',
                                        'year', 'established', 'ts_length', 'cov_hours',
-                                       'cov_visits', 'cov_times', 'cov_notes',
+                                       'cov_visits', 'cov_times', 'cov_notes', 'area',
                                        'richness', 'territories', 'terr_notes',
                                        'weather']]
 counts_table.to_csv('data/raw_datasets/BBC_pdfs/bbc_counts.csv', index=False)
