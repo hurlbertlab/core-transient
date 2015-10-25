@@ -416,3 +416,6 @@ census_table = census_table[['siteID', 'sitename', 'siteNumInCensus',
                                        'cov_visits', 'cov_times', 'cov_notes',
                                        'richness', 'territories', 'terr_notes',
                                        'weather']]
+counts_table.to_csv('data/raw_datasets/BBC_pdfs/bbc_counts.csv', index=False)
+census_table.to_csv('data/raw_datasets/BBC_pdfs/bbc_censuses.csv', index=False)
+site_table.to_csv('data/raw_datasets/BBC_pdfs/bbc_sites.csv', index=False)
