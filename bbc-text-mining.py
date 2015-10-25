@@ -80,14 +80,8 @@ def parse_block(block, site_name, site_num, year):
     """Parse a main data block from a BBC file"""
     # Cleanup difficult issues manually
     # Combination of difficult \n's and OCR mistakes
-    replacements = {'—': '-',
-                    "’": "'",
-                    "‘": "'",
-                    '”': '"',
-                    '“': '"',
-                    'km3': 'km2',
+    replacements = {'km3': 'km2',
                     'kmz': 'km2',
-                    'ﬁ': 'fi',
                     'Cemus': 'Census',
                     'Cov-\nerage': 'Coverage',
                     'Cov—\nerage': 'Coverage',
@@ -139,12 +133,13 @@ def parse_block(block, site_name, site_num, year):
                     'Estab-\nlished 1993; 2 )n‘.': 'Estab-\nlished 1993; 2.',
                     'Established l983': 'Established 1983',
                     'Established 1978;\n18 you': 'Established 1978;\n18 yr.',
-                    'This plot is part of a larger plot that was first censused in 1981.': ''
+                    'This plot is part of a larger plot that was ﬁrst censused in 1981.': ''
     }
     for replacement in replacements:
         if replacement in block:
-            print("Replacing {} with {}".format(replacements[replacement], replacement))
+            print("Replacing {} with {}".format(replacement, replacements[replacement]))
             block = block.replace(replacement, replacements[replacement])
+    block = get_clean_block(block)
     p = re.compile(r'((?:Site Number|Location|Continuity|Previously called|Size|Description of Plot|Edge|Topography and Elevation|Weather|Coverage|Census|Total|Visitors|Nests Found|Remarks|Other Observers|Acknowledgments)):')
     split_block = p.split(block)[1:] #discard first value; an empty string
     block_dict = {split_block[i]: split_block[i+1] for i in range(0, len(split_block), 2)}
@@ -227,6 +222,19 @@ def extract_counts(data, year):
                                                         'count',
                                                         'status'])
     return counts_data
+
+def get_clean_block(block):
+    """Clean up unicode characters in blocks"""
+    replacements = {'ﬁ': 'fi',
+                    '—': '-',
+                    "’": "'",
+                    "‘": "'",
+                    '”': '"',
+                    '“': '"'}
+    for replacement in replacements:
+        if replacement in block:
+            block = block.replace(replacement, replacements[replacement])
+    return(block)
 
 def get_clean_size(size_data):
     """Remove units, notes, and whitespace"""
