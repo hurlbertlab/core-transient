@@ -80,11 +80,17 @@ def parse_block(block, site_name, site_num, year):
     """Parse a main data block from a BBC file"""
     # Cleanup difficult issues manually
     # Combination of difficult \n's and OCR mistakes
-    replacements = {'km3': 'km2',
-                    'kmz': 'km2',
-                    'Cemus': 'Census',
+    replacements = {'Cemus': 'Census',
                     'Description Oi Plot': 'Description of Plot',
+                    'Acknowledgmentsz': 'Acknowledgments: ',
+                    'Other Observers:]': 'Other Observers: ',
+                    'Other 0berservers': 'Other Observers: ',
+                    '0ther Observerers': 'Other Observers: ',
                     'Continnity': 'Continuity',
+                    'lViagnolia': 'Magnolia',
+                    'lVildlife': 'Wildlife',
+                    'Mallard ): American Black Duck hybrid': 'Mallard x American Black Duck hybrid',
+                    'Observerszj': 'Observers',
                     'Bobolink; 9.0 territories': 'Bobolink, 9.0 territories',
                     "37°38'N, 121°46lW": "37°38'N, 121°46'W",
                     'Common Yellowthroat, 4.5, Northern Flicker, 3.0': 'Common Yellowthroat, 4.5; Northern Flicker, 3.0',
@@ -107,7 +113,7 @@ def parse_block(block, site_name, site_num, year):
                     '44°57’N, 68D41’W': '44°57’N, 68°41’W',
                     '18.8 11; 11 Visits': '18.8 h; 11 Visits',
                     "Descripn'on of Plot": "Description of Plot",
-                    '41 c’42’N, 73°13’VV': '41°42’N, 73°13’VV',
+                    '41 c’42’N, 73°13’VV': "41°42'N, 73°13'W",
                     'Northern Rough-winged Swallow. 0.5': 'Northern Rough-winged Swallow, 0.5',
                     'Warbling Vireo, 1.0, Northern Cardinal, 1.0': 'Warbling Vireo, 1.0; Northern Cardinal, 1.0',
                     'Wood Thrush, 3.0 (18), American Redstart, 3.0': 'Wood Thrush, 3.0; American Redstart, 3.0',
@@ -126,7 +132,18 @@ def parse_block(block, site_name, site_num, year):
                     'RuHed Grouse': 'Ruffed Grouse',
                     '\Varbler': "Warbler",
                     'VVarbler': "Warbler",
-                    'Common Yellowthroat 3': 'Common Yellowthroat, 3'
+                    'Common Yellowthroat 3': 'Common Yellowthroat, 3',
+                    'all known to breed in immediate vicinity': '',
+                    'and a number of vagrants': '',
+                    "Utner Ubservers": "Other Observers",
+                    'Dovmy': 'Downy',
+                    "W'oodpecker": "Woodpecker",
+                    "\700d Thrush": "Wood Thrush",
+                    "\form-eating Warbler": "Worm-eating Warbler",
+                    "Cliﬂ' Swallow": "Cliff Swallow",
+                    'Cliﬂ\ Swallow"': 'Cliff Swallow',
+                    'Downy Woodpecknululuu I JHJ er': 'Downy Woodpecker',
+                    'unidentified Accipiter': 'Accipiter sp.',
     }
     block = get_cleaned_string(block)
     for replacement in replacements:
