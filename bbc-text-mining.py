@@ -4,6 +4,7 @@ import os
 import re
 import string
 from glob import glob
+from functools import lru_cache
 
 import pandas as pd
 from fuzzywuzzy import process
@@ -265,6 +266,7 @@ def get_clean_size(size_data):
     size = size.replace('.?)', '3')
     return float(size.strip(' .\n'))
 
+@lru_cache(maxsize=None)
 def get_cleaned_species(species):
     """Cleanup species names"""
     species = species.strip().replace('-\n', '-')
