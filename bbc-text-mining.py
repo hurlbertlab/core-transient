@@ -6,6 +6,7 @@ import string
 from glob import glob
 
 import pandas as pd
+from fuzzywuzzy import process
 
 def convert_pdf_to_images(filename):
     """Convert a pdf to images"""
@@ -268,7 +269,10 @@ def get_cleaned_species(species):
     """Cleanup species names"""
     species = species.strip().replace('-\n', '-')
     species = species.replace('\n', ' ')
+    species = species.replace('species', 'sp.')
     species = species.strip(' .')
+    matched_species = process.extract(species, valid_sp_names, limit=1)[0]
+    species = matched_species[0] if matched_species[1] > 90 else 'No Match'
     return species
 
 
@@ -405,6 +409,12 @@ def get_census_table(site_data, year):
                              })
     return census_table
 
+def get_valid_sp_names(sp_names_file):
+    """Get valid species names from name corrections file"""
+    names_data = pd.read_csv(sp_names_file)
+    names_data.loc[names_data['cleaned_name'].isnull(),'cleaned_name'] = names_data['original_name']
+    valid_names = list(names_data['cleaned_name'].drop_duplicates())
+    return(valid_names)
 
 para_starts = {1988: 4, 1989: 6, 1990: 6, 1991: 7,
                1992: 7, 1993: 7, 1994: 7, 1995: 6}
@@ -412,6 +422,8 @@ data_path = "./data/raw_datasets/BBC_pdfs/"
 #convert_pdfs_to_text(data_path)
 #cleanup_nonpara_pages(data_path, para_starts)
 #combine_txt_files_by_yr(data_path, para_starts.keys())
+
+valid_sp_names = get_valid_sp_names("data/raw_datasets/BBC_pdfs/bbc_species_corrections.csv")
 
 counts_table = pd.DataFrame(columns = ['siteNumInCensus', 'year', 'species',
                                        'count', 'status'])
