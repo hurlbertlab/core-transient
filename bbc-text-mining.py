@@ -240,13 +240,18 @@ def extract_counts(data, year):
     return counts_data
 
 def get_clean_block(block):
-    """Clean up unicode characters in blocks"""
+    """Clean up unicode characters and common OCR errors in blocks"""
     replacements = {'ﬁ': 'fi',
                     '—': '-',
                     "’": "'",
                     "‘": "'",
                     '”': '"',
-                    '“': '"'}
+                    '“': '"',
+                    'km3': 'km2',
+                    'kmz': 'km2',
+                    '\\N': 'W',
+                    'VV': 'W',
+                    'lVI': 'M',}
     for replacement in replacements:
         if replacement in block:
             block = block.replace(replacement, replacements[replacement])
