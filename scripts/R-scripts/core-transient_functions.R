@@ -135,8 +135,6 @@ dataFormattingTableUpdateFinished = function(datasetID, datasetFinal){
     dataFormattingTable[,'Formatted_Max_Individuals_perSiteYear'] = 
       dataFormattingTableFieldUpdate(datasetID, 'Formatted_Max_Individuals_perSiteYear', 
                                      max(siteYearCounts$tCount))
-    siteYearCounts = ddply(datasetFinal, .(site, date), 
-                           summarize, tCount = sum(count))
   } else {
     dataFormattingTable[,'Formatted_Mean_Individuals_perSiteYear'] = 
       dataFormattingTableFieldUpdate(datasetID, 'Formatted_Mean_Individuals_perSiteYear','NA')
