@@ -2,9 +2,9 @@
 #  DATA FORMATTING TEMPLATE
 ################################################################################*
 #
-# Dataset name:
-# Dataset source (link):
-# Formatted by: 
+# Dataset name: North Temperate Lakes LTER: Macrophyte Species at Quadrat Level - Trout Lake 1993 - current
+# Dataset source (link): https://lter.limnology.wisc.edu/dataset/north-temperate-lakes-lter-macrophyte-species-quadrat-level-trout-lake-1993-current
+# Formatted by: Catie Alves and Allen Hurlbert
 #
 # Start by opening the data formatting table (data_formatting_table.csv). 
 # Datasets to be worked on will have a 'format_flag' of 0.
@@ -51,8 +51,6 @@ getwd()
 # Set your working directory to be in the home of the core-transient repository
 # e.g., setwd('C:/git/core-transient')
 
-setwd('C:/git/core-transient')
-
 source('scripts/R-scripts/core-transient_functions.R')
 
 # Get data. First specify the dataset number ('datasetID') you are working with.
@@ -75,8 +73,7 @@ dataFormattingTable[,'Raw_datafile_name'] =
   dataFormattingTableFieldUpdate(datasetID, 'Raw_datafile_name',  
                                  
 #--! PROVIDE INFO !--#
-  'rawdata_282.csv') 
-
+  'north_temperate_lakes_lter__macrophyte_species_at_quadrat_level_-_trout_lake.csv') 
 
 
 ########################################################
@@ -161,7 +158,7 @@ dataFormattingTable[,'LatLong_sites'] =
   dataFormattingTableFieldUpdate(datasetID, 'LatLong_sites',  
 
 #--! PROVIDE INFO !--#
-                                 'Y') 
+                                 'N') 
 
 
 #-------------------------------------------------------------------------------*
@@ -180,7 +177,9 @@ dateFieldName = c('sampledate')
 # If necessary, paste together date info from multiple columns into single field
 if (length(dateFieldName) > 1) {
   newDateField = dataset1[, dateFieldName[1]]
-  for (i in dateFieldName[2:length(dateFieldName)]) { newDateField = paste(newDateField, dataset[,i], sep = "-") }
+  for (i in dateFieldName[2:length(dateFieldName)]) { 
+    newDateField = paste(newDateField, dataset[,i], sep = "-") 
+  }
   dataset1$date = newDateField
   datefield = 'date'
 } else {
@@ -241,9 +240,7 @@ dataFormattingTable[,'Notes_timeFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_timeFormat', 
 
 #--! PROVIDE INFO !--#
-    'the only modification was removing the hour:minute from the date and changing where the column was')
-
-#######THIS IS WHERE I STOPPED ON 10.9.15 (CLA)#########
+    'the only modification was removing the hour:minute from the date')
 
 # subannualTgrain. After exploring the time data, was this dataset sampled at a 
 #   sub-annual temporal grain? Y/N
@@ -252,7 +249,7 @@ dataFormattingTable[,'subannualTgrain'] =
   dataFormattingTableFieldUpdate(datasetID, 'subannualTgrain', 
 
 #--! PROVIDE INFO !--#                                 
-                                 'N')
+                                 'Y')
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SITE DATA ----
