@@ -65,6 +65,7 @@ dataset = read.csv(paste('data/raw_datasets/dataset_', datasetID, '.csv', sep = 
 dataFormattingTable = read.csv('data_formatting_table.csv')
 
 # Make sure the original name of the raw data file is saved in the data formatting table.
+# NOT, for example, 'rawdataset_255.csv', but the filename as originally downloaded.
 # Check the data source link (available in the table, and hopefully posted above) if
 # the data is available online. If the data come from a published paper and there is
 # no file that was downloaded, enter "NA".
