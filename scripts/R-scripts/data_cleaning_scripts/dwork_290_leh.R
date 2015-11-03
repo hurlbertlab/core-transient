@@ -4,7 +4,7 @@
 #
 # Dataset name:HJ Andrews TP108: Herb Layer in Uncut Plots: Cover, Height, Number of Tree Seedlings (U-B3)
 # Dataset source (link):http://andrewsforest.oregonstate.edu/data/abstract.cfm?dbcode=TP108&topnav=97 
-# Formatted by: Laura Hamon
+# Formatted by: Laura Hamon and Allen Hurlbert
 #
 # Start by opening the data formatting table (data_formatting_table.csv). 
 # Datasets to be worked on will have a 'format_flag' of 0.
@@ -73,7 +73,7 @@ dataFormattingTable[,'Raw_datafile_name'] =
   dataFormattingTableFieldUpdate(datasetID, 'Raw_datafile_name',  
                                  
 #--! PROVIDE INFO !--#
-  'dataset_290.csv') 
+  'TP10807_v3.csv') 
 
 
 
@@ -139,7 +139,7 @@ dataset1$cover = apply(dataset1[, 6:11], 1, function(x) {x[is.na(x)] = 0; mean(x
 #remove HCOVER columns
 unusedFieldNames1 = c('HCOVER1', 'HCOVER2', 'HCOVER3', 'HCOVER4','HCOVER5','HCOVER6')
 unusedFields1 = which(names(dataset1) %in% unusedFieldNames1)
-dataset2 = dataset1[,-unusedFields1]
+dataset1 = dataset1[,-unusedFields1]
 
 
 # You also might want to change the names of the identified species field [to 
@@ -181,7 +181,7 @@ dataFormattingTable[,'LatLong_sites'] =
 # E.g., c('year', 'month', 'day')
 
 #--! PROVIDE INFO !--#
-dateFieldName = c('sampledate')
+dateFieldName = c('SAMPLEDATE')
 
 # If necessary, paste together date info from multiple columns into single field
 if (length(dateFieldName) > 1) {
@@ -198,7 +198,7 @@ if (length(dateFieldName) > 1) {
 # be '%Y-%m-%d'. Type "?strptime" for other examples of date formatting.
 
 #--! PROVIDE INFO !--#
-dateformat = '%m/%d/%Y %H:%M'
+dateformat = '%m/%d/%Y'
 
 # If date is only listed in years:
 
@@ -213,8 +213,8 @@ if (dateformat == '%Y' | dateformat == '%y') {
   date = as.POSIXct(strptime(dataset1[, datefield], dateformat))
 }
 
-# A check on the structure lets you know that date field is now a date object:
-
+# A check on the structure lets you know that date field is now a date object.
+# Should say: [1] "POSIXct" "POSIXt"
 class(date)
 
 # Give a double-check, if everything looks okay replace the column:
@@ -283,7 +283,7 @@ dataFormattingTable[,'subannualTgrain'] =
 # fill in the fields that specify nested spatial grains below.
 
 #--! PROVIDE INFO !--#
-site_grain_names = c("site", "quadrat")
+site_grain_names = c("BLOCK", "quadrat")
 
 # We will now create the site field with these codes concatenated if there
 # are multiple grain fields. Otherwise, site will just be the single grain field.
