@@ -3,8 +3,8 @@
 ################################################################################*
 #
 # Dataset name: Konza bird grids
-# Dataset source (http://www.konza.ksu.edu/knz/pages/data/KnzEntity.aspx?id=CBC011):
-# Formatted by: jrb
+# Dataset source (http://www.konza.ksu.edu/knz/pages/data/KnzEntity.aspx?id=CBP011):
+# Formatted by: Robbie Burger and Allen Hurlbert
 #
 # Start by opening the data formatting table (data_formatting_table.csv). 
 # Datasets to be worked on will have a 'format_flag' of 0.
@@ -73,7 +73,7 @@ dataFormattingTable[,'Raw_datafile_name'] =
   dataFormattingTableFieldUpdate(datasetID, 'Raw_datafile_name',  
                                  
 #--! PROVIDE INFO !--#
-  'dataset_287.csv') 
+  'CBP011.dat') 
 
 
 
@@ -126,7 +126,7 @@ head(dataset)
 names(dataset)
 
 #--! PROVIDE INFO !--#
-unusedFieldNames = c('lakeid', 'min_depth', 'max_depth', 'year4')
+unusedFieldNames = c('DATACODE', 'RECTYPE', 'OBSID', 'CENTURY')
 
 
 unusedFields = which(names(dataset) %in% unusedFieldNames)
