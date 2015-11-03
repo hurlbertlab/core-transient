@@ -4,7 +4,7 @@
 #
 # Dataset name: Luquillo LTER bird point counts
 # Dataset source (link): http://luq.lternet.edu/data/luqmetadata23
-# Formatted by: Tracie Hayes
+# Formatted by: Tracie Hayes and Allen Hurlbert
 #
 # Start by opening the data formatting table (data_formatting_table.csv). 
 # Datasets to be worked on will have a 'format_flag' of 0.
@@ -243,6 +243,17 @@ abline(h = c(128, 170), lty= 'dotted', col = 'red')
 dataset2$julian = yday(dataset2$date) 
 dataset2 = subset(dataset2, julian >= 128 & julian <=170)
 
+# NOTE: Survey procedures appear to be conducting point counts at usually 40 locations
+# within the grid over 3 or 4 survey dates. However the number of sampling dates is
+# not relevant for subsampling since this is just the time over which a fixed number
+# of spatial subsamples were surveyed. Thus, below, I indicate that this dataset
+# does not have a subannual grain, and I am resetting the 'date' field to just
+# be the year. Could only do this though after weeding out the sampling events
+# outside the Julian day range specified above.
+# (So these next two lines are specific to this dataset!)
+dataset2$date = as.numeric(format(dataset2$date, "%Y"))
+dateformat = "%Y"
+
 # !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE DATE DATA WERE MODIFIED!
 
 #!DATA FORMATTING TABLE UPDATE!
@@ -264,7 +275,7 @@ dataFormattingTable[,'subannualTgrain'] =
   dataFormattingTableFieldUpdate(datasetID, 'subannualTgrain', 
 
 #--! PROVIDE INFO !--#                                 
-                                 'Y')
+                                 'N')
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SITE DATA ----
@@ -293,6 +304,9 @@ dataFormattingTable[,'subannualTgrain'] =
 
 # Realized from below that there is a typo in the 'PLACE' field, so correcting:
 dataset2$PLACE[dataset2$PLACE == 'ELVERDE'] = 'EL VERDE'
+
+# 'PLOT1' and 'PLOT2' seem to be x and y coordinates on a grid, so their 
+# unique combination is the fine-grained point count location
 dataset2$gridpoint = paste(dataset2$PLOT1, dataset2$PLOT2, sep = "_")
 site_grain_names = c("PLACE", "gridpoint")
 
