@@ -184,7 +184,6 @@ def parse_txt_file(infile, year):
     for line in infile:
         site_info = get_site(line)
         if site_info:
-            print(site_info)
             if not first_site:
                 data[site_num] = parse_block(main_block, site_name, site_num, year)
             first_site = False
@@ -470,11 +469,11 @@ census_table = pd.DataFrame(columns = ['sitename', 'siteNumInCensus',
 years = range(1988, 1996)
 
 for year in years:
+    print("\nProcessing {} data...\n".format(year))
     datafile = os.path.join(data_path, "bbc_combined_{}.txt".format(year))
     with open(datafile) as infile:
         data = parse_txt_file(infile, year)
         for site in data:
-            print(year, site)
             data[site] = extract_site_data(data[site])
             counts_table = counts_table.append(extract_counts(data[site], year),
                                                ignore_index=True)
