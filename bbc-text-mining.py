@@ -280,6 +280,12 @@ def get_cleaned_species(species):
     matched_species = process.extractOne(species, valid_sp_names,
                                          processor=str, # Needed to hack around https://github.com/seatgeek/fuzzywuzzy/issues/77
                                          scorer=fuzz.ratio)
+    if matched_species[1] >= 70:
+        species = matched_species[0]
+    else:
+        print(year, site, species, matched_species)
+        unmatched.append((species, matched_species))
+        species = None
     return species
 
 
@@ -419,6 +425,7 @@ def get_census_table(site_data, year):
 def get_valid_sp_names(sp_names_file):
     """Get valid species names from name corrections file"""
     names_data = pd.read_csv(sp_names_file)
+    names_data = names_data[names_data['Notes'] != 'delete']
     names_data.loc[names_data['cleaned_name'].isnull(),'cleaned_name'] = names_data['original_name']
     valid_names = list(names_data['cleaned_name'].drop_duplicates())
     return(valid_names)
@@ -431,6 +438,7 @@ data_path = "./data/raw_datasets/BBC_pdfs/"
 #combine_txt_files_by_yr(data_path, para_starts.keys())
 
 valid_sp_names = get_valid_sp_names("data/raw_datasets/BBC_pdfs/bbc_species_corrections.csv")
+unmatched = []
 
 counts_table = pd.DataFrame(columns = ['siteNumInCensus', 'year', 'species',
                                        'count', 'status'])
