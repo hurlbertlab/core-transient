@@ -298,6 +298,7 @@ def get_cleaned_species(species):
                                          processor=str, # Needed to hack around https://github.com/seatgeek/fuzzywuzzy/issues/77
                                          scorer=fuzz.ratio)
     if matched_species[1] >= 70:
+        if matched_species[1] <100: matched[species] = matched_species
         species = matched_species[0]
     else:
         unmatched.append((species, matched_species))
@@ -455,6 +456,7 @@ data_path = "./data/raw_datasets/BBC_pdfs/"
 
 valid_sp_names = get_valid_sp_names("data/raw_datasets/BBC_pdfs/bbc_species_corrections.csv")
 unmatched = []
+matched = {}
 
 counts_table = pd.DataFrame(columns = ['siteNumInCensus', 'year', 'species',
                                        'count', 'status'])
@@ -480,6 +482,15 @@ for year in years:
                                            ignore_index=True)
             census_table = census_table.append(get_census_table(data[site], year),
                                                ignore_index=True)
+
+# Provide information on fuzzy matching for error checking
+print("\nUnmatched species:\n")
+print(unmatched)
+print()
+print("\nFuzzy matched species:\n")
+print("RawSpecies, MatchedSpecies, Ratio")
+for raw_species in matched:
+    print('{}, {}, {}'.format(raw_species, matched[raw_species][0], matched[raw_species][1]))
 
 site_table_simp = site_table[['sitename', 'latitude', 'longitude']]
 unique_sites = site_table_simp.drop_duplicates().reset_index(drop=True)
