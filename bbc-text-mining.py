@@ -7,7 +7,7 @@ from glob import glob
 from functools import lru_cache
 
 import pandas as pd
-from fuzzywuzzy import process
+from fuzzywuzzy import fuzz, process
 
 def convert_pdf_to_images(filename):
     """Convert a pdf to images"""
@@ -88,6 +88,9 @@ def parse_block(block, site_name, site_num, year):
                     'Other Observers:]': 'Other Observers: ',
                     'Other 0berservers': 'Other Observers: ',
                     '0ther Observerers': 'Other Observers: ',
+                    'Other 0bservers': 'Other Observers: ',
+                    'Other Observers.': 'Other Observers:',
+                    'Other Observers]': 'Other Observers:',
                     'Continnity': 'Continuity',
                     'lViagnolia': 'Magnolia',
                     'lVildlife': 'Wildlife',
@@ -98,6 +101,8 @@ def parse_block(block, site_name, site_num, year):
                     'Common Yellowthroat, 4.5, Northern Flicker, 3.0': 'Common Yellowthroat, 4.5; Northern Flicker, 3.0',
                     'Red-bellied Woodpecker, 2.0, Carolina Chickadee, 2.0': 'Red-bellied Woodpecker, 2.0; Carolina Chickadee, 2.0',
                     'Winter 1992': ' ', #One header line in one file got OCR'd for some reason
+                    'nuLquu “1:10': ' ',
+                    'nululuu 1:1:1.)': ' ',
                     '20.9 h; 8 Visits (8 sunrise), 8, 15, 22, 29 April; 6, 13, 20, 27 May.': '20.9 h; 8 Visits (8 sunrise); 8, 15, 22, 29 April; 6, 13, 20, 27 May.',
                     '19.3 h; 11 visits (11 sunrise;': '19.3 h; 11 visits (11 sunrise);',
                     'Foster Plantation; 42"7’N': 'Foster Plantation; 42°7’N',
@@ -106,7 +111,6 @@ def parse_block(block, site_name, site_num, year):
                     "42°“7'N, 77°45’W": "42°7'N, 77°45’W",
                     '41°4\'N, 76"7’W': "41°4'N, 76°7’W",
                     'w‘sits': 'visits',
-                    'Weather': 'Weather',
                     '79513’W': '79°13’W',
                     'Continuity.': 'Continuity:',
                     'Continuity"': 'Continuity:',
@@ -145,7 +149,19 @@ def parse_block(block, site_name, site_num, year):
                     "Cliﬂ' Swallow": "Cliff Swallow",
                     'Cliﬂ\ Swallow"': 'Cliff Swallow',
                     'Downy Woodpecknululuu I JHJ er': 'Downy Woodpecker',
-                    'unidentified Accipiter': 'Accipiter sp.',
+                    'unidentiﬁed Accipiter': 'Accipiter sp.',
+                    "Traill’s Flycatcher": "Willow Flycatcher",
+                    'Eastern Titmouse': 'Tufted Titmouse',
+                    'Common Barn Owl': 'Barn Owl',
+                    'Common Bushtit': 'Bushtit',
+                    'Yellow-shafted Flicker': 'Northern Flicker',
+                    'Yellowshafted Flicker': 'Northern Flicker',
+                    'Common Barn-Owl': 'Barn Owl',
+                    'Northern Parula Warbler': 'Northern Parula',
+                    'Yellow-rumped,': 'Yellow-rumped Warbler,',
+                    'Common Crow': 'American Crow',
+                    ', Raven,': ', Common Raven,',
+                    '; Raven,': '; Common Raven,'
     }
     block = get_cleaned_string(block)
     for replacement in replacements:
@@ -246,6 +262,7 @@ def extract_counts(data, year):
 def get_clean_block(block):
     """Clean up unicode characters and common OCR errors in blocks"""
     replacements = {'ﬁ': 'fi',
+                    'ﬂ': 'fi',
                     '—': '-',
                     "’": "'",
                     "‘": "'",
@@ -283,7 +300,6 @@ def get_cleaned_species(species):
     if matched_species[1] >= 70:
         species = matched_species[0]
     else:
-        print(year, site, species, matched_species)
         unmatched.append((species, matched_species))
         species = None
     return species
