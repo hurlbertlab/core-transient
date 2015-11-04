@@ -276,6 +276,7 @@ def get_cleaned_species(species):
     species = species.replace('\n', ' ')
     species = species.replace('species', 'sp.')
     species = species.strip(' .')
+    species = re.sub(r'\([^)]+\)', '', species) #remove parenthetical
     matched_species = process.extractOne(species, valid_sp_names,
                                          processor=str, # Needed to hack around https://github.com/seatgeek/fuzzywuzzy/issues/77
                                          scorer=fuzz.ratio)
