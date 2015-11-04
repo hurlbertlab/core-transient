@@ -217,9 +217,10 @@ def extract_counts(data, year):
             else:
                 species, count = record.split(',')
             species = get_cleaned_species(species)
-            counts_record = [year, data['SiteNumInCensus'], species,
-                             count.strip(' .\n'), 'breeder']
-            counts_results.append(counts_record)
+            if species:
+                counts_record = [year, data['SiteNumInCensus'], species,
+                                 count.strip(' .\n'), 'breeder']
+                counts_results.append(counts_record)
 
     if 'Visitors' in data:
         visitor_data = data['Visitors'].split(',')
@@ -230,9 +231,10 @@ def extract_counts(data, year):
                 census_data.append(new_species[1])
                 continue
             species = get_cleaned_species(species)
-            counts_record = [year, data['SiteNumInCensus'], species,
-                             None, 'visitor']
-            counts_results.append(counts_record)
+            if species:
+                counts_record = [year, data['SiteNumInCensus'], species,
+                                 None, 'visitor']
+                counts_results.append(counts_record)
 
     counts_data = pd.DataFrame(counts_results, columns=['year',
                                                         'siteNumInCensus',
