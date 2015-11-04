@@ -271,7 +271,8 @@ def get_clean_size(size_data):
 @lru_cache(maxsize=None)
 def get_cleaned_species(species):
     """Cleanup species names"""
-    species = species.strip().replace('-\n', '-')
+    if not species: return None
+    species = species.replace('-\n', '-')
     species = species.replace('\n', ' ')
     species = species.replace('species', 'sp.')
     species = species.strip(' .')
