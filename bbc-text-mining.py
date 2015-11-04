@@ -275,8 +275,9 @@ def get_cleaned_species(species):
     species = species.replace('\n', ' ')
     species = species.replace('species', 'sp.')
     species = species.strip(' .')
-    matched_species = process.extract(species, valid_sp_names, limit=1)[0]
-    species = matched_species[0] if matched_species[1] > 90 else 'No Match'
+    matched_species = process.extractOne(species, valid_sp_names,
+                                         processor=str, # Needed to hack around https://github.com/seatgeek/fuzzywuzzy/issues/77
+                                         scorer=fuzz.ratio)
     return species
 
 
