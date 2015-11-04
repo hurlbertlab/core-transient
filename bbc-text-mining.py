@@ -4,8 +4,10 @@ import os
 import re
 import string
 from glob import glob
+from functools import lru_cache
 
 import pandas as pd
+from fuzzywuzzy import fuzz, process
 
 def convert_pdf_to_images(filename):
     """Convert a pdf to images"""
@@ -80,16 +82,27 @@ def parse_block(block, site_name, site_num, year):
     """Parse a main data block from a BBC file"""
     # Cleanup difficult issues manually
     # Combination of difficult \n's and OCR mistakes
-    replacements = {'km3': 'km2',
-                    'kmz': 'km2',
-                    'Cemus': 'Census',
+    replacements = {'Cemus': 'Census',
                     'Description Oi Plot': 'Description of Plot',
+                    'Acknowledgmentsz': 'Acknowledgments: ',
+                    'Other Observers:]': 'Other Observers: ',
+                    'Other 0berservers': 'Other Observers: ',
+                    '0ther Observerers': 'Other Observers: ',
+                    'Other 0bservers': 'Other Observers: ',
+                    'Other Observers.': 'Other Observers:',
+                    'Other Observers]': 'Other Observers:',
                     'Continnity': 'Continuity',
+                    'lViagnolia': 'Magnolia',
+                    'lVildlife': 'Wildlife',
+                    'Mallard ): American Black Duck hybrid': 'Mallard x American Black Duck hybrid',
+                    'Observerszj': 'Observers',
                     'Bobolink; 9.0 territories': 'Bobolink, 9.0 territories',
                     "37°38'N, 121°46lW": "37°38'N, 121°46'W",
                     'Common Yellowthroat, 4.5, Northern Flicker, 3.0': 'Common Yellowthroat, 4.5; Northern Flicker, 3.0',
                     'Red-bellied Woodpecker, 2.0, Carolina Chickadee, 2.0': 'Red-bellied Woodpecker, 2.0; Carolina Chickadee, 2.0',
                     'Winter 1992': ' ', #One header line in one file got OCR'd for some reason
+                    'nuLquu “1:10': ' ',
+                    'nululuu 1:1:1.)': ' ',
                     '20.9 h; 8 Visits (8 sunrise), 8, 15, 22, 29 April; 6, 13, 20, 27 May.': '20.9 h; 8 Visits (8 sunrise); 8, 15, 22, 29 April; 6, 13, 20, 27 May.',
                     '19.3 h; 11 visits (11 sunrise;': '19.3 h; 11 visits (11 sunrise);',
                     'Foster Plantation; 42"7’N': 'Foster Plantation; 42°7’N',
@@ -98,7 +111,6 @@ def parse_block(block, site_name, site_num, year):
                     "42°“7'N, 77°45’W": "42°7'N, 77°45’W",
                     '41°4\'N, 76"7’W': "41°4'N, 76°7’W",
                     'w‘sits': 'visits',
-                    'Weather': 'Weather',
                     '79513’W': '79°13’W',
                     'Continuity.': 'Continuity:',
                     'Continuity"': 'Continuity:',
@@ -107,7 +119,7 @@ def parse_block(block, site_name, site_num, year):
                     '44°57’N, 68D41’W': '44°57’N, 68°41’W',
                     '18.8 11; 11 Visits': '18.8 h; 11 Visits',
                     "Descripn'on of Plot": "Description of Plot",
-                    '41 c’42’N, 73°13’VV': '41°42’N, 73°13’VV',
+                    '41 c’42’N, 73°13’VV': "41°42'N, 73°13'W",
                     'Northern Rough-winged Swallow. 0.5': 'Northern Rough-winged Swallow, 0.5',
                     'Warbling Vireo, 1.0, Northern Cardinal, 1.0': 'Warbling Vireo, 1.0; Northern Cardinal, 1.0',
                     'Wood Thrush, 3.0 (18), American Redstart, 3.0': 'Wood Thrush, 3.0; American Redstart, 3.0',
@@ -126,7 +138,30 @@ def parse_block(block, site_name, site_num, year):
                     'RuHed Grouse': 'Ruffed Grouse',
                     '\Varbler': "Warbler",
                     'VVarbler': "Warbler",
-                    'Common Yellowthroat 3': 'Common Yellowthroat, 3'
+                    'Common Yellowthroat 3': 'Common Yellowthroat, 3',
+                    'all known to breed in immediate vicinity': '',
+                    'and a number of vagrants': '',
+                    "Utner Ubservers": "Other Observers",
+                    'Dovmy': 'Downy',
+                    "W'oodpecker": "Woodpecker",
+                    "\700d Thrush": "Wood Thrush",
+                    "\form-eating Warbler": "Worm-eating Warbler",
+                    "Cliﬂ' Swallow": "Cliff Swallow",
+                    'Cliﬂ\ Swallow"': 'Cliff Swallow',
+                    'Downy Woodpecknululuu I JHJ er': 'Downy Woodpecker',
+                    'unidentiﬁed Accipiter': 'Accipiter sp.',
+                    "Traill’s Flycatcher": "Willow Flycatcher",
+                    'Eastern Titmouse': 'Tufted Titmouse',
+                    'Common Barn Owl': 'Barn Owl',
+                    'Common Bushtit': 'Bushtit',
+                    'Yellow-shafted Flicker': 'Northern Flicker',
+                    'Yellowshafted Flicker': 'Northern Flicker',
+                    'Common Barn-Owl': 'Barn Owl',
+                    'Northern Parula Warbler': 'Northern Parula',
+                    'Yellow-rumped,': 'Yellow-rumped Warbler,',
+                    'Common Crow': 'American Crow',
+                    ', Raven,': ', Common Raven,',
+                    '; Raven,': '; Common Raven,'
     }
     block = get_cleaned_string(block)
     for replacement in replacements:
@@ -149,7 +184,6 @@ def parse_txt_file(infile, year):
     for line in infile:
         site_info = get_site(line)
         if site_info:
-            print(site_info)
             if not first_site:
                 data[site_num] = parse_block(main_block, site_name, site_num, year)
             first_site = False
@@ -198,9 +232,10 @@ def extract_counts(data, year):
             else:
                 species, count = record.split(',')
             species = get_cleaned_species(species)
-            counts_record = [year, data['SiteNumInCensus'], species,
-                             count.strip(' .\n'), 'breeder']
-            counts_results.append(counts_record)
+            if species:
+                counts_record = [year, data['SiteNumInCensus'], species,
+                                 count.strip(' .\n'), 'breeder']
+                counts_results.append(counts_record)
 
     if 'Visitors' in data:
         visitor_data = data['Visitors'].split(',')
@@ -211,9 +246,10 @@ def extract_counts(data, year):
                 census_data.append(new_species[1])
                 continue
             species = get_cleaned_species(species)
-            counts_record = [year, data['SiteNumInCensus'], species,
-                             None, 'visitor']
-            counts_results.append(counts_record)
+            if species:
+                counts_record = [year, data['SiteNumInCensus'], species,
+                                 None, 'visitor']
+                counts_results.append(counts_record)
 
     counts_data = pd.DataFrame(counts_results, columns=['year',
                                                         'siteNumInCensus',
@@ -223,13 +259,19 @@ def extract_counts(data, year):
     return counts_data
 
 def get_clean_block(block):
-    """Clean up unicode characters in blocks"""
+    """Clean up unicode characters and common OCR errors in blocks"""
     replacements = {'ﬁ': 'fi',
+                    'ﬂ': 'fi',
                     '—': '-',
                     "’": "'",
                     "‘": "'",
                     '”': '"',
-                    '“': '"'}
+                    '“': '"',
+                    'km3': 'km2',
+                    'kmz': 'km2',
+                    '\\N': 'W',
+                    'VV': 'W',
+                    'lVI': 'M',}
     for replacement in replacements:
         if replacement in block:
             block = block.replace(replacement, replacements[replacement])
@@ -242,11 +284,24 @@ def get_clean_size(size_data):
     size = size.replace('.?)', '3')
     return float(size.strip(' .\n'))
 
+@lru_cache(maxsize=None)
 def get_cleaned_species(species):
     """Cleanup species names"""
-    species = species.strip().replace('-\n', '-')
+    if not species: return None
+    species = species.replace('-\n', '-')
     species = species.replace('\n', ' ')
+    species = species.replace('species', 'sp.')
     species = species.strip(' .')
+    species = re.sub(r'\([^)]+\)', '', species) #remove parenthetical
+    matched_species = process.extractOne(species, valid_sp_names,
+                                         processor=str, # Needed to hack around https://github.com/seatgeek/fuzzywuzzy/issues/77
+                                         scorer=fuzz.ratio)
+    if matched_species[1] >= 70:
+        if matched_species[1] <100: matched[species] = matched_species
+        species = matched_species[0]
+    else:
+        unmatched.append((species, matched_species))
+        species = None
     return species
 
 
@@ -383,6 +438,13 @@ def get_census_table(site_data, year):
                              })
     return census_table
 
+def get_valid_sp_names(sp_names_file):
+    """Get valid species names from name corrections file"""
+    names_data = pd.read_csv(sp_names_file)
+    names_data = names_data[names_data['Notes'] != 'delete']
+    names_data.loc[names_data['cleaned_name'].isnull(),'cleaned_name'] = names_data['original_name']
+    valid_names = list(names_data['cleaned_name'].drop_duplicates())
+    return(valid_names)
 
 para_starts = {1988: 4, 1989: 6, 1990: 6, 1991: 7,
                1992: 7, 1993: 7, 1994: 7, 1995: 6}
@@ -390,6 +452,10 @@ data_path = "./data/raw_datasets/BBC_pdfs/"
 #convert_pdfs_to_text(data_path)
 #cleanup_nonpara_pages(data_path, para_starts)
 #combine_txt_files_by_yr(data_path, para_starts.keys())
+
+valid_sp_names = get_valid_sp_names("data/raw_datasets/BBC_pdfs/bbc_species_corrections.csv")
+unmatched = []
+matched = {}
 
 counts_table = pd.DataFrame(columns = ['siteNumInCensus', 'year', 'species',
                                        'count', 'status'])
@@ -403,11 +469,11 @@ census_table = pd.DataFrame(columns = ['sitename', 'siteNumInCensus',
 years = range(1988, 1996)
 
 for year in years:
+    print("\nProcessing {} data...\n".format(year))
     datafile = os.path.join(data_path, "bbc_combined_{}.txt".format(year))
     with open(datafile) as infile:
         data = parse_txt_file(infile, year)
         for site in data:
-            print(year, site)
             data[site] = extract_site_data(data[site])
             counts_table = counts_table.append(extract_counts(data[site], year),
                                                ignore_index=True)
@@ -415,6 +481,15 @@ for year in years:
                                            ignore_index=True)
             census_table = census_table.append(get_census_table(data[site], year),
                                                ignore_index=True)
+
+# Provide information on fuzzy matching for error checking
+print("\nUnmatched species:\n")
+print(unmatched)
+print()
+print("\nFuzzy matched species:\n")
+print("RawSpecies, MatchedSpecies, Ratio")
+for raw_species in matched:
+    print('{}, {}, {}'.format(raw_species, matched[raw_species][0], matched[raw_species][1]))
 
 site_table_simp = site_table[['sitename', 'latitude', 'longitude']]
 unique_sites = site_table_simp.drop_duplicates().reset_index(drop=True)
