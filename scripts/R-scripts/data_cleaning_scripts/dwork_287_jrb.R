@@ -126,7 +126,8 @@ head(dataset)
 names(dataset)
 
 #--! PROVIDE INFO !--#
-unusedFieldNames = c('DATACODE', 'RECTYPE', 'OBSID', 'CENTURY')
+unusedFieldNames = c('DATACODE', 'RECTYPE', 'OBSID', 'CENTURY','COMMENTS','OBSNUM',
+                     'SEX','STATUS','WATERSHED','LENGTH','DISTANCE')
 
 
 unusedFields = which(names(dataset) %in% unusedFieldNames)
@@ -173,7 +174,7 @@ dataFormattingTable[,'LatLong_sites'] =
 # E.g., c('year', 'month', 'day')
 
 #--! PROVIDE INFO !--#
-dateFieldName = c('sampledate')
+dateFieldName = c('RECYEAR','RECMONTH','RECDAY')
 
 # If necessary, paste together date info from multiple columns into single field
 if (length(dateFieldName) > 1) {
@@ -190,7 +191,7 @@ if (length(dateFieldName) > 1) {
 # be '%Y-%m-%d'. Type "?strptime" for other examples of date formatting.
 
 #--! PROVIDE INFO !--#
-dateformat = '%m/%d/%Y %H:%M'
+dateformat = '%Y-%m-%d'
 
 # If date is only listed in years:
 
@@ -254,28 +255,23 @@ dataFormattingTable[,'subannualTgrain'] =
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SITE DATA ----
 #===============================================================================*
-# From the previous head commmand, we can see that sites are broken up into 
-# (potentially) 2 fields. Find the metadata link in the data formatting table use 
-# that link to determine how sites are characterized.
+# 16 Transects (TRANSNUM) of varying length (in the LENGTH column) were carried out with
+# one transect in each WATERSHED. So TRANSNUM and WATERSHED should be redundant,
+# although in the original dataset they were not, and the data curators had
+# to clean this up for us. Because transects vary in length from ~350 m to 1500 m
+# this has the potential to introduce some scale-associated variation in core-
+# transient assignments. For this reason, it might be more appropriate to only
+# consider the bird community across the entire Konza Prairie (i.e. all transects).
 
-#  -- If sampling is nested (e.g., quadrats within sites as in this study), use 
-#     each of the identifying fields and separate each field with an underscore. 
-#     For nested samples be sure the order of concatenated columns goes from 
-#     coarser to finer scales (e.g. "km_m_cm")
-
-# -- If sites are listed as lats and longs, use the finest available grain and 
-#    separate lat and long fields with an underscore.
-
-# -- If the site definition is clear, make a new site column as necessary.
-
-# -- If the dataset is for just a single site, and there is no site column, then add one.
+# Here I will add a new SITE field that is 'Konza' for the entire dataset.
+dataset2$SITE = 'Konza'
 
 # Here, we will concatenate all of the potential fields that describe the site 
 # in hierarchical order from largest to smallest grain. Based on the dataset,
 # fill in the fields that specify nested spatial grains below.
 
 #--! PROVIDE INFO !--#
-site_grain_names = c("site", "quadrat")
+site_grain_names = c('SITE', 'TRANSNUM')
 
 # We will now create the site field with these codes concatenated if there
 # are multiple grain fields. Otherwise, site will just be the single grain field.
@@ -288,20 +284,19 @@ if (num_grains > 1) {
   } 
 }
 
-# What is the spatial grain of the finest sampling scale? For example, this might be
-# a 0.25 m2 quadrat, or a 5 m transect, or a 50 ml water sample.
+# What is the spatial grain of the finest sampling scale? 
 
 dataFormattingTable[,'Raw_spatial_grain'] = 
   dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain',  
                                  
 #--! PROVIDE INFO !--#
-                                 0.25) 
+                                 500) 
 
 dataFormattingTable[,'Raw_spatial_grain_unit'] = 
   dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain',  
                                  
 #--! PROVIDE INFO !--#
-                                 'm2') 
+                                 'm') 
 
 
 # BEFORE YOU CONTINUE. We need to make sure that there are at least minNTime for 
