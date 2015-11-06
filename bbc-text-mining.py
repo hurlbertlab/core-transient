@@ -161,7 +161,8 @@ def parse_block(block, site_name, site_num, year):
                     'Yellow-rumped,': 'Yellow-rumped Warbler,',
                     'Common Crow': 'American Crow',
                     ', Raven,': ', Common Raven,',
-                    '; Raven,': '; Common Raven,'
+                    '; Raven,': '; Common Raven,',
+                    '+_': '+'
     }
     block = get_cleaned_string(block)
     for replacement in replacements:
