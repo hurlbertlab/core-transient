@@ -366,7 +366,7 @@ dataFormattingTable[,'spatial_scale_variable'] =
   dataFormattingTableFieldUpdate(datasetID, 'spatial_scale_variable',
 
 #--! PROVIDE INFO !--#
-                                 'Y') # Fill value here in quotes
+                                 'Y')
 
 # Notes_siteFormat. Use this field to THOROUGHLY describe any changes made to the 
 # site field during formatting.
@@ -557,7 +557,7 @@ good_name = c('CERATOPHYLLUM DEMERSUM',
               'SAGITTARIA LATIFOLIA',
               'VALLISNERIA AMERICANA')
 
-if (length(typo_name) > 0) {
+if (length(typo_name) > 0 & typo_name[1] != "") {
   for (n in 1:length(typo_name)) {
     dataset6$species[dataset6$species == typo_name[n]] = good_name[n]
   }
