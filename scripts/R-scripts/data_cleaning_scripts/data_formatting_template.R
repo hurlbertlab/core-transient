@@ -333,12 +333,12 @@ data.frame(table(site))
 
 dataset3 = dataset2
 
-dataset3$site = factor(site)
-
 # Remove any hierarchical site related fields that are no longer needed, IF NECESSARY.
 
 #--! PROVIDE INFO !--#
-# dataset3 = dataset3[,-4]
+dataset3 = dataset3[, !names(dataset3) %in% site_grain_names]
+
+dataset3$site = factor(site)
 
 # Check the new dataset (are the columns as they should be?):
 
