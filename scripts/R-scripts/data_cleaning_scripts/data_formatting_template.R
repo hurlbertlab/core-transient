@@ -763,7 +763,7 @@ length(goodSites)
 uniqueSites = unique(dataset7$site)
 fullGoodSites = c()
 for (s in goodSites) {
-  tmp = as.character(uniqueSites[grepl(paste(s, "_", sep = ""), uniqueSites)])
+  tmp = as.character(uniqueSites[grepl(paste(s, "_", sep = ""), paste(uniqueSites, "_", sep = ""))])
   fullGoodSites = c(fullGoodSites, tmp)
 }
 
