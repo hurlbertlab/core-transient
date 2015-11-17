@@ -352,11 +352,14 @@ head(dataset3)
 # one, it was coded as "site_quadrat"). Alternatively, if the site were concatenated 
 # from latitude and longitude fields, the encoding would be "lat_long". 
 
-dataFormattingTable[,'Raw_siteUnit'] = 
-  dataFormattingTableFieldUpdate(datasetID, 'Raw_siteUnit',  
-
-#--! PROVIDE INFO !--#
-                                 'site_quadrat') 
+if (dataFormattingTable[dataFormattingTable$dataset_ID == datasetID,'LatLong_sites'] == "N") {
+  dataFormattingTable[,'Raw_siteUnit'] = 
+    dataFormattingTableFieldUpdate(datasetID, 'Raw_siteUnit',  
+                                   paste(site_grain_names, collapse="_")) 
+} else if (dataFormattingTable[dataFormattingTable$dataset_ID == datasetID,'LatLong_sites'] == "Y") {
+  dataFormattingTable[,'Raw_siteUnit'] = 
+    dataFormattingTableFieldUpdate(datasetID, 'Raw_siteUnit', "lat_long") 
+}  
 
 
 # spatial_scale_variable. Is a site potentially nested (e.g., plot within a quad or 
