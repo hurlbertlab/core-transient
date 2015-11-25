@@ -502,7 +502,7 @@ getDataList = function(datasetID){
                            datasetID, '.csv', sep = ''))
   siteSummary = read.csv(paste('data/siteSummaries/siteSummary_', 
                                datasetID, '.csv',  sep = ''))
-  metaData = subset(read.csv('metadata.csv'),
+  metaData = subset(read.csv('data_formatting_table.csv'),
                     dataset_ID == datasetID)
   system = metaData$system
   taxa = metaData$taxa
