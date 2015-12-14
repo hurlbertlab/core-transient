@@ -720,13 +720,11 @@ tGrain = 'year'
 site_grain_names
 
 #--! PROVIDE INFO !--#
-sGrain = 'site'
+sGrain = 'lakeid'
 
 # This is a reasonable choice of spatial grain because ...
 #--! PROVIDE INFO !--#
-# quadrats are only 0.25 m2 and record presence absence, whereas sites encompass
-# 28-52 quadrats per depth interval providing a greater sample and an effective
-# abundance measure.
+# there is only 1 station per lake, so this is the only appropriate scale to analyze the data
 
 # The function "richnessYearSubsetFun" below will subset the data to sites with an 
 # adequate number of years of sampling and species richness. If there are no 
