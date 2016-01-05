@@ -187,7 +187,7 @@ if (length(dateFieldName) > 1) {
 # be '%Y-%m-%d'. Type "?strptime" for other examples of date formatting.
 
 #--! PROVIDE INFO !--#
-dateformat = '%m/%d/%Y %H:%M'
+dateformat = '%m/%d/%Y'
 
 # If date is only listed in years:
 
