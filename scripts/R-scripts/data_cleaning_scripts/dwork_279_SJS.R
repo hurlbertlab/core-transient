@@ -505,7 +505,7 @@ data.frame(table(dataset5$species))
 # Because of this, you should really stop here and post an issue on GitHub. 
 
 #--! PROVIDE INFO !--#
-bad_sp = c('', 'CERIODAPHNIA', 'COPEPODITES', 'LEYDIGIA','TROPOCYCLOPS')
+bad_sp = c('', 'CERIODAPHNIA', 'LEYDIGIA','TROPOCYCLOPS')
 
 dataset6 = dataset5[!dataset5$species %in% bad_sp,]
 
@@ -519,10 +519,10 @@ table(dataset6$species)
 # correct spellings in good_name, and then replace them using the for loop below:
 
 #--! PROVIDE INFO !--#
-typo_name = c()          
+typo_name = c('COPEPODITES', 'COPEPOD NAUPLII')          
 
 #--! PROVIDE INFO !--#
-good_name = c()
+good_name = c("COPEPOD", "COPEPOD")
 
 if (length(typo_name) > 0 & typo_name[1] != "") {
   for (n in 1:length(typo_name)) {
