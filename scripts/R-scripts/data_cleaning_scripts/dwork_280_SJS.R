@@ -459,13 +459,14 @@ dataFormattingTable[,'countFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'countFormat',  
 
 #--! PROVIDE INFO !--#                                 
-                                 'presence')
+                                 'count')
 
 dataFormattingTable[,'Notes_countFormat'] = 
   dataFormattingTableFieldUpdate(datasetID, 'Notes_countFormat', 
                                  
 #--! PROVIDE INFO !--#                                 
-              'No count data provided, so 1s added to indicate presence')
+              'Number cells per ml; data on biomass and number of colonies were
+  excluded')
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SPECIES DATA ----
@@ -479,7 +480,7 @@ dataFormattingTable[,'Notes_countFormat'] =
 # It will get converted to 'species'
 
 #--! PROVIDE INFO !--#
-speciesField = 'species_name'
+speciesField = 'taxa_name'
 
 names(dataset5)[names(dataset5) == speciesField] = 'species'
 
@@ -508,7 +509,14 @@ data.frame(table(dataset5$species))
 # Because of this, you should really stop here and post an issue on GitHub. 
 
 #--! PROVIDE INFO !--#
-bad_sp = c('')
+bad_sp = c('','Achnanthes', 'Amphora sp1', 'Anabaena', 'Aphanocapsa', 'Carteria',
+           'Characium', 'Coelastrum  ', 'Cryptomonas sp1 ', 'Cryptomonas sp3',
+           'Cyclotella   ', 'Cymbella  ', 'Fragilaria ', 'Kephyrion ', 'Lagerheimia',
+           'Lyngbya  ', 'Microcystis ', 'Monomastix', 'Navicula', 'Nitzschia  ',
+           'Nitzschia', 'Oscillatoria', 'Peridinium  ', 'Peridinium', 'Phormidium',
+           'Pseudanabaena', 'Pseudanabaena ', 'Pyramichlamys  ', 'Rhoicosphenia ',
+           'Scenedesmus', 'Scenedesmus ', 'Scenedesmus sp2 ', 'Selenastrum', 'Selenastrum ',
+           'Synedra ')
 
 dataset6 = dataset5[!dataset5$species %in% bad_sp,]
 
@@ -522,46 +530,90 @@ table(dataset6$species)
 # correct spellings in good_name, and then replace them using the for loop below:
 
 #--! PROVIDE INFO !--#
-typo_name = c('CERATOPHYLLUM',
-              'CHARA',
-              'ELEOCHARIS',
-              'ELODEA',
-              'ISOETES',
-              'JUNCUS',
-              'LITTORELLA',
-              'LOBELIA',
-              'MYRIO. ALT.',
-              'MYRIO. SIBIR.',
-              'MYRIO. TENELLUM',
-              'MYRIO. VERT.',
-              'NAJAS',
-              'P. AMPLIFOLIUS',
-              'P. GRAMINEUS', 
-              'P. RICHARDSONII',
-              'P. ROBBINSII',
-              'SAJ.',           #no other genus begins with these letters
-              'VAL.')           #no other genus begins with these letters
+typo_name = c('Actinastrum hantzschii ', 'Actinocyclus normanii ',
+              'Amphidinium ', 'Anabaena circinalis ', 'Anabaena flos-aquae ',
+              'Anabaena macrospora ', 'Ankistrodesmus convolutus ',
+              'Ankistrodesmus falcatus ', 'Aphanizomenon flos-aquae ',
+              'Aphanocapsa delicatissima ', 'Aphanocapsa elachista ',
+              'Aphanothece  ', 'Aphanothece clathrata ', 'Aphanothece nidulans ',
+              'Asterionella formosa ', 'Aulacoseira ambigua ', 'Aulacoseira granulata ',
+              'Botryococcus braunii ', 'Ceratium hirundinella ', 'Characium limneticum ',
+              'Chlamydomonas  ', 'Chlamydomonas incerta ', 'Chromulina  ', 'Chroococcaceae',
+              'Chroococcus limneticus ', 'Chroococcus minimus ', 'Chroococcus minutus ',
+              'Closterium ', 'Closterium moniliferum ', 'Cocconeis placentula ',
+              'Coelastrum microporum ', 'Coelastrum proboscideum ', 'Colonial  ', 
+              'Cosmarium  ', 'Cosmarium tenue ', 'Crucigenia crucifera ',
+              'Crucigenia tetrapedia ', 'Cryptomonas erosa ', 'Cryptomonas lucens ',
+              'Cryptomonas rostratiformis ', 'Cyclotella meneghiniana ',
+              'Cyclotella ocellata ', 'Cyclotella sp1 ', 'Cylindrospermopsis raciborskii ',
+              'Dactylococcopsis irregularis ', 'Deasonia Gigantica', 'Desmarella ',
+              'Diatoma tenue ', 'Dictyosphaerium pulchellum ', 'Erkenia subaequiciliata ',
+              'Eudorina elegans ', 'Euglena  ', 'Euglenophyta', 'Fragilaria capucina ',
+              'Fragilaria capucina capicina', 'Fragilaria construens ', 'Gloeocystis  ',
+              'Gloeocystis vesiculosa ', 'Golenkinia radiata ', 'Gomphonema parvulum ',
+              'Gomphosphaeria lacustris ', 'Gonium  ', 'Gymnodinium sp1',
+              'Gymnodinium sp2', 'Gymnodinium sp3', 'Lobomonas  ', 'Lobomonas cf verrucosa',
+              'Lyngbya limnetica ', 'Lyngbya subtilis ', 'Mallomonas  ', 
+              'Mallomonas akrokomas', 'Mallomonas caudata', 'Merismopedia tenuissima ',
+              'Micractinium pusillum ', 'Microcystis aeruginosa ', 'Mougeotia  ',
+              'Navicula viridula ', 'Nitzschia acicularis ', 'Nitzschia gracilis ', 
+              'Nitzschia palea ', 'Oedogonium  ', 'Oocystis lacustris ','Oocystis parva ',
+              'Oocystis pusilla ', 'Oscillatoria limnetica ', 'Pediastrum boryanum ', 
+              'Pediastrum simplex ', 'Pedinomonas minutissima', 'Peridinium umbonatum ',
+              'Quadrigula lacustris ', ' Rhizosolenia longiseta ', 'Rhodomonas minuta ',
+              'Scenedesmus abundans ', 'Scenedesmus acutus ', 'Scenedesmus bijuga ',
+              'Scenedesmus intermedius ', 'Scenedesmus quadricauda ', 
+              'Scenedesmus serratus ', 'Schroederia judayi ', 'Schroederia setigera ',
+              'Selenastrum minutum ', 'Sphaerocystis schroeteri ', 'Staurastrum  ',
+              'Staurastrum hexacerum', 'Staurastrum natator', 'Stephanodiscus hantzschii ',
+              'Stephanodiscus medius ', 'Stephanodiscus niagarae ', 'Stephanodiscus parvus ',
+              'Surirella minuta', 'Synechococcus elongatus ', 'Synechococcus sp1 ',
+              'Synechocystis  ', 'Synedra tenera ', 'Synedra ulna ', 'Synura  ', 
+              'Synura uvella-sphagnicola', 'Tetraedron caudatum ', 'Tetraedron minimum ',
+              'Tetrastrum staurogeniaeforme ', 'Trachelomonas  ', 'Trachelomonas volvocina',
+              'Uroglena  ')          
 
 #--! PROVIDE INFO !--#
-good_name = c('CERATOPHYLLUM DEMERSUM',
-              'CHARA SP',
-              'ELEOCHARIS SP',
-              'ELODEA CANADENSIS',
-              'ISOETES SP',
-              'JUNCUS SP',
-              'LITTORELLA UNIFLORA ASCH. VAR. AMERICANA',
-              'LOBELIA DORTMANNA',
-              'MYRIOPHYLLUM ALTERNIFLORUM',
-              'MYRIOPHYLLUM SIBIRICUM',
-              'MYRIOPHYLLUM TENELLUM',
-              'MYRIOPHYLLUM VERTICILLATUM',
-              'NAJAS FLEXILIS',
-              'POTAMOGETON AMPLIFOLIUS',
-              'POTAMOGETON GRAMINEUS',
-              'POTAMOGETON RICHARDSONII',
-              'POTAMOGETON ROBBINSII',
-              'SAGITTARIA LATIFOLIA',
-              'VALLISNERIA AMERICANA')
+good_name = c('Actinastrum hantzschii', 'Actinocyclus normanii',
+              'Amphidinium', 'Anabaena circinalis', 'Anabaena flos-aquae',
+              'Anabaena macrospora', 'Ankistrodesmus convolutus', 
+              'Ankistrodesmus falcatus', 'Aphanizomenon flos-aquae',
+              'Aphanocapsa delicatissima', 'Aphanocapsa elachista',
+              'Aphanothece', 'Aphanothece clathrata', 'Aphanothece nidulans',
+              'Asterionella formosa', 'Aulacoseira ambigua', 'Aulacoseira granulata',
+              'Botryococcus braunii', 'Ceratium hirundinella', 'Characium limneticum',
+              'Chlamydomonas', 'Chlamydomonas incerta', 'Chromulina', 'Chroococcus  ',
+              'Chroococcus limneticus', 'Chroococcus minimus', 'Chroococcus minutus',
+              'Closterium', 'Closterium moniliferum', 'Cocconeis placentula',
+              'Coelastrum microporum', 'Coelastrum proboscideum', 'Colonial', 
+              'Cosmarium', 'Cosmarium tenue', 'Crucigenia crucifera', 
+              'Crucigenia tetrapedia', 'Cryptomonas erosa', 'Cryptomonas lucens',
+              'Cryptomonas rostratiformis', 'Cyclotella meneghiniana',
+              'Cyclotella ocellata', 'Cyclotella sp. 1', 'Cylindrospermopsis raciborskii',
+              'Dactylococcopsis irregularis', 'Deasonia gigantica', 'Desmarella ',
+              'Diatoma tenuis', 'Dictyosphaerium pulchellum', 'Erkenia subaequiciliata',
+              'Eudorina elegans', 'Euglena', 'Euglena', 'Fragilaria capucina',
+              'Fragilaria capucina', 'Fragilaria construens', 'Gloeocystis',
+              'Gloeocystis vesiculosa', 'Golenkinia radiata', 'Gomphonema',
+              'Gomphosphaeria lacustris', 'Gonium', 'Gymnodinium sp. 1', 
+              'Gymnodinium sp. 2', 'Gymnodinium sp. 3', 'Lobomonas', 'Lobomonas',
+              'Lyngbya limnetica', 'Lyngbya subtilis', 'Mallomonas', 'Mallomonas',
+              'Mallomonas', 'Merismopedia tenuissima', 'Micractinium pusillum',
+              'Microcystis aeruginosa', 'Mougeotia', 'Navicula viridula', 'Nitzschia acicularis',
+              'Nitzschia gracilis', 'Nitzschia palea', 'Oedogonium', 'Oocystis lacustris',
+              'Oocystis parva','Oocystis pusilla', 'Oscillatoria limnetica', 
+              'Pediastrum boryanum', 'Pediastrum simplex', 'Pedinomonas', 
+              'Peridinium umbonatum', 'Quadrigula lacustris', 'Rhizosolenia ',
+              'Rhodomonas minuta', 'Scenedesmus abundans', 'Scenedesmus acutus',
+              'Scenedesmus bijuga', 'Scenedesmus intermedius', 'Scenedesmus quadricauda',
+              'Scenedesmus serratus', 'Schroederia judayi', 'Schroederia setigera',
+              'Selenastrum minutum', 'Sphaerocystis schroeteri', 'Staurastrum', 
+              'Staurastrum', 'Staurastrum', 'Stephanodiscus hantzschii', 
+              'Stephanodiscus medius', 'Stephanodiscus niagarae', 'Stephanodiscus parvus',
+              'Surirella', 'Synechococcus elongatus', 'Synechococcus sp. 1', 
+              'Synechocystis', 'Synedra tenera', 'Synedra ulna', 'Synura', 'Synura',
+              'Tetraedron caudatum', 'Tetraedron minimum', 'Tetrastrum staurogeniaeforme',
+              'Trachelomonas', 'Trachelomonas', 'Uroglena')
 
 if (length(typo_name) > 0 & typo_name[1] != "") {
   for (n in 1:length(typo_name)) {
