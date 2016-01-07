@@ -509,20 +509,22 @@ data.frame(table(dataset5$species))
 # Because of this, you should really stop here and post an issue on GitHub. 
 
 #--! PROVIDE INFO !--#
-bad_sp = c('','Achnanthes', 'Amphora sp1', 'Anabaena', 'Aphanocapsa', 'Carteria',
-           'Characium', 'Coelastrum  ', 'Cryptomonas sp1 ', 'Cryptomonas sp3',
-           'Cyclotella   ', 'Cymbella  ', 'Fragilaria ', 'Kephyrion ', 'Lagerheimia',
-           'Lyngbya  ', 'Microcystis ', 'Monomastix', 'Navicula', 'Nitzschia  ',
-           'Nitzschia', 'Oscillatoria', 'Peridinium  ', 'Peridinium', 'Phormidium',
-           'Pseudanabaena', 'Pseudanabaena ', 'Pyramichlamys  ', 'Rhoicosphenia ',
-           'Scenedesmus', 'Scenedesmus ', 'Scenedesmus sp2 ', 'Selenastrum', 'Selenastrum ',
-           'Synedra ')
+bad_sp = c('','Achnanthes', 'Amphora sp1', 'Anabaena', 'Aphanocapsa', 'Aphanothece', 
+           'Carteria','Chlamydomonas (palmeloid stage)','Characium', 'Coelastrum  ', 
+           'Cryptomonas sp1 ', 'Cryptomonas sp3', 'Chroococcus', 'Closterium',
+           'Cyclotella   ', 'Cymbella  ','Dinobryon', 'Fragilaria ', 'Gloeotrichia',
+           'Kephyrion ','Kirchneriella' ,'Lagerheimia',
+           'Lyngbya  ', 'Microcystis ', 'Monomastix', 'Navicula', 
+           'Nitzschia', 'Oscillatoria', 'Peridinium', 'Phormidium',
+           'Pseudanabaena', 'Pyramichlamys', 'Rhoicosphenia',
+           'Scenedesmus', 'Scenedesmus sp2', 'Selenastrum', 'Synedra')
 
 dataset6 = dataset5[!dataset5$species %in% bad_sp,]
 
 # It may be useful to count the number of times each name occurs, as misspellings 
 # or typos will likely only show up one time.
 
+dataset6$species = trimws(dataset6$species, which = "both")
 table(dataset6$species)
 
 # If you find any potential typos, try to confirm that the "mispelling" isn't 
@@ -530,90 +532,20 @@ table(dataset6$species)
 # correct spellings in good_name, and then replace them using the for loop below:
 
 #--! PROVIDE INFO !--#
-typo_name = c('Actinastrum hantzschii ', 'Actinocyclus normanii ',
-              'Amphidinium ', 'Anabaena circinalis ', 'Anabaena flos-aquae ',
-              'Anabaena macrospora ', 'Ankistrodesmus convolutus ',
-              'Ankistrodesmus falcatus ', 'Aphanizomenon flos-aquae ',
-              'Aphanocapsa delicatissima ', 'Aphanocapsa elachista ',
-              'Aphanothece  ', 'Aphanothece clathrata ', 'Aphanothece nidulans ',
-              'Asterionella formosa ', 'Aulacoseira ambigua ', 'Aulacoseira granulata ',
-              'Botryococcus braunii ', 'Ceratium hirundinella ', 'Characium limneticum ',
-              'Chlamydomonas  ', 'Chlamydomonas incerta ', 'Chromulina  ', 'Chroococcaceae',
-              'Chroococcus limneticus ', 'Chroococcus minimus ', 'Chroococcus minutus ',
-              'Closterium ', 'Closterium moniliferum ', 'Cocconeis placentula ',
-              'Coelastrum microporum ', 'Coelastrum proboscideum ', 'Colonial  ', 
-              'Cosmarium  ', 'Cosmarium tenue ', 'Crucigenia crucifera ',
-              'Crucigenia tetrapedia ', 'Cryptomonas erosa ', 'Cryptomonas lucens ',
-              'Cryptomonas rostratiformis ', 'Cyclotella meneghiniana ',
-              'Cyclotella ocellata ', 'Cyclotella sp1 ', 'Cylindrospermopsis raciborskii ',
-              'Dactylococcopsis irregularis ', 'Deasonia Gigantica', 'Desmarella ',
-              'Diatoma tenue ', 'Dictyosphaerium pulchellum ', 'Erkenia subaequiciliata ',
-              'Eudorina elegans ', 'Euglena  ', 'Euglenophyta', 'Fragilaria capucina ',
-              'Fragilaria capucina capicina', 'Fragilaria construens ', 'Gloeocystis  ',
-              'Gloeocystis vesiculosa ', 'Golenkinia radiata ', 'Gomphonema parvulum ',
-              'Gomphosphaeria lacustris ', 'Gonium  ', 'Gymnodinium sp1',
-              'Gymnodinium sp2', 'Gymnodinium sp3', 'Lobomonas  ', 'Lobomonas cf verrucosa',
-              'Lyngbya limnetica ', 'Lyngbya subtilis ', 'Mallomonas  ', 
-              'Mallomonas akrokomas', 'Mallomonas caudata', 'Merismopedia tenuissima ',
-              'Micractinium pusillum ', 'Microcystis aeruginosa ', 'Mougeotia  ',
-              'Navicula viridula ', 'Nitzschia acicularis ', 'Nitzschia gracilis ', 
-              'Nitzschia palea ', 'Oedogonium  ', 'Oocystis lacustris ','Oocystis parva ',
-              'Oocystis pusilla ', 'Oscillatoria limnetica ', 'Pediastrum boryanum ', 
-              'Pediastrum simplex ', 'Pedinomonas minutissima', 'Peridinium umbonatum ',
-              'Quadrigula lacustris ', ' Rhizosolenia longiseta ', 'Rhodomonas minuta ',
-              'Scenedesmus abundans ', 'Scenedesmus acutus ', 'Scenedesmus bijuga ',
-              'Scenedesmus intermedius ', 'Scenedesmus quadricauda ', 
-              'Scenedesmus serratus ', 'Schroederia judayi ', 'Schroederia setigera ',
-              'Selenastrum minutum ', 'Sphaerocystis schroeteri ', 'Staurastrum  ',
-              'Staurastrum hexacerum', 'Staurastrum natator', 'Stephanodiscus hantzschii ',
-              'Stephanodiscus medius ', 'Stephanodiscus niagarae ', 'Stephanodiscus parvus ',
-              'Surirella minuta', 'Synechococcus elongatus ', 'Synechococcus sp1 ',
-              'Synechocystis  ', 'Synedra tenera ', 'Synedra ulna ', 'Synura  ', 
-              'Synura uvella-sphagnicola', 'Tetraedron caudatum ', 'Tetraedron minimum ',
-              'Tetrastrum staurogeniaeforme ', 'Trachelomonas  ', 'Trachelomonas volvocina',
-              'Uroglena  ')          
+typo_name = c('Chrysocapsa', 'Colonial chrysophyte', 'Cosmarium tenue',
+              'Deasonia Gigantica', 'Diatoma tenue', 'Euglenophyta',
+              'Fragilaria capucina capicina', 'Gloeocystis vesiculosa',
+              'Gomphonema parvulum', 'Gymnodinium sp1', 'Gymnodinium sp2',
+              'Gymnodinium sp3', 'Lobomonas cf verrucosa', 'Mallomonas akrokomas',
+              'Mallomonas caudata', 'Pedinomonas minutissima', 'Rhizosolenia longiseta',
+              'Surirella minuta', 'Synechococcus sp1', 'Synura uvella-sphagnicola')          
 
 #--! PROVIDE INFO !--#
-good_name = c('Actinastrum hantzschii', 'Actinocyclus normanii',
-              'Amphidinium', 'Anabaena circinalis', 'Anabaena flos-aquae',
-              'Anabaena macrospora', 'Ankistrodesmus convolutus', 
-              'Ankistrodesmus falcatus', 'Aphanizomenon flos-aquae',
-              'Aphanocapsa delicatissima', 'Aphanocapsa elachista',
-              'Aphanothece', 'Aphanothece clathrata', 'Aphanothece nidulans',
-              'Asterionella formosa', 'Aulacoseira ambigua', 'Aulacoseira granulata',
-              'Botryococcus braunii', 'Ceratium hirundinella', 'Characium limneticum',
-              'Chlamydomonas', 'Chlamydomonas incerta', 'Chromulina', 'Chroococcus  ',
-              'Chroococcus limneticus', 'Chroococcus minimus', 'Chroococcus minutus',
-              'Closterium', 'Closterium moniliferum', 'Cocconeis placentula',
-              'Coelastrum microporum', 'Coelastrum proboscideum', 'Colonial', 
-              'Cosmarium', 'Cosmarium tenue', 'Crucigenia crucifera', 
-              'Crucigenia tetrapedia', 'Cryptomonas erosa', 'Cryptomonas lucens',
-              'Cryptomonas rostratiformis', 'Cyclotella meneghiniana',
-              'Cyclotella ocellata', 'Cyclotella sp. 1', 'Cylindrospermopsis raciborskii',
-              'Dactylococcopsis irregularis', 'Deasonia gigantica', 'Desmarella ',
-              'Diatoma tenuis', 'Dictyosphaerium pulchellum', 'Erkenia subaequiciliata',
-              'Eudorina elegans', 'Euglena', 'Euglena', 'Fragilaria capucina',
-              'Fragilaria capucina', 'Fragilaria construens', 'Gloeocystis',
-              'Gloeocystis vesiculosa', 'Golenkinia radiata', 'Gomphonema',
-              'Gomphosphaeria lacustris', 'Gonium', 'Gymnodinium sp. 1', 
-              'Gymnodinium sp. 2', 'Gymnodinium sp. 3', 'Lobomonas', 'Lobomonas',
-              'Lyngbya limnetica', 'Lyngbya subtilis', 'Mallomonas', 'Mallomonas',
-              'Mallomonas', 'Merismopedia tenuissima', 'Micractinium pusillum',
-              'Microcystis aeruginosa', 'Mougeotia', 'Navicula viridula', 'Nitzschia acicularis',
-              'Nitzschia gracilis', 'Nitzschia palea', 'Oedogonium', 'Oocystis lacustris',
-              'Oocystis parva','Oocystis pusilla', 'Oscillatoria limnetica', 
-              'Pediastrum boryanum', 'Pediastrum simplex', 'Pedinomonas', 
-              'Peridinium umbonatum', 'Quadrigula lacustris', 'Rhizosolenia ',
-              'Rhodomonas minuta', 'Scenedesmus abundans', 'Scenedesmus acutus',
-              'Scenedesmus bijuga', 'Scenedesmus intermedius', 'Scenedesmus quadricauda',
-              'Scenedesmus serratus', 'Schroederia judayi', 'Schroederia setigera',
-              'Selenastrum minutum', 'Sphaerocystis schroeteri', 'Staurastrum', 
-              'Staurastrum', 'Staurastrum', 'Stephanodiscus hantzschii', 
-              'Stephanodiscus medius', 'Stephanodiscus niagarae', 'Stephanodiscus parvus',
-              'Surirella', 'Synechococcus elongatus', 'Synechococcus sp. 1', 
-              'Synechocystis', 'Synedra tenera', 'Synedra ulna', 'Synura', 'Synura',
-              'Tetraedron caudatum', 'Tetraedron minimum', 'Tetrastrum staurogeniaeforme',
-              'Trachelomonas', 'Trachelomonas', 'Uroglena')
+good_name = c('Chrysocapsaceae', 'Colonial', 'Cosmarium', 'Deasonia gigantica',
+              'Diatoma tenuis', 'Euglena', 'Fragilaria capucina', 'Gloeocystis',
+              'Gomphonema', 'Gymnodinium sp. 1', 'Gymnodinium sp. 2', 'Gymnodinium sp. 3',
+              'Lobomonas', 'Mallomonas', 'Mallomonas', 'Pedinomonas', 'Rhizosolenia',
+              'Surirella', 'Synechococcus sp. 1', 'Synura')
 
 if (length(typo_name) > 0 & typo_name[1] != "") {
   for (n in 1:length(typo_name)) {
@@ -648,10 +580,10 @@ dataFormattingTable[,'Notes_spFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_spFormat',  
 
 #--! PROVIDE INFO !--#                                 
-  'Lots of species had the same name but different spacing, so all of those were combined.
-Other species had 1 entry at the genus level and several at the species level, so genus-only 
-entries were removed. Additionally, when there were more genus-level entries than species, species-level
-entries were changed to just genus.')
+  'Lots of species had the same name but different spacing, so all of those were combined using 
+trimws command. Other species had 1 entry at the genus level and several at the species
+level, so genus-only entries were removed. Additionally, when there were more genus-level 
+entries than species, species-level entries were changed to just genus.')
 
 #-------------------------------------------------------------------------------*
 # ---- MAKE DATA FRAME OF COUNT BY SITES, SPECIES, AND YEAR ----
