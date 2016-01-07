@@ -167,6 +167,12 @@ dataFormattingTable[,'LatLong_sites'] =
 # then write these field names as a vector from largest to smallest temporal grain.
 # E.g., c('year', 'month', 'day')
 
+# notes - had to separate out year
+dataset1$year = substr(dataset1$MO, 1, 4)
+
+#converting from Julian date to MDY
+dataset1$mydates <- as.Date(dataset1$DATE, origin = "9/1/1988", format = "%m/%d/%Y")
+
 #--! PROVIDE INFO !--#
 dateFieldName = c('sampledate')
 
