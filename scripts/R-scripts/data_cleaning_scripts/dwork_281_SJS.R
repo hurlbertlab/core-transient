@@ -268,8 +268,8 @@ dataFormattingTable[,'subannualTgrain'] =
 # fill in the fields that specify nested spatial grains below.
 
 #--! PROVIDE INFO !--#
-depthcat <- paste(dataset1$min_depth, dataset1$max_depth, sep = "-")
-dataset1site_grain_names = c('lakeid', 'site', 'depthcat')
+dataset2$depthcat <- paste(dataset2$min_depth, dataset2$max_depth, sep = "-")
+site_grain_names = c('lakeid', 'site', 'depthcat')
 
 # We will now create the site field with these codes concatenated if there
 # are multiple grain fields. Otherwise, site will just be the single grain field.
@@ -507,7 +507,7 @@ data.frame(table(dataset5$species))
 
 #--! PROVIDE INFO !--#
 bad_sp = c('CERATOPHYLLUM', 'ELODEA', 'LITTORELLA', 'LOBELIA',
-           'MEGALODONTA')
+           'MEGALODONTA', 'NAJAS', 'SAJ.', 'VAL.')
 
 dataset6 = dataset5[!dataset5$species %in% bad_sp,]
 
@@ -522,12 +522,17 @@ table(dataset6$species)
 
 #--! PROVIDE INFO !--#
 typo_name = c('CHARA', 'ELEOCHARIS', 'ISOETES', 'JUNCUS', 'MYRIO. ALT.',
-              'MYRIO. TENELLUM', 'MYRIO. VERT.')          
+              'MYRIO. TENELLUM', 'MYRIO. VERT.', 'P. ALPINUS', 'P. AMPLIFOLIUS',
+              'P. GRAMINEUS', 'P. PRAELONGUS ', 'P. PUSILLUS', 'P. RICHARDSONII',
+              'P. ROBBINSII', 'P. ZOSTERIFORMIS')          
 
 #--! PROVIDE INFO !--#
 good_name = c('CHARA SP', 'ELEOCHARIS SP', 'ISOETES SP', 'JUNCUS SP',
               'MYRIOPHYLLUM ALTERNIFLORUM', 'MYRIOPHYLLUM TENELLUM',
-              'MYRIOPHYLLUM VERTICILLATUM')
+              'MYRIOPHYLLUM VERTICILLATUM', 'POTAMOGETON ALPINUS', 
+              'POTAMOGETON AMPLIFOLIUS', 'POTAMOGETON GRAMINEUS', 'POTAMOGETON PRAELONGUS',
+              'POTAMOGETON PUSILLUS', 'POTAMOGETON RICHARDSONII', 'POTAMOGETON ROBBINSII',
+              'POTAMOGETON ZOSTERIFORMIS')
 
 if (length(typo_name) > 0 & typo_name[1] != "") {
   for (n in 1:length(typo_name)) {
@@ -562,7 +567,9 @@ dataFormattingTable[,'Notes_spFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_spFormat',  
 
 #--! PROVIDE INFO !--#                                 
-  'A number of names represented in two obvious forms; 2 names (Myrio alt and vert) assumed to be shorthand for Sagitarria and Vallisneria.')
+  'A number of names represented in two obvious forms and were corrected by combining;
+some were assumed to be in shorthand (Myrio alt and Myrio vert) and were combined with
+their long form names.')
 
 #-------------------------------------------------------------------------------*
 # ---- MAKE DATA FRAME OF COUNT BY SITES, SPECIES, AND YEAR ----
