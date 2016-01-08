@@ -243,7 +243,7 @@ dataFormattingTable[,'Notes_timeFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_timeFormat', 
 
 #--! PROVIDE INFO !--#
-    'The only modification to this field involved converting to a date object.')
+    'Date was converted from Julian day to Y-M-D using the origin date, 9-01-1988.')
 
 
 # subannualTgrain. After exploring the time data, was this dataset sampled at a 
@@ -279,7 +279,7 @@ dataFormattingTable[,'subannualTgrain'] =
 # fill in the fields that specify nested spatial grains below.
 
 #--! PROVIDE INFO !--#
-site_grain_names = c("site", "quadrat")
+site_grain_names = c("GR")
 
 # We will now create the site field with these codes concatenated if there
 # are multiple grain fields. Otherwise, site will just be the single grain field.
@@ -299,7 +299,7 @@ dataFormattingTable[,'Raw_spatial_grain'] =
   dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain',  
                                  
 #--! PROVIDE INFO !--#
-                                 0.25) 
+                                 5625) 
 
 dataFormattingTable[,'Raw_spatial_grain_unit'] = 
   dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain',  
@@ -378,7 +378,7 @@ dataFormattingTable[,'spatial_scale_variable'] =
   dataFormattingTableFieldUpdate(datasetID, 'spatial_scale_variable',
 
 #--! PROVIDE INFO !--#
-                                 'Y')
+                                 'N')
 
 # Notes_siteFormat. Use this field to THOROUGHLY describe any changes made to the 
 # site field during formatting.
@@ -387,7 +387,7 @@ dataFormattingTable[,'Notes_siteFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_siteFormat', 
 
 #--! PROVIDE INFO !--#
-  'The site field is a concatenation of site and quadrat.')
+  'The site field is the grid number at the spatial scale of 75x75 m.')
 
 
 #-------------------------------------------------------------------------------*
@@ -485,7 +485,7 @@ dataFormattingTable[,'Notes_countFormat'] =
 # It will get converted to 'species'
 
 #--! PROVIDE INFO !--#
-speciesField = 'species_name'
+speciesField = 'SP'
 
 names(dataset5)[names(dataset5) == speciesField] = 'species'
 
@@ -528,46 +528,10 @@ table(dataset6$species)
 # correct spellings in good_name, and then replace them using the for loop below:
 
 #--! PROVIDE INFO !--#
-typo_name = c('CERATOPHYLLUM',
-              'CHARA',
-              'ELEOCHARIS',
-              'ELODEA',
-              'ISOETES',
-              'JUNCUS',
-              'LITTORELLA',
-              'LOBELIA',
-              'MYRIO. ALT.',
-              'MYRIO. SIBIR.',
-              'MYRIO. TENELLUM',
-              'MYRIO. VERT.',
-              'NAJAS',
-              'P. AMPLIFOLIUS',
-              'P. GRAMINEUS', 
-              'P. RICHARDSONII',
-              'P. ROBBINSII',
-              'SAJ.',           #no other genus begins with these letters
-              'VAL.')           #no other genus begins with these letters
+typo_name = c()          
 
 #--! PROVIDE INFO !--#
-good_name = c('CERATOPHYLLUM DEMERSUM',
-              'CHARA SP',
-              'ELEOCHARIS SP',
-              'ELODEA CANADENSIS',
-              'ISOETES SP',
-              'JUNCUS SP',
-              'LITTORELLA UNIFLORA ASCH. VAR. AMERICANA',
-              'LOBELIA DORTMANNA',
-              'MYRIOPHYLLUM ALTERNIFLORUM',
-              'MYRIOPHYLLUM SIBIRICUM',
-              'MYRIOPHYLLUM TENELLUM',
-              'MYRIOPHYLLUM VERTICILLATUM',
-              'NAJAS FLEXILIS',
-              'POTAMOGETON AMPLIFOLIUS',
-              'POTAMOGETON GRAMINEUS',
-              'POTAMOGETON RICHARDSONII',
-              'POTAMOGETON ROBBINSII',
-              'SAGITTARIA LATIFOLIA',
-              'VALLISNERIA AMERICANA')
+good_name = c()
 
 if (length(typo_name) > 0 & typo_name[1] != "") {
   for (n in 1:length(typo_name)) {
