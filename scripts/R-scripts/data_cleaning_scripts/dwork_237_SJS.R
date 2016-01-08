@@ -127,7 +127,7 @@ head(dataset)
 names(dataset)
 
 #--! PROVIDE INFO !--#
-unusedFieldNames = c("ROW", "COL", "SEX", "WT", "SST", "RST", "ST", "F")
+unusedFieldNames = c("ROW", "COL", "HOUR", "SEX", "WT", "SST", "RST", "ST", "F")
 
 dataset1 = dataset[, !names(dataset) %in% unusedFieldNames]
 
@@ -168,10 +168,13 @@ dataFormattingTable[,'LatLong_sites'] =
 # E.g., c('year', 'month', 'day')
 
 # notes - had to separate out year
-dataset1$year = substr(dataset1$MO, 1, 4)
+#dataset1$year = substr(dataset1$MO, 1, 4)
+
+#rename DATE 
+names(dataset1)[names(dataset1)=="DATE"] <- "jday"
 
 #converting from Julian date to MDY
-dataset1$mydates <- as.Date(dataset1$DATE, origin = "9/1/1988", format = "%m/%d/%Y")
+dataset1$sampledate <- as.Date(dataset1$jday, origin = "9/1/1988", format = "%m/%d/%Y")
 
 #--! PROVIDE INFO !--#
 dateFieldName = c('sampledate')
@@ -191,7 +194,7 @@ if (length(dateFieldName) > 1) {
 # be '%Y-%m-%d'. Type "?strptime" for other examples of date formatting.
 
 #--! PROVIDE INFO !--#
-dateformat = '%m/%d/%Y %H:%M'
+dateformat = '%Y-%m-%d'
 
 # If date is only listed in years:
 
