@@ -456,13 +456,13 @@ dataFormattingTable[,'countFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'countFormat',  
 
 #--! PROVIDE INFO !--#                                 
-                                 'presence')
+                                 'count')
 
 dataFormattingTable[,'Notes_countFormat'] = 
   dataFormattingTableFieldUpdate(datasetID, 'Notes_countFormat', 
                                  
 #--! PROVIDE INFO !--#                                 
-              'No count data provided, so 1s added to indicate presence')
+              'Data is in total count of fish caught at each site')
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SPECIES DATA ----
@@ -476,7 +476,7 @@ dataFormattingTable[,'Notes_countFormat'] =
 # It will get converted to 'species'
 
 #--! PROVIDE INFO !--#
-speciesField = 'species_name'
+speciesField = 'spname'
 
 names(dataset5)[names(dataset5) == speciesField] = 'species'
 
@@ -519,46 +519,10 @@ table(dataset6$species)
 # correct spellings in good_name, and then replace them using the for loop below:
 
 #--! PROVIDE INFO !--#
-typo_name = c('CERATOPHYLLUM',
-              'CHARA',
-              'ELEOCHARIS',
-              'ELODEA',
-              'ISOETES',
-              'JUNCUS',
-              'LITTORELLA',
-              'LOBELIA',
-              'MYRIO. ALT.',
-              'MYRIO. SIBIR.',
-              'MYRIO. TENELLUM',
-              'MYRIO. VERT.',
-              'NAJAS',
-              'P. AMPLIFOLIUS',
-              'P. GRAMINEUS', 
-              'P. RICHARDSONII',
-              'P. ROBBINSII',
-              'SAJ.',           #no other genus begins with these letters
-              'VAL.')           #no other genus begins with these letters
+typo_name = c()           
 
 #--! PROVIDE INFO !--#
-good_name = c('CERATOPHYLLUM DEMERSUM',
-              'CHARA SP',
-              'ELEOCHARIS SP',
-              'ELODEA CANADENSIS',
-              'ISOETES SP',
-              'JUNCUS SP',
-              'LITTORELLA UNIFLORA ASCH. VAR. AMERICANA',
-              'LOBELIA DORTMANNA',
-              'MYRIOPHYLLUM ALTERNIFLORUM',
-              'MYRIOPHYLLUM SIBIRICUM',
-              'MYRIOPHYLLUM TENELLUM',
-              'MYRIOPHYLLUM VERTICILLATUM',
-              'NAJAS FLEXILIS',
-              'POTAMOGETON AMPLIFOLIUS',
-              'POTAMOGETON GRAMINEUS',
-              'POTAMOGETON RICHARDSONII',
-              'POTAMOGETON ROBBINSII',
-              'SAGITTARIA LATIFOLIA',
-              'VALLISNERIA AMERICANA')
+good_name = c()
 
 if (length(typo_name) > 0 & typo_name[1] != "") {
   for (n in 1:length(typo_name)) {
