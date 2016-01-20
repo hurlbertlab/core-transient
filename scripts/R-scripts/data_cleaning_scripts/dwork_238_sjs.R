@@ -404,7 +404,7 @@ if (countfield == "") {
 
 # Check that the count field is numeric or integer, and convert if necessary
 class(dataset3$count)
-# For example, dataset3$count = as.numeric(as.character(dataset3$count))
+dataset3$count = as.numeric(as.character(dataset3$count))
 
 
 # Now we will remove zero counts and NA's:
@@ -461,7 +461,7 @@ dataFormattingTable[,'Notes_countFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_countFormat', 
                                  
 #--! PROVIDE INFO !--#                                 
-              'cover data provided by treatment and grid')
+              'percent cover data provided by treatment and grid')
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SPECIES DATA ----
@@ -569,10 +569,10 @@ dataFormattingTable[,'Notes_spFormat'] =
 dataset6$datasetID = datasetID
   
 # Now make the compiled dataframe:
-#ADDED as.numeric to this count!
+
 
 dataset7 = ddply(dataset6,.(datasetID, site, date, species),
-                 summarize, count = sum(as.numeric(count)))
+                 summarize, count = sum(count))
 
 # Explore the data frame:
 
@@ -690,7 +690,7 @@ tGrain = 'year'
 site_grain_names
 
 #--! PROVIDE INFO !--#
-sGrain = 'site'
+sGrain = 'Trt_Grid'
 
 # This is a reasonable choice of spatial grain because ...
 #--! PROVIDE INFO !--#
