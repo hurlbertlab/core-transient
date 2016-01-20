@@ -356,7 +356,7 @@ dataFormattingTable[,'Raw_siteUnit'] =
   dataFormattingTableFieldUpdate(datasetID, 'Raw_siteUnit',  
 
 #--! PROVIDE INFO !--#
-                                 'site_transnum') 
+                                 'SITE_TRANSNUM') 
 
 
 # spatial_scale_variable. Is a site potentially nested (e.g., plot within a quad or 
@@ -683,7 +683,7 @@ tGrain = 'year'
 site_grain_names
 
 #--! PROVIDE INFO !--#
-sGrain = 'TRANSNUM'
+sGrain = 'SITE_TRANSNUM'
 
 # This is a reasonable choice of spatial grain because ...
 #--! PROVIDE INFO !--#
