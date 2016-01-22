@@ -272,6 +272,10 @@ dataFormattingTable[,'subannualTgrain'] =
 # in hierarchical order from largest to smallest grain. Based on the dataset,
 # fill in the fields that specify nested spatial grains below.
 
+######ADDING IN 
+#need to cut traps 2,4,6 bc sampling only the first half of the study
+dataset2 <- subset(dataset2, (dataset2$trap == 1)|(dataset2$trap == 3)|(dataset2$trap == 5))
+
 #--! PROVIDE INFO !--#
 site_grain_names = c("site", "line", "trap")
 
@@ -293,13 +297,13 @@ dataFormattingTable[,'Raw_spatial_grain'] =
   dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain',  
                                  
 #--! PROVIDE INFO !--#
-                                 82.5) 
+                                 4) 
 
 dataFormattingTable[,'Raw_spatial_grain_unit'] = 
   dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain',  
                                  
 #--! PROVIDE INFO !--#
-                                 'cm2') 
+                                 'm2') 
 
 
 # BEFORE YOU CONTINUE. We need to make sure that there are at least minNTime for 
@@ -381,7 +385,8 @@ dataFormattingTable[,'Notes_siteFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_siteFormat', 
 
 #--! PROVIDE INFO !--#
-  'The site field is a concatenation of site, line, and trap.')
+  'The site field is a concatenation of site, line, and trap. Traps 1,3,5 only
+were used bc 2,4,6 did not have data for all years.')
 
 
 #-------------------------------------------------------------------------------*
@@ -465,7 +470,7 @@ dataFormattingTable[,'Notes_countFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_countFormat', 
                                  
 #--! PROVIDE INFO !--#                                 
-              'Count data already present.')
+              'Count data already present, no formatting needed.')
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SPECIES DATA ----
