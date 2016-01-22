@@ -649,7 +649,7 @@ dataFormattingTable[,'format_flag'] =
   dataFormattingTableFieldUpdate(datasetID, 'format_flag', 
      
 #--! PROVIDE INFO !--#                                 
-                                 3)
+                                 5)
 
 # Flag codes are as follows:
 # 0 = not currently worked on

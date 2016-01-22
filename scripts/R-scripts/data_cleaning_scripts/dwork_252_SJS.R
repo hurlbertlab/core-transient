@@ -489,9 +489,7 @@ dataFormattingTable[,'Notes_countFormat'] =
 #dataset5$spp <- dataset5$species
 #dataset5 <- subset(dataset5, select = c("count", 'date', 'site', 'species_name'))  
 
-dataset5$species = dataset5[dataset5$species!='-888 -888',]
-
-speciesField = 'species_name'
+speciesField = 'species'
 
 names(dataset5)[names(dataset5) == speciesField] = 'species'
 
@@ -520,8 +518,8 @@ data.frame(table(dataset5$species))
 # Because of this, you should really stop here and post an issue on GitHub. 
 
 #--! PROVIDE INFO !--#
-bad_sp = c('-888', '-888 -888', '1', '2', '20', '28', '3', '30', '4', '46', '51', '56',
-           '57', '60', '88')
+bad_sp = c('-888', '1', '2', '20', '28', '3', '30', '4', '46', '51', '56',
+           '57', '60', '88', 'NS')
 
 dataset6 = dataset5[!dataset5$species %in% bad_sp,]
 
@@ -536,11 +534,11 @@ table(dataset6$species)
 
 #--! PROVIDE INFO !--#
 
-if (length(typo_name) > 0 & typo_name[1] != "") {
-  for (n in 1:length(typo_name)) {
-    dataset6$species[dataset6$species == typo_name[n]] = good_name[n]
-  }
-}
+#if (length(typo_name) > 0 & typo_name[1] != "") {
+#  for (n in 1:length(typo_name)) {
+#    dataset6$species[dataset6$species == typo_name[n]] = good_name[n]
+#  }
+#}
 
 
 # Reset the factor levels:
@@ -570,7 +568,8 @@ dataFormattingTable[,'Notes_spFormat'] =
 
 #--! PROVIDE INFO !--#                                 
   'No typos found, but some species were just labelled as numbers and were removed.
-Additionally the data table was subsetted to remove the duplicate species column.')
+Also NS meant "no species" bc values were either negative or -888, the NA value, so 
+that was also removed.')
 
 #-------------------------------------------------------------------------------*
 # ---- MAKE DATA FRAME OF COUNT BY SITES, SPECIES, AND YEAR ----
@@ -626,7 +625,7 @@ dataFormattingTable[,'format_flag'] =
   dataFormattingTableFieldUpdate(datasetID, 'format_flag', 
      
 #--! PROVIDE INFO !--#                                 
-                                 3)
+                                 1)
 
 # Flag codes are as follows:
 # 0 = not currently worked on
@@ -703,7 +702,7 @@ tGrain = 'year'
 site_grain_names
 
 #--! PROVIDE INFO !--#
-sGrain = 'TRANSNUM'
+sGrain = 'site_line_trap'
 
 # This is a reasonable choice of spatial grain because ...
 #--! PROVIDE INFO !--#
