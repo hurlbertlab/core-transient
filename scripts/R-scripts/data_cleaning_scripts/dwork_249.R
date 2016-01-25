@@ -127,7 +127,7 @@ head(dataset)
 names(dataset)
 
 #--! PROVIDE INFO !--#
-unusedFieldNames = c()
+unusedFieldNames = c("record_id", "effort")
 
 dataset1 = dataset[, !names(dataset) %in% unusedFieldNames]
 
@@ -285,12 +285,19 @@ if (num_grains > 1) {
 
 # What is the spatial grain of the finest sampling scale? For example, this might be
 # a 0.25 m2 quadrat, or a 5 m transect, or a 50 ml water sample.
+######ADDED to det most diverse sampling method for a consistent spatial grain
+#levels(dataset2$gearid)
+#BESINE <- dataset2[ which(dataset2$gearid == "BSEINE"), ]   2719
+#fyknet <- dataset2[ which(dataset2$gearid == "FYKNET"), ]  2056
+#ELFISH <- dataset2[ which(dataset2$gearid == "ELFISH"), ]  2503
+
+dataset2 <- dataset2[ which(dataset2$gearid == "BSEINE"), ]
 
 dataFormattingTable[,'Raw_spatial_grain'] = 
   dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain',  
                                  
 #--! PROVIDE INFO !--#
-                                 14.64) 
+                                 14.6) 
 
 dataFormattingTable[,'Raw_spatial_grain_unit'] = 
   dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain',  
