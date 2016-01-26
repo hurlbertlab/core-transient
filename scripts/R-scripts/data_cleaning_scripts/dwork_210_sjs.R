@@ -508,7 +508,19 @@ data.frame(table(dataset5$species))
 # Because of this, you should really stop here and post an issue on GitHub. 
 
 #--! PROVIDE INFO !--#
-bad_sp = c('')
+bad_sp = c('Allium sp.', 'Arabis sp.','Aristida sp.' ,'Asclepias sp.',
+           'Aster sp.', 'Calamovilfa sp.', 'Carex muhlenbergii', 'Carex pensylvanicus', 
+           'Chenopodium Album', 'Chenopodium sp.', ' Cirsium sp.', 'Digitaria sp.', ' Equisetum sp.',
+           'Erigeron sp.','Galium sp.', 'Helianthus sp.', 'Hieracium sp.', 'Lithospermum sp.',
+           'Melilotus sp.', 'Miscellaneous grasses 2', 'Miscellaneous sp.',
+           'Mosses & lichens 2', 'Oenothera sp.', 'Oxalis sp.', 'Panicum sp.', 'Parthenocissus sp.',
+           'Pinus sp.', 'Poa sp.', 'Polygala sp.', 'Polygonatum sp.', 'Polygonum sp.', 'Potentilla sp.',
+           'Pycnan Vir', 'Quercus borealis-ellipsoidalis', 'Quercus sp.', 'ranoncolos rhombiodeus',
+           'Rhus sp.', 'Rumex sp.', "Miscellaneous forb", "Miscellaneous grasses", "Miscellaneous grasses 2", 
+           "Miscellaneous herb", "Miscellaneous herbs", "Miscellaneous legumes", "Miscellaneous litter", 
+           "Miscellaneous rushes", "Miscellaneous sedges", "Miscellaneous sp.", "Miscellaneous woody plants",
+           "Forb seedlings","Mosses & lichens", "Pine needles", 'Sedges', 'Senecio sp.', 'Setaria sp.',
+           'Silene sp.', 'Solidago sp.', 'Sporobolus sp.', 'Tradescantia sp.', 'Trifolium sp.', 'Viola sp.')
 
 dataset6 = dataset5[!dataset5$species %in% bad_sp,]
 
@@ -522,46 +534,13 @@ table(dataset6$species)
 # correct spellings in good_name, and then replace them using the for loop below:
 
 #--! PROVIDE INFO !--#
-typo_name = c('CERATOPHYLLUM',
-              'CHARA',
-              'ELEOCHARIS',
-              'ELODEA',
-              'ISOETES',
-              'JUNCUS',
-              'LITTORELLA',
-              'LOBELIA',
-              'MYRIO. ALT.',
-              'MYRIO. SIBIR.',
-              'MYRIO. TENELLUM',
-              'MYRIO. VERT.',
-              'NAJAS',
-              'P. AMPLIFOLIUS',
-              'P. GRAMINEUS', 
-              'P. RICHARDSONII',
-              'P. ROBBINSII',
-              'SAJ.',           #no other genus begins with these letters
-              'VAL.')           #no other genus begins with these letters
+typo_name = c('carex sp.', 'Cyperus filiculmis','Cyperus schweinitzii','cyperus sp.',
+              'Lactuca canadensis', ' Lactuca serriola (scariola)', 'Prunus pensylvanica',
+              'Prunus pumila', 'Rubus flagellaris', 'Rubus idaeus')           
 
 #--! PROVIDE INFO !--#
-good_name = c('CERATOPHYLLUM DEMERSUM',
-              'CHARA SP',
-              'ELEOCHARIS SP',
-              'ELODEA CANADENSIS',
-              'ISOETES SP',
-              'JUNCUS SP',
-              'LITTORELLA UNIFLORA ASCH. VAR. AMERICANA',
-              'LOBELIA DORTMANNA',
-              'MYRIOPHYLLUM ALTERNIFLORUM',
-              'MYRIOPHYLLUM SIBIRICUM',
-              'MYRIOPHYLLUM TENELLUM',
-              'MYRIOPHYLLUM VERTICILLATUM',
-              'NAJAS FLEXILIS',
-              'POTAMOGETON AMPLIFOLIUS',
-              'POTAMOGETON GRAMINEUS',
-              'POTAMOGETON RICHARDSONII',
-              'POTAMOGETON ROBBINSII',
-              'SAGITTARIA LATIFOLIA',
-              'VALLISNERIA AMERICANA')
+good_name = c('Carex sp.', 'Cyperus sp.', 'Cyperus sp.', 'Cyperus sp.', 'Lactuca sp.', 'Lactuca sp.',
+              'Prunus sp.', 'Prunus sp.', 'Rubus sp.', 'Rubus sp.')
 
 if (length(typo_name) > 0 & typo_name[1] != "") {
   for (n in 1:length(typo_name)) {
@@ -596,7 +575,8 @@ dataFormattingTable[,'Notes_spFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_spFormat',  
 
 #--! PROVIDE INFO !--#                                 
-  'A number of names represented in two obvious forms; 2 names (SAJ and VAL) assumed to be shorthand for Sagitarria and Vallisneria.')
+  'Lot of species had generic genuses listed as 1 and >50% having genus and species, so they were removed. 
+Anything with a generic name(tree, shrub) was also removed.')
 
 #-------------------------------------------------------------------------------*
 # ---- MAKE DATA FRAME OF COUNT BY SITES, SPECIES, AND YEAR ----
@@ -729,7 +709,7 @@ tGrain = 'year'
 site_grain_names
 
 #--! PROVIDE INFO !--#
-sGrain = 'site'
+sGrain = 'exp_field_plot'
 
 # This is a reasonable choice of spatial grain because ...
 #--! PROVIDE INFO !--#
