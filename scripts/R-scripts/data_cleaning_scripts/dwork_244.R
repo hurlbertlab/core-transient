@@ -2,7 +2,8 @@
 # Dataset 244, Channel Islands, CA benthos
 #
 # Data and metadata can be found here: http://esapubs.org/archive/ecol/E094/245
-#
+#Edited by Sara Snell
+
 # Note that this is the Benthic Density data, which includes more species than
 # the Benthic Cover data within this dataset.
 
@@ -53,9 +54,9 @@ source('scripts/R-scripts/core-transient_functions.R')
 #####
 datasetID = 244 
 
-list.files('data/raw_datasets')
+list.files('data/raw_datasets/dataset_244')
 
-dataset = read.csv(paste('data/raw_datasets/dataset_', datasetID, '.csv', sep = ''))
+dataset = read.csv(paste('data/raw_datasets/dataset_244/dataset_', datasetID, '.csv', sep = ''))
 
 dataFormattingTable = read.csv('data_formatting_table.csv')
 
@@ -200,7 +201,7 @@ head(dataset2)
 str(dataset2)
 
 # In this dataset, a number of taxa 
-siteinfo = read.csv('Table1_Monitoring_sites.csv', header=T)
+siteinfo = read.csv('C:/git/core-transient/data/raw_datasets/dataset_244/Table1_Monitoring_sites.csv', header=T)
 years = 1982:2011
 numSitesEachYear = sapply(years, function(x) sum(siteinfo$StartYear <= x))
 numNAsEachYear = aggregate(dataset2$densitymean, by = list(dataset2$species, dataset2$year),
@@ -309,8 +310,7 @@ dataset3$site = factor(site)
 
 # Remove any hierarchical site related fields that are no longer needed, IF NECESSARY.
 
-#####
-dataset3 = dataset3[,-c(1:2)]
+#####dataset3 = dataset3[,-c(1:2)]
 
 # Check the new dataset (are the columns as they should be?):
 
@@ -326,7 +326,7 @@ dataFormattingTable[,'Raw_siteUnit'] =
   dataFormattingTableFieldUpdate(datasetID, 'Raw_siteUnit',       # Fill value below in quotes
 
 #####
-                                 'Station_Quadrat') 
+                                 'site') 
 
 
 # spatial_scale_variable. Is a site potentially nested (e.g., plot within a quad or decimal lat longs that could be scaled up)? Y/N
@@ -335,7 +335,7 @@ dataFormattingTable[,'spatial_scale_variable'] =
   dataFormattingTableFieldUpdate(datasetID, 'spatial_scale_variable',
 
 #####
-                                 'Y') # Fill value here in quotes
+                                 'N') # Fill value here in quotes
 
 # Notes_siteFormat. Use this field to THOROUGHLY describe any changes made to the site field during formatting.
 
@@ -343,7 +343,7 @@ dataFormattingTable[,'Notes_siteFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_siteFormat',  # Fill value below in quotes
 
 #####
-  'Site fields concatenated. Each station has 10 quadrats.')
+  'Site field converted to factor, otherwise unchanged.')
 
 
 #-------------------------------------------------------------------------------*
@@ -357,7 +357,7 @@ summary(dataset3)
 # Fill in the original field name here
 
 #####
-countfield = 'Cover'
+countfield = 'densitymean'
 
 # Renaming it
 names(dataset3)[which(names(dataset3) == countfield)] = 'count'
@@ -396,14 +396,13 @@ dataFormattingTable[,'countFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'countFormat',    # Fill value below in quotes
 
 #####                                 
-                                 'cover')
+                                 'density')
 
 dataFormattingTable[,'Notes_countFormat'] = 
   dataFormattingTableFieldUpdate(datasetID, 'Notes_countFormat', # Fill value below in quotes
                                  
 #####                                 
-                                 'Data represents cover in 1-m2 permanent quadrats, estimated by 
-                                  intercepts at 20 fixed points. ')
+                                 "Data in mean density format, ranging 0-154.")
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SPECIES DATA ----
@@ -414,10 +413,11 @@ dataFormattingTable[,'Notes_countFormat'] =
 # It will get converted to 'species'
 
 #####
-speciesField = 'SpeciesCode'
+dataset5$species <- as.factor(dataset5$species)
+speciesField = 'species'
 
-dataset5$species = dataset5[, speciesField]
-dataset5 = dataset5[, -which(names(dataset5) == speciesField)]
+#dataset5$species = dataset5[, speciesField]
+#dataset5 = dataset5[, -which(names(dataset5) == speciesField)]
 
 # Look at the individual species present and how frequently they occur: This way you can more easily scan the species names (listed alphabetically) and identify potential misspellings, extra characters or blank space, or other issues.
 
@@ -566,11 +566,11 @@ write.csv(dataset7, paste("data/formatted_datasets/dataset_", datasetID, ".csv",
 
 # As we've now successfully created the formatted dataset, we will now update the format priority and format flag fields. 
 
-dataFormattingTable[,'format_priority'] = 
-  dataFormattingTableFieldUpdate(datasetID, 'format_priority',    # Fill value below in quotes 
-
+#dataFormattingTable[,'format_priority'] = 
+#  dataFormattingTableFieldUpdate(datasetID, 'format_priority',    # Fill value below in quotes 
+#
 #####                                 
-                                 'NA')
+#                                 'NA')
 
 dataFormattingTable[,'format_flag'] = 
   dataFormattingTableFieldUpdate(datasetID, 'format_flag',    # Fill value below
@@ -651,7 +651,7 @@ tGrain = 'year'
 site_grain_names
 
 #####
-sGrain = 'Station'
+sGrain = 'site'
 
 # This is a reasonable choice of spatial grain because ...
 # ...a 1m2 quadrat is probably too small given the size of some of these
