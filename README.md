@@ -10,7 +10,7 @@ The **core-transient** repo includes:
   - an output folder that contains analytical results and data summaries of the compilation
   - a Reference folder that includes the NSF proposal and some random project notes
 
-The project also includes a **core-transient-data** sub-repo that is private. This sub-repo contains
+The project also includes a **core-transient-datasets** sub-repo that is private. This sub-repo contains
   - a raw_datasets folder, which includes the raw data for each dataset named using the convention 'dataset_XXX.csv' where XXX is our assigned dataset ID.
     - note that in some instances, the raw data files required a small amount of format-massaging, or pasting together from multiple raw files, in which case the truly raw data files are in a subfolder called 'dataset_XXXRAW' along with the preformatting script.
     - in that case, the dataset_XXX.csv file in the raw_datasets folder is the output of that preformatting script
