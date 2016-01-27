@@ -10,9 +10,9 @@ The set of scripts and files located in this file system are used to format and 
     - site
     - date (either year or in date format)
     - species
-    - count (the count field may represent)
-    - A site summary dataset, that provides the species richness and number of time samples for each site
-    - A dataframe coded “propOcc” which provides the proportion of time samples a given species was observed at a given site
+    - count (the count field may represent count, density, percent cover, or presence)
+  - A site summary dataset, that provides the species richness and number of time samples for each site
+  - A dataframe coded “propOcc” which provides the proportion of time samples a given species was observed at a given site
     
 ## R-scripts and functions in the core-transient file system
 Early attempts to automate the process of formatting the datasets were met with difficulties associated with marked differences in how the data were coded across studies. Because of this, we’ve found it necessary to format and prepare data for analysis on a dataset-by-dataset basis. In the R-scripts folder (‘core-transient/scripts/R-scripts’) you will find two files: core-transient_functions.R and a folder of data_cleaning_scripts.
