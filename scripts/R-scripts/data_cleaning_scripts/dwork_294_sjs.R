@@ -252,6 +252,9 @@ dataFormattingTable[,'subannualTgrain'] =
 #--! PROVIDE INFO !--#                                 
                                  'N')
 
+######ADDING since seining effort was decreased in 1997
+dataset2 <- dataset2[ which(dataset2$date > 1997), ] #more recent = 6447, older = 4661
+
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SITE DATA ----
 #===============================================================================*

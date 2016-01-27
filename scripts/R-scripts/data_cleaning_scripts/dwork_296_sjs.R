@@ -82,7 +82,9 @@ dataFormattingTable[,'Raw_datafile_name'] =
 #--! PROVIDE INFO !--#
   'fish_abundance') 
 
-
+###ADDING IN to get same effort across electro fish
+dataset <- dataset[ which(dataset$gearid == "ELFISH"), ]
+dataset <- dataset[ which(dataset$effort == 6), ] 
 
 ########################################################
 # ANALYSIS CRITERIA                                    #  
