@@ -52,29 +52,6 @@ This should be run any time any of the functions in 'core-transient_functions.R'
 
 - **Processed datasets**: Currently, there are 12 datasets processed with proportional occurrence frames and 33 formatted datasets. The disparity between the number of proportional occurrence frames and formatted datasets predominantly reflects datasets with an inadequate number of time samples for each site given the current cut-off value of 10. All datasets for which proportional occurrence frames can be constructed under current cut-offs have been made. _**Still needed**_: To obtain more proportional occurrence frames under the current cut-off values, I suggest only formatting new datasets with at least 10 years of data (per site).
 
-## *Priority rankings* for obtaining and/or formatting data, on a scale of 0-3, are currently based on summing:
-
-### 0 = Low priority
-Common system and taxa, less than 20 sites **OR** sites defined by Lat Long
-
-### 1 = Minor priority
-Common system and taxa, more than 20 sites (**IF** sites are not defined by Lat Long)
--OR- uncommon system OR taxa less than 20 sites (**OR** sites defined by Lat Long)
-
-### 2 = Medium priority
-Uncommon system OR taxa, more than 20 sites (**IF** sites are not defined by Lat Long)
--OR- uncommon system AND taxa, less than 20 sites (**OR** sites defined by Lat Long)
-
-### 3 = high priority
-Uncommon system AND taxa, more than 20 sites (**IF** sites are not defined by Lat Long)
-
-#### Uncommon taxa (based on current representation in formatted datasets)
-Arthropod, Invertebrate, Plankton, Mammal  
-  
-#### Uncommon System (based on current representation in formatted datasets)
-Terrestrial or Aquatic  
-
-
 ## *Format flag codes*
 
  0 = not yet examined  
