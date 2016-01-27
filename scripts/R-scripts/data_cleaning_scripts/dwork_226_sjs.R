@@ -2,9 +2,9 @@
 #  DATA FORMATTING TEMPLATE
 ################################################################################*
 #
-# Dataset name:
-# Dataset source (link):
-# Formatted by: 
+# Dataset name: Eastern Wood Breeding Bird Data
+# Dataset source (link): http://onlinelibrary.wiley.com/doi/10.1002/9780470999592.app2/pdf
+# Formatted by: Sara Snell
 #
 # Start by opening the data formatting table (data_formatting_table.csv). 
 # Datasets to be worked on will have a 'format_flag' of 0.
@@ -56,7 +56,7 @@ source('scripts/R-scripts/core-transient_functions.R')
 # Get data. First specify the dataset number ('datasetID') you are working with.
 
 #--! PROVIDE INFO !--#
-datasetID = 282 
+datasetID = 226 
 
 list.files('data/raw_datasets')
 
@@ -74,7 +74,8 @@ dataFormattingTable[,'Raw_datafile_name'] =
   dataFormattingTableFieldUpdate(datasetID, 'Raw_datafile_name',  
                                  
 #--! PROVIDE INFO !--#
-  'north_temperate_lakes_lter__macrophyte_species_at_quadrat_level_-_trout_lake.csv') 
+  'Appendix II_ Eastern Wood Breeding Bird Data 
+- Pattern and Process in Macroecology - Wiley Online Library.csv') 
 
 
 
@@ -118,6 +119,36 @@ str(dataset)
 
 head(dataset)
 
+library(reshape)
+# Melt from wide to long format:
+dClean = melt(dataset, id.vars = 'Species')
+
+# Set column names:
+names(dClean) = c('species','year','count')
+
+# Remove X's from the year column and convert year to numeric:
+dClean$year = as.numeric(gsub('X', '',dClean$year))
+
+# Add a site column:
+dClean$site = factor(rep('d226_ew', length(dClean$year)))
+
+# Add a dataset ID column for matching with metadata
+dClean$datasetID = rep(226, length(dClean[,1]))
+
+# Rearrange the columns"
+dClean = dClean[,c(5,4,1:3)]
+
+# Remove NA's:
+dClean = na.omit(dClean)
+
+# Remove 0's:
+d226 = dClean[dClean$count>0,]
+
+# Not all species were samples in 1949, so these records need to be excluded:
+d226 = d226[d226$year!=1949,]
+
+dataset = d226
+
 # Here, we can see that there are some fields that we won't use. These might be
 # fields describing weather, observer ID's, or duplicate information like year
 # or month when there is already a complete date column.
@@ -127,7 +158,7 @@ head(dataset)
 names(dataset)
 
 #--! PROVIDE INFO !--#
-unusedFieldNames = c('lakeid', 'min_depth', 'max_depth', 'year4')
+unusedFieldNames = c()
 
 dataset1 = dataset[, !names(dataset) %in% unusedFieldNames]
 
@@ -168,7 +199,7 @@ dataFormattingTable[,'LatLong_sites'] =
 # E.g., c('year', 'month', 'day')
 
 #--! PROVIDE INFO !--#
-dateFieldName = c('sampledate')
+dateFieldName = c('year')
 
 # If necessary, paste together date info from multiple columns into single field
 if (length(dateFieldName) > 1) {
@@ -185,11 +216,7 @@ if (length(dateFieldName) > 1) {
 # be '%Y-%m-%d'. Type "?strptime" for other examples of date formatting.
 
 #--! PROVIDE INFO !--#
-dateformat = '%m/%d/%Y %H:%M'
-
-# If date is only listed in years:
-
-# dateformat = '%Y'
+dateformat = '%Y'
 
 # If the date is just a year, then make sure it is of class numeric
 # and not a factor. Otherwise change to a true date object.
@@ -244,7 +271,7 @@ dataFormattingTable[,'subannualTgrain'] =
   dataFormattingTableFieldUpdate(datasetID, 'subannualTgrain', 
 
 #--! PROVIDE INFO !--#                                 
-                                 'Y')
+                                 'N')
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SITE DATA ----
@@ -270,7 +297,7 @@ dataFormattingTable[,'subannualTgrain'] =
 # fill in the fields that specify nested spatial grains below.
 
 #--! PROVIDE INFO !--#
-site_grain_names = c("site", "quadrat")
+site_grain_names = c("site")
 
 # We will now create the site field with these codes concatenated if there
 # are multiple grain fields. Otherwise, site will just be the single grain field.
@@ -290,13 +317,13 @@ dataFormattingTable[,'Raw_spatial_grain'] =
   dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain',  
                                  
 #--! PROVIDE INFO !--#
-                                 0.25) 
+                                 16) 
 
 dataFormattingTable[,'Raw_spatial_grain_unit'] = 
   dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain',  
                                  
 #--! PROVIDE INFO !--#
-                                 'm2') 
+                                 'ha') 
 
 
 # BEFORE YOU CONTINUE. We need to make sure that there are at least minNTime for 
@@ -369,7 +396,7 @@ dataFormattingTable[,'spatial_scale_variable'] =
   dataFormattingTableFieldUpdate(datasetID, 'spatial_scale_variable',
 
 #--! PROVIDE INFO !--#
-                                 'Y')
+                                 'N')
 
 # Notes_siteFormat. Use this field to THOROUGHLY describe any changes made to the 
 # site field during formatting.
@@ -378,7 +405,7 @@ dataFormattingTable[,'Notes_siteFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_siteFormat', 
 
 #--! PROVIDE INFO !--#
-  'The site field is a concatenation of site and quadrat.')
+  'The site field is a concatenation of site and sample area (all in Eastern Wood).')
 
 
 #-------------------------------------------------------------------------------*
@@ -395,7 +422,7 @@ summary(dataset3)
 # If there is no countfield, set this equal to "".
 
 #--! PROVIDE INFO !--#
-countfield = ""
+countfield = "count"
 
 # Renaming it
 if (countfield == "") {
@@ -456,13 +483,13 @@ dataFormattingTable[,'countFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'countFormat',  
 
 #--! PROVIDE INFO !--#                                 
-                                 'presence')
+                                 'count')
 
 dataFormattingTable[,'Notes_countFormat'] = 
   dataFormattingTableFieldUpdate(datasetID, 'Notes_countFormat', 
                                  
 #--! PROVIDE INFO !--#                                 
-              'No count data provided, so 1s added to indicate presence')
+              'Count data provided in dataset')
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SPECIES DATA ----
@@ -476,7 +503,7 @@ dataFormattingTable[,'Notes_countFormat'] =
 # It will get converted to 'species'
 
 #--! PROVIDE INFO !--#
-speciesField = 'species_name'
+speciesField = 'species'
 
 names(dataset5)[names(dataset5) == speciesField] = 'species'
 
@@ -519,46 +546,10 @@ table(dataset6$species)
 # correct spellings in good_name, and then replace them using the for loop below:
 
 #--! PROVIDE INFO !--#
-typo_name = c('CERATOPHYLLUM',
-              'CHARA',
-              'ELEOCHARIS',
-              'ELODEA',
-              'ISOETES',
-              'JUNCUS',
-              'LITTORELLA',
-              'LOBELIA',
-              'MYRIO. ALT.',
-              'MYRIO. SIBIR.',
-              'MYRIO. TENELLUM',
-              'MYRIO. VERT.',
-              'NAJAS',
-              'P. AMPLIFOLIUS',
-              'P. GRAMINEUS', 
-              'P. RICHARDSONII',
-              'P. ROBBINSII',
-              'SAJ.',           #no other genus begins with these letters
-              'VAL.')           #no other genus begins with these letters
+typo_name = c()           
 
 #--! PROVIDE INFO !--#
-good_name = c('CERATOPHYLLUM DEMERSUM',
-              'CHARA SP',
-              'ELEOCHARIS SP',
-              'ELODEA CANADENSIS',
-              'ISOETES SP',
-              'JUNCUS SP',
-              'LITTORELLA UNIFLORA ASCH. VAR. AMERICANA',
-              'LOBELIA DORTMANNA',
-              'MYRIOPHYLLUM ALTERNIFLORUM',
-              'MYRIOPHYLLUM SIBIRICUM',
-              'MYRIOPHYLLUM TENELLUM',
-              'MYRIOPHYLLUM VERTICILLATUM',
-              'NAJAS FLEXILIS',
-              'POTAMOGETON AMPLIFOLIUS',
-              'POTAMOGETON GRAMINEUS',
-              'POTAMOGETON RICHARDSONII',
-              'POTAMOGETON ROBBINSII',
-              'SAGITTARIA LATIFOLIA',
-              'VALLISNERIA AMERICANA')
+good_name = c()
 
 if (length(typo_name) > 0 & typo_name[1] != "") {
   for (n in 1:length(typo_name)) {
@@ -593,7 +584,7 @@ dataFormattingTable[,'Notes_spFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_spFormat',  
 
 #--! PROVIDE INFO !--#                                 
-  'A number of names represented in two obvious forms; 2 names (SAJ and VAL) assumed to be shorthand for Sagitarria and Vallisneria.')
+  'No duplicate or erroneous species observed')
 
 #-------------------------------------------------------------------------------*
 # ---- MAKE DATA FRAME OF COUNT BY SITES, SPECIES, AND YEAR ----
