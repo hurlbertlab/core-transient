@@ -4,18 +4,19 @@ Data and code for NSF funded research on core vs transient species
 ## Navigating the core-transient file system:
 The **core-transient** repo includes:
   - the data_formatting_table.csv, which includes the list of datasets and their metadata
-    -note that dataset ID's less than 200 were obtained from Maria Dornelas from the compilation underlying Dornelas et al. 2014, *Science* 344: 296-299, although we excluded many datasets from that compilation due to more stringent time series requirements
+    - note that dataset ID's less than 200 were obtained from Maria Dornelas from the compilation underlying Dornelas et al. 2014, *Science* 344: 296-299, although we excluded many datasets from that compilation due to more stringent time series requirements
+  - a file describing all of the fields in the data_formatting_table.csv
   - a scripts folder including dataset-specific cleaning scripts (see below)
   - an output folder that contains analytical results and data summaries of the compilation
   - a Reference folder that includes the NSF proposal and some random project notes
 
 The project also includes a **core-transient-data** sub-repo that is private. This sub-repo contains
   - a raw_datasets folder, which includes the raw data for each dataset named using the convention 'dataset_XXX.csv' where XXX is our assigned dataset ID.
-    -note that in some instances, the raw data files required a small amount of format-massaging, or pasting together from multiple raw files, in which case the truly raw data files are in a subfolder called 'dataset_XXXRAW' along with the preformatting script.
-    -in that case, the dataset_XXX.csv file in the raw_datasets folder is the output of that preformatting script
-  -a formatted_datasets folder, which includes data files that have been processed by their respective data cleaning scripts to have the following fields: datasetID, site, date, species, count
-  -a propOcc_datasets folder which has proportional occupancy values for each species at each site within a dataset
-  -a siteSummaries folder which has a summary of richness, number of temporal sampling events, and average total abundance per sampling event for each site in the dataset
+    - note that in some instances, the raw data files required a small amount of format-massaging, or pasting together from multiple raw files, in which case the truly raw data files are in a subfolder called 'dataset_XXXRAW' along with the preformatting script.
+    - in that case, the dataset_XXX.csv file in the raw_datasets folder is the output of that preformatting script
+  - a formatted_datasets folder, which includes data files that have been processed by their respective data cleaning scripts to have the following fields: datasetID, site, date, species, count
+  - a propOcc_datasets folder which has proportional occupancy values for each species at each site within a dataset
+  - a siteSummaries folder which has a summary of richness, number of temporal sampling events, and average total abundance per sampling event for each site in the dataset
 
 
 ## R-scripts and functions in the core-transient file system
