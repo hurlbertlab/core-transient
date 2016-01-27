@@ -2,7 +2,7 @@
 #  Dataset 228: Birds of Hubbard Brook and White Mountain National Forest
 #
 #  Metadata can be found here: http://www.hubbardbrook.org/data/dataset.php?id=81
-
+# Formatted by Will Larson, revisited by Sara Snell
 
 #-------------------------------------------------------------------------------*
 # ---- SET-UP ----
@@ -336,10 +336,9 @@ summary(dataset3)
 # Can usually tell if there are any zeros or NAs from that summary(). If there aren't any showing, still run these functions or continue with the update of dataset# so that you are consistent with this template.
 
 # Subset to records > 0 (if applicable):
+dataset3$count <- as.numeric(dataset3$count)
 
-dataset4 = subset(dataset3, (count > 0 & count != '0.0' & count != 'tr' & count != 't') )
-
-dataset4$count = as.numeric(dataset4$count)
+dataset4 = subset(dataset3, (count > 0 & count != '0.0' & count != 'tr' & count != 't'))
 
 summary(dataset4)
 
@@ -430,7 +429,12 @@ head(dataset6)
 dataFormattingTable[,'Notes_spFormat'] = 
   dataFormattingTableFieldUpdate(datasetID, 'Notes_spFormat',    # Fill value below in quotes
                                  
-                                 'several species removed. Though Evening Grosbeak and Acadian Flycatcher were factors of the species column, there were no actual entries for those species. This is most likely because the count entries associated with each of these were either zero or trace and were removed. Two other species entries were removed: TOTAL  (ALL SPECIES) and NUMBER OF SPECIES  ')
+                                 'several species removed. Though Evening Grosbeak and Acadian 
+                                 Flycatcher were factors of the species column, there were no actual 
+                                 entries for those species. This is most likely because the 
+                                 count entries associated with each of these were either zero 
+                                 or trace and were removed. Two other species entries were removed: 
+                                 TOTAL  (ALL SPECIES) and NUMBER OF SPECIES  ')
 
 #-------------------------------------------------------------------------------*
 # ---- MAKE DATA FRAME OF COUNT BY SITES, SPECIES, AND YEAR ----
