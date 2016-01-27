@@ -2,15 +2,14 @@
 #  DATA FORMATTING TEMPLATE
 ################################################################################*
 #
-# Dataset name: A 12-year study on the scaling of vascular plant composition 
-#               in an Oklahoma tallgrass prairie
-# Dataset source (link): http://esapubs.org/Archive/ecol/E091/124/default.htm#data
+# Dataset name: North Temperate Lakes LTER: Fish Abundance 1981 - current
+# Dataset source (link): https://portal.lternet.edu/nis/mapbrowse?packageid=knb-lter-ntl.7.10
 # Formatted by: Sara Snell
 
-#This link provides multiple formats of data in species cover and species presence format.
-#Presence provides info about variable spatial scales and quadrats, while cover only 
-#provides species information only at the coarset spatial grain of 100 m2.
 
+#BSEINE collection method (gearid field) ONLY! Lots of gear collection methods at different 
+#spatial scales. Took most common methods and ran separate scripts but used same dataset.
+#Applies to d294, 295, 296.
 
 
 # Start by opening the data formatting table (data_formatting_table.csv). 
@@ -63,7 +62,7 @@ source('scripts/R-scripts/core-transient_functions.R')
 # Get data. First specify the dataset number ('datasetID') you are working with.
 
 #--! PROVIDE INFO !--#
-datasetID = 225 
+datasetID = 294
 
 list.files('data/raw_datasets')
 
@@ -81,7 +80,7 @@ dataFormattingTable[,'Raw_datafile_name'] =
   dataFormattingTableFieldUpdate(datasetID, 'Raw_datafile_name',  
                                  
 #--! PROVIDE INFO !--#
-  'TGPP_pres.csv') 
+  'fish_abundance') 
 
 
 
@@ -134,7 +133,7 @@ head(dataset)
 names(dataset)
 
 #--! PROVIDE INFO !--#
-unusedFieldNames = c()
+unusedFieldNames = c("record_id", "effort")
 
 dataset1 = dataset[, !names(dataset) %in% unusedFieldNames]
 
@@ -175,7 +174,7 @@ dataFormattingTable[,'LatLong_sites'] =
 # E.g., c('year', 'month', 'day')
 
 #--! PROVIDE INFO !--#
-dateFieldName = c('year')
+dateFieldName = c('year4')
 
 # If necessary, paste together date info from multiple columns into single field
 if (length(dateFieldName) > 1) {
@@ -192,8 +191,10 @@ if (length(dateFieldName) > 1) {
 # be '%Y-%m-%d'. Type "?strptime" for other examples of date formatting.
 
 #--! PROVIDE INFO !--#
+#dateformat = '%m/%d/%Y %H:%M'
 
 # If date is only listed in years:
+
 dateformat = '%Y'
 
 # If the date is just a year, then make sure it is of class numeric
@@ -275,10 +276,7 @@ dataFormattingTable[,'subannualTgrain'] =
 # fill in the fields that specify nested spatial grains below.
 
 #--! PROVIDE INFO !--#
-site_grain_names = c("plot")
-
-#need for spec pres dataset, subsetting specific scales
-#dataset2 <- dataset2[ which(dataset2$scale == 1e+02), ]
+site_grain_names = c("lakeid")
 
 # We will now create the site field with these codes concatenated if there
 # are multiple grain fields. Otherwise, site will just be the single grain field.
@@ -293,12 +291,20 @@ if (num_grains > 1) {
 
 # What is the spatial grain of the finest sampling scale? For example, this might be
 # a 0.25 m2 quadrat, or a 5 m transect, or a 50 ml water sample.
+######ADDED to det most diverse sampling method for a consistent spatial grain
+#levels(dataset2$gearid)
+BSEINE <- dataset2[ which(dataset2$gearid == "BSEINE"), ]   #2719
+length(unique(BSEINE$spname))
+#FYKNET <- dataset2[ which(dataset2$gearid == "FYKNET"), ]  #2056
+#ELFISH <- dataset2[ which(dataset2$gearid == "ELFISH"), ]  #2503
+
+dataset2 <- dataset2[ which(dataset2$gearid == "BSEINE"), ]
 
 dataFormattingTable[,'Raw_spatial_grain'] = 
   dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain',  
                                  
 #--! PROVIDE INFO !--#
-                                 100) 
+                                 1464) 
 
 dataFormattingTable[,'Raw_spatial_grain_unit'] = 
   dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain',  
@@ -344,14 +350,13 @@ dataset3 = dataset2
 # Remove any hierarchical site related fields that are no longer needed, IF NECESSARY.
 
 #--! PROVIDE INFO !--#
-dataset3 = dataset3[, !names(dataset3) %in% site_grain_names]
+#dataset3 = dataset3[, !names(dataset3) %in% site_grain_names]
 
 dataset3$site = factor(site)
 
 # Check the new dataset (are the columns as they should be?):
 
 head(dataset3)
-
 
 # !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE SITE DATA WERE MODIFIED!
 
@@ -378,7 +383,7 @@ dataFormattingTable[,'spatial_scale_variable'] =
   dataFormattingTableFieldUpdate(datasetID, 'spatial_scale_variable',
 
 #--! PROVIDE INFO !--#
-                                 'Y') #DATA IN SPEC_PRES DATASET, see link
+                                 'N')
 
 # Notes_siteFormat. Use this field to THOROUGHLY describe any changes made to the 
 # site field during formatting.
@@ -387,9 +392,7 @@ dataFormattingTable[,'Notes_siteFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_siteFormat', 
 
 #--! PROVIDE INFO !--#
-  'For cover (USED): only the coarsest spatial scale provided (100 m2) by dataset.
-For species pres, the site field is a concatenation of plot and corner. Each corner was 
-measured at different spatial scales.')
+  'The site field is lakeid.')
 
 
 #-------------------------------------------------------------------------------*
@@ -406,7 +409,7 @@ summary(dataset3)
 # If there is no countfield, set this equal to "".
 
 #--! PROVIDE INFO !--#
-countfield = "cover"
+countfield = "total_caught"
 
 # Renaming it
 if (countfield == "") {
@@ -467,15 +470,13 @@ dataFormattingTable[,'countFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'countFormat',  
 
 #--! PROVIDE INFO !--#                                 
-                                 'cover')
+                                 'count')
 
 dataFormattingTable[,'Notes_countFormat'] = 
   dataFormattingTableFieldUpdate(datasetID, 'Notes_countFormat', 
                                  
 #--! PROVIDE INFO !--#                                 
-              'Cover data provided in cover dataset.')
-
-
+              'Data is in total count of fish caught at each site')
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SPECIES DATA ----
@@ -489,7 +490,7 @@ dataFormattingTable[,'Notes_countFormat'] =
 # It will get converted to 'species'
 
 #--! PROVIDE INFO !--#
-speciesField = 'spcode'
+speciesField = 'spname'
 
 names(dataset5)[names(dataset5) == speciesField] = 'species'
 
@@ -518,7 +519,7 @@ data.frame(table(dataset5$species))
 # Because of this, you should really stop here and post an issue on GitHub. 
 
 #--! PROVIDE INFO !--#
-bad_sp = c()
+bad_sp = c('')
 
 dataset6 = dataset5[!dataset5$species %in% bad_sp,]
 
@@ -532,10 +533,10 @@ table(dataset6$species)
 # correct spellings in good_name, and then replace them using the for loop below:
 
 #--! PROVIDE INFO !--#
-typo_name = c('desmills', 'hordpusi', 'Erechier')           
+typo_name = c()           
 
 #--! PROVIDE INFO !--#
-good_name = c('desmilli', 'houspusi','erechier')
+good_name = c()
 
 if (length(typo_name) > 0 & typo_name[1] != "") {
   for (n in 1:length(typo_name)) {
@@ -570,7 +571,8 @@ dataFormattingTable[,'Notes_spFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_spFormat',  
 
 #--! PROVIDE INFO !--#                                 
-  '3 species were represented with two different name codes so that was corrected.')
+  'No typos were found; spname renamed to species but otherwise left as-is.')
+
 #-------------------------------------------------------------------------------*
 # ---- MAKE DATA FRAME OF COUNT BY SITES, SPECIES, AND YEAR ----
 #===============================================================================*
@@ -702,7 +704,7 @@ tGrain = 'year'
 site_grain_names
 
 #--! PROVIDE INFO !--#
-sGrain = 'plot'
+sGrain = 'lakeid'
 
 # This is a reasonable choice of spatial grain because ...
 #--! PROVIDE INFO !--#
