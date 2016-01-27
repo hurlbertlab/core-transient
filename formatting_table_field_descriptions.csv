@@ -1,0 +1,52 @@
+Field,Type,Description
+dataset_ID,numeric,dataset ID's that are 200 and below are from Dornelas et al.
+format_flag,numeric,"0 = not yet examined; 1 = formatting complete; 2 = formatting in process; 3 = formatting halted, issue; 4 = data unavailable; 5 = data inadequate for project aims "
+dataset_name,character,Name provided for the dataset
+data_source,character,The source from which the data were obtained; a URL when possible
+system,factor,"Terrestrial, marine, or aquatic system – may be a combination."
+climate,character,"The climatic zone in which the sample was taken (tropical, temperate, polar, or some combination of each. "
+taxa,character,The taxonomic group being studied (e.g. plankton or birds)
+organism,character,Sub-class of the taxonomic group if a more specific grouping is available.
+location,character,"Describes the spatial location of the data (e.g., Channel Islands, CA)"
+CentralLatitude,numeric,"The mean latitude of the samples – if lat lon data are not available, this may be estimated from the spatial location of the sampling location (e.g., Channel Islands)"
+CentralLongitude,numeric,The mean longitude of the samples
+LatLong_sites,factor,"Y or N. Whether or not spatial subsamples are designated purely by a lat-long coordinate as opposed to a sample or quadrat or plot ID, etc."
+Raw_datafile_name,character,Original datafile name as downloaded from the source
+Raw_start_year,numeric,earliest year in the raw dataset
+Raw_end_year,numeric,latest year in the raw dataset
+Raw_nRecs,numeric,The number of records in the raw dataset
+Raw_nTime,numeric,The number of time samples in the raw dataset
+Raw_nSpecies,numeric,The total number of species in the raw dataset (across all sites)
+Raw_siteUnit,character,"Hierarchical description of the finest spatial sampling unit; If quads were sampled within plots within sites, this would be ""site_plot_quad"""
+spatial_scale_variable,factor,Y or N. Whether or not dataset has sampling at multiple scales making it suitable for spatial scaling analyses
+Raw_nSites,numeric,The number of sites in the raw dataset
+Notes_siteFormat,character,Notes about the delineation of sample sites and their spatial grain
+Notes_spFormat,character,Notes about taxonomic or other corrections made to species names
+Raw_spatial_grain,numeric,value of the finest spatial sampling grain
+Raw_spatial_grain_unit,character,"units for the Raw_spatial_grain value (e.g., km2, L, m)"
+Raw_Mean_Individuals_perSiteYear,numeric,"The average number of individuals across all species per sampling event, across all sites and years, in the raw dataset"
+Raw_Min_Individuals_perSiteYear,numeric,"The minimum number of individuals across all species per sampling event, across all sites and years, in the raw dataset"
+Raw_Max_Individuals_perSiteYear,numeric,"The maximum number of individuals across all species per sampling event, across all sites and years, in the raw dataset"
+countFormat,factor,"Density, cover, count, or presence"
+Notes_countFormat,character,Notes about what is represented by the count data
+Formatted_nRecs,numeric,The number of records in the formatted dataset
+Formatted_start_year,numeric,earliest year in the formatted dataset
+Formatted_end_year,numeric,latest year in the formatted dataset
+Formatted_nSites,numeric,The number of sites in the formatted dataset
+Formatted_nTime,numeric,"The number of time samples in the formatted dataset (if this varies by site, it will be the maximum number of time samples)"
+Formatted_nSpecies,numeric,The number of species in the formatted dataset
+Formatted_Mean_Individuals_perSiteYear,numeric,"The average number of individuals across all species per sampling event, across all sites and years, in the formatted dataset"
+Formatted_Min_Individuals_perSiteYear,numeric,"The minimum number of individuals across all species per sampling event, across all sites and years, in the formatted dataset"
+Formatted_Max_Individuals_perSiteYear,numeric,"The maximum number of individuals across all species per sampling event, across all sites and years, in the formatted dataset"
+Formatted_spatial_grain,numeric,value of the finest spatial sampling grain in the formatted dataset
+Formatted_spatial_grain_unit,character,"units for the Raw_spatial_grain value (e.g., km2, L, m) in the formatted dataset"
+Notes_timeFormat,character,Notes on the temporal scale of sampling
+subannualTgrain,factor,Y or N. Whether or not temporal sampling occurs repeatedly within years
+PropOcc_notes,character,Notes about the calculation of temporal occupancy values
+General_notes,character,Any additional information necessary for understanding the data
+Citation1,character,data citation (may be for the dataset -OR- a published journal article describing or using the data)
+Citation2,character,data citation (may be for the dataset -OR- a published journal article describing or using the data)
+Citation3,character,data citation (may be for the dataset -OR- a published journal article describing or using the data)
+Citation4,character,data citation (may be for the dataset -OR- a published journal article describing or using the data)
+Citation5,character,data citation (may be for the dataset -OR- a published journal article describing or using the data)
+Citation6,character,data citation (may be for the dataset -OR- a published journal article describing or using the data)
