@@ -253,6 +253,7 @@ dataFormattingTable[,'subannualTgrain'] =
                                  'N')
 
 ######ADDING since seining effort was decreased in 1997
+#equiv to setting effort at 12 vs 18 alike fyke net and electro fish 
 dataset2 <- dataset2[ which(dataset2$date > 1997), ] #more recent = 6447, older = 4661
 
 #-------------------------------------------------------------------------------*

@@ -62,7 +62,7 @@ source('scripts/R-scripts/core-transient_functions.R')
 # Get data. First specify the dataset number ('datasetID') you are working with.
 
 #--! PROVIDE INFO !--#
-datasetID = 294
+datasetID = 295
 
 list.files('data/raw_datasets')
 
@@ -132,12 +132,9 @@ head(dataset)
 
 names(dataset)
 
-#####ADDED IN only using same sampling effort fyke net, effort = 3
-#data after 1997 only
-dataset <- dataset[ which(dataset$effort == 3), ] 
 
 #--! PROVIDE INFO !--#
-unusedFieldNames = c("record_id", "effort")
+unusedFieldNames = c("record_id")
 
 dataset1 = dataset[, !names(dataset) %in% unusedFieldNames]
 
@@ -303,6 +300,11 @@ length(unique(FYKNET$spname))
 #ELFISH <- dataset2[ which(dataset2$gearid == "ELFISH"), ]  #2503
 
 dataset2 <- dataset2[ which(dataset2$gearid == "FYKNET"), ]
+
+#####ADDED IN only using same sampling effort fyke net, effort = 6
+#data after 1997 only
+dataset2 <- dataset2[ which(dataset2$effort == '6'), ] 
+
 
 dataFormattingTable[,'Raw_spatial_grain'] = 
   dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain',  
