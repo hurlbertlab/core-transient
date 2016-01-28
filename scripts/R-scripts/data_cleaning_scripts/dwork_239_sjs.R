@@ -127,7 +127,10 @@ head(dataset)
 names(dataset)
 
 #--! PROVIDE INFO !--#
-unusedFieldNames = c('lakeid', 'min_depth', 'max_depth', 'year4')
+unusedFieldNames = c('Chl', 'QFChl', 'SurfacePAR', 'QFPAR', 'Kd490', 'QFKd490',
+                     'PARz', 'Nitrate', 'QFNO3', 'Nitrite', 'QFNO2', 'Ammonium',
+                     'QFNH4', 'Phosphate', 'QFPO4', 'Silicate', 'QFSil', 'MLD',
+                     'QFMLD', 'Daylength', 'Temperature', 'QFTemp')
 
 dataset1 = dataset[, !names(dataset) %in% unusedFieldNames]
 
@@ -168,7 +171,7 @@ dataFormattingTable[,'LatLong_sites'] =
 # E.g., c('year', 'month', 'day')
 
 #--! PROVIDE INFO !--#
-dateFieldName = c('sampledate')
+dateFieldName = c('Date')
 
 # If necessary, paste together date info from multiple columns into single field
 if (length(dateFieldName) > 1) {
@@ -185,7 +188,7 @@ if (length(dateFieldName) > 1) {
 # be '%Y-%m-%d'. Type "?strptime" for other examples of date formatting.
 
 #--! PROVIDE INFO !--#
-dateformat = '%m/%d/%Y %H:%M'
+dateformat = '%d-%m-%Y'
 
 # If date is only listed in years:
 
@@ -649,7 +652,7 @@ dataFormattingTable[,'format_flag'] =
   dataFormattingTableFieldUpdate(datasetID, 'format_flag', 
      
 #--! PROVIDE INFO !--#                                 
-                                 1)
+                                 5)
 
 # Flag codes are as follows:
 # 0 = not currently worked on
