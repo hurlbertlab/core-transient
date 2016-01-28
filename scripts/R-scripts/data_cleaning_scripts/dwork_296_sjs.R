@@ -84,7 +84,7 @@ dataFormattingTable[,'Raw_datafile_name'] =
 
 ###ADDING IN to get same effort across electro fish
 dataset <- dataset[ which(dataset$gearid == "ELFISH"), ]
-dataset <- dataset[ which(dataset$effort == 6), ] 
+dataset <- dataset[ which(dataset$effort == 3), ] 
 
 ########################################################
 # ANALYSIS CRITERIA                                    #  
