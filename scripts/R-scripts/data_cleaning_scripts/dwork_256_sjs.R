@@ -57,7 +57,7 @@ source('scripts/R-scripts/core-transient_functions.R')
 # Get data. First specify the dataset number ('datasetID') you are working with.
 
 #--! PROVIDE INFO !--#
-datasetID = 282 
+datasetID = 256 
 
 list.files('data/raw_datasets')
 
@@ -75,7 +75,7 @@ dataFormattingTable[,'Raw_datafile_name'] =
   dataFormattingTableFieldUpdate(datasetID, 'Raw_datafile_name',  
                                  
 #--! PROVIDE INFO !--#
-  'ddi903_sm_AppendixS1.csv') 
+  'Dapporto2009JICO.pdf') 
 
 
 
@@ -127,8 +127,19 @@ head(dataset)
 
 names(dataset)
 
+######ADDING IN preformat of data
+library(tidyr)
+#within(dataset, paste(dataset$Genus, dataset$spp, sep = " "))
+#Combining genus and species columns
+dataset <- unite(dataset, spec, Genus, spp, sep = " ", remove = TRUE)
+#getting data into wide to long format by year
+dataset = gather(dataset, year, count, X1889.1908:X1989.2008)
+#removing "x" from in front of year - CANT RUN 2X
+dataset$year = substring(dataset$year, 2)
+
+
 #--! PROVIDE INFO !--#
-unusedFieldNames = c('lakeid', 'min_depth', 'max_depth', 'year4')
+unusedFieldNames = c('Numberofperiods', 'ResidualsfromSIF.SSFregression')
 
 dataset1 = dataset[, !names(dataset) %in% unusedFieldNames]
 
@@ -169,7 +180,7 @@ dataFormattingTable[,'LatLong_sites'] =
 # E.g., c('year', 'month', 'day')
 
 #--! PROVIDE INFO !--#
-dateFieldName = c('sampledate')
+dateFieldName = c('year')
 
 # If necessary, paste together date info from multiple columns into single field
 if (length(dateFieldName) > 1) {
@@ -186,11 +197,10 @@ if (length(dateFieldName) > 1) {
 # be '%Y-%m-%d'. Type "?strptime" for other examples of date formatting.
 
 #--! PROVIDE INFO !--#
-dateformat = '%m/%d/%Y %H:%M'
 
 # If date is only listed in years:
 
-# dateformat = '%Y'
+dateformat = '%Y'
 
 # If the date is just a year, then make sure it is of class numeric
 # and not a factor. Otherwise change to a true date object.
