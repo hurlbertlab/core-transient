@@ -2,18 +2,23 @@
 Data and code for NSF funded research on core vs transient species
 
 ## Navigating the core-transient file system:
-The set of scripts and files located in this file system are used to format and analyze datasets. For each dataset, the following files have been saved:
+The **core-transient** repo includes:
+  - the data_formatting_table.csv, which includes the list of datasets and their metadata
+    - note that dataset ID's less than 200 were obtained from Maria Dornelas from the compilation underlying Dornelas et al. 2014, *Science* 344: 296-299, although we excluded many datasets from that compilation due to more stringent time series requirements
+  - a file describing all of the fields in the data_formatting_table.csv
+  - a scripts folder including dataset-specific cleaning scripts (see below)
+  - an output folder that contains analytical results and data summaries of the compilation
+  - a Reference folder that includes the NSF proposal and some random project notes
 
-  - The raw data file in the format in which is was obtained
-  - A formatted dataset – a dataset format which is universal across all data files that includes:
-    - datasetID
-    - site
-    - date (either year or in date format)
-    - species
-    - count (the count field may represent)
-    - A site summary dataset, that provides the species richness and number of time samples for each site
-    - A dataframe coded “propOcc” which provides the proportion of time samples a given species was observed at a given site
-    
+The project also includes a **core-transient-datasets** sub-repo that is private. This sub-repo contains
+  - a raw_datasets folder, which includes the raw data for each dataset named using the convention 'dataset_XXX.csv' where XXX is our assigned dataset ID.
+    - note that in some instances, the raw data files required a small amount of format-massaging, or pasting together from multiple raw files, in which case the truly raw data files are in a subfolder called 'dataset_XXXRAW' along with the preformatting script.
+    - in that case, the dataset_XXX.csv file in the raw_datasets folder is the output of that preformatting script
+  - a formatted_datasets folder, which includes data files that have been processed by their respective data cleaning scripts to have the following fields: datasetID, site, date, species, count
+  - a propOcc_datasets folder which has proportional occupancy values for each species at each site within a dataset
+  - a siteSummaries folder which has a summary of richness, number of temporal sampling events, and average total abundance per sampling event for each site in the dataset
+
+
 ## R-scripts and functions in the core-transient file system
 Early attempts to automate the process of formatting the datasets were met with difficulties associated with marked differences in how the data were coded across studies. Because of this, we’ve found it necessary to format and prepare data for analysis on a dataset-by-dataset basis. In the R-scripts folder (‘core-transient/scripts/R-scripts’) you will find two files: core-transient_functions.R and a folder of data_cleaning_scripts.
 
@@ -22,7 +27,7 @@ Early attempts to automate the process of formatting the datasets were met with 
     - Determing the parameters of the beta distribution
     - Displaying summary statistics
     - Displaying a histogram
-  - **data_cleaning_script**. Each data cleaning script (titled: dwork__.R) is separated out into two basic parts.
+  - **data_cleaning_script**. Each data cleaning script (titled: dwork_XXX.R) is separated out into two basic parts.
     - **Data formatting**: This section takes the raw data and places fields within a format that is universal across datasets. Additionally, this process involves a considerable amount of data “cleaning”, which includes removing bad species, time records, and site designations. Another crucial component of each data formatting script are sets of lines used to update the data formatting table. This table is used for further data processing once the data formatting is complete. The data formatting process is broken into the following sections:
         - Exploring the overall data structure to familiarize yourself with the fields and current format of the raw data structure.
         - Exploring and formatting site data: Here, the data formatter will explore any available metadata associated with a dataset and determine how the researcher initially defined their sites. They will then arrange any nested sites in the order from largest to smallest site grain (e.g., region - site - plot -quad).
@@ -47,32 +52,9 @@ This should be run any time any of the functions in 'core-transient_functions.R'
 
 - **Processed datasets**: Currently, there are 12 datasets processed with proportional occurrence frames and 33 formatted datasets. The disparity between the number of proportional occurrence frames and formatted datasets predominantly reflects datasets with an inadequate number of time samples for each site given the current cut-off value of 10. All datasets for which proportional occurrence frames can be constructed under current cut-offs have been made. _**Still needed**_: To obtain more proportional occurrence frames under the current cut-off values, I suggest only formatting new datasets with at least 10 years of data (per site).
 
-## *Priority rankings* for obtaining and/or formatting data, on a scale of 0-3, are currently based on summing:
-
-### 0 = Low priority
-Common system and taxa, less than 20 sites **OR** sites defined by Lat Long
-
-### 1 = Minor priority
-Common system and taxa, more than 20 sites (**IF** sites are not defined by Lat Long)
--OR- uncommon system OR taxa less than 20 sites (**OR** sites defined by Lat Long)
-
-### 2 = Medium priority
-Uncommon system OR taxa, more than 20 sites (**IF** sites are not defined by Lat Long)
--OR- uncommon system AND taxa, less than 20 sites (**OR** sites defined by Lat Long)
-
-### 3 = high priority
-Uncommon system AND taxa, more than 20 sites (**IF** sites are not defined by Lat Long)
-
-#### Uncommon taxa (based on current representation in formatted datasets)
-Arthropod, Invertebrate, Plankton, Mammal  
-  
-#### Uncommon System (based on current representation in formatted datasets)
-Terrestrial or Aquatic  
-
-
 ## *Format flag codes*
 
- 0 = not yet examined
+ 0 = not yet examined  
  1 = formatting complete  
  2 = formatting in process  
  3 = formatting halted, issue  
