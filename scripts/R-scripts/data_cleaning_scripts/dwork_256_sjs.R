@@ -127,17 +127,6 @@ head(dataset)
 
 names(dataset)
 
-######ADDING IN preformat of data
-library(tidyr)
-#within(dataset, paste(dataset$Genus, dataset$spp, sep = " "))
-#Combining genus and species columns
-dataset <- unite(dataset, spec, Genus, spp, sep = " ", remove = TRUE)
-#getting data into wide to long format by year
-dataset = gather(dataset, year, count, X1889.1908:X1989.2008)
-#removing "x" from in front of year - CANT RUN 2X
-dataset$year = substring(dataset$year, 2)
-
-
 #--! PROVIDE INFO !--#
 unusedFieldNames = c('Numberofperiods', 'ResidualsfromSIF.SSFregression')
 
