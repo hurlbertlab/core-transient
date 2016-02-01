@@ -128,7 +128,7 @@ head(dataset)
 names(dataset)
 
 #--! PROVIDE INFO !--#
-unusedFieldNames = c('Numberofperiods', 'ResidualsfromSIF.SSFregression')
+unusedFieldNames = c('period', 'Numberofperiods', 'ResidualsfromSIF.SSFregression')
 
 dataset1 = dataset[, !names(dataset) %in% unusedFieldNames]
 
