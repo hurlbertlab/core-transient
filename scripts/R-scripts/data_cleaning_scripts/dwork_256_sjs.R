@@ -4,7 +4,7 @@
 #
 # Dataset name:Identifying zones of phenetic compression in West Mediterranean butterflies 
 #             (Satyrinae): refugia, invasion and hybridization
-# Dataset source (link): http://onlinelibrary.wiley.com/doi/10.1111/j.1472-4642.2012.00903.x/full
+# Dataset source (link): https://www.researchgate.net/publication/225129821_Core_and_satellite_butterfly_species_on_Elba_island_Tuscan_Archipelago_Italy_A_study_on_persistence_based_on_https://www.researchgate.net/publication/225129821_Core_and_satellite_butterfly_species_on_Elba_island_Tuscan_Archipelago_Italy_A_study_on_persistence_based_on_120_years_of_collection_data
 # Formatted by: Sara Snell
 #
 # Start by opening the data formatting table (data_formatting_table.csv). 
@@ -270,7 +270,10 @@ dataFormattingTable[,'subannualTgrain'] =
 # fill in the fields that specify nested spatial grains below.
 
 #--! PROVIDE INFO !--#
-site_grain_names = c("site", "quadrat")
+####ADDED site column specifying 1 since only 1 site sampled
+dataset2$site <- 1
+
+site_grain_names = c("site")
 
 # We will now create the site field with these codes concatenated if there
 # are multiple grain fields. Otherwise, site will just be the single grain field.
@@ -290,13 +293,13 @@ dataFormattingTable[,'Raw_spatial_grain'] =
   dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain',  
                                  
 #--! PROVIDE INFO !--#
-                                 0.25) 
+                                 100) 
 
 dataFormattingTable[,'Raw_spatial_grain_unit'] = 
   dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain',  
                                  
 #--! PROVIDE INFO !--#
-                                 'm2') 
+                                 'km2') 
 
 
 # BEFORE YOU CONTINUE. We need to make sure that there are at least minNTime for 
@@ -369,7 +372,7 @@ dataFormattingTable[,'spatial_scale_variable'] =
   dataFormattingTableFieldUpdate(datasetID, 'spatial_scale_variable',
 
 #--! PROVIDE INFO !--#
-                                 'Y')
+                                 'N')
 
 # Notes_siteFormat. Use this field to THOROUGHLY describe any changes made to the 
 # site field during formatting.
@@ -378,7 +381,7 @@ dataFormattingTable[,'Notes_siteFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_siteFormat', 
 
 #--! PROVIDE INFO !--#
-  'The site field is a concatenation of site and quadrat.')
+  'The site field is just the number 1 beacuse all samples are from the same island site.')
 
 
 #-------------------------------------------------------------------------------*
@@ -395,7 +398,7 @@ summary(dataset3)
 # If there is no countfield, set this equal to "".
 
 #--! PROVIDE INFO !--#
-countfield = ""
+countfield = "count"
 
 # Renaming it
 if (countfield == "") {
@@ -406,11 +409,12 @@ if (countfield == "") {
 
 # Check that the count field is numeric or integer, and convert if necessary
 class(dataset3$count)
-# For example, dataset3$count = as.numeric(as.character(dataset3$count))
+dataset3$count = as.numeric((dataset3$count))
 
 
 # Now we will remove zero counts and NA's:
 summary(dataset3)
+
 
 # Can usually tell if there are any zeros or NAs from that summary(). If there 
 # aren't any showing, still run these functions or continue with the update of 
@@ -462,7 +466,7 @@ dataFormattingTable[,'Notes_countFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_countFormat', 
                                  
 #--! PROVIDE INFO !--#                                 
-              'No count data provided, so 1s added to indicate presence')
+              'Presence data provided as 0,1, or NA')
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SPECIES DATA ----
@@ -476,7 +480,7 @@ dataFormattingTable[,'Notes_countFormat'] =
 # It will get converted to 'species'
 
 #--! PROVIDE INFO !--#
-speciesField = 'species_name'
+speciesField = 'spec'
 
 names(dataset5)[names(dataset5) == speciesField] = 'species'
 
@@ -519,46 +523,10 @@ table(dataset6$species)
 # correct spellings in good_name, and then replace them using the for loop below:
 
 #--! PROVIDE INFO !--#
-typo_name = c('CERATOPHYLLUM',
-              'CHARA',
-              'ELEOCHARIS',
-              'ELODEA',
-              'ISOETES',
-              'JUNCUS',
-              'LITTORELLA',
-              'LOBELIA',
-              'MYRIO. ALT.',
-              'MYRIO. SIBIR.',
-              'MYRIO. TENELLUM',
-              'MYRIO. VERT.',
-              'NAJAS',
-              'P. AMPLIFOLIUS',
-              'P. GRAMINEUS', 
-              'P. RICHARDSONII',
-              'P. ROBBINSII',
-              'SAJ.',           #no other genus begins with these letters
-              'VAL.')           #no other genus begins with these letters
+typo_name = c('')           
 
 #--! PROVIDE INFO !--#
-good_name = c('CERATOPHYLLUM DEMERSUM',
-              'CHARA SP',
-              'ELEOCHARIS SP',
-              'ELODEA CANADENSIS',
-              'ISOETES SP',
-              'JUNCUS SP',
-              'LITTORELLA UNIFLORA ASCH. VAR. AMERICANA',
-              'LOBELIA DORTMANNA',
-              'MYRIOPHYLLUM ALTERNIFLORUM',
-              'MYRIOPHYLLUM SIBIRICUM',
-              'MYRIOPHYLLUM TENELLUM',
-              'MYRIOPHYLLUM VERTICILLATUM',
-              'NAJAS FLEXILIS',
-              'POTAMOGETON AMPLIFOLIUS',
-              'POTAMOGETON GRAMINEUS',
-              'POTAMOGETON RICHARDSONII',
-              'POTAMOGETON ROBBINSII',
-              'SAGITTARIA LATIFOLIA',
-              'VALLISNERIA AMERICANA')
+good_name = c('')
 
 if (length(typo_name) > 0 & typo_name[1] != "") {
   for (n in 1:length(typo_name)) {
@@ -593,7 +561,7 @@ dataFormattingTable[,'Notes_spFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_spFormat',  
 
 #--! PROVIDE INFO !--#                                 
-  'A number of names represented in two obvious forms; 2 names (SAJ and VAL) assumed to be shorthand for Sagitarria and Vallisneria.')
+  'No bad species or typos were found so the species column was not altered')
 
 #-------------------------------------------------------------------------------*
 # ---- MAKE DATA FRAME OF COUNT BY SITES, SPECIES, AND YEAR ----
