@@ -186,7 +186,9 @@ if (length(dateFieldName) > 1) {
 # be '%Y-%m-%d'. Type "?strptime" for other examples of date formatting.
 
 #--! PROVIDE INFO !--#
-
+###ADDED in to get 4 years
+dataset1$year <- as.numeric(dataset1$year)
+dataset1$year = sapply(dataset1$year, function(x) if(x > 10) {x+1900} else {x + 2000})
 
 # If date is only listed in years:
 
