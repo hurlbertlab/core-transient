@@ -2,7 +2,7 @@
 #  DATA FORMATTING TEMPLATE
 ################################################################################*
 #
-# Dataset name:El Verde Grid long-term invertebrate data - Walking Stick
+# Dataset name:El Verde Grid long-term invertebrate data - Snails
 # Dataset source (link):http://luq2.lternet.edu/data/luqmetadata107
 # Formatted by: Sara Snell
 #
@@ -77,7 +77,6 @@ dataFormattingTable[,'Raw_datafile_name'] =
   'BigGridSnailCaptures.csv') 
 
 
-
 ########################################################
 # ANALYSIS CRITERIA                                    #  
 ########################################################
@@ -127,7 +126,7 @@ head(dataset)
 names(dataset)
 
 #--! PROVIDE INFO !--#
-unusedFieldNames = c('lakeid', 'min_depth', 'max_depth', 'year4')
+unusedFieldNames = c('SEASON', 'DATE', 'COMMENTS')
 
 dataset1 = dataset[, !names(dataset) %in% unusedFieldNames]
 
@@ -168,7 +167,7 @@ dataFormattingTable[,'LatLong_sites'] =
 # E.g., c('year', 'month', 'day')
 
 #--! PROVIDE INFO !--#
-dateFieldName = c('sampledate')
+dateFieldName = c('YEAR')
 
 # If necessary, paste together date info from multiple columns into single field
 if (length(dateFieldName) > 1) {
@@ -185,11 +184,10 @@ if (length(dateFieldName) > 1) {
 # be '%Y-%m-%d'. Type "?strptime" for other examples of date formatting.
 
 #--! PROVIDE INFO !--#
-dateformat = '%m/%d/%Y %H:%M'
 
 # If date is only listed in years:
 
-# dateformat = '%Y'
+dateformat = '%Y'
 
 # If the date is just a year, then make sure it is of class numeric
 # and not a factor. Otherwise change to a true date object.
@@ -244,7 +242,7 @@ dataFormattingTable[,'subannualTgrain'] =
   dataFormattingTableFieldUpdate(datasetID, 'subannualTgrain', 
 
 #--! PROVIDE INFO !--#                                 
-                                 'Y')
+                                 'N')
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SITE DATA ----
@@ -270,7 +268,7 @@ dataFormattingTable[,'subannualTgrain'] =
 # fill in the fields that specify nested spatial grains below.
 
 #--! PROVIDE INFO !--#
-site_grain_names = c("site", "quadrat")
+site_grain_names = c("POINT")
 
 # We will now create the site field with these codes concatenated if there
 # are multiple grain fields. Otherwise, site will just be the single grain field.
@@ -290,7 +288,7 @@ dataFormattingTable[,'Raw_spatial_grain'] =
   dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain',  
                                  
 #--! PROVIDE INFO !--#
-                                 0.25) 
+                                 ) 
 
 dataFormattingTable[,'Raw_spatial_grain_unit'] = 
   dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain',  
