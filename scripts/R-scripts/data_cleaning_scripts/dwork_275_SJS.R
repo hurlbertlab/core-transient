@@ -56,7 +56,7 @@ source('scripts/R-scripts/core-transient_functions.R')
 # Get data. First specify the dataset number ('datasetID') you are working with.
 
 #--! PROVIDE INFO !--#
-datasetID = 282 
+datasetID = 275 
 
 list.files('data/raw_datasets')
 
@@ -74,7 +74,7 @@ dataFormattingTable[,'Raw_datafile_name'] =
   dataFormattingTableFieldUpdate(datasetID, 'Raw_datafile_name',  
                                  
 #--! PROVIDE INFO !--#
-  'north_temperate_lakes_lter__macrophyte_species_at_quadrat_level_-_trout_lake.csv') 
+  'BigGridSnailCaptures.csv') 
 
 
 

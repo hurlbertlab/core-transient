@@ -169,7 +169,6 @@ dataFormattingTable[,'LatLong_sites'] =
 # then write these field names as a vector from largest to smallest temporal grain.
 # E.g., c('year', 'month', 'day')
 
-#--! PROVIDE INFO !--#
 dateFieldName = c('year')
 
 # If necessary, paste together date info from multiple columns into single field
@@ -190,7 +189,7 @@ if (length(dateFieldName) > 1) {
 
 # If date is only listed in years:
 
-dateformat = '%Y'
+dateformat = '%Y-%m-%d'
 
 # If the date is just a year, then make sure it is of class numeric
 # and not a factor. Otherwise change to a true date object.
