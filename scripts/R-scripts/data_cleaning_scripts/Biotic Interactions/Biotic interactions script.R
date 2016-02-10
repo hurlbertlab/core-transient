@@ -9,14 +9,16 @@ towhees = subsetocc[subsetocc$CommonName == "Spotted Towhee"| subsetocc$CommonNa
 
 #read in BBS data
 bbs = read.csv('data/raw_datasets/dataset_1.csv', header = T)
-subsettowhee = bbs[bbs$Aou == 5880|bbs$Aou == 5900,] # just two desired spp of towhee
-#select overlapping routes
-t1 = table(subsettowhee$stateroute, subsettowhee$Aou == 5880) 
+spotted = bbs[bbs$Aou == 5880,] # subsetting spotted towhees
 
-if (t1$subsettowhee.Aou....5880 == TRUE & t1$subsettowhee.Aou....5880 == FALSE) {
-  cbind(1)}
+#merge occupancy with bbs for spotted towhee
+t1 = merge(spotted, occupancy, by.x = "Aou", by.y = "AOU")
 
-#for each site, we want the abundance of competitors for GT towhee
+
+#BBS abundances of just spotted towhee
+#merge occupancy data of species by stateroute
+#occupancy on GT, abundance on spotteed
+#LT averge for GT towhee for 10 year
 
 
 #NOTES
