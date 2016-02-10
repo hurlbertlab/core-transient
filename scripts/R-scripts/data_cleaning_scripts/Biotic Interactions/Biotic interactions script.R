@@ -1,7 +1,7 @@
 #Biotic Interactions script
 
 #reading in dataset 
-occupancy = read.csv('scripts/R-scripts/data_cleaning_scripts/Biotic Interactions/Master_RO_Correlates_20110610.csv', header = T)
+Hurlbert_o = read.csv('scripts/R-scripts/data_cleaning_scripts/Biotic Interactions/Master_RO_Correlates_20110610.csv', header = T)
 #subsetting species whose occupancies were between 0.3 and 0.6 over a 10 eyar period
 subsetocc = occupancy[occupancy$X10yr.Prop > .3 & occupancy$X10yr.Prop < .7,]
 #compare green-tailed towhee to spotted towhee
@@ -9,12 +9,43 @@ towhees = subsetocc[subsetocc$CommonName == "Spotted Towhee"| subsetocc$CommonNa
 
 #read in BBS data
 bbs = read.csv('data/raw_datasets/dataset_1.csv', header = T)
-spotted = bbs[bbs$Aou == 5880,] # subsetting spotted towhees
+# subsetting spotted towhees
+spotted = bbs[bbs$Aou == 5880,] 
 
+#read in Coyle occupancy data
+coyle_o = read.csv('scripts/R-scripts/data_cleaning_scripts/Biotic Interactions/site_sp_occupancy_matrix_Coyle.csv', header = T)
+#rename column one to stateroute
+colnames(coyle_o)[1] = c("stateroute")
+#subset GT towhee within occupancy data
+gt = data.frame(coyle_o$stateroute, coyle_o$X5900)
 #merge occupancy with bbs for spotted towhee
-t1 = merge(spotted, occupancy, by.x = "Aou", by.y = "AOU")
+t1 = merge(spotted, gt, by.x = "stateroute", by.y = "coyle_o.stateroute")
+#insert GT occupancy = 0 instead of NA
+t1$coyle_o.X5900[is.na(t1$coyle_o.X5900)] <- 0
 
+#read in expected presence data
+ep = read.csv('scripts/R-scripts/data_cleaning_scripts/Biotic Interactions/expected_presence_on_BBS_routes.csv', header = T)
+#subset GT towhee within occupancy data
+gt_ep = ep[ep$AOU == 5900,] 
+#merge expected occupancy w real occupancy
+obs_exp = merge(gt_ep, t1, by = "stateroute")
+#view where coyle_occupancy = 0 but predicted presence
+GT_gaps = obs_exp[obs_exp$coyle_o.X5900 == 0,] 
 
+#merge in lat/long
+latlongs = read.csv('scripts/R-scripts/data_cleaning_scripts/Biotic Interactions/routes 1996-2010 consecutive.csv', header = T)
+plotdata_all = merge(obs_exp, latlongs, by = "stateroute") #where expected didnt equal observed
+plotdata = merge(GT_gaps, latlongs, by = "stateroute") #where expected didnt equal observed GT only
+#spotted range in point format
+spotty = merge(bbs, latlongs, by = "stateroute")
+spotty = spotty[spotty$Aou == 5880,]
+
+#attempting to plot
+library(maps)
+map("state")
+points(spotty$Longi, spotty$Lati, col = 2, pch = 18)
+points(plotdata_all$Longi, plotdata_all$Lati, col = 3, pch = 16)
+points(plotdata$Longi, plotdata$Lati, col = 4, pch = 17)
 #BBS abundances of just spotted towhee
 #merge occupancy data of species by stateroute
 #occupancy on GT, abundance on spotteed
