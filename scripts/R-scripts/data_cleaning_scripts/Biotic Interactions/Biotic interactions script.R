@@ -51,6 +51,9 @@ points(plotdata$Longi, plotdata$Lati, col = 4, pch = 17)
 #occupancy on GT, abundance on spotteed
 #LT averge for GT towhee for 10 year
 
+#starting lm analysis
+f1 = lm(stateroute ~ coyle_o.X5900 * Year, data = obs_exp)
+summary(f1)
 
 #NOTES
 #flycathcers, green tailed tohee
