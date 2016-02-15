@@ -3,7 +3,7 @@ library(plyr)
 #reading in dataset 
 Hurlbert_o = read.csv('scripts/R-scripts/data_cleaning_scripts/Biotic Interactions/Master_RO_Correlates_20110610.csv', header = T)
 #subsetting species whose occupancies were between 0.3 and 0.6 over a 10 eyar period
-subsetocc = occupancy[occupancy$X10yr.Prop > .3 & occupancy$X10yr.Prop < .7,]
+subsetocc = Hurlbert_o[Hurlbert_o$X10yr.Prop > .3 & Hurlbert_o$X10yr.Prop < .7,]
 #compare green-tailed towhee to spotted towhee
 towhees = subsetocc[subsetocc$CommonName == "Spotted Towhee"| subsetocc$CommonName == "Green-tailed Towhee",]
 
@@ -71,15 +71,18 @@ env_occu_matrix = merge(env, bbs, by.x = "Species", by.y = "Aou")
 #t = aggregate(env_occu_matrix, by = list(env_occu_matrix$stateroute), FUN = mean)
 #merge env matrix w occupancy for towhee
 finalmodelmatrix = merge(obs_exp_2, env_occu_matrix, by = "stateroute", all = FALSE)
+#subset GT towhee within env
+gt_env = finalmodelmatrix[finalmodelmatrix$Common.Name == "Green-tailed Towhee",] 
 #starting lm analysis
-f1 = lm(GToccupancy ~  stateroute, data = finalmodelmatrix)
+f1 = lm(GToccupancy ~  stateroute, data = gt_env)
 summary(f1)
 
-f2 = lm(GToccupancy ~  stateroute*spottedtotal, data = finalmodelmatrix)
+f2 = lm(GToccupancy ~  stateroute*spottedtotal, data = gt_env)
 summary(f2)
 
-f3 = lm(GToccupancy ~  stateroute*spottedtotal, data = finalmodelmatrix)
-  
+f3 = lm(GToccupancy ~  stateroute+spottedtotal+Temp.Est+Elev.Est+Precip.Est+EVI.Est+Euc.dist.Est,
+        data = gt_env)
+summary(f3)  
   
   
 #NOTES
