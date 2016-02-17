@@ -696,7 +696,7 @@ tGrain = 'year'
 site_grain_names
 
 #--! PROVIDE INFO !--#
-sGrain = 'WATERSHED.LINE'
+sGrain = 'Transect_Plot'
 
 # This is a reasonable choice of spatial grain because ...
 #--! PROVIDE INFO !--#
