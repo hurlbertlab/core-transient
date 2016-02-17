@@ -12,7 +12,7 @@
 # Flag codes are as follows:
   # 0 = not currently worked on
   # 1 = formatting complete
-  # 2 = formatting in process
+  # 2 = formatting in processcd
   # 3 = formatting halted, issue
   # 4 = data unavailable
   # 5 = data insufficient for generating occupancy data

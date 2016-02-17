@@ -2,10 +2,11 @@
 #  DATA FORMATTING TEMPLATE
 ################################################################################*
 #
-# Dataset name: Breeding Bird Dynamics in a Primeval Temperate Forest Over Thirty-Five
+# Dataset name: Breeding Bird Dynamics in a Primeval Temperate Forest Over Forty
                     #Years: Variation and Stability in the Changing World
 
 # Dataset source (link): http://www.bioone.org/doi/pdf/10.3161/000164510X551354
+# Link only has 5 years of data - Acquired full dataset from author
 # Formatted by: Sara Snell
 #
 # Start by opening the data formatting table (data_formatting_table.csv). 
@@ -129,7 +130,7 @@ head(dataset)
 names(dataset)
 
 #--! PROVIDE INFO !--#
-unusedFieldNames = c('p.10.ha', 'x')
+unusedFieldNames = c('')
 
 dataset1 = dataset[, !names(dataset) %in% unusedFieldNames]
 
@@ -170,7 +171,6 @@ dataFormattingTable[,'LatLong_sites'] =
 # E.g., c('year', 'month', 'day')
 
 #--! PROVIDE INFO !--#
-dataset1$year <- substring(dataset1$year, 2)
 dateFieldName = c('year')
 
 # If necessary, paste together date info from multiple columns into single field
@@ -272,7 +272,7 @@ dataFormattingTable[,'subannualTgrain'] =
 # fill in the fields that specify nested spatial grains below.
 
 #--! PROVIDE INFO !--#
-site_grain_names = c("site")
+site_grain_names = c("PLOT")
 
 # We will now create the site field with these codes concatenated if there
 # are multiple grain fields. Otherwise, site will just be the single grain field.
@@ -292,7 +292,7 @@ dataFormattingTable[,'Raw_spatial_grain'] =
   dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain',  
                                  
 #--! PROVIDE INFO !--#
-                                 27.5)  #There were 5 different sites of slightly diff area, so the average of 5 sites were used
+                                 27)  #There were 7 different sites of slightly diff area, so the average of sites were used
 
 dataFormattingTable[,'Raw_spatial_grain_unit'] = 
   dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain',  
@@ -381,7 +381,7 @@ dataFormattingTable[,'Notes_siteFormat'] =
 
 #--! PROVIDE INFO !--#
   'The site field is the name of each site, which are different areas and habitat types.
-  Forest type is listed in the paper, and the average of the 5 site area sizes was used for
+  Habitat type is listed in the paper, and the average of the 7 site area sizes was used for
   the spatial grain.')
 
 
@@ -480,7 +480,7 @@ dataFormattingTable[,'Notes_countFormat'] =
 # It will get converted to 'species'
 
 #--! PROVIDE INFO !--#
-speciesField = 'spec'
+speciesField = 'LATIN'
 
 names(dataset5)[names(dataset5) == speciesField] = 'species'
 
@@ -509,7 +509,7 @@ data.frame(table(dataset5$species))
 # Because of this, you should really stop here and post an issue on GitHub. 
 
 #--! PROVIDE INFO !--#
-bad_sp = c('')
+bad_sp = c('Ficedula albicollis x F. hypoleuca') #hybrid spp removed
 
 dataset6 = dataset5[!dataset5$species %in% bad_sp,]
 
@@ -523,10 +523,10 @@ table(dataset6$species)
 # correct spellings in good_name, and then replace them using the for loop below:
 
 #--! PROVIDE INFO !--#
-typo_name = c('C.  coccothraustes')           
+typo_name = c('Lophophnaes cristatus', 'Poecilepalustris')           
 
 #--! PROVIDE INFO !--#
-good_name = c('C. coccothraustes')
+good_name = c('Lophophanes cristatus', 'Poecile palustris')
 
 if (length(typo_name) > 0 & typo_name[1] != "") {
   for (n in 1:length(typo_name)) {
@@ -561,7 +561,7 @@ dataFormattingTable[,'Notes_spFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_spFormat',  
 
 #--! PROVIDE INFO !--#                                 
-  'There was a spacing typo for one species, which was corrected.')
+  'There were two typo species, and the hybrid species was removed bc both parent spp were included in count data.')
 
 #-------------------------------------------------------------------------------*
 # ---- MAKE DATA FRAME OF COUNT BY SITES, SPECIES, AND YEAR ----
@@ -617,7 +617,7 @@ dataFormattingTable[,'format_flag'] =
   dataFormattingTableFieldUpdate(datasetID, 'format_flag', 
      
 #--! PROVIDE INFO !--#                                 
-                                 3)
+                                 1)
 
 # Flag codes are as follows:
 # 0 = not currently worked on
@@ -694,7 +694,7 @@ tGrain = 'year'
 site_grain_names
 
 #--! PROVIDE INFO !--#
-sGrain = 'site'
+sGrain = 'PLOT'
 
 # This is a reasonable choice of spatial grain because ...
 #--! PROVIDE INFO !--#
