@@ -2,7 +2,7 @@
 #  DATA FORMATTING TEMPLATE
 ################################################################################*
 #
-# Dataset name:El Verde Grid long-term invertebrate data - Snails
+# Dataset name: El Verde Grid long-term invertebrate data - Snails
 # Dataset source (link):http://luq2.lternet.edu/data/luqmetadata107
 # Formatted by: Sara Snell
 #
