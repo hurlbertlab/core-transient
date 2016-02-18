@@ -11,35 +11,34 @@ towhees = subsetocc[subsetocc$CommonName == "Spotted Towhee"| subsetocc$CommonNa
 bbs = read.csv('data/raw_datasets/dataset_1.csv', header = T)
 # subsetting spotted towhees
 spotted = bbs[bbs$Aou == 5880,] 
-
+#aggregate based on year to get just spotted towhee abundance
+spot_agg = aggregate(spotted, by = list(spotted$stateroute), FUN = mean) 
 #read in Coyle occupancy data
 coyle_o = read.csv('scripts/R-scripts/data_cleaning_scripts/Biotic Interactions/site_sp_occupancy_matrix_Coyle.csv', header = T)
 #rename column one to stateroute
 colnames(coyle_o)[1] = c("stateroute")
 #subset GT towhee within occupancy data
-gt = data.frame(coyle_o$stateroute, coyle_o$X5900)
+gt_occ = data.frame(coyle_o$stateroute, coyle_o$X5900)
+#subset spotted towhee within occupancy data
+spot_occ = data.frame(coyle_o$stateroute, coyle_o$X5880)
 #merge occupancy with bbs for spotted towhee
-t1 = merge(spotted, gt, by.x = "stateroute", by.y = "coyle_o.stateroute")
+t1 = merge(spot_agg, gt_occ, by.x = "stateroute", by.y = "coyle_o.stateroute")
 #insert GT occupancy = 0 instead of NA
 t1$coyle_o.X5900[is.na(t1$coyle_o.X5900)] <- 0
-
+#remove duplicate column
+drops <- c("Group.1", "Year", "Aou")
+t1 = t1[, !(names(t1) %in% drops)]
+#merge occupancy with bbs for spotted towhee
+t2 = merge(spot_occ, gt_occ, by="coyle_o.stateroute")
 #read in expected presence data
 ep = read.csv('scripts/R-scripts/data_cleaning_scripts/Biotic Interactions/expected_presence_on_BBS_routes.csv', header = T)
 #subset GT towhee within occupancy data
 gt_ep = ep[ep$AOU == 5900,] 
-#merge expected occupancy w real occupancy
-obs_exp = merge(gt_ep, t1, by = "stateroute")
-#dropping duplicate columns
-drops <- c("SSTATENUMB","SROUTE", "AOU", "Year", "Aou")
-obs_exp = obs_exp[, !(names(obs_exp) %in% drops)]
-#renaming columns for clarity
-names(obs_exp) = c("stateroute", "spottedtotal", "GToccupancy")
-#aggregate based on year to get an average for each route
-obs_exp_2 = aggregate(obs_exp, by = list(obs_exp$stateroute), FUN = mean)
-#double checked with subset: mean(obs_exp$coyle_o.X5900[obs_exp$stateroute == 14168])
-#remove duplicate column
-drops <- c("Group.1")
-obs_exp_2 = obs_exp_2[, !(names(obs_exp_2) %in% drops)]
+#merge expected occupancy w real occupancy SPOT TOTAL
+obs_exp_total = merge(gt_ep, t1, by = "stateroute")
+#merge expected occupancy w real occupancy SPOT OCC
+obs_exp_occ = merge(gt_ep, t2, by.x = "stateroute", by.y = "coyle_o.stateroute")
+
 #view where coyle_occupancy = 0 but predicted presence
 GT_gaps = obs_exp_2[obs_exp_2$GToccupancy == 0,] 
 
@@ -64,7 +63,7 @@ points(plotdata$Longi, plotdata$Lati, col = 4, pch = 17)
 
 #read in env data 
 #from biol 465 final project, Snell Project Final.R script
-env = read.csv('scripts/R-scripts/data_cleaning_scripts/Biotic Interactions/BIOL465_final.csv', header = T)
+env = read.csv('scripts/R-scripts/data_cleaning_scripts/Biotic Interactions/occuenv.csv', header = T)
 #merge env data w obs_exp
 env_occu_matrix = merge(env, bbs, by.x = "Species", by.y = "Aou")
 #aggregate based on year to get an average for each route
@@ -74,13 +73,13 @@ finalmodelmatrix = merge(obs_exp_2, env_occu_matrix, by = "stateroute", all = FA
 #subset GT towhee within env
 gt_env = finalmodelmatrix[finalmodelmatrix$Common.Name == "Green-tailed Towhee",] 
 #starting lm analysis
-f1 = lm(GToccupancy ~  stateroute, data = gt_env)
+f1 = lm(GToccupancy ~  , data = gt_env)
 summary(f1)
 
-f2 = lm(GToccupancy ~  stateroute*spottedtotal, data = gt_env)
+f2 = lm(GToccupancy ~  spottedtotal, data = gt_env)
 summary(f2)
 
-f3 = lm(GToccupancy ~  stateroute+spottedtotal+Temp.Est+Elev.Est+Precip.Est+EVI.Est+Euc.dist.Est,
+f3 = lm(GToccupancy ~  spottedtotal+Temp.Est+Elev.Est+Precip.Est+EVI.Est+Euc.dist.Est,
         data = gt_env)
 summary(f3)  
   
