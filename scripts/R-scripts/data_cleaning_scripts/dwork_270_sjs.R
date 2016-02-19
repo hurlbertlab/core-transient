@@ -2,11 +2,14 @@
 #  DATA FORMATTING TEMPLATE
 ################################################################################*
 #
-# Dataset name: Bird Populations in East Central Illinois:
-#       Fluctuations, Variations, and Development over a Half-Century
-# Dataset source (link): https://www.ideals.illinois.edu/bitstream/handle/2142/25182/birdpopulationsi52kend.pdf?sequence=1
-# Formatted by: Sara Snell
-#
+# Dataset name: Long-Term Community Dynamics of Small Landbirds with and Without 
+# Exposure to Extensive Disturbance from Military Training Activities
+# Dataset source (link): http://link.springer.com/article/10.1007/s00267-009-9421-6/fulltext.html
+# Formatted by: Sara Snell 
+
+# Data come in occupancy proportions already so data formatting just to update data fromatting table
+#Konza prarie site - other site is Ft. Riley, d271
+
 # Start by opening the data formatting table (data_formatting_table.csv). 
 # Datasets to be worked on will have a 'format_flag' of 0.
 
@@ -57,7 +60,7 @@ source('scripts/R-scripts/core-transient_functions.R')
 # Get data. First specify the dataset number ('datasetID') you are working with.
 
 #--! PROVIDE INFO !--#
-datasetID = 282 
+datasetID = 270
 
 list.files('data/raw_datasets')
 
@@ -75,7 +78,7 @@ dataFormattingTable[,'Raw_datafile_name'] =
   dataFormattingTableFieldUpdate(datasetID, 'Raw_datafile_name',  
                                  
 #--! PROVIDE INFO !--#
-  'birdpopulationsi52kend.pdf') 
+  'art%3A10.1007%2Fs00267-009-9421-6.pdf') 
 
 
 
@@ -128,7 +131,7 @@ head(dataset)
 names(dataset)
 
 #--! PROVIDE INFO !--#
-unusedFieldNames = c('lakeid', 'min_depth', 'max_depth', 'year4')
+unusedFieldNames = c('KP.gaind', 'FR.gaind', 'KP.losse', 'FR.losse')
 
 dataset1 = dataset[, !names(dataset) %in% unusedFieldNames]
 
@@ -169,24 +172,24 @@ dataFormattingTable[,'LatLong_sites'] =
 # E.g., c('year', 'month', 'day')
 
 #--! PROVIDE INFO !--#
-dateFieldName = c('sampledate')
+#dateFieldName = c('sampledate')
 
 # If necessary, paste together date info from multiple columns into single field
-if (length(dateFieldName) > 1) {
-  newDateField = dataset1[, dateFieldName[1]]
-  for (i in dateFieldName[2:length(dateFieldName)]) { newDateField = paste(newDateField, dataset[,i], sep = "-") }
-  dataset1$date = newDateField
-  datefield = 'date'
-} else {
-  datefield = dateFieldName
-}
+#if (length(dateFieldName) > 1) {
+#  newDateField = dataset1[, dateFieldName[1]]
+#  for (i in dateFieldName[2:length(dateFieldName)]) { newDateField = paste(newDateField, dataset[,i], sep = "-") }
+#  dataset1$date = newDateField
+#  datefield = 'date'
+#} else {
+#  datefield = dateFieldName
+#}
 
 # What is the format in which date data is recorded? For example, if it is
 # recorded as 5/30/94, then this would be '%m/%d/%y', while 1994-5-30 would
 # be '%Y-%m-%d'. Type "?strptime" for other examples of date formatting.
 
 #--! PROVIDE INFO !--#
-dateformat = '%m/%d/%Y %H:%M'
+#dateformat = '%m/%d/%Y %H:%M'
 
 # If date is only listed in years:
 
@@ -195,34 +198,34 @@ dateformat = '%m/%d/%Y %H:%M'
 # If the date is just a year, then make sure it is of class numeric
 # and not a factor. Otherwise change to a true date object.
 
-if (dateformat == '%Y' | dateformat == '%y') {
-  date = as.numeric(as.character(dataset1[, datefield]))
-} else {
-  date = as.POSIXct(strptime(dataset1[, datefield], dateformat))
-}
+#if (dateformat == '%Y' | dateformat == '%y') {
+#  date = as.numeric(as.character(dataset1[, datefield]))
+#} else {
+#  date = as.POSIXct(strptime(dataset1[, datefield], dateformat))
+#}
 
 # A check on the structure lets you know that date field is now a date object:
 
-class(date)
+#class(date)
 
 # Give a double-check, if everything looks okay replace the column:
 
-head(dataset1[, datefield])
+#head(dataset1[, datefield])
 
-head(date)
+#head(date)
 
-dataset2 = dataset1
+#dataset2 = dataset1
 
 # Delete the old date field
-dataset2 = dataset2[, -which(names(dataset2) %in% dateFieldName)]
+#dataset2 = dataset2[, -which(names(dataset2) %in% dateFieldName)]
 
 # Assign the new date values in a field called 'date'
-dataset2$date = date
+#dataset2$date = date
 
 # Check the results:
 
-head(dataset2)
-str(dataset2)
+#head(dataset2)
+#str(dataset2)
 
 # !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE DATE DATA WERE MODIFIED!
 
@@ -235,7 +238,7 @@ dataFormattingTable[,'Notes_timeFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_timeFormat', 
 
 #--! PROVIDE INFO !--#
-    'The only modification to this field involved converting to a date object.')
+    'No date objects, have proportion species occurred over 11 year sampling period.')
 
 
 # subannualTgrain. After exploring the time data, was this dataset sampled at a 
@@ -245,7 +248,7 @@ dataFormattingTable[,'subannualTgrain'] =
   dataFormattingTableFieldUpdate(datasetID, 'subannualTgrain', 
 
 #--! PROVIDE INFO !--#                                 
-                                 'Y')
+                                 'N')
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SITE DATA ----
@@ -271,27 +274,30 @@ dataFormattingTable[,'subannualTgrain'] =
 # fill in the fields that specify nested spatial grains below.
 
 #--! PROVIDE INFO !--#
-site_grain_names = c("site", "quadrat")
+#site_grain_names = c("site", "quadrat")
 
 # We will now create the site field with these codes concatenated if there
 # are multiple grain fields. Otherwise, site will just be the single grain field.
-num_grains = length(site_grain_names)
+#num_grains = length(site_grain_names)
 
-site = dataset2[, site_grain_names[1]]
-if (num_grains > 1) {
-  for (i in 2:num_grains) {
-    site = paste(site, dataset2[, site_grain_names[i]], sep = "_")
-  } 
-}
+#site = dataset2[, site_grain_names[1]]
+#if (num_grains > 1) {
+#  for (i in 2:num_grains) {
+#    site = paste(site, dataset2[, site_grain_names[i]], sep = "_")
+#  } 
+#}
 
 # What is the spatial grain of the finest sampling scale? For example, this might be
 # a 0.25 m2 quadrat, or a 5 m transect, or a 50 ml water sample.
+
+#Konza site = 3487 ha total, 1112700 m2 (from LTER transect data from Allen)
+#Ft Riley = 40,273 ha, 20,000 m2 x 60 plots
 
 dataFormattingTable[,'Raw_spatial_grain'] = 
   dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain',  
                                  
 #--! PROVIDE INFO !--#
-                                 0.25) 
+                              1112700) 
 
 dataFormattingTable[,'Raw_spatial_grain_unit'] = 
   dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain',  
@@ -303,47 +309,47 @@ dataFormattingTable[,'Raw_spatial_grain_unit'] =
 # BEFORE YOU CONTINUE. We need to make sure that there are at least minNTime for 
 # sites at the coarsest possible spatial grain. 
 
-siteCoarse = dataset2[, site_grain_names[1]]
+#siteCoarse = dataset2[, site_grain_names[1]]
 
-if (dateformat == '%Y' | dateformat == '%y') {
-  dateYear = dataset2$date
-} else {
-  dateYear = format(dataset2$date, '%Y')
-}
+#if (dateformat == '%Y' | dateformat == '%y') {
+#  dateYear = dataset2$date
+#} else {
+#  dateYear = format(dataset2$date, '%Y')
+#}
 
-datasetYearTest = data.frame(siteCoarse, dateYear)
+#datasetYearTest = data.frame(siteCoarse, dateYear)
 
-ddply(datasetYearTest, .(siteCoarse), summarise, 
-      lengthYears =  length(unique(dateYear)))
+#ddply(datasetYearTest, .(siteCoarse), summarise, 
+#      lengthYears =  length(unique(dateYear)))
 
 # If the dataset has less than minNTime years per site, do not continue processing. 
 
 
 # Do some quality control by comparing the site fields in the dataset with the new vector of sites:
 
-head(site)
+#head(site)
 
 # Check how evenly represented all of the sites are in the dataset. If this is the
 # type of dataset where every site was sampled on a regular schedule, then you
 # expect to see similar values here across sites. Sites that only show up a small
 # percent of the time may reflect typos.
 
-data.frame(table(site))
+#data.frame(table(site))
 
 # All looks correct, so replace the site column in the dataset (as a factor) and remove the unnecessary fields, start by renaming the dataset to dataset2:
 
-dataset3 = dataset2
+#dataset3 = dataset2
 
 # Remove any hierarchical site related fields that are no longer needed, IF NECESSARY.
 
 #--! PROVIDE INFO !--#
-dataset3 = dataset3[, !names(dataset3) %in% site_grain_names]
+#dataset3 = dataset3[, !names(dataset3) %in% site_grain_names]
 
-dataset3$site = factor(site)
+#dataset3$site = factor(site)
 
 # Check the new dataset (are the columns as they should be?):
 
-head(dataset3)
+#head(dataset3)
 
 # !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE SITE DATA WERE MODIFIED!
 
@@ -353,14 +359,14 @@ head(dataset3)
 # one, it was coded as "site_quadrat"). Alternatively, if the site were concatenated 
 # from latitude and longitude fields, the encoding would be "lat_long". 
 
-if (dataFormattingTable[dataFormattingTable$dataset_ID == datasetID,'LatLong_sites'] == "N") {
-  dataFormattingTable[,'Raw_siteUnit'] = 
-    dataFormattingTableFieldUpdate(datasetID, 'Raw_siteUnit',  
-                                   paste(site_grain_names, collapse="_")) 
-} else if (dataFormattingTable[dataFormattingTable$dataset_ID == datasetID,'LatLong_sites'] == "Y") {
-  dataFormattingTable[,'Raw_siteUnit'] = 
-    dataFormattingTableFieldUpdate(datasetID, 'Raw_siteUnit', "lat_long") 
-}  
+#if (dataFormattingTable[dataFormattingTable$dataset_ID == datasetID,'LatLong_sites'] == "N") {
+#  dataFormattingTable[,'Raw_siteUnit'] = 
+#    dataFormattingTableFieldUpdate(datasetID, 'Raw_siteUnit',  
+#                                   paste(site_grain_names, collapse="_")) 
+#} else if (dataFormattingTable[dataFormattingTable$dataset_ID == datasetID,'LatLong_sites'] == "Y") {
+#  dataFormattingTable[,'Raw_siteUnit'] = 
+#    dataFormattingTableFieldUpdate(datasetID, 'Raw_siteUnit', "lat_long") 
+#}  
 
 
 # spatial_scale_variable. Is a site potentially nested (e.g., plot within a quad or 
@@ -370,7 +376,7 @@ dataFormattingTable[,'spatial_scale_variable'] =
   dataFormattingTableFieldUpdate(datasetID, 'spatial_scale_variable',
 
 #--! PROVIDE INFO !--#
-                                 'Y')
+                                 'N')
 
 # Notes_siteFormat. Use this field to THOROUGHLY describe any changes made to the 
 # site field during formatting.
@@ -379,7 +385,7 @@ dataFormattingTable[,'Notes_siteFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_siteFormat', 
 
 #--! PROVIDE INFO !--#
-  'The site field is a concatenation of site and quadrat.')
+  'The site for 270 is Kona Prairie, and 271 is Ft Riley.')
 
 
 #-------------------------------------------------------------------------------*
@@ -389,38 +395,38 @@ dataFormattingTable[,'Notes_siteFormat'] =
 # table, we need to change the name of the field which represents counts, 
 # densities, percent cover, etc to "count". Then we will clean up unnecessary values.
 
-names(dataset3)
-summary(dataset3)
+#names(dataset3)
+#summary(dataset3)
 
 # Fill in the original field name for the count or abundance data here. 
 # If there is no countfield, set this equal to "".
 
 #--! PROVIDE INFO !--#
-countfield = ""
+#countfield = ""
 
 # Renaming it
-if (countfield == "") {
-  dataset3$count = 1
-} else {
-  names(dataset3)[which(names(dataset3) == countfield)] = 'count'
-}
+#if (countfield == "") {
+#  dataset3$count = 1
+#} else {
+#  names(dataset3)[which(names(dataset3) == countfield)] = 'count'
+#}
 
 # Check that the count field is numeric or integer, and convert if necessary
-class(dataset3$count)
+#class(dataset3$count)
 # For example, dataset3$count = as.numeric(as.character(dataset3$count))
 
 
 # Now we will remove zero counts and NA's:
-summary(dataset3)
+#summary(dataset3)
 
 # Can usually tell if there are any zeros or NAs from that summary(). If there 
 # aren't any showing, still run these functions or continue with the update of 
 # dataset# so that you are consistent with this template.
 
 # Subset to records > 0 (if applicable):
-dataset4 = subset(dataset3, count > 0) 
+#dataset4 = subset(dataset3, count > 0) 
 
-summary(dataset4)
+#summary(dataset4)
 
 # Check to make sure that by removing 0's that you haven't completely removed
 # any sampling events in which nothing was observed. Compare the number of 
@@ -429,23 +435,23 @@ summary(dataset4)
 # If there are no sampling events lost, then we can go ahead and use the 
 # smaller dataset4 which could save some time in subsequent analyses.
 # If there are sampling events lost, then we'll keep the 0's (use dataset3).
-numEventsd3 = nrow(unique(dataset3[, c('site', 'date')]))
-numEventsd4 = nrow(unique(dataset4[, c('site', 'date')]))
-if(numEventsd3 > numEventsd4) {
-  dataset4 = dataset3
-} else {
-  dataset4 = dataset4
-}
+#numEventsd3 = nrow(unique(dataset3[, c('site', 'date')]))
+#numEventsd4 = nrow(unique(dataset4[, c('site', 'date')]))
+#if(numEventsd3 > numEventsd4) {
+#  dataset4 = dataset3
+#} else {
+#  dataset4 = dataset4
+#}
 
 
 # Remove NA's:
 
-dataset5 = na.omit(dataset4)
+#dataset5 = na.omit(dataset4)
 
 
 # How does it look?
 
-head(dataset5)
+#head(dataset5)
 
 # !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE COUNT DATA WERE MODIFIED!
 
@@ -457,13 +463,13 @@ dataFormattingTable[,'countFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'countFormat',  
 
 #--! PROVIDE INFO !--#                                 
-                                 'presence')
+                                 'proportion occupancy')
 
 dataFormattingTable[,'Notes_countFormat'] = 
   dataFormattingTableFieldUpdate(datasetID, 'Notes_countFormat', 
                                  
 #--! PROVIDE INFO !--#                                 
-              'No count data provided, so 1s added to indicate presence')
+              'Proportion of occupancy over the study period provided for each site.')
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SPECIES DATA ----
@@ -477,15 +483,15 @@ dataFormattingTable[,'Notes_countFormat'] =
 # It will get converted to 'species'
 
 #--! PROVIDE INFO !--#
-speciesField = 'species_name'
+#speciesField = 'species_name'
 
-names(dataset5)[names(dataset5) == speciesField] = 'species'
+#names(dataset5)[names(dataset5) == speciesField] = 'species'
 
 # Look at the individual species present and how frequently they occur: This way 
 # you can more easily scan the species names (listed alphabetically) and identify 
 # potential misspellings, extra characters or blank space, or other issues.
 
-data.frame(table(dataset5$species))
+#data.frame(table(dataset5$species))
 
 # If there are entries that only specify the genus while there are others that 
 # specify the species in addition to that same genus, they need to be regrouped 
@@ -506,81 +512,45 @@ data.frame(table(dataset5$species))
 # Because of this, you should really stop here and post an issue on GitHub. 
 
 #--! PROVIDE INFO !--#
-bad_sp = c('')
+#bad_sp = c('')
 
-dataset6 = dataset5[!dataset5$species %in% bad_sp,]
+#dataset6 = dataset5[!dataset5$species %in% bad_sp,]
 
 # It may be useful to count the number of times each name occurs, as misspellings 
 # or typos will likely only show up one time.
 
-table(dataset6$species)
+#table(dataset6$species)
 
 # If you find any potential typos, try to confirm that the "mispelling" isn't 
 # actually a valid name. If not, then list the typos in typo_name, and the 
 # correct spellings in good_name, and then replace them using the for loop below:
 
 #--! PROVIDE INFO !--#
-typo_name = c('CERATOPHYLLUM',
-              'CHARA',
-              'ELEOCHARIS',
-              'ELODEA',
-              'ISOETES',
-              'JUNCUS',
-              'LITTORELLA',
-              'LOBELIA',
-              'MYRIO. ALT.',
-              'MYRIO. SIBIR.',
-              'MYRIO. TENELLUM',
-              'MYRIO. VERT.',
-              'NAJAS',
-              'P. AMPLIFOLIUS',
-              'P. GRAMINEUS', 
-              'P. RICHARDSONII',
-              'P. ROBBINSII',
-              'SAJ.',           #no other genus begins with these letters
-              'VAL.')           #no other genus begins with these letters
+#typo_name = c()           #no other genus begins with these letters
 
 #--! PROVIDE INFO !--#
-good_name = c('CERATOPHYLLUM DEMERSUM',
-              'CHARA SP',
-              'ELEOCHARIS SP',
-              'ELODEA CANADENSIS',
-              'ISOETES SP',
-              'JUNCUS SP',
-              'LITTORELLA UNIFLORA ASCH. VAR. AMERICANA',
-              'LOBELIA DORTMANNA',
-              'MYRIOPHYLLUM ALTERNIFLORUM',
-              'MYRIOPHYLLUM SIBIRICUM',
-              'MYRIOPHYLLUM TENELLUM',
-              'MYRIOPHYLLUM VERTICILLATUM',
-              'NAJAS FLEXILIS',
-              'POTAMOGETON AMPLIFOLIUS',
-              'POTAMOGETON GRAMINEUS',
-              'POTAMOGETON RICHARDSONII',
-              'POTAMOGETON ROBBINSII',
-              'SAGITTARIA LATIFOLIA',
-              'VALLISNERIA AMERICANA')
+#good_name = c()
 
-if (length(typo_name) > 0 & typo_name[1] != "") {
-  for (n in 1:length(typo_name)) {
-    dataset6$species[dataset6$species == typo_name[n]] = good_name[n]
-  }
-}
+#if (length(typo_name) > 0 & typo_name[1] != "") {
+#  for (n in 1:length(typo_name)) {
+#    dataset6$species[dataset6$species == typo_name[n]] = good_name[n]
+#  }
+#}
 
 
 # Reset the factor levels:
 
-dataset6$species = factor(dataset6$species)
+#dataset6$species = factor(dataset6$species)
 
 # Let's look at how the removal of bad species and altered the length of the dataset:
 
-nrow(dataset5)
+#nrow(dataset5)
 
-nrow(dataset6)
+#nrow(dataset6)
 
 # Look at the head of the dataset to ensure everything is correct:
 
-head(dataset6)
+#head(dataset6)
 
 # !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE SPECIES DATA WERE MODIFIED!
 
@@ -594,8 +564,7 @@ dataFormattingTable[,'Notes_spFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_spFormat',  
 
 #--! PROVIDE INFO !--#                                 
-  'A number of names represented in two obvious forms; 2 names (SAJ and VAL) assumed to be shorthand for Sagitarria and Vallisneria.')
-
+  'Duplicates of species names were checked for in the publication, none were found.')
 #-------------------------------------------------------------------------------*
 # ---- MAKE DATA FRAME OF COUNT BY SITES, SPECIES, AND YEAR ----
 #===============================================================================*
@@ -604,20 +573,20 @@ dataFormattingTable[,'Notes_spFormat'] =
 
 # First, lets add the datasetID:
 
-dataset6$datasetID = datasetID
+#dataset6$datasetID = datasetID
   
 # Now make the compiled dataframe:
 
-dataset7 = ddply(dataset6,.(datasetID, site, date, species),
-                 summarize, count = sum(count))
+#dataset7 = ddply(dataset6,.(datasetID, site, date, species),
+ #                summarize, count = sum(count))
 
 # Explore the data frame:
 
-dim(dataset7)
+#dim(dataset7)
 
-head(dataset7, 15)
+#head(dataset7, 15)
 
-summary(dataset7)
+#summary(dataset7)
 
 # !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE DATA WERE MODIFIED!
 #-------------------------------------------------------------------------------*
@@ -628,17 +597,17 @@ summary(dataset7)
 # the inputs for this are 'datasetID', the datasetID and the dataset form that you 
 # consider to be fully formatted.
 
-dataFormattingTable = dataFormattingTableUpdate(datasetID, dataset7)
+dataFormattingTable = dataFormattingTableUpdate(datasetID, dataset1)
 
 # Take a final look at the dataset:
 
-head(dataset7)
+#head(dataset7)
 
-summary (dataset7)
+#summary (dataset7)
 
 # If everything is looks okay we're ready to write formatted data frame:
 
-write.csv(dataset7, paste("data/formatted_datasets/dataset_", datasetID, ".csv", sep = ""), row.names = F)
+write.csv(dataset1, paste("data/formatted_datasets/dataset_", datasetID, ".csv", sep = ""), row.names = F)
 
 # !GIT-ADD-COMMIT-PUSH THE FORMATTED DATASET IN THE DATA FILE, 
 # THEN GIT-ADD-COMMIT-PUSH THE UPDATED DATA FOLDER!
@@ -682,10 +651,10 @@ library(tidyr)
 
 # Have a look at the dimensions of the dataset and number of sites:
 
-dim(dataset7)
-length(unique(dataset7$site))
-length(unique(dataset7$date))
-head(dataset7)
+#dim(dataset7)
+#length(unique(dataset7$site))
+#length(unique(dataset7$date))
+#head(dataset7)
 
 # Get the data formatting table for that dataset:
 
@@ -713,7 +682,7 @@ dataDescription$subannualTgrain
 # group. Justify your spatial scale below with a comment.
 
 #--! PROVIDE INFO !--#
-tGrain = 'year'
+#tGrain = 'year'
 
 # Refresh your memory about the spatial grain names if this is NOT a lat-long-only
 # based dataset. Set sGrain = to the hierarchical scale for analysis, including
@@ -724,10 +693,10 @@ tGrain = 'year'
 # HOWEVER, if the sites are purely defined by lat-longs, then sGrain should equal
 # a numerical value specifying the block size in degrees latitude for analysis.
 
-site_grain_names
+#site_grain_names
 
 #--! PROVIDE INFO !--#
-sGrain = 'site'
+#sGrain = 'site'
 
 # This is a reasonable choice of spatial grain because ...
 #--! PROVIDE INFO !--#
@@ -744,18 +713,18 @@ sGrain = 'site'
 # above. If this function fails for ALL spatial grains, then this dataset will
 # not be suitable for analysis and you can STOP HERE.
 
-richnessYearsTest = richnessYearSubsetFun(dataset7, spatialGrain = sGrain, 
-                                          temporalGrain = tGrain, 
-                                          minNTime = minNTime, 
-                                          minSpRich = minSpRich,
-                                          dataDescription)
+#richnessYearsTest = richnessYearSubsetFun(dataset7, spatialGrain = sGrain, 
+#                                          temporalGrain = tGrain, 
+#                                          minNTime = minNTime, 
+#                                          minSpRich = minSpRich,
+#                                          dataDescription)
 
-head(richnessYearsTest)
-dim(richnessYearsTest) ; dim(dataset7)
+#head(richnessYearsTest)
+#dim(richnessYearsTest) ; dim(dataset7)
 
 #Number of unique sites meeting criteria
-goodSites = unique(richnessYearsTest$analysisSite)
-length(goodSites)
+#goodSites = unique(richnessYearsTest$analysisSite)
+#length(goodSites)
 
 # Now subset dataset7 to just those goodSites as defined. This is tricky though
 # because assuming Sgrain is not the finest resolution, we will need to use
@@ -764,14 +733,14 @@ length(goodSites)
 # enough years of data) may also have low sampling intensity that constrains
 # the subsampling level of the well sampled sites.
 
-uniqueSites = unique(dataset7$site)
-fullGoodSites = c()
-for (s in goodSites) {
-  tmp = as.character(uniqueSites[grepl(paste(s, "_", sep = ""), paste(uniqueSites, "_", sep = ""))])
-  fullGoodSites = c(fullGoodSites, tmp)
-}
+#uniqueSites = unique(dataset7$site)
+#fullGoodSites = c()
+#for (s in goodSites) {
+#  tmp = as.character(uniqueSites[grepl(paste(s, "_", sep = ""), paste(uniqueSites, "_", sep = ""))])
+#  fullGoodSites = c(fullGoodSites, tmp)
+#}
 
-dataset8 = subset(dataset7, site %in% fullGoodSites)
+#dataset8 = subset(dataset7, site %in% fullGoodSites)
 
 # Once we've settled on spatial and temporal grains that pass our test above,
 # we then need to 1) figure out what levels of spatial and temporal subsampling
@@ -787,30 +756,30 @@ dataset8 = subset(dataset7, site %in% fullGoodSites)
 # and bases the characterization of the community in that site-year based on
 # the aggregate of those standardized subsamples.
 
-subsettedData = subsetDataFun(dataset8, 
-                              datasetID, 
-                              spatialGrain = sGrain, 
-                              temporalGrain = tGrain,
-                              minNTime = minNTime, minSpRich = minSpRich,
-                              proportionalThreshold = topFractionSites,
-                              dataDescription)
+#subsettedData = subsetDataFun(dataset8, 
+#                              datasetID, 
+#                              spatialGrain = sGrain, 
+#                              temporalGrain = tGrain,
+#                              minNTime = minNTime, minSpRich = minSpRich,
+#                              proportionalThreshold = topFractionSites,
+#                             dataDescription)
 # Take a look at the propOcc:
 
-head(propOccFun(subsettedData))
+#head(propOccFun(dataset1$KP_occ))
 
-hist(propOccFun(subsettedData)$propOcc)
+hist(dataset1$KP_occ)
 
 # Take a look at the site summary frame:
 
-siteSummaryFun(subsettedData)
+#siteSummaryFun(subsettedData)
 
 # If everything looks good, write the files:
 
-writePropOccSiteSummary(subsettedData)
+#writePropOccSiteSummary(subsettedData)
 
 # Update Data Formatting Table with summary stats of the formatted,
 # properly subsetted dataset
-dataFormattingTable = dataFormattingTableUpdateFinished(datasetID, subsettedData)
+dataFormattingTable = dataFormattingTableUpdateFinished(datasetID, dataset1)
 
 # And write the final data formatting table:
 
