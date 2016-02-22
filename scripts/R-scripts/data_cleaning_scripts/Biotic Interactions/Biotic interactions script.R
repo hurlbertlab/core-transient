@@ -84,7 +84,7 @@ env_zscore = env_gt[, (names(env_gt) %in% col_keeps)]
 # merge env data w obs_exp_total
 env_occu_matrix = merge(env_zscore, obs_exp_total, by = "stateroute")
 
-#### ---- Modelling ---- ####
+#### ---- Basic modelling ---- ####
 # Interaction between GT occupancy and ST abundance where GT exists
 f1 = lm(coyle_o.X5900 ~  SpeciesTotal, data = env_occu_matrix)
 summary(f1)
@@ -112,7 +112,22 @@ q4_env <- lm(coyle_o.X5900 ~ SpeciesTotal * zPrecip + I(zPrecip^2) * zTemp + I(z
               zEVI + I(zEVI^2), data = env_occu_matrix) #paring down model decreases significance
 summary(q4_env)
 
-# GLM fit with logit link 
+#### ---- Variance partitioning ---- ####
+competition <- lm(coyle_o.X5900 ~ SpeciesTotal + I(SpeciesTotal^2), data = env_occu_matrix)
+env_eff = lm(coyle_o.X5900 ~ zPrecip + I(zPrecip^2) * zTemp + I(zTemp^2) * zEVI + I(zEVI^2), data = env_occu_matrix)
+both = lm(coyle_o.X5900 ~ SpeciesTotal * zPrecip + I(zPrecip^2) * zTemp + I(zTemp^2) *
+              zEVI + I(zEVI^2), data = env_occu_matrix)
+
+A = summary(both)$r.squared - summary(competition)$r.squared
+# competition only = 0.5599084
+C = summary(both)$r.squared - summary(env_eff)$r.squared
+# env only = 0.02060625
+B = summary(competition)$r.squared - C
+# both = 0.1540913
+D = 1 - summary(both)$r.squared
+# neither = 0.265394
+  
+#### ---- GLM fit with logit link ---- ####
 library(MASS)
 glm1 = glm(coyle_o.X5900 ~  SpeciesTotal+abs(zTemp)+abs(zElev)+abs(zPrecip)+abs(zEVI)+abs(euc.dist.spp),
     family = quasibinomial, data = env_occu_matrix)
