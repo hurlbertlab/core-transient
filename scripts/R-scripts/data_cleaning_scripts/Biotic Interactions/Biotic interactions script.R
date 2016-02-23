@@ -82,6 +82,7 @@ env_occu_matrix$eucdist = sqrt((env_occu_matrix$zTemp)^2 + (env_occu_matrix$zPre
 #renaming columns
 names(env_occu_matrix) = c("stateroute", "AOU", "Longi", "Lati", "zTemp", "zPrecip", "zElev", "zEVI", "Spotted_abun", "GT_occ", "eucdist")
 
+write.csv(env_occu_matrix, "scripts/R-scripts/data_cleaning_scripts/Biotic Interactions/env_occu.csv")
 #### ---- Variance partitioning ---- ####
 # Interaction between GT occupancy and ST abundance where GT exists
 competition <- lm(GT_occ ~  Spotted_abun, data = env_occu_matrix)
@@ -134,12 +135,29 @@ ggplotRegression(lm(GT_occ ~ Spotted_abun, data = env_occu_matrix))
 #### ---- GLM fit with logit link ---- ####
 # merge Hurlbert_o w env to get diet guilds
 dietguild = merge(env_occu_matrix, Hurlbert_o, by = "AOU")
-#add on success and failure columns
-env_occu_matrix$success = env_occu_matrix$GT_occ > 0 
-env_occu_matrix$success = as.integer(env_occu_matrix$success)
+# add on success and failure columns by creating # of sites where birds were found
+# and # of sites birds were not found from original bbs data
+# subset to get just GT towhees in raw bbs data
+gt = bbs[bbs$Aou == 5900|bbs$Aou == 5880,] 
+# add column of ones to sum up # of sites for each row
+gt1 = cbind(gt, 1)
+#renaming columns to make more clear
+colnames(gt1) <- c("stateroute", "year","Aou","speciestotal", "numsites")
+# aggregate to sum across years by site
+gt_binom = aggregate(gt1$numsites, by = list(gt$stateroute), FUN = sum) 
+#renaming columns to make more clear
+colnames(gt_binom) <- c("stateroute", "numsites")
 
-library(MASS)
-glm1 = glm(success ~  Spotted_abun + eucdist, family = binomial, data = env_occu_matrix)
+
+# merge success/failure columns w environmnetal data
+env_occu_matrix_1 = merge(env_occu_matrix, gt_binom, by = "stateroute", )
+# using equation species sum*GT occ to get success and failure for binomial anlaysis
+env_occu_matrix_1$sp_success = env_occu_matrix_1$numsites * env_occu_matrix_1$GT_occ
+env_occu_matrix_1$sp_fail = env_occu_matrix_1$numsites * (1 - env_occu_matrix_1$GT_occ)
+
+
+library(lme4)
+glm1 = glm(sp_success ~ sp_fail + Spotted_abun + eucdist, family = binomial, data = env_occu_matrix_1)
 summary(glm1)
 
 #NOTES
