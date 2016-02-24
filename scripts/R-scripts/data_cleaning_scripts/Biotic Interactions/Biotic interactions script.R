@@ -87,9 +87,9 @@ write.csv(env_occu_matrix, "scripts/R-scripts/data_cleaning_scripts/Biotic Inter
 # Interaction between GT occupancy and ST abundance where GT exists
 competition <- lm(GT_occ ~  Spotted_abun, data = env_occu_matrix)
 # Env effects summed
-env_eff = lm(GT_occ ~ eucdist, data = env_occu_matrix)
+# env_eff = lm(GT_occ ~ eucdist, data = env_occu_matrix)
 # Env effects summed and interaction
-both = lm(GT_occ ~  Spotted_abun + eucdist, data = env_occu_matrix)
+# both = lm(GT_occ ~  Spotted_abun + eucdist, data = env_occu_matrix)
  
 # z scores separated out for env effects
 env_z = lm(GT_occ ~ zTemp + I(zTemp^2) + zPrecip + I(zPrecip^2), zElev + 
@@ -100,15 +100,16 @@ env_z = lm(GT_occ ~ abs(zTemp)+abs(zElev)+abs(zPrecip)+abs(zEVI), data = env_occ
 both_z = lm(GT_occ ~  Spotted_abun + abs(zTemp)+abs(zElev)+abs(zPrecip)+abs(zEVI), data = env_occu_matrix)
 
 #####################abiotic variables explain twice as much variation as biotic
-
-A = summary(both)$r.squared - summary(competition)$r.squared
-# competition only = 0.03742123
-C = summary(both)$r.squared - summary(env_eff)$r.squared
-# env only = 0.1451207
-B = summary(competition)$r.squared - C
-# both = 0.01574603
-D = 1 - summary(both)$r.squared
-# neither = 0.801712
+variance_partitioning = function(x) {
+ENV = summary(both_z)$r.squared - summary(competition)$r.squared
+return(ENV)
+COMP = summary(both_z)$r.squared - summary(env_z)$r.squared
+return(COMP)
+SHARED = summary(competition)$r.squared - C
+return(SHARED)
+NONE = 1 - summary(both_z)$r.squared
+return(NONE)
+}
 
 #### ---- Plotting LMs ---- ####
 library(ggplot2)
@@ -138,7 +139,7 @@ dietguild = merge(env_occu_matrix, Hurlbert_o, by = "AOU")
 # add on success and failure columns by creating # of sites where birds were found
 # and # of sites birds were not found from original bbs data
 # subset to get just GT towhees in raw bbs data
-gt = bbs[bbs$Aou == 5900|bbs$Aou == 5880,] 
+gt = bbs[bbs$Aou == 5900,] 
 # add column of ones to sum up # of sites for each row
 gt1 = cbind(gt, 1)
 #renaming columns to make more clear
