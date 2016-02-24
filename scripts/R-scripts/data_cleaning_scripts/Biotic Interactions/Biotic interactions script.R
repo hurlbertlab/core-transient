@@ -49,6 +49,48 @@ obs_exp_total = obs_exp_total[, !(names(obs_exp_total) %in% drops)]
 # view where coyle_occupancy = 0 but predicted presence
 GT_gaps = obs_exp_total[obs_exp_total$coyle_o.X5900 == 0,] 
 
+
+################
+# work with occupancy data for all species
+library(tidyr)
+all_occ = gather(coyle_o, "AOU", "occupancy", 2:ncol(coyle_o))
+all_occ$AOU = as.character(all_occ$AOU)
+all_occ$AOU = as.numeric(substr(all_occ$AOU, 2, nchar(all_occ$AOU)))
+all_occ = all_occ[!is.na(all_occ$occupancy), ]
+
+# pull out stateroutes that have been continuously sampled 1996-2010
+routes = all_occ$stateroute
+
+# merge expected presence with occupancy data
+new_occ = merge(ep[, c('stateroute', 'AOU')], all_occ, by = c('stateroute', 'AOU'), all.x = T)
+new_occ$occupancy[is.na(new_occ$occupancy)] = 0
+# subset to routes in the well sampled list of 'routes'
+new_occ2 = new_occ[new_occ$stateroute %in% routes, ]
+
+# Pull out summary of different levels of occupancy by species
+occ_dist_output = data.frame(AOU = NA, occupancy = NA, count = NA)
+bins = seq(0.1, 1, by = .1)
+for (s in unique(new_occ2$AOU)) {
+  tmp = subset(new_occ2, AOU == s)
+  occ_counts = sapply(bins, function(x) sum(tmp$occupancy <= x & tmp$occupancy > (x-0.1)))
+  tmp_out = data.frame(AOU = s, occupancy = bins, count = occ_counts/nrow(tmp))
+  occ_dist_output = rbind(occ_dist_output, tmp_out)
+}
+occ_dist_output = occ_dist_output[-1, ]
+
+# average distribution for all species
+ave_occ_dist = aggregate(occ_dist_output$count, by = list(occ_dist_output$occupancy), mean)
+names(ave_occ_dist) = c('occupancy', 'frequency')
+ave_occ_dist$occupancy = as.numeric(as.character(ave_occ_dist$occupancy))
+
+plot(ave_occ_dist$occupancy, ave_occ_dist$frequency, type = 'l')
+
+
+
+
+
+
+
 #### ---- Plotting ---- ####
 # merge in lat/long
 latlongs = read.csv('scripts/R-scripts/data_cleaning_scripts/Biotic Interactions/routes 1996-2010 consecutive.csv', header = T)
