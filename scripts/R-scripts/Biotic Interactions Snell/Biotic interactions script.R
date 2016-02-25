@@ -1,24 +1,24 @@
 # Biotic Interactions script
 # In this script we are comparing the differences in occupancy and abundance between
 # green-tailed towhees and spotted towhees using occupancy, abundance, and environmental data.
-# Env data formatted in Snell_code.R from BIOL 465 project. Occupancy data from BBS, Coyle, and Hurlbert.
+# Env data was formatted in Snell_code.R from BIOL 465 project. Occupancy data from BBS, Coyle, and Hurlbert.
 
 #### ---- Inital Formatting ---- ####
 library(plyr)
-# reading in dataset 
+# read in temporal occupancy dataset 
 Hurlbert_o = read.csv('scripts/R-scripts/data_cleaning_scripts/Biotic Interactions/Master_RO_Correlates_20110610.csv', header = T)
-# subsetting species whose occupancies were between 0.3 and 0.6 over a 10 year period
+# subset species whose occupancies were between 0.3 and 0.7 over a 10 year period
 subsetocc = Hurlbert_o[Hurlbert_o$X10yr.Prop > .3 & Hurlbert_o$X10yr.Prop < .7,]
-# compare green-tailed towhee to spotted towhee
+# compare green-tailed towhee to spotted towhee occupancies
 towhees = subsetocc[subsetocc$CommonName == "Spotted Towhee"| subsetocc$CommonName == "Green-tailed Towhee",]
 
 # read in BBS data
 bbs = read.csv('data/raw_datasets/dataset_1.csv', header = T)
-# subsetting spotted towhees based on AOU code
+# subset spotted towhees based on AOU code
 spotted = bbs[bbs$Aou == 5880,] 
 # aggregate based on year to get just spotted towhee abundance
 spot_agg = aggregate(spotted, by = list(spotted$stateroute), FUN = mean) 
-# read in Coyle occupancy data
+# read in Coyle occupancy data - organized by site 
 coyle_o = read.csv('scripts/R-scripts/data_cleaning_scripts/Biotic Interactions/site_sp_occupancy_matrix_Coyle.csv', header = T)
 # rename column one to stateroute
 colnames(coyle_o)[1] = c("stateroute")
@@ -178,13 +178,13 @@ colnames(gt_binom) <- c("stateroute", "numsites")
 
 
 # merge success/failure columns w environmnetal data
-env_occu_matrix_1 = merge(env_occu_matrix, gt_binom, by = "stateroute", )
+env_occu_matrix_1 = merge(env_occu_matrix, gt_binom, by = "stateroute",)
 # using equation species sum*GT occ to get success and failure for binomial anlaysis
 env_occu_matrix_1$sp_success = as.factor(env_occu_matrix_1$numsites * env_occu_matrix_1$GT_occ)
 env_occu_matrix_1$sp_fail = as.factor(env_occu_matrix_1$numsites * (1 - env_occu_matrix_1$GT_occ))
 
 # merge Hurlbert_o w env to get diet guilds
-# dietguild = merge(env_occu_matrix_1, Hurlbert_o$Trophic.Group, by = "AOU")
+dietguild = merge(occ_dist_output, Hurlbert_o, by = "AOU")
 
 library(lme4)
 # abs(zTemp)+abs(zElev)+abs(zPrecip)+abs(zEVI)
@@ -197,8 +197,8 @@ summary(glm2)
 glm3 = glm(sp_success ~ Spotted_abun + eucdist + (1|AOU), family = quasibinomial, data = env_occu_matrix_1)
 summary(glm3)
 
-glm4 = glm(sp_success ~ Spotted_abun + eucdist + #, family = quasibinomial, data = env_occu_matrix_1)
-summary(glm4)
+# glm4 = glm(sp_success ~ Spotted_abun + eucdist + Foraging, family = quasibinomial, data = dietguild)
+# summary(glm4)
 
 
 
