@@ -2,9 +2,9 @@
 #  DATA FORMATTING TEMPLATE
 ################################################################################*
 #
-# Dataset name: 
-# Dataset source (link):
-# Formatted by: 
+# Dataset name: Neotropical Migratory Bird Communities in a Developing Pine Plantation
+# Dataset source (link): http://www.seafwa.org/resource/dynamic/private/PDF/DICKSON-439-446.pdf
+# Formatted by: Sara Snell
 #
 # Start by opening the data formatting table (data_formatting_table.csv). 
 # Datasets to be worked on will have a 'format_flag' of 0.
