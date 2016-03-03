@@ -91,7 +91,8 @@ avg_occ_dist$occupancy = as.numeric(as.character(avg_occ_dist$occupancy))
 library(maps)
 
 # plot total avg avian occupancy distribution
-plot(avg_occ_dist$occupancy, avg_occ_dist$frequency, type = 'l')
+plot(avg_occ_dist$occupancy, avg_occ_dist$frequency, type = 'l', 
+     xlab = "Average Occupancy Distribution", ylab = "Frequency")
 
 # merge in lat/long
 latlongs = read.csv('scripts/R-scripts/Biotic Interactions Snell/routes 1996-2010 consecutive.csv', header = T)
@@ -179,7 +180,7 @@ ggplotRegression(lm(GT_occ ~ Spotted_abun, data = env_occu_matrix))
 library(lme4)
 
 # subset to get just GT towhees in raw bbs data
-gt_bbs_subset = bbs[bbs$Aou == 5900,] 
+gt_bbs_subset = bbs[bbs$Aou == 5900 | (bbs$Aou != 5900 & bbs$Aou == 5880),] 
 # add column of ones to sum up # of sites for each row
 gt_bbs_subset_1 = cbind(gt_bbs_subset, 1)
 #rename columns to make more clear
@@ -199,18 +200,14 @@ env_occu_matrix_1$sp_fail = as.factor(env_occu_matrix_1$numsites * (1 - env_occu
 dietguild = merge(occ_dist_output, Hurlbert_o, by = "AOU")
 
 # GLM trials
-# ideally want to include: abs(zTemp)+abs(zElev)+abs(zPrecip)+abs(zEVI)
-glm_abundance_binom = glm(sp_success ~ Spotted_abun + eucdist, family = binomial, data = env_occu_matrix_1)
+glm_abundance_binom = glm(cbind(sp_success, sp_fail) ~ Spotted_abun + abs(zTemp)+abs(zElev)+abs(zPrecip)+abs(zEVI), family = binomial, data = env_occu_matrix_1)
 summary(glm_abundance_binom)
 
-glm_abundance_quasibinom = glm(sp_success ~ Spotted_abun + eucdist, family = quasibinomial, data = env_occu_matrix_1)
+glm_abundance_quasibinom = glm(cbind(sp_success, sp_fail) ~ Spotted_abun + abs(zTemp)+abs(zElev)+abs(zPrecip)+abs(zEVI), family = quasibinomial, data = env_occu_matrix_1)
 summary(glm_abundance_quasibinom)
 
-glm_abundance_rand_spp = glm(sp_success ~ Spotted_abun + eucdist + (1|AOU), family = quasibinomial, data = env_occu_matrix_1)
+glm_abundance_rand_spp = glm(cbind(sp_success, sp_fail) ~ Spotted_abun + abs(zTemp)+abs(zElev)+abs(zPrecip)+abs(zEVI) + (1|AOU), family = quasibinomial, data = env_occu_matrix_1)
 summary(glm_abundance_rand_spp)
-
-# glm4 = glm(sp_success ~ Spotted_abun + eucdist + Foraging, family = quasibinomial, data = dietguild)
-# summary(glm4)
 
 
 
