@@ -3,7 +3,7 @@
 # green-tailed towhees and spotted towhees using occupancy, abundance, and environmental data.
 # Env data was formatted in Snell_code.R from BIOL 465 project. Occupancy data from BBS, Coyle, and Hurlbert.
 
-setwd("/Users/terrysnell/Desktop/Stats/Leading Stats")
+setwd("C:/git/core-transient/scripts/R-scripts/Biotic Interactions Snell")
 #### ---- Inital Formatting ---- ####
 library(plyr)
 
@@ -139,10 +139,10 @@ write.csv(env_occu_matrix, "env_occu.csv")
 trans.arcsine <- function(x){
   asin(sign(x) * sqrt(abs(x)))
 }
-test = trans.arcsine(env_occu_matrix$Spotted_abun)
+arc.gt.occ = trans.arcsine (env_occu_matrix$GT_occ)
 
 # Interaction between GT occupancy and ST abundance where GT exists
-competition <- lm(GT_occ ~  (Spotted_abun), data = env_occu_matrix)
+competition <- lm(trans.arcsine(GT_occ) ~  Spotted_abun, data = env_occu_matrix)
 # z scores separated out for env effects (as opposed to multivariate variable)
 env_z = lm(GT_occ ~ abs(zTemp)+abs(zElev)+abs(zPrecip)+abs(zEVI), data = env_occu_matrix)
 # z scores separated out for env effects
