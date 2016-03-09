@@ -209,19 +209,26 @@ env_occu_matrix_1$sp_fail = as.factor(env_occu_matrix_1$numsites * (1 - env_occu
 library(lmtest)
 library(lme4)
 # GLM trials
+
+cs <- function(x) scale(x,scale=TRUE,center=TRUE)
+# source: http://permalink.gmane.org/gmane.comp.lang.r.lme4.devel/12080
+# need to scale predictor variables
+
 glm_abundance_binom = glm(cbind(sp_success, sp_fail) ~ Spotted_abun + 
-               abs(zTemp)+abs(zElev)+abs(zPrecip)+abs(zEVI), family = binomial, data = env_occu_matrix_1)
+               abs(zTemp)+abs(zElev)+abs(zPrecip)+abs(zEVI), family = binomial(link = logit), data = env_occu_matrix_1)
 summary(glm_abundance_binom)
 
 glm_abundance_quasibinom = glm(cbind(sp_success, sp_fail) ~ Spotted_abun + 
                abs(zTemp)+abs(zElev)+abs(zPrecip)+abs(zEVI), family = quasibinomial, data = env_occu_matrix_1)
 summary(glm_abundance_quasibinom)
 
-glm_abundance_rand_site = glm(cbind(sp_success, sp_fail) ~ Spotted_abun + 
-               abs(zTemp)+abs(zElev)+abs(zPrecip)+abs(zEVI) + (1|stateroute), family = binomial, data = env_occu_matrix_1)
-summary(glm_abundance_rand_site) # needs to be glmer!!
+glm_abundance_rand_site = glmer(cbind(sp_success, sp_fail) ~ cs(Spotted_abun) + 
+               abs(zTemp)+abs(zElev)+abs(zPrecip)+abs(zEVI) + (1|stateroute), family = binomial(link = logit), data = env_occu_matrix_1)
+summary(glm_abundance_rand_site) 
 
 # want to do a likelihood ratio test on them
+anova(glm_abundance_rand_site, test = "Chisq")
+
 lrtest(glm_abundance_binom)
 lrtest(glm_abundance_quasibinom)
 lrtest(glm_abundance_rand_site)
