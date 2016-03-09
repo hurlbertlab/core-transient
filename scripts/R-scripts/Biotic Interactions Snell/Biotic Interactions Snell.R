@@ -228,6 +228,8 @@ summary(glm_abundance_rand_site)
 
 # want to do a likelihood ratio test on them
 anova(glm_abundance_rand_site, test = "Chisq")
+anova(glm_abundance_quasibinom, test = "Chisq")
+anova(glm_abundance_binom, test = "Chisq")
 
 lrtest(glm_abundance_binom)
 lrtest(glm_abundance_quasibinom)
