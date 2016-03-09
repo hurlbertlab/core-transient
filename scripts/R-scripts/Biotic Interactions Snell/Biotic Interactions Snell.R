@@ -129,14 +129,11 @@ env_occu_matrix$eucdist = sqrt((env_occu_matrix$zTemp)^2 + (env_occu_matrix$zPre
 #renaming columns
 names(env_occu_matrix) = c("stateroute", "AOU", "Longi", "Lati", "zTemp", "zPrecip", "zElev", "zEVI", "Spotted_abun", "GT_occ", "eucdist")
 
-write.csv(env_occu_matrix, "env_occu.csv")
+write.csv(env_occu_matrix, "env_occu.csv") #WRONGWRONGWRONGWRONGWONR
 
 #### ---- Variance partitioning ---- ####
-# create arcsine transformation function
-trans.arcsine <- function(x){
-  asin(sign(x) * sqrt(abs(x)))
-}
-arc.gt.occ = trans.arcsine (env_occu_matrix$GT_occ)
+# create logit transformation function
+occ_logit =  log(env_occu_matrix$GT_occ / (1 - env_occu_matrix$GT_occ))
 
 # Interaction between GT occupancy and ST abundance where GT exists
 competition <- lm(trans.arcsine(GT_occ) ~  Spotted_abun, data = env_occu_matrix)

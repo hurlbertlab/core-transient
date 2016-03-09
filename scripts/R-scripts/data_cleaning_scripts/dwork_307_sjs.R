@@ -266,6 +266,7 @@ dataFormattingTable[,'subannualTgrain'] =
 # fill in the fields that specify nested spatial grains below.
 
 #--! PROVIDE INFO !--#
+dataset2$site = 1
 site_grain_names = c("site")
 
 # We will now create the site field with these codes concatenated if there
