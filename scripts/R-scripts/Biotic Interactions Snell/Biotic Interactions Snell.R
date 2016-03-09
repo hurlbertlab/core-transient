@@ -36,9 +36,6 @@ t1$coyle_o.X5900[is.na(t1$coyle_o.X5900)] <- 0
 #remove duplicate columns
 drops <- c("Group.1", "Year", "Aou")
 t1 = t1[, !(names(t1) %in% drops)]
-
-# t1[, -drops]
-
 # merge occupancy with bbs for spotted towhee
 t2 = merge(spot_occ, gt_occ, by="coyle_o.stateroute")
 
@@ -209,15 +206,34 @@ env_occu_matrix_1$sp_fail = as.factor(env_occu_matrix_1$numsites * (1 - env_occu
 
 # merge Hurlbert_o w env to get diet guilds
 # dietguild = merge(occ_dist_output, Hurlbert_o, by = "AOU")
-
+library(lmtest)
+library(lme4)
 # GLM trials
-glm_abundance_binom = glm(cbind(sp_success, sp_fail) ~ Spotted_abun + abs(zTemp)+abs(zElev)+abs(zPrecip)+abs(zEVI), family = binomial, data = env_occu_matrix_1)
+glm_abundance_binom = glm(cbind(sp_success, sp_fail) ~ Spotted_abun + 
+               abs(zTemp)+abs(zElev)+abs(zPrecip)+abs(zEVI), family = binomial, data = env_occu_matrix_1)
 summary(glm_abundance_binom)
 
-glm_abundance_quasibinom = glm(cbind(sp_success, sp_fail) ~ Spotted_abun + abs(zTemp)+abs(zElev)+abs(zPrecip)+abs(zEVI), family = quasibinomial, data = env_occu_matrix_1)
+glm_abundance_quasibinom = glm(cbind(sp_success, sp_fail) ~ Spotted_abun + 
+               abs(zTemp)+abs(zElev)+abs(zPrecip)+abs(zEVI), family = quasibinomial, data = env_occu_matrix_1)
 summary(glm_abundance_quasibinom)
 
-glm_abundance_rand_site = glmer(cbind(sp_success, sp_fail) ~ Spotted_abun + abs(zTemp)+abs(zElev)+abs(zPrecip)+abs(zEVI) + (1|stateroute), family = binomial, data = env_occu_matrix_1)
-summary(glm_abundance_rand_site)
+glm_abundance_rand_site = glm(cbind(sp_success, sp_fail) ~ Spotted_abun + 
+               abs(zTemp)+abs(zElev)+abs(zPrecip)+abs(zEVI) + (1|stateroute), family = binomial, data = env_occu_matrix_1)
+summary(glm_abundance_rand_site) # needs to be glmer!!
 
 # want to do a likelihood ratio test on them
+lrtest(glm_abundance_binom)
+lrtest(glm_abundance_quasibinom)
+lrtest(glm_abundance_rand_site)
+
+
+#lr test
+logLik(glm_abundance_binom)
+logLik(glm_abundance_rand_site)
+
+d0 = deviance(glm_abundance_binom)
+d1 = deviance(glm_abundance_rand_site)
+
+LR = d0- d1
+pchisq(LR, 1, lower = FALSE)
+
