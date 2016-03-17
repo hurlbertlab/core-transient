@@ -120,16 +120,20 @@ env = read.csv('occuenv.csv', header = T)
 # subset to GT species  
 env_gt = env[env$Species == 5900|env$Species == 5880,] 
 # pulling out environmental z-scores by state route 
-col_keeps <- c("stateroute", "Species", "Lati", "Longi", "zTemp","zPrecip", "zElev", "zEVI")
-env_zscore = env_gt[, (names(env_gt) %in% col_keeps)]
+col_keeps <- c("stateroute", "Lati", "Longi", "zTemp","zPrecip", "zElev", "zEVI")
+env_zscore = env_gt[, (names(env_gt) %in% col_keeps)]]
+
+# pulling out environmental z-scores by state route 
+col_keeps <- c("stateroute", "SpeciesTotal", "coyle_o.X5900")
+obs_exp_edit = obs_exp_total[, (names(obs_exp_total) %in% col_keeps)]
+
 # merge env data w obs_exp_total
-env_occu_matrix = merge(env_zscore, obs_exp_total, by = "stateroute")
+env_occu_matrix = merge(env_zscore, obs_exp_edit, by = "stateroute", all = TRUE) 
 #calculate euclidean distance with z scores
 env_occu_matrix$eucdist = sqrt((env_occu_matrix$zTemp)^2 + (env_occu_matrix$zPrecip)^2 + (env_occu_matrix$zElev)^2 + (env_occu_matrix$zEVI)^2)
 #renaming columns
-names(env_occu_matrix) = c("stateroute", "AOU", "Longi", "Lati", "zTemp", "zPrecip", "zElev", "zEVI", "Spotted_abun", "GT_occ", "eucdist")
-
-write.csv(env_occu_matrix, "env_occu.csv") #WRONGWRONGWRONGWRONGWONR
+names(env_occu_matrix)[9] = "GT_occ"
+names(env_occu_matrix)[8] = "SpottedTotal"
 
 #### ---- Variance partitioning ---- ####
 # create logit transformation function
@@ -185,18 +189,18 @@ ggplotRegression(lm(GT_occ ~ Spotted_abun, data = env_occu_matrix))
 library(lme4)
 
 # subset to get just GT towhees in raw bbs data
-gt_bbs_subset = bbs[bbs$Aou == 5900 | (bbs$Aou != 5900 & bbs$Aou == 5880),] 
+gt_bbs_subset = subset(bbs, Aou == 5900, 
+                       select = c("stateroute", "Aou", "SpeciesTotal", "Year"))
 # add column of ones to sum up # of sites for each row
-gt_bbs_subset_1 = cbind(gt_bbs_subset, 1)
-#rename columns to make more clear
-colnames(gt_bbs_subset_1) <- c("stateroute", "year","Aou","speciestotal", "numsites")
+gt_bbs_subset$counter = 1
+
 # aggregate to sum across years by site
-gt_binom = aggregate(gt_bbs_subset_1$numsites, by = list(gt_bbs_subset_1$stateroute), FUN = sum) 
+gt_binom = aggregate(gt_bbs_subset$counter, by = list(gt_bbs_subset$stateroute), FUN = sum) 
 #rename columns to make more clear
-colnames(gt_binom) <- c("stateroute", "numsites")
+colnames(gt_binom) <- c("stateroute", "numyears")
 
 # merge success/failure columns w environmnetal data, missing 0 occupancies
-env_occu_matrix_1 = merge(env_occu_matrix, gt_binom, by = "stateroute", )
+env_occu_matrix_1 = merge(env_occu_matrix, gt_binom, by = "stateroute", all.x = TRUE)
 # using equation species sum*GT occ to get success and failure for binomial anlaysis
 env_occu_matrix_1$sp_success = as.factor(env_occu_matrix_1$numsites * env_occu_matrix_1$GT_occ)
 env_occu_matrix_1$sp_fail = as.factor(env_occu_matrix_1$numsites * (1 - env_occu_matrix_1$GT_occ))
