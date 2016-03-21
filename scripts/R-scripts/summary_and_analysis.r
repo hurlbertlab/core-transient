@@ -28,6 +28,7 @@ datasetIDs = c()
 summaries = c()
 for (d in datasetIDs) {
   newsumm = summaryStatsFun(d, threshold, reps)
+  print(d) #delete when done error-checking
   summaries = rbind(summaries, newsumm)
 }
 
@@ -48,7 +49,7 @@ write.csv(summaries, 'output/tabular_data/core-transient_summary.csv',
 # create the 'core-transient_summary.csv' file from scratch for all
 # datasets with formatted data.
 
-summ = addNewSummariesFun(threshold, reps, write = TRUE)
+summ = addNewSummariesFun(threshold, reps, write = FALSE)
 
 
 #####################

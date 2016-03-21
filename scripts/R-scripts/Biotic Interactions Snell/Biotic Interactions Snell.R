@@ -118,22 +118,22 @@ points(plotdata_gaps$Longi, plotdata_gaps$Lati, col = 4, pch = 17) #where GT == 
 # read in env data from biol 465 final project, Snell Project Final.R script
 env = read.csv('occuenv.csv', header = T)
 # subset to GT species  
-env_gt = env[env$Species == 5900|env$Species == 5880,] 
+env_gt = env[env$Species == 5900,] 
 # pulling out environmental z-scores by state route 
 col_keeps <- c("stateroute", "Lati", "Longi", "zTemp","zPrecip", "zElev", "zEVI")
-env_zscore = env_gt[, (names(env_gt) %in% col_keeps)]]
+env_zscore = env_gt[, (names(env_gt) %in% col_keeps)]
 
 # pulling out environmental z-scores by state route 
 col_keeps <- c("stateroute", "SpeciesTotal", "coyle_o.X5900")
 obs_exp_edit = obs_exp_total[, (names(obs_exp_total) %in% col_keeps)]
 
 # merge env data w obs_exp_total
-env_occu_matrix = merge(env_zscore, obs_exp_edit, by = "stateroute", all = TRUE) 
+env_occu_matrix = merge(env_zscore, obs_exp_edit, by = "stateroute", all.y = T) 
 #calculate euclidean distance with z scores
 env_occu_matrix$eucdist = sqrt((env_occu_matrix$zTemp)^2 + (env_occu_matrix$zPrecip)^2 + (env_occu_matrix$zElev)^2 + (env_occu_matrix$zEVI)^2)
 #renaming columns
-names(env_occu_matrix)[9] = "GT_occ"
-names(env_occu_matrix)[8] = "SpottedTotal"
+colnames(env_occu_matrix)[colnames(env_occu_matrix)=="SpeciesTotal"] <- "SpottedTotal"
+colnames(env_occu_matrix)[colnames(env_occu_matrix)=="coyle_o.X5900"] <- "GT_occ"
 
 #### ---- Variance partitioning ---- ####
 # create logit transformation function
@@ -202,8 +202,8 @@ colnames(gt_binom) <- c("stateroute", "numyears")
 # merge success/failure columns w environmnetal data, missing 0 occupancies
 env_occu_matrix_1 = merge(env_occu_matrix, gt_binom, by = "stateroute", all.x = TRUE)
 # using equation species sum*GT occ to get success and failure for binomial anlaysis
-env_occu_matrix_1$sp_success = as.factor(env_occu_matrix_1$numsites * env_occu_matrix_1$GT_occ)
-env_occu_matrix_1$sp_fail = as.factor(env_occu_matrix_1$numsites * (1 - env_occu_matrix_1$GT_occ))
+env_occu_matrix_1$sp_success = as.factor(env_occu_matrix_1$numyears * env_occu_matrix_1$GT_occ)
+env_occu_matrix_1$sp_fail = as.factor(env_occu_matrix_1$numyears * (1 - env_occu_matrix_1$GT_occ))
 
 # merge Hurlbert_o w env to get diet guilds
 # dietguild = merge(occ_dist_output, Hurlbert_o, by = "AOU")
@@ -215,15 +215,15 @@ cs <- function(x) scale(x,scale=TRUE,center=TRUE)
 # source: http://permalink.gmane.org/gmane.comp.lang.r.lme4.devel/12080
 # need to scale predictor variables
 
-glm_abundance_binom = glm(cbind(sp_success, sp_fail) ~ Spotted_abun + 
+glm_abundance_binom = glm(cbind(sp_success, sp_fail) ~ SpottedTotal + 
                abs(zTemp)+abs(zElev)+abs(zPrecip)+abs(zEVI), family = binomial(link = logit), data = env_occu_matrix_1)
 summary(glm_abundance_binom)
 
-glm_abundance_quasibinom = glm(cbind(sp_success, sp_fail) ~ Spotted_abun + 
+glm_abundance_quasibinom = glm(cbind(sp_success, sp_fail) ~ SpottedTotal + 
                abs(zTemp)+abs(zElev)+abs(zPrecip)+abs(zEVI), family = quasibinomial, data = env_occu_matrix_1)
 summary(glm_abundance_quasibinom)
 
-glm_abundance_rand_site = glmer(cbind(sp_success, sp_fail) ~ cs(Spotted_abun) + 
+glm_abundance_rand_site = glmer(cbind(sp_success, sp_fail) ~ cs(SpottedTotal) + 
                abs(zTemp)+abs(zElev)+abs(zPrecip)+abs(zEVI) + (1|stateroute), family = binomial(link = logit), data = env_occu_matrix_1)
 summary(glm_abundance_rand_site) 
 
