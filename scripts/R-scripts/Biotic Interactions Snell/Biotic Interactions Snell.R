@@ -20,7 +20,7 @@ bbs = read.csv('dataset_1.csv', header = T)
 spotted = bbs[bbs$Aou == 5880,] 
 # aggregate based on year to get just spotted towhee abundance
 spot_agg = aggregate(spotted, by = list(spotted$stateroute), FUN = mean) 
-
+competitor_agg = aggregate(bbs, by = list(bbs$stateroute & bbs$Aou), FUN = mean) ##FIX
 # read in Coyle occupancy data - organized by site 
 coyle_o = read.csv('site_sp_occupancy_matrix_Coyle.csv', header = T)
 # rename column one to stateroute
@@ -118,17 +118,28 @@ points(plotdata_gaps$Longi, plotdata_gaps$Lati, col = 4, pch = 17) #where GT == 
 # read in env data from biol 465 final project, Snell Project Final.R script
 env = read.csv('occuenv.csv', header = T)
 # subset to GT species  
-env_gt = env[env$Species == 5900,] 
+env_gt = env[env$Species == 5900 |env$Species == 5880,] 
 # pulling out environmental z-scores by state route 
-col_keeps <- c("stateroute", "Lati", "Longi", "zTemp","zPrecip", "zElev", "zEVI")
+col_keeps <- c("stateroute", "Species", "Lati", "Longi", "zTemp","zPrecip", "zElev", "zEVI")
 env_zscore = env_gt[, (names(env_gt) %in% col_keeps)]
+                    
+# NEED: if duplicate, remove.
+library(dplyr)
+
+test = ddply(env_zscore, .(stateroute), summarize,
+      Species=ifelse(all((Species == 5900)), NA, max(Species,na.rm=TRUE)))
+
+# subset to stateroute, recalculate z-scores from scratch
+unique(env_zscore$stateroute)
+
+competitor_focal_env = merge(env_zscore, test, by = "stateroute")
 
 # pulling out environmental z-scores by state route 
-col_keeps <- c("stateroute", "SpeciesTotal", "coyle_o.X5900")
-obs_exp_edit = obs_exp_total[, (names(obs_exp_total) %in% col_keeps)]
+col_keep_2 <- c("stateroute", "SpeciesTotal", "coyle_o.X5900")
+obs_exp_edit = obs_exp_total[, (names(obs_exp_total) %in% col_keep_2)]
 
 # merge env data w obs_exp_total
-env_occu_matrix = merge(env_zscore, obs_exp_edit, by = "stateroute", all.y = T) 
+env_occu_matrix = merge(env_zscore, obs_exp_edit, by = "stateroute") 
 #calculate euclidean distance with z scores
 env_occu_matrix$eucdist = sqrt((env_occu_matrix$zTemp)^2 + (env_occu_matrix$zPrecip)^2 + (env_occu_matrix$zElev)^2 + (env_occu_matrix$zEVI)^2)
 #renaming columns
@@ -194,6 +205,10 @@ gt_bbs_subset = subset(bbs, Aou == 5900,
 # add column of ones to sum up # of sites for each row
 gt_bbs_subset$counter = 1
 
+# need to have env info for competitor species
+gt_comp_subset = subset(bbs, Aou == 5880,
+                        select = c("stateroute", "Aou", "SpeciesTotal", "Year"))
+
 # aggregate to sum across years by site
 gt_binom = aggregate(gt_bbs_subset$counter, by = list(gt_bbs_subset$stateroute), FUN = sum) 
 #rename columns to make more clear
@@ -201,6 +216,7 @@ colnames(gt_binom) <- c("stateroute", "numyears")
 
 # merge success/failure columns w environmnetal data, missing 0 occupancies
 env_occu_matrix_1 = merge(env_occu_matrix, gt_binom, by = "stateroute", all.x = TRUE)
+
 # using equation species sum*GT occ to get success and failure for binomial anlaysis
 env_occu_matrix_1$sp_success = as.factor(env_occu_matrix_1$numyears * env_occu_matrix_1$GT_occ)
 env_occu_matrix_1$sp_fail = as.factor(env_occu_matrix_1$numyears * (1 - env_occu_matrix_1$GT_occ))

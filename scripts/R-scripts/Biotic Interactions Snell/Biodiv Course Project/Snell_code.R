@@ -7,7 +7,7 @@
 ######################################
 
 ### Set working directory to the folder where all of your data and code are stored
-setwd('/Users/terrysnell/Desktop/Biodiv Course Project')
+setwd('C:/git/core-transient/scripts/R-scripts/Biotic Interactions Snell/Biodiv Course Project/Snell_Project_Total')
 
 #-------------for this project only used "All Env Data.csv" START ON LINE 49---------------------------------------#
 ###Temperature, precip, elevation data from WorldClim: http://www.worldclim.org/current
@@ -50,9 +50,9 @@ evi = subset(fEVI, select = c('stateroute', 'sum.EVI'))
 
 ####----Creating an environmental matrix ----####
 library(raster)
-occumatrix <- read.table("/Users/terrysnell/Desktop/Biodiv Course Project/Cleaned Data/site_sp_occupancy_matrix.csv", sep=",", header = T)
+occumatrix <- read.table("site_sp_occupancy_matrix.csv", sep=",", header = T)
 names(occumatrix)[names(occumatrix)=="X"] <- "stateroute"
-route.locs = read.csv('/Users/terrysnell/Desktop/Biodiv Course Project/routes.csv')
+route.locs = read.csv('routes.csv')
 route.locs$stateroute = 1000*route.locs$statenum + route.locs$Route
 
 latlongs = subset(route.locs, select = c('stateroute', 'Lati', 'Longi'))
@@ -60,7 +60,7 @@ route.sp = coordinates(latlongs[,3:2])
 plot(route.sp)
 
 #Read in ENV data set
-envtable <- read.csv("/Users/terrysnell/Desktop/Biodiv Course Project/All Env Data.csv", header = T)
+envtable <- read.csv("All Env Data.csv", header = T)
 
 #mean data for all variables
 finalenv <- subset(envtable, select = c('stateroute', 'sum.EVI', 'elev.mean', 'mat', 'ap.mean')) 
@@ -125,7 +125,7 @@ final.analy.table <- merge(occuenv, sorted.sd, by = "Species")
 occuenv$euc.dist.spp = occuenv$euc.dist/final.analy.table$sp.sd
 
 #adding in common names to aid analysis
-taxAOU <- read.table("/Users/terrysnell/Desktop/Biodiv Course Project/Tax_AOU_Alpha.csv", header = T, sep = ",", quote = "\"")
+taxAOU <- read.table("Tax_AOU_Alpha.csv", header = T, sep = ",", quote = "\"")
 names(taxAOU) = c("Common.Name","Species","Code")
 
 occuenv = merge(occuenv, taxAOU, by = "Species")
