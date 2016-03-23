@@ -23,7 +23,7 @@ reps = 999
 # stats for one or a few datasets into R, run this section
 
 # Specify here the datasetIDs and then run the code below.
-datasetIDs = c(208, 210, 213)
+datasetIDs = c(208)
 
 summaries = c()
 for (d in datasetIDs) {

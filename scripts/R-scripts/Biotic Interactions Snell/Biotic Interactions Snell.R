@@ -16,15 +16,25 @@ towhees = subsetocc[subsetocc$CommonName == "Spotted Towhee"| subsetocc$CommonNa
 
 # read in BBS data
 bbs = read.csv('dataset_1.csv', header = T)
+# paring down BBS cols
+bbs = bbs[, (names(bbs) %in% c("stateroute", "Aou", "SpeciesTotal",  'routeID', 'Lati', 'Longi'))]
+# read in Coyle occupancy data - organized by site 
+coyle_o = read.csv('site_sp_occupancy_matrix_Coyle.csv', header = T)
+# gather into long format
+# coyle_long = gather(coyle_o, Aou, occupancy, X2881:X22860)
+# remove x
+# coyle_long$Aou = substring(coyle_long$Aou, 2)
+# name 1st col stateroute
+colnames(coyle_o)[1] = "stateroute"
+
+########NEED for loop here
+
+
 # subset spotted towhees based on AOU code
 spotted = bbs[bbs$Aou == 5880,] 
 # aggregate based on year to get just spotted towhee abundance
 spot_agg = aggregate(spotted, by = list(spotted$stateroute), FUN = mean) 
-competitor_agg = aggregate(bbs, by = list(bbs$stateroute & bbs$Aou), FUN = mean) ##FIX
-# read in Coyle occupancy data - organized by site 
-coyle_o = read.csv('site_sp_occupancy_matrix_Coyle.csv', header = T)
-# rename column one to stateroute
-colnames(coyle_o)[1] = c("stateroute")
+
 # subset GT towhee within coyle occupancy data
 gt_occ = data.frame(coyle_o$stateroute, coyle_o$X5900)
 # subset spotted towhee within coyle occupancy data
@@ -49,11 +59,8 @@ obs_exp_total = merge(gt_ep, t1, by = "stateroute")
 # drop extra columns
 drops <- c("SSTATENUMB","SROUTE", "AOU") # -drops
 obs_exp_total = obs_exp_total[, !(names(obs_exp_total) %in% drops)]
-# view where coyle_occupancy = 0 but predicted presence
-GT_gaps = obs_exp_total[obs_exp_total$coyle_o.X5900 == 0,] 
 
-# merge expected occupancy w real occupancy SPOT OCC
-# obs_exp_occ = merge(gt_ep, t2, by.x = "stateroute", by.y = "coyle_o.stateroute")
+
 
 ############# ---- Generate total species occupancies ---- #############
 library(tidyr)
@@ -99,21 +106,41 @@ plot(avg_occ_dist$occupancy, avg_occ_dist$frequency, type = 'l',
 
 # merge in lat/long
 latlongs = read.csv('routes 1996-2010 consecutive.csv', header = T)
-plotdata_all = merge(obs_exp_total, latlongs, by = "stateroute") #where expected didnt equal observed
-plotdata_gaps = merge(GT_gaps, latlongs, by = "stateroute") #where expected didnt equal observed GT only
+plotdata_all = merge(obs_exp_total, latlongs, by = "stateroute") 
+plotdata_gaps = merge(GT_gaps, latlongs, by = "stateroute") #where expected didnt equal observed GT only in coyle
 # spotted range in point format
-spotty = merge(bbs, latlongs, by = "stateroute")
-spotty = spotty[spotty$Aou == 5880,]
+bbs_loc = merge(bbs, latlongs, by = "stateroute")
+GT_abun = bbs_loc[bbs_loc$Aou == 5900,]
+spotty = bbs_loc[bbs_loc$Aou == 5880,]
+# view where coyle_occupancy = 0 but predicted presence
+GT_gaps = obs_exp_total[obs_exp_total$coyle_o.X5900 == 0,] 
 
 # plot of states
 map("state") 
 # adding ranges of spp
-points(spotty$Longi, spotty$Lati, col = 2, pch = 18) #spotted range = RED
-points(plotdata_all$Longi, plotdata_all$Lati, col = 3, pch = 16) #GT range = GREEN
-points(plotdata_gaps$Longi, plotdata_gaps$Lati, col = 4, pch = 17) #where GT == 0 but predicted presence BLUE 
+# ggplot(spotted, aes(Lati, Longi)) + geom_point(size = spotted$SpeciesTotal)
+points(spotted$Longi, spotted$Lati, col = 2,  pch = 20, cex = spotted$SpeciesTotal/25) #spotted range = RED
+points(GT_abun$Longi.x, GT_abun$Lati.x, col = 3, pch = 16, cex = GT_abun$SpeciesTotal/25) #GT range = GREEN
+points(plotdata_gaps$Longi.x, plotdata_gaps$Lati.x, col = 4, pch = 17) #where GT == 0 but predicted presence BLUE 
 
 
 #### ---- Processing Environmental Data ---- ####
+# read in raw env data (from Coyle et al)
+all_env = read.csv('All Env Data.csv', header = T)
+# merge in ENV
+all_expected_pres = merge(all_env, expect_pres, by = "stateroute")
+col_keep_1 <- c("stateroute", "Longi", "Lati",  'sum.EVI', 'elev.mean', 'mat', 'ap.mean', "AOU", 'SSTATENUMB', 'SROUTE')
+all_expected_pres = all_expected_pres[, (names(all_expected_pres) %in% col_keep_1)]
+
+# for loop subsetting env data to expected occurrence for focal species
+allspecies = unique(all_expected_pres$AOU)
+
+for (s in allspecies){
+  temp = all_expected_pres[all_expected_pres$AOU == s,] 
+  # merge w coyle occ to get only a few data sets
+  merge(temp, bbs, by = "Aou", all = FALSE)
+}
+
 
 # read in env data from biol 465 final project, Snell Project Final.R script
 env = read.csv('occuenv.csv', header = T)
@@ -126,8 +153,6 @@ env_zscore = env_gt[, (names(env_gt) %in% col_keeps)]
 # NEED: if duplicate, remove.
 library(dplyr)
 
-test = ddply(env_zscore, .(stateroute), summarize,
-      Species=ifelse(all((Species == 5900)), NA, max(Species,na.rm=TRUE)))
 
 # subset to stateroute, recalculate z-scores from scratch
 unique(env_zscore$stateroute)
