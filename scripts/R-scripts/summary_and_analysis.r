@@ -23,7 +23,7 @@ reps = 999
 # stats for one or a few datasets into R, run this section
 
 # Specify here the datasetIDs and then run the code below.
-datasetIDs = c(208)
+datasetIDs = c(291:295)
 
 summaries = c()
 for (d in datasetIDs) {
@@ -32,8 +32,8 @@ for (d in datasetIDs) {
   summaries = rbind(summaries, newsumm)
 }
 
-#write.csv(summaries, 'output/tabular_data/core-transient_summary.csv', 
-#          row.names = F)
+write.csv(summaries, 'output/tabular_data/core-transient_summary_test.csv', 
+          row.names = T)
 
 ##################################################################
 

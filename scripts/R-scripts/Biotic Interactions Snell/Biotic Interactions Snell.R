@@ -27,9 +27,7 @@ coyle_o = read.csv('site_sp_occupancy_matrix_Coyle.csv', header = T)
 # name 1st col stateroute
 colnames(coyle_o)[1] = "stateroute"
 
-########NEED for loop here
-
-
+########NEED  to expand to take any species here
 # subset spotted towhees based on AOU code
 spotted = bbs[bbs$Aou == 5880,] 
 # aggregate based on year to get just spotted towhee abundance
@@ -110,7 +108,7 @@ plotdata_all = merge(obs_exp_total, latlongs, by = "stateroute")
 plotdata_gaps = merge(GT_gaps, latlongs, by = "stateroute") #where expected didnt equal observed GT only in coyle
 # spotted range in point format
 bbs_loc = merge(bbs, latlongs, by = "stateroute")
-GT_abun = bbs_loc[bbs_loc$Aou == 5900,]
+GT_abun = bbs_loc[bbs_loc$Aou == 5900,] #EXPAND TO OTHER SPP HERE
 spotty = bbs_loc[bbs_loc$Aou == 5880,]
 # view where coyle_occupancy = 0 but predicted presence
 GT_gaps = obs_exp_total[obs_exp_total$coyle_o.X5900 == 0,] 
@@ -133,14 +131,24 @@ col_keep_1 <- c("stateroute", "Longi", "Lati",  'sum.EVI', 'elev.mean', 'mat', '
 all_expected_pres = all_expected_pres[, (names(all_expected_pres) %in% col_keep_1)]
 
 # for loop subsetting env data to expected occurrence for focal species
-allspecies = unique(all_expected_pres$AOU)
-
+#allspecies = unique(all_expected_pres$AOU)
+allspecies = all_expected_pres$AOU == 5900
 for (s in allspecies){
   temp = all_expected_pres[all_expected_pres$AOU == s,] 
-  # merge w coyle occ to get only a few data sets
-  merge(temp, bbs, by = "Aou", all = FALSE)
-}
+  focal_abun = bbs_loc[bbs_loc$Aou == s,] 
+  merge(temp, focal_abun, by.x = "AOU", by.y = "Aou", all = FALSE)
+}         ###### how to store separately?
 
+focal_abun = bbs_loc[bbs_loc$Aou == 5900,] 
+competitor = bbs_loc[bbs_loc$Aou == 5880,]
+
+# merge foacl abundance w expected pres/env variables #NEEDS TO BE IN A LOOP
+env_abun = merge(all_expected_pres, focal_abun, by = "stateroute")
+env_abun_subset = env_abun[, (names(env_abun) %in% c("stateroute", "elev.mean", "sum.EVI", 
+                                                    "mat", "ap.mean","SpeciesTotal","AOU"))]
+
+# NEED: for loop for species-spec weighted avg of env variables
+env_abun_subset$weighted_avg = (env_abun_subset$mat * env_abun_subset$SpeciesTotal)/sum(env_abun_subset$SpeciesTotal)
 
 # read in env data from biol 465 final project, Snell Project Final.R script
 env = read.csv('occuenv.csv', header = T)
@@ -149,8 +157,8 @@ env_gt = env[env$Species == 5900 |env$Species == 5880,]
 # pulling out environmental z-scores by state route 
 col_keeps <- c("stateroute", "Species", "Lati", "Longi", "zTemp","zPrecip", "zElev", "zEVI")
 env_zscore = env_gt[, (names(env_gt) %in% col_keeps)]
-                    
-# NEED: if duplicate, remove.
+
+  
 library(dplyr)
 
 
