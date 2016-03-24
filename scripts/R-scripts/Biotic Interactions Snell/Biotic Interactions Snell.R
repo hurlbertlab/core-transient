@@ -142,13 +142,23 @@ for (s in allspecies){
 focal_abun = bbs_loc[bbs_loc$Aou == 5900,] 
 competitor = bbs_loc[bbs_loc$Aou == 5880,]
 
-# merge foacl abundance w expected pres/env variables #NEEDS TO BE IN A LOOP
+# merge focal abundance w expected pres/env variables #NEEDS TO BE IN A LOOP
 env_abun = merge(all_expected_pres, focal_abun, by = "stateroute")
 env_abun_subset = env_abun[, (names(env_abun) %in% c("stateroute", "elev.mean", "sum.EVI", 
                                                     "mat", "ap.mean","SpeciesTotal","AOU"))]
 
 # NEED: for loop for species-spec weighted avg of env variables
-env_abun_subset$weighted_avg = (env_abun_subset$mat * env_abun_subset$SpeciesTotal)/sum(env_abun_subset$SpeciesTotal)
+env_abun_subset$meantemp = (env_abun_subset$mat * env_abun_subset$SpeciesTotal)/sum(env_abun_subset$SpeciesTotal)
+env_abun_subset$meanelev = (env_abun_subset$elev.mean * env_abun_subset$SpeciesTotal)/sum(env_abun_subset$SpeciesTotal)
+env_abun_subset$meanprecip = (env_abun_subset$ap.mean * env_abun_subset$SpeciesTotal)/sum(env_abun_subset$SpeciesTotal)
+env_abun_subset$meanevi = (env_abun_subset$sum.EVI * env_abun_subset$SpeciesTotal)/sum(env_abun_subset$SpeciesTotal)
+
+# weighted SD
+output = c()
+for (r in env_abun_subset$stateroute){
+  output = c(output, rep(env_abun_subset$meantemp), env_abun_subset$SpeciesTotal)
+  
+}
 
 # read in env data from biol 465 final project, Snell Project Final.R script
 env = read.csv('occuenv.csv', header = T)
