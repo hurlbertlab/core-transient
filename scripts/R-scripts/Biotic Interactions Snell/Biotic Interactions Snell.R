@@ -153,6 +153,9 @@ env_abun_subset$meanelev = (env_abun_subset$elev.mean * env_abun_subset$SpeciesT
 env_abun_subset$meanprecip = (env_abun_subset$ap.mean * env_abun_subset$SpeciesTotal)/sum(env_abun_subset$SpeciesTotal)
 env_abun_subset$meanevi = (env_abun_subset$sum.EVI * env_abun_subset$SpeciesTotal)/sum(env_abun_subset$SpeciesTotal)
 
+
+env_focal = env_abun_subset[env_abun_subset$AOU == 5900,]
+
 # weighted SD
 output = c()
 for (r in env_abun_subset$stateroute){
