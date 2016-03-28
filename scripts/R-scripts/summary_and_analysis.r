@@ -18,7 +18,7 @@ reps = 999
 
 # If running summaries for the first time (or wanting to start
 # anew because all formatted datasets have changed) and a
-# 'core-transient_summary.csv' file does not exist yet in the
+# 'core-transient_summary.csv' file does not exist yet in the 
 # output/tabular_data folder, or if you just want to get summary
 # stats for one or a few datasets into R, run this section
 
@@ -26,7 +26,6 @@ reps = 999
 dataformattingtable = read.csv('data_formatting_table.csv', header = T) 
 
 use = which(dataformattingtable$format_flag == 1)
-
 
 datasetIDs = c(300:304)
 
