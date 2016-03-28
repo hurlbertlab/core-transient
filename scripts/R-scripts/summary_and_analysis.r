@@ -23,12 +23,16 @@ reps = 999
 # stats for one or a few datasets into R, run this section
 
 # Specify here the datasetIDs and then run the code below.
-datasetIDs = c(291:295)
+dataformattingtable = read.csv('data_formatting_table.csv', header = T) 
+
+use = which(dataformattingtable$format_flag == 1)
+
+
+datasetIDs = c(300:304)
 
 summaries = c()
-for (d in datasetIDs) {
+for (d in use) {
   newsumm = summaryStatsFun(d, threshold, reps)
-  print(d) #delete when done error-checking
   summaries = rbind(summaries, newsumm)
 }
 
