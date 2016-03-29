@@ -25,12 +25,10 @@ reps = 999
 # Specify here the datasetIDs and then run the code below.
 dataformattingtable = read.csv('data_formatting_table.csv', header = T) 
 
-use = which(dataformattingtable$format_flag == 1)
-
-datasetIDs = c(300:304)
+datasetIDs = dataformattingtable$dataset_ID[dataformattingtable$format_flag == 1]
 
 summaries = c()
-for (d in use) {
+for (d in datasetIDs) {
   newsumm = summaryStatsFun(d, threshold, reps)
   summaries = rbind(summaries, newsumm)
 }
