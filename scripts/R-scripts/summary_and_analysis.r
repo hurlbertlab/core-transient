@@ -27,10 +27,14 @@ dataformattingtable = read.csv('data_formatting_table.csv', header = T)
 
 datasetIDs = dataformattingtable$dataset_ID[dataformattingtable$format_flag == 1]
 
+datasetIDs = datasetIDs[!datasetIDs %in% c(1, 67, 228)]
+# run inside of dataset for i =2, 3, etc.to det problem
+
 summaries = c()
 for (d in datasetIDs) {
   newsumm = summaryStatsFun(d, threshold, reps)
   summaries = rbind(summaries, newsumm)
+  print(d)
 }
 
 write.csv(summaries, 'output/tabular_data/core-transient_summary_test.csv', 

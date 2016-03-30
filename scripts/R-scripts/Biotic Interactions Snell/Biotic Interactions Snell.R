@@ -58,8 +58,6 @@ obs_exp_total = merge(gt_ep, t1, by = "stateroute")
 drops <- c("SSTATENUMB","SROUTE", "AOU") # -drops
 obs_exp_total = obs_exp_total[, !(names(obs_exp_total) %in% drops)]
 
-
-
 ############# ---- Generate total species occupancies ---- #############
 library(tidyr)
 
@@ -119,7 +117,7 @@ map("state")
 # ggplot(spotted, aes(Lati, Longi)) + geom_point(size = spotted$SpeciesTotal)
 points(spotted$Longi, spotted$Lati, col = 2,  pch = 20, cex = spotted$SpeciesTotal/25) #spotted range = RED
 points(GT_abun$Longi.x, GT_abun$Lati.x, col = 3, pch = 16, cex = GT_abun$SpeciesTotal/25) #GT range = GREEN
-points(plotdata_gaps$Longi.x, plotdata_gaps$Lati.x, col = 4, pch = 17) #where GT == 0 but predicted presence BLUE 
+# points(plotdata_gaps$Longi.x, plotdata_gaps$Lati.x, col = 4, pch = 17) #where GT == 0 but predicted presence BLUE 
 
 
 #### ---- Processing Environmental Data ---- ####
@@ -132,11 +130,12 @@ all_expected_pres = all_expected_pres[, (names(all_expected_pres) %in% col_keep_
 
 # for loop subsetting env data to expected occurrence for focal species
 #allspecies = unique(all_expected_pres$AOU)
-allspecies = all_expected_pres$AOU == 5900
+allspecies = all_expected_pres$AOU 
+s = 5900
 for (s in allspecies){
-  temp = all_expected_pres[all_expected_pres$AOU == s,] 
-  focal_abun = bbs_loc[bbs_loc$Aou == s,] 
-  merge(temp, focal_abun, by.x = "AOU", by.y = "Aou", all = FALSE)
+  temp = all_expected_pres[all_expected_pres$AOU == 5900,] # need to automate these
+  focal_abun = bbs_loc[bbs_loc$Aou == 5900,] 
+  env_output = merge(temp, focal_abun, by.x = "AOU", by.y = "Aou", all = FALSE)
 }         ###### how to store separately?
 
 focal_abun = bbs_loc[bbs_loc$Aou == 5900,] 
@@ -159,7 +158,7 @@ env_focal = env_abun_subset[env_abun_subset$AOU == 5900,]
 # weighted SD
 output = c()
 for (r in env_abun_subset$stateroute){
-  output = c(output, rep(env_abun_subset$meantemp), env_abun_subset$SpeciesTotal)
+  output = c(output, rep(env_abun_subset$meantemp, env_abun_subset$SpeciesTotal))
   
 }
 
@@ -197,7 +196,7 @@ colnames(env_occu_matrix)[colnames(env_occu_matrix)=="coyle_o.X5900"] <- "GT_occ
 occ_logit =  log(env_occu_matrix$GT_occ / (1 - env_occu_matrix$GT_occ))
 
 # Interaction between GT occupancy and ST abundance where GT exists
-competition <- lm(trans.arcsine(GT_occ) ~  Spotted_abun, data = env_occu_matrix)
+competition <- lm(trans.arcsine(GT_occ) ~  SpottedTotal, data = env_occu_matrix) #LOGIT LINK HERE
 # z scores separated out for env effects (as opposed to multivariate variable)
 env_z = lm(GT_occ ~ abs(zTemp)+abs(zElev)+abs(zPrecip)+abs(zEVI), data = env_occu_matrix)
 # z scores separated out for env effects
@@ -220,7 +219,7 @@ variance_partitioning = function(x, y) { # change to x and y
 library(ggplot2)
 
 # Plotting basic lms to understand relationships
-ggplot(env_occu_matrix, aes(x = GT_occ, y = Spotted_abun)) + 
+ggplot(env_occu_matrix, aes(x = GT_occ, y = SpottedTotal)) + 
   geom_point(pch = 16) +
   stat_smooth(method = "lm", col = "red") + theme_classic()
 
@@ -229,7 +228,7 @@ ggplotRegression <- function (fit) {
   require(ggplot2)
   
   ggplot(fit$model, aes_string(x = names(fit$model)[2], y = names(fit$model)[1])) + 
-    geom_point() +
+    geom_point() + ylim(0, 1)
     stat_smooth(method = "lm", col = "red") + theme_classic() + 
     labs(title = paste("Adj R2 = ",signif(summary(fit)$adj.r.squared, 5),
                        "Intercept =",signif(fit$coef[[1]],5 ),
@@ -237,7 +236,7 @@ ggplotRegression <- function (fit) {
                        " P =",signif(summary(fit)$coef[2,4], 5)))
 }
 
-ggplotRegression(lm(GT_occ ~ Spotted_abun, data = env_occu_matrix))
+ggplotRegression(lm((GT_occ) ~ (SpottedTotal), data = env_occu_matrix))
 # source = https://susanejohnston.wordpress.com/2012/08/09/a-quick-and-easy-function-to-plot-lm-results-in-r/
 
 #### ---- GLM fitting  ---- ####
@@ -288,6 +287,9 @@ summary(glm_abundance_quasibinom)
 glm_abundance_rand_site = glmer(cbind(sp_success, sp_fail) ~ cs(SpottedTotal) + 
                abs(zTemp)+abs(zElev)+abs(zPrecip)+abs(zEVI) + (1|stateroute), family = binomial(link = logit), data = env_occu_matrix_1)
 summary(glm_abundance_rand_site) 
+
+
+# what is the cs?!
 
 # want to do a likelihood ratio test on them
 anova(glm_abundance_rand_site, test = "Chisq")
