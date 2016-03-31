@@ -35,47 +35,22 @@ datasetID = 228
 
 list.files('data/raw_datasets')
 
+dataset = read.csv(paste('data/raw_datasets/dataset_', datasetID, '.csv', sep = ''))
+
 dataFormattingTable = read.csv('data_formatting_table.csv')
 
-###
-# Dataset must be combined from 4 files and reshaped!
-###
 
-# Load reshape2 library:
+# Make sure the original name of the raw data file is saved in the data formatting table.
+# NOT, for example, 'rawdataset_255.csv', but the filename as originally downloaded.
+# Check the data source link (available in the table, and hopefully posted above) if
+# the data is available online. If the data come from a published paper and there is
+# no file that was downloaded, enter "NA".
 
-library(reshape2)
-
-# Set read and write directories:
-
-in_dir = 'data/raw_datasets/dataset_228RAW'
-out_dir = 'data/formatted_datasets'
-
-# Get data:
-# Note: each file represents one site from the Hubbard Brook study.
-
-hb = read.csv(file.path(in_dir,'hb_bird.txt'))
-mk = read.csv(file.path(in_dir,'mk_bird.txt'))
-rp = read.csv(file.path(in_dir,'rp_bird.txt'))
-sm = read.csv(file.path(in_dir,'sm_bird.txt'))
-
-reshape.fun = function(sampling.site, site.code){
-  # Remove X's from the year column:
-  names(sampling.site) = gsub('X', '',names(sampling.site))
-  # Melt from wide to long format:
-  dClean = melt(sampling.site, id.vars = 'Bird.Species')
-  # Set column names:
-  names(dClean) = c('species','year','count')
-  # Add a site column (and arrange as the first column):
-  site.name = site.code
-  dClean$site = factor(rep(site.name, length(dClean$year)))
-  dClean
-}
-
-d228 = rbind(reshape.fun(hb,'hb'),reshape.fun(mk,'mk'),
-             reshape.fun(rp,'rp'),reshape.fun(sm,'sm'))
-
-dataset = d228
-
+dataFormattingTable[,'Raw_datafile_name'] = 
+  dataFormattingTableFieldUpdate(datasetID, 'Raw_datafile_name',  
+                                 
+                                 #--! PROVIDE INFO !--#
+                                 'hb_bird.txt') 
 ########################################################
 # ANALYSIS CRITERIA                                    #  
 ########################################################
@@ -312,7 +287,8 @@ dataFormattingTable[,'spatial_scale_variable'] =
 dataFormattingTable[,'Notes_siteFormat'] = 
   dataFormattingTableFieldUpdate(datasetID, 'Notes_siteFormat',  # Fill value below in quotes
                                  
-                                 'site fields concatenated. metadata suggests site-block-treatment-plot-quad describes the order of nested sites from small to large.')
+                                 'Each dataset was a separate plot, so used Hubbard Brook, Moose 
+                                 Moosilauke, Sitnson Mountain, and Russell Pond as sites.')
 
 
 #-------------------------------------------------------------------------------*
@@ -338,7 +314,7 @@ summary(dataset3)
 # Subset to records > 0 (if applicable):
 dataset3$count <- as.numeric(dataset3$count)
 
-dataset4 = subset(dataset3, (count > 0 & count != '0.0' & count != 'tr' & count != 't'))
+dataset4 = subset(dataset3, (count > 0))
 
 summary(dataset4)
 
@@ -364,30 +340,29 @@ dataFormattingTable[,'countFormat'] =
 dataFormattingTable[,'Notes_countFormat'] = 
   dataFormattingTableFieldUpdate(datasetID, 'Notes_countFormat', # Fill value below in quotes
                                  
-                                 'Data represents count. There were many 0s, 0.0s removed. bird counts that were entered as trace (t or tr) were also deleted')
+                                 'Data represents count. There were many 0s, 0.0s removed. bird counts that were 
+                                 entered as trace (t or tr) were entered as half the smallest amount observed in the dataset as 0.25')
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SPECIES DATA ----
 #===============================================================================*
 # Here, your primary goal is to ensure that all of your species are valid. To do so, you need to look at the list of unique species very carefully. Avoid being too liberal in interpretation, if you notice an entry that MIGHT be a problem, but you can't say with certainty, create an issue on GitHub.
 
-# Look at the individual species present:
+speciesField = 'Bird.Species'
 
-levels(factor(dataset5$species)) 
+names(dataset5)[names(dataset5) == speciesField] = 'species'
 
-# The first thing that I notice is that there are lower and upper case entries. Because R is case-sensitive, this will be coded as separate species. Modify this prior to continuing:
+# Look at the individual species present and how frequently they occur: This way 
+# you can more easily scan the species names (listed alphabetically) and identify 
+# potential misspellings, extra characters or blank space, or other issues.
 
-dataset5$species = factor(toupper(dataset5$species))
-
-# Now explore the listed species themselves, again. A good trick here to finding problematic entries is to shrink the console below horizontally so that species names will appear in a single column.  This way you can more easily scan the species names (listed alphabetically) and identify potential misspellings, extra characters or blank space, or other issues.
-
-levels(dataset5$species)
+data.frame(table(dataset5$species))
 
 # If species names are coded (not scientific names) go back to study's metadata to learn what species should and shouldn't be in the data. 
 
 # In this example, a quick look at the metadata is not informative, unfortunately. Because of this, you should really stop here and post an issue on GitHub. With some more thorough digging, however, I've found the names represent "Kartez codes". Several species can be removed (double-checked with USDA plant codes at plants.usda.gov and another Sevilleta study (dataset 254) that provides species names for some codes). Some codes were identified with this pdf from White Sands: https://nhnm.unm.edu/sites/default/files/nonsensitive/publications/nhnm/U00MUL02NMUS.pdf
 
-bad_sp = c('TOTAL  (ALL SPECIES)' , 'NUMBER OF SPECIES')
+bad_sp = c(' Total  (all Species)' , 'Number of Species')
 
 dataset6 = dataset5[!dataset5$species %in% bad_sp,]
 
@@ -429,12 +404,7 @@ head(dataset6)
 dataFormattingTable[,'Notes_spFormat'] = 
   dataFormattingTableFieldUpdate(datasetID, 'Notes_spFormat',    # Fill value below in quotes
                                  
-                                 'several species removed. Though Evening Grosbeak and Acadian 
-                                 Flycatcher were factors of the species column, there were no actual 
-                                 entries for those species. This is most likely because the 
-                                 count entries associated with each of these were either zero 
-                                 or trace and were removed. Two other species entries were removed: 
-                                 TOTAL  (ALL SPECIES) and NUMBER OF SPECIES  ')
+                                 'Species entries were removed: TOTAL  (ALL SPECIES) and NUMBER OF SPECIES  ')
 
 #-------------------------------------------------------------------------------*
 # ---- MAKE DATA FRAME OF COUNT BY SITES, SPECIES, AND YEAR ----
@@ -480,11 +450,6 @@ write.csv(dataset7, paste("data/formatted_datasets/dataset_", datasetID, ".csv",
 # !GIT-ADD-COMMIT-PUSH THE FORMATTED DATASET IN THE DATA FILE, THEN GIT-ADD-COMMIT-PUSH THE UPDATED DATA FOLDER!
 
 # As we've now successfully created the formatted dataset, we will now update the format priority and format flag fields. 
-
-dataFormattingTable[,'format_priority'] = 
-  dataFormattingTableFieldUpdate(datasetID, 'format_priority',    # Fill value below in quotes 
-                                 
-                                 'NA')
 
 dataFormattingTable[,'format_flag'] = 
   dataFormattingTableFieldUpdate(datasetID, 'format_flag',    # Fill value below
@@ -608,6 +573,14 @@ siteSummaryFun(subsettedData)
 # If everything looks good, write the files:
 
 writePropOccSiteSummary(subsettedData)
+
+# Update Data Formatting Table with summary stats of the formatted,
+# properly subsetted dataset
+dataFormattingTable = dataFormattingTableUpdateFinished(datasetID, dataset1)
+
+# And write the final data formatting table:
+
+write.csv(dataFormattingTable, 'data_formatting_table.csv', row.names = F)
 
 # Remove all objects except for functions from the environment:
 
