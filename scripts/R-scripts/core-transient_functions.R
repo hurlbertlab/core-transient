@@ -618,12 +618,11 @@ fitBeta = function(occProp, nTime) {
    shape.params = tryCatch( #############################TRYCATCH
  
        {
-         fitdistr(occs, "beta",
-                  list(shape1 = 2, shape2 = 2)) ###
+         suppressWarnings(fitdistr(occs, "beta", list(shape1 = 2, shape2 = 2))) ###
        },
        error = function(cond) {
-         message(paste("Error in fitdistr:", cond)) ###
-         fitdistr(occs, "beta", list(shape1 = 1, shape2 = 1)) ###alternative starting params
+         message(paste("Error in fitdistr; trying new starting values")) ###
+         suppressWarnings(fitdistr(occs, "beta", list(shape1 = 3, shape2 = 3))) ###alternative starting params
        },
        warning = function(cond) {
          message(cond) ###
@@ -701,7 +700,7 @@ summaryStatsFun = function(datasetID, threshold, reps){
   # Get data:
   dataList = getDataList(datasetID)
   sites  = dataList$siteSummary$site
-  # Get summary stats for each site:
+  # Get summary stats for each site:         #where is the problem coming from?!
   outList = list(length = length(sites))
   for(i in 1:length(sites)){
     propOcc = subset(dataList$propOcc, site == sites[i])$propOcc
