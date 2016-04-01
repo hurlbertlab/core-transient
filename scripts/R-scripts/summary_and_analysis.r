@@ -27,8 +27,7 @@ dataformattingtable = read.csv('data_formatting_table.csv', header = T)
 
 datasetIDs = dataformattingtable$dataset_ID[dataformattingtable$format_flag == 1]
 
-datasetIDs = datasetIDs[!datasetIDs %in% c(1)]
-# 67, 228, 270, 271, 312, 315
+datasetIDs = datasetIDs[!datasetIDs %in% c(1, 67, 312)]
 
 summaries = c()
 for (d in datasetIDs) {
