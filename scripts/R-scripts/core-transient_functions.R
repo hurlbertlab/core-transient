@@ -618,16 +618,16 @@ fitBeta = function(occProp, nTime) {
    shape.params = tryCatch( #############################TRYCATCH
  
        {
-         suppressWarnings(fitdistr(occs, "beta", list(shape1 = 2, shape2 = 2))) ###
+         suppressWarnings(fitdistr(occs, "beta", list(shape1 = 2, shape2 = 2), method = "SANN", lower = c(0, 0))) ###
        },
        error = function(cond) {
          message(paste("Error in fitdistr; trying new starting values")) ###
          tryCatch(
            {
-             suppressWarnings(fitdistr(occs, "beta", list(shape1 = 3, shape2 = 3))) ###alternative starting params
+             suppressWarnings(fitdistr(occs, "beta", list(shape1 = 3, shape2 = 3), method = "SANN", lower = c(0, 0))) ###alternative starting params
            },
            error = function(cond) {
-             list(c(NA, NA)) 
+             list(estimate = c(NA, NA)) ############ FIX THIS
            },
            warning = function(cond) {
              message()
@@ -726,7 +726,6 @@ summaryStatsFun = function(datasetID, threshold, reps){
     mu = mean(propOcc)
     bimodality = bimodalityFun(propOcc, nTime)
     pBimodal = pBimodalFun(propOcc, nTime, reps)
-    #################### EDITING ############
     betaParms = fitBeta(propOcc, nTime)
     
     alpha = betaParms[1]

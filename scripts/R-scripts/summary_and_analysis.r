@@ -27,7 +27,7 @@ dataformattingtable = read.csv('data_formatting_table.csv', header = T)
 
 datasetIDs = dataformattingtable$dataset_ID[dataformattingtable$format_flag == 1]
 
-datasetIDs = datasetIDs[!datasetIDs %in% c(1, 67, 312)]
+# datasetIDs = datasetIDs[!datasetIDs %in% c(1, 67, 312)]
 
 summaries = c()
 for (d in datasetIDs) {
@@ -36,10 +36,10 @@ for (d in datasetIDs) {
   print(d)
 }
 
-write.csv(summaries, 'output/tabular_data/core-transient_summary_test.csv', 
+write.csv(summaries, 'output/tabular_data/core-transient_summary_test1.csv', 
           row.names = T)
 
-##################################################################
+                                               
 
 ##################################################################
 
