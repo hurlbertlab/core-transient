@@ -56,7 +56,7 @@ write.csv(summaries, 'output/tabular_data/core-transient_summary_test.csv',
 summ = addNewSummariesFun(threshold, reps, write = FALSE)
 
 
-#####################
+#####################lump reptile and ampibian into herptile, get rid of invert if possible - other category?, do a table of communities
 
 # Plotting summary results across datasets for Core-Transient analysis
 
@@ -66,7 +66,7 @@ summ$system = factor(summ$system)
 summ2 = subset(summ, !datasetID %in% c(99, 85, 90, 91, 92, 97, 124))
 dsets = unique(summ2[, c('datasetID', 'system','taxa')])
 
-taxorder = c('Bird', 'Plant', 'Mammal', 'Fish', 'Arthropod', 'Benthos', 'Plankton')
+taxorder = c('Bird', 'Plant', 'Mammal', 'Fish', 'Arthropod', 'Benthos', 'Plankton', 'Invertebrate', 'Herptile')
 
 dsetsBySystem = table(dsets$system)
 dsetsByTaxa = table(dsets$taxa)
@@ -79,9 +79,11 @@ colors7 = c(rgb(29/255, 106/255, 155/255),
             colors()[144],
             rgb(0, 54/255, 117/255),
             rgb(86/255, 141/255, 27/255),
-            colors()[547])
+            colors()[547],
+            colors()[600],  #added!
+            colors()[712]) #added!
 
-symbols7 = c(16:18,15, 17, 167,18)
+symbols7 = c(16:18,15, 17, 167,18, 19, 20) # added 19-20!
 
 taxcolors = data.frame(taxa = unique(summ$taxa), color = colors7, pch = symbols7)
 
