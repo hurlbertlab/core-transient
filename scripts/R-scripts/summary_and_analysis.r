@@ -53,7 +53,7 @@ write.csv(summaries, 'output/tabular_data/core-transient_summary_test.csv',
 # create the 'core-transient_summary.csv' file from scratch for all
 # datasets with formatted data.
 
-summ = addNewSummariesFun(threshold, reps, write = FALSE)
+summ = addNewSummariesFun(threshold, reps, write = TRUE)
 
 
 #####################lump reptile and ampibian into herptile, get rid of invert if possible - other category?, do a table of communities
@@ -128,7 +128,7 @@ par(mfrow = c(1,1), mar = c(6, 5, 1, 1), mgp = c(3, 1, 0), oma = c(0,0,0,0))
 box1 = boxplot(summ2$propCore, xlim = c(0, (3*length(uniqTaxa)-2)), ylim = c(0, 1), 
         border = 'white', col = 'white', ylab = "Fraction of species", cex.lab = 1.5, las = 1, 
         cex.axis = 1.25)
-for (i in 1:length(uniqTaxa)) {
+for (i in 1:length(uniqTaxa)) {   ##### wonky labelling somewhere in here
   tax = uniqTaxa[i]
   boxplot(summ2$propTrans[summ2$taxa == tax], add = T, col = transCol, staplewex = 0, outline = F,
           at = 3*(i-1), yaxt = "n")
