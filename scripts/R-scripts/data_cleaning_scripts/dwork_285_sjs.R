@@ -74,7 +74,7 @@ dataFormattingTable[,'Raw_datafile_name'] =
   dataFormattingTableFieldUpdate(datasetID, 'Raw_datafile_name',  
                                  
 #--! PROVIDE INFO !--#
-  'dataset_285.csv') 
+  'https://www.imperial.ac.uk/cpb/gpdd2/showdata.aspx?dataset=6863') 
 
 ##################CHANGE THIS!! WEBSITE DOWN###########################
 
@@ -287,13 +287,13 @@ dataFormattingTable[,'Raw_spatial_grain'] =
   dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain',  
                                  
 #--! PROVIDE INFO !--#
-                                 0.25) ##########GPDD DOWN
+                                 1) 
 
 dataFormattingTable[,'Raw_spatial_grain_unit'] = 
   dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain',  
                                  
 #--! PROVIDE INFO !--#
-                                 'm2') 
+                                 'ha') 
 
 
 # BEFORE YOU CONTINUE. We need to make sure that there are at least minNTime for 
@@ -366,7 +366,7 @@ dataFormattingTable[,'spatial_scale_variable'] =
   dataFormattingTableFieldUpdate(datasetID, 'spatial_scale_variable',
 
 #--! PROVIDE INFO !--#
-                                 'Y')
+                                 'N')
 
 # Notes_siteFormat. Use this field to THOROUGHLY describe any changes made to the 
 # site field during formatting.
@@ -375,7 +375,7 @@ dataFormattingTable[,'Notes_siteFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_siteFormat', 
 
 #--! PROVIDE INFO !--#
-  'The site field is a concatenation of site and quadrat.')
+  'The site field was created and labelled 1 because the only site was the plant production lab.')
 
 
 #-------------------------------------------------------------------------------*
@@ -392,7 +392,7 @@ summary(dataset3)
 # If there is no countfield, set this equal to "".
 
 #--! PROVIDE INFO !--#
-countfield = ""
+countfield = "Population"
 
 # Renaming it
 if (countfield == "") {
@@ -453,13 +453,13 @@ dataFormattingTable[,'countFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'countFormat',  
 
 #--! PROVIDE INFO !--#                                 
-                                 'presence')
+                                 'count')
 
 dataFormattingTable[,'Notes_countFormat'] = 
   dataFormattingTableFieldUpdate(datasetID, 'Notes_countFormat', 
                                  
 #--! PROVIDE INFO !--#                                 
-              'No count data provided, so 1s added to indicate presence')
+              'Count data provided')
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SPECIES DATA ----
@@ -473,7 +473,7 @@ dataFormattingTable[,'Notes_countFormat'] =
 # It will get converted to 'species'
 
 #--! PROVIDE INFO !--#
-speciesField = 'species_name'
+speciesField = 'TaxonID'
 
 names(dataset5)[names(dataset5) == speciesField] = 'species'
 
@@ -516,10 +516,10 @@ table(dataset6$species)
 # correct spellings in good_name, and then replace them using the for loop below:
 
 #--! PROVIDE INFO !--#
-typo_name = c('CERATOPHYLLUM')           #no other genus begins with these letters
+typo_name = c('')           
 
 #--! PROVIDE INFO !--#
-good_name = c('CERATOPHYLLUM DEMERSUM')
+good_name = c('')
 
 if (length(typo_name) > 0 & typo_name[1] != "") {
   for (n in 1:length(typo_name)) {
@@ -554,7 +554,7 @@ dataFormattingTable[,'Notes_spFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_spFormat',  
 
 #--! PROVIDE INFO !--#                                 
-  'A number of names represented in two obvious forms; 2 names (SAJ and VAL) assumed to be shorthand for Sagitarria and Vallisneria.')
+  'Species provided by numeric code, so no alterations made')
 
 #-------------------------------------------------------------------------------*
 # ---- MAKE DATA FRAME OF COUNT BY SITES, SPECIES, AND YEAR ----
