@@ -618,13 +618,13 @@ fitBeta = function(occProp, nTime) {
    shape.params = tryCatch( #############################TRYCATCH
  
        {
-         suppressWarnings(fitdistr(occs, "beta", list(shape1 = 2, shape2 = 2), method = "SANN", lower = c(0, 0))) ###
+         suppressWarnings(fitdistr(occs, "beta", list(shape1 = 2, shape2 = 2), lower = c(1e-10, 1e-10))) ###
        },
        error = function(cond) {
          message(paste("Error in fitdistr; trying new starting values")) ###
          tryCatch(
            {
-             suppressWarnings(fitdistr(occs, "beta", list(shape1 = 3, shape2 = 3), method = "SANN", lower = c(0, 0))) ###alternative starting params
+             suppressWarnings(fitdistr(occs, "beta", list(shape1 = 3, shape2 = 3), lower = c(1e-10, 1e-10))) ###alternative starting params
            },
            error = function(cond) {
              list(estimate = c(NA, NA)) ############ FIX THIS
