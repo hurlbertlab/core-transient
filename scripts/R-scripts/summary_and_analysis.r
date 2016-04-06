@@ -83,9 +83,9 @@ colors7 = c(rgb(29/255, 106/255, 155/255),
             rgb(86/255, 141/255, 27/255),
             colors()[547],
             colors()[600],  #added!
-            colors()[712]) #added!
+            colors()[91]) #added!
 
-symbols7 = c(16:18,15, 17, 167,18, 19, 20) # added 19-20!
+symbols7 = c(16:18,15, 17, 167,24, 19, 20) # added 19-20!
 
 taxcolors = data.frame(taxa = unique(summ$taxa), color = colors7, pch = symbols7)
 
@@ -156,14 +156,14 @@ bbssumm = subset(summ3, datasetID == 1)
 
 
 
-#########################################################################################
+######################################################################################### legend not right
 # Summarizing datasets based on beta distribution parameters
 pdf('output/plots/alpha_vs_beta.pdf', height = 6, width = 8)
-par(mfrow = c(1,1), mar = c(5,5,1,1), mgp = c(3,1, 0), cex.axis = 1.25, cex.lab = 2, las = 1)
+par(mfrow = c(1,1), mar = c(5,5,1,1), mgp = c(3,1, 0), cex.axis = 1, cex.lab = 1, las = 1)
 plot(summ3$alpha, summ3$beta, type = "n", xlim = c(-0.25,3.5), xlab = "alpha", ylab = "beta",
      ylim = c(0,4), yaxt = "n")
-axis(2, 0:4, cex = 1.25)
-points(summ3$alpha, summ3$beta, pch = summ3$pch, col = summ3$color, font = 5, cex = 1.5)
+axis(2, 0:4, cex = 1)
+points(summ3$alpha, summ3$beta, pch = summ3$pch, col = summ3$color, font = 5, cex = 1)
 abline(a=0, b=1, lty = 'dotted', lwd = 4)
 rect(-1, -1, 1, 1, lty = 'dashed', lwd = 2)
 legend('topleft', legend = unique(summ$taxa), pch = symbols7, 
