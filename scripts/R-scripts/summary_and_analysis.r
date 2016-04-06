@@ -5,6 +5,8 @@
 # Input files are named propOcc_XXX.csv where
 # XXX is the dataset ID.
 
+# setwd("C:/git/core-transient")
+
 source('scripts/R-scripts/core-transient_functions.R')
 
 # Maximum occupancy of transient species
@@ -90,9 +92,9 @@ taxcolors = data.frame(taxa = unique(summ$taxa), color = colors7, pch = symbols7
 pdf('output/plots/data_summary_hists.pdf', height = 8, width = 10)
 par(mfrow = c(2, 2), mar = c(6,6,1,1), cex = 1.25, oma = c(0,0,0,0), las = 1,
     cex.lab = 1.5)
-barplot(dsetsBySystem, col = c('skyblue', 'burlywood'), cex.names = 1.5)
+barplot(dsetsBySystem, col = c('skyblue', 'navy', 'burlywood'), cex.names = 1)
 mtext("# Datasets", 2, cex = 1.5, las = 0, line = 2.5)
-barplot(log10(sitesBySystem), col = c('skyblue', 'burlywood'), cex.names = 1.25,
+barplot(log10(sitesBySystem), col = c('skyblue', 'navy', 'burlywood'), cex.names = 1,
         yaxt = "n", ylim = c(0,3))
 axis(2, 0:3)
 mtext(expression(log[10] ~ " # Assemblages"), 2, cex = 1.5, las = 0, line = 2.5)
@@ -126,7 +128,7 @@ uniqTaxa = meanCoreByTaxa$Group.1[order(meanCoreByTaxa$x, decreasing = T)]
 pdf('output/plots/CT_boxplots_byTaxa.pdf', height = 6, width = 8)
 par(mfrow = c(1,1), mar = c(6, 5, 1, 1), mgp = c(3, 1, 0), oma = c(0,0,0,0))
 box1 = boxplot(summ2$propCore, xlim = c(0, (3*length(uniqTaxa)-2)), ylim = c(0, 1), 
-        border = 'white', col = 'white', ylab = "Fraction of species", cex.lab = 1.5, las = 1, 
+        border = 'white', col = 'white', ylab = "Fraction of species", cex.lab = 1, las = 1, 
         cex.axis = 1.25)
 for (i in 1:length(uniqTaxa)) {   ##### wonky labelling somewhere in here
   tax = uniqTaxa[i]
@@ -137,7 +139,7 @@ for (i in 1:length(uniqTaxa)) {   ##### wonky labelling somewhere in here
   boxplot(summ2$propCore[summ2$taxa == tax], add =T, col = coreCol, staplewex = 0, outline = F,
           at = 3*(i-1)+1, yaxt = "n")
 }
-text(3*(1:7)-2.5, par("usr")[3], uniqTaxa, srt = 45, xpd = T, cex = 1.25, adj = c(1.1,1.1))
+text(3 *(1:9) - 2.5, par("usr")[3], uniqTaxa, srt = 45, xpd = T, cex = 1, adj = c(1.1,1.1)) 
 rect(.5, 0.9, 1.5, 1.0, col = transCol, border=F)
 rect(6.5, 0.9, 7.5, 1.0, col = nonCol, border=F)  
 rect(12.5, 0.9, 13.5, 1.0, col = coreCol, border=F)  
