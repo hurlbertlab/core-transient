@@ -76,16 +76,16 @@ sitesBySystem = table(summ2$system)
 sitesByTaxa = table(summ2$taxa)
 
 colors7 = c(rgb(29/255, 106/255, 155/255),
-            colors()[612],
             colors()[552],
+            colors()[612],
             colors()[144],
             rgb(0, 54/255, 117/255),
-            rgb(86/255, 141/255, 27/255),
-            colors()[547],
-            colors()[600],  #added!
+            colors()[600],
+            colors()[551],
+            rgb(86/255, 141/255, 27/255), #added!
             colors()[91]) #added!
 
-symbols7 = c(16:18,15, 17, 167,24, 19, 20) # added 19-20!
+symbols7 = c(16, 18, 167, 15, 17, 1, 3, 20, 24) # added 19-20!
 
 taxcolors = data.frame(taxa = unique(summ$taxa), color = colors7, pch = symbols7)
 
@@ -167,7 +167,7 @@ points(summ3$alpha, summ3$beta, pch = summ3$pch, col = summ3$color, font = 5, ce
 abline(a=0, b=1, lty = 'dotted', lwd = 4)
 rect(-1, -1, 1, 1, lty = 'dashed', lwd = 2)
 legend('topleft', legend = unique(summ$taxa), pch = symbols7, 
-       col = c(colors7[1:5], 'white', colors7[7]), pt.cex = 2, cex = 1.4)
+       col = c(colors7, 'white', colors7), pt.cex = 1.5, cex = 1.25)
 points(-.28, 2.65, pch = symbols7[6], font = 5, col = colors7[6], cex = 1.7)
 text(3,3.2, substitute(paste(alpha, " = ", beta)), srt = 40, cex = 2)
 dev.off()
@@ -460,13 +460,13 @@ par(mfrow = c(1, 1), mar = c(6, 6, 1, 1), mgp = c(4, 1, 0),
     cex.axis = 1.5, cex.lab = 2, las = 1)
 plot(log10(meanN), meanOcc, xlab = expression(paste(plain(log)[10]," Community Size")), 
      ylab = 'Mean occupancy', pch = 16, col = c('black', col1, col2, col3, col4), 
-     cex = 4, ylim = c(0.2, 1.15), xlim = c(.8,5))
+     cex = 1.5, ylim = c(0.2, 1.15), xlim = c(.8,5))
 lines(range(log10(meanN[2:5])), range(log10(meanN[2:5]))*BBS.lm$coefficients[2] + BBS.lm$coefficients[1],
       lwd = 4, lty = 'dashed')
-points(log10(meanN), meanOcc, pch = 16, col = c('black', col1, col2, col3, col4), cex = 4)
+points(log10(meanN), meanOcc, pch = 16, col = c('black', col1, col2, col3, col4), cex = 1.5)
 
 points(log10(datasetMean$meanN), datasetMean$meanOcc, pch = datasetMean$pch, 
-       cex = 3, col = 'gray80', font = 5)
+       cex = 1.5, col = 'gray80', font = 5)
 #Add BBS points
 points(log10(bbssumm$meanAbundance), bbssumm$mu, pch = 16, cex = 1, 
        col = as.character(taxcolors$color[taxcolors$taxa == "Bird"]))
@@ -474,7 +474,6 @@ legend('topleft', legend = unique(summ$taxa), pch = symbols7,
        col = c(colors7[1], rep('gray80', 4), 'white', 'gray80'), pt.cex = 2, cex = 1.5)
 points(0.79, 0.79, pch = symbols7[6], font = 5, col = 'gray80', cex = 2)
 dev.off()
-
 
 
 
