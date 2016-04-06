@@ -487,13 +487,13 @@ par(mfrow = c(1, 1), mar = c(6, 6, 1, 1), mgp = c(4, 1, 0),
 plot(log10(meanN), meanOcc, xlab = expression(paste(plain(log)[10]," Community Size")), 
      ylab = 'Mean occupancy', pch = 16, col = c('black', col1, col2, col3, col4), 
      cex = 4, ylim = c(0.15, 1.15), xlim = c(.8,5))
-points(log10(bbssumm$meanAbundance), bbssumm$mu, pch = 16, cex = 2, col = colors7[1])
-points(log10(meanN), meanOcc, pch = 16, col = c('black', col1, col2, col3, col4), cex = 4)
+points(log10(bbssumm$meanAbundance), bbssumm$mu, pch = 16, cex = 1, col = colors7[1])
+points(log10(meanN), meanOcc, pch = 16, col = c('black', col1, col2, col3, col4), cex = 1)
 
-points(log10(notbbs$meanAbundance), notbbs$mu, pch = notbbs$pch, cex = 2, col = notbbs$color, font = 5)
+points(log10(notbbs$meanAbundance), notbbs$mu, pch = notbbs$pch, cex = 1, col = notbbs$color, font = 5)
 legend('topleft', legend = unique(summ$taxa), pch = symbols7, 
-       col = c(colors7[1:5], 'white', colors7[7]), pt.cex = 2, cex = 1.5)
-points(0.78, 0.78, pch = symbols7[6], font = 5, col = colors7[6], cex = 2)
+       col = c(colors7[1:5], 'white', colors7[7]), pt.cex = 1, cex = 1)
+points(0.78, 0.78, pch = symbols7[6], font = 5, col = colors7[6], cex = 1)
 dev.off()
 
 
