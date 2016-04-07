@@ -492,7 +492,7 @@ points(log10(meanN), meanOcc, pch = 16, col = c('black', col1, col2, col3, col4)
 
 points(log10(notbbs$meanAbundance), notbbs$mu, pch = notbbs$pch, cex = 1, col = notbbs$color, font = 5)
 legend('topleft', legend = unique(summ$taxa), pch = symbols7, 
-       col = c(colors7[1:5], 'white', colors7[7]), pt.cex = 1, cex = 1)
+       col = c(colors7, 'white', colors7), pt.cex = 1, cex = 1)
 points(0.78, 0.78, pch = symbols7[6], font = 5, col = colors7[6], cex = 1)
 dev.off()
 

@@ -690,7 +690,7 @@ tGrain = 'year'
 site_grain_names
 
 #--! PROVIDE INFO !--#
-sGrain = 'RUN_POINT'
+sGrain = 'RUN'
 
 # This is a reasonable choice of spatial grain because ...
 #--! PROVIDE INFO !--#
