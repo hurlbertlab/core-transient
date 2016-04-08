@@ -709,7 +709,7 @@ tGrain = 'year'
 site_grain_names
 
 #--! PROVIDE INFO !--#
-sGrain = 'exp_field_plot'
+sGrain = 'exp_field'
 
 # This is a reasonable choice of spatial grain because ...
 #--! PROVIDE INFO !--#

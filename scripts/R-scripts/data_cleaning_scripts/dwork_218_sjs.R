@@ -2,7 +2,7 @@
 #  DATA FORMATTING TEMPLATE
 ################################################################################*
 #
-# Dataset name: Lac Croche understory vegetation data set
+# Dataset name: La Croche understory vegetation data set
 # Dataset source (link): http://www.esapubs.org/archive/ecol/E088/197/Croche_VegCover.txt
 # Formatted by: Sara Snell
 #
@@ -694,9 +694,8 @@ sGrain = 'Transect_Plot'
 
 # This is a reasonable choice of spatial grain because ...
 #--! PROVIDE INFO !--#
-# quadrats are only 0.25 m2 and record presence absence, whereas sites encompass
-# 28-52 quadrats per depth interval providing a greater sample and an effective
-# abundance measure.
+# The sampling design is based on the annual re-sampling of 43 permanent 400-m2 plots 
+# along five transects running parallel to an elevation gradient from a lake (Lac Croche) to the top of a hill.
 
 # The function "richnessYearSubsetFun" below will subset the data to sites with an 
 # adequate number of years of sampling and species richness. If there are no 
