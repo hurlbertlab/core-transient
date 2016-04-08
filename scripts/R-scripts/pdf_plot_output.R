@@ -20,8 +20,11 @@ file.names <- list.files(path, pattern="*.csv")
 setwd("C:/git/core-transient/data/propOcc_datasets/")
 for(i in 1:length(file.names)){
   file <- read.csv(file=file.names[i], header=TRUE, sep=",", stringsAsFactors=FALSE) 
-  plot(hist(file$propOcc))
+  plot= hist(file$propOcc)
+  plot(hist(file$propOcc), xlab = "Frequency", ylim = c(0,1), ylab = "Occupancy", main = file.names[i])
+  # text(x =tempR2.pos, y = .1, paste("R2 = ", round(beta[i,4], 2)), col = "red")
   
+plot
 }
 #write.table(out.file, file = "cand_Brazil.txt",sep=";", 
  #           row.names = FALSE, qmethod = "double",fileEncoding="windows-1252")
