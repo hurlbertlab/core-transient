@@ -1,5 +1,5 @@
 # creating a propOcc plot for each dataset
-
+library(gtools)
 setwd("C:/git/core-transient")
 # beta = matrix(NA, nrow = length(uniq2), ncol = 19)
 
@@ -15,7 +15,7 @@ out.file<-"output/tabular_data/propOcc.pdf"
 file.names <- dir(path, pattern = "*.csv")
 
 file.names <- list.files(path, pattern="*.csv")
-
+file.names = mixedsort(file.names)
 #myfiles = lapply(file.names, read.delim)
 setwd("C:/git/core-transient/data/propOcc_datasets/")
 for(i in 1:length(file.names)){
