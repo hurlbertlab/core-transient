@@ -496,6 +496,14 @@ summary(dataset7)
 
 dataFormattingTable = dataFormattingTableUpdate(datasetID, dataset7)
 
+# Manual override of mean abundance values for reasons described above
+dataFormattingTable[,'Raw_Mean_Individuals_perSiteYear'] = 
+  dataFormattingTableFieldUpdate(datasetID, 'Raw_Mean_Individuals_perSiteYear', NA)
+dataFormattingTable[,'Raw_Min_Individuals_perSiteYear'] = 
+  dataFormattingTableFieldUpdate(datasetID, 'Raw_Min_Individuals_perSiteYear',  NA)
+dataFormattingTable[,'Raw_Max_Individuals_perSiteYear'] = 
+  dataFormattingTableFieldUpdate(datasetID, 'Raw_Max_Individuals_perSiteYear',  NA)
+
 # Take a final look at the dataset:
 
 head(dataset7)
@@ -509,11 +517,6 @@ write.csv(dataset7, paste("data/formatted_datasets/dataset_", datasetID, ".csv",
 # !GIT-ADD-COMMIT-PUSH THE FORMATTED DATASET IN THE DATA FILE, THEN GIT-ADD-COMMIT-PUSH THE UPDATED DATA FOLDER!
 
 # As we've now successfully created the formatted dataset, we will now update the format priority and format flag fields. 
-
-dataFormattingTable[,'format_priority'] = 
-  dataFormattingTableFieldUpdate(datasetID, 'format_priority',    # Fill value below in quotes 
-                                 
-                                 'NA')
 
 dataFormattingTable[,'format_flag'] = 
   dataFormattingTableFieldUpdate(datasetID, 'format_flag',    # Fill value below
