@@ -7,6 +7,10 @@
 
 # setwd("C:/git/core-transient")
 
+library(dplyr)
+library(ggplot2)
+library(tidyr)
+
 source('scripts/R-scripts/core-transient_functions.R')
 
 # Maximum occupancy of transient species
@@ -516,8 +520,56 @@ text(2600, 0.85, bquote(R^2 ~ "=" ~ .(round(summary(lm.elev)$r.squared, 2))), ce
 mtext("Mean occupancy", 2, outer = T, cex = 2, las = 0)
 
 
+#####################################################
+# Summary figure(s) showing site level density estimates
 
+load_data <- function(path) { 
+  files <- dir(path, pattern = '\\.csv', full.names = TRUE)
+  tables <- lapply(files, function(x) read.csv(x, stringsAsFactors = FALSE) )
+  do.call(rbind, tables)
+}
 
+site_data <- read.csv("output/tabular_data/core-transient_summary.csv")
+sp_data <- load_data("data/propOcc_datasets/")
+dataset_taxa_link <- site_data %>%
+  select(datasetID, system, taxa) %>%
+  distinct()
+sp_data_full <- inner_join(sp_data, dataset_taxa_link)
 
+densities_by_taxa_gaus <- ggplot(data = sp_data_full, aes(x = propOcc, group = site)) +
+  geom_line(stat="density", alpha=0.1, size = 2) +
+  facet_wrap(~taxa, scales = "free") +
+  scale_y_sqrt()
 
+densities_by_taxa_rect <- ggplot(data = sp_data_full, aes(x = propOcc, group = site)) +
+  stat_density(kernel = "rectangular", geom = "line", position = "identity", alpha = 0.1, size = 2) +
+  facet_wrap(~taxa, scales = "free") +
+  scale_y_sqrt()
 
+ggsave("output/plots/densitites_by_taxa_gaus.png", densities_by_taxa_gaus)
+ggsave("output/plots/densitites_by_taxa_rect.png", densities_by_taxa_rect)
+
+###############################################################
+# Alpha vs Beta comparison by taxa
+
+alpha_beta_by_taxa <- ggplot(data = site_data, aes(x = alpha, y = beta, color = datasetID)) +
+  geom_point() +
+  facet_wrap(~taxa) +
+  scale_x_log10() +
+  scale_y_log10()
+
+ggsave("output/plots/alpha_beta_by_taxa.png", alpha_beta_by_taxa)
+
+###############################################################
+# Violin plots of proportions of core and transitient by taxa
+
+stacked_site_data <- site_data %>%
+  select(datasetID, site, system, taxa, propCore, propTrans) %>%
+  mutate(propNeither = 1 - propCore - propTrans) %>%
+  gather(key = sp_category, value = prop, propTrans, propNeither, propCore)
+
+core_trans_prop_violins <- ggplot(stacked_site_data, aes(x = sp_category, y = prop, color = sp_category)) +
+  geom_violin() +
+  facet_wrap(~taxa)
+
+ggsave("output/plots/core_trans_prop_violins.png")
