@@ -5,6 +5,12 @@
 # Input files are named propOcc_XXX.csv where
 # XXX is the dataset ID.
 
+# setwd("C:/git/core-transient")
+
+library(dplyr)
+library(ggplot2)
+library(tidyr)
+
 source('scripts/R-scripts/core-transient_functions.R')
 
 # Maximum occupancy of transient species
@@ -18,23 +24,28 @@ reps = 999
 
 # If running summaries for the first time (or wanting to start
 # anew because all formatted datasets have changed) and a
-# 'core-transient_summary.csv' file does not exist yet in the
+# 'core-transient_summary.csv' file does not exist yet in the 
 # output/tabular_data folder, or if you just want to get summary
 # stats for one or a few datasets into R, run this section
 
 # Specify here the datasetIDs and then run the code below.
-datasetIDs = c()
+dataformattingtable = read.csv('data_formatting_table.csv', header = T) 
+
+datasetIDs = dataformattingtable$dataset_ID[dataformattingtable$format_flag == 1]
+
+datasetIDs = datasetIDs[!datasetIDs %in% c(1)]
 
 summaries = c()
 for (d in datasetIDs) {
   newsumm = summaryStatsFun(d, threshold, reps)
   summaries = rbind(summaries, newsumm)
+  print(d)
 }
 
-write.csv(summaries, 'output/tabular_data/core-transient_summary.csv', 
-          row.names = F)
+write.csv(summaries, 'output/tabular_data/core-transient_summary_test.csv', 
+          row.names = T)
 
-##################################################################
+                                               
 
 ##################################################################
 
@@ -51,7 +62,7 @@ write.csv(summaries, 'output/tabular_data/core-transient_summary.csv',
 summ = addNewSummariesFun(threshold, reps, write = TRUE)
 
 
-#####################
+#####################lump reptile and ampibian into herptile, get rid of invert if possible - other category?, do a table of communities
 
 # Plotting summary results across datasets for Core-Transient analysis
 
@@ -61,7 +72,7 @@ summ$system = factor(summ$system)
 summ2 = subset(summ, !datasetID %in% c(99, 85, 90, 91, 92, 97, 124))
 dsets = unique(summ2[, c('datasetID', 'system','taxa')])
 
-taxorder = c('Bird', 'Plant', 'Mammal', 'Fish', 'Arthropod', 'Benthos', 'Plankton')
+taxorder = c('Bird', 'Plant', 'Mammal', 'Fish', 'Arthropod', 'Benthos', 'Plankton', 'Invertebrate', 'Herptile')
 
 dsetsBySystem = table(dsets$system)
 dsetsByTaxa = table(dsets$taxa)
@@ -69,23 +80,25 @@ sitesBySystem = table(summ2$system)
 sitesByTaxa = table(summ2$taxa)
 
 colors7 = c(rgb(29/255, 106/255, 155/255),
-            colors()[612],
             colors()[552],
+            colors()[612],
             colors()[144],
             rgb(0, 54/255, 117/255),
-            rgb(86/255, 141/255, 27/255),
-            colors()[547])
+            colors()[600],
+            colors()[551],
+            rgb(86/255, 141/255, 27/255), #added!
+            colors()[91]) #added!
 
-symbols7 = c(16:18,15, 17, 167,18)
+symbols7 = c(16, 18, 167, 15, 17, 1, 3, 20, 24) # added 19-20!
 
 taxcolors = data.frame(taxa = unique(summ$taxa), color = colors7, pch = symbols7)
 
 pdf('output/plots/data_summary_hists.pdf', height = 8, width = 10)
 par(mfrow = c(2, 2), mar = c(6,6,1,1), cex = 1.25, oma = c(0,0,0,0), las = 1,
     cex.lab = 1.5)
-barplot(dsetsBySystem, col = c('skyblue', 'burlywood'), cex.names = 1.5)
+barplot(dsetsBySystem, col = c('skyblue', 'navy', 'burlywood'), cex.names = 1)
 mtext("# Datasets", 2, cex = 1.5, las = 0, line = 2.5)
-barplot(log10(sitesBySystem), col = c('skyblue', 'burlywood'), cex.names = 1.25,
+barplot(log10(sitesBySystem), col = c('skyblue', 'navy', 'burlywood'), cex.names = 1,
         yaxt = "n", ylim = c(0,3))
 axis(2, 0:3)
 mtext(expression(log[10] ~ " # Assemblages"), 2, cex = 1.5, las = 0, line = 2.5)
@@ -119,9 +132,9 @@ uniqTaxa = meanCoreByTaxa$Group.1[order(meanCoreByTaxa$x, decreasing = T)]
 pdf('output/plots/CT_boxplots_byTaxa.pdf', height = 6, width = 8)
 par(mfrow = c(1,1), mar = c(6, 5, 1, 1), mgp = c(3, 1, 0), oma = c(0,0,0,0))
 box1 = boxplot(summ2$propCore, xlim = c(0, (3*length(uniqTaxa)-2)), ylim = c(0, 1), 
-        border = 'white', col = 'white', ylab = "Fraction of species", cex.lab = 1.5, las = 1, 
+        border = 'white', col = 'white', ylab = "Fraction of species", cex.lab = 1, las = 1, 
         cex.axis = 1.25)
-for (i in 1:length(uniqTaxa)) {
+for (i in 1:length(uniqTaxa)) {   ##### wonky labelling somewhere in here
   tax = uniqTaxa[i]
   boxplot(summ2$propTrans[summ2$taxa == tax], add = T, col = transCol, staplewex = 0, outline = F,
           at = 3*(i-1), yaxt = "n")
@@ -130,7 +143,7 @@ for (i in 1:length(uniqTaxa)) {
   boxplot(summ2$propCore[summ2$taxa == tax], add =T, col = coreCol, staplewex = 0, outline = F,
           at = 3*(i-1)+1, yaxt = "n")
 }
-text(3*(1:7)-2.5, par("usr")[3], uniqTaxa, srt = 45, xpd = T, cex = 1.25, adj = c(1.1,1.1))
+text(3 *(1:9) - 2.5, par("usr")[3], uniqTaxa, srt = 45, xpd = T, cex = 1, adj = c(1.1,1.1)) 
 rect(.5, 0.9, 1.5, 1.0, col = transCol, border=F)
 rect(6.5, 0.9, 7.5, 1.0, col = nonCol, border=F)  
 rect(12.5, 0.9, 13.5, 1.0, col = coreCol, border=F)  
@@ -147,18 +160,18 @@ bbssumm = subset(summ3, datasetID == 1)
 
 
 
-#########################################################################################
+######################################################################################### legend not right
 # Summarizing datasets based on beta distribution parameters
 pdf('output/plots/alpha_vs_beta.pdf', height = 6, width = 8)
-par(mfrow = c(1,1), mar = c(5,5,1,1), mgp = c(3,1, 0), cex.axis = 1.25, cex.lab = 2, las = 1)
+par(mfrow = c(1,1), mar = c(5,5,1,1), mgp = c(3,1, 0), cex.axis = 1, cex.lab = 1, las = 1)
 plot(summ3$alpha, summ3$beta, type = "n", xlim = c(-0.25,3.5), xlab = "alpha", ylab = "beta",
      ylim = c(0,4), yaxt = "n")
-axis(2, 0:4, cex = 1.25)
-points(summ3$alpha, summ3$beta, pch = summ3$pch, col = summ3$color, font = 5, cex = 1.5)
+axis(2, 0:4, cex = 1)
+points(summ3$alpha, summ3$beta, pch = summ3$pch, col = summ3$color, font = 5, cex = 1)
 abline(a=0, b=1, lty = 'dotted', lwd = 4)
 rect(-1, -1, 1, 1, lty = 'dashed', lwd = 2)
 legend('topleft', legend = unique(summ$taxa), pch = symbols7, 
-       col = c(colors7[1:5], 'white', colors7[7]), pt.cex = 2, cex = 1.4)
+       col = c(colors7, 'white', colors7), pt.cex = 1.5, cex = 1.25)
 points(-.28, 2.65, pch = symbols7[6], font = 5, col = colors7[6], cex = 1.7)
 text(3,3.2, substitute(paste(alpha, " = ", beta)), srt = 40, cex = 2)
 dev.off()
@@ -451,13 +464,13 @@ par(mfrow = c(1, 1), mar = c(6, 6, 1, 1), mgp = c(4, 1, 0),
     cex.axis = 1.5, cex.lab = 2, las = 1)
 plot(log10(meanN), meanOcc, xlab = expression(paste(plain(log)[10]," Community Size")), 
      ylab = 'Mean occupancy', pch = 16, col = c('black', col1, col2, col3, col4), 
-     cex = 4, ylim = c(0.2, 1.15), xlim = c(.8,5))
+     cex = 1.5, ylim = c(0.2, 1.15), xlim = c(.8,5))
 lines(range(log10(meanN[2:5])), range(log10(meanN[2:5]))*BBS.lm$coefficients[2] + BBS.lm$coefficients[1],
       lwd = 4, lty = 'dashed')
-points(log10(meanN), meanOcc, pch = 16, col = c('black', col1, col2, col3, col4), cex = 4)
+points(log10(meanN), meanOcc, pch = 16, col = c('black', col1, col2, col3, col4), cex = 1.5)
 
 points(log10(datasetMean$meanN), datasetMean$meanOcc, pch = datasetMean$pch, 
-       cex = 3, col = 'gray80', font = 5)
+       cex = 1.5, col = 'gray80', font = 5)
 #Add BBS points
 points(log10(bbssumm$meanAbundance), bbssumm$mu, pch = 16, cex = 1, 
        col = as.character(taxcolors$color[taxcolors$taxa == "Bird"]))
@@ -471,7 +484,6 @@ dev.off()
 
 
 
-
 # Get summary data for ALL SITES of all other datasets
 pdf('output/plots/occ_vs_communitySize_allSites.pdf', height = 6, width = 7.5)
 par(mfrow = c(1, 1), mar = c(6, 6, 1, 1), mgp = c(4, 1, 0), 
@@ -479,13 +491,13 @@ par(mfrow = c(1, 1), mar = c(6, 6, 1, 1), mgp = c(4, 1, 0),
 plot(log10(meanN), meanOcc, xlab = expression(paste(plain(log)[10]," Community Size")), 
      ylab = 'Mean occupancy', pch = 16, col = c('black', col1, col2, col3, col4), 
      cex = 4, ylim = c(0.15, 1.15), xlim = c(.8,5))
-points(log10(bbssumm$meanAbundance), bbssumm$mu, pch = 16, cex = 2, col = colors7[1])
-points(log10(meanN), meanOcc, pch = 16, col = c('black', col1, col2, col3, col4), cex = 4)
+points(log10(bbssumm$meanAbundance), bbssumm$mu, pch = 16, cex = 1, col = colors7[1])
+points(log10(meanN), meanOcc, pch = 16, col = c('black', col1, col2, col3, col4), cex = 1)
 
-points(log10(notbbs$meanAbundance), notbbs$mu, pch = notbbs$pch, cex = 2, col = notbbs$color, font = 5)
+points(log10(notbbs$meanAbundance), notbbs$mu, pch = notbbs$pch, cex = 1, col = notbbs$color, font = 5)
 legend('topleft', legend = unique(summ$taxa), pch = symbols7, 
-       col = c(colors7[1:5], 'white', colors7[7]), pt.cex = 2, cex = 1.5)
-points(0.78, 0.78, pch = symbols7[6], font = 5, col = colors7[6], cex = 2)
+       col = c(colors7, 'white', colors7), pt.cex = 1, cex = 1)
+points(0.78, 0.78, pch = symbols7[6], font = 5, col = colors7[6], cex = 1)
 dev.off()
 
 
@@ -508,8 +520,56 @@ text(2600, 0.85, bquote(R^2 ~ "=" ~ .(round(summary(lm.elev)$r.squared, 2))), ce
 mtext("Mean occupancy", 2, outer = T, cex = 2, las = 0)
 
 
+#####################################################
+# Summary figure(s) showing site level density estimates
 
+load_data <- function(path) { 
+  files <- dir(path, pattern = '\\.csv', full.names = TRUE)
+  tables <- lapply(files, function(x) read.csv(x, stringsAsFactors = FALSE) )
+  do.call(rbind, tables)
+}
 
+site_data <- read.csv("output/tabular_data/core-transient_summary.csv")
+sp_data <- load_data("data/propOcc_datasets/")
+dataset_taxa_link <- site_data %>%
+  select(datasetID, system, taxa) %>%
+  distinct()
+sp_data_full <- inner_join(sp_data, dataset_taxa_link)
 
+densities_by_taxa_gaus <- ggplot(data = sp_data_full, aes(x = propOcc, group = site)) +
+  geom_line(stat="density", alpha=0.1, size = 2) +
+  facet_wrap(~taxa, scales = "free") +
+  scale_y_sqrt()
 
+densities_by_taxa_rect <- ggplot(data = sp_data_full, aes(x = propOcc, group = site)) +
+  stat_density(kernel = "rectangular", geom = "line", position = "identity", alpha = 0.1, size = 2) +
+  facet_wrap(~taxa, scales = "free") +
+  scale_y_sqrt()
 
+ggsave("output/plots/densitites_by_taxa_gaus.png", densities_by_taxa_gaus)
+ggsave("output/plots/densitites_by_taxa_rect.png", densities_by_taxa_rect)
+
+###############################################################
+# Alpha vs Beta comparison by taxa
+
+alpha_beta_by_taxa <- ggplot(data = site_data, aes(x = alpha, y = beta, color = datasetID)) +
+  geom_point() +
+  facet_wrap(~taxa) +
+  scale_x_log10() +
+  scale_y_log10()
+
+ggsave("output/plots/alpha_beta_by_taxa.png", alpha_beta_by_taxa)
+
+###############################################################
+# Violin plots of proportions of core and transitient by taxa
+
+stacked_site_data <- site_data %>%
+  select(datasetID, site, system, taxa, propCore, propTrans) %>%
+  mutate(propNeither = 1 - propCore - propTrans) %>%
+  gather(key = sp_category, value = prop, propTrans, propNeither, propCore)
+
+core_trans_prop_violins <- ggplot(stacked_site_data, aes(x = sp_category, y = prop, color = sp_category)) +
+  geom_violin() +
+  facet_wrap(~taxa)
+
+ggsave("output/plots/core_trans_prop_violins.png")

@@ -222,7 +222,7 @@ dataFormattingTable[,'subannualTgrain'] =
 # fill in the fields that specify nested spatial grains below.
 
 #####
-site_grain_names = c("Plot", "Quadrat")
+site_grain_names = c("Plot")
 
 # We will now create the site field with these codes concatenated if there
 # are multiple grain fields. Otherwise, site will just be the single grain field.
@@ -290,7 +290,7 @@ dataFormattingTable[,'Raw_siteUnit'] =
   dataFormattingTableFieldUpdate(datasetID, 'Raw_siteUnit',       # Fill value below in quotes
 
 #####
-                                 'Plot_Quadrat') 
+                                 'Plot') 
 
 
 # spatial_scale_variable. Is a site potentially nested (e.g., plot within a quad or decimal lat longs that could be scaled up)? Y/N
@@ -299,7 +299,7 @@ dataFormattingTable[,'spatial_scale_variable'] =
   dataFormattingTableFieldUpdate(datasetID, 'spatial_scale_variable',
 
 #####
-                                 'Y') # Fill value here in quotes
+                                 'N') # Fill value here in quotes
 
 # Notes_siteFormat. Use this field to THOROUGHLY describe any changes made to the site field during formatting.
 
@@ -307,7 +307,7 @@ dataFormattingTable[,'Notes_siteFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_siteFormat',  # Fill value below in quotes
 
 #####
-  'Plot and Quadrat fields concatenated.')
+  'Plot fields used - 50 m x 50 m grid.')
 
 
 #-------------------------------------------------------------------------------*

@@ -706,9 +706,15 @@ sGrain = 'QUAD'
 
 # This is a reasonable choice of spatial grain because ...
 #--! PROVIDE INFO !--#
-# quadrats are only 0.25 m2 and record presence absence, whereas sites encompass
-# 28-52 quadrats per depth interval providing a greater sample and an effective
-# abundance measure.
+# Each replicate plot is 300 m x 300 m and contains a standard Sevilleta mammal 
+# trapping web which consists of 12 transects radiating from a central point. 
+# Each transect contains 12 numbered stakes for a total of 144 sample points per web. 
+# Vegetation is sampled in permanently located 50 cm x 50 cm quadrats at four evenly 
+# spaced points along each radius of each web transect (48 permanent quadrats per replicate). 
+# The end of each transect is marked with a long rebar stake with smaller rebar stakes 
+# occurring in 10 m increments towards the center of the web. Vegetation is measured in 
+# only the first four even numbered stakes from the end of the transect on the trapping web. 
+# For example, stakes 12, 10, 8, and 6 are measured for the transect that ends with stake 12.
 
 # The function "richnessYearSubsetFun" below will subset the data to sites with an 
 # adequate number of years of sampling and species richness. If there are no 

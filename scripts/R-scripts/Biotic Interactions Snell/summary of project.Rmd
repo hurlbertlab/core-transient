@@ -1,0 +1,35 @@
+---
+title: "Biotic Interactions Project"
+output: html_document
+---
+
+
+This project seeks to understand why species exhibit patchy distributions within their range. 
+Plan:
+
+Clark paper, Belmaker paper
+
+use phylogenetic distance combined with a functional dendrogram based on similarity matrix
+
+potentially use guilds (dietary, functional)
+
+for short-term:
+
+pick a species with 30-50% range occupancy (woodpecker/nuthatch/chickadee)
+
+look at closest relatives and ecological competitors
+
+perform correlational analyses of abundances
+
+temporal occupancy vs presence/absence of competitor of focal species (model)
+
+how climatically optimal is si to GT towhee? LAst sem abiotic project
+
+lm(GT abundance ~ spotted, abiotic)
+
+generalize to focal ~ competitor
+
+variance partitioning on biotic vs abiotic?
+
+eventually fix modis data
+

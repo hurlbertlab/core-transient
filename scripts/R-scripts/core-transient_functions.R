@@ -615,8 +615,29 @@ fitBeta = function(occProp, nTime) {
   bi = bimodalityFun(occProp,nTime)
   if (bi != 0 & !is.na(bi))
   {occs  = occsScaledFun(occProp)
-   shape.params = suppressWarnings(fitdistr(occs, "beta",
-                                            list(shape1 = 2, shape2 = 2)))
+   shape.params = tryCatch( #############################TRYCATCH
+ 
+       {
+         suppressWarnings(fitdistr(occs, "beta", list(shape1 = 2, shape2 = 2), lower = c(1e-10, 1e-10))) ###
+       },
+       error = function(cond) {
+         message(paste("Error in fitdistr; trying new starting values")) ###
+         tryCatch(
+           {
+             suppressWarnings(fitdistr(occs, "beta", list(shape1 = 3, shape2 = 3), lower = c(1e-10, 1e-10))) ###alternative starting params
+           },
+           error = function(cond) {
+             list(estimate = c(NA, NA)) ############ FIX THIS
+           },
+           warning = function(cond) {
+             message()
+           })
+       },
+       warning = function(cond) {
+         message(cond) ###
+       }
+     )
+   ################### END EDITING #########
    return(as.vector(shape.params$estimate))
   } else c(NA, NA)
 }
@@ -687,8 +708,8 @@ pModeFun = function(propOcc, nTime, mode, threshold, reps){
 summaryStatsFun = function(datasetID, threshold, reps){
   # Get data:
   dataList = getDataList(datasetID)
-  sites  = dataList$siteSummary$site
-  # Get summary stats for each site:
+  sites  = as.character(dataList$siteSummary$site)
+  # Get summary stats for each site:         #where is the problem coming from?!
   outList = list(length = length(sites))
   for(i in 1:length(sites)){
     propOcc = subset(dataList$propOcc, site == sites[i])$propOcc
@@ -706,6 +727,7 @@ summaryStatsFun = function(datasetID, threshold, reps){
     bimodality = bimodalityFun(propOcc, nTime)
     pBimodal = pBimodalFun(propOcc, nTime, reps)
     betaParms = fitBeta(propOcc, nTime)
+    
     alpha = betaParms[1]
     beta = betaParms[2]   
     outList[[i]] = data.frame(datasetID, site = sites[i],
