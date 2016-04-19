@@ -2,21 +2,70 @@
 #Calculate temporal occupancy distributions at 3 different spatial scales for
 #grant proposal preliminary analysis: 1) scale of 10 BBS stops, 
 # 2) BBS route, 3) aggregate of 27 BBS routes within state of MD.
+setwd("C:/git/core-transient")
 
 library(raster)
-counts5 = read.csv('data/raw_datasets/dataset_1_full.csv', header=T)
+counts5 = read.csv('data/raw_datasets/dataset_1_full.csv', header=T) #in groups of ten 
 occupancy.matrix = as.matrix(
   read.csv('scripts/R-scripts/scale_analysis/occ_matrix_BBS.csv', header=T, row.names = 1))
-fifty = read.csv('scripts/R-scripts/scale_analysis/BBS_fiftystop_MD_CO_CA_OR_1996-2010.csv')
+fifty = read.csv('scripts/R-scripts/scale_analysis/BBS_fiftystop_MD_CO_CA_OR_1996-2010.csv') #remember to rely on ecoretriever! don't need to go to the website to download 
+#mod to include all; can't yet bc bbs website down 
 routes = read.csv('scripts/R-scripts/scale_analysis/routes.csv')
 routes$stateroute = 1000*routes$statenum + routes$Route
 
-# All-BBS scale:
+# All-BBS scale (50 pt count scale):
 uniqSpYr = unique(counts5[, c('Year', 'Aou')])
 BBS.occ = data.frame(table(uniqSpYr$Aou)/15)
 
+bbs.occ.mat = occupancy.matrix[floor(as.numeric(row.names(occupancy.matrix))/1000),]
+bbs.uniq = unique(counts5[,c('Year','Aou')])
+bbs.occ = data.frame(table(bbs.uniq$Aou)/15)
+
+###So for the whole dataset, 10 pt count stops: #we are only getting one out of five chunks along 
+#want to estimate occupancy across each one, as of now only estimating for count 10 column 
+#modify the blow function 
+#add a scale argument rather than hard coding the scale column 
+#confirm whether or not raw data (50 stop original) differs in aou vs Aou vs AOU 
+#figure out then how to group aggregating over multiple columns 
+#fifty pt count data and then taking pts 1-5 and collapsing them all together 
+occ_counts = function(countData, countColumn) {
+  bbsu = unique(countData[countData[ , countColumn] != 0, c('stateroute', 'Year', 'Aou')])
+  bbsu.rt.occ = data.frame(table(bbsu[,c('stateroute', 'Aou')])/15)
+  bbsu.rt.occ2 = bbsu.rt.occ[bbsu.rt.occ$Freq!=0,]
+  names(bbsu.rt.occ2)[3] = 'occupancy'
+  bbsu.rt.occ2$scale = 
+  bbsu.rt.occ2$subrouteID = countColumn
+  bbsu.rt.occ2 = bbsu.rt.occ2[, c('stateroute', 'scale', 'subrouteID', 'Aou', 'occupancy')]
+  return(bbsu.rt.occ2)
+}
+#state route stop, scale at which (1 or 10 stops etc), sub-route ID (if scale is 10 stops, it's count20), species, occupany
+
+#scale of 1 pt count 
+bbs1 = subset(fifty, stateroute %in% unique(bbs10.rt.occ$stateroute) & year > 1995 & year < 2011 & Stop1!=0, 
+              select = c('stateroute','year','AOU','Stop1'))
+bbs1.rt.occ = data.frame(table(bbs1[,c('stateroute','AOU')])/15)
+bbs1.rt.occ2 = bbs1.rt.occ[bbs1.rt.occ$Freq!=0,]
+
+#scale of 5 pt counts -> how to group? 
+bbs5 = 
+  unique(bbs1[bbs1$Count5!=0, c('stateroute', 'Year', 'Aou')])
+bbs5.rt.occ = 
+  data.frame(table(bbs5[,c('stateroute', 'Aou')])/15)
+bbs5.rt.occ2 = bbs5.rt.occ[bbs10.rt.occ$Freq!=0,] 
+
+#scale of 25 pt counts 
+#Just halving the fifty stop data 
+
+fiftybbs = subset(fifty, stateroute %in% unique(bbs1.rt.occ$stateroute) & year > 1995 & year < 2011 & Stop25!=0, 
+                  select = c('stateroute','year','AOU','Stop1'))
+bbs25.rt.occ = data.frame(table(fiftybbs[,c('stateroute','AOU')])/15)
+bbs25.rt.occ2 = bbs25.rt.occ[bbs25.rt.occ$Freq!=0,]
+
+
+
+###################################################################################
 # MD BBS data
-md.counts = subset(counts5, statenum==46)
+md.counts = subset(counts5, statenum==46) #sub to MD
 md.occ.mat = occupancy.matrix[floor(as.numeric(row.names(occupancy.matrix))/1000)==46,]
 md.uniq = unique(md.counts[,c('Year','Aou')])
 # MD statewide temporal occupancy (27 routes)
@@ -27,7 +76,7 @@ md10 = unique(md.counts[md.counts$Count10!=0,c('stateroute','Year','Aou')])
 md10.rt.occ = data.frame(table(md10[,c('stateroute','Aou')])/15)
 md10.rt.occ2 = md10.rt.occ[md10.rt.occ$Freq!=0,]
 
-# Scale of 1 BBS point count stop
+# Scale of 1 BBS point count stop #use to group in clumps of 5
 fiftyMD1 = subset(fifty, stateroute %in% unique(md10.rt.occ$stateroute) & year > 1995 & year < 2011 & Stop1!=0, 
                   select = c('stateroute','year','AOU','Stop1'))
 md1.rt.occ = data.frame(table(fiftyMD1[,c('stateroute','AOU')])/15)
