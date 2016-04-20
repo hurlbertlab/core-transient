@@ -10,6 +10,8 @@
 library(dplyr)
 library(ggplot2)
 library(tidyr)
+library(maps)
+# library(sp)
 
 source('scripts/R-scripts/core-transient_functions.R')
 
@@ -573,3 +575,25 @@ core_trans_prop_violins <- ggplot(stacked_site_data, aes(x = sp_category, y = pr
   facet_wrap(~taxa)
 
 ggsave("output/plots/core_trans_prop_violins.png")
+
+
+#################################################################
+# Map of each community - a few for now
+world = map(database='world')
+
+
+# merge in lat/long
+latlongs = read.csv('data_formatting_table.csv', header = T)
+plotdata_all = merge(dsets, latlongs, by.x = "datasetID", by.y = "dataset_ID") 
+
+
+points(plotdata_all$CentralLongitude, plotdata_all$CentralLatitude, col = 3,  pch = 20) 
+
+
+# merge in lat/long
+plotdata_comm = merge(summ, latlongs, by.x = "datasetID", by.y = "dataset_ID")
+points(plotdata_comm$CentralLongitude, plotdata_comm$CentralLatitude, col = 4,  pch = 20) 
+
+
+
+
