@@ -306,7 +306,7 @@ dataFormattingTable[,'Notes_siteFormat'] =
                                  
                                  'site field is a concatenation of lat and long for some sites, but for others is a provided sitename. The scale of these sites is variable as this is an amalgamation of heterogeneous datasets.')
 
-
+write.csv(dataset2, "C:/git/core-transient/data/raw_datasets/dataset_247.csv")
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT COUNT DATA ----
 #===============================================================================*

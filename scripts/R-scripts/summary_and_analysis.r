@@ -584,7 +584,8 @@ world = map(database='world')
 
 # merge in lat/long
 latlongs = read.csv('data_formatting_table.csv', header = T)
-plotdata_all = merge(dsets, latlongs, by.x = "datasetID", by.y = "dataset_ID") 
+plotdata_all = merge(dsets, latlongs, by.x = "datasetID", by.y = "dataset_ID")
+plot247 = read.csv("data/raw_datasets/dataset_247.csv", header = T)
 plot248 = read.csv("data/latlongs/d248_latlongs.csv", header = T)
 plot269 = read.csv("data/latlongs/d269_latlongs.csv", header = T)
 
