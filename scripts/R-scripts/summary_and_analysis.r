@@ -585,13 +585,20 @@ world = map(database='world')
 # merge in lat/long
 latlongs = read.csv('data_formatting_table.csv', header = T)
 plotdata_all = merge(dsets, latlongs, by.x = "datasetID", by.y = "dataset_ID")
-plot247 = read.csv("data/raw_datasets/dataset_247.csv", header = T)
 plot248 = read.csv("data/latlongs/d248_latlongs.csv", header = T)
 plot269 = read.csv("data/latlongs/d269_latlongs.csv", header = T)
+plot289 = read.csv("data/latlongs/d289_latlongs.csv", header = T)
+plot315 = read.csv("data/latlongs/d315_latlongs.csv", header = T)
+# extra cleaning for 247 lat/long
+plot247_init = read.csv("data/latlongs/d247_latlongs.csv", header = T)
+plot247 = data.frame(unique(plot247_init$verbatimlatitude), unique(plot247_init$verbatimlongitude))
 
-points(plotdata_all$CentralLongitude, plotdata_all$CentralLatitude, col = 3,  pch = 20) 
-points(plot248$long, plot248$lat, col = 4, pch = 20)
-points(plot269$long, plot269$lat, col = 2, pch = 20)
+points(plotdata_all$CentralLongitude, plotdata_all$CentralLatitude, col = "red",  pch = 20) 
+points(plot248$long, plot248$lat, col = "green", pch = 20)
+points(plot269$long, plot269$lat, col = "blue", pch = 20)
+points(plot289$Longitude, plot289$Latitude, col = "cyan", pch = 20) 
+points(plot315$long, plot315$lat, col = "black", pch = 20)
+points(plot247$unique.plot247_init.verbatimlongitude., plot247$unique.plot247_init.verbatimlatitude., col = "purple", pch = 20)
 
 # merge in lat/long
 plotdata_comm = merge(summ, latlongs, by.x = "datasetID", by.y = "dataset_ID")
