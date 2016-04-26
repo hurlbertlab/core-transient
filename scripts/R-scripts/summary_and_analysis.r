@@ -588,21 +588,23 @@ plotdata_all = merge(dsets, latlongs, by.x = "datasetID", by.y = "dataset_ID")
 plot248 = read.csv("data/latlongs/d248_latlongs.csv", header = T)
 plot269 = read.csv("data/latlongs/d269_latlongs.csv", header = T)
 plot289 = read.csv("data/latlongs/d289_latlongs.csv", header = T)
+plot309 = read.csv("data/latlongs/d309_latlongs.csv", header = T)
 plot315 = read.csv("data/latlongs/d315_latlongs.csv", header = T)
 # extra cleaning for 247 lat/long
-plot247_init = read.csv("data/latlongs/d247_latlongs.csv", header = T)
-plot247 = data.frame(unique(plot247_init$verbatimlatitude), unique(plot247_init$verbatimlongitude))
+plot247 = read.csv("data/latlongs/d247_latlongs_unique.csv", header = T)
+# plot247 = data.frame(unique(plot247_init$verbatimlatitude), unique(plot247_init$verbatimlongitude))
 
 points(plotdata_all$CentralLongitude, plotdata_all$CentralLatitude, col = "red",  pch = 20) 
 points(plot248$long, plot248$lat, col = "green", pch = 20)
 points(plot269$long, plot269$lat, col = "blue", pch = 20)
 points(plot289$Longitude, plot289$Latitude, col = "cyan", pch = 20) 
+points(plot309$long, plot309$lat, col = "gold", pch = 20)
 points(plot315$long, plot315$lat, col = "black", pch = 20)
-points(plot247$unique.plot247_init.verbatimlongitude., plot247$unique.plot247_init.verbatimlatitude., col = "purple", pch = 20)
+points(plot247$long, plot247$lat, col = "purple", pch = 20)
 
 # merge in lat/long
-plotdata_comm = merge(summ, latlongs, by.x = "datasetID", by.y = "dataset_ID")
-points(plotdata_comm$CentralLongitude, plotdata_comm$CentralLatitude, col = 4,  pch = 20) 
+# plotdata_comm = merge(summ, latlongs, by.x = "datasetID", by.y = "dataset_ID")
+# points(plotdata_comm$CentralLongitude, plotdata_comm$CentralLatitude, col = 4,  pch = 20) 
 
 
 
