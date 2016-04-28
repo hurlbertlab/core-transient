@@ -3,7 +3,7 @@
 ################################################################################*
 #
 # Dataset name: Mountain Birdwatch
-# Dataset source (link): http://www.vtecostudies.org/MBW/
+# Dataset source (link): https://knb.ecoinformatics.org/#view/doi:10.5063/F1DN430G
 # Formatted by: Sara Snell
 #
 # Start by opening the data formatting table (data_formatting_table.csv). 
@@ -74,7 +74,7 @@ dataFormattingTable[,'Raw_datafile_name'] =
   dataFormattingTableFieldUpdate(datasetID, 'Raw_datafile_name',  
                                  
 #--! PROVIDE INFO !--#
-                'MountainBirdWatch.xlsx') # NOTE: data acquired from rarestabilizationdata repo (Glenda Yenni)
+                'JMHILL.5.csv') # NOTE: data acquired from rarestabilizationdata repo (Glenda Yenni)
 
 
 
@@ -124,12 +124,22 @@ head(dataset)
 
 # If all fields will be used, then set unusedFieldNames = ""
 
-names(dataset)
+###### Joining in route table
+routes = read.csv("data/raw_datasets/dataset_308RAW/routes.csv", header = TRUE)
+dataset0 = merge(dataset, routes, by = "ObservationNumber")
+
+##### ALLSpeciesSurveyed code 1 means all species observed were recorded, 3 = only 5 focal spp recorded
+dataset0 = dataset0[dataset0$AllSpeciesSurveyed == 1,]
+
+head(dataset0)
 
 #--! PROVIDE INFO !--#
-unusedFieldNames = c('total') # total = total number of species seen in one year
+unusedFieldNames = c('ObserverID', "SurveyStartTime", 'AllSpeciesSurveyed',"CountLengthInMintues",
+                     "Temperature", 'CloudCode', 'WindCode', 'PointCountStartTime', 'TimePeriod', 
+                     'DistancetoBird', 'PlayBackStartTime', 'NumberOfBITH', 'SurveyNotes', "SurveyID",
+                     'PointNumber', 'PrimaryPeak', 'RouteOwnership', 'MaxRouteElevation') 
 
-dataset1 = dataset[, !names(dataset) %in% unusedFieldNames]
+dataset1 = dataset0[, !names(dataset0) %in% unusedFieldNames]
 
 # Note that I've given a new name here "dataset1", this is to ensure that 
 # we don't have to go back to square 1 if we've miscoded anything.
@@ -168,7 +178,7 @@ dataFormattingTable[,'LatLong_sites'] =
 # E.g., c('year', 'month', 'day')
 
 #--! PROVIDE INFO !--#
-dateFieldName = c('year')
+dateFieldName = c('SurveyDate')
 
 # If necessary, paste together date info from multiple columns into single field
 if (length(dateFieldName) > 1) {
@@ -185,7 +195,7 @@ if (length(dateFieldName) > 1) {
 # be '%Y-%m-%d'. Type "?strptime" for other examples of date formatting.
 
 #--! PROVIDE INFO !--#
-dateformat = '%Y'
+dateformat = '%m-%d-%Y'
 
 # If the date is just a year, then make sure it is of class numeric
 # and not a factor. Otherwise change to a true date object.
@@ -240,7 +250,7 @@ dataFormattingTable[,'subannualTgrain'] =
   dataFormattingTableFieldUpdate(datasetID, 'subannualTgrain', 
 
 #--! PROVIDE INFO !--#                                 
-                                 'N')
+                                 'Y')
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SITE DATA ----
@@ -266,7 +276,7 @@ dataFormattingTable[,'subannualTgrain'] =
 # fill in the fields that specify nested spatial grains below.
 
 #--! PROVIDE INFO !--#
-site_grain_names = c("state")
+site_grain_names = c("RouteName")
 
 # We will now create the site field with these codes concatenated if there
 # are multiple grain fields. Otherwise, site will just be the single grain field.
