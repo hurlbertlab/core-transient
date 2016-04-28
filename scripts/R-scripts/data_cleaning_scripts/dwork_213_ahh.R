@@ -273,8 +273,7 @@ dataFormattingTable[,'spatial_scale_variable'] =
 dataFormattingTable[,'Notes_siteFormat'] = 
   dataFormattingTableFieldUpdate(datasetID, 'Notes_siteFormat',  # Fill value below in quotes
                                  
-  'quadrats (sites) are potentially nested into two livestock exclosures and XY coords are provided; 
-  it may be useful to create 3 or 4 coarser grain site codes based on the spatial arrangement.')
+  'quadrats (sites) are potentially nested into two livestock exclosures and XY coords are provided; it may be useful to create 3 or 4 coarser grain site codes based on the spatial arrangement.')
 
 
 #-------------------------------------------------------------------------------*
@@ -329,9 +328,7 @@ dataFormattingTable[,'countFormat'] =
 dataFormattingTable[,'Notes_countFormat'] = 
   dataFormattingTableFieldUpdate(datasetID, 'Notes_countFormat', # Fill value below in quotes
                                  
-                                 'Each record is counted as one individual, which may be underestimate
-                                 the true number, but is more appropriate than using the coverage area
-                                 when comparing to other datasets.')
+                                 'Each record is counted as one individual, which may underestimate the true number, but is more appropriate than using the coverage area when comparing to other datasets.')
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SPECIES DATA ----
@@ -402,8 +399,7 @@ head(dataset6)
 dataFormattingTable[,'Notes_spFormat'] = 
   dataFormattingTableFieldUpdate(datasetID, 'Notes_spFormat',    # Fill value below in quotes
                                  
-  'Several ambiguous groups and unidentified spp removed, three unidentified species reassigned to 
-  the sole member of the genus in the dataset.')
+  'Several ambiguous groups and unidentified spp removed, three unidentified species reassigned to the sole member of the genus in the dataset.')
 
 #-------------------------------------------------------------------------------*
 # ---- MAKE DATA FRAME OF COUNT BY SITES, SPECIES, AND YEAR ----
