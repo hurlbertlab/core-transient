@@ -3,6 +3,9 @@
 #
 #  Metadata can be found at http://www.vliz.be/en/imis?module=dataset&dasid=3846
 
+# Data at http://www.arcodiv.org/Database/Plankton_datasets.html (broken)
+# Data availabe from iOBIS.org (dataset ID 1559)
+
 #-------------------------------------------------------------------------------*
 # ---- SET-UP ----
 #===============================================================================*
@@ -198,6 +201,22 @@ if (num_grains > 1) {
     site = paste(site, dataset2[, site_grain_names[i]], sep = "_")
   } 
 }
+
+# What is the spatial grain of the finest sampling scale? For example, this might be
+# a 0.25 m2 quadrat, or a 5 m transect, or a 50 ml water sample.
+
+dataFormattingTable[,'Raw_spatial_grain'] = 
+  dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain',  
+                                 
+                                 #--! PROVIDE INFO !--#
+                                 0.25) 
+
+dataFormattingTable[,'Raw_spatial_grain_unit'] = 
+  dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain',  
+                                 
+                                 #--! PROVIDE INFO !--#
+                                 'm2') 
+
 
 
 # BEFORE YOU CONTINUE. We need to make sure that there are at least minNTime for sites at the coarsest possilbe spatial grain. 
