@@ -195,7 +195,7 @@ if (length(dateFieldName) > 1) {
 # be '%Y-%m-%d'. Type "?strptime" for other examples of date formatting.
 
 #--! PROVIDE INFO !--#
-dateformat = '%m-%d-%Y'
+dateformat = '%m/%d/%Y'
 
 # If the date is just a year, then make sure it is of class numeric
 # and not a factor. Otherwise change to a true date object.
@@ -296,13 +296,13 @@ dataFormattingTable[,'Raw_spatial_grain'] =
   dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain',  
                                  
 #--! PROVIDE INFO !--#
-                                 1) 
+                                 1000) # 5 points at 200 m intervals, transect
 
 dataFormattingTable[,'Raw_spatial_grain_unit'] = 
   dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain',  
                                  
 #--! PROVIDE INFO !--#
-                                 'km') 
+                                 'm') 
 
 
 # BEFORE YOU CONTINUE. We need to make sure that there are at least minNTime for 
@@ -384,7 +384,7 @@ dataFormattingTable[,'Notes_siteFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_siteFormat', 
 
 #--! PROVIDE INFO !--#
-  'The site field is the state the bird was sighted in.')
+  'The site field is the name of each route sampled.')
 
 
 #-------------------------------------------------------------------------------*
@@ -401,7 +401,8 @@ summary(dataset3)
 # If there is no countfield, set this equal to "".
 
 #--! PROVIDE INFO !--#
-countfield = "count"
+dataset3$presence = 1
+countfield = "presence"
 
 # Renaming it
 if (countfield == "") {
@@ -462,13 +463,13 @@ dataFormattingTable[,'countFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'countFormat',  
 
 #--! PROVIDE INFO !--#                                 
-                                 'count')
+                                 'presence')
 
 dataFormattingTable[,'Notes_countFormat'] = 
   dataFormattingTableFieldUpdate(datasetID, 'Notes_countFormat', 
                                  
 #--! PROVIDE INFO !--#                                 
-              'Count data provided')
+              'No count data provided so 1s added to indicate presence')
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SPECIES DATA ----
@@ -482,7 +483,7 @@ dataFormattingTable[,'Notes_countFormat'] =
 # It will get converted to 'species'
 
 #--! PROVIDE INFO !--#
-speciesField = 'species'
+speciesField = 'SpeciesCode'
 
 names(dataset5)[names(dataset5) == speciesField] = 'species'
 
@@ -511,7 +512,7 @@ data.frame(table(dataset5$species))
 # Because of this, you should really stop here and post an issue on GitHub. 
 
 #--! PROVIDE INFO !--#
-bad_sp = c('')
+bad_sp = c('', 'CHSW', 'NONE', 'RESQ', 'GRSQ', 'UNBI')
 
 dataset6 = dataset5[!dataset5$species %in% bad_sp,]
 
@@ -563,7 +564,8 @@ dataFormattingTable[,'Notes_spFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_spFormat',  
 
 #--! PROVIDE INFO !--#                                 
-  'No bad spp or typos found.')
+  'Observations of American Red Squirrel (RESQ) and Eastern Gray Squirrel (GRSQ) were removed. 
+Unidentified birds were recorded as "UNBI" and "NONE" feilds removed.')
 
 #-------------------------------------------------------------------------------*
 # ---- MAKE DATA FRAME OF COUNT BY SITES, SPECIES, AND YEAR ----
@@ -696,7 +698,7 @@ tGrain = 'year'
 site_grain_names
 
 #--! PROVIDE INFO !--#
-sGrain = 'site'
+sGrain = 'RouteName'
 
 # This is a reasonable choice of spatial grain because ...
 #--! PROVIDE INFO !--#
