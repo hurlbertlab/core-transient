@@ -3,6 +3,11 @@
 #
 #  Data info can be found at http://iobis.org/mapper/?dataset=2282
 
+# As a pelagic dataset with only lat-longs as site identifiers, we've decided the data are unsuitable 
+# for analysis of temporal occupancy at a relevant assemblage scale.
+
+# NO NEED TO RUN SCRIPT
+
 
 #-------------------------------------------------------------------------------*
 # ---- SET-UP ----

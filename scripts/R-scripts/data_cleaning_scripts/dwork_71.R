@@ -8,10 +8,10 @@
 # Formatted by: Allen Hurlbert
 #
 
-# YOU WILL NEED TO ENTER DATASET-SPECIFIC INFO IN EVERY LINE OF CODE PRECEDED
-# BY "#--! PROVIDE INFO !--#". 
+# As a pelagic dataset with only lat-longs as site identifiers, we've decided the data are unsuitable 
+# for analysis of temporal occupancy at a relevant assemblage scale.
 
-# YOU SHOULD RUN, BUT NOT OTHERWISE MODIFY, ALL OTHER LINES OF CODE.
+# NO NEED TO RUN SCRIPT
 
 #-------------------------------------------------------------------------------*
 # ---- SET-UP ----
@@ -616,7 +616,7 @@ dataFormattingTable[,'format_flag'] =
   dataFormattingTableFieldUpdate(datasetID, 'format_flag', 
      
 #--! PROVIDE INFO !--#                                 
-                                 1)
+                                 5)
 
 # Flag codes are as follows:
 # 0 = not currently worked on

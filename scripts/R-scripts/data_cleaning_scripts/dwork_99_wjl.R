@@ -3,6 +3,10 @@
 #
 #  Metadata can be found at http://gcmd.nasa.gov/records/GCMD_cmar_wh.html
 
+# As a pelagic trawl dataset , we've decided the data are unsuitable 
+# for analysis of temporal occupancy at a relevant assemblage scale.
+
+# NO NEED TO RUN SCRIPT
 
 #-------------------------------------------------------------------------------*
 # ---- SET-UP ----
@@ -424,17 +428,12 @@ write.csv(dataset7, paste("data/formatted_datasets/dataset_", datasetID, ".csv",
 
 # !GIT-ADD-COMMIT-PUSH THE FORMATTED DATASET IN THE DATA FILE, THEN GIT-ADD-COMMIT-PUSH THE UPDATED DATA FOLDER!
 
-# As we've now successfully created the formatted dataset, we will now update the format priority and format flag fields. 
-
-dataFormattingTable[,'format_priority'] = 
-  dataFormattingTableFieldUpdate(datasetID, 'format_priority',    # Fill value below in quotes 
-                                 
-                                 'NA')
+# As we've now successfully created the formatted dataset, we will now update the format flag field. 
 
 dataFormattingTable[,'format_flag'] = 
   dataFormattingTableFieldUpdate(datasetID, 'format_flag',    # Fill value below
                                  
-                                 1)
+                                 5)
 
 # And update the data formatting table:
 

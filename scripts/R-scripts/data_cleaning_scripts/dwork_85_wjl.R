@@ -3,6 +3,19 @@
 #
 #  Metadata can be found at http://www.emodnet-biology.eu/data-catalog?module=dataset&dasid=1037
 
+# As a marine benthic dataset with only lat-longs as site identifiers, we've decided the data are unsuitable 
+# for analysis of temporal occupancy at a relevant assemblage scale.
+
+# Notes field has alternative location identifiers which can be pulled out like this:
+
+# siteID = substr(matrix(unlist(strsplit(as.character(dataset$Notes), ":")), byrow = T, ncol = 2)[,2], 5, 20)
+
+# However, without further description of the sampling methodology, it seems likely that
+# these site id's refer to a fixed ship location, but not necessarily a fixed quadrat
+# or sampling station on the ocean floor.
+
+
+# NO NEED TO RUN SCRIPT
 
 
 
@@ -470,7 +483,7 @@ write.csv(dataset7, paste("data/formatted_datasets/dataset_", datasetID, ".csv",
 dataFormattingTable[,'format_flag'] = 
   dataFormattingTableFieldUpdate(datasetID, 'format_flag',    # Fill value below
                                  
-                                 1)
+                                 5)
 
 
 # !GIT-ADD-COMMIT-PUSH THE DATA FORMATTING TABLE!
