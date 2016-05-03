@@ -3,6 +3,10 @@
 #
 #  Metadata can be found at http://www.emodnet-biology.eu/data-catalog?module=dataset&dasid=1646 
 
+# "During 8 years (before, during and after the storm-surge barrier) phytoplankton was measured at two stations in the Oosterschelde (inner harbour and the estuary, the Netherlands) by Kees Bakker."
+
+# Since time series straddles a major disturbance/habitat shift, this dataset should probably not be used.
+
 #-------------------------------------------------------------------------------*
 # ---- SET-UP ----
 #===============================================================================*
@@ -396,17 +400,12 @@ write.csv(dataset7, paste("data/formatted_datasets/dataset_", datasetID, ".csv",
 
 # !GIT-ADD-COMMIT-PUSH THE FORMATTED DATASET IN THE DATA FILE, THEN GIT-ADD-COMMIT-PUSH THE UPDATED DATA FOLDER!
 
-# As we've now successfully created the formatted dataset, we will now update the format priority and format flag fields. 
-
-dataFormattingTable[,'format_priority'] = 
-  dataFormattingTableFieldUpdate(datasetID, 'format_priority',    # Fill value below in quotes 
-                                 
-                                 'NA')
+# As we've now successfully created the formatted dataset, we will now update the format flag field. 
 
 dataFormattingTable[,'format_flag'] = 
   dataFormattingTableFieldUpdate(datasetID, 'format_flag',    # Fill value below
                                  
-                                 1)
+                                 5)
 
 # And update the data formatting table:
 
