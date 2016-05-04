@@ -301,7 +301,7 @@ dataFormattingTable[,'Raw_spatial_grain'] =
                                  100) 
 
 dataFormattingTable[,'Raw_spatial_grain_unit'] = 
-  dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain',  
+  dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain_unit',  
                                  
 #--! PROVIDE INFO !--#
                                  'm2') 
@@ -387,9 +387,7 @@ dataFormattingTable[,'Notes_siteFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_siteFormat', 
 
 #--! PROVIDE INFO !--#
-  'For cover (USED): only the coarsest spatial scale provided (100 m2) by dataset.
-For species pres, the site field is a concatenation of plot and corner. Each corner was 
-measured at different spatial scales.')
+  'For cover (USED): only the coarsest spatial scale provided (100 m2) by dataset. For species pres, the site field is a concatenation of plot and corner. Each corner was measured at different spatial scales.')
 
 
 #-------------------------------------------------------------------------------*

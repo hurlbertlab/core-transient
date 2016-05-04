@@ -287,8 +287,7 @@ dataFormattingTable[,'spatial_scale_variable'] =
 dataFormattingTable[,'Notes_siteFormat'] = 
   dataFormattingTableFieldUpdate(datasetID, 'Notes_siteFormat',  # Fill value below in quotes
                                  
-                                 'Each dataset was a separate plot, so used Hubbard Brook, Moose 
-                                 Moosilauke, Sitnson Mountain, and Russell Pond as sites.')
+           'Each dataset was a separate plot, so used Hubbard Brook, Moose  Moosilauke, Sitnson Mountain, and Russell Pond as sites.')
 
 
 #-------------------------------------------------------------------------------*
@@ -340,8 +339,7 @@ dataFormattingTable[,'countFormat'] =
 dataFormattingTable[,'Notes_countFormat'] = 
   dataFormattingTableFieldUpdate(datasetID, 'Notes_countFormat', # Fill value below in quotes
                                  
-                                 'Data represents count. There were many 0s, 0.0s removed. bird counts that were 
-                                 entered as trace (t or tr) were entered as half the smallest amount observed in the dataset as 0.25')
+  'Data represents count. There were many 0s, 0.0s removed. bird counts that were entered as trace (t or tr) were entered as half the smallest amount observed in the dataset as 0.25')
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SPECIES DATA ----

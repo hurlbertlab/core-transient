@@ -294,7 +294,7 @@ dataFormattingTable[,'Raw_spatial_grain'] =
                                  10) 
 
 dataFormattingTable[,'Raw_spatial_grain_unit'] = 
-  dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain',  
+  dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain_unit',  
                                  
 #--! PROVIDE INFO !--#
                                  'm2') 
@@ -379,8 +379,7 @@ dataFormattingTable[,'Notes_siteFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_siteFormat', 
 
 #--! PROVIDE INFO !--#
-  'The site field is a concatenation of transect and plot. Transect e was removed bc it was
-  only sampled for 2 years.')
+  'The site field is a concatenation of transect and plot. Transect e was removed bc it was only sampled for 2 years.')
 
 
 #-------------------------------------------------------------------------------*
@@ -464,9 +463,7 @@ dataFormattingTable[,'Notes_countFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_countFormat', 
                                  
 #--! PROVIDE INFO !--#                                 
-              'Cover data provided. Seven cover classes were used to estimate 
-  species canopy coverage. 1 - 0-1% cover; 2 - 2-5% cover; 3 - 5-25% cover; 4 - 25-50% cover; 
-  5 - 50-75%; 6 - 75-95% cover; 7 - 95-100% cover.')
+              'Cover data provided. Seven cover classes were used to estimate species canopy coverage. 1 - 0-1% cover; 2 - 2-5% cover; 3 - 5-25% cover; 4 - 25-50% cover; 5 - 50-75%; 6 - 75-95% cover; 7 - 95-100% cover.')
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SPECIES DATA ----
@@ -561,9 +558,7 @@ dataFormattingTable[,'Notes_spFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_spFormat',  
 
 #--! PROVIDE INFO !--#                                 
-  'The bad spp found were genus no spp provided, which made up <50% of that genus in the dataset.
-  Only sp abbrevations are provided - full name 
-  is in website metadata and was checked for duplicates.')
+  'The bad spp found were genus no spp provided, which made up <50% of that genus in the dataset. Only sp abbrevations are provided - full name is in website metadata and was checked for duplicates.')
 
 #-------------------------------------------------------------------------------*
 # ---- MAKE DATA FRAME OF COUNT BY SITES, SPECIES, AND YEAR ----
