@@ -3,6 +3,14 @@
 #
 # Metadata can be found at http://gcmd.nasa.gov/KeywordSearch/Metadata.do?Portal=GCMD&KeywordPath=%5BPersonnel%3A+Last_Name%3D%27DATA+MANAGEMENT+OFFICE%27%5D&OrigMetadataNode=GCMD&EntryId=JAMSTEC_MARINE_BIOLOGICAL_SAMPLE_DATABASE&MetadataView=Full&MetadataType=0&lbnode=mdlb2
 
+# As a marine dataset with only lat-longs as site identifiers, we've decided the data are unsuitable 
+# for analysis of temporal occupancy at a relevant assemblage scale.
+
+# NO NEED TO RUN SCRIPT
+
+
+
+
 #-------------------------------------------------------------------------------*
 # ---- SET-UP ----
 #===============================================================================*
