@@ -299,7 +299,7 @@ dataFormattingTable[,'Raw_spatial_grain'] =
                                  1000) # 5 points at 200 m intervals, transect
 
 dataFormattingTable[,'Raw_spatial_grain_unit'] = 
-  dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain',  
+  dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain_unit',  
                                  
 #--! PROVIDE INFO !--#
                                  'm') 
@@ -564,8 +564,7 @@ dataFormattingTable[,'Notes_spFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_spFormat',  
 
 #--! PROVIDE INFO !--#                                 
-  'Observations of American Red Squirrel (RESQ) and Eastern Gray Squirrel (GRSQ) were removed. 
-Unidentified birds were recorded as "UNBI" and "NONE" feilds removed.')
+  'Observations of American Red Squirrel (RESQ) and Eastern Gray Squirrel (GRSQ) were removed. Unidentified birds were recorded as "UNBI" and "NONE" feilds removed.')
 
 #-------------------------------------------------------------------------------*
 # ---- MAKE DATA FRAME OF COUNT BY SITES, SPECIES, AND YEAR ----

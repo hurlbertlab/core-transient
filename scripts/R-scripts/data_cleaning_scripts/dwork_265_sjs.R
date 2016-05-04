@@ -294,7 +294,7 @@ dataFormattingTable[,'Raw_spatial_grain'] =
                                  13) 
 
 dataFormattingTable[,'Raw_spatial_grain_unit'] = 
-  dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain',  
+  dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain_unit',  
                                  
 #--! PROVIDE INFO !--#
                                  'ha') 
@@ -379,8 +379,7 @@ dataFormattingTable[,'Notes_siteFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_siteFormat', 
 
 #--! PROVIDE INFO !--#
-  'The site field is the number 1 because the study site was the same, and 
-no grain size smaller than the area of the study site was provided ')
+  'The site field is the number 1 because the study site was the same, and no grain size smaller than the area of the study site was provided ')
 
 
 #-------------------------------------------------------------------------------*

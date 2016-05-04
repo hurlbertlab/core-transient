@@ -56,7 +56,7 @@ datasetID = 244
 
 list.files('data/raw_datasets/dataset_244')
 
-dataset = read.csv(paste('data/raw_datasets/dataset_244/dataset_', datasetID, '.csv', sep = ''))
+dataset = read.csv(paste('data/raw_datasets/dataset_244.csv', sep = ''))
 
 dataFormattingTable = read.csv('data_formatting_table.csv')
 

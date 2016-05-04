@@ -379,8 +379,7 @@ dataFormattingTable[,'Notes_countFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_countFormat', # Fill value below in quotes
                                  
 #####                                 
-                                 'Data represents cover in 1-m2 permanent quadrats, estimated by 
-                                  intercepts at 20 fixed points. ')
+       'Data represents cover in 1-m2 permanent quadrats, estimated by intercepts at 20 fixed points. ')
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SPECIES DATA ----
@@ -494,9 +493,7 @@ dataFormattingTable[,'Notes_spFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_spFormat',    # Fill value below in quotes
 
 #####                                 
-  'A number of non-organismal cover classes, and taxa not identified to species were
-   removed while several "spp" taxa were assigned to the only species of that genus
-   in the dataset.')
+  'A number of non-organismal cover classes, and taxa not identified to species were removed while several "spp" taxa were assigned to the only species of that genus in the dataset.')
 
 #-------------------------------------------------------------------------------*
 # ---- MAKE DATA FRAME OF COUNT BY SITES, SPECIES, AND YEAR ----

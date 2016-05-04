@@ -310,7 +310,7 @@ dataFormattingTable[,'Raw_spatial_grain'] =
                                  250) 
 
 dataFormattingTable[,'Raw_spatial_grain_unit'] = 
-  dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain',  
+  dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain_unit',  
                                  
 #--! PROVIDE INFO !--#
                                  'mL') 
@@ -395,8 +395,7 @@ dataFormattingTable[,'Notes_siteFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_siteFormat', 
 
 #--! PROVIDE INFO !--#
-  'Phytoplankton sampling involved pooling 250 mL from multiple lake samples;
-  there is only 1 station per lake')
+  'Phytoplankton sampling involved pooling 250 mL from multiple lake samples; there is only 1 station per lake')
 
 
 #-------------------------------------------------------------------------------*
@@ -480,8 +479,7 @@ dataFormattingTable[,'Notes_countFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_countFormat', 
                                  
 #--! PROVIDE INFO !--#                                 
-              'Number cells per ml; data on biomass and number of colonies were
-  excluded')
+              'Number cells per ml; data on biomass and number of colonies were excluded')
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SPECIES DATA ----
@@ -586,8 +584,7 @@ dataFormattingTable[,'Notes_spFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_spFormat',  
 
 #--! PROVIDE INFO !--#                                 
-  'Changed K.gracile to K gracilis bc there was only 1 result on Google;
-  4 unknown genera removed and 6 species lumped to genus name')
+  'Changed K.gracile to K gracilis bc there was only 1 result on Google; 4 unknown genera removed and 6 species lumped to genus name')
 
 #-------------------------------------------------------------------------------*
 # ---- MAKE DATA FRAME OF COUNT BY SITES, SPECIES, AND YEAR ----

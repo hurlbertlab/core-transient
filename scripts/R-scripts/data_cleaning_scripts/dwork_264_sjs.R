@@ -295,7 +295,7 @@ dataFormattingTable[,'Raw_spatial_grain'] =
                                  27)  #There were 7 different sites of slightly diff area, so the average of sites were used
 
 dataFormattingTable[,'Raw_spatial_grain_unit'] = 
-  dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain',  
+  dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain_unit',  
                                  
 #--! PROVIDE INFO !--#
                                  'ha') 
@@ -380,9 +380,7 @@ dataFormattingTable[,'Notes_siteFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_siteFormat', 
 
 #--! PROVIDE INFO !--#
-  'The site field is the name of each site, which are different areas and habitat types.
-  Habitat type is listed in the paper, and the average of the 7 site area sizes was used for
-  the spatial grain.')
+  'The site field is the name of each site, which are different areas and habitat types.Habitat type is listed in the paper, and the average of the 7 site area sizes was used for the spatial grain.')
 
 
 #-------------------------------------------------------------------------------*

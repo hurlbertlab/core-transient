@@ -234,8 +234,7 @@ dataFormattingTable[,'Notes_timeFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_timeFormat', 
 
 #--! PROVIDE INFO !--#
-    'The only modification to this field involved converting to a date object.
-    Additionally only the first year of 2 year range was used to make formatting easier.')
+    'The only modification to this field involved converting to a date object. Additionally only the first year of 2 year range was used to make formatting easier.')
 
 
 # subannualTgrain. After exploring the time data, was this dataset sampled at a 
@@ -295,7 +294,7 @@ dataFormattingTable[,'Raw_spatial_grain'] =
                                  24) 
 
 dataFormattingTable[,'Raw_spatial_grain_unit'] = 
-  dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain',  
+  dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain_unit',  
                                  
 #--! PROVIDE INFO !--#
                                  'ha') 
@@ -380,9 +379,7 @@ dataFormattingTable[,'Notes_siteFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_siteFormat', 
 
 #--! PROVIDE INFO !--#
-  'The site field is the number 1 because all surveys were conducted in William
-  Trelease Woods in a 24 ha plot. This dataset is different than app 1 bc it 
-  is the average number of wintering bird populations.')
+  'The site field is the number 1 because all surveys were conducted in William Trelease Woods in a 24 ha plot. This dataset is different than app 1 bc it is the average number of wintering bird populations.')
 
 
 #-------------------------------------------------------------------------------*

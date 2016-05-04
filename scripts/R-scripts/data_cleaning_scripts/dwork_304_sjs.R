@@ -291,7 +291,7 @@ dataFormattingTable[,'Raw_spatial_grain'] =
                                  330) 
 
 dataFormattingTable[,'Raw_spatial_grain_unit'] = 
-  dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain',  
+  dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain_unit',  
                                  
 #--! PROVIDE INFO !--#
                                  'ha') 
@@ -376,8 +376,7 @@ dataFormattingTable[,'Notes_siteFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_siteFormat', 
 
 #--! PROVIDE INFO !--#
-  'The site field is Bold park bc the study was conducted within the park; there
-  were 4 sites but the data were summed by year for all sites.')
+  'The site field is Bold park bc the study was conducted within the park; there were 4 sites but the data were summed by year for all sites.')
 
 
 #-------------------------------------------------------------------------------*

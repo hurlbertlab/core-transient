@@ -295,7 +295,7 @@ dataFormattingTable[,'Raw_spatial_grain'] =
                                  0.5)   ####ESTIMATED from areas ranging from 0.36 to .52
 
 dataFormattingTable[,'Raw_spatial_grain_unit'] = 
-  dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain',  
+  dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain_unit',  
                                  
 #--! PROVIDE INFO !--#
                                  'km2') 
@@ -464,9 +464,7 @@ dataFormattingTable[,'Notes_countFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_countFormat', 
                                  
 #--! PROVIDE INFO !--#                                 
-              'Densities of the passerine species (excl. Corvidae) (territories/km2
-) as obtained by mapping or nest search in the study plots provided in appendix 2. Count data without
-year also provided, will check against propOcc table.')
+              'Densities of the passerine species (excl. Corvidae) (territories/km2) as obtained by mapping or nest search in the study plots provided in appendix 2. Count data without year also provided, will check against propOcc table.')
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SPECIES DATA ----

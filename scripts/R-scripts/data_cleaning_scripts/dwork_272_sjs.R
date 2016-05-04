@@ -294,7 +294,7 @@ dataFormattingTable[,'Raw_spatial_grain'] =
                                  1) 
 
 dataFormattingTable[,'Raw_spatial_grain_unit'] = 
-  dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain',  
+  dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain_unit',  
                                  
 #--! PROVIDE INFO !--#
                                  'km2') 
@@ -379,8 +379,7 @@ dataFormattingTable[,'Notes_siteFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_siteFormat', 
 
 #--! PROVIDE INFO !--#
-  'The site field is the number one becuase a single square kilometer plot within 
-the Estenstad forest was used.')
+  'The site field is the number one becuase a single square kilometer plot within the Estenstad forest was used.')
 
 
 #-------------------------------------------------------------------------------*

@@ -294,7 +294,7 @@ dataFormattingTable[,'Raw_spatial_grain'] =
                                  2500) 
 
 dataFormattingTable[,'Raw_spatial_grain_unit'] = 
-  dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain',  
+  dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain_unit',  
                                  
 #--! PROVIDE INFO !--#
                                  'cm2') 
@@ -463,8 +463,7 @@ dataFormattingTable[,'Notes_countFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_countFormat', 
                                  
 #--! PROVIDE INFO !--#                                 
-              'Cover of each species rooted in each quadrat provided. Visually 
-estimated in 1% intervals from 1-9%, then in 5% intervals from 10-100%.')
+              'Cover of each species rooted in each quadrat provided. Visually estimated in 1% intervals from 1-9%, then in 5% intervals from 10-100%.')
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SPECIES DATA ----
@@ -567,9 +566,7 @@ dataFormattingTable[,'Notes_spFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_spFormat',  
 
 #--! PROVIDE INFO !--#                                 
-  'Had to use trimws command to remove white space duplicates. A few unknown
-species were date specific so those were removed, but the total unknown spp
- data was kept.')
+  'Had to use trimws command to remove white space duplicates. A few unknown species were date specific so those were removed, but the total unknown spp data was kept.')
 
 #-------------------------------------------------------------------------------*
 # ---- MAKE DATA FRAME OF COUNT BY SITES, SPECIES, AND YEAR ----

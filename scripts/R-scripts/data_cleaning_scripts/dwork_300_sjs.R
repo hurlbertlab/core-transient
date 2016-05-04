@@ -294,7 +294,7 @@ dataFormattingTable[,'Raw_spatial_grain'] =
                                  11.35) 
 
 dataFormattingTable[,'Raw_spatial_grain_unit'] = 
-  dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain',  
+  dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain_unit',  
                                  
 #--! PROVIDE INFO !--#
                                  'ha') 
@@ -379,9 +379,7 @@ dataFormattingTable[,'Notes_siteFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_siteFormat', 
 
 #--! PROVIDE INFO !--#
-  'The site field consists of the upland site (12.6 ha) and the flooplain site (10.1 ha),
-  both in the forest plots of Robert Allerton Park, Appendix 3. Spatial grain was the 
-  average of the two sites.')
+  'The site field consists of the upland site (12.6 ha) and the flooplain site (10.1 ha), both in the forest plots of Robert Allerton Park, Appendix 3. Spatial grain was the average of the two sites.')
 
 
 #-------------------------------------------------------------------------------*
