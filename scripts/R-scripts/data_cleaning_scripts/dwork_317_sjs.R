@@ -289,7 +289,7 @@ dataFormattingTable[,'Raw_spatial_grain'] =
                                  ) # NOTE : no spatial grain provided
 
 dataFormattingTable[,'Raw_spatial_grain_unit'] = 
-  dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain',  
+  dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain_unit',  
                                  
 #--! PROVIDE INFO !--#
                                  'm2') 
