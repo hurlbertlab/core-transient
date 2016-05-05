@@ -579,27 +579,76 @@ ggsave("output/plots/core_trans_prop_violins.png")
 
 #################################################################
 # Map of each community - a few for now
+pdf('fig1map.pdf', height = 8, width = 10)
+par(pin = c(7, 9))
+
 world = map(database='world')
 
 
 # merge in lat/long
 latlongs = read.csv('data_formatting_table.csv', header = T)
 plotdata_all = merge(dsets, latlongs, by.x = "datasetID", by.y = "dataset_ID")
+plotdata_all$Lat = plotdata_all$CentralLatitude
+plotdata_all$Lon = plotdata_all$CentralLongitude
+plotdata_sub = plotdata_all[,c(1, 3, 54, 55)]
+# select(plotdata_all$datasetID, plotdata_all$Lat, plotdata_all$Lon, plotdata_all$taxa.x)
+
 plot1 = read.csv("data/latlongs/bbs_96-10_latlongs.csv", header = T)
+plot1$Lat = plot1$Lati
+plot1$Lon = plot1$Longi
+plot1$datasetID = 1
+plot1$taxa.x = 'Bird'
+plot1_sub = plot1[,c(7:10)]
+
+247
+
 plot248 = read.csv("data/latlongs/d248_latlongs.csv", header = T)
+plot248$Lat = plot248$lat
+plot248$Lon = plot248$long
+plot248$datasetID = 248
+plot248$taxa.x = 'Fish'
+plot248_sub = plot248[,c(4:7)]
+
 plot269 = read.csv("data/latlongs/d269_latlongs.csv", header = T)
+plot269$Lat = plot269$lat
+plot269$Lon = plot269$long
+plot269$datasetID = 269
+plot269$taxa.x = 'Bird'
+plot269_sub = plot269[,c(4:7)]
+
+283
+
 plot289 = read.csv("data/latlongs/d289_latlongs.csv", header = T)
+plot289$Lat = plot289$Latitude
+plot289$Lon = plot289$Longitude
+plot289$datasetID = 289
+plot289$taxa.x = 'Plant'
+plot289_sub = plot289[,c(10:13)]
+
+308
+plot308 = read.csv("data/latlongs/d308_latlongs.csv", header = T)
+
+
+
+309
+plot309 = read.csv("data/latlongs/d309_latlongs.csv", header = T)
+
+315
+plot315 = read.csv("data/latlongs/d315_latlongs.csv", header = T)
+
+# merge all together
+rbind(plotdata_all, plot1, plot248, plot269, plot289)
+
 
 # points(plot247$verbatimlongitude, plot247$verbatimlatitude, col = 1, pch = 20)
-points(plotdata_all$CentralLongitude, plotdata_all$CentralLatitude, col = 3,  pch = 20) 
-points(plot1$Longi, plot1$Lati, col = 5, pch = 20)
-points(plot248$long, plot248$lat, col = 4, pch = 20)
-points(plot269$long, plot269$lat, col = 2, pch = 20)
-points(plot289$Longitude, plot289$Latitude, col = 6, pch = 20)
 
-# merge in lat/long
-plotdata_comm = merge(summ, latlongs, by.x = "datasetID", by.y = "dataset_ID")
-points(plotdata_comm$CentralLongitude, plotdata_comm$CentralLatitude, col = 4,  pch = 20) 
+points(plot248$long, plot248$lat, col = "green", pch = 20)
+points(plot269$long, plot269$lat, col = "blue", pch = 20)
+points(plot289$Longitude, plot289$Latitude, col = "cyan", pch = 20) 
++points(plot308$RouteLongitude, plot308$RouteLattitude, col = "brown", pch = 20)
+points(plot309$long, plot309$lat, col = "gold", pch = 20)
+points(plot315$long, plot315$lat, col = "black", pch = 20)
+points(plot247$long, plot247$lat, col = "purple", pch = 20)
 
-
+out.file<-"output/tabular_data/fig1map.pdf"
 
