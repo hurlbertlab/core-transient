@@ -12,6 +12,6 @@ perl -pXe 's/dataFormattingTable[,'Raw_spatial_grain_unit'] = \n
 dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain'/dataFormattingTable[,'Raw_spatial_grain_unit'] = \n
 dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain_unit'/g' -i **
 
-sed -r "s/'dataFormattingTable[,'Raw_spatial_grain_unit'] =\n
+sed -i "s/'dataFormattingTable[,'Raw_spatial_grain_unit'] =\n
 dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain''/'dataFormattingTable[,'Raw_spatial_grain_unit'] =\n
 dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain_unit''/g"

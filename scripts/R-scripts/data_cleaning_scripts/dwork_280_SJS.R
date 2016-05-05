@@ -236,7 +236,7 @@ dataFormattingTable[,'Notes_timeFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_timeFormat', 
 
 #--! PROVIDE INFO !--#
-    'The only modification to this field involved converting to a date object.Original format was m/d/yyyy.')
+    'The only modification to this field involved converting to a date object. Original format was m/d/yyyy.')
 
 
 # subannualTgrain. After exploring the time data, was this dataset sampled at a 

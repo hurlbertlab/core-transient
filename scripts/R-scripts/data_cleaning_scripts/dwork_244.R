@@ -517,9 +517,7 @@ dataFormattingTable[,'Notes_spFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_spFormat',    # Fill value below in quotes
 
 #####                                 
-  'A number of non-organismal cover classes, and taxa not identified to species were
-   removed while several "spp" taxa were assigned to the only species of that genus
-   in the dataset.')
+  'A number of non-organismal cover classes, and taxa not identified to species were removed while several "spp" taxa were assigned to the only species of that genus in the dataset.')
 
 #-------------------------------------------------------------------------------*
 # ---- MAKE DATA FRAME OF COUNT BY SITES, SPECIES, AND YEAR ----
