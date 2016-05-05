@@ -580,86 +580,21 @@ ggsave("output/plots/core_trans_prop_violins.png")
 #################################################################
 # Map of each community - a few for now
 pdf('fig1map.pdf', height = 8, width = 10)
-par(pin = c(7, 9))
+par(pin = c(3, 4))
 
 world = map(database='world')
 
-# merge in lat/long
-latlongs = read.csv('data_formatting_table.csv', header = T)
-plotdata_all = merge(dsets, latlongs, by.x = "datasetID", by.y = "dataset_ID")
-plotdata_all$Lat = plotdata_all$CentralLatitude
-plotdata_all$Lon = plotdata_all$CentralLongitude
-plotdata_sub = plotdata_all[,c(1, 3, 54, 55)]
-# select(plotdata_all$datasetID, plotdata_all$Lat, plotdata_all$Lon, plotdata_all$taxa.x)
-##### hide messy lat long cleaning #####
-plot1 = read.csv("data/latlongs/bbs_96-10_latlongs.csv", header = T)
-plot1$Lat = plot1$Lati
-plot1$Lon = plot1$Longi
-plot1$datasetID = 1
-plot1$taxa.x = 'Bird'
-plot1_sub = plot1[,c(7:10)]
+# read in lat/long file (preformatted)
+latlong = read.csv("data/latlongs/latlongs.csv", header = T)
+points(latlong$Lon, latlong$Lat, pch = 20, col = as.integer(latlong$taxa.x))
 
-plot247 = read.csv("data/latlongs/d247_latlongs_unique.csv", header = T)
-plot247$Lat = plot247$lat
-plot247$Lon = plot247$long
-plot247$datasetID = 247
-plot247$taxa.x = 'Arthopod'
-plot247_sub = plot247[,c(4:7)]
+#points(plot248$long, plot248$lat, col = "green", pch = 20)
+#points(plot269$long, plot269$lat, col = "blue", pch = 20)
+#points(plot289$Longitude, plot289$Latitude, col = "cyan", pch = 20) 
+#points(plot308$RouteLongitude, plot308$RouteLattitude, col = "brown", pch = 20)
+#points(plot309$long, plot309$lat, col = "gold", pch = 20)
+#points(plot315$long, plot315$lat, col = "black", pch = 20)
+#points(plot247$long, plot247$lat, col = "purple", pch = 20)
 
-plot248 = read.csv("data/latlongs/d248_latlongs.csv", header = T)
-plot248$Lat = plot248$lat
-plot248$Lon = plot248$long
-plot248$datasetID = 248
-plot248$taxa.x = 'Fish'
-plot248_sub = plot248[,c(4:7)]
-
-plot269 = read.csv("data/latlongs/d269_latlongs.csv", header = T)
-plot269$Lat = plot269$lat
-plot269$Lon = plot269$long
-plot269$datasetID = 269
-plot269$taxa.x = 'Bird'
-plot269_sub = plot269[,c(4:7)]
-
-plot289 = read.csv("data/latlongs/d289_latlongs.csv", header = T)
-plot289$Lat = plot289$Latitude
-plot289$Lon = plot289$Longitude
-plot289$datasetID = 289
-plot289$taxa.x = 'Plant'
-plot289_sub = plot289[,c(10:13)]
-
-plot308 = read.csv("data/latlongs/d308_latlongs.csv", header = T)
-plot308$Lat = plot308$RouteLattitude
-plot308$Lon = plot308$RouteLongitude
-plot308$datasetID = 308
-plot308$taxa.x = 'Bird'
-plot308_sub = plot308[,c(12:15)]
-
-plot309 = read.csv("data/latlongs/d309_latlongs.csv", header = T)
-plot309$Lat = plot309$lat
-plot309$Lon = plot309$long
-plot309$datasetID = 309
-plot309$taxa.x = 'Fish'
-plot309_sub = plot309[,c(4:7)]
-
-plot315 = read.csv("data/latlongs/d315_latlongs.csv", header = T)
-plot315$Lat = plot315$lat
-plot315$Lon = plot315$long
-plot315$datasetID = 315
-plot315$taxa.x = 'Arthropod'
-plot315_sub = plot315[,c(5:8)]
-#### end messy cleaning ####
-# merge all together
-alldata_latlong = rbind(plotdata_sub, plot1_sub, plot247_sub, plot248_sub, plot269_sub, plot289_sub, plot308_sub, plot309_sub, plot315_sub)
-
-points(alldata_latlong$Lon, alldata_latlong$Lat, pch = 20, col = as.integer(alldata_latlong$taxa.x))
-
-points(plot248$long, plot248$lat, col = "green", pch = 20)
-points(plot269$long, plot269$lat, col = "blue", pch = 20)
-points(plot289$Longitude, plot289$Latitude, col = "cyan", pch = 20) 
-points(plot308$RouteLongitude, plot308$RouteLattitude, col = "brown", pch = 20)
-points(plot309$long, plot309$lat, col = "gold", pch = 20)
-points(plot315$long, plot315$lat, col = "black", pch = 20)
-points(plot247$long, plot247$lat, col = "purple", pch = 20)
-
-out.file<-"output/tabular_data/fig1map.pdf"
-
+# out.file<-"output/tabular_data/fig1map.pdf"
+dev.off()
