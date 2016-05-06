@@ -78,7 +78,6 @@ dataFormattingTable[,'Raw_datafile_name'] =
   '1982_2000gs81tusbm.csv') 
 
 
-
 ########################################################
 # ANALYSIS CRITERIA                                    #  
 ########################################################
@@ -128,7 +127,7 @@ head(dataset)
 names(dataset)
 
 #--! PROVIDE INFO !--#
-unusedFieldNames = c('Site', 'Treatment', 'StdERR.g.m.2', 'Count..g.m.2', 'Species.Comments', 'Comments')
+unusedFieldNames = c('Treatment', 'StdERR.g.m.2', 'Count..g.m.2', 'Species.Comments', 'Comments')
 
 dataset1 = dataset[, !names(dataset) %in% unusedFieldNames]
 
@@ -170,6 +169,10 @@ dataFormattingTable[,'LatLong_sites'] =
 
 #--! PROVIDE INFO !--#
 dateFieldName = c('Date')
+
+###NEED TO FIX DATES!
+# filter(dataset1$Date == ( "03-Jul-1983"))
+# dataset1$Date = grep("Jul", dataset1$Date)
 
 # If necessary, paste together date info from multiple columns into single field
 if (length(dateFieldName) > 1) {
@@ -270,8 +273,21 @@ dataFormattingTable[,'subannualTgrain'] =
 # in hierarchical order from largest to smallest grain. Based on the dataset,
 # fill in the fields that specify nested spatial grains below.
 
+##### ADDED IN CLEANING UP OF SITES
+bad_sites = c('Average', 'Count', 'Std..Err.')
+dataset2 = dataset2[!dataset2$quadrat %in% bad_sites,]
+dataset2$quadrat = factor(dataset2$quadrat)
+
+dataset2$s1 = 'Toolik'
+
+library(tidyr)
+dataset2 = separate(dataset2, quadrat, c("Plot", "Quad"), sep = "Q")
+dataset2$Plot = substring(dataset2$Plot, 2)
+dataset2 = unite(dataset2, site_final, s1 , Plot, Quad, sep = "_")
+
 #--! PROVIDE INFO !--#
-site_grain_names = c("quadrat")
+site_grain_names = c("site_final")
+
 
 # We will now create the site field with these codes concatenated if there
 # are multiple grain fields. Otherwise, site will just be the single grain field.
