@@ -127,7 +127,7 @@ head(dataset)
 names(dataset)
 
 #--! PROVIDE INFO !--#
-unusedFieldNames = c('Treatment', 'StdERR.g.m.2', 'Count..g.m.2', 'Species.Comments', 'Comments')
+unusedFieldNames = c('Treatment', 'StdERR.g.m.2', 'Count..g.m.2', 'Comments')
 
 dataset1 = dataset[, !names(dataset) %in% unusedFieldNames]
 
@@ -168,11 +168,13 @@ dataFormattingTable[,'LatLong_sites'] =
 # E.g., c('year', 'month', 'day')
 
 #--! PROVIDE INFO !--#
-dateFieldName = c('Date')
+### ADDED IN: only selecting Jul dates bc of variability in sampling effort
+dplyr::filter
+temp = filter(dataset1, grepl("Jul", Date))
+temp$Date = factor(temp$Date)
+dataset1 = temp 
 
-###NEED TO FIX DATES!
-# filter(dataset1$Date == ( "03-Jul-1983"))
-# dataset1$Date = grep("Jul", dataset1$Date)
+dateFieldName = c('Date')
 
 # If necessary, paste together date info from multiple columns into single field
 if (length(dateFieldName) > 1) {
@@ -238,7 +240,7 @@ dataFormattingTable[,'Notes_timeFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_timeFormat', 
 
 #--! PROVIDE INFO !--#
-    'The only modification to this field involved converting to a date object.')
+    'The date field was subset to only include July dates to account for sampling effort and rather drastic temperature changes in the Arctic.')
 
 
 # subannualTgrain. After exploring the time data, was this dataset sampled at a 
@@ -276,6 +278,7 @@ dataFormattingTable[,'subannualTgrain'] =
 ##### ADDED IN CLEANING UP OF SITES
 bad_sites = c('Average', 'Count', 'Std..Err.')
 dataset2 = dataset2[!dataset2$quadrat %in% bad_sites,]
+dataset2 = filter(dataset2, !grepl("gm2", quadrat))
 dataset2$quadrat = factor(dataset2$quadrat)
 
 dataset2$s1 = 'Toolik'
@@ -284,6 +287,7 @@ library(tidyr)
 dataset2 = separate(dataset2, quadrat, c("Plot", "Quad"), sep = "Q")
 dataset2$Plot = substring(dataset2$Plot, 2)
 dataset2 = unite(dataset2, site_final, s1 , Plot, Quad, sep = "_")
+
 
 #--! PROVIDE INFO !--#
 site_grain_names = c("site_final")
@@ -386,7 +390,7 @@ dataFormattingTable[,'spatial_scale_variable'] =
   dataFormattingTableFieldUpdate(datasetID, 'spatial_scale_variable',
 
 #--! PROVIDE INFO !--#
-                                 'N')
+                                 'Y')
 
 # Notes_siteFormat. Use this field to THOROUGHLY describe any changes made to the 
 # site field during formatting.
@@ -395,7 +399,7 @@ dataFormattingTable[,'Notes_siteFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_siteFormat', 
 
 #--! PROVIDE INFO !--#
-  'The site field is each quadrat in the study site.')
+  'We created a new site variable that is hierarchical by site/plot/quad to more easily manipulate spatial grain. Also had to eliminate avg/count/StdErr fields and gm2 duplicate fields from dataset')
 
 
 #-------------------------------------------------------------------------------*
@@ -467,19 +471,19 @@ head(dataset5)
 
 #!DATA FORMATTING TABLE UPDATE!
 
-# Possible values for countFormat field are density, cover, presence and count.
+# Possible values for countFormat field are density, cover, presence, biomass, and count.
 
 dataFormattingTable[,'countFormat'] = 
   dataFormattingTableFieldUpdate(datasetID, 'countFormat',  
 
 #--! PROVIDE INFO !--#                                 
-                                 'density')
+                                 'biomass')
 
 dataFormattingTable[,'Notes_countFormat'] = 
   dataFormattingTableFieldUpdate(datasetID, 'Notes_countFormat', 
                                  
 #--! PROVIDE INFO !--#                                 
-              'Density data provided')
+              'Biomass data provided summed across tissue types, aboveground & belowground biomass.')
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SPECIES DATA ----
@@ -496,6 +500,20 @@ dataFormattingTable[,'Notes_countFormat'] =
 speciesField = 'Species'
 
 names(dataset5)[names(dataset5) == speciesField] = 'species'
+
+####ADDED IN additional species names in Species.Comments column
+dataset5 = separate(dataset5, col = Species.Comments, into = c("y", "x"), sep = " ", extra = "merge")
+dataset5$x = NULL
+dataset5$sppinclude = as.character(dataset5$y)
+
+ifelse(dataset5$sppinclude == "Arctostaphylus", dataset5$species = dataset5$sppinclude)
+
+
+for (i in dataset5) {
+  if(dataset5$sppinclude == "Pedicularis") {
+    dataset5$species = dataset5$sppinclude
+  }
+}
 
 # Look at the individual species present and how frequently they occur: This way 
 # you can more easily scan the species names (listed alphabetically) and identify 
