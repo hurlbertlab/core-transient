@@ -170,6 +170,22 @@ if (num_grains > 1) {
   } 
 }
 
+# What is the spatial grain of the finest sampling scale? For example, this might be
+# a 0.25 m2 quadrat, or a 5 m transect, or a 50 ml water sample.
+
+dataFormattingTable[,'Raw_spatial_grain'] = 
+  dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain',  
+                                 
+                                 #--! PROVIDE INFO !--#
+                                 NA) 
+
+dataFormattingTable[,'Raw_spatial_grain_unit'] = 
+  dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain_unit',  
+                                 
+                                 #--! PROVIDE INFO !--#
+                                 NA) 
+
+
 # BEFORE YOU CONTINUE. We need to make sure that there are at least minNTime for sites at the coarsest possilbe spatial grain. 
 
 siteCoarse = dataset2[, site_grain_names[1]]
@@ -376,54 +392,20 @@ write.csv(dataset7, paste("data/formatted_datasets/dataset_", datasetID, ".csv",
 
 # !GIT-ADD-COMMIT-PUSH THE FORMATTED DATASET IN THE DATA FILE, THEN GIT-ADD-COMMIT-PUSH THE UPDATED DATA FOLDER!
 
-# As we've now successfully created the formatted dataset, we will now update the format priority and format flag fields. 
-
-dataFormattingTable[,'format_priority'] = 
-  dataFormattingTableFieldUpdate(datasetID, 'format_priority',    # Fill value below in quotes 
-                                 
-                                 'NA')
+# As we've now successfully created the formatted dataset, we will now update the format flag field. 
 
 dataFormattingTable[,'format_flag'] = 
   dataFormattingTableFieldUpdate(datasetID, 'format_flag',    # Fill value below
                                  
                                  1)
+# Flag codes are as follows:
+# 0 = not currently worked on
+# 1 = formatting complete
+# 2 = formatting in process
+# 3 = formatting halted, issue
+# 4 = data unavailable
+# 5 = data insufficient for generating occupancy data
 
-# And update the data formatting table:
-
-write.csv(dataFormattingTable, 'data_formatting_table.csv', row.names = F)
-
-
-# Update the data formatting table (this may take a moment to process). Note that the inputs for this are 'datasetID', the datasetID and the dataset form that you consider to be fully formatted.
-
-dataFormattingTable = dataFormattingTableUpdate(datasetID, dataset7)
-
-# Take a final look at the dataset:
-
-head(dataset7)
-
-summary (dataset7)
-
-# If everything is looks okay we're ready to write formatted data frame:
-
-write.csv(dataset7, paste("data/formatted_datasets/dataset_", datasetID, ".csv", sep = ""), row.names = F)
-
-# !GIT-ADD-COMMIT-PUSH THE FORMATTED DATASET IN THE DATA FILE, THEN GIT-ADD-COMMIT-PUSH THE UPDATED DATA FOLDER!
-
-# As we've now successfully created the formatted dataset, we will now update the format priority and format flag fields. 
-
-dataFormattingTable[,'format_priority'] = 
-  dataFormattingTableFieldUpdate(datasetID, 'format_priority',    # Fill value below in quotes 
-                                 
-                                 'NA')
-
-dataFormattingTable[,'format_flag'] = 
-  dataFormattingTableFieldUpdate(datasetID, 'format_flag',    # Fill value below
-                                 
-                                 1)
-
-# And update the data formatting table:
-
-write.csv(dataFormattingTable, 'data_formatting_table.csv', row.names = F)
 
 # !GIT-ADD-COMMIT-PUSH THE DATA FORMATTING TABLE!
 
@@ -483,7 +465,21 @@ site_grain_names
 sGrain = 'Replicate_Treatment'
 
 # This is a reasonable choice of spatial grain because ...
-#  There are 6 replicates with 7 treatments. Within each 1 hectare treatment, there are 5 stations with one sticky trap each. The captured insects from one sticky trap is probably not a good indicator of the community composition, so treatment, the next coarsest grain, will be used.   
+#  There are 6 replicates with 7 treatments. Within each treatment (87 x 105 m), there are 5 stations with one sticky trap each. The captured insects from one sticky trap is probably not a good indicator of the community composition, so treatment, the next coarsest grain, will be used.   
+
+dataFormattingTable[,'Formatted_spatial_grain'] = 
+  dataFormattingTableFieldUpdate(datasetID, 'Formatted_spatial_grain',  
+                                 
+                                 #--! PROVIDE INFO !--#
+                                 9135) 
+
+dataFormattingTable[,'Formatted_spatial_grain_unit'] = 
+  dataFormattingTableFieldUpdate(datasetID, 'Formatted_spatial_grain_unit',  
+                                 
+                                 #--! PROVIDE INFO !--#
+                                 'm2') 
+
+
 
 # The function "richnessYearSubsetFun" below will subset the data to sites with an 
 # adequate number of years of sampling and species richness. If there are no 
@@ -504,9 +500,25 @@ head(richnessYearsTest)
 dim(richnessYearsTest) ; dim(dataset7)
 length(unique(richnessYearsTest$analysisSite))
 
-# Temporary fix for the richnesYearSubsetFun issue where analysisdate gets listed as "year_year" instead of "year"
+#Number of unique sites meeting criteria
+goodSites = unique(richnessYearsTest$analysisSite)
+length(goodSites)
 
-richnessYearsTest$analysisDate = substr(richnessYearsTest$analysisDate, start = 1, stop = 4)
+# Now subset dataset7 to just those goodSites as defined. This is tricky though
+# because assuming Sgrain is not the finest resolution, we will need to use
+# grep to match site names that begin with the string in goodSites.
+# The reason to do this is that sites which don't meet the criteria (e.g. not
+# enough years of data) may also have low sampling intensity that constrains
+# the subsampling level of the well sampled sites.
+
+uniqueSites = unique(dataset7$site)
+fullGoodSites = c()
+for (s in goodSites) {
+  tmp = as.character(uniqueSites[grepl(paste(s, "_", sep = ""), paste(uniqueSites, "_", sep = ""))])
+  fullGoodSites = c(fullGoodSites, tmp)
+}
+
+dataset8 = subset(dataset7, site %in% fullGoodSites)
 
 # Once we've settled on spatial and temporal grains that pass our test above,
 # we then need to 1) figure out what levels of spatial and temporal subsampling
@@ -522,7 +534,7 @@ richnessYearsTest$analysisDate = substr(richnessYearsTest$analysisDate, start = 
 # and bases the characterization of the community in that site-year based on
 # the aggregate of those standardized subsamples.
 
-subsettedData = subsetDataFun(dataset7, datasetID, spatialGrain = sGrain, 
+subsettedData = subsetDataFun(dataset8, datasetID, spatialGrain = sGrain, 
                               temporalGrain = tGrain,
                               minNTime = minNTime, minSpRich = minSpRich,
                               proportionalThreshold = topFractionSites,
@@ -541,6 +553,15 @@ siteSummaryFun(subsettedData)
 # If everything looks good, write the files:
 
 writePropOccSiteSummary(subsettedData)
+
+# Update Data Formatting Table with summary stats of the formatted,
+# properly subsetted dataset
+dataFormattingTable = dataFormattingTableUpdateFinished(datasetID, subsettedData)
+
+# And write the final data formatting table:
+
+write.csv(dataFormattingTable, 'data_formatting_table.csv', row.names = F)
+
 
 # Remove all objects except for functions from the environment:
 
