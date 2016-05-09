@@ -244,21 +244,7 @@ dataFormattingTable[,'subannualTgrain'] =
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SITE DATA ----
 #===============================================================================*
-# From the previous head commmand, we can see that sites are broken up into 
-# (potentially) 2 fields. Find the metadata link in the data formatting table use 
-# that link to determine how sites are characterized.
-
-#  -- If sampling is nested (e.g., quadrats within sites as in this study), use 
-#     each of the identifying fields and separate each field with an underscore. 
-#     For nested samples be sure the order of concatenated columns goes from 
-#     coarser to finer scales (e.g. "km_m_cm")
-
-# -- If sites are listed as lats and longs, use the finest available grain and 
-#    separate lat and long fields with an underscore.
-
-# -- If the site definition is clear, make a new site column as necessary.
-
-# -- If the dataset is for just a single site, and there is no site column, then add one.
+# Sampling is done on 10 m2 circular plots, which occur in groups of 5 along transects.
 
 # Here, we will concatenate all of the potential fields that describe the site 
 # in hierarchical order from largest to smallest grain. Based on the dataset,
@@ -691,11 +677,11 @@ tGrain = 'year'
 site_grain_names
 
 #--! PROVIDE INFO !--#
-sGrain = 'Transect_Plot'
+sGrain = 'Transect'
 
 # This is a reasonable choice of spatial grain because ...
 #--! PROVIDE INFO !--#
-# Line is the only level of spatial grain provided and watershed is an additional spatial identifier.
+# ...a plot of 10 m2 seems on the small side, whereas a Transect encompasses 50 m2 including thousands of individuals.
 
 # The function "richnessYearSubsetFun" below will subset the data to sites with an 
 # adequate number of years of sampling and species richness. If there are no 
