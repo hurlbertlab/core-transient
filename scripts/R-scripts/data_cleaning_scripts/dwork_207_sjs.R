@@ -311,13 +311,13 @@ dataFormattingTable[,'Raw_spatial_grain'] =
   dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain',  
                                  
 #--! PROVIDE INFO !--#
-                                 400) 
+                                 80) 
 
 dataFormattingTable[,'Raw_spatial_grain_unit'] = 
   dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain_unit',  
                                  
 #--! PROVIDE INFO !--#
-                                 'cm2') 
+                                 'm2') 
 
 
 # BEFORE YOU CONTINUE. We need to make sure that there are at least minNTime for 
@@ -502,18 +502,15 @@ speciesField = 'Species'
 names(dataset5)[names(dataset5) == speciesField] = 'species'
 
 ####ADDED IN additional species names in Species.Comments column
-dataset5 = separate(dataset5, col = Species.Comments, into = c("y", "x"), sep = " ", extra = "merge")
-dataset5$x = NULL
-dataset5$sppinclude = as.character(dataset5$y)
+spcomments = unique(dataset5$Species.Comments)[3:5] #not including "" and "Grass"
+spcomments_replace = c("Arctostaphylos alpina", "Empetrum nigrum", "Pedicularis spp.")
 
-ifelse(dataset5$sppinclude == "Arctostaphylus", dataset5$species = dataset5$sppinclude)
-
-
-for (i in dataset5) {
-  if(dataset5$sppinclude == "Pedicularis") {
-    dataset5$species = dataset5$sppinclude
-  }
+newspecies = as.character(dataset5$species)
+for (i in 1:length(spcomments)) {
+  newspecies[dataset5$Species.Comments == spcomments[i]] = spcomments_replace[i]
 }
+
+dataset5$species = factor(newspecies)
 
 # Look at the individual species present and how frequently they occur: This way 
 # you can more easily scan the species names (listed alphabetically) and identify 
@@ -540,10 +537,10 @@ data.frame(table(dataset5$species))
 # Because of this, you should really stop here and post an issue on GitHub. 
 
 #--! PROVIDE INFO !--#
-bad_sp = c('dead wood', 'Grasses', 'Leaf litter', 'Lichens spp.', 'Loose Litter',
+bad_sp = c('dead wood', 'Grasses', 'Forbs spp. ','Leaf litter', 'Lichens spp.', 'Loose Litter',
            'Mosses spp.', 'Other deciduous', 'Other Deciduous', 'Other Deciduous (Note species in comments)',
            'Other Evergreen', 'Other Evergreen (Note species in comments)', 'Other forbs',
-           'Other forbs (Note species in comments)', 'Other Graminoids', 'Other Graminoids (Note species in comments)',
+           'Other forbs (Note species in comments) ', 'Other Graminoids', 'Other Graminoids (Note species in comments)',
            'Other sedges', 'Salix spp.')
 
 dataset6 = dataset5[!dataset5$species %in% bad_sp,]
@@ -728,7 +725,7 @@ tGrain = 'year'
 site_grain_names
 
 #--! PROVIDE INFO !--#
-sGrain = 'quadrat'
+sGrain = 'site_final'
 
 # This is a reasonable choice of spatial grain because ...
 #--! PROVIDE INFO !--#
