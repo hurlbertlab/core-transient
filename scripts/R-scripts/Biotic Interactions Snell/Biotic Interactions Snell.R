@@ -11,6 +11,7 @@ library(plyr)
 Hurlbert_o = read.csv('Master_RO_Correlates_20110610.csv', header = T)
 # subset species whose occupancies were between 0.3 and 0.7 over a 10 year period
 subsetocc = Hurlbert_o[Hurlbert_o$X10yr.Prop > .3 & Hurlbert_o$X10yr.Prop < .7,]
+write.csv(subsetocc, "focal.csv")
 # compare green-tailed towhee to spotted towhee occupancies
 towhees = subsetocc[subsetocc$CommonName == "Spotted Towhee"| subsetocc$CommonName == "Green-tailed Towhee",]
 
