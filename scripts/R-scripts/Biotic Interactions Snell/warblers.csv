@@ -33,21 +33,26 @@
 20,6720,ground glean,insectivore,Palm Warbler,Kentucky Warbler,
 20,6720,ground glean,insectivore,Palm Warbler,Connecticut Warbler,
 20,6720,ground glean,insectivore,Palm Warbler,Swainson's Warbler,E/midwest
-21,6750,ground glean,insectivore,Northern Waterthrush,,
-,,,,,,
-,,,,,,
-22,6760,ground glean,insectivore,Louisiana Waterthrush,,E
-,,,,,,
-,,,,,,
-,,,,,,
-23,6770,ground glean,insectivore,Kentucky Warbler,,E
-,,,,,,
-,,,,,,
-,,,,,,
-24,6780,ground glean,insectivore,Connecticut Warbler,,E
-,,,,,,NE
-,,,,,,
-,,,,,,
+21,6750,ground glean,insectivore,Northern Waterthrush,Swainson's Warbler,
+21,6750,ground glean,insectivore,Northern Waterthrush,Palm Warbler,
+21,6750,ground glean,insectivore,Northern Waterthrush,Louisiana Waterthrush,
+21,6750,ground glean,insectivore,Northern Waterthrush,Kentucky Warbler,
+21,6750,ground glean,insectivore,Northern Waterthrush,Connecticut Warbler,
+22,6760,ground glean,insectivore,Louisiana Waterthrush,Swainson's Warbler,E
+22,6760,ground glean,insectivore,Louisiana Waterthrush,Palm Warbler,
+22,6760,ground glean,insectivore,Louisiana Waterthrush,Northern Waterthrush,
+22,6760,ground glean,insectivore,Louisiana Waterthrush,Kentucky Warbler,
+22,6760,ground glean,insectivore,Louisiana Waterthrush,Connecticut Warbler,
+23,6770,ground glean,insectivore,Kentucky Warbler,Swainson's Warbler,E
+23,6770,ground glean,insectivore,Kentucky Warbler,Palm Warbler,
+23,6770,ground glean,insectivore,Kentucky Warbler,Louisiana Waterthrush,
+23,6770,ground glean,insectivore,Kentucky Warbler,Northern Waterthrush,
+23,6770,ground glean,insectivore,Kentucky Warbler,Connecticut Warbler,
+24,6780,ground glean,insectivore,Connecticut Warbler,Swainson's Warbler,E
+24,6780,ground glean,insectivore,Connecticut Warbler,Palm Warbler,NE
+24,6780,ground glean,insectivore,Connecticut Warbler,Northern Waterthrush,
+24,6780,ground glean,insectivore,Connecticut Warbler,Louisiana Waterthrush,
+24,6780,ground glean,insectivore,Connecticut Warbler,Kentucky Warbler,
 12,6540,hover/glean,insectivore,Black-throated Blue Warbler,Magnolia Warbler,
 12,6540,hover/glean,insectivore,Black-throated Blue Warbler,Canada Warbler,
 12,6540,hover/glean,insectivore,Black-throated Blue Warbler,American Redstart,
