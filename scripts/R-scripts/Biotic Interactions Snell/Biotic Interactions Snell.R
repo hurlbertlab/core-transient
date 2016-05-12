@@ -320,3 +320,12 @@ pchisq(LR, 1, lower = FALSE)
 
 ttable = read.csv("trophic_table.csv", header = TRUE)
 ttable2 = merge(ttable, Hurlbert_o, by = "AOU")
+write.csv(ttable2, "warbler_all.csv")
+  
+  
+warblers = read.csv("focal_warblers.csv", header = TRUE)
+warblertable = merge(ttable2, warblers, by = "AOU")
+write.csv(warblertable, "warblers.csv")
+
+
+
