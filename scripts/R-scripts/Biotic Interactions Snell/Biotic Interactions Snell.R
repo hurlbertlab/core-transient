@@ -11,6 +11,7 @@ library(plyr)
 Hurlbert_o = read.csv('Master_RO_Correlates_20110610.csv', header = T)
 # subset species whose occupancies were between 0.3 and 0.7 over a 10 year period
 subsetocc = Hurlbert_o[Hurlbert_o$X10yr.Prop > .3 & Hurlbert_o$X10yr.Prop < .7,]
+# write.csv(subsetocc, "focal.csv")
 # compare green-tailed towhee to spotted towhee occupancies
 towhees = subsetocc[subsetocc$CommonName == "Spotted Towhee"| subsetocc$CommonName == "Green-tailed Towhee",]
 
@@ -310,4 +311,21 @@ d1 = deviance(glm_abundance_rand_site)
 
 LR = d0- d1
 pchisq(LR, 1, lower = FALSE)
+
+
+
+
+
+
+
+ttable = read.csv("trophic_table.csv", header = TRUE)
+ttable2 = merge(ttable, Hurlbert_o, by = "AOU")
+write.csv(ttable2, "warbler_all.csv")
+  
+  
+warblers = read.csv("focal_warblers.csv", header = TRUE)
+warblertable = merge(ttable2, warblers, by = "AOU")
+write.csv(warblertable, "warblers.csv")
+
+
 
