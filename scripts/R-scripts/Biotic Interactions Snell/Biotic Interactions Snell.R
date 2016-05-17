@@ -327,5 +327,6 @@ warblers = read.csv("focal_warblers.csv", header = TRUE)
 warblertable = merge(ttable2, warblers, by = "AOU")
 write.csv(warblertable, "warblers.csv")
 
-
-
+focal_competitor_table = read.csv("focal spp.csv", header = TRUE)
+AOU = read.csv("Bird_Taxonomy.csv", header = TRUE)
+comp_AOU = merge(focal_competitor_table, AOU, by.x = "Competitor", by.y = "PRIMARY_COM_NAME", na.rm = FALSE)
