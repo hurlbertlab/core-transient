@@ -328,5 +328,15 @@ warblertable = merge(ttable2, warblers, by = "AOU")
 write.csv(warblertable, "warblers.csv")
 
 focal_competitor_table = read.csv("focal spp.csv", header = TRUE)
+focal_competitor_table = data.frame(focal_competitor_table$AOU, focal_competitor_table$CommonName, focal_competitor_table$Competitor)
+focal_competitor_table = rename(focal_competitor_table, c("focal_competitor_table.AOU" = "focalAOU", "focal_competitor_table.CommonName" = "Focal", "focal_competitor_table.Competitor" = "Competitor"))
+
 AOU = read.csv("Bird_Taxonomy.csv", header = TRUE)
-comp_AOU = merge(focal_competitor_table, AOU, by.x = "Competitor", by.y = "PRIMARY_COM_NAME", na.rm = FALSE)
+AOU2 = data.frame(AOU$SCI_NAME, AOU$AOU_OUT, AOU$PRIMARY_COM_NAME)
+AOU2 = rename(AOU2, c("AOU.SCI_NAME" = "Sci Name", "AOU.AOU_OUT" = "CompetitorAOU", "AOU.PRIMARY_COM_NAME" = "Competitor"))
+AOU2 = unique(AOU2)
+### grep " X " and grep " (" to eliminate hybrids
+
+comp_AOU = merge(focal_competitor_table, AOU2, by = "Competitor")
+comp_AOU = data.frame(comp_AOU$Competitor, comp_AOU$AOU, comp_AOU$CommonName, comp_AOU$SCI_NAME, comp_AOU$AOU_OUT)
+comp_AOU$CompetitorAOU = comp_AOU$comp_AOU.AOU_OUT
