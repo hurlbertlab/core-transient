@@ -1,286 +1,19 @@
 SubsetSppID,AOU,CommonName,Competitor
-1,2881,Gray Partridge,Ring-necked Pheasant
-1,2881,Gray Partridge,Ruffed Grouse
-1,2881,Gray Partridge,Spruce Grouse
-2,2920,Mountain Quail,California Quail
-3,3000,Ruffed Grouse,Spruce Grouse
-3,3000,Ruffed Grouse,Gray Partridge
-4,3091,Ring-necked Pheasant,Gray Partridge
-4,3091,Ring-necked Pheasant,Wild Turkey
-5,3100,Wild Turkey,Ring-necked Pheasant
-6,3120,Band-tailed Pigeon,Rock Pigeon
-6,3120,Band-tailed Pigeon,Mourning Dove
-7,3210,Inca Dove,White-winged Dove
-7,3210,Inca Dove,Mourning Dove
-7,3210,Inca Dove,Common Ground-Dove
-9,3880,Black-billed Cuckoo,Yellow-billed Cuckoo
-10,4021,Red-naped Sapsucker,Williamson's Sapsucker
-11,4030,Red-breasted Sapsucker,Nuttall's Woodpecker
-11,4030,Red-breasted Sapsucker,Acorn Woodpecker
-12,4060,Red-headed Woodpecker,Red-bellied Woodpecker
-12,4060,Red-headed Woodpecker,Northern Flicker
-13,4070,Acorn Woodpecker,Acorn Woodpecker
+27,4650,Acadian Flycatcher,Eastern Wood-Pewee
 13,4070,Acorn Woodpecker,Nuttall's Woodpecker
-14,4240,Vaux's Swift,Black Swift
-15,4290,Black-chinned Hummingbird,Broad-tailed Hummingbird
+29,4661,Alder Flycatcher,Olive-sided Flycatcher
+30,6870,American Redstart,Black-throated Blue Warbler
+30,6870,American Redstart,Magnolia Warbler
+30,6870,American Redstart,Canada Warbler
 16,4310,Anna's Hummingbird,Allen's Hummingbird
-17,4320,Broad-tailed Hummingbird,Black-chinned Hummingbird
-18,4330,Rufous Hummingbird,Calliope Hummingbird
-19,4360,Calliope Hummingbird,Rufous Hummingbird
-20,4480,Cassin's Kingbird,Ash-throated Flycatcher
-21,4530,Brown-crested Flycatcher,Dusky-capped Flycatcher
 22,4540,Ash-throated Flycatcher,Cassin's Kingbird
 22,4540,Ash-throated Flycatcher,Say's Phoebe
-23,4570,Say's Phoebe,Western Kingbird
-23,4570,Say's Phoebe,Ash-throated Flycatcher
-24,4580,Black Phoebe,Vermilion Flycatcher
-25,4590,Olive-sided Flycatcher,Western Wood-Pewee
-25,4590,Olive-sided Flycatcher,Western Kingbird
-26,4640,Cordilleran Flycatcher,Gray Flycatcher
-26,4640,Cordilleran Flycatcher,Hammond's Flycatcher
-27,4650,Acadian Flycatcher,Eastern Wood-Pewee
-28,4660,Willow Flycatcher,Alder Flycatcher
-29,4661,Alder Flycatcher,Olive-sided Flycatcher
-30,4680,Hammond's Flycatcher,Cordilleran Flycatcher
-30,4680,Hammond's Flycatcher,Dusky Flycatcher
-31,4690,Dusky Flycatcher,Hammond's Flycatcher
-31,4690,Dusky Flycatcher,Gray Flycatcher
-32,4691,Gray Flycatcher,Cordilleran Flycatcher
-32,4691,Gray Flycatcher,Dusky Flycatcher
-33,4710,Vermilion Flycatcher,Black Phoebe
-34,4740,Horned Lark,Barn Swallow
-34,4740,Horned Lark,Cliff Swallow
-35,4760,Yellow-billed Magpie,Western Scrub-Jay
-35,4760,Yellow-billed Magpie,American Crow
-36,4780,Steller's Jay,Western Scrub-Jay
-36,4780,Steller's Jay,Gray Jay
-37,4810,Western Scrub-Jay,Yellow-billed Magpie
-37,4810,Western Scrub-Jay,Steller's Jay
-38,4840,Gray Jay,Steller's Jay
-38,4840,Gray Jay,Clark's Nutcracker
-39,4870,Chihuahuan Raven,Common Raven
-40,4890,Northwestern Crow,Common Raven
-40,4890,Northwestern Crow,Black-billed Magpie
-41,4910,Clark's Nutcracker,Gray Jay
-42,4920,Pinyon Jay,Black-billed Magpie
-43,4970,Yellow-headed Blackbird,Red-winged Blackbird
-44,5040,Scott's Oriole,Bullock's Oriole
-44,5040,Scott's Oriole,Hooded Oriole
-45,5050,Hooded Oriole,Scott's Oriole
-45,5050,Hooded Oriole,Bullock's Oriole
-46,5120,Great-tailed Grackle,Brown-headed Cowbird
-46,5120,Great-tailed Grackle,Red-winged Blackbird
-47,5140,Evening Grosbeak,American Goldfinch
-48,5180,Cassin's Finch,House Finch
-49,5210,Red Crossbill,White-winged Crossbill
-49,5210,Red Crossbill,Purple Finch
-50,5220,White-winged Crossbill,Red Crossbill
-50,5220,White-winged Crossbill,Purple Finch
-51,5300,Lesser Goldfinch,House Finch
-51,5300,Lesser Goldfinch,Pine Siskin
-52,5330,Pine Siskin,Lesser Goldfinch
-52,5330,Pine Siskin,Red Crossbill
-53,5380,Chestnut-collared Longspur,McCown's Longspur
-53,5380,Chestnut-collared Longspur,Lark Bunting
-54,5400,Vesper Sparrow,Song Sparrow
-54,5400,Vesper Sparrow,Brewer's Sparrow
-54,5400,Vesper Sparrow,Sprague's Pipit
 55,5450,Baird's Sparrow,Grasshopper Sparrow
 55,5450,Baird's Sparrow,Lark Sparrow
-56,5460,Grasshopper Sparrow,Baird's Sparrow
-56,5460,Grasshopper Sparrow,Chipping Sparrow
-57,5480,Le Conte's Sparrow,Savannah Sparrow
-57,5480,Le Conte's Sparrow,Chipping Sparrow
-58,5491,Nelson's Sharp-tailed Sparrow,Le Conte's Sparrow
-58,5491,Nelson's Sharp-tailed Sparrow,Chipping Sparrow
-59,5520,Lark Sparrow,Baird's Sparrow
-59,5520,Lark Sparrow,Chipping Sparrow
-59,5520,Lark Sparrow,Brewer's Sparrow
-60,5540,White-crowned Sparrow,Golden-crowned Sparrow
-60,5540,White-crowned Sparrow,Lincoln's Sparrow
-60,5540,White-crowned Sparrow,Fox Sparrow
-61,5570,Golden-crowned Sparrow,White-crowned Sparrow
-61,5570,Golden-crowned Sparrow,Lincoln's Sparrow
-62,5620,Brewer's Sparrow,Lark Sparrow
-62,5620,Brewer's Sparrow,Vesper Sparrow
-63,5650,Black-chinned Sparrow,Rufous-crowned Sparrow
-63,5650,Black-chinned Sparrow,Black-throated Sparrow
-64,5660,Dark-eyed Junco,Song Sparrow
-64,5660,Dark-eyed Junco,Savannah Sparrow
-65,5730,Black-throated Sparrow,Black-chinned Sparrow
-65,5730,Black-throated Sparrow,Rufous-crowned Sparrow
-66,5740,Sage Sparrow,Song Sparrow
-67,5800,Rufous-crowned Sparrow,Black-chinned Sparrow
-68,5830,Lincoln's Sparrow,Golden-crowned Sparrow
-68,5830,Lincoln's Sparrow,White-crowned Sparrow
-68,5830,Lincoln's Sparrow,Swamp Sparrow
-68,5830,Lincoln's Sparrow,Fox Sparrow
-69,5840,Swamp Sparrow,Lincoln's Sparrow
-69,5840,Swamp Sparrow,White-throated Sparrow
-70,5850,Fox Sparrow,Lincoln's Sparrow
-70,5850,Fox Sparrow,White-crowned Sparrow
-71,5880,Spotted Towhee,Green-tailed Towhee
-72,5900,Green-tailed Towhee,Spotted Towhee
-73,5911,California Towhee,Spotted Towhee
-74,5940,Pyrrhuloxia,Northern Cardinal
-74,5940,Pyrrhuloxia,Blue Grosbeak
-75,5990,Lazuli Bunting,Black-headed Grosbeak
-76,6050,Lark Bunting,Chestnut-collared Longspur
-76,6050,Lark Bunting,Grasshopper Sparrow
-76,6050,Lark Bunting,Lark Sparrow
-76,6050,Lark Bunting,Brewer's Sparrow
-78,6150,Violet-green Swallow,Northern Rough-winged Swallow
-78,6150,Violet-green Swallow,Barn Swallow
+6,3120,Band-tailed Pigeon,Rock Pigeon
+6,3120,Band-tailed Pigeon,Mourning Dove
 79,6160,Bank Swallow,Cliff Swallow
 79,6160,Bank Swallow,Tree Swallow
-81,6220,Loggerhead Shrike,American Kestrel
-82,6260,Philadelphia Vireo,Blue-headed Vireo
-82,6260,Philadelphia Vireo,Red-eyed Vireo
-83,6291,Plumbeous Vireo,Warbling Vireo
-84,6292,Cassin's Vireo,Warbling Vireo
-84,6292,Cassin's Vireo,Hutton's Vireo
-85,6320,Hutton's Vireo,Cassin's Vireo
-85,6320,Hutton's Vireo,Warbling Vireo
-86,6330,Bell's Vireo,Warbling Vireo
-86,6330,Bell's Vireo,Yellow-throated Vireo
-118,7000,Sprague's Pipit,Vesper Sparrow
-119,7020,Sage Thrasher,Northern Mockingbird
-119,7020,Sage Thrasher,Bendire's Thrasher
-120,7030,Northern Mockingbird,Gray Catbird
-120,7030,Northern Mockingbird,Brown Thrasher
-120,7030,Northern Mockingbird,Sage Thrasher
-120,7030,Northern Mockingbird,Phainopepla
-120,7030,Northern Mockingbird,Loggerhead Shrike
-120,7030,Northern Mockingbird,Bendire's Thrasher
-120,7030,Northern Mockingbird,California Thrasher
-121,7080,Bendire's Thrasher,Crissal Thrasher
-121,7080,Bendire's Thrasher,Northern Mockingbird
-122,7100,California Thrasher,Northern Mockingbird
-123,7150,Rock Wren,Bewick's Wren
-123,7150,Rock Wren,House Wren
-124,7190,Bewick's Wren,Rock Wren
-124,7190,Bewick's Wren,House Wren
-125,7220,Winter Wren,House Wren
-125,7220,Winter Wren,Marsh Wren
-125,7220,Winter Wren,Sedge Wren
-126,7240,Sedge Wren,Winter Wren
-126,7240,Sedge Wren,House Wren
-127,7260,Brown Creeper,Red-breasted Nuthatch
-127,7260,Brown Creeper,White-breasted Nuthatch
-128,7280,Red-breasted Nuthatch,Brown Creeper
-128,7280,Red-breasted Nuthatch,White-breasted Nuthatch
-129,7331,Juniper Titmouse,Mountain Chickadee
-130,7380,Mountain Chickadee,Juniper Titmouse
-131,7400,Boreal Chickadee,Black-capped Chickadee
-132,7410,Chestnut-backed Chickadee,Oak Titmouse
-132,7410,Chestnut-backed Chickadee,Bushtit
-133,7420,Wrentit,Oak Titmouse
-133,7420,Wrentit,Bushtit
-134,7430,Bushtit,Chestnut-backed Chickadee
-134,7430,Bushtit,Oak Titmouse
-134,7430,Bushtit,Bushtit
-135,7480,Golden-crowned Kinglet,Ruby-crowned Kinglet
-136,7490,Ruby-crowned Kinglet,Golden-crowned Kinglet
-137,7520,Black-tailed Gnatcatcher,Blue-gray Gnatcatcher
-138,7540,Townsend's Solitaire,Mountain Bluebird
-138,7540,Townsend's Solitaire,Hermit Thrush
-139,7580,Swainson's Thrush,Hermit Thrush
-140,7590,Hermit Thrush,Townsend's Solitaire
-140,7590,Hermit Thrush,Swainson's Thrush
-141,7630,Varied Thrush,Gray-cheeked Thrush
-141,7630,Varied Thrush,Swainson's Thrush
-141,7630,Varied Thrush,Hermit Thrush
-142,7670,Western Bluebird,Hermit Thrush
-142,7670,Western Bluebird,American Robin
-143,7680,Mountain Bluebird,Townsend's Solitaire
-143,7680,Mountain Bluebird,American Robin
-1,6360,Black-and-white Warbler,Prothonotary Warbler
-1,6360,Black-and-white Warbler,Yellow-throated Warbler
-1,6360,Black-and-white Warbler,Pine Warbler
-2,6370,Prothonotary Warbler,Yellow-throated Warbler
-2,6370,Prothonotary Warbler,Black-and-white Warbler
-2,6370,Prothonotary Warbler,Pine Warbler
-17,6630,Yellow-throated Warbler,Black-and-white Warbler
-17,6630,Yellow-throated Warbler,Prothonotary Warbler
-17,6630,Yellow-throated Warbler,Pine Warbler
-4,6390,Worm-eating Warbler,Blue-winged Warbler
-4,6390,Worm-eating Warbler,Pine Warbler
-4,6390,Worm-eating Warbler,Northern Parula
-4,6390,Worm-eating Warbler,Prairie Warbler
-4,6390,Worm-eating Warbler,Yellow Warbler
-4,6390,Worm-eating Warbler,Common Yellowthroat
-4,6390,Worm-eating Warbler,Yellow-breasted Chat
-4,6390,Worm-eating Warbler,Hooded Warbler
-5,6410,Blue-winged Warbler,Worm-eating Warbler
-5,6410,Blue-winged Warbler,Pine Warbler
-5,6410,Blue-winged Warbler,Northern Parula
-5,6410,Blue-winged Warbler,Prairie Warbler
-5,6410,Blue-winged Warbler,Yellow Warbler
-5,6410,Blue-winged Warbler,Common Yellowthroat
-5,6410,Blue-winged Warbler,Yellow-breasted Chat
-5,6410,Blue-winged Warbler,Hooded Warbler
-6,6430,Lucy's Warbler,Yellow Warbler
-6,6430,Lucy's Warbler,Painted Redstart
-6,6430,Lucy's Warbler,Grace's Warbler
-6,6430,Lucy's Warbler,Black-throated Gray Warbler
-6,6430,Lucy's Warbler,Yellow-breasted Chat
-6,6430,Lucy's Warbler,Red-faced Warbler
-8,6450,Nashville Warbler,Orange-crowned Warbler
-8,6450,Nashville Warbler,Tennessee Warbler
-8,6450,Nashville Warbler,Cape May Warbler
-8,6450,Nashville Warbler,Bay-breasted Warbler
-8,6450,Nashville Warbler,Blackpoll Warbler
-8,6450,Nashville Warbler,Blackburnian Warbler
-8,6450,Nashville Warbler,Common Yellowthroat
-8,6450,Nashville Warbler,Yellow Warbler
-8,6450,Nashville Warbler,Yellow-rumped Warbler
-8,6450,Nashville Warbler,Chestnut-sided Warbler
-8,6450,Nashville Warbler,Wilson's Warbler
-8,6450,Nashville Warbler,Black-throated Green Warbler
-8,6450,Nashville Warbler,Townsend's Warbler
-8,6450,Nashville Warbler,Mourning Warbler
-9,6460,Orange-crowned Warbler,Virginia's Warbler
-9,6460,Orange-crowned Warbler,Tennessee Warbler
-9,6460,Orange-crowned Warbler,Cape May Warbler
-9,6460,Orange-crowned Warbler,Bay-breasted Warbler
-9,6460,Orange-crowned Warbler,Blackpoll Warbler
-9,6460,Orange-crowned Warbler,Blackburnian Warbler
-9,6460,Orange-crowned Warbler,Common Yellowthroat
-9,6460,Orange-crowned Warbler,Yellow Warbler
-9,6460,Orange-crowned Warbler,Yellow-rumped Warbler
-9,6460,Orange-crowned Warbler,Chestnut-sided Warbler
-9,6460,Orange-crowned Warbler,Wilson's Warbler
-9,6460,Orange-crowned Warbler,Black-throated Green Warbler
-9,6460,Orange-crowned Warbler,Townsend's Warbler
-9,6460,Orange-crowned Warbler,Mourning Warbler
-10,6470,Tennessee Warbler,Orange-crowned Warbler
-10,6470,Tennessee Warbler,Nashville Warbler
-10,6470,Tennessee Warbler,Cape May Warbler
-10,6470,Tennessee Warbler,Bay-breasted Warbler
-10,6470,Tennessee Warbler,Blackpoll Warbler
-10,6470,Tennessee Warbler,Blackburnian Warbler
-10,6470,Tennessee Warbler,Common Yellowthroat
-10,6470,Tennessee Warbler,Yellow Warbler
-10,6470,Tennessee Warbler,Yellow-rumped Warbler
-10,6470,Tennessee Warbler,Chestnut-sided Warbler
-10,6470,Tennessee Warbler,Wilson's Warbler
-10,6470,Tennessee Warbler,Black-throated Green Warbler
-10,6470,Tennessee Warbler,Townsend's Warbler
-10,6470,Tennessee Warbler,Mourning Warbler
-11,6500,Cape May Warbler,Tennessee Warbler
-11,6500,Cape May Warbler,Orange-crowned Warbler
-11,6500,Cape May Warbler,Nashville Warbler
-11,6500,Cape May Warbler,Bay-breasted Warbler
-11,6500,Cape May Warbler,Blackpoll Warbler
-11,6500,Cape May Warbler,Blackburnian Warbler
-11,6500,Cape May Warbler,Common Yellowthroat
-11,6500,Cape May Warbler,Yellow Warbler
-11,6500,Cape May Warbler,Yellow-rumped Warbler
-11,6500,Cape May Warbler,Chestnut-sided Warbler
-11,6500,Cape May Warbler,Wilson's Warbler
-11,6500,Cape May Warbler,Black-throated Green Warbler
-11,6500,Cape May Warbler,Townsend's Warbler
-11,6500,Cape May Warbler,Mourning Warbler
 14,6600,Bay-breasted Warbler,Tennessee Warbler
 14,6600,Bay-breasted Warbler,Orange-crowned Warbler
 14,6600,Bay-breasted Warbler,Nashville Warbler
@@ -295,20 +28,17 @@ SubsetSppID,AOU,CommonName,Competitor
 14,6600,Bay-breasted Warbler,Black-throated Green Warbler
 14,6600,Bay-breasted Warbler,Townsend's Warbler
 14,6600,Bay-breasted Warbler,Mourning Warbler
-15,6610,Blackpoll Warbler,Bay-breasted Warbler
-15,6610,Blackpoll Warbler,Tennessee Warbler
-15,6610,Blackpoll Warbler,Orange-crowned Warbler
-15,6610,Blackpoll Warbler,Nashville Warbler
-15,6610,Blackpoll Warbler,Cape May Warbler
-15,6610,Blackpoll Warbler,Blackburnian Warbler
-15,6610,Blackpoll Warbler,Common Yellowthroat
-15,6610,Blackpoll Warbler,Yellow Warbler
-15,6610,Blackpoll Warbler,Yellow-rumped Warbler
-15,6610,Blackpoll Warbler,Chestnut-sided Warbler
-15,6610,Blackpoll Warbler,Wilson's Warbler
-15,6610,Blackpoll Warbler,Black-throated Green Warbler
-15,6610,Blackpoll Warbler,Townsend's Warbler
-15,6610,Blackpoll Warbler,Mourning Warbler
+86,6330,Bell's Vireo,Warbling Vireo
+86,6330,Bell's Vireo,Yellow-throated Vireo
+121,7080,Bendire's Thrasher,Crissal Thrasher
+121,7080,Bendire's Thrasher,Northern Mockingbird
+124,7190,Bewick's Wren,Rock Wren
+124,7190,Bewick's Wren,House Wren
+24,4580,Black Phoebe,Vermilion Flycatcher
+1,6360,Black-and-white Warbler,Prothonotary Warbler
+1,6360,Black-and-white Warbler,Yellow-throated Warbler
+1,6360,Black-and-white Warbler,Pine Warbler
+9,3880,Black-billed Cuckoo,Yellow-billed Cuckoo
 16,6620,Blackburnian Warbler,Blackpoll Warbler
 16,6620,Blackburnian Warbler,Bay-breasted Warbler
 16,6620,Blackburnian Warbler,Tennessee Warbler
@@ -323,12 +53,116 @@ SubsetSppID,AOU,CommonName,Competitor
 16,6620,Blackburnian Warbler,Black-throated Green Warbler
 16,6620,Blackburnian Warbler,Townsend's Warbler
 16,6620,Blackburnian Warbler,Mourning Warbler
+15,4290,Black-chinned Hummingbird,Broad-tailed Hummingbird
+63,5650,Black-chinned Sparrow,Rufous-crowned Sparrow
+63,5650,Black-chinned Sparrow,Black-throated Sparrow
+15,6610,Blackpoll Warbler,Bay-breasted Warbler
+15,6610,Blackpoll Warbler,Tennessee Warbler
+15,6610,Blackpoll Warbler,Orange-crowned Warbler
+15,6610,Blackpoll Warbler,Nashville Warbler
+15,6610,Blackpoll Warbler,Cape May Warbler
+15,6610,Blackpoll Warbler,Blackburnian Warbler
+15,6610,Blackpoll Warbler,Common Yellowthroat
+15,6610,Blackpoll Warbler,Yellow Warbler
+15,6610,Blackpoll Warbler,Yellow-rumped Warbler
+15,6610,Blackpoll Warbler,Chestnut-sided Warbler
+15,6610,Blackpoll Warbler,Wilson's Warbler
+15,6610,Blackpoll Warbler,Black-throated Green Warbler
+15,6610,Blackpoll Warbler,Townsend's Warbler
+15,6610,Blackpoll Warbler,Mourning Warbler
+137,7520,Black-tailed Gnatcatcher,Blue-gray Gnatcatcher
+12,6540,Black-throated Blue Warbler,Magnolia Warbler
+12,6540,Black-throated Blue Warbler,Canada Warbler
+12,6540,Black-throated Blue Warbler,American Redstart
 18,6650,Black-throated Gray Warbler,Lucy's Warbler
 18,6650,Black-throated Gray Warbler,Yellow Warbler
 18,6650,Black-throated Gray Warbler,Painted Redstart
 18,6650,Black-throated Gray Warbler,Grace's Warbler
-18,6650,Black-throated Gray Warbler,Black-throated Gray Warbler
 18,6650,Black-throated Gray Warbler,Yellow-breasted Chat
+65,5730,Black-throated Sparrow,Black-chinned Sparrow
+65,5730,Black-throated Sparrow,Rufous-crowned Sparrow
+5,6410,Blue-winged Warbler,Worm-eating Warbler
+5,6410,Blue-winged Warbler,Pine Warbler
+5,6410,Blue-winged Warbler,Northern Parula
+5,6410,Blue-winged Warbler,Prairie Warbler
+5,6410,Blue-winged Warbler,Yellow Warbler
+5,6410,Blue-winged Warbler,Common Yellowthroat
+5,6410,Blue-winged Warbler,Yellow-breasted Chat
+5,6410,Blue-winged Warbler,Hooded Warbler
+131,7400,Boreal Chickadee,Black-capped Chickadee
+62,5620,Brewer's Sparrow,Lark Sparrow
+62,5620,Brewer's Sparrow,Vesper Sparrow
+17,4320,Broad-tailed Hummingbird,Black-chinned Hummingbird
+127,7260,Brown Creeper,Red-breasted Nuthatch
+127,7260,Brown Creeper,White-breasted Nuthatch
+21,4530,Brown-crested Flycatcher,Dusky-capped Flycatcher
+134,7430,Bushtit,Chestnut-backed Chickadee
+134,7430,Bushtit,Oak Titmouse
+134,7430,Bushtit,Bushtit
+122,7100,California Thrasher,Northern Mockingbird
+73,5911,California Towhee,Spotted Towhee
+19,4360,Calliope Hummingbird,Rufous Hummingbird
+29,6860,Canada Warbler,Black-throated Blue Warbler
+29,6860,Canada Warbler,Magnolia Warbler
+29,6860,Canada Warbler,American Redstart
+11,6500,Cape May Warbler,Tennessee Warbler
+11,6500,Cape May Warbler,Orange-crowned Warbler
+11,6500,Cape May Warbler,Nashville Warbler
+11,6500,Cape May Warbler,Bay-breasted Warbler
+11,6500,Cape May Warbler,Blackpoll Warbler
+11,6500,Cape May Warbler,Blackburnian Warbler
+11,6500,Cape May Warbler,Common Yellowthroat
+11,6500,Cape May Warbler,Yellow Warbler
+11,6500,Cape May Warbler,Yellow-rumped Warbler
+11,6500,Cape May Warbler,Chestnut-sided Warbler
+11,6500,Cape May Warbler,Wilson's Warbler
+11,6500,Cape May Warbler,Black-throated Green Warbler
+11,6500,Cape May Warbler,Townsend's Warbler
+11,6500,Cape May Warbler,Mourning Warbler
+48,5180,Cassin's Finch,House Finch
+20,4480,Cassin's Kingbird,Ash-throated Flycatcher
+84,6292,Cassin's Vireo,Warbling Vireo
+84,6292,Cassin's Vireo,Hutton's Vireo
+132,7410,Chestnut-backed Chickadee,Oak Titmouse
+132,7410,Chestnut-backed Chickadee,Bushtit
+53,5380,Chestnut-collared Longspur,McCown's Longspur
+53,5380,Chestnut-collared Longspur,Lark Bunting
+39,4870,Chihuahuan Raven,Common Raven
+41,4910,Clark's Nutcracker,Gray Jay
+24,6780,Connecticut Warbler,Swainson's Warbler
+24,6780,Connecticut Warbler,Palm Warbler
+24,6780,Connecticut Warbler,Northern Waterthrush
+24,6780,Connecticut Warbler,Louisiana Waterthrush
+24,6780,Connecticut Warbler,Kentucky Warbler
+24,6780,Connecticut Warbler,Ovenbird
+26,4640,Cordilleran Flycatcher,Gray Flycatcher
+26,4640,Cordilleran Flycatcher,Hammond's Flycatcher
+64,5660,Dark-eyed Junco,Song Sparrow
+64,5660,Dark-eyed Junco,Savannah Sparrow
+31,4690,Dusky Flycatcher,Hammond's Flycatcher
+31,4690,Dusky Flycatcher,Gray Flycatcher
+47,5140,Evening Grosbeak,American Goldfinch
+70,5850,Fox Sparrow,Lincoln's Sparrow
+70,5850,Fox Sparrow,White-crowned Sparrow
+135,7480,Golden-crowned Kinglet,Ruby-crowned Kinglet
+61,5570,Golden-crowned Sparrow,White-crowned Sparrow
+61,5570,Golden-crowned Sparrow,Lincoln's Sparrow
+56,5460,Grasshopper Sparrow,Baird's Sparrow
+56,5460,Grasshopper Sparrow,Chipping Sparrow
+32,4691,Gray Flycatcher,Cordilleran Flycatcher
+32,4691,Gray Flycatcher,Dusky Flycatcher
+38,4840,Gray Jay,Steller's Jay
+38,4840,Gray Jay,Clark's Nutcracker
+1,2881,Gray Partridge,Ring-necked Pheasant
+1,2881,Gray Partridge,Ruffed Grouse
+1,2881,Gray Partridge,Spruce Grouse
+46,5120,Great-tailed Grackle,Brown-headed Cowbird
+46,5120,Great-tailed Grackle,Red-winged Blackbird
+72,5900,Green-tailed Towhee,Spotted Towhee
+30,4680,Hammond's Flycatcher,Cordilleran Flycatcher
+30,4680,Hammond's Flycatcher,Dusky Flycatcher
+140,7590,Hermit Thrush,Townsend's Solitaire
+140,7590,Hermit Thrush,Swainson's Thrush
 19,6690,Hermit Warbler,Yellow-breasted Chat
 19,6690,Hermit Warbler,Black-throated Gray Warbler
 19,6690,Hermit Warbler,Townsend's Warbler
@@ -336,6 +170,68 @@ SubsetSppID,AOU,CommonName,Competitor
 19,6690,Hermit Warbler,Yellow Warbler
 19,6690,Hermit Warbler,Yellow-rumped Warbler
 19,6690,Hermit Warbler,MacGillivray's Warbler
+45,5050,Hooded Oriole,Scott's Oriole
+45,5050,Hooded Oriole,Bullock's Oriole
+28,6840,Hooded Warbler,Yellow-breasted Chat
+28,6840,Hooded Warbler,Prairie Warbler
+28,6840,Hooded Warbler,Common Yellowthroat
+34,4740,Horned Lark,Barn Swallow
+34,4740,Horned Lark,Cliff Swallow
+85,6320,Hutton's Vireo,Cassin's Vireo
+85,6320,Hutton's Vireo,Warbling Vireo
+7,3210,Inca Dove,White-winged Dove
+7,3210,Inca Dove,Mourning Dove
+7,3210,Inca Dove,Common Ground-Dove
+129,7331,Juniper Titmouse,Mountain Chickadee
+23,6770,Kentucky Warbler,Swainson's Warbler
+23,6770,Kentucky Warbler,Palm Warbler
+23,6770,Kentucky Warbler,Louisiana Waterthrush
+23,6770,Kentucky Warbler,Northern Waterthrush
+23,6770,Kentucky Warbler,Connecticut Warbler
+23,6770,Kentucky Warbler,Ovenbird
+76,6050,Lark Bunting,Chestnut-collared Longspur
+76,6050,Lark Bunting,Grasshopper Sparrow
+76,6050,Lark Bunting,Lark Sparrow
+76,6050,Lark Bunting,Brewer's Sparrow
+59,5520,Lark Sparrow,Baird's Sparrow
+59,5520,Lark Sparrow,Chipping Sparrow
+59,5520,Lark Sparrow,Brewer's Sparrow
+75,5990,Lazuli Bunting,Black-headed Grosbeak
+57,5480,Le Conte's Sparrow,Savannah Sparrow
+57,5480,Le Conte's Sparrow,Chipping Sparrow
+51,5300,Lesser Goldfinch,House Finch
+51,5300,Lesser Goldfinch,Pine Siskin
+68,5830,Lincoln's Sparrow,Golden-crowned Sparrow
+68,5830,Lincoln's Sparrow,White-crowned Sparrow
+68,5830,Lincoln's Sparrow,Swamp Sparrow
+68,5830,Lincoln's Sparrow,Fox Sparrow
+81,6220,Loggerhead Shrike,American Kestrel
+22,6760,Louisiana Waterthrush,Swainson's Warbler
+22,6760,Louisiana Waterthrush,Palm Warbler
+22,6760,Louisiana Waterthrush,Northern Waterthrush
+22,6760,Louisiana Waterthrush,Kentucky Warbler
+22,6760,Louisiana Waterthrush,Connecticut Warbler
+22,6760,Louisiana Waterthrush,Ovenbird
+6,6430,Lucy's Warbler,Yellow Warbler
+6,6430,Lucy's Warbler,Painted Redstart
+6,6430,Lucy's Warbler,Grace's Warbler
+6,6430,Lucy's Warbler,Black-throated Gray Warbler
+6,6430,Lucy's Warbler,Yellow-breasted Chat
+6,6430,Lucy's Warbler,Red-faced Warbler
+26,6800,MacGillivray's Warbler,Hermit Warbler
+26,6800,MacGillivray's Warbler,Yellow-breasted Chat
+26,6800,MacGillivray's Warbler,Black-throated Gray Warbler
+26,6800,MacGillivray's Warbler,Townsend's Warbler
+26,6800,MacGillivray's Warbler,Common Yellowthroat
+26,6800,MacGillivray's Warbler,Yellow Warbler
+26,6800,MacGillivray's Warbler,Yellow-rumped Warbler
+13,6570,Magnolia Warbler,Black-throated Blue Warbler
+13,6570,Magnolia Warbler,Canada Warbler
+13,6570,Magnolia Warbler,American Redstart
+143,7680,Mountain Bluebird,Townsend's Solitaire
+143,7680,Mountain Bluebird,American Robin
+130,7380,Mountain Chickadee,Juniper Titmouse
+2,2920,Mountain Quail,California Quail
 25,6790,Mourning Warbler,Blackburnian Warbler
 25,6790,Mourning Warbler,Blackpoll Warbler
 25,6790,Mourning Warbler,Bay-breasted Warbler
@@ -350,13 +246,166 @@ SubsetSppID,AOU,CommonName,Competitor
 25,6790,Mourning Warbler,Wilson's Warbler
 25,6790,Mourning Warbler,Black-throated Green Warbler
 25,6790,Mourning Warbler,Townsend's Warbler
-26,6800,MacGillivray's Warbler,Hermit Warbler
-26,6800,MacGillivray's Warbler,Yellow-breasted Chat
-26,6800,MacGillivray's Warbler,Black-throated Gray Warbler
-26,6800,MacGillivray's Warbler,Townsend's Warbler
-26,6800,MacGillivray's Warbler,Common Yellowthroat
-26,6800,MacGillivray's Warbler,Yellow Warbler
-26,6800,MacGillivray's Warbler,Yellow-rumped Warbler
+8,6450,Nashville Warbler,Orange-crowned Warbler
+8,6450,Nashville Warbler,Tennessee Warbler
+8,6450,Nashville Warbler,Cape May Warbler
+8,6450,Nashville Warbler,Bay-breasted Warbler
+8,6450,Nashville Warbler,Blackpoll Warbler
+8,6450,Nashville Warbler,Blackburnian Warbler
+8,6450,Nashville Warbler,Common Yellowthroat
+8,6450,Nashville Warbler,Yellow Warbler
+8,6450,Nashville Warbler,Yellow-rumped Warbler
+8,6450,Nashville Warbler,Chestnut-sided Warbler
+8,6450,Nashville Warbler,Wilson's Warbler
+8,6450,Nashville Warbler,Black-throated Green Warbler
+8,6450,Nashville Warbler,Townsend's Warbler
+8,6450,Nashville Warbler,Mourning Warbler
+58,5491,Nelson's Sharp-tailed Sparrow,Le Conte's Sparrow
+58,5491,Nelson's Sharp-tailed Sparrow,Chipping Sparrow
+120,7030,Northern Mockingbird,Gray Catbird
+120,7030,Northern Mockingbird,Brown Thrasher
+120,7030,Northern Mockingbird,Sage Thrasher
+120,7030,Northern Mockingbird,Phainopepla
+120,7030,Northern Mockingbird,Loggerhead Shrike
+120,7030,Northern Mockingbird,Bendire's Thrasher
+120,7030,Northern Mockingbird,California Thrasher
+21,6750,Northern Waterthrush,Swainson's Warbler
+21,6750,Northern Waterthrush,Palm Warbler
+21,6750,Northern Waterthrush,Louisiana Waterthrush
+21,6750,Northern Waterthrush,Kentucky Warbler
+21,6750,Northern Waterthrush,Connecticut Warbler
+21,6750,Northern Waterthrush,Ovenbird
+40,4890,Northwestern Crow,Common Raven
+40,4890,Northwestern Crow,Black-billed Magpie
+25,4590,Olive-sided Flycatcher,Western Wood-Pewee
+25,4590,Olive-sided Flycatcher,Western Kingbird
+9,6460,Orange-crowned Warbler,Virginia's Warbler
+9,6460,Orange-crowned Warbler,Tennessee Warbler
+9,6460,Orange-crowned Warbler,Cape May Warbler
+9,6460,Orange-crowned Warbler,Bay-breasted Warbler
+9,6460,Orange-crowned Warbler,Blackpoll Warbler
+9,6460,Orange-crowned Warbler,Blackburnian Warbler
+9,6460,Orange-crowned Warbler,Common Yellowthroat
+9,6460,Orange-crowned Warbler,Yellow Warbler
+9,6460,Orange-crowned Warbler,Yellow-rumped Warbler
+9,6460,Orange-crowned Warbler,Chestnut-sided Warbler
+9,6460,Orange-crowned Warbler,Wilson's Warbler
+9,6460,Orange-crowned Warbler,Black-throated Green Warbler
+9,6460,Orange-crowned Warbler,Townsend's Warbler
+9,6460,Orange-crowned Warbler,Mourning Warbler
+20,6720,Palm Warbler,Northern Waterthrush
+20,6720,Palm Warbler,Louisiana Waterthrush
+20,6720,Palm Warbler,Kentucky Warbler
+20,6720,Palm Warbler,Connecticut Warbler
+20,6720,Palm Warbler,Swainson's Warbler
+20,6720,Palm Warbler,Ovenbird
+82,6260,Philadelphia Vireo,Blue-headed Vireo
+82,6260,Philadelphia Vireo,Red-eyed Vireo
+52,5330,Pine Siskin,Lesser Goldfinch
+52,5330,Pine Siskin,Red Crossbill
+42,4920,Pinyon Jay,Black-billed Magpie
+83,6291,Plumbeous Vireo,Warbling Vireo
+2,6370,Prothonotary Warbler,Yellow-throated Warbler
+2,6370,Prothonotary Warbler,Black-and-white Warbler
+2,6370,Prothonotary Warbler,Pine Warbler
+74,5940,Pyrrhuloxia,Northern Cardinal
+74,5940,Pyrrhuloxia,Blue Grosbeak
+49,5210,Red Crossbill,White-winged Crossbill
+49,5210,Red Crossbill,Purple Finch
+128,7280,Red-breasted Nuthatch,Brown Creeper
+128,7280,Red-breasted Nuthatch,White-breasted Nuthatch
+11,4030,Red-breasted Sapsucker,Nuttall's Woodpecker
+11,4030,Red-breasted Sapsucker,Acorn Woodpecker
+31,6900,Red-faced Warbler,Lucy's Warbler
+31,6900,Red-faced Warbler,Painted Redstart
+31,6900,Red-faced Warbler,Grace's Warbler
+12,4060,Red-headed Woodpecker,Red-bellied Woodpecker
+12,4060,Red-headed Woodpecker,Northern Flicker
+10,4021,Red-naped Sapsucker,Williamson's Sapsucker
+4,3091,Ring-necked Pheasant,Gray Partridge
+4,3091,Ring-necked Pheasant,Wild Turkey
+123,7150,Rock Wren,Bewick's Wren
+123,7150,Rock Wren,House Wren
+136,7490,Ruby-crowned Kinglet,Golden-crowned Kinglet
+3,3000,Ruffed Grouse,Spruce Grouse
+3,3000,Ruffed Grouse,Gray Partridge
+18,4330,Rufous Hummingbird,Calliope Hummingbird
+67,5800,Rufous-crowned Sparrow,Black-chinned Sparrow
+66,5740,Sage Sparrow,Song Sparrow
+119,7020,Sage Thrasher,Northern Mockingbird
+119,7020,Sage Thrasher,Bendire's Thrasher
+23,4570,Say's Phoebe,Western Kingbird
+23,4570,Say's Phoebe,Ash-throated Flycatcher
+44,5040,Scott's Oriole,Bullock's Oriole
+44,5040,Scott's Oriole,Hooded Oriole
+126,7240,Sedge Wren,Winter Wren
+126,7240,Sedge Wren,House Wren
+71,5880,Spotted Towhee,Green-tailed Towhee
+118,7000,Sprague's Pipit,Vesper Sparrow
+36,4780,Steller's Jay,Western Scrub-Jay
+36,4780,Steller's Jay,Gray Jay
+139,7580,Swainson's Thrush,Hermit Thrush
+3,6380,Swainson's Warbler,Palm Warbler
+3,6380,Swainson's Warbler,Northern Waterthrush
+3,6380,Swainson's Warbler,Louisiana Waterthrush
+3,6380,Swainson's Warbler,Kentucky Warbler
+3,6380,Swainson's Warbler,Connecticut Warbler
+3,6380,Swainson's Warbler,Ovenbird
+69,5840,Swamp Sparrow,Lincoln's Sparrow
+69,5840,Swamp Sparrow,White-throated Sparrow
+10,6470,Tennessee Warbler,Orange-crowned Warbler
+10,6470,Tennessee Warbler,Nashville Warbler
+10,6470,Tennessee Warbler,Cape May Warbler
+10,6470,Tennessee Warbler,Bay-breasted Warbler
+10,6470,Tennessee Warbler,Blackpoll Warbler
+10,6470,Tennessee Warbler,Blackburnian Warbler
+10,6470,Tennessee Warbler,Common Yellowthroat
+10,6470,Tennessee Warbler,Yellow Warbler
+10,6470,Tennessee Warbler,Yellow-rumped Warbler
+10,6470,Tennessee Warbler,Chestnut-sided Warbler
+10,6470,Tennessee Warbler,Wilson's Warbler
+10,6470,Tennessee Warbler,Black-throated Green Warbler
+10,6470,Tennessee Warbler,Townsend's Warbler
+10,6470,Tennessee Warbler,Mourning Warbler
+138,7540,Townsend's Solitaire,Mountain Bluebird
+138,7540,Townsend's Solitaire,Hermit Thrush
+141,7630,Varied Thrush,Gray-cheeked Thrush
+141,7630,Varied Thrush,Swainson's Thrush
+141,7630,Varied Thrush,Hermit Thrush
+14,4240,Vaux's Swift,Black Swift
+33,4710,Vermilion Flycatcher,Black Phoebe
+54,5400,Vesper Sparrow,Song Sparrow
+54,5400,Vesper Sparrow,Brewer's Sparrow
+54,5400,Vesper Sparrow,Sprague's Pipit
+78,6150,Violet-green Swallow,Northern Rough-winged Swallow
+78,6150,Violet-green Swallow,Barn Swallow
+7,6440,Virginia's Warbler,Orange-crowned Warbler
+142,7670,Western Bluebird,Hermit Thrush
+142,7670,Western Bluebird,American Robin
+37,4810,Western Scrub-Jay,Yellow-billed Magpie
+37,4810,Western Scrub-Jay,Steller's Jay
+60,5540,White-crowned Sparrow,Golden-crowned Sparrow
+60,5540,White-crowned Sparrow,Lincoln's Sparrow
+60,5540,White-crowned Sparrow,Fox Sparrow
+50,5220,White-winged Crossbill,Red Crossbill
+50,5220,White-winged Crossbill,Purple Finch
+5,3100,Wild Turkey,Ring-necked Pheasant
+28,4660,Willow Flycatcher,Alder Flycatcher
+125,7220,Winter Wren,House Wren
+125,7220,Winter Wren,Marsh Wren
+125,7220,Winter Wren,Sedge Wren
+4,6390,Worm-eating Warbler,Blue-winged Warbler
+4,6390,Worm-eating Warbler,Pine Warbler
+4,6390,Worm-eating Warbler,Northern Parula
+4,6390,Worm-eating Warbler,Prairie Warbler
+4,6390,Worm-eating Warbler,Yellow Warbler
+4,6390,Worm-eating Warbler,Common Yellowthroat
+4,6390,Worm-eating Warbler,Yellow-breasted Chat
+4,6390,Worm-eating Warbler,Hooded Warbler
+133,7420,Wrentit,Oak Titmouse
+133,7420,Wrentit,Bushtit
+35,4760,Yellow-billed Magpie,Western Scrub-Jay
+35,4760,Yellow-billed Magpie,American Crow
 27,6830,Yellow-breasted Chat,Hooded Warbler
 27,6830,Yellow-breasted Chat,Worm-eating Warbler
 27,6830,Yellow-breasted Chat,Blue-winged Warbler
@@ -364,58 +413,7 @@ SubsetSppID,AOU,CommonName,Competitor
 27,6830,Yellow-breasted Chat,Black-throated Gray Warbler
 27,6830,Yellow-breasted Chat,Hermit Warbler
 27,6830,Yellow-breasted Chat,MacGillivray's Warbler
-28,6840,Hooded Warbler,Yellow-breasted Chat
-28,6840,Hooded Warbler,Prairie Warbler
-28,6840,Hooded Warbler,Common Yellowthroat
-31,6900,Red-faced Warbler,Lucy's Warbler
-31,6900,Red-faced Warbler,Painted Redstart
-31,6900,Red-faced Warbler,Grace's Warbler
-3,6380,Swainson's Warbler,Palm Warbler
-3,6380,Swainson's Warbler,Northern Waterthrush
-3,6380,Swainson's Warbler,Louisiana Waterthrush
-3,6380,Swainson's Warbler,Kentucky Warbler
-3,6380,Swainson's Warbler,Connecticut Warbler
-3,6380,Swainson's Warbler,Ovenbird
-7,6440,Virginia's Warbler,Orange-crowned Warbler
-20,6720,Palm Warbler,Northern Waterthrush
-20,6720,Palm Warbler,Louisiana Waterthrush
-20,6720,Palm Warbler,Kentucky Warbler
-20,6720,Palm Warbler,Connecticut Warbler
-20,6720,Palm Warbler,Swainson's Warbler
-20,6720,Palm Warbler,Ovenbird
-21,6750,Northern Waterthrush,Swainson's Warbler
-21,6750,Northern Waterthrush,Palm Warbler
-21,6750,Northern Waterthrush,Louisiana Waterthrush
-21,6750,Northern Waterthrush,Kentucky Warbler
-21,6750,Northern Waterthrush,Connecticut Warbler
-21,6750,Northern Waterthrush,Ovenbird
-22,6760,Louisiana Waterthrush,Swainson's Warbler
-22,6760,Louisiana Waterthrush,Palm Warbler
-22,6760,Louisiana Waterthrush,Northern Waterthrush
-22,6760,Louisiana Waterthrush,Kentucky Warbler
-22,6760,Louisiana Waterthrush,Connecticut Warbler
-22,6760,Louisiana Waterthrush,Ovenbird
-23,6770,Kentucky Warbler,Swainson's Warbler
-23,6770,Kentucky Warbler,Palm Warbler
-23,6770,Kentucky Warbler,Louisiana Waterthrush
-23,6770,Kentucky Warbler,Northern Waterthrush
-23,6770,Kentucky Warbler,Connecticut Warbler
-23,6770,Kentucky Warbler,Ovenbird
-24,6780,Connecticut Warbler,Swainson's Warbler
-24,6780,Connecticut Warbler,Palm Warbler
-24,6780,Connecticut Warbler,Northern Waterthrush
-24,6780,Connecticut Warbler,Louisiana Waterthrush
-24,6780,Connecticut Warbler,Kentucky Warbler
-24,6780,Connecticut Warbler,Ovenbird
-12,6540,Black-throated Blue Warbler,Magnolia Warbler
-12,6540,Black-throated Blue Warbler,Canada Warbler
-12,6540,Black-throated Blue Warbler,American Redstart
-13,6570,Magnolia Warbler,Black-throated Blue Warbler
-13,6570,Magnolia Warbler,Canada Warbler
-13,6570,Magnolia Warbler,American Redstart
-29,6860,Canada Warbler,Black-throated Blue Warbler
-29,6860,Canada Warbler,Magnolia Warbler
-29,6860,Canada Warbler,American Redstart
-30,6870,American Redstart,Black-throated Blue Warbler
-30,6870,American Redstart,Magnolia Warbler
-30,6870,American Redstart,Canada Warbler
+43,4970,Yellow-headed Blackbird,Red-winged Blackbird
+17,6630,Yellow-throated Warbler,Black-and-white Warbler
+17,6630,Yellow-throated Warbler,Prothonotary Warbler
+17,6630,Yellow-throated Warbler,Pine Warbler

@@ -6,6 +6,8 @@
 setwd("C:/git/core-transient/scripts/R-scripts/Biotic Interactions Snell")
 #### ---- Inital Formatting ---- ####
 library(plyr)
+library(dplyr)
+library(maps)
 
 # read in temporal occupancy dataset 
 Hurlbert_o = read.csv('Master_RO_Correlates_20110610.csv', header = T)
@@ -94,7 +96,7 @@ names(avg_occ_dist) = c('occupancy', 'frequency')
 avg_occ_dist$occupancy = as.numeric(as.character(avg_occ_dist$occupancy))
 
 #### ---- Plotting ---- ####
-library(maps)
+
 
 # plot total avg avian occupancy distribution
 plot(avg_occ_dist$occupancy, avg_occ_dist$frequency, type = 'l', 
@@ -321,11 +323,6 @@ pchisq(LR, 1, lower = FALSE)
 ttable = read.csv("trophic_table.csv", header = TRUE)
 ttable2 = merge(ttable, Hurlbert_o, by = "AOU")
 write.csv(ttable2, "warbler_all.csv")
-  
-  
-warblers = read.csv("focal_warblers.csv", header = TRUE)
-warblertable = merge(ttable2, warblers, by = "AOU")
-write.csv(warblertable, "warblers.csv")
 
 focal_competitor_table = read.csv("focal spp.csv", header = TRUE)
 focal_competitor_table = data.frame(focal_competitor_table$AOU, focal_competitor_table$CommonName, focal_competitor_table$Competitor)
@@ -333,10 +330,29 @@ focal_competitor_table = rename(focal_competitor_table, c("focal_competitor_tabl
 
 AOU = read.csv("Bird_Taxonomy.csv", header = TRUE)
 AOU2 = data.frame(AOU$SCI_NAME, AOU$AOU_OUT, AOU$PRIMARY_COM_NAME)
-AOU2 = rename(AOU2, c("AOU.SCI_NAME" = "Sci Name", "AOU.AOU_OUT" = "CompetitorAOU", "AOU.PRIMARY_COM_NAME" = "Competitor"))
-AOU2 = unique(AOU2)
-### grep " X " and grep " (" to eliminate hybrids
+AOU2 = plyr::rename(AOU2, c("AOU.SCI_NAME" = "SciName", "AOU.AOU_OUT" = "CompetitorAOU", "AOU.PRIMARY_COM_NAME" = "Competitor"))
 
-comp_AOU = merge(focal_competitor_table, AOU2, by = "Competitor")
-comp_AOU = data.frame(comp_AOU$Competitor, comp_AOU$AOU, comp_AOU$CommonName, comp_AOU$SCI_NAME, comp_AOU$AOU_OUT)
-comp_AOU$CompetitorAOU = comp_AOU$comp_AOU.AOU_OUT
+
+AOUsub = AOU2[-grep("sp.", AOU2$Competitor),]
+AOUsub2 = AOUsub[-grep("\\)", AOUsub$Competitor),]
+AOUsub3 = AOUsub2[-grep(" \\(", AOUsub2$Competitor),]
+AOUsub4 = unique(AOUsub3)
+
+comp_AOU = merge(focal_competitor_table, AOUsub4, by = "Competitor")
+comp_AOU <- comp_AOU[c("Focal", "focalAOU", "Competitor", "CompetitorAOU", "SciName")]
+
+bsize = read.csv("DunningBodySize_old_2008.11.12.csv", header = TRUE)
+bsize = unite(bsize, SciName, Genus, Species, sep = " ")
+
+spec_w_bsize = merge(comp_AOU, bsize, by.x = "Focal", by.y = "CommonName")
+spec_w_bsize2 = merge(spec_w_bsize, bsize, by.x = "Competitor", by.y = "CommonName")
+spec_w_weights = data.frame(spec_w_bsize2$Focal, spec_w_bsize2$focalAOU, spec_w_bsize2$SciName.y, spec_w_bsize2$Mass.g..x, spec_w_bsize2$Competitor,
+                            spec_w_bsize2$CompetitorAOU, spec_w_bsize2$SciName.x, spec_w_bsize2$Mass.g..y)
+spec_w_weights = plyr::rename(spec_w_weights, c("spec_w_bsize2.Focal" = "Focal", "spec_w_bsize2.focalAOU" = "FocalAOU", 
+                  "spec_w_bsize2.SciName.y" = "FocalSciName", "spec_w_bsize2.Mass.g..x" = "FocalMass", "spec_w_bsize2.Competitor" = "Competitor",
+                  "spec_w_bsize2.CompetitorAOU" = "CompAOU", "spec_w_bsize2.SciName.x" = "CompSciName", "spec_w_bsize2.Mass.g..y" = "CompMass"))
+
+# want to compare body size - if competitor is double or more in size to focal, then delete
+no_fatties = subset(spec_w_weights, !(spec_w_weights$FocalMass * 2) < (spec_w_weights$CompMass))
+
+
