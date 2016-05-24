@@ -604,6 +604,6 @@ dev.off()
 # mean occupancy as a function of taxon, scale, latitude/geography
 # need to merge in latlongs to summ2
 # waht is the scale variable here?
-# propCore = taxa + ? + latlong, do we want propCore even?
+summ2$meanAbundance = summ2$taxa + summ2$SCALE? + NEEDTOMERGEIN$latlong ## do we want propCore even?
 
 
