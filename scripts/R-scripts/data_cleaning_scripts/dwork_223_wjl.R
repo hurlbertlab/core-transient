@@ -5,6 +5,8 @@
 # See also here 
 # http://repository.unm.edu/bitstream/handle/1928/29843/knb-lter-sev.97.182096-metadata.html?sequence=1&isAllowed=y
 
+# Cleaned by Will Larsen and Allen Hurlbert
+
 #-------------------------------------------------------------------------------*
 # ---- SET-UP ----
 #===============================================================================*
