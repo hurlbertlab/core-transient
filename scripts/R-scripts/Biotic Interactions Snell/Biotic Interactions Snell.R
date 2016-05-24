@@ -112,32 +112,27 @@ new_spec_weights$focalcat = gsub(" ", "_", new_spec_weights$FocalSciName)
 new_spec_weights$compcat = gsub(" ", "_", new_spec_weights$CompSciName)
 
 # read in bird range shps
-abeil = readOGR("Z:/GIS/birds/All/All", "All") # WHAT TO PUT HERE?
-abeilorigin = abeil[abeil@data$ORIGIN == 1|abeil@data$ORIGIN == 2|abeil@data$ORIGIN ==5] # subset to breeding/permanent habitat
-plot(abeilorigin)
+all_spp_list = list.files('Z:/GIS/birds/All/All')
 
 # for loop to select a genus_spp from pairwise table, read in shp, subset to permanent habitat, plot focal
-t1= new_spec_weights[grep('*_*', new_spec_weights$focalcat), ]
-focal_spp = list(c(t1$focalcat))
+filesoutput = c()
+sp = 'Sphyrapicus_ruber'
+focal_spp = c(new_spec_weights$focalcat)
 for (sp in focal_spp){
-  sp = "Sphyrapicus_ruber" 
-  readOGR("Z:/GIS/birds/All/All",  sp) # reads in species-specific shapefile
-  sporigin = sp[sp@data$ORIGIN == 1|sp@data$ORIGIN == 2|sp@data$ORIGIN ==5]
+  t1 = all_spp_list[grep(sp, all_spp_list)]
+  print(t1)
+  t2 = focal_spp[grep(sp, focal_spp)]
+  print(t2)
+  filesoutput = rbind(filesoutput, t1)
+  #readOGR(all_spp_list, t2)
+  # readOGR("Z:/GIS/birds/All/All",  filesoutput) # reads in species-specific shapefile
+  #sporigin = sp[sp@data$ORIGIN == 1|sp@data$ORIGIN == 2|sp@data$ORIGIN ==5]
 }
 
+filesoutput2 = data.frame(filesoutput)
 
 ### FLO parks, try to project, intersect, then calculate area of intersect
-library(maptools)
 
-# get all files with the .shp extension from working directory
-setwd("Z:/GIS/birds/All/All")
-shps <- dir(getwd(), "*.shp")
-
-# the assign function will take the string representing shp and turn it into a variable
-# which holds the spatial points data
-for (shp in shps) assign(shp, readShapePoly(shp))
-plot(get(shp[1])) # i.e.
-# ...done
 
 ############# ---- Generate total species occupancies ---- #############
 # gathering occupancy data for all species
