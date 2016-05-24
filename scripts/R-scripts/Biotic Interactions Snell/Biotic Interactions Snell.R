@@ -116,7 +116,7 @@ all_spp_list = list.files('Z:/GIS/birds/All/All')
 
 # for loop to select a genus_spp from pairwise table, read in shp, subset to permanent habitat, plot focal
 filesoutput = c()
-sp = 'Sphyrapicus_ruber'
+sp = 'Gymnogyps_californianus_22697636'
 focal_spp = c(new_spec_weights$focalcat)
 for (sp in focal_spp){
   t1 = all_spp_list[grep(sp, all_spp_list)]
@@ -124,7 +124,7 @@ for (sp in focal_spp){
   t2 = focal_spp[grep(sp, focal_spp)]
   print(t2)
   filesoutput = rbind(filesoutput, t1)
-  #readOGR(all_spp_list, t2)
+  readOGR("Z:/GIS/birds/All/All", 'Gymnogyps_californianus_22697636')
   # readOGR("Z:/GIS/birds/All/All",  filesoutput) # reads in species-specific shapefile
   #sporigin = sp[sp@data$ORIGIN == 1|sp@data$ORIGIN == 2|sp@data$ORIGIN ==5]
 }
