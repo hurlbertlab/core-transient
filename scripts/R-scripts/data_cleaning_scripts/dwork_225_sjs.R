@@ -387,7 +387,7 @@ dataFormattingTable[,'Notes_siteFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_siteFormat', 
 
 #--! PROVIDE INFO !--#
-  'For cover (USED): only the coarsest spatial scale provided (100 m2) by dataset. For species pres, the site field is a concatenation of plot and corner. Each corner was measured at different spatial scales.')
+  'Used only the coarsest spatial scale provided (100 m2) by dataset, which is the only scale with cover data. Finer scale data available in each plot corner but only species presence.')
 
 
 #-------------------------------------------------------------------------------*
