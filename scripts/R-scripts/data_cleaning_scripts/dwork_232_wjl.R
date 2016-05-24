@@ -3,6 +3,7 @@
 #
 #  Metadata can be found at http://sev.lternet.edu/data/sev-8
 
+# Formatted by Will Larsen and Allen Hurlbert
 
 #-------------------------------------------------------------------------------*
 # ---- SET-UP ----
@@ -80,7 +81,7 @@ head(dataset)
 names(dataset)
 
 #####
-unusedFieldNames = c('night','recap','sex','age','reprod','mass')
+unusedFieldNames = c('night','recap','sex','age','reprod','mass', 'trap')
 
 
 unusedFields = which(names(dataset) %in% unusedFieldNames)
@@ -211,7 +212,7 @@ dataFormattingTable[,'subannualTgrain'] =
 # fill in the fields that specify nested spatial grains below.
 
 #####
-site_grain_names = c("location","web","trap")
+site_grain_names = c("location","web")
 
 # We will now create the site field with these codes concatenated if there
 # are multiple grain fields. Otherwise, site will just be the single grain field.
@@ -223,6 +224,23 @@ if (num_grains > 1) {
     site = paste(site, dataset2[, site_grain_names[i]], sep = "_")
   } 
 }
+
+# What is the spatial grain of the finest sampling scale? For example, this might be
+# a 0.25 m2 quadrat, or a 5 m transect, or a 50 ml water sample.
+
+# Each web consisted of 12 trap lines radiating around a center station, each line with 12 permanently-marked trap stations. In order to increase the odds of capturing any animals inhabiting the center of a web, the center station had four traps, each pointing in a cardinal direction, and the first four stations of each trap line were spaced only 5 m apart, providing a trap saturation effect. The remaining eight stations in a trap line were spaced at 10 m intervals. The web thus established a series of concentric rings of traps covering a circle of radius 100 m.
+
+dataFormattingTable[,'Raw_spatial_grain'] = 
+  dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain',  
+                                 
+                                 #--! PROVIDE INFO !--#
+                                 31416) 
+
+dataFormattingTable[,'Raw_spatial_grain_unit'] = 
+  dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain_unit',  
+                                 
+                                 #--! PROVIDE INFO !--#
+                                 'm2') 
 
 
 # BEFORE YOU CONTINUE. We need to make sure that there are at least minNTime for sites at the coarsest possilbe spatial grain. 
@@ -260,7 +278,7 @@ dataset3$site = factor(site)
 # Remove any hierarchical site related fields that are no longer needed, IF NECESSARY.
 
 #####
-dataset3 = dataset3[,-c(1:3)]
+dataset3 = dataset3[, !names(dataset3) %in% site_grain_names]
 
 # Check the new dataset (are the columns as they should be?):
 
@@ -276,7 +294,7 @@ dataFormattingTable[,'Raw_siteUnit'] =
   dataFormattingTableFieldUpdate(datasetID, 'Raw_siteUnit',       # Fill value below in quotes
                                  
                                  #####
-                                 'location_web_trap') 
+                                 'location_web') 
 
 
 # spatial_scale_variable. Is a site potentially nested (e.g., plot within a quad or decimal lat longs that could be scaled up)? Y/N
@@ -293,7 +311,7 @@ dataFormattingTable[,'Notes_siteFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_siteFormat',  # Fill value below in quotes
                                  
                                  #####
-                                 'site fields concatenated. metadata suggests location-web-trap describes the order of nested sites from large area to small area')
+                                 'site is a concatenation of location and web, with 3 trapping webs per location, and each web consisting of 148 Sherman traps spanning a circle of radius 100m.')
 
 
 #-------------------------------------------------------------------------------*
@@ -323,6 +341,9 @@ dataset4 = datasetcount
 
 names(dataset4)[names(dataset4)=='Freq'] = 'count'
 
+# Need to reclassify the date field as a date object
+dataset4$date = as.POSIXct(strptime(dataset4$date, '%Y-%m-%d'))
+
 # Remove NA's:
 
 dataset5 = na.omit(dataset4)
@@ -348,7 +369,7 @@ dataFormattingTable[,'Notes_countFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_countFormat', # Fill value below in quotes
                                  
                                  #####                                 
-                                 'Data represents count. There was no count column in this dataset, so a dataframe was made that showed the frequency of of species per time sample per site')
+                                 'Data represents count. Each row in the raw data represents the capture of one individual in a trap; these were tallied to get counts by web.')
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SPECIES DATA ----
@@ -475,13 +496,7 @@ write.csv(dataset7, paste("data/formatted_datasets/dataset_", datasetID, ".csv",
 
 # !GIT-ADD-COMMIT-PUSH THE FORMATTED DATASET IN THE DATA FILE, THEN GIT-ADD-COMMIT-PUSH THE UPDATED DATA FOLDER!
 
-# As we've now successfully created the formatted dataset, we will now update the format priority and format flag fields. 
-
-dataFormattingTable[,'format_priority'] = 
-  dataFormattingTableFieldUpdate(datasetID, 'format_priority',    # Fill value below in quotes 
-                                 
-                                 #####                                 
-                                 'NA')
+# As we've now successfully created the formatted dataset, we will now update the format flag field. 
 
 dataFormattingTable[,'format_flag'] = 
   dataFormattingTableFieldUpdate(datasetID, 'format_flag',    # Fill value below
@@ -497,9 +512,6 @@ dataFormattingTable[,'format_flag'] =
 # 4 = data unavailable
 # 5 = data insufficient for generating occupancy data
 
-# And update the data formatting table:
-
-write.csv(dataFormattingTable, 'data_formatting_table.csv', row.names = F)
 
 # !GIT-ADD-COMMIT-PUSH THE DATA FORMATTING TABLE!
 
@@ -562,9 +574,9 @@ tGrain = 'year'
 site_grain_names
 
 #####
-sGrain = 'location_web'
+sGrain = 'location'
 
-# This is a reasonable choice of spatial grain because according to the metadata, the webs were placed at least 100 m away from each other to 'minimize homerange overlap for individuals captured in the outer portion of neighboring webs'
+# This is a reasonable choice of spatial grain because the webs within a location are all more or less adjacent to one another and all represent the same basic habitat type.
 
 # The function "richnessYearSubsetFun" below will subset the data to sites with an 
 # adequate number of years of sampling and species richness. If there are no 
@@ -585,7 +597,24 @@ head(richnessYearsTest)
 dim(richnessYearsTest) ; dim(dataset7)
 
 #Number of unique sites meeting criteria
-length(unique(richnessYearsTest$analysisSite))
+goodSites = unique(richnessYearsTest$analysisSite)
+length(goodSites)
+
+# Now subset dataset7 to just those goodSites as defined. This is tricky though
+# because assuming Sgrain is not the finest resolution, we will need to use
+# grep to match site names that begin with the string in goodSites.
+# The reason to do this is that sites which don't meet the criteria (e.g. not
+# enough years of data) may also have low sampling intensity that constrains
+# the subsampling level of the well sampled sites.
+
+uniqueSites = unique(dataset7$site)
+fullGoodSites = c()
+for (s in goodSites) {
+  tmp = as.character(uniqueSites[grepl(paste(s, "_", sep = ""), paste(uniqueSites, "_", sep = ""))])
+  fullGoodSites = c(fullGoodSites, tmp)
+}
+
+dataset8 = subset(dataset7, site %in% fullGoodSites)
 
 # Once we've settled on spatial and temporal grains that pass our test above,
 # we then need to 1) figure out what levels of spatial and temporal subsampling
@@ -601,7 +630,8 @@ length(unique(richnessYearsTest$analysisSite))
 # and bases the characterization of the community in that site-year based on
 # the aggregate of those standardized subsamples.
 
-subsettedData = subsetDataFun(dataset7, datasetID, spatialGrain = sGrain, 
+subsettedData = subsetDataFun(dataset8, 
+                              datasetID, spatialGrain = sGrain, 
                               temporalGrain = tGrain,
                               minNTime = minNTime, minSpRich = minSpRich,
                               proportionalThreshold = topFractionSites,
@@ -621,6 +651,13 @@ siteSummaryFun(subsettedData)
 
 writePropOccSiteSummary(subsettedData)
 
-# Remove all objects except for functions from the environment:
+# Update Data Formatting Table with summary stats of the formatted,
+# properly subsetted dataset
+dataFormattingTable = dataFormattingTableUpdateFinished(datasetID, subsettedData)
 
+# And write the final data formatting table:
+
+write.csv(dataFormattingTable, 'data_formatting_table.csv', row.names = F)
+
+# Remove all objects except for functions from the environment:
 rm(list = setdiff(ls(), lsf.str()))
