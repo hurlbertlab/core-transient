@@ -1,7 +1,11 @@
 ################################################################################*
 #  DATASET 223: Sevilletta LTER Plants
 #
-#  Metadata can be found at http://sev.lternet.edu/data/sev-97
+# Metadata can be found at http://sev.lternet.edu/data/sev-97
+# See also here 
+# http://repository.unm.edu/bitstream/handle/1928/29843/knb-lter-sev.97.182096-metadata.html?sequence=1&isAllowed=y
+
+# Cleaned by Will Larsen and Allen Hurlbert
 
 #-------------------------------------------------------------------------------*
 # ---- SET-UP ----
@@ -81,7 +85,7 @@ head(dataset)
 names(dataset)
 
 #####
-unusedFieldNames = c('record_id','userid','treatment' 'cond','season','height','comments','tapeid')
+unusedFieldNames = c('record_id','userid','treatment', 'cond','season','height','comments','tapeid')
 
 
 unusedFields = which(names(dataset) %in% unusedFieldNames)
@@ -193,6 +197,8 @@ dataFormattingTable[,'subannualTgrain'] =
 
 # -- If the dataset is for just a single site, and there is no site column, then add one.
 
+# Experimental Design There are 2 study sites, the Five Points grassland site, and the Rio Salado creosotebush site. Each study site is 1 km by 0.5 km in area. Three rodent trapping webs and four replicate experimental blocks of plots are randomly located at each study site to measure vegetation responses to the exclusion of small mammals. Each block of plots is 96 meters on each side. Each block of plots consists of 4 experimental study plots, each occupying 1/4 of each block. The blocks of study plots are all oriented on a site in a X/Y coordinate system, with the top to the north. Treatments within each block include one unfenced control plot (Treatment: C), one plot fenced with hardware cloth and poultry wire to exclude rodents and rabbits (Treatment: R), and one plot fenced only with poultry wire to exclude rabbits (Treatment: L). The three treatments were randomly assigned to each of the four possible plots in each block independently, and their arrangements differ from block to block. Each of the three plots in a replicate block are separated by 20 meters. Each experimental measurement plot measures 36 meters by 36 meters. A grid of 36 sampling points are positioned at 5.8-meter intervals on a systematically located 6 by 6 point grid within each plot. A permanent one-meter by one-meter vegetation measurement quadrat is located at each of the 36 points.
+
 # Here, we will concatenate all of the potential fields that describe the site 
 # in hierarchical order from largest to smallest grain. Based on the dataset,
 # fill in the fields that specify nested spatial grains below.
@@ -210,6 +216,22 @@ if (num_grains > 1) {
     site = paste(site, dataset2[, site_grain_names[i]], sep = "_")
   } 
 }
+
+# What is the spatial grain of the finest sampling scale? For example, this might be
+# a 0.25 m2 quadrat, or a 5 m transect, or a 50 ml water sample.
+
+dataFormattingTable[,'Raw_spatial_grain'] = 
+  dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain',  
+                                 
+                                 #--! PROVIDE INFO !--#
+                                 1) 
+
+dataFormattingTable[,'Raw_spatial_grain_unit'] = 
+  dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain_unit',  
+                                 
+                                 #--! PROVIDE INFO !--#
+                                 'm2') 
+
 
 
 # BEFORE YOU CONTINUE. We need to make sure that there are at least minNTime for sites at the coarsest possilbe spatial grain. 
@@ -248,7 +270,7 @@ dataset3$site = factor(site)
 # Remove any hierarchical site related fields that are no longer needed, IF NECESSARY.
 
 #####
-dataset3 = dataset3[,-c(2:5)]
+dataset3 = dataset3[,!names(dataset3) %in% c('block', 'plot', 'quad')]
 
 # Check the new dataset (are the columns as they should be?):
 
@@ -281,7 +303,7 @@ dataFormattingTable[,'Notes_siteFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_siteFormat',  # Fill value below in quotes
                                  
                                  #####
-                                 'site fields concatenated. metadata suggests site-block--plot-quad describes the order of nested sites from large to small.')
+                                 'site fields concatenated. metadata suggests site-block-plot-quad describes the order of nested sites from large to small.')
 
 
 #-------------------------------------------------------------------------------*
@@ -360,7 +382,7 @@ table(dataset5$species)
 # In this example, a quick look at the metadata is not informative, unfortunately. Because of this, you should really stop here and post an issue on GitHub. With some more thorough digging, however, I've found the names represent "Kartez codes". Several species can be removed (double-checked with USDA plant codes at plants.usda.gov and another Sevilleta study (dataset 254) that provides species names for some codes). Some codes were identified with this pdf from White Sands: https://nhnm.unm.edu/sites/default/files/nonsensitive/publications/nhnm/U00MUL02NMUS.pdf
 
 #####
-bad_sp = c('','NONE','UK1','UKFO1','UNK1','UNK2','UNK3','LAMIA', 'UNGR1','CACT1','UNK','NONE','UNK2','UNK3', 'UNK1','FORB7', 'MISSING', '-888', 'DEAD','ERRO2', 'FORB1','FSEED', 'GSEED', 'MOSQ', 'SEED','SEEDS1','SEEDS2', 'SEFLF','SESPM','SPOR1')
+bad_sp = c('CACT1','FORB1', 'DEAD','FSEED', 'GSEED', 'MUHL1', 'OPUN', 'POAC1', 'SEED','SEEDS1', 'SEEDS2', 'SPOR1')
 
 dataset6 = dataset5[!dataset5$species %in% bad_sp,]
 
@@ -411,7 +433,7 @@ dataFormattingTable[,'Notes_spFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_spFormat',    # Fill value below in quotes
                                  
                                  #####                                 
-                                 'several species removed. Metadata was relatively uninformative regarding what constitutes a true species sample for this study. Exploration of metadata from associated Sevilleta studies were more informative regarding which species needed to be removed. Species names are predominantly provided as Kartez codes, but not always. See: http://sev.lternet.edu/data/sev-212/5048. Some codes were identified with this pdf from White Sands: https://nhnm.unm.edu/sites/default/files/nonsensitive/publications/nhnm/U00MUL02NMUS.pdf')
+                                 'Species codes are mostly Kartez codes, but several were removed that refer to unidentifiable entities or seeds.')
 
 #-------------------------------------------------------------------------------*
 # ---- MAKE DATA FRAME OF COUNT BY SITES, SPECIES, AND YEAR ----
@@ -456,13 +478,7 @@ write.csv(dataset7, paste("data/formatted_datasets/dataset_", datasetID, ".csv",
 
 # !GIT-ADD-COMMIT-PUSH THE FORMATTED DATASET IN THE DATA FILE, THEN GIT-ADD-COMMIT-PUSH THE UPDATED DATA FOLDER!
 
-# As we've now successfully created the formatted dataset, we will now update the format priority and format flag fields. 
-
-dataFormattingTable[,'format_priority'] = 
-  dataFormattingTableFieldUpdate(datasetID, 'format_priority',    # Fill value below in quotes 
-                                 
-                                 #####                                 
-                                 'NA')
+# As we've now successfully created the formatted dataset, we will now update the format flag field. 
 
 dataFormattingTable[,'format_flag'] = 
   dataFormattingTableFieldUpdate(datasetID, 'format_flag',    # Fill value below
@@ -478,9 +494,6 @@ dataFormattingTable[,'format_flag'] =
 # 4 = data unavailable
 # 5 = data insufficient for generating occupancy data
 
-# And update the data formatting table:
-
-write.csv(dataFormattingTable, 'data_formatting_table.csv', row.names = F)
 
 # !GIT-ADD-COMMIT-PUSH THE DATA FORMATTING TABLE!
 
@@ -546,8 +559,7 @@ site_grain_names
 sGrain = 'site_block_plot'
 
 # This is a reasonable choice of spatial grain because ...
-# ...for sessile plant communities a plot (~ 4m^2) encompasses scores to hundreds
-# of individuals.
+# ...a plot includes 36 m2 of sampled area from an extent spanning 1296 m2, and this encompasses hundreds to thousands of individuals.
 
 # The function "richnessYearSubsetFun" below will subset the data to sites with an 
 # adequate number of years of sampling and species richness. If there are no 
@@ -568,7 +580,24 @@ head(richnessYearsTest)
 dim(richnessYearsTest) ; dim(dataset7)
 
 #Number of unique sites meeting criteria
-length(unique(richnessYearsTest$analysisSite))
+goodSites = unique(richnessYearsTest$analysisSite)
+length(goodSites)
+
+# Now subset dataset7 to just those goodSites as defined. This is tricky though
+# because assuming Sgrain is not the finest resolution, we will need to use
+# grep to match site names that begin with the string in goodSites.
+# The reason to do this is that sites which don't meet the criteria (e.g. not
+# enough years of data) may also have low sampling intensity that constrains
+# the subsampling level of the well sampled sites.
+
+uniqueSites = unique(dataset7$site)
+fullGoodSites = c()
+for (s in goodSites) {
+  tmp = as.character(uniqueSites[grepl(paste(s, "_", sep = ""), paste(uniqueSites, "_", sep = ""))])
+  fullGoodSites = c(fullGoodSites, tmp)
+}
+
+dataset8 = subset(dataset7, site %in% fullGoodSites)
 
 # Once we've settled on spatial and temporal grains that pass our test above,
 # we then need to 1) figure out what levels of spatial and temporal subsampling
@@ -584,7 +613,8 @@ length(unique(richnessYearsTest$analysisSite))
 # and bases the characterization of the community in that site-year based on
 # the aggregate of those standardized subsamples.
 
-subsettedData = subsetDataFun(dataset7, datasetID, spatialGrain = sGrain, 
+subsettedData = subsetDataFun(dataset8, 
+                              datasetID, spatialGrain = sGrain, 
                               temporalGrain = tGrain,
                               minNTime = minNTime, minSpRich = minSpRich,
                               proportionalThreshold = topFractionSites,
@@ -604,6 +634,13 @@ siteSummaryFun(subsettedData)
 
 writePropOccSiteSummary(subsettedData)
 
-# Remove all objects except for functions from the environment:
+# Update Data Formatting Table with summary stats of the formatted,
+# properly subsetted dataset
+dataFormattingTable = dataFormattingTableUpdateFinished(datasetID, subsettedData)
 
+# And write the final data formatting table:
+
+write.csv(dataFormattingTable, 'data_formatting_table.csv', row.names = F)
+
+# Remove all objects except for functions from the environment:
 rm(list = setdiff(ls(), lsf.str()))
