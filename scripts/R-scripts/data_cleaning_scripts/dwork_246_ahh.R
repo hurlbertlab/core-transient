@@ -382,8 +382,7 @@ dataFormattingTable[,'Notes_countFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_countFormat', # Fill value below in quotes
                                  
 #####                                 
-                                 'Data prior to 2003 include abundance categories rather
-than numeric counts that were converted to numeric values based on category midpoints.')
+                                 'Data prior to 2003 include abundance categories rather than numeric counts that were converted to numeric values based on category midpoints.')
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SPECIES DATA ----
@@ -593,8 +592,7 @@ dataFormattingTable[,'Notes_spFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_spFormat',    # Fill value below in quotes
 
 #####                                 
-  'Several unidentified taxa removed. Juvenile and adult (and occasionally male and female)
-classes of the same species were lumped into single entities.')
+  'Several unidentified taxa removed. Juvenile and adult (and occasionally male and female) classes of the same species were lumped into single entities.')
 
 #-------------------------------------------------------------------------------*
 # ---- MAKE DATA FRAME OF COUNT BY SITES, SPECIES, AND YEAR ----

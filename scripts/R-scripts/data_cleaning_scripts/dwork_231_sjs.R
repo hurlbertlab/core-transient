@@ -292,7 +292,7 @@ dataFormattingTable[,'Raw_spatial_grain'] =
                                  60000) 
 
 dataFormattingTable[,'Raw_spatial_grain_unit'] = 
-  dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain',  
+  dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain_unit',  
                                  
 #--! PROVIDE INFO !--#
                                  'm2') 
@@ -377,8 +377,7 @@ dataFormattingTable[,'Notes_siteFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_siteFormat', 
 
 #--! PROVIDE INFO !--#
-  'The site field is a concatenation of watershed and trapline. The raw data 
-  was provided in this format.')
+  'The site field is a concatenation of watershed and trapline. The raw data was provided in this format.')
 
 
 #-------------------------------------------------------------------------------*
@@ -557,8 +556,7 @@ dataFormattingTable[,'Notes_spFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_spFormat',  
 
 #--! PROVIDE INFO !--#                                 
-  'No typos or bad spp found. Only sp abbrevations are provided - full name 
-  is in website metadata and was checked for duplicates.')
+  'No typos or bad spp found. Only sp abbrevations are provided - full name is in website metadata and was checked for duplicates.')
 
 #-------------------------------------------------------------------------------*
 # ---- MAKE DATA FRAME OF COUNT BY SITES, SPECIES, AND YEAR ----

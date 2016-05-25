@@ -3,7 +3,7 @@
 ################################################################################*
 #
 # Dataset name: Mountain Birdwatch
-# Dataset source (link): http://www.vtecostudies.org/MBW/
+# Dataset source (link): https://knb.ecoinformatics.org/#view/doi:10.5063/F1DN430G
 # Formatted by: Sara Snell
 #
 # Start by opening the data formatting table (data_formatting_table.csv). 
@@ -74,7 +74,7 @@ dataFormattingTable[,'Raw_datafile_name'] =
   dataFormattingTableFieldUpdate(datasetID, 'Raw_datafile_name',  
                                  
 #--! PROVIDE INFO !--#
-                'MountainBirdWatch.xlsx') # NOTE: data acquired from rarestabilizationdata repo (Glenda Yenni)
+                'JMHILL.5.csv') # NOTE: data acquired from rarestabilizationdata repo (Glenda Yenni)
 
 
 
@@ -124,12 +124,22 @@ head(dataset)
 
 # If all fields will be used, then set unusedFieldNames = ""
 
-names(dataset)
+###### Joining in route table
+routes = read.csv("data/raw_datasets/dataset_308RAW/routes.csv", header = TRUE)
+dataset0 = merge(dataset, routes, by = "ObservationNumber")
+
+##### ALLSpeciesSurveyed code 1 means all species observed were recorded, 3 = only 5 focal spp recorded
+dataset0 = dataset0[dataset0$AllSpeciesSurveyed == 1,]
+
+head(dataset0)
 
 #--! PROVIDE INFO !--#
-unusedFieldNames = c('total') # total = total number of species seen in one year
+unusedFieldNames = c('ObserverID', "SurveyStartTime", 'AllSpeciesSurveyed',"CountLengthInMintues",
+                     "Temperature", 'CloudCode', 'WindCode', 'PointCountStartTime', 'TimePeriod', 
+                     'DistancetoBird', 'PlayBackStartTime', 'NumberOfBITH', 'SurveyNotes', "SurveyID",
+                     'PointNumber', 'PrimaryPeak', 'RouteOwnership', 'MaxRouteElevation') 
 
-dataset1 = dataset[, !names(dataset) %in% unusedFieldNames]
+dataset1 = dataset0[, !names(dataset0) %in% unusedFieldNames]
 
 # Note that I've given a new name here "dataset1", this is to ensure that 
 # we don't have to go back to square 1 if we've miscoded anything.
@@ -168,7 +178,7 @@ dataFormattingTable[,'LatLong_sites'] =
 # E.g., c('year', 'month', 'day')
 
 #--! PROVIDE INFO !--#
-dateFieldName = c('year')
+dateFieldName = c('SurveyDate')
 
 # If necessary, paste together date info from multiple columns into single field
 if (length(dateFieldName) > 1) {
@@ -185,7 +195,7 @@ if (length(dateFieldName) > 1) {
 # be '%Y-%m-%d'. Type "?strptime" for other examples of date formatting.
 
 #--! PROVIDE INFO !--#
-dateformat = '%Y'
+dateformat = '%m/%d/%Y'
 
 # If the date is just a year, then make sure it is of class numeric
 # and not a factor. Otherwise change to a true date object.
@@ -240,7 +250,7 @@ dataFormattingTable[,'subannualTgrain'] =
   dataFormattingTableFieldUpdate(datasetID, 'subannualTgrain', 
 
 #--! PROVIDE INFO !--#                                 
-                                 'N')
+                                 'Y')
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SITE DATA ----
@@ -266,7 +276,7 @@ dataFormattingTable[,'subannualTgrain'] =
 # fill in the fields that specify nested spatial grains below.
 
 #--! PROVIDE INFO !--#
-site_grain_names = c("state")
+site_grain_names = c("RouteName")
 
 # We will now create the site field with these codes concatenated if there
 # are multiple grain fields. Otherwise, site will just be the single grain field.
@@ -286,13 +296,13 @@ dataFormattingTable[,'Raw_spatial_grain'] =
   dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain',  
                                  
 #--! PROVIDE INFO !--#
-                                 1) 
+                                 1000) # 5 points at 200 m intervals, transect
 
 dataFormattingTable[,'Raw_spatial_grain_unit'] = 
-  dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain',  
+  dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain_unit',  
                                  
 #--! PROVIDE INFO !--#
-                                 'km') 
+                                 'm') 
 
 
 # BEFORE YOU CONTINUE. We need to make sure that there are at least minNTime for 
@@ -374,7 +384,7 @@ dataFormattingTable[,'Notes_siteFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_siteFormat', 
 
 #--! PROVIDE INFO !--#
-  'The site field is the state the bird was sighted in.')
+  'The site field is the name of each route sampled.')
 
 
 #-------------------------------------------------------------------------------*
@@ -391,7 +401,8 @@ summary(dataset3)
 # If there is no countfield, set this equal to "".
 
 #--! PROVIDE INFO !--#
-countfield = "count"
+dataset3$presence = 1
+countfield = "presence"
 
 # Renaming it
 if (countfield == "") {
@@ -452,13 +463,13 @@ dataFormattingTable[,'countFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'countFormat',  
 
 #--! PROVIDE INFO !--#                                 
-                                 'count')
+                                 'presence')
 
 dataFormattingTable[,'Notes_countFormat'] = 
   dataFormattingTableFieldUpdate(datasetID, 'Notes_countFormat', 
                                  
 #--! PROVIDE INFO !--#                                 
-              'Count data provided')
+              'No count data provided so 1s added to indicate presence')
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SPECIES DATA ----
@@ -472,7 +483,7 @@ dataFormattingTable[,'Notes_countFormat'] =
 # It will get converted to 'species'
 
 #--! PROVIDE INFO !--#
-speciesField = 'species'
+speciesField = 'SpeciesCode'
 
 names(dataset5)[names(dataset5) == speciesField] = 'species'
 
@@ -501,7 +512,7 @@ data.frame(table(dataset5$species))
 # Because of this, you should really stop here and post an issue on GitHub. 
 
 #--! PROVIDE INFO !--#
-bad_sp = c('')
+bad_sp = c('', 'CHSW', 'NONE', 'RESQ', 'GRSQ', 'UNBI')
 
 dataset6 = dataset5[!dataset5$species %in% bad_sp,]
 
@@ -553,7 +564,7 @@ dataFormattingTable[,'Notes_spFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_spFormat',  
 
 #--! PROVIDE INFO !--#                                 
-  'No bad spp or typos found.')
+  'Observations of American Red Squirrel (RESQ) and Eastern Gray Squirrel (GRSQ) were removed. Unidentified birds were recorded as "UNBI" and "NONE" feilds removed.')
 
 #-------------------------------------------------------------------------------*
 # ---- MAKE DATA FRAME OF COUNT BY SITES, SPECIES, AND YEAR ----
@@ -686,7 +697,7 @@ tGrain = 'year'
 site_grain_names
 
 #--! PROVIDE INFO !--#
-sGrain = 'site'
+sGrain = 'RouteName'
 
 # This is a reasonable choice of spatial grain because ...
 #--! PROVIDE INFO !--#

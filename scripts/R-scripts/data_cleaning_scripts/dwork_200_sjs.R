@@ -2,7 +2,7 @@
 #  DATA FORMATTING TEMPLATE
 ################################################################################*
 #
-# Dataset name:
+# Dataset name: 
 # Dataset source (link):
 # Formatted by: 
 #
@@ -293,7 +293,7 @@ dataFormattingTable[,'Raw_spatial_grain'] =
                                  0.25) 
 
 dataFormattingTable[,'Raw_spatial_grain_unit'] = 
-  dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain',  
+  dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain_unit',  
                                  
 #--! PROVIDE INFO !--#
                                  'm2') 
@@ -450,7 +450,7 @@ head(dataset5)
 
 #!DATA FORMATTING TABLE UPDATE!
 
-# Possible values for countFormat field are density, cover, presence and count.
+# Possible values for countFormat field are density, cover, presence, biomass and count.
 
 dataFormattingTable[,'countFormat'] = 
   dataFormattingTableFieldUpdate(datasetID, 'countFormat',  
@@ -519,46 +519,10 @@ table(dataset6$species)
 # correct spellings in good_name, and then replace them using the for loop below:
 
 #--! PROVIDE INFO !--#
-typo_name = c('CERATOPHYLLUM',
-              'CHARA',
-              'ELEOCHARIS',
-              'ELODEA',
-              'ISOETES',
-              'JUNCUS',
-              'LITTORELLA',
-              'LOBELIA',
-              'MYRIO. ALT.',
-              'MYRIO. SIBIR.',
-              'MYRIO. TENELLUM',
-              'MYRIO. VERT.',
-              'NAJAS',
-              'P. AMPLIFOLIUS',
-              'P. GRAMINEUS', 
-              'P. RICHARDSONII',
-              'P. ROBBINSII',
-              'SAJ.',           #no other genus begins with these letters
-              'VAL.')           #no other genus begins with these letters
+typo_name = c('CERATOPHYLLUM')           #no other genus begins with these letters
 
 #--! PROVIDE INFO !--#
-good_name = c('CERATOPHYLLUM DEMERSUM',
-              'CHARA SP',
-              'ELEOCHARIS SP',
-              'ELODEA CANADENSIS',
-              'ISOETES SP',
-              'JUNCUS SP',
-              'LITTORELLA UNIFLORA ASCH. VAR. AMERICANA',
-              'LOBELIA DORTMANNA',
-              'MYRIOPHYLLUM ALTERNIFLORUM',
-              'MYRIOPHYLLUM SIBIRICUM',
-              'MYRIOPHYLLUM TENELLUM',
-              'MYRIOPHYLLUM VERTICILLATUM',
-              'NAJAS FLEXILIS',
-              'POTAMOGETON AMPLIFOLIUS',
-              'POTAMOGETON GRAMINEUS',
-              'POTAMOGETON RICHARDSONII',
-              'POTAMOGETON ROBBINSII',
-              'SAGITTARIA LATIFOLIA',
-              'VALLISNERIA AMERICANA')
+good_name = c('CERATOPHYLLUM DEMERSUM')
 
 if (length(typo_name) > 0 & typo_name[1] != "") {
   for (n in 1:length(typo_name)) {
@@ -646,10 +610,10 @@ write.csv(dataset7, paste("data/formatted_datasets/dataset_", datasetID, ".csv",
 # the format flag field. 
 
 dataFormattingTable[,'format_flag'] = 
-  dataFormattingTableFieldUpdate(200, 'format_flag', 
+  dataFormattingTableFieldUpdate(datasetID, 'format_flag', 
      
 #--! PROVIDE INFO !--#                                 
-                                 5)
+                                 1)
 
 # Flag codes are as follows:
 # 0 = not currently worked on

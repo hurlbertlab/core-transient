@@ -4,7 +4,7 @@
 #
 # Dataset name: Mapped quadrats in sagebrush steppe: long-term data for analyzing 
 # demographic rates and plant-plant interactions
-# Dataset source (link): http://onlinelibrary.wiley.com/doi/10.1890/10-0404.1/abstract
+# Dataset source (link): http://esapubs.org/archive/ecol/E091/243/default.htm#data
 # Formatted by: Sara Snell
 #
 # Start by opening the data formatting table (data_formatting_table.csv). 
@@ -75,7 +75,7 @@ dataFormattingTable[,'Raw_datafile_name'] =
   dataFormattingTableFieldUpdate(datasetID, 'Raw_datafile_name',  
                                  
 #--! PROVIDE INFO !--#
-  'SagebrushSteppe.xls') ### NOTE: data acquired from rare data stabilization repo
+  'allrecords_cover.csv') 
 
 
 
@@ -128,7 +128,7 @@ head(dataset)
 names(dataset)
 
 #--! PROVIDE INFO !--#
-unusedFieldNames = c('Total.Of.area', 'year')
+unusedFieldNames = c('SP_ID', 'year', 'stemID', 'x', 'y')
 
 dataset1 = dataset[, !names(dataset) %in% unusedFieldNames]
 
@@ -267,7 +267,12 @@ dataFormattingTable[,'subannualTgrain'] =
 # fill in the fields that specify nested spatial grains below.
 
 #--! PROVIDE INFO !--#
-site_grain_names = c("site")
+site_grain_names = c("quad")
+
+# ADDED - Q15-18 removed bc sampled less htan half the years of the others
+# 8-9 years vs 20+ years of sampling
+dataset2 = filter(dataset2, quad  ==  c( "Q1",  "Q10", "Q11", "Q12", "Q13", "Q14", "Q19", "Q2",
+        "Q20", "Q21", "Q22", "Q23", "Q24", "Q25", "Q26", "Q3",  "Q4",  "Q5", "Q6", "Q7", "Q8", "Q9"))
 
 # We will now create the site field with these codes concatenated if there
 # are multiple grain fields. Otherwise, site will just be the single grain field.
@@ -290,7 +295,7 @@ dataFormattingTable[,'Raw_spatial_grain'] =
                                  1) 
 
 dataFormattingTable[,'Raw_spatial_grain_unit'] = 
-  dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain',  
+  dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain_unit',  
                                  
 #--! PROVIDE INFO !--#
                                  'm2') 
@@ -313,7 +318,6 @@ ddply(datasetYearTest, .(siteCoarse), summarise,
       lengthYears =  length(unique(dateYear)))
 
 # If the dataset has less than minNTime years per site, do not continue processing. 
-
 
 # Do some quality control by comparing the site fields in the dataset with the new vector of sites:
 
@@ -375,7 +379,7 @@ dataFormattingTable[,'Notes_siteFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_siteFormat', 
 
 #--! PROVIDE INFO !--#
-  'The site field is the name of the site - SGS.')
+  'The site field is the name of each quad (26 total - the 3 sampled fewer years = 23 quads).')
 
 
 #-------------------------------------------------------------------------------*
@@ -392,7 +396,7 @@ summary(dataset3)
 # If there is no countfield, set this equal to "".
 
 #--! PROVIDE INFO !--#
-countfield = "count"
+countfield = "area"
 
 # Renaming it
 if (countfield == "") {
@@ -459,7 +463,7 @@ dataFormattingTable[,'Notes_countFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_countFormat', 
                                  
 #--! PROVIDE INFO !--#                                 
-              'Cover data provided')
+              'Cover area provided')
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SPECIES DATA ----
@@ -502,7 +506,7 @@ data.frame(table(dataset5$species))
 # Because of this, you should really stop here and post an issue on GitHub. 
 
 #--! PROVIDE INFO !--#
-bad_sp = c('Antennaria.spp_', 'Carex.spp_', 'unknown.grass')
+bad_sp = c('unknown', 'unknown grass', 'unknown lichen', 'unknown moss')
 
 dataset6 = dataset5[!dataset5$species %in% bad_sp,]
 
@@ -516,10 +520,10 @@ table(dataset6$species)
 # correct spellings in good_name, and then replace them using the for loop below:
 
 #--! PROVIDE INFO !--#
-typo_name = c('')           
+typo_name = c('Antennaria.spp_', 'Carex.spp_')           
 
 #--! PROVIDE INFO !--#
-good_name = c('')
+good_name = c('Antennaria rosea', 'Carex douglasii')
 
 if (length(typo_name) > 0 & typo_name[1] != "") {
   for (n in 1:length(typo_name)) {
@@ -554,7 +558,7 @@ dataFormattingTable[,'Notes_spFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_spFormat',  
 
 #--! PROVIDE INFO !--#                                 
-  'Genus only entries were removed, as well as the unknown grass.')
+  'Genus only entries were renamed to genus and spp since there was only one of that genus sampled; unknown entries were removed.')
 
 #-------------------------------------------------------------------------------*
 # ---- MAKE DATA FRAME OF COUNT BY SITES, SPECIES, AND YEAR ----
@@ -687,7 +691,7 @@ tGrain = 'year'
 site_grain_names
 
 #--! PROVIDE INFO !--#
-sGrain = 'site'
+sGrain = 'quad'
 
 # This is a reasonable choice of spatial grain because ...
 #--! PROVIDE INFO !--#

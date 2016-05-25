@@ -5,11 +5,13 @@
 # Input files are named propOcc_XXX.csv where
 # XXX is the dataset ID.
 
-# setwd("C:/git/core-transient")
+setwd("C:/git/core-transient")
 
 library(dplyr)
 library(ggplot2)
 library(tidyr)
+library(maps)
+# library(sp)
 
 source('scripts/R-scripts/core-transient_functions.R')
 
@@ -45,7 +47,7 @@ for (d in datasetIDs) {
 write.csv(summaries, 'output/tabular_data/core-transient_summary_test.csv', 
           row.names = T)
 
-                                               
+
 
 ##################################################################
 
@@ -103,12 +105,12 @@ barplot(log10(sitesBySystem), col = c('skyblue', 'navy', 'burlywood'), cex.names
 axis(2, 0:3)
 mtext(expression(log[10] ~ " # Assemblages"), 2, cex = 1.5, las = 0, line = 2.5)
 bar1 = barplot(dsetsByTaxa[taxorder], xaxt = "n", axisnames = F,
-        col = as.character(taxcolors$color[match(taxorder, taxcolors$taxa)]))
+               col = as.character(taxcolors$color[match(taxorder, taxcolors$taxa)]))
 text(bar1, par("usr")[3], taxorder, srt = 60, adj = c(1, 1), xpd = TRUE, cex = 1.25)
 axis(2, 0:5)
 mtext("# Datasets", 2, cex = 1.5, las = 0, line = 2.5)
 bar2 = barplot(log10(sitesByTaxa[taxorder]), axes = F, axisnames = F, ylim = c(0,3),
-        col = as.character(taxcolors$color[match(taxorder, taxcolors$taxa)]))
+               col = as.character(taxcolors$color[match(taxorder, taxcolors$taxa)]))
 text(bar2, par("usr")[3], taxorder, srt = 60, adj = c(1, 1), xpd = TRUE, cex = 1.25)
 axis(2, 0:3)
 mtext(expression(log[10] ~ " # Assemblages"), 2, cex = 1.5, las = 0, line = 2.5)
@@ -132,8 +134,8 @@ uniqTaxa = meanCoreByTaxa$Group.1[order(meanCoreByTaxa$x, decreasing = T)]
 pdf('output/plots/CT_boxplots_byTaxa.pdf', height = 6, width = 8)
 par(mfrow = c(1,1), mar = c(6, 5, 1, 1), mgp = c(3, 1, 0), oma = c(0,0,0,0))
 box1 = boxplot(summ2$propCore, xlim = c(0, (3*length(uniqTaxa)-2)), ylim = c(0, 1), 
-        border = 'white', col = 'white', ylab = "Fraction of species", cex.lab = 1, las = 1, 
-        cex.axis = 1.25)
+               border = 'white', col = 'white', ylab = "Fraction of species", cex.lab = 1, las = 1, 
+               cex.axis = 1.25)
 for (i in 1:length(uniqTaxa)) {   ##### wonky labelling somewhere in here
   tax = uniqTaxa[i]
   boxplot(summ2$propTrans[summ2$taxa == tax], add = T, col = transCol, staplewex = 0, outline = F,
@@ -405,10 +407,10 @@ arthYpred = mean.lm$coefficients[1] + arthXrange * mean.lm$coefficients[2]
 plotRegLine = function(data, lmObject, taxon) {
   xrange = log10(range(data$meanN[data$taxa == taxon]))
   ypred = lmObject$coefficients[1] + 
-          lmObject$coefficients[paste("taxa", taxon, sep = "")] +
-          (lmObject$coefficients[2] +
-             lmObject$coefficients[paste("log10(meanN):taxa", taxon, sep = "")])*
-          xrange
+    lmObject$coefficients[paste("taxa", taxon, sep = "")] +
+    (lmObject$coefficients[2] +
+       lmObject$coefficients[paste("log10(meanN):taxa", taxon, sep = "")])*
+    xrange
   lines(xrange, ypred, lwd = 3, col = as.character(data$color[data$taxa == taxon][1]))
 }
 
@@ -573,3 +575,35 @@ core_trans_prop_violins <- ggplot(stacked_site_data, aes(x = sp_category, y = pr
   facet_wrap(~taxa)
 
 ggsave("output/plots/core_trans_prop_violins.png")
+
+
+#################################################################
+# Map of each community - a few for now
+pdf('fig1map.pdf', height = 8, width = 10)
+par(pin = c(3, 4))
+
+world = map(database='world')
+
+# read in lat/long file (preformatted)
+latlong = read.csv("data/latlongs/latlongs.csv", header = T)
+points(latlong$Lon, latlong$Lat, pch = 20, col = as.integer(latlong$taxa.x))
+
+#points(plot248$long, plot248$lat, col = "green", pch = 20)
+#points(plot269$long, plot269$lat, col = "blue", pch = 20)
+#points(plot289$Longitude, plot289$Latitude, col = "cyan", pch = 20) 
+#points(plot308$RouteLongitude, plot308$RouteLattitude, col = "brown", pch = 20)
+#points(plot309$long, plot309$lat, col = "gold", pch = 20)
+#points(plot315$long, plot315$lat, col = "black", pch = 20)
+#points(plot247$long, plot247$lat, col = "purple", pch = 20)
+
+# out.file<-"output/tabular_data/fig1map.pdf"
+dev.off()
+
+##################################################################
+# GAM for Figure 5
+# mean occupancy as a function of taxon, scale, latitude/geography
+# need to merge in latlongs to summ2
+# waht is the scale variable here?
+summ2$meanAbundance = summ2$taxa + summ2$SCALE? + NEEDTOMERGEIN$latlong ## do we want propCore even?
+
+

@@ -302,7 +302,7 @@ dataFormattingTable[,'Raw_spatial_grain'] =
                                  5625) 
 
 dataFormattingTable[,'Raw_spatial_grain_unit'] = 
-  dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain',  
+  dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain_unit',  
                                  
 #--! PROVIDE INFO !--#
                                  'm2') 
@@ -566,8 +566,7 @@ dataFormattingTable[,'Notes_spFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_spFormat',  
 
 #--! PROVIDE INFO !--#                                 
-  'No alterations to species name were necessary since there were only a few names and
-they were represented wwith two letters. Data in presence/absence format.')
+  'No alterations to species name were necessary since there were only a few names and they were represented wwith two letters. Data in presence/absence format.')
 
 #-------------------------------------------------------------------------------*
 # ---- MAKE DATA FRAME OF COUNT BY SITES, SPECIES, AND YEAR ----

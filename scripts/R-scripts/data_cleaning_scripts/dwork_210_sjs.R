@@ -295,7 +295,7 @@ dataFormattingTable[,'Raw_spatial_grain'] =
                                  16) 
 
 dataFormattingTable[,'Raw_spatial_grain_unit'] = 
-  dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain',  
+  dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain_unit',  
                                  
 #--! PROVIDE INFO !--#
                                  'm2') 
@@ -380,8 +380,7 @@ dataFormattingTable[,'Notes_siteFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_siteFormat', 
 
 #--! PROVIDE INFO !--#
-  'The site field is a concatenation of experiment, field, and plot. Field D was 
-deleted bc its spatial grain was much larger than Fields A,B,C.')
+  'The site field is a concatenation of experiment, field, and plot. Field D was deleted bc its spatial grain was much larger than Fields A,B,C.')
 
 
 #-------------------------------------------------------------------------------*
@@ -575,8 +574,7 @@ dataFormattingTable[,'Notes_spFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_spFormat',  
 
 #--! PROVIDE INFO !--#                                 
-  'Lot of species had generic genuses listed as 1 and >50% having genus and species, so they were removed. 
-Anything with a generic name(tree, shrub) was also removed.')
+  'Lot of species had generic genuses listed as 1 and >50% having genus and species, so they were removed. Anything with a generic name(tree, shrub) was also removed.')
 
 #-------------------------------------------------------------------------------*
 # ---- MAKE DATA FRAME OF COUNT BY SITES, SPECIES, AND YEAR ----

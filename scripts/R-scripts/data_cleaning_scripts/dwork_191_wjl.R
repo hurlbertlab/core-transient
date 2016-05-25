@@ -3,6 +3,11 @@
 #
 #  Metadata can be found at http://idn.ceos.org/KeywordSearch/Metadata.do?Portal=idn_water&KeywordPath=%5BSensor_Name%3A+Short_Name%3D%27GRAB+SAMPLERS%27%5D&OrigMetadataNode=NOAA-NMMR&EntryId=WHOI_Benthic_Fauna&MetadataView=Full&MetadataType=0&lbnode=mdlb2
 
+# As a marine benthic dataset with only lat-longs as site identifiers, we've decided the data are unsuitable 
+# for analysis of temporal occupancy at a relevant assemblage scale.
+
+# NO NEED TO RUN SCRIPT
+
 
 #-------------------------------------------------------------------------------*
 # ---- SET-UP ----

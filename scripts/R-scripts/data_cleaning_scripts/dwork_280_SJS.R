@@ -236,8 +236,7 @@ dataFormattingTable[,'Notes_timeFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_timeFormat', 
 
 #--! PROVIDE INFO !--#
-    'The only modification to this field involved converting to a date object.
-  Original format was m/d/yyyy.')
+    'The only modification to this field involved converting to a date object. Original format was m/d/yyyy.')
 
 
 # subannualTgrain. After exploring the time data, was this dataset sampled at a 
@@ -296,7 +295,7 @@ dataFormattingTable[,'Raw_spatial_grain'] =
                                  250) 
 
 dataFormattingTable[,'Raw_spatial_grain_unit'] = 
-  dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain',  
+  dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain_unit',  
                                  
 #--! PROVIDE INFO !--#
                                  'mL') 
@@ -465,8 +464,7 @@ dataFormattingTable[,'Notes_countFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_countFormat', 
                                  
 #--! PROVIDE INFO !--#                                 
-              'Number cells per ml; data on biomass and number of colonies were
-  excluded')
+              'Number cells per ml; data on biomass and number of colonies were excluded')
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SPECIES DATA ----
@@ -580,10 +578,7 @@ dataFormattingTable[,'Notes_spFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_spFormat',  
 
 #--! PROVIDE INFO !--#                                 
-  'Lots of species had the same name but different spacing, so all of those were combined using 
-trimws command. Other species had 1 entry at the genus level and several at the species
-level, so genus-only entries were removed. Additionally, when there were more genus-level 
-entries than species, species-level entries were changed to just genus.')
+  'Lots of species had the same name but different spacing, so all of those were combined using trimws command. Other species had 1 entry at the genus level and several at the species level, so genus-only entries were removed. Additionally, when there were more genus-level entries than species, species-level entries were changed to just genus.')
 
 #-------------------------------------------------------------------------------*
 # ---- MAKE DATA FRAME OF COUNT BY SITES, SPECIES, AND YEAR ----

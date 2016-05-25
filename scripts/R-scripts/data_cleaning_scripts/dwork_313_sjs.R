@@ -289,7 +289,7 @@ dataFormattingTable[,'Raw_spatial_grain'] =
                                  41) #40 cm deep on a 16 trap plot - assumed square so (16 * 40)^2
 
 dataFormattingTable[,'Raw_spatial_grain_unit'] = 
-  dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain',  
+  dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain_unit',  
                                  
 #--! PROVIDE INFO !--#
                                  'm2') 

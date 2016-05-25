@@ -293,7 +293,7 @@ dataFormattingTable[,'Raw_spatial_grain'] =
                                  50) 
 
 dataFormattingTable[,'Raw_spatial_grain_unit'] = 
-  dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain',  
+  dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain_unit',  
                                  
                                  #--! PROVIDE INFO !--#
                                  'm') 
@@ -556,10 +556,8 @@ head(dataset6)
 dataFormattingTable[,'Notes_spFormat'] = 
   dataFormattingTableFieldUpdate(datasetID, 'Notes_spFormat',  
                                  
-                                 #--! PROVIDE INFO !--#                                 
-                                 '3 species were removed because they were genus only or had only 1 field. One species had no name
-                                 but 5 entries, so it was removed. There were 295 entries for just COPEPODITES 
-                                 as well as 295 entries for COPEPOD NAUPLII, so that seemed like a typo and COPEPODITES was removed.')
+#--! PROVIDE INFO !--#                                 
+  '3 species were removed because they were genus only or had only 1 field. One species had no name but 5 entries, so it was removed. There were 295 entries for just COPEPODITES as well as 295 entries for COPEPOD NAUPLII, so that seemed like a typo and COPEPODITES was removed.')
 
 #-------------------------------------------------------------------------------*
 # ---- MAKE DATA FRAME OF COUNT BY SITES, SPECIES, AND YEAR ----

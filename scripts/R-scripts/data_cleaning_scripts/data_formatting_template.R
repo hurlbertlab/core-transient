@@ -293,7 +293,7 @@ dataFormattingTable[,'Raw_spatial_grain'] =
                                  0.25) 
 
 dataFormattingTable[,'Raw_spatial_grain_unit'] = 
-  dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain',  
+  dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain_unit',  
                                  
 #--! PROVIDE INFO !--#
                                  'm2') 
@@ -450,7 +450,7 @@ head(dataset5)
 
 #!DATA FORMATTING TABLE UPDATE!
 
-# Possible values for countFormat field are density, cover, presence and count.
+# Possible values for countFormat field are density, cover, presence, biomass and count.
 
 dataFormattingTable[,'countFormat'] = 
   dataFormattingTableFieldUpdate(datasetID, 'countFormat',  

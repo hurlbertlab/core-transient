@@ -291,7 +291,7 @@ dataFormattingTable[,'Raw_spatial_grain'] =
 # source = http://www.slu.se/Documents/externwebben/akvatiska-resurser/personliga%20sidor/Ann-Christin%20Rudolphi/2010%20IBTS%20Manual_Rev_VIII.pdf
 
 dataFormattingTable[,'Raw_spatial_grain_unit'] = 
-  dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain',  
+  dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain_unit',  
                                  
 #--! PROVIDE INFO !--#
                                  'm2') 

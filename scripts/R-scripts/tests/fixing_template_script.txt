@@ -1,0 +1,17 @@
+find data_cleaning_scripts/ -type f -exec sed -i 's_/dataFormattingTable[,'Raw_spatial_grain_unit'] =\n
+dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain'_/dataFormattingTable[,'Raw_spatial_grain_unit'] =\n
+dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain_unit'_/g' {} \;
+
+grep -rl matchstring data_cleaning_scripts/ | xargs sed -i '' 's//g'
+
+grep -r -l data_cleaning_scripts/ . | sort | uniq | xargs perl -e "s/dataFormattingTable[,'Raw_spatial_grain_unit'] = \n
+dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain'/dataFormattingTable[,'Raw_spatial_grain_unit'] = \n
+dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain_unit'/" -pi
+
+perl -pXe 's/dataFormattingTable[,'Raw_spatial_grain_unit'] = \n
+dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain'/dataFormattingTable[,'Raw_spatial_grain_unit'] = \n
+dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain_unit'/g' -i **
+
+sed -i "s/'dataFormattingTable[,'Raw_spatial_grain_unit'] =\n
+dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain''/'dataFormattingTable[,'Raw_spatial_grain_unit'] =\n
+dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain_unit''/g"

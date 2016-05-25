@@ -74,8 +74,7 @@ dataFormattingTable[,'Raw_datafile_name'] =
   dataFormattingTableFieldUpdate(datasetID, 'Raw_datafile_name',  
                                  
 #--! PROVIDE INFO !--#
-  'Appendix II_ Eastern Wood Breeding Bird Data 
-- Pattern and Process in Macroecology - Wiley Online Library.csv') 
+  'Appendix II_ Eastern Wood Breeding Bird Data - Pattern and Process in Macroecology - Wiley Online Library.csv') 
 
 
 
@@ -320,7 +319,7 @@ dataFormattingTable[,'Raw_spatial_grain'] =
                                  16) 
 
 dataFormattingTable[,'Raw_spatial_grain_unit'] = 
-  dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain',  
+  dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain_unit',  
                                  
 #--! PROVIDE INFO !--#
                                  'ha') 

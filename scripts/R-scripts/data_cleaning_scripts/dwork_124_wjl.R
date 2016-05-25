@@ -3,6 +3,18 @@
 #
 #  Metadata can be foudn at: http://seamap.env.duke.edu/dataset/103150230
 
+# Sampling effort and resultant species lists are way too variable from 
+# year to year to be included for analysis
+
+# Number of samples per year
+# 1903 1904 1905 1906 1907 1908 1909 
+# 168  340  329   21   86   19   46 
+
+# Number of species observed per year
+# 1903 1904 1905 1906 1907 1908 1909 
+# 325  454  503   31  185    5   62 
+
+# NO NEED TO RUN SCRIPT
 
 #-------------------------------------------------------------------------------*
 # ---- SET-UP ----

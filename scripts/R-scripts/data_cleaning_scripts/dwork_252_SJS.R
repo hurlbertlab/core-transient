@@ -236,8 +236,7 @@ dataFormattingTable[,'Notes_timeFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_timeFormat', 
 
 #--! PROVIDE INFO !--#
-    'The year, month, and day columns were concatenated using "paste" to get a single column
-called sampledate, which was then converted to a date object.')
+    'The year, month, and day columns were concatenated using "paste" to get a single column called sampledate, which was then converted to a date object.')
 
 
 # subannualTgrain. After exploring the time data, was this dataset sampled at a 
@@ -300,7 +299,7 @@ dataFormattingTable[,'Raw_spatial_grain'] =
                                  4) 
 
 dataFormattingTable[,'Raw_spatial_grain_unit'] = 
-  dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain',  
+  dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain_unit',  
                                  
 #--! PROVIDE INFO !--#
                                  'm2') 
@@ -385,8 +384,7 @@ dataFormattingTable[,'Notes_siteFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_siteFormat', 
 
 #--! PROVIDE INFO !--#
-  'The site field is a concatenation of site, line, and trap. Traps 1,3,5 only
-were used bc 2,4,6 did not have data for all years.')
+  'The site field is a concatenation of site, line, and trap. Traps 1,3,5 only were used bc 2,4,6 did not have data for all years.')
 
 
 #-------------------------------------------------------------------------------*
@@ -567,9 +565,7 @@ dataFormattingTable[,'Notes_spFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_spFormat',  
 
 #--! PROVIDE INFO !--#                                 
-  'No typos found, but some species were just labelled as numbers and were removed.
-Also NS meant "no species" bc values were either negative or -888, the NA value, so 
-that was also removed.')
+  'No typos found, but some species were just labelled as numbers and were removed. Also NS meant "no species" bc values were either negative or -888, the NA value, so that was also removed.')
 
 #-------------------------------------------------------------------------------*
 # ---- MAKE DATA FRAME OF COUNT BY SITES, SPECIES, AND YEAR ----
@@ -702,7 +698,7 @@ tGrain = 'year'
 site_grain_names
 
 #--! PROVIDE INFO !--#
-sGrain = 'site_line_trap'
+sGrain = 'site'
 
 # This is a reasonable choice of spatial grain because ...
 #--! PROVIDE INFO !--#

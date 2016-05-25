@@ -6,11 +6,17 @@
 setwd("C:/git/core-transient/scripts/R-scripts/Biotic Interactions Snell")
 #### ---- Inital Formatting ---- ####
 library(plyr)
+library(dplyr)
+library(maps)
+library(rgdal)
+library(shapefiles)
+library(tidyr)
 
 # read in temporal occupancy dataset 
 Hurlbert_o = read.csv('Master_RO_Correlates_20110610.csv', header = T)
 # subset species whose occupancies were between 0.3 and 0.7 over a 10 year period
 subsetocc = Hurlbert_o[Hurlbert_o$X10yr.Prop > .3 & Hurlbert_o$X10yr.Prop < .7,]
+# write.csv(subsetocc, "focal.csv")
 # compare green-tailed towhee to spotted towhee occupancies
 towhees = subsetocc[subsetocc$CommonName == "Spotted Towhee"| subsetocc$CommonName == "Green-tailed Towhee",]
 
@@ -58,9 +64,134 @@ obs_exp_total = merge(gt_ep, t1, by = "stateroute")
 drops <- c("SSTATENUMB","SROUTE", "AOU") # -drops
 obs_exp_total = obs_exp_total[, !(names(obs_exp_total) %in% drops)]
 
-############# ---- Generate total species occupancies ---- #############
-library(tidyr)
+############# ---- Set up pairwise comparison table ---- #############
 
+ttable = read.csv("trophic_table.csv", header = TRUE)
+ttable2 = merge(ttable, Hurlbert_o, by = "AOU")
+write.csv(ttable2, "warbler_all.csv")
+
+# create a table with pairwise comparison of each focal species to several potential competitors
+focal_competitor_table = read.csv("focal spp.csv", header = TRUE)
+focal_competitor_table = data.frame(focal_competitor_table$AOU, focal_competitor_table$CommonName, focal_competitor_table$Competitor)
+focal_competitor_table = plyr::rename(focal_competitor_table, c("focal_competitor_table.AOU" = "focalAOU", "focal_competitor_table.CommonName" = "Focal", "focal_competitor_table.Competitor" = "Competitor"))
+
+# read in taxonomy data
+AOU = read.csv("Bird_Taxonomy.csv", header = TRUE)
+AOU2 = data.frame(AOU$SCI_NAME, AOU$AOU_OUT, AOU$PRIMARY_COM_NAME, AOU$FAMILY)
+AOU2 = plyr::rename(AOU2, c("AOU.SCI_NAME" = "SciName", "AOU.AOU_OUT" = "CompetitorAOU", "AOU.PRIMARY_COM_NAME" = "Competitor", "AOU.FAMILY" = "FAMILY"))
+
+# remove duplicates/subspecies
+AOUsub = AOU2[-grep("sp.", AOU2$Competitor),]
+AOUsub2 = AOUsub[-grep("\\)", AOUsub$Competitor),]
+AOUsub3 = AOUsub2[-grep(" \\(", AOUsub2$Competitor),]
+AOUsub4 = unique(AOUsub3)
+
+#merge pairwise table with taxonomy info
+comp_AOU = merge(focal_competitor_table, AOUsub4, by = "Competitor")
+comp_AOU <- comp_AOU[c("Focal", "focalAOU", "Competitor", "CompetitorAOU", "SciName")]
+
+
+# renaming to get latest scientific names for mismatch spp
+tempnames = filter(comp_AOU, SciName == 'Oreothlypis peregrina')
+tempnames$SciName = 'Vermivora peregrina'
+comp_AOU2 = rbind(comp_AOU, tempnames)
+comp_AOU2 = comp_AOU2[!(comp_AOU2$SciName =='Oreothlypis peregrina'), ]
+
+tempnames = filter(comp_AOU, SciName == 'Vermivora pinus')
+tempnames$SciName = 'Vermivora cyanoptera'
+comp_AOU3 = rbind(comp_AOU2, tempnames)
+comp_AOU3 = comp_AOU3[!(comp_AOU3$SciName =='Vermivora pinus'), ]
+
+tempnames = filter(comp_AOU, SciName == 'Stellula calliope')
+tempnames$SciName = 'Selasphorus calliope'
+comp_AOU4 = rbind(comp_AOU3, tempnames)
+comp_AOU4 = comp_AOU4[!(comp_AOU4$SciName =='Stellula calliope'), ]
+
+# import body size data
+bsize = read.csv("DunningBodySize_old_2008.11.12.csv", header = TRUE)
+bsize = unite(bsize, SciName, Genus, Species, sep = " ")
+
+# renaming to get latest scientific names for mismatch spp
+tempnames = filter(bsize, SciName == 'Helmitheros vermivorus')
+tempnames$SciName = 'Helmitheros vermivorum'
+bsize2 = rbind(bsize, tempnames)
+bsize2 = bsize2[!(bsize2$SciName =='Helmitheros vermivorus'), ]
+
+tempnames = filter(bsize, SciName == 'Seiurus noveboracensis')
+tempnames$SciName = 'Parkesia noveboracensis'
+bsize3 = rbind(bsize2, tempnames)
+bsize3 = bsize3[!(bsize3$SciName =='Seiurus noveboracensis'), ]
+
+tempnames = filter(bsize, SciName == 'Vermivora pinus')
+tempnames$SciName = 'Vermivora cyanoptera'
+bsize4 = rbind(bsize3, tempnames)
+bsize4 = bsize4[!(bsize4$SciName =='Vermivora pinus'), ]
+
+tempnames = filter(bsize, SciName == 'Seiurus motacilla')
+tempnames$SciName = 'Parkesia motacilla'
+bsize5 = rbind(bsize4, tempnames)
+bsize5 = bsize5[!(bsize5$SciName =='Seiurus motacilla'), ]
+
+tempnames = filter(bsize, SciName == 'Baeolophus griseus')
+tempnames$SciName = 'Baeolophus ridgwayi'
+bsize6 = rbind(bsize5, tempnames)
+bsize6 = bsize6[!(bsize6$SciName =='Baeolophus griseus'), ]
+
+tempnames = filter(bsize, SciName == 'Stellula calliope')
+tempnames$SciName = 'Selasphorus calliope'
+bsize7 = rbind(bsize6, tempnames)
+bsize7 = bsize7[!(bsize7$SciName =='Stellula calliope'), ]
+
+tempnames = filter(bsize, SciName == 'Pipilo crissalis')
+tempnames$SciName = 'Melozone crissalis'
+bsize8 = rbind(bsize7, tempnames)
+bsize8 = bsize8[!(bsize8$SciName =='Pipilo crissalis'), ]
+
+tempnames = filter(bsize, SciName == 'Contopus borealis')
+tempnames$SciName = 'Melozone crissalis'
+bsize9 = rbind(bsize8, tempnames)
+bsize9 = bsize9[!(bsize9$SciName =='Contopus borealis'), ]
+
+# merge in competitor and focal body size
+spec_w_bsize = merge(comp_AOU4, bsize9, by.x = "Focal", by.y = "CommonName")
+spec_w_bsize2 = merge(spec_w_bsize, bsize9, by.x = "Competitor", by.y = "CommonName")
+
+spec_w_weights = data.frame(spec_w_bsize2$Focal, spec_w_bsize2$focalAOU, spec_w_bsize2$SciName.y, spec_w_bsize2$Mass.g..x, spec_w_bsize2$Competitor,
+                            spec_w_bsize2$CompetitorAOU, spec_w_bsize2$SciName.x, spec_w_bsize2$Mass.g..y)
+spec_w_weights = plyr::rename(spec_w_weights, c("spec_w_bsize2.Focal" = "Focal", "spec_w_bsize2.focalAOU" = "FocalAOU", 
+                                                "spec_w_bsize2.SciName.y" = "FocalSciName", "spec_w_bsize2.Mass.g..x" = "FocalMass", "spec_w_bsize2.Competitor" = "Competitor",
+                                                "spec_w_bsize2.CompetitorAOU" = "CompAOU", "spec_w_bsize2.SciName.x" = "CompSciName", "spec_w_bsize2.Mass.g..y" = "CompMass"))
+
+# want to compare body size - if competitor is double or more in size to focal, then delete
+new_spec_weights = subset(spec_w_weights, spec_w_weights$FocalMass / spec_w_weights$CompMass >= 0.5 &
+                            spec_w_weights$FocalMass / spec_w_weights$CompMass <= 2)
+
+# adding in underscore for file name matching
+new_spec_weights$focalcat = gsub(" ", "_", new_spec_weights$FocalSciName)
+new_spec_weights$compcat = gsub(" ", "_", new_spec_weights$CompSciName)
+
+# read in bird range shps
+all_spp_list = list.files('Z:/GIS/birds/All/All')
+
+# for loop to select a genus_spp from pairwise table, read in shp, subset to permanent habitat, plot focal
+filesoutput = c()
+focal_spp = c(new_spec_weights$focalcat)
+for (sp in focal_spp){
+  print(sp)
+  t1 = all_spp_list[grep(sp, all_spp_list)]
+  t2 = t1[grep('.shp', t1)]
+  t3 = strsplit(t2, ".shp")
+  filesoutput = rbind(filesoutput, t1)
+  test.poly <- readShapePoly(paste("Z:/GIS/birds/All/All/", t3, sep = ""))# reads in species-specific shapefile
+  plot(test.poly) 
+  sporigin = test.poly[test.poly@data$ORIGIN == 1|test.poly@data$ORIGIN == 2|test.poly@data$ORIGIN ==5]
+  plot(sporigin)
+} 
+
+### FLO parks, try to project, intersect, then calculate area of intersect
+
+
+############# ---- Generate total species occupancies ---- #############
 # gathering occupancy data for all species
 all_occ = gather(coyle_o, "AOU", "occupancy", 2:ncol(coyle_o))
 all_occ$AOU = as.character(all_occ$AOU)
@@ -93,7 +224,7 @@ names(avg_occ_dist) = c('occupancy', 'frequency')
 avg_occ_dist$occupancy = as.numeric(as.character(avg_occ_dist$occupancy))
 
 #### ---- Plotting ---- ####
-library(maps)
+
 
 # plot total avg avian occupancy distribution
 plot(avg_occ_dist$occupancy, avg_occ_dist$frequency, type = 'l', 
@@ -144,7 +275,7 @@ competitor = bbs_loc[bbs_loc$Aou == 5880,]
 # merge focal abundance w expected pres/env variables #NEEDS TO BE IN A LOOP
 env_abun = merge(all_expected_pres, focal_abun, by = "stateroute")
 env_abun_subset = env_abun[, (names(env_abun) %in% c("stateroute", "elev.mean", "sum.EVI", 
-                                                    "mat", "ap.mean","SpeciesTotal","AOU"))]
+                                                     "mat", "ap.mean","SpeciesTotal","AOU"))]
 
 # NEED: for loop for species-spec weighted avg of env variables
 env_abun_subset$meantemp = (env_abun_subset$mat * env_abun_subset$SpeciesTotal)/sum(env_abun_subset$SpeciesTotal)
@@ -170,7 +301,7 @@ env_gt = env[env$Species == 5900 |env$Species == 5880,]
 col_keeps <- c("stateroute", "Species", "Lati", "Longi", "zTemp","zPrecip", "zElev", "zEVI")
 env_zscore = env_gt[, (names(env_gt) %in% col_keeps)]
 
-  
+
 library(dplyr)
 
 
@@ -229,7 +360,7 @@ ggplotRegression <- function (fit) {
   
   ggplot(fit$model, aes_string(x = names(fit$model)[2], y = names(fit$model)[1])) + 
     geom_point() + ylim(0, 1)
-    stat_smooth(method = "lm", col = "red") + theme_classic() + 
+  stat_smooth(method = "lm", col = "red") + theme_classic() + 
     labs(title = paste("Adj R2 = ",signif(summary(fit)$adj.r.squared, 5),
                        "Intercept =",signif(fit$coef[[1]],5 ),
                        " Slope =",signif(fit$coef[[2]], 5),
@@ -277,15 +408,15 @@ cs <- function(x) scale(x,scale=TRUE,center=TRUE)
 # need to scale predictor variables
 
 glm_abundance_binom = glm(cbind(sp_success, sp_fail) ~ SpottedTotal + 
-               abs(zTemp)+abs(zElev)+abs(zPrecip)+abs(zEVI), family = binomial(link = logit), data = env_occu_matrix_1)
+                            abs(zTemp)+abs(zElev)+abs(zPrecip)+abs(zEVI), family = binomial(link = logit), data = env_occu_matrix_1)
 summary(glm_abundance_binom)
 
 glm_abundance_quasibinom = glm(cbind(sp_success, sp_fail) ~ SpottedTotal + 
-               abs(zTemp)+abs(zElev)+abs(zPrecip)+abs(zEVI), family = quasibinomial, data = env_occu_matrix_1)
+                                 abs(zTemp)+abs(zElev)+abs(zPrecip)+abs(zEVI), family = quasibinomial, data = env_occu_matrix_1)
 summary(glm_abundance_quasibinom)
 
 glm_abundance_rand_site = glmer(cbind(sp_success, sp_fail) ~ cs(SpottedTotal) + 
-               abs(zTemp)+abs(zElev)+abs(zPrecip)+abs(zEVI) + (1|stateroute), family = binomial(link = logit), data = env_occu_matrix_1)
+                                  abs(zTemp)+abs(zElev)+abs(zPrecip)+abs(zEVI) + (1|stateroute), family = binomial(link = logit), data = env_occu_matrix_1)
 summary(glm_abundance_rand_site) 
 
 
@@ -310,4 +441,11 @@ d1 = deviance(glm_abundance_rand_site)
 
 LR = d0- d1
 pchisq(LR, 1, lower = FALSE)
+
+
+
+
+
+
+
 

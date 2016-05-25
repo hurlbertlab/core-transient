@@ -3,6 +3,19 @@
 #
 #  Metadata can be found at http://www.emodnet-biology.eu/data-catalog?module=dataset&dasid=1037
 
+# As a marine benthic dataset with only lat-longs as site identifiers, we've decided the data are unsuitable 
+# for analysis of temporal occupancy at a relevant assemblage scale.
+
+# Notes field has alternative location identifiers which can be pulled out like this:
+
+# siteID = substr(matrix(unlist(strsplit(as.character(dataset$Notes), ":")), byrow = T, ncol = 2)[,2], 5, 20)
+
+# However, without further description of the sampling methodology, it seems likely that
+# these site id's refer to a fixed ship location, but not necessarily a fixed quadrat
+# or sampling station on the ocean floor.
+
+
+# NO NEED TO RUN SCRIPT
 
 
 
@@ -211,6 +224,25 @@ if (dateformat == '%Y' | dateformat == '%y') {
 } else {
   dateYear = format(dataset2$date, '%Y')
 }
+
+
+# What is the spatial grain of the finest sampling scale? For example, this might be
+# a 0.25 m2 quadrat, or a 5 m transect, or a 50 ml water sample.
+
+dataFormattingTable[,'Raw_spatial_grain'] = 
+  dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain',  
+                                 
+                                 #--! PROVIDE INFO !--#
+                                 NA) 
+
+dataFormattingTable[,'Raw_spatial_grain_unit'] = 
+  dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain_unit',  
+                                 
+                                 #--! PROVIDE INFO !--#
+                                 NA) 
+
+
+
 
 datasetYearTest = data.frame(siteCoarse, dateYear)
 
@@ -446,21 +478,13 @@ write.csv(dataset7, paste("data/formatted_datasets/dataset_", datasetID, ".csv",
 
 # !GIT-ADD-COMMIT-PUSH THE FORMATTED DATASET IN THE DATA FILE, THEN GIT-ADD-COMMIT-PUSH THE UPDATED DATA FOLDER!
 
-# As we've now successfully created the formatted dataset, we will now update the format priority and format flag fields. 
-
-dataFormattingTable[,'format_priority'] = 
-  dataFormattingTableFieldUpdate(datasetID, 'format_priority',    # Fill value below in quotes 
-                                 
-                                 'NA')
+# As we've now successfully created the formatted dataset, we will now update the format flag field. 
 
 dataFormattingTable[,'format_flag'] = 
   dataFormattingTableFieldUpdate(datasetID, 'format_flag',    # Fill value below
                                  
-                                 1)
+                                 5)
 
-# And update the data formatting table:
-
-write.csv(dataFormattingTable, 'data_formatting_table.csv', row.names = F)
 
 # !GIT-ADD-COMMIT-PUSH THE DATA FORMATTING TABLE!
 
@@ -544,7 +568,24 @@ head(richnessYearsTest)
 dim(richnessYearsTest) ; dim(dataset7)
 
 #Number of unique sites meeting criteria
-length(unique(richnessYearsTest$analysisSite))
+goodSites = unique(richnessYearsTest$analysisSite)
+length(goodSites)
+
+# Now subset dataset7 to just those goodSites as defined. This is tricky though
+# because assuming Sgrain is not the finest resolution, we will need to use
+# grep to match site names that begin with the string in goodSites.
+# The reason to do this is that sites which don't meet the criteria (e.g. not
+# enough years of data) may also have low sampling intensity that constrains
+# the subsampling level of the well sampled sites.
+
+uniqueSites = unique(dataset7$site)
+fullGoodSites = c()
+for (s in goodSites) {
+  tmp = as.character(uniqueSites[grepl(paste(s, "_", sep = ""), paste(uniqueSites, "_", sep = ""))])
+  fullGoodSites = c(fullGoodSites, tmp)
+}
+
+dataset8 = subset(dataset7, site %in% fullGoodSites)
 
 # Once we've settled on spatial and temporal grains that pass our test above,
 # we then need to 1) figure out what levels of spatial and temporal subsampling
@@ -560,7 +601,8 @@ length(unique(richnessYearsTest$analysisSite))
 # and bases the characterization of the community in that site-year based on
 # the aggregate of those standardized subsamples.
 
-subsettedData = subsetDataFun(dataset7, datasetID, spatialGrain = sGrain, 
+subsettedData = subsetDataFun(dataset8, 
+                              datasetID, spatialGrain = sGrain, 
                               temporalGrain = tGrain,
                               minNTime = minNTime, minSpRich = minSpRich,
                               proportionalThreshold = topFractionSites,
@@ -579,6 +621,16 @@ siteSummaryFun(subsettedData)
 # If everything looks good, write the files:
 
 writePropOccSiteSummary(subsettedData)
+
+# Update Data Formatting Table with summary stats of the formatted,
+# properly subsetted dataset
+dataFormattingTable = dataFormattingTableUpdateFinished(datasetID, subsettedData)
+
+# And write the final data formatting table:
+
+write.csv(dataFormattingTable, 'data_formatting_table.csv', row.names = F)
+
+
 
 # Remove all objects except for functions from the environment:
 

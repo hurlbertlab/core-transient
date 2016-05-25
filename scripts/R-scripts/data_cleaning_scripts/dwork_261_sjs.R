@@ -294,7 +294,7 @@ dataFormattingTable[,'Raw_spatial_grain'] =
                                  2760) 
 
 dataFormattingTable[,'Raw_spatial_grain_unit'] = 
-  dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain',  
+  dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain_unit',  
                                  
 #--! PROVIDE INFO !--#
                                  'm2') 
@@ -379,9 +379,7 @@ dataFormattingTable[,'Notes_siteFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_siteFormat', 
 
 #--! PROVIDE INFO !--#
-  'The site field is the number one because all sampling was completed at one site. 
-  Additionally, some data had sub-annual data and others did not, so all data is at the 
-  annual scale only.')
+  'The site field is the number one because all sampling was completed at one site. Additionally, some data had sub-annual data and others did not, so all data is at the annual scale only.')
 
 
 #-------------------------------------------------------------------------------*

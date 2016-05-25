@@ -293,7 +293,7 @@ dataFormattingTable[,'Raw_spatial_grain'] =
                                  125) 
 
 dataFormattingTable[,'Raw_spatial_grain_unit'] = 
-  dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain',  
+  dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain_unit',  
                                  
 #--! PROVIDE INFO !--#
                                  'ha') 
@@ -378,8 +378,7 @@ dataFormattingTable[,'Notes_siteFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_siteFormat', 
 
 #--! PROVIDE INFO !--#
-  'The site field  made up of four sample sites - Abisko (PAL), Ammarnas (K1) and (K2), Ottsjo (OA).
-PAL from app 3, K1 and K2 from app 2, and OA from app 4. Took average of area (100-150 ha) for spatial grain.')
+  'The site field  made up of four sample sites - Abisko (PAL), Ammarnas (K1) and (K2), Ottsjo (OA).PAL from app 3, K1 and K2 from app 2, and OA from app 4. Took average of area (100-150 ha) for spatial grain.')
 
 
 #-------------------------------------------------------------------------------*

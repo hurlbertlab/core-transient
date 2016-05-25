@@ -292,7 +292,7 @@ dataFormattingTable[,'Raw_spatial_grain'] =
                                  0.25) 
 
 dataFormattingTable[,'Raw_spatial_grain_unit'] = 
-  dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain',  
+  dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain_unit',  
                                  
 #--! PROVIDE INFO !--#
                                  'm2') 
@@ -377,8 +377,7 @@ dataFormattingTable[,'Notes_siteFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_siteFormat', 
 
 #--! PROVIDE INFO !--#
-  'The site field is a concatenation of site, depth, lake id. Depth was concatenated
-min and max columns.')
+  'The site field is a concatenation of site, depth, lake id. Depth was concatenated min and max columns.')
 
 
 #-------------------------------------------------------------------------------*
@@ -462,8 +461,7 @@ dataFormattingTable[,'Notes_countFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_countFormat', 
                                  
 #--! PROVIDE INFO !--#                                 
-              'Species present is a count, described as the number of species found
-at each site/depth/lake combo.')
+              'Species present is a count, described as the number of species found at each site/depth/lake combo.')
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SPECIES DATA ----
@@ -567,9 +565,7 @@ dataFormattingTable[,'Notes_spFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_spFormat',  
 
 #--! PROVIDE INFO !--#                                 
-  'A number of names represented in two obvious forms and were corrected by combining;
-some were assumed to be in shorthand (Myrio alt and Myrio vert) and were combined with
-their long form names.')
+  'A number of names represented in two obvious forms and were corrected by combining;some were assumed to be in shorthand (Myrio alt and Myrio vert) and were combined with their long form names.')
 
 #-------------------------------------------------------------------------------*
 # ---- MAKE DATA FRAME OF COUNT BY SITES, SPECIES, AND YEAR ----

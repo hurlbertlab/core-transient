@@ -271,7 +271,7 @@ dataFormattingTable[,'subannualTgrain'] =
 # fill in the fields that specify nested spatial grains below.
 
 #--! PROVIDE INFO !--#
-site_grain_names = c("PLOT", "QUAD")
+site_grain_names = c("PLOT")
 
 # We will now create the site field with these codes concatenated if there
 # are multiple grain fields. Otherwise, site will just be the single grain field.
@@ -294,7 +294,7 @@ dataFormattingTable[,'Raw_spatial_grain'] =
                                  2500) 
 
 dataFormattingTable[,'Raw_spatial_grain_unit'] = 
-  dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain',  
+  dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain_unit',  
                                  
 #--! PROVIDE INFO !--#
                                  'cm2') 
@@ -370,7 +370,7 @@ dataFormattingTable[,'spatial_scale_variable'] =
   dataFormattingTableFieldUpdate(datasetID, 'spatial_scale_variable',
 
 #--! PROVIDE INFO !--#
-                                 'Y')
+                                 'N')
 
 # Notes_siteFormat. Use this field to THOROUGHLY describe any changes made to the 
 # site field during formatting.
@@ -379,7 +379,7 @@ dataFormattingTable[,'Notes_siteFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_siteFormat', 
 
 #--! PROVIDE INFO !--#
-  'The site field is a concatenation of plot and quadrat.')
+  'The site field is 300 x 300 m plots.')
 
 
 #-------------------------------------------------------------------------------*
@@ -463,8 +463,7 @@ dataFormattingTable[,'Notes_countFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_countFormat', 
                                  
 #--! PROVIDE INFO !--#                                 
-              'Cover of each species rooted in each quadrat provided. Visually 
-estimated in 1% intervals from 1-9%, then in 5% intervals from 10-100%.')
+              'Cover of each species rooted in each quadrat provided. Visually estimated in 1% intervals from 1-9%, then in 5% intervals from 10-100%.')
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SPECIES DATA ----
@@ -567,9 +566,7 @@ dataFormattingTable[,'Notes_spFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_spFormat',  
 
 #--! PROVIDE INFO !--#                                 
-  'Had to use trimws command to remove white space duplicates. A few unknown
-species were date specific so those were removed, but the total unknown spp
- data was kept.')
+  'Had to use trimws command to remove white space duplicates. A few unknown species were date specific so those were removed, but the total unknown spp data was kept.')
 
 #-------------------------------------------------------------------------------*
 # ---- MAKE DATA FRAME OF COUNT BY SITES, SPECIES, AND YEAR ----
@@ -702,7 +699,7 @@ tGrain = 'year'
 site_grain_names
 
 #--! PROVIDE INFO !--#
-sGrain = 'QUAD'
+sGrain = 'PLOT'
 
 # This is a reasonable choice of spatial grain because ...
 #--! PROVIDE INFO !--#

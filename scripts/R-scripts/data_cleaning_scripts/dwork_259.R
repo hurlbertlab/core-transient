@@ -445,8 +445,7 @@ dataFormattingTable[,'Notes_spFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_spFormat',    # Fill value below in quotes
 
 #####                                 
-  'All taxa not identified to species were removed, except those reflecting particular
-   morphotypes (e.g. Cryp_sp3 and Cryp_sp4 were kept while Astr_spp was dropped.')
+  'All taxa not identified to species were removed, except those reflecting particular morphotypes (e.g. Cryp_sp3 and Cryp_sp4 were kept while Astr_spp was dropped.')
 
 #-------------------------------------------------------------------------------*
 # ---- MAKE DATA FRAME OF COUNT BY SITES, SPECIES, AND YEAR ----

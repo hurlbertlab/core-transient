@@ -232,8 +232,7 @@ dataFormattingTable[,'Notes_timeFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_timeFormat', 
 
 #--! PROVIDE INFO !--#
-    'The only modification to this field involved converting to a date object. there was a 
-  finer grain date column but not all entries had a date.')
+    'The only modification to this field involved converting to a date object. there was a finer grain date column but not all entries had a date.')
 
 
 # subannualTgrain. After exploring the time data, was this dataset sampled at a 
@@ -292,7 +291,7 @@ dataFormattingTable[,'Raw_spatial_grain'] =
                                  400) 
 
 dataFormattingTable[,'Raw_spatial_grain_unit'] = 
-  dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain',  
+  dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain_unit',  
                                  
 #--! PROVIDE INFO !--#
                                  'm2') 
@@ -377,8 +376,7 @@ dataFormattingTable[,'Notes_siteFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_siteFormat', 
 
 #--! PROVIDE INFO !--#
-  'The site field is a concatenation of run and point on the quadrat. Grain was det from a 500 m plot 
-  being divided into 400 20x20 m quadrats.')
+  'The site field is a concatenation of run and point on the quadrat. Grain was det from a 500 m plot being divided into 400 20x20 m quadrats.')
 
 
 #-------------------------------------------------------------------------------*

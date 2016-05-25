@@ -290,7 +290,7 @@ dataFormattingTable[,'Raw_spatial_grain'] =
                                 20000) #4 250x80 m transects
 
 dataFormattingTable[,'Raw_spatial_grain_unit'] = 
-  dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain',  
+  dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain_unit',  
                                  
 #--! PROVIDE INFO !--#
                                  'm2') 
@@ -375,8 +375,7 @@ dataFormattingTable[,'Notes_siteFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_siteFormat', 
 
 #--! PROVIDE INFO !--#
-  'The site field is number because the smaples were lumped into 1 total 
-  value per year and werent separated out by transect.')
+  'The site field is number because the smaples were lumped into 1 total value per year and werent separated out by transect.')
 
 
 #-------------------------------------------------------------------------------*

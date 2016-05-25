@@ -3,6 +3,11 @@
 #  
 #  metadata can be found at http://www.emodnet-biology.eu/data-catalog?module=dataset&dasid=2774
 
+# As a pelagic, marine plankton dataset, we've decided the data are unsuitable 
+# for analysis of temporal occupancy at a relevant assemblage scale.
+
+# NO NEED TO RUN SCRIPT
+
 #-------------------------------------------------------------------------------*
 # ---- SET-UP ----
 #===============================================================================*

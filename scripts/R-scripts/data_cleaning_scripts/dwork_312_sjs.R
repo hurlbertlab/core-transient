@@ -290,7 +290,7 @@ dataFormattingTable[,'Raw_spatial_grain'] =
                                  9712) #size of wetland site (2.4 ac)
 
 dataFormattingTable[,'Raw_spatial_grain_unit'] = 
-  dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain',  
+  dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain_unit',  
                                  
 #--! PROVIDE INFO !--#
                                  'm') 

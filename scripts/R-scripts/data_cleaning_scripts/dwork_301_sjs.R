@@ -293,7 +293,7 @@ dataFormattingTable[,'Raw_spatial_grain'] =
                                  40) 
 
 dataFormattingTable[,'Raw_spatial_grain_unit'] = 
-  dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain',  
+  dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain_unit',  
                                  
 #--! PROVIDE INFO !--#
                                  'ha') 
@@ -378,8 +378,7 @@ dataFormattingTable[,'Notes_siteFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_siteFormat', 
 
 #--! PROVIDE INFO !--#
-  'The site field consists of the number 1 because all birds were observed
-  on abandoned farmland plot in Robert Allerton Park (40 ha).')
+  'The site field consists of the number 1 because all birds were observed on abandoned farmland plot in Robert Allerton Park (40 ha).')
 
 
 #-------------------------------------------------------------------------------*

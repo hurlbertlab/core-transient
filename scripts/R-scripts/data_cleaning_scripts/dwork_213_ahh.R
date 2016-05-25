@@ -192,11 +192,14 @@ dataFormattingTable[,'subannualTgrain'] =
 
 # -- If the dataset is for just a single site, and there is no site column, then add one.
 
+# Add a field for constant siteID
+dataset2$siteID = 213
+
 # Here, we will concatenate all of the potential fields that describe the site 
 # in hierarchical order from largest to smallest grain. Based on the dataset,
 # fill in the fields that specify nested spatial grains below.
 
-site_grain_names = c("site")
+site_grain_names = c("siteID", "site")
 
 # We will now create the site field with these codes concatenated if there
 # are multiple grain fields. Otherwise, site will just be the single grain field.
@@ -208,6 +211,21 @@ if (num_grains > 1) {
     site = paste(site, dataset2[, site_grain_names[i]], sep = "_")
   } 
 }
+
+# What is the spatial grain of the finest sampling scale? 1-m2 quadrats in mixed grass prairie
+
+dataFormattingTable[,'Raw_spatial_grain'] = 
+  dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain',  
+                                 
+                                 #--! PROVIDE INFO !--#
+                                 1) 
+
+dataFormattingTable[,'Raw_spatial_grain_unit'] = 
+  dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain_unit',  
+                                 
+                                 #--! PROVIDE INFO !--#
+                                 'm2') 
+
 
 
 # BEFORE YOU CONTINUE. We need to make sure that there are at least minNTime for sites at the coarsest possilbe spatial grain. 
@@ -258,7 +276,7 @@ head(dataset3)
 dataFormattingTable[,'Raw_siteUnit'] = 
   dataFormattingTableFieldUpdate(datasetID, 'Raw_siteUnit',       # Fill value below in quotes
                                  
-                                 'site') 
+                                 'siteID_site') 
 
 
 # spatial_scale_variable. Is a site potentially nested (e.g., plot within a quad or decimal lat longs that could be scaled up)? Y/N
@@ -266,15 +284,14 @@ dataFormattingTable[,'Raw_siteUnit'] =
 dataFormattingTable[,'spatial_scale_variable'] = 
   dataFormattingTableFieldUpdate(datasetID, 'spatial_scale_variable',
                                  
-                                 'N') # Fill value here in quotes
+                                 'Y') # Fill value here in quotes
 
 # Notes_siteFormat. Use this field to THOROUGHLY describe any changes made to the site field during formatting.
 
 dataFormattingTable[,'Notes_siteFormat'] = 
   dataFormattingTableFieldUpdate(datasetID, 'Notes_siteFormat',  # Fill value below in quotes
                                  
-  'quadrats (sites) are potentially nested into two livestock exclosures and XY coords are provided; 
-  it may be useful to create 3 or 4 coarser grain site codes based on the spatial arrangement.')
+  'quadrats (sites) are potentially nested into two livestock exclosures and XY coords are provided; it may be useful to create 3 or 4 coarser grain site codes based on the spatial arrangement.')
 
 
 #-------------------------------------------------------------------------------*
@@ -329,9 +346,7 @@ dataFormattingTable[,'countFormat'] =
 dataFormattingTable[,'Notes_countFormat'] = 
   dataFormattingTableFieldUpdate(datasetID, 'Notes_countFormat', # Fill value below in quotes
                                  
-                                 'Each record is counted as one individual, which may be underestimate
-                                 the true number, but is more appropriate than using the coverage area
-                                 when comparing to other datasets.')
+                                 'Each record is counted as one individual, which may underestimate the true number, but is more appropriate than using the coverage area when comparing to other datasets.')
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SPECIES DATA ----
@@ -402,8 +417,7 @@ head(dataset6)
 dataFormattingTable[,'Notes_spFormat'] = 
   dataFormattingTableFieldUpdate(datasetID, 'Notes_spFormat',    # Fill value below in quotes
                                  
-  'Several ambiguous groups and unidentified spp removed, three unidentified species reassigned to 
-  the sole member of the genus in the dataset.')
+  'Several ambiguous groups and unidentified spp removed, three unidentified species reassigned to the sole member of the genus in the dataset.')
 
 #-------------------------------------------------------------------------------*
 # ---- MAKE DATA FRAME OF COUNT BY SITES, SPECIES, AND YEAR ----
@@ -448,12 +462,7 @@ write.csv(dataset7, paste("data/formatted_datasets/dataset_", datasetID, ".csv",
 
 # !GIT-ADD-COMMIT-PUSH THE FORMATTED DATASET IN THE DATA FILE, THEN GIT-ADD-COMMIT-PUSH THE UPDATED DATA FOLDER!
 
-# As we've now successfully created the formatted dataset, we will now update the format priority and format flag fields. 
-
-dataFormattingTable[,'format_priority'] = 
-  dataFormattingTableFieldUpdate(datasetID, 'format_priority',    # Fill value below in quotes 
-                                 
-                                 'NA')
+# As we've now successfully created the formatted dataset, we will now update the format flag field. 
 
 dataFormattingTable[,'format_flag'] = 
   dataFormattingTableFieldUpdate(datasetID, 'format_flag',    # Fill value below
@@ -531,11 +540,10 @@ tGrain = 'year'
 
 site_grain_names
 
-sGrain = 'site'
+sGrain = 'siteID'
 
 # This is a reasonable choice of spatial grain because ...
-# ...for sessile plant communities a plot (~ 4m^2) encompasses scores to hundreds
-# of individuals.
+# ...1m2 quadrats are far too small. All 51 quadrats in this study are all within the same small area.
 
 # The function "richnessYearSubsetFun" below will subset the data to sites with an 
 # adequate number of years of sampling and species richness. If there are no 
@@ -556,7 +564,24 @@ head(richnessYearsTest)
 dim(richnessYearsTest) ; dim(dataset7)
 
 #Number of unique sites meeting criteria
-length(unique(richnessYearsTest$analysisSite))
+goodSites = unique(richnessYearsTest$analysisSite)
+length(goodSites)
+
+# Now subset dataset7 to just those goodSites as defined. This is tricky though
+# because assuming Sgrain is not the finest resolution, we will need to use
+# grep to match site names that begin with the string in goodSites.
+# The reason to do this is that sites which don't meet the criteria (e.g. not
+# enough years of data) may also have low sampling intensity that constrains
+# the subsampling level of the well sampled sites.
+
+uniqueSites = unique(dataset7$site)
+fullGoodSites = c()
+for (s in goodSites) {
+  tmp = as.character(uniqueSites[grepl(paste(s, "_", sep = ""), paste(uniqueSites, "_", sep = ""))])
+  fullGoodSites = c(fullGoodSites, tmp)
+}
+
+dataset8 = subset(dataset7, site %in% fullGoodSites)
 
 # Once we've settled on spatial and temporal grains that pass our test above,
 # we then need to 1) figure out what levels of spatial and temporal subsampling
@@ -572,7 +597,8 @@ length(unique(richnessYearsTest$analysisSite))
 # and bases the characterization of the community in that site-year based on
 # the aggregate of those standardized subsamples.
 
-subsettedData = subsetDataFun(dataset7, datasetID, spatialGrain = sGrain, 
+subsettedData = subsetDataFun(dataset8, 
+                              datasetID, spatialGrain = sGrain, 
                               temporalGrain = tGrain,
                               minNTime = minNTime, minSpRich = minSpRich,
                               proportionalThreshold = topFractionSites,
@@ -592,7 +618,14 @@ siteSummaryFun(subsettedData)
 
 writePropOccSiteSummary(subsettedData)
 
-# Remove all objects except for functions from the environment:
+# Update Data Formatting Table with summary stats of the formatted,
+# properly subsetted dataset
+dataFormattingTable = dataFormattingTableUpdateFinished(datasetID, subsettedData)
 
+# And write the final data formatting table:
+
+write.csv(dataFormattingTable, 'data_formatting_table.csv', row.names = F)
+
+# Remove all objects except for functions from the environment:
 rm(list = setdiff(ls(), lsf.str()))
 

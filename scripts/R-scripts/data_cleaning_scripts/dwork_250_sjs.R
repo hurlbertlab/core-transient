@@ -235,8 +235,7 @@ dataFormattingTable[,'Notes_timeFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_timeFormat', 
 
 #--! PROVIDE INFO !--#
-    'The year, month, and day columns were concatenated to make a single
-date column, which was then converted to a date object.')
+    'The year, month, and day columns were concatenated to make a single date column, which was then converted to a date object.')
 
 
 # subannualTgrain. After exploring the time data, was this dataset sampled at a 
@@ -295,7 +294,7 @@ dataFormattingTable[,'Raw_spatial_grain'] =
                                  90) 
 
 dataFormattingTable[,'Raw_spatial_grain_unit'] = 
-  dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain',  
+  dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain_unit',  
                                  
 #--! PROVIDE INFO !--#
                                  'm') 
