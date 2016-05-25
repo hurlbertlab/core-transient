@@ -18,9 +18,9 @@ The project also includes a **core-transient-datasets** sub-repo that is private
   - a propOcc_datasets folder which has proportional occupancy values for each species at each site within a dataset
   - a siteSummaries folder which has a summary of richness, number of temporal sampling events, and average total abundance per sampling event for each site in the dataset
   - For new users, must clone submodule separately to ensure that core-transient folder and data submodule are linked. 
-  -   Clone core-transient module with SSH key
-  -   type git submodule init
-  -   type git submodule update
+      - Clone core-transient module with SSH key
+      - Type git submodule init
+      - Type git submodule update
 
 
 ## R-scripts and functions in the core-transient file system
