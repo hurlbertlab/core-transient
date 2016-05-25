@@ -29,10 +29,10 @@ After all of this is completed, what then? Moving forward into Fall 2016 semeste
 2) Bigger picture comparisons I wrote above 
 
 Make changes, commit to the repo, every time I make changes commit to git 
-#MD files are markdown files - descriptive notes 
+MD files are markdown files - descriptive notes 
 create a markdown file for the R-scripts scale analysis folder  
 
-#update markdown file 2x every week, treat like a lab notebook that I *have* to keep 
+update markdown file 2x every week, treat like a lab notebook that I *have* to keep 
 Scale_analysis.MD
 
 2 sep functions for 10 pt count and then for 50 stop data 
