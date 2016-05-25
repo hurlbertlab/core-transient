@@ -9,7 +9,7 @@ library(plyr)
 library(dplyr)
 library(maps)
 library(rgdal)
-library(raster)
+library(shapefiles)
 library(tidyr)
 
 # read in temporal occupancy dataset 
@@ -88,17 +88,74 @@ AOUsub4 = unique(AOUsub3)
 
 #merge pairwise table with taxonomy info
 comp_AOU = merge(focal_competitor_table, AOUsub4, by = "Competitor")
-comp_AOU <- comp_AOU[c("Focal", "focalAOU", "Competitor", "CompetitorAOU", "SciName", "FAMILY")]
+comp_AOU <- comp_AOU[c("Focal", "focalAOU", "Competitor", "CompetitorAOU", "SciName")]
 
-# get familiy info for shapefiles
-families = unique(comp_AOU$FAMILY)
+
+# renaming to get latest scientific names for mismatch spp
+tempnames = filter(comp_AOU, SciName == 'Oreothlypis peregrina')
+tempnames$SciName = 'Vermivora peregrina'
+comp_AOU2 = rbind(comp_AOU, tempnames)
+comp_AOU2 = comp_AOU2[!(comp_AOU2$SciName =='Oreothlypis peregrina'), ]
+
+tempnames = filter(comp_AOU, SciName == 'Vermivora pinus')
+tempnames$SciName = 'Vermivora cyanoptera'
+comp_AOU3 = rbind(comp_AOU2, tempnames)
+comp_AOU3 = comp_AOU3[!(comp_AOU3$SciName =='Vermivora pinus'), ]
+
+tempnames = filter(comp_AOU, SciName == 'Stellula calliope')
+tempnames$SciName = 'Selasphorus calliope'
+comp_AOU4 = rbind(comp_AOU3, tempnames)
+comp_AOU4 = comp_AOU4[!(comp_AOU4$SciName =='Stellula calliope'), ]
 
 # import body size data
 bsize = read.csv("DunningBodySize_old_2008.11.12.csv", header = TRUE)
 bsize = unite(bsize, SciName, Genus, Species, sep = " ")
 
-spec_w_bsize = merge(comp_AOU, bsize, by.x = "Focal", by.y = "CommonName")
-spec_w_bsize2 = merge(spec_w_bsize, bsize, by.x = "Competitor", by.y = "CommonName")
+# renaming to get latest scientific names for mismatch spp
+tempnames = filter(bsize, SciName == 'Helmitheros vermivorus')
+tempnames$SciName = 'Helmitheros vermivorum'
+bsize2 = rbind(bsize, tempnames)
+bsize2 = bsize2[!(bsize2$SciName =='Helmitheros vermivorus'), ]
+
+tempnames = filter(bsize, SciName == 'Seiurus noveboracensis')
+tempnames$SciName = 'Parkesia noveboracensis'
+bsize3 = rbind(bsize2, tempnames)
+bsize3 = bsize3[!(bsize3$SciName =='Seiurus noveboracensis'), ]
+
+tempnames = filter(bsize, SciName == 'Vermivora pinus')
+tempnames$SciName = 'Vermivora cyanoptera'
+bsize4 = rbind(bsize3, tempnames)
+bsize4 = bsize4[!(bsize4$SciName =='Vermivora pinus'), ]
+
+tempnames = filter(bsize, SciName == 'Seiurus motacilla')
+tempnames$SciName = 'Parkesia motacilla'
+bsize5 = rbind(bsize4, tempnames)
+bsize5 = bsize5[!(bsize5$SciName =='Seiurus motacilla'), ]
+
+tempnames = filter(bsize, SciName == 'Baeolophus griseus')
+tempnames$SciName = 'Baeolophus ridgwayi'
+bsize6 = rbind(bsize5, tempnames)
+bsize6 = bsize6[!(bsize6$SciName =='Baeolophus griseus'), ]
+
+tempnames = filter(bsize, SciName == 'Stellula calliope')
+tempnames$SciName = 'Selasphorus calliope'
+bsize7 = rbind(bsize6, tempnames)
+bsize7 = bsize7[!(bsize7$SciName =='Stellula calliope'), ]
+
+tempnames = filter(bsize, SciName == 'Pipilo crissalis')
+tempnames$SciName = 'Melozone crissalis'
+bsize8 = rbind(bsize7, tempnames)
+bsize8 = bsize8[!(bsize8$SciName =='Pipilo crissalis'), ]
+
+tempnames = filter(bsize, SciName == 'Contopus borealis')
+tempnames$SciName = 'Melozone crissalis'
+bsize9 = rbind(bsize8, tempnames)
+bsize9 = bsize9[!(bsize9$SciName =='Contopus borealis'), ]
+
+# merge in competitor and focal body size
+spec_w_bsize = merge(comp_AOU4, bsize9, by.x = "Focal", by.y = "CommonName")
+spec_w_bsize2 = merge(spec_w_bsize, bsize9, by.x = "Competitor", by.y = "CommonName")
+
 spec_w_weights = data.frame(spec_w_bsize2$Focal, spec_w_bsize2$focalAOU, spec_w_bsize2$SciName.y, spec_w_bsize2$Mass.g..x, spec_w_bsize2$Competitor,
                             spec_w_bsize2$CompetitorAOU, spec_w_bsize2$SciName.x, spec_w_bsize2$Mass.g..y)
 spec_w_weights = plyr::rename(spec_w_weights, c("spec_w_bsize2.Focal" = "Focal", "spec_w_bsize2.focalAOU" = "FocalAOU", 
@@ -108,6 +165,8 @@ spec_w_weights = plyr::rename(spec_w_weights, c("spec_w_bsize2.Focal" = "Focal",
 # want to compare body size - if competitor is double or more in size to focal, then delete
 new_spec_weights = subset(spec_w_weights, spec_w_weights$FocalMass / spec_w_weights$CompMass >= 0.5 &
                             spec_w_weights$FocalMass / spec_w_weights$CompMass <= 2)
+
+# adding in underscore for file name matching
 new_spec_weights$focalcat = gsub(" ", "_", new_spec_weights$FocalSciName)
 new_spec_weights$compcat = gsub(" ", "_", new_spec_weights$CompSciName)
 
@@ -116,20 +175,18 @@ all_spp_list = list.files('Z:/GIS/birds/All/All')
 
 # for loop to select a genus_spp from pairwise table, read in shp, subset to permanent habitat, plot focal
 filesoutput = c()
-sp = 'Gymnogyps_californianus_22697636'
 focal_spp = c(new_spec_weights$focalcat)
 for (sp in focal_spp){
+  print(sp)
   t1 = all_spp_list[grep(sp, all_spp_list)]
-  print(t1)
-  t2 = focal_spp[grep(sp, focal_spp)]
-  print(t2)
+  t2 = t1[grep('.shp', t1)]
+  t3 = strsplit(t2, ".shp")
   filesoutput = rbind(filesoutput, t1)
-  readOGR("Z:/GIS/birds/All/All", 'Gymnogyps_californianus_22697636')
-  # readOGR("Z:/GIS/birds/All/All",  filesoutput) # reads in species-specific shapefile
-  #sporigin = sp[sp@data$ORIGIN == 1|sp@data$ORIGIN == 2|sp@data$ORIGIN ==5]
-}
-
-filesoutput2 = data.frame(filesoutput)
+  test.poly <- readShapePoly(paste("Z:/GIS/birds/All/All/", t3, sep = ""))# reads in species-specific shapefile
+  plot(test.poly) 
+  sporigin = test.poly[test.poly@data$ORIGIN == 1|test.poly@data$ORIGIN == 2|test.poly@data$ORIGIN ==5]
+  plot(sporigin)
+} 
 
 ### FLO parks, try to project, intersect, then calculate area of intersect
 
