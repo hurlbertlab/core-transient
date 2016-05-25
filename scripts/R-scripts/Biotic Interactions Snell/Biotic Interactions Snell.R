@@ -11,6 +11,7 @@ library(maps)
 library(rgdal)
 library(shapefiles)
 library(tidyr)
+library(raster)
 
 # read in temporal occupancy dataset 
 Hurlbert_o = read.csv('Master_RO_Correlates_20110610.csv', header = T)
@@ -176,16 +177,49 @@ all_spp_list = list.files('Z:/GIS/birds/All/All')
 # for loop to select a genus_spp from pairwise table, read in shp, subset to permanent habitat, plot focal
 filesoutput = c()
 focal_spp = c(new_spec_weights$focalcat)
+comp_spp = c(new_spec_weights$compcat)
 for (sp in focal_spp){
+        sp = 'Dendroica_occidentalis'
   print(sp)
   t1 = all_spp_list[grep(sp, all_spp_list)]
   t2 = t1[grep('.shp', t1)]
   t3 = strsplit(t2, ".shp")
   filesoutput = rbind(filesoutput, t1)
-  test.poly <- readShapePoly(paste("Z:/GIS/birds/All/All/", t3, sep = ""))# reads in species-specific shapefile
+  test.poly <- readShapePoly(paste("Z:/GIS/birds/All/All/", t3, sep = "")) # reads in species-specific shapefile
   plot(test.poly) 
   sporigin = test.poly[test.poly@data$ORIGIN == 1|test.poly@data$ORIGIN == 2|test.poly@data$ORIGIN ==5]
-  plot(sporigin)
+  proj = writePolyShape(sporigin, "WGS84") ##Lambert Azimuthal Equal Area
+
+    for co in comp_spp{
+      co = 'Geothlypis_trichas'
+      print(co)
+      c1 = all_spp_list[grep(co, all_spp_list)]
+      c2 = c1[grep('.shp', c1)]
+      c3 = strsplit(c2, ".shp")
+      comp.poly <- readShapePoly(paste("Z:/GIS/birds/All/All/", c3, sep = "")) # reads in species-specific shapefile
+      # focal polygon intersection prep: http://gis.stackexchange.com/questions/140504/extracting-intersection-areas-in-r
+      n1 = as(test.poly, 'SpatialPolygons')
+      focalpoly = SpatialPolygonsDataFrame(n1, data.frame(focalpoly = focalpoly@data$SISID[1:5]), match.ID = FALSE)
+      # competitor polygon intersection prep
+      p1 = union(as(extent(-124.5614, -82.3974, 8.654724, 48.76147), 'SpatialPolygons'), 
+               as(extent(-139.7368, -52.63629, 3.903687, 65.84113), 'SpatialPolygons'))
+    
+      compoly = SpatialPolygonsDataFrame(p1, data.frame(compoly=c('x','y')), match.ID=FALSE)
+      projection(compoly) <- projection(focalpoly) # setting projections equal
+    
+      # intersect from raster package
+      pi <- intersect(focalpoly, compoly)
+      plot(focalpoly, axes=T); plot(compoly, add=T); plot(pi, add=T, col='red')
+
+      # Extract areas from polygon objects then attach as attribute
+      areas <- data.frame(area=sapply(pi@polygons, FUN=function(x) {slot(x, 'area')}))
+      row.names(areas) <- sapply(pi@polygons, FUN=function(x) {slot(x, 'ID')})
+      # Combine attributes info and areas 
+      attArea <- spCbind(pi, areas)
+      
+      # For each field, get area
+      aggregate(focalpoly~compoly, data=attArea, FUN=sum)
+  }
 } 
 
 ### FLO parks, try to project, intersect, then calculate area of intersect
