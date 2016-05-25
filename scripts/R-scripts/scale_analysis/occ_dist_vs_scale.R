@@ -2,19 +2,26 @@
 #Calculate temporal occupancy distributions at 3 different spatial scales for
 #grant proposal preliminary analysis: 1) scale of 10 BBS stops, 
 # 2) BBS route, 3) aggregate of 27 BBS routes within state of MD.
+#pull in 50 stop data from ecoretriever
+setwd("C:/Program Files (x86)/EcoDataRetriever")
+library(ecoretriever)
+ecoretriever::datasets()
+bbs50 = ecoretriever::fetch("BBS50")
+names(bbs50)
+#bbs as matrix or dataframe 
+bbs = bbs50$species
+bbsrts= bbs50$routes #Year columns missing from both datasets?
+names(bbsrts)
 setwd("C:/git/core-transient")
-
 library(raster)
 counts5 = read.csv('data/raw_datasets/dataset_1_full.csv', header=T) #in groups of ten 
 occupancy.matrix = as.matrix(
   read.csv('scripts/R-scripts/scale_analysis/occ_matrix_BBS.csv', header=T, row.names = 1))
-fifty = read.csv('scripts/R-scripts/scale_analysis/BBS_fiftystop_MD_CO_CA_OR_1996-2010.csv') #remember to rely on ecoretriever! don't need to go to the website to download 
-#mod to include all; can't yet bc bbs website down 
 routes = read.csv('scripts/R-scripts/scale_analysis/routes.csv')
 routes$stateroute = 1000*routes$statenum + routes$Route
 
 # All-BBS scale (50 pt count scale):
-uniqSpYr = unique(counts5[, c('Year', 'Aou')])
+uniqSpYr = unique(bbs[, c('Year', 'Aou')])
 BBS.occ = data.frame(table(uniqSpYr$Aou)/15)
 
 bbs.occ.mat = occupancy.matrix[floor(as.numeric(row.names(occupancy.matrix))/1000),]
@@ -23,7 +30,7 @@ bbs.occ = data.frame(table(bbs.uniq$Aou)/15)
 
 ###So for the whole dataset, 10 pt count stops: #we are only getting one out of five chunks along 
 #want to estimate occupancy across each one, as of now only estimating for count 10 column 
-#modify the blow function 
+#modify the below function 
 #add a scale argument rather than hard coding the scale column 
 #confirm whether or not raw data (50 stop original) differs in aou vs Aou vs AOU 
 #figure out then how to group aggregating over multiple columns 
@@ -33,13 +40,27 @@ occ_counts = function(countData, countColumn) {
   bbsu.rt.occ = data.frame(table(bbsu[,c('stateroute', 'Aou')])/15)
   bbsu.rt.occ2 = bbsu.rt.occ[bbsu.rt.occ$Freq!=0,]
   names(bbsu.rt.occ2)[3] = 'occupancy'
-  bbsu.rt.occ2$scale = 
+  bbsu.rt.occ2$scale = 10
   bbsu.rt.occ2$subrouteID = countColumn
   bbsu.rt.occ2 = bbsu.rt.occ2[, c('stateroute', 'scale', 'subrouteID', 'Aou', 'occupancy')]
   return(bbsu.rt.occ2)
 }
-#state route stop, scale at which (1 or 10 stops etc), sub-route ID (if scale is 10 stops, it's count20), species, occupany
 
+#########
+occ_counts = function(countData, countColumn, variable v) {
+  bbsu = unique(countData[countData[, countColumn] != 0, c('stateroute', 'Year', 'Aou')])
+  bbsu.rt.occ = data.frame(table(bbsu[,c('stateroute', 'Aou')])/15)
+  bbsu.rt.occ2 = bbsu.rt.occ[bbsu.rt.occ$Freq!=0,]
+  names(bbsu.rt.occ2)[3] = 'occupancy'
+  bbsu.rt.occ2$subrouteID = countColumn
+  bbsu.rt.occ2$scale = v #if subrouteID = Count10, Count20, etc == 10; if = Count25, == 25; if = Count1, == 1, but no need for "ifs"   
+    # modeled after: BBS_Core_agreement = sum(temp.site$occupancy>0.67 & temp.site$status=="breeder", na.rm = T)/sum(temp.site$occupancy>0.67, na.rm = T)
+  bbsu.rt.occ2 = bbsu.rt.occ2[, c('stateroute', 'scale', 'subrouteID', 'Aou', 'occupancy')]
+  return(bbsu.rt.occ2)
+}
+#state route stop, scale at which (1 or 10 stops etc), sub-route ID (if scale is 10 stops, it's count20), species, occupany
+bb1<-occ_counts(counts5, counts5$Count10, 10)
+head(bb1)
 #scale of 1 pt count 
 bbs1 = subset(fifty, stateroute %in% unique(bbs10.rt.occ$stateroute) & year > 1995 & year < 2011 & Stop1!=0, 
               select = c('stateroute','year','AOU','Stop1'))
