@@ -1,0 +1,61 @@
+-Finish or approach finishing comparison analysis: 
+	-Finish multi-scale iterations of geographic and environmental distance site pairings. 
+	-Run models comparing discrepancies at different scales. 
+	-Does scale of sample play a role in explaining discrepancies between sites?  
+		-Run variation partitioning analysis for each scale. 
+		-Compare outcomes. 
+
+In addition to this, be reading a lot. Maybe start every morning with a paper. 
+
+After all of this is completed, what then? Moving forward into Fall 2016 semester and ENEC 993 time scheduled. 
+
+#############
+2 pieces: 
+1) independent of breeding bird census stuff - how do these patterns vary with scale, period, independent of bbs and bbc? 
+	-for just bbs 
+	-shift in temporal occupancy from transient to core 
+		-how does that shift happen and what impacts it? 
+		-geographic context within a site sits: landscape heterogeneity, ndvi 
+		-we already know bbs routes in more hetero vs homog at same scale has more transient spp 
+		-scale patterns: could be that we expect mean occupancy to increase with higher spatial scales 
+			-how do these patterns differ between homo and hetero landscapes as scale increases? 
+				-might include diffs in slope and leveling off between two curves 
+				-as we change scale in a more hetero region or route, how does temp occupancy vary? 
+		-at the scale of a bbs route and below (sets of 10 or below) 
+			-can extract temporal occupancy values for every spp 
+			**most immediate piece to work on first
+2) Bigger picture comparisons I wrote above 
+
+Make changes, commit to the repo, every time I make changes commit to git 
+#MD files are markdown files - descriptive notes 
+create a markdown file for the R-scripts scale analysis folder  
+
+#update markdown file 2x every week, treat like a lab notebook that I *have* to keep 
+Scale_analysis.MD
+
+2 sep functions for 10 pt count and then for 50 stop data 
+
+
+
+2) 
+
+##############
+May: 
+-next week: work on making function run 
+
+June: 
+-week 1: 
+-week 2:
+-week 3:
+-week 4:
+
+July: 
+-week 1: 
+-week 2: 
+-week 3: 
+-week 4:
+
+August: 
+-week 1: wrap up. 
+
+2nd week of August = Topsail. 
