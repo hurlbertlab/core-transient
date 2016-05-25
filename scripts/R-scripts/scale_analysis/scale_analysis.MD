@@ -1,15 +1,14 @@
 # Notes on exploring the impacts of spatial scale on temporal occupancy
 
 -Finish or approach finishing comparison analysis: 
-	-Finish multi-scale iterations of geographic and environmental distance site pairings. 
-	-Run models comparing discrepancies at different scales. 
-	-Does scale of sample play a role in explaining discrepancies between sites?  
-		-Run variation partitioning analysis for each scale. 
-		-Compare outcomes. 
 
-In addition to this, be reading a lot. Maybe start every morning with a paper. 
+-Finish multi-scale iterations of geographic and environmental distance site pairings. 
 
-After all of this is completed, what then? Moving forward into Fall 2016 semester and ENEC 993 time scheduled. 
+-Run models comparing discrepancies at different scales. 
+
+-Does scale of sample play a role in explaining discrepancies between sites?  
+--Run variation partitioning analysis for each scale. 
+--Compare outcomes. 
 
 #############
 2 pieces: 
@@ -60,5 +59,4 @@ July:
 August: 
 -week 1: wrap up. 
 
-2nd week of August = Topsail. 
 
