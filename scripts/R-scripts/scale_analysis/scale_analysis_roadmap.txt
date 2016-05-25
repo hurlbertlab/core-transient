@@ -1,14 +1,13 @@
-# Notes on exploring the impacts of spatial scale on temporal occupancy
-
 -Finish or approach finishing comparison analysis: 
+	-Finish multi-scale iterations of geographic and environmental distance site pairings. 
+	-Run models comparing discrepancies at different scales. 
+	-Does scale of sample play a role in explaining discrepancies between sites?  
+		-Run variation partitioning analysis for each scale. 
+		-Compare outcomes. 
 
--Finish multi-scale iterations of geographic and environmental distance site pairings. 
+In addition to this, be reading a lot. Maybe start every morning with a paper. 
 
--Run models comparing discrepancies at different scales. 
-
--Does scale of sample play a role in explaining discrepancies between sites?  
---Run variation partitioning analysis for each scale. 
---Compare outcomes. 
+After all of this is completed, what then? Moving forward into Fall 2016 semester and ENEC 993 time scheduled. 
 
 #############
 2 pieces: 
@@ -28,10 +27,10 @@
 2) Bigger picture comparisons I wrote above 
 
 Make changes, commit to the repo, every time I make changes commit to git 
-MD files are markdown files - descriptive notes 
+#MD files are markdown files - descriptive notes 
 create a markdown file for the R-scripts scale analysis folder  
 
-update markdown file 2x every week, treat like a lab notebook that I *have* to keep 
+#update markdown file 2x every week, treat like a lab notebook that I *have* to keep 
 Scale_analysis.MD
 
 2 sep functions for 10 pt count and then for 50 stop data 
@@ -59,4 +58,4 @@ July:
 August: 
 -week 1: wrap up. 
 
-
+2nd week of August = Topsail. 
