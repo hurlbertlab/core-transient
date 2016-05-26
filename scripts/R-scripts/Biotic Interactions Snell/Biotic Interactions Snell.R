@@ -10,6 +10,7 @@ library(dplyr)
 library(maps)
 library(rgdal)
 library(shapefiles)
+library(maptools)
 library(tidyr)
 library(raster)
 
@@ -174,35 +175,46 @@ new_spec_weights$compcat = gsub(" ", "_", new_spec_weights$CompSciName)
 # read in bird range shps
 all_spp_list = list.files('Z:/GIS/birds/All/All')
 
-# for loop to select a genus_spp from pairwise table, read in shp, subset to permanent habitat, plot focal
+# for loop to select a genus_spp from pairwise table, read in shp, subset to permanent habitat, plot focal distribution
 filesoutput = c()
 focal_spp = c(new_spec_weights$focalcat)
-comp_spp = c(new_spec_weights$compcat)
+comp_spp = c(new_spec_weights$compcat) # this may not work...
+
+CRS("+proj=laea +lat_0=40 +lon_0=-100") # lambert azimuthal equal area
+usa1 = map(database='state', fill=T, plot=F)
+IDs = usa1$names
+usa_sp = map2SpatialPolygons(usa1, IDs, CRS("+proj=longlat"))
+
+
 for (sp in focal_spp){
-        sp = 'Dendroica_occidentalis'
+        sp = 'Setophaga_ruticilla'
   print(sp)
   t1 = all_spp_list[grep(sp, all_spp_list)]
   t2 = t1[grep('.shp', t1)]
   t3 = strsplit(t2, ".shp")
   filesoutput = rbind(filesoutput, t1)
   test.poly <- readShapePoly(paste("Z:/GIS/birds/All/All/", t3, sep = "")) # reads in species-specific shapefile
-  plot(test.poly) 
-  sporigin = test.poly[test.poly@data$ORIGIN == 1|test.poly@data$ORIGIN == 2|test.poly@data$ORIGIN ==5]
-  proj = writePolyShape(sporigin, "WGS84") ##Lambert Azimuthal Equal Area
-
-    for co in comp_spp{
-      co = 'Geothlypis_trichas'
+  
+  plot(usa_sp)
+  colors = c("red", "yellow", "green", "blue", "purple")
+  plot(test.poly[test.poly@data$ORIGIN == '1',], add = TRUE, col = colors, border = NA) 
+  
+  sporigin = test.poly[test.poly@data$ORIGIN == '1'|test.poly@data$ORIGIN == '2'|test.poly@data$ORIGIN =='5',]
+  
+  # focal polygon intersection prep: http://gis.stackexchange.com/questions/140504/extracting-intersection-areas-in-r
+  n1 = as(sporigin, 'SpatialPolygons')
+  focalpoly = SpatialPolygonsDataFrame(n1, data.frame(focalpoly = focalpoly@data$SISID[1:5]), match.ID = FALSE)
+  
+    for co in comp_spp{         # for loop to match competitor sp to focal spp, intersect its range with the focal range, 
+      co = 'Geothlypis_trichas' # and calcualte the area of overlap between the two species.
       print(co)
       c1 = all_spp_list[grep(co, all_spp_list)]
       c2 = c1[grep('.shp', c1)]
       c3 = strsplit(c2, ".shp")
       comp.poly <- readShapePoly(paste("Z:/GIS/birds/All/All/", c3, sep = "")) # reads in species-specific shapefile
-      # focal polygon intersection prep: http://gis.stackexchange.com/questions/140504/extracting-intersection-areas-in-r
-      n1 = as(test.poly, 'SpatialPolygons')
-      focalpoly = SpatialPolygonsDataFrame(n1, data.frame(focalpoly = focalpoly@data$SISID[1:5]), match.ID = FALSE)
+      
       # competitor polygon intersection prep
-      p1 = union(as(extent(-124.5614, -82.3974, 8.654724, 48.76147), 'SpatialPolygons'), 
-               as(extent(-139.7368, -52.63629, 3.903687, 65.84113), 'SpatialPolygons'))
+      p1 = union(as(extent(focalpoly), 'SpatialPolygons'), as(extent(comp.poly), 'SpatialPolygons'))
     
       compoly = SpatialPolygonsDataFrame(p1, data.frame(compoly=c('x','y')), match.ID=FALSE)
       projection(compoly) <- projection(focalpoly) # setting projections equal
@@ -222,8 +234,10 @@ for (sp in focal_spp){
   }
 } 
 
-### FLO parks, try to project, intersect, then calculate area of intersect
 
+roadColors <- c("blue","green","grey","purple", "gold")[test.poly@data$ORIGIN]
+plot(test.poly@data$ORIGIN, col=roadColors,
+     main="NEON Harvard Forest Field Site\n Roads & Trails")
 
 ############# ---- Generate total species occupancies ---- #############
 # gathering occupancy data for all species
