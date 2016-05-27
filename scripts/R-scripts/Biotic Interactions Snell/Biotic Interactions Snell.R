@@ -109,6 +109,15 @@ tempnames$SciName = 'Selasphorus calliope'
 comp_AOU4 = rbind(comp_AOU3, tempnames)
 comp_AOU4 = comp_AOU4[!(comp_AOU4$SciName =='Stellula calliope'), ]
 
+tempnames = comp_AOU[grep('Setophaga *', comp_AOU$SciName),]
+tempnames$SciName = gsub('Setophaga ', 'Dendroica ', tempnames$SciName)
+comp_AOU5 = rbind(comp_AOU4, tempnames)
+
+tempnames = filter(comp_AOU5, SciName == 'Dendroica ruticilla')
+tempnames$SciName = 'Setophaga ruticilla'
+comp_AOU6 = rbind(comp_AOU5, tempnames)
+comp_AOU6 = comp_AOU6[!(comp_AOU6$SciName =='Dendroica ruticilla'), ]
+
 # import body size data
 bsize = read.csv("DunningBodySize_old_2008.11.12.csv", header = TRUE)
 bsize = unite(bsize, SciName, Genus, Species, sep = " ")
@@ -150,12 +159,12 @@ bsize8 = rbind(bsize7, tempnames)
 bsize8 = bsize8[!(bsize8$SciName =='Pipilo crissalis'), ]
 
 tempnames = filter(bsize, SciName == 'Contopus borealis')
-tempnames$SciName = 'Melozone crissalis'
+tempnames$SciName = 'Melozone crissalis' #####WRONGGGGGGGG
 bsize9 = rbind(bsize8, tempnames)
 bsize9 = bsize9[!(bsize9$SciName =='Contopus borealis'), ]
 
 # merge in competitor and focal body size
-spec_w_bsize = merge(comp_AOU4, bsize9, by.x = "Focal", by.y = "CommonName")
+spec_w_bsize = merge(comp_AOU6, bsize9, by.x = "Focal", by.y = "CommonName")
 spec_w_bsize2 = merge(spec_w_bsize, bsize9, by.x = "Competitor", by.y = "CommonName")
 
 spec_w_weights = data.frame(spec_w_bsize2$Focal, spec_w_bsize2$focalAOU, spec_w_bsize2$SciName.y, spec_w_bsize2$Mass.g..x, spec_w_bsize2$Competitor,
@@ -178,50 +187,53 @@ all_spp_list = list.files('Z:/GIS/birds/All/All')
 # for loop to select a genus_spp from pairwise table, read in shp, subset to permanent habitat, plot focal distribution
 filesoutput = c()
 focal_spp = c(new_spec_weights$focalcat)
-comp_spp = c(new_spec_weights$compcat) # this may not work...
+comp_spp = c(new_spec_weights$compcat) 
 
-CRS("+proj=laea +lat_0=40 +lon_0=-100") # lambert azimuthal equal area
+sp_proj = CRS("+proj=laea +lat_0=40 +lon_0=-100") # lambert azimuthal equal area
 usa1 = map(database='state', fill=T, plot=F)
+# usa1 = spTransform(usa1, CRS(sp_proj))
 IDs = usa1$names
 usa_sp = map2SpatialPolygons(usa1, IDs, CRS("+proj=longlat"))
 
-
-for (sp in focal_spp){
-        sp = 'Setophaga_ruticilla'
+for (sp in focal_spp) {
+      sp = 'Dendroica_coronata'
   print(sp)
   t1 = all_spp_list[grep(sp, all_spp_list)]
   t2 = t1[grep('.shp', t1)]
   t3 = strsplit(t2, ".shp")
   filesoutput = rbind(filesoutput, t1)
-  test.poly <- readShapePoly(paste("Z:/GIS/birds/All/All/", t3, sep = "")) # reads in species-specific shapefile
-  
+  test.poly <- readShapePoly(paste("Z:/GIS/birds/All/All/", t3, sep = ""), proj4string = sp_proj) # reads in species-specific shapefile
+
   plot(usa_sp)
   colors = c("red", "yellow", "green", "blue", "purple")
-  plot(test.poly[test.poly@data$ORIGIN == '1',], add = TRUE, col = colors, border = NA) 
+  #keep_polys = sapply(test.poly$polygons, function(x) x@data$ORIGIN == 1)
+  #test.poly = test.poly[keep_polys]
+  #plot(keep_polys)
   
-  sporigin = test.poly[test.poly@data$ORIGIN == '1'|test.poly@data$ORIGIN == '2'|test.poly@data$ORIGIN =='5',]
+  sporigin = test.poly[test.poly@data$SEASONAL == 1|test.poly@data$SEASONAL == 2|test.poly@data$SEASONAL ==5,]
+  plot(sporigin, add = TRUE, col = colors, border = NA) 
   
   # focal polygon intersection prep: http://gis.stackexchange.com/questions/140504/extracting-intersection-areas-in-r
-  n1 = as(sporigin, 'SpatialPolygons')
-  focalpoly = SpatialPolygonsDataFrame(n1, data.frame(focalpoly = focalpoly@data$SISID[1:5]), match.ID = FALSE)
+ # n1 = as(sporigin, 'SpatialPolygons')
+ #focalpoly = SpatialPolygonsDataFrame(n1, data.frame(focalpoly = focalpoly@data$SISID[1:5]), match.ID = FALSE)
   
-    for co in comp_spp{         # for loop to match competitor sp to focal spp, intersect its range with the focal range, 
-      co = 'Geothlypis_trichas' # and calcualte the area of overlap between the two species.
+    for (co in comp_spp) {         # for loop to match competitor sp to focal spp, intersect its range with the focal range, 
+      #co = 'Chondestes_grammacus' # and calcualte the area of overlap between the two species.
       print(co)
       c1 = all_spp_list[grep(co, all_spp_list)]
       c2 = c1[grep('.shp', c1)]
       c3 = strsplit(c2, ".shp")
-      comp.poly <- readShapePoly(paste("Z:/GIS/birds/All/All/", c3, sep = "")) # reads in species-specific shapefile
-      
+      comp.poly <- readShapePoly(paste("Z:/GIS/birds/All/All/", c3, sep = ""), proj4string = sp_proj) # reads in species-specific shapefile
+      plot(comp.poly, add = TRUE, col = colors, border = NA) 
       # competitor polygon intersection prep
-      p1 = union(as(extent(focalpoly), 'SpatialPolygons'), as(extent(comp.poly), 'SpatialPolygons'))
-    
-      compoly = SpatialPolygonsDataFrame(p1, data.frame(compoly=c('x','y')), match.ID=FALSE)
-      projection(compoly) <- projection(focalpoly) # setting projections equal
+      # p1 = union(as(extent(focalpoly), 'SpatialPolygons'), as(extent(comp.poly), 'SpatialPolygons'))
+      # compoly = SpatialPolygonsDataFrame(p1, data.frame(compoly=c('x','y')), match.ID=FALSE)
     
       # intersect from raster package
-      pi <- intersect(focalpoly, compoly)
-      plot(focalpoly, axes=T); plot(compoly, add=T); plot(pi, add=T, col='red')
+      pi = intersect(test.poly, comp.poly)
+      plot(pi)
+      #pi <- intersect(focalpoly, compoly)
+      #plot(focalpoly, axes=T); plot(compoly, add=T); plot(pi, add=T, col='red')
 
       # Extract areas from polygon objects then attach as attribute
       areas <- data.frame(area=sapply(pi@polygons, FUN=function(x) {slot(x, 'area')}))
@@ -230,7 +242,7 @@ for (sp in focal_spp){
       attArea <- spCbind(pi, areas)
       
       # For each field, get area
-      aggregate(focalpoly~compoly, data=attArea, FUN=sum)
+      #aggregate(test.poly~comp.poly, data=attArea, FUN=sum) #wrong
   }
 } 
 
