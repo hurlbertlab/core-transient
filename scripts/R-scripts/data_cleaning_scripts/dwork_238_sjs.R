@@ -7,6 +7,10 @@
 # Dataset source (link):http://esapubs.org/archive/ecol/E094/084/metadata.php
 # Formatted by: Sara Snell
 #
+# NOTE: This is a combination of annual and perennial datasets, as combined
+#       in the preformat_238.R script
+#
+#
 # Start by opening the data formatting table (data_formatting_table.csv). 
 # Datasets to be worked on will have a 'format_flag' of 0.
 
@@ -75,7 +79,7 @@ dataFormattingTable[,'Raw_datafile_name'] =
   dataFormattingTableFieldUpdate(datasetID, 'Raw_datafile_name',  
                                  
 #--! PROVIDE INFO !--#
-  'Fray_Jorge_Annuals_1989-2005_Fray_Jorge_Perennials_1989-2005.csv') 
+  'Fray_Jorge_Annuals_1989-2005.txt, Fray_Jorge_Perennials_1989-2005.txt') 
 
 
 
@@ -128,7 +132,7 @@ head(dataset)
 names(dataset)
 
 #--! PROVIDE INFO !--#
-unusedFieldNames = c()
+unusedFieldNames = c('Trt')
 
 dataset1 = dataset[, !names(dataset) %in% unusedFieldNames]
 
