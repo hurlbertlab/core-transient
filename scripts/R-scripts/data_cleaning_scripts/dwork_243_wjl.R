@@ -35,6 +35,12 @@ dataset = read.csv(paste('data/raw_datasets/dataset_', datasetID, '.csv', sep = 
 
 dataFormattingTable = read.csv('data_formatting_table.csv')
 
+dataFormattingTable[,'Raw_datafile_name'] = 
+  dataFormattingTableFieldUpdate(datasetID, 'Raw_datafile_name',  
+                                 
+                                 #--! PROVIDE INFO !--#
+                                 'Midwater fish density raw data.csv') 
+
 ########################################################
 # ANALYSIS CRITERIA                                    #  
 ########################################################
@@ -186,6 +192,20 @@ if (num_grains > 1) {
   } 
 }
 
+# What is the spatial grain of the finest sampling scale? For example, this might be
+# a 0.25 m2 quadrat, or a 5 m transect, or a 50 ml water sample.
+
+dataFormattingTable[,'Raw_spatial_grain'] = 
+  dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain',  
+                                 
+                                 #--! PROVIDE INFO !--#
+                                 250) 
+
+dataFormattingTable[,'Raw_spatial_grain_unit'] = 
+  dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain_unit',  
+                                 
+                                 #--! PROVIDE INFO !--#
+                                 'm2') 
 
 # BEFORE YOU CONTINUE. We need to make sure that there are at least minNTime for sites at the coarsest possilbe spatial grain. 
 
@@ -330,7 +350,7 @@ dataFormattingTable[,'countFormat'] =
 dataFormattingTable[,'Notes_countFormat'] = 
   dataFormattingTableFieldUpdate(datasetID, 'Notes_countFormat', # Fill value below in quotes
                                  
-                                 'Raw data represents density, and adult and juvenile densities were in separate columns. These were added together in count column and multiplied by 250 to get count of individuals in 50 x 5 m transect.')
+                                 'Raw data represents density per m2, and adult and juvenile densities were in separate columns. These were added together in count column and multiplied by 250 to get count of individuals in 50 x 5 m transect.')
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SPECIES DATA ----
@@ -428,21 +448,12 @@ write.csv(dataset7, paste("data/formatted_datasets/dataset_", datasetID, ".csv",
 
 # !GIT-ADD-COMMIT-PUSH THE FORMATTED DATASET IN THE DATA FILE, THEN GIT-ADD-COMMIT-PUSH THE UPDATED DATA FOLDER!
 
-# As we've now successfully created the formatted dataset, we will now update the format priority and format flag fields. 
-
-dataFormattingTable[,'format_priority'] = 
-  dataFormattingTableFieldUpdate(datasetID, 'format_priority',    # Fill value below in quotes 
-                                 
-                                 'NA')
+# As we've now successfully created the formatted dataset, we will now update the format flag field. 
 
 dataFormattingTable[,'format_flag'] = 
   dataFormattingTableFieldUpdate(datasetID, 'format_flag',    # Fill value below
                                  
                                  1)
-
-# And update the data formatting table:
-
-write.csv(dataFormattingTable, 'data_formatting_table.csv', row.names = F)
 
 # !GIT-ADD-COMMIT-PUSH THE DATA FORMATTING TABLE!
 
@@ -522,11 +533,26 @@ richnessYearsTest = richnessYearSubsetFun(dataset7, spatialGrain = sGrain,
 
 head(richnessYearsTest)
 dim(richnessYearsTest) ; dim(dataset7)
-length(unique(richnessYearsTest$analysisSite))
 
-# Temporary fix for the richnesYearSubsetFun issue where analysisdate gets listed as "year_year" instead of "year"
+#Number of unique sites meeting criteria
+goodSites = unique(richnessYearsTest$analysisSite)
+length(goodSites)
 
-richnessYearsTest$analysisDate = substr(richnessYearsTest$analysisDate, start = 1, stop = 4)
+# Now subset dataset7 to just those goodSites as defined. This is tricky though
+# because assuming Sgrain is not the finest resolution, we will need to use
+# grep to match site names that begin with the string in goodSites.
+# The reason to do this is that sites which don't meet the criteria (e.g. not
+# enough years of data) may also have low sampling intensity that constrains
+# the subsampling level of the well sampled sites.
+
+uniqueSites = unique(dataset7$site)
+fullGoodSites = c()
+for (s in goodSites) {
+  tmp = as.character(uniqueSites[grepl(paste(s, "_", sep = ""), paste(uniqueSites, "_", sep = ""))])
+  fullGoodSites = c(fullGoodSites, tmp)
+}
+
+dataset8 = subset(dataset7, site %in% fullGoodSites)
 
 # Once we've settled on spatial and temporal grains that pass our test above,
 # we then need to 1) figure out what levels of spatial and temporal subsampling
@@ -542,7 +568,8 @@ richnessYearsTest$analysisDate = substr(richnessYearsTest$analysisDate, start = 
 # and bases the characterization of the community in that site-year based on
 # the aggregate of those standardized subsamples.
 
-subsettedData = subsetDataFun(dataset7, datasetID, spatialGrain = sGrain, 
+subsettedData = subsetDataFun(dataset8, 
+                              datasetID, spatialGrain = sGrain, 
                               temporalGrain = tGrain,
                               minNTime = minNTime, minSpRich = minSpRich,
                               proportionalThreshold = topFractionSites,
@@ -561,6 +588,14 @@ siteSummaryFun(subsettedData)
 # If everything looks good, write the files:
 
 writePropOccSiteSummary(subsettedData)
+
+# Update Data Formatting Table with summary stats of the formatted,
+# properly subsetted dataset
+dataFormattingTable = dataFormattingTableUpdateFinished(datasetID, subsettedData)
+
+# And write the final data formatting table:
+
+write.csv(dataFormattingTable, 'data_formatting_table.csv', row.names = F)
 
 # Remove all objects except for functions from the environment:
 
