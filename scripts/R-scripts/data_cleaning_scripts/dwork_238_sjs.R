@@ -236,7 +236,7 @@ dataFormattingTable[,'Notes_timeFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_timeFormat', 
 
 #--! PROVIDE INFO !--#
-    'The only modification to this field involved converting to a date object.')
+    'Raw data provided for annuals in September and for perennials 4 times per year. All data were restricted to September samples in preformatting.')
 
 
 # subannualTgrain. After exploring the time data, was this dataset sampled at a 
@@ -272,7 +272,7 @@ dataFormattingTable[,'subannualTgrain'] =
 # fill in the fields that specify nested spatial grains below.
 
 #--! PROVIDE INFO !--#
-site_grain_names = c("Trt", "Grid")
+site_grain_names = c("Grid")
 
 # We will now create the site field with these codes concatenated if there
 # are multiple grain fields. Otherwise, site will just be the single grain field.
@@ -292,13 +292,13 @@ dataFormattingTable[,'Raw_spatial_grain'] =
   dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain',  
                                  
 #--! PROVIDE INFO !--#
-                                 4500) 
+                                 300) 
 
 dataFormattingTable[,'Raw_spatial_grain_unit'] = 
   dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain_unit',  
                                  
 #--! PROVIDE INFO !--#
-                                 'm2') 
+                                 'm') 
 
 
 # BEFORE YOU CONTINUE. We need to make sure that there are at least minNTime for 
@@ -371,7 +371,7 @@ dataFormattingTable[,'spatial_scale_variable'] =
   dataFormattingTableFieldUpdate(datasetID, 'spatial_scale_variable',
 
 #--! PROVIDE INFO !--#
-                                 'Y')
+                                 'N')
 
 # Notes_siteFormat. Use this field to THOROUGHLY describe any changes made to the 
 # site field during formatting.
@@ -380,7 +380,7 @@ dataFormattingTable[,'Notes_siteFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_siteFormat', 
 
 #--! PROVIDE INFO !--#
-  'The site field is a concatenation of treatment and grid.')
+  'Each grid has four permanent 75-m long transects; Perennial cover measured at 0.5 m intervals along each transect (75 points × 4 transects = 300 points per plot). Ephemeral (annual + geophyte) cover is measured on 10 randomly selected 1.5 m segments from these transects. Segments are sampled at 5 cm intervals (30 points × 10 segments × 4 transects = 1200 points per plot).')
 
 
 #-------------------------------------------------------------------------------*
@@ -392,7 +392,10 @@ dataFormattingTable[,'Notes_siteFormat'] =
 
 names(dataset3)
 summary(dataset3)
+str(dataset3)
 
+# Noticed there are some values with commas in the gcount field; convert to decimal:
+dataset3$gcover = gsub(",", ".", dataset3$gcover)
 # Fill in the original field name for the count or abundance data here. 
 # If there is no countfield, set this equal to "".
 
@@ -465,7 +468,7 @@ dataFormattingTable[,'Notes_countFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_countFormat', 
                                  
 #--! PROVIDE INFO !--#                                 
-              'percent cover data provided by treatment and grid')
+              'percent cover data provided by grid')
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SPECIES DATA ----
@@ -508,7 +511,7 @@ data.frame(table(dataset5$species))
 # Because of this, you should really stop here and post an issue on GitHub. 
 
 #--! PROVIDE INFO !--#
-bad_sp = c('')
+bad_sp = c('UNID', 'SOIL', 'TCOB', 'TCOV  ', 'LICY X')
 
 dataset6 = dataset5[!dataset5$species %in% bad_sp,]
 
@@ -522,12 +525,13 @@ table(dataset6$species)
 # correct spellings in good_name, and then replace them using the for loop below:
 
 #--! PROVIDE INFO !--#
-typo_name = c('ABDE  ', 'FLTH  ', 'POCH ', 'SECU  ', 'TCOV  ')          
+typo_name = c('ADBE  ', 'FLTH  ', 'POCH ', 'SECU  ')          
 
 #--! PROVIDE INFO !--#
-good_name = c('ABDE', 'FLTH', 'POCH', 'SECU', 'TCOV')
+good_name = c('ADBE', 'FLTH', 'POCH', 'SECU')
 
 if (length(typo_name) > 0 & typo_name[1] != "") {
+  levels(dataset6$species) = unique(c(levels(dataset6$species), good_name))
   for (n in 1:length(typo_name)) {
     dataset6$species[dataset6$species == typo_name[n]] = good_name[n]
   }
@@ -560,7 +564,7 @@ dataFormattingTable[,'Notes_spFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_spFormat',  
 
 #--! PROVIDE INFO !--#                                 
-  'Some species had extra spaces but there were no duplicate or wrong names.')
+  'Some species had extra spaces and codes for SOIL and Total Cover were removed.')
 
 #-------------------------------------------------------------------------------*
 # ---- MAKE DATA FRAME OF COUNT BY SITES, SPECIES, AND YEAR ----
@@ -694,7 +698,7 @@ tGrain = 'year'
 site_grain_names
 
 #--! PROVIDE INFO !--#
-sGrain = 'Trt_Grid'
+sGrain = 'Grid'
 
 # This is a reasonable choice of spatial grain because ...
 #--! PROVIDE INFO !--#
