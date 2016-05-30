@@ -3,6 +3,8 @@
 # 
 #  Metadata can be found at http://ecologicaldata.org/wiki/powdermill-biological-station-small-mammal-database
 
+# Formatted by Will Larsen and Allen Hurlbert
+
 #-------------------------------------------------------------------------------*
 # ---- SET-UP ----
 #===============================================================================
@@ -211,22 +213,13 @@ dataFormattingTable[,'subannualTgrain'] =
 levels(dataset2$quadr) = c(levels(dataset2$quadr),'blank')
 dataset2$quadr[dataset2$quadr == ""] = 'blank'
 
-# According to the metadata, they row in the grid is indicated by the letter and the column is indicated by the number, so everything that's not <number><letter> should be deleted
-
-# Remove entries of one character (like 'J')
-dataset2 = subset(dataset2, nchar(as.character(dataset2$quadr))>1 )
-
-# Remove entries only composed of numbers (like '58') and entries that have incorrect letters (like 'T9') by subsetting to entries whose first character is an acceptable letter
-dataset2 = subset(dataset2, str_sub(dataset2$quadr,1,1) %in% c('A','B','b','C','D','E','F','G','H','I','J'))
-
-# Remove entries with numbers that are too high (over 10)
-dataset2 = subset(dataset2, as.numeric(str_sub(dataset2$quadr,2,-1))<=10 | dataset2$quadr == 'blank')
+# According to the metadata, the row in the grid is indicated by the letter and the column is indicated by the number. There appear to be numerous typos in the quadrat field, but since analysis will not be performed at the quadrat scale we won't worry about them.
 
 # Adding plot column so that later, all quads can be treated as one site
 
 dataset2$plot = rep(1, length(dataset2$quadr))
 
-site_grain_names = c("plot", "quadr")
+site_grain_names = c("plot")
 
 # We will now create the site field with these codes concatenated if there
 # are multiple grain fields. Otherwise, site will just be the single grain field.
@@ -239,6 +232,20 @@ if (num_grains > 1) {
   } 
 }
 
+# What is the spatial grain of the finest sampling scale? For example, this might be
+# a 0.25 m2 quadrat, or a 5 m transect, or a 50 ml water sample.
+
+dataFormattingTable[,'Raw_spatial_grain'] = 
+  dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain',  
+                                 
+                                 #--! PROVIDE INFO !--#
+                                 1) 
+
+dataFormattingTable[,'Raw_spatial_grain_unit'] = 
+  dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain_unit',  
+                                 
+                                 #--! PROVIDE INFO !--#
+                                 'ha') 
 
 # BEFORE YOU CONTINUE. We need to make sure that there are at least minNTime for sites at the coarsest possilbe spatial grain. 
 
@@ -278,7 +285,7 @@ dataset3$site = factor(site)
 # Remove any hierarchical site related fields that are no longer needed, IF NECESSARY.
 
 #####
-dataset3 = dataset3[,-c(2,5)]
+dataset3 = dataset3[, !names(dataset3) %in% c("quadr", "plot")]
 
 # Check the new dataset (are the columns as they should be?):
 
@@ -294,7 +301,7 @@ dataFormattingTable[,'Raw_siteUnit'] =
   dataFormattingTableFieldUpdate(datasetID, 'Raw_siteUnit',       # Fill value below in quotes
                                  
                                  #####
-                                 'quadr') 
+                                 'plot') 
 
 
 # spatial_scale_variable. Is a site potentially nested (e.g., plot within a quad or decimal lat longs that could be scaled up)? Y/N
@@ -311,7 +318,7 @@ dataFormattingTable[,'Notes_siteFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_siteFormat',  # Fill value below in quotes
                                  
                                  #####
-                                 'sites are quadrats within a 1 ha plot, marked by a letter for the row and a number for the column. There were many bad site entries with either unacceptable rows (must be letters A-J) or unacceptable columns (must be numbers 1-10). One site with 400+ entries was named "" (no chars, just blank), the site was kept but renamed "blank"')
+                                 'This dataset comprises many trapping stations that ultimately reflect the assemblage at a single plot, Powdermill Station.')
 
 
 #-------------------------------------------------------------------------------*
@@ -322,18 +329,10 @@ dataFormattingTable[,'Notes_siteFormat'] =
 names(dataset3)
 summary(dataset3)
 
-# Dataset does not have a count column, have to add up all occurences of a species at a specific date and site
+# Dataset does not have a count column, because each row reflects the capture of 1 individual
 
-dataset_count = data.frame(table(dataset3[,c('species','date','site')]))
-dataset_count = dataset_count[dataset_count$Freq!=0, ]
-
-head(dataset_count)
-
-names(dataset_count)[4] = 'count' 
-
-dataset4 = dataset_count
-
-summary(dataset4)
+dataset4 = dataset3
+dataset4$count = 1
 
 # Remove NA's:
 
@@ -360,7 +359,7 @@ dataFormattingTable[,'Notes_countFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_countFormat', # Fill value below in quotes
                                  
                                  #####                                 
-                                 'Data represents count. There was no count column to begin with, so the occurences of each species at a spefici site and date were added up using table(). Many 0s, but no NAs were removed ')
+                                 'Each record of raw data indicates the capture of one individual. These values are summed by date and species to get counts.')
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SPECIES DATA ----
@@ -432,7 +431,7 @@ dataFormattingTable[,'Notes_spFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_spFormat',    # Fill value below in quotes
                                  
                                  #####                                 
-                                 'two species codes removed: one was just blank and one was a question mark. two species codes were questionable because of low frequency, but were kept because the metadata provided does not list species codes: "MM" and "ZH" ')
+                                 'Two species codes removed: one was just blank and one was a question mark.')
 
 #-------------------------------------------------------------------------------*
 # ---- MAKE DATA FRAME OF COUNT BY SITES, SPECIES, AND YEAR ----
@@ -477,13 +476,7 @@ write.csv(dataset7, paste("data/formatted_datasets/dataset_", datasetID, ".csv",
 
 # !GIT-ADD-COMMIT-PUSH THE FORMATTED DATASET IN THE DATA FILE, THEN GIT-ADD-COMMIT-PUSH THE UPDATED DATA FOLDER!
 
-# As we've now successfully created the formatted dataset, we will now update the format priority and format flag fields. 
-
-dataFormattingTable[,'format_priority'] = 
-  dataFormattingTableFieldUpdate(datasetID, 'format_priority',    # Fill value below in quotes 
-                                 
-                                 #####                                 
-                                 'NA')
+# As we've now successfully created the formatted dataset, we will now update the format flag field. 
 
 dataFormattingTable[,'format_flag'] = 
   dataFormattingTableFieldUpdate(datasetID, 'format_flag',    # Fill value below
@@ -498,10 +491,6 @@ dataFormattingTable[,'format_flag'] =
 # 3 = formatting halted, issue
 # 4 = data unavailable
 # 5 = data insufficient for generating occupancy data
-
-# And update the data formatting table:
-
-write.csv(dataFormattingTable, 'data_formatting_table.csv', row.names = F)
 
 # !GIT-ADD-COMMIT-PUSH THE DATA FORMATTING TABLE!
 
@@ -587,7 +576,24 @@ head(richnessYearsTest)
 dim(richnessYearsTest) ; dim(dataset7)
 
 #Number of unique sites meeting criteria
-length(unique(richnessYearsTest$analysisSite))
+goodSites = unique(richnessYearsTest$analysisSite)
+length(goodSites)
+
+# Now subset dataset7 to just those goodSites as defined. This is tricky though
+# because assuming Sgrain is not the finest resolution, we will need to use
+# grep to match site names that begin with the string in goodSites.
+# The reason to do this is that sites which don't meet the criteria (e.g. not
+# enough years of data) may also have low sampling intensity that constrains
+# the subsampling level of the well sampled sites.
+
+uniqueSites = unique(dataset7$site)
+fullGoodSites = c()
+for (s in goodSites) {
+  tmp = as.character(uniqueSites[grepl(paste(s, "_", sep = ""), paste(uniqueSites, "_", sep = ""))])
+  fullGoodSites = c(fullGoodSites, tmp)
+}
+
+dataset8 = subset(dataset7, site %in% fullGoodSites)
 
 # Once we've settled on spatial and temporal grains that pass our test above,
 # we then need to 1) figure out what levels of spatial and temporal subsampling
@@ -603,7 +609,8 @@ length(unique(richnessYearsTest$analysisSite))
 # and bases the characterization of the community in that site-year based on
 # the aggregate of those standardized subsamples.
 
-subsettedData = subsetDataFun(dataset7, datasetID, spatialGrain = sGrain, 
+subsettedData = subsetDataFun(dataset8,
+                              datasetID, spatialGrain = sGrain, 
                               temporalGrain = tGrain,
                               minNTime = minNTime, minSpRich = minSpRich,
                               proportionalThreshold = topFractionSites,
@@ -623,6 +630,13 @@ siteSummaryFun(subsettedData)
 
 writePropOccSiteSummary(subsettedData)
 
-# Remove all objects except for functions from the environment:
+# Update Data Formatting Table with summary stats of the formatted,
+# properly subsetted dataset
+dataFormattingTable = dataFormattingTableUpdateFinished(datasetID, subsettedData)
 
+# And write the final data formatting table:
+
+write.csv(dataFormattingTable, 'data_formatting_table.csv', row.names = F)
+
+# Remove all objects except for functions from the environment:
 rm(list = setdiff(ls(), lsf.str()))
