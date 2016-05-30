@@ -3,6 +3,8 @@
 # 
 #  Metadata can be found at http://esapubs.org/archive/ecol/E094/084/metadata.php
 
+# Formatted by Will Larsen and Allen Hurlbert
+
 #-------------------------------------------------------------------------------*
 # ---- SET-UP ----
 #===============================================================================*
@@ -178,19 +180,12 @@ dataFormattingTable[,'subannualTgrain'] =
 
 # -- If the dataset is for just a single site, and there is no site column, then add one.
 
-# according to the metadata, the 'row' and 'col' columns should have values between 1 and 5, removing all values that aren't legitimate
+# according to the metadata, the 'row' and 'col' columns should have values between 1 and 5, so there seem to be some typos but analysis will only be conducted at the trapping grid scale (5 x 5 grid) so these typos will be ignored. In this way, every capture on a grid is recorded even if we are unsure exactly where on the grid it was captured.
 
-dataset2 = subset(dataset2, (dataset2$col>0 & dataset2$col<6) & (dataset2$row>0 & dataset2$row<6))
+# Adding a 'site' field for all of Bosque Fray Jorge National Park
+dataset2$site = 'BFJNP'
 
-# Combining 'row' and 'col' entries that note where the trapping locations are within each grid
-
-dataset2$rowcol = paste(dataset2$row,dataset2$col,sep="-")
-
-# Here, we will concatenate all of the potential fields that describe the site 
-# in hierarchical order from largest to smallest grain. Based on the dataset,
-# fill in the fields that specify nested spatial grains below.
-
-site_grain_names = c("gr","rowcol")
+site_grain_names = c("site", "gr")
 
 # We will now create the site field with these codes concatenated if there
 # are multiple grain fields. Otherwise, site will just be the single grain field.
@@ -202,6 +197,21 @@ if (num_grains > 1) {
     site = paste(site, dataset2[, site_grain_names[i]], sep = "_")
   } 
 }
+
+# What is the spatial grain of the finest sampling scale? For example, this might be
+# a 0.25 m2 quadrat, or a 5 m transect, or a 50 ml water sample.
+
+dataFormattingTable[,'Raw_spatial_grain'] = 
+  dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain',  
+                                 
+                                 #--! PROVIDE INFO !--#
+                                 0.56) 
+
+dataFormattingTable[,'Raw_spatial_grain_unit'] = 
+  dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain_unit',  
+                                 
+                                 #--! PROVIDE INFO !--#
+                                 'ha') 
 
 
 # BEFORE YOU CONTINUE. We need to make sure that there are at least minNTime for sites at the coarsest possilbe spatial grain. 
@@ -238,7 +248,7 @@ dataset3 = dataset2
 
 dataset3$site = factor(site)
 
-dataset3 = dataset3[,-c(1:3,6)]
+dataset3 = dataset3[, !names(dataset3) %in% c("gr", "row", "col")]
 
 # Check the new dataset (are the columns as they should be?):
 
@@ -253,7 +263,7 @@ head(dataset3)
 dataFormattingTable[,'Raw_siteUnit'] = 
   dataFormattingTableFieldUpdate(datasetID, 'Raw_siteUnit',       # Fill value below in quotes
                                  
-                                 'gr_rowcol') 
+                                 'site_gr') 
 
 
 # spatial_scale_variable. Is a site potentially nested (e.g., plot within a quad or decimal lat longs that could be scaled up)? Y/N
@@ -261,14 +271,14 @@ dataFormattingTable[,'Raw_siteUnit'] =
 dataFormattingTable[,'spatial_scale_variable'] = 
   dataFormattingTableFieldUpdate(datasetID, 'spatial_scale_variable',
                                  
-                                 'Y') # Fill value here in quotes
+                                 'N') # Fill value here in quotes
 
 # Notes_siteFormat. Use this field to THOROUGHLY describe any changes made to the site field during formatting.
 
 dataFormattingTable[,'Notes_siteFormat'] = 
   dataFormattingTableFieldUpdate(datasetID, 'Notes_siteFormat',  # Fill value below in quotes
                                  
-                                 'site fields concatenated. the columns that originally contained the row and column of the trap within the grid had a few values that were not legitimate (according to metadata, values should be 1-5, there were a few 0s). These bad values were removed and the row and col columns were combined as "rowcol"')
+                                 "'Site' represents the aggregate of all trapping grids, while a single 'gr' is a 0.56 ha 5 x 5 grid.")
 
 
 #-------------------------------------------------------------------------------*
@@ -276,33 +286,10 @@ dataFormattingTable[,'Notes_siteFormat'] =
 #===============================================================================*
 # Next, we need to explore the count records. For filling out the data formatting table, we need to change the name of the field which represents counts, densities, percent cover, etc to "count". Then we will clean up unnecessary values.
 
-names(dataset3)
-summary(dataset3)
 
-# No count column in dataset, count must be extracted from the multiple records of each species and a site/date
-
-dataset_count = data.frame(table(dataset3[,c('species','date','site')]))
-
-# Check to make sure there is one species for every site/date combination
-
-summary(dataset_count)
-head(dataset_count)
-
-# Rename 'Freq' to 'count'
-
-names(dataset_count)[4] = 'count'
-
-# Can usually tell if there are any zeros or NAs from that summary(). If there aren't any showing, still run these functions or continue with the update of dataset# so that you are consistent with this template.
-
-# Subset to records > 0 (if applicable):
-
-dataset4 = subset(dataset_count, count>0)
-
-summary(dataset4)
-
-# Dates got turned into factors when count column was being added, turn dates back into POSIXct format
-
-dataset4$date = as.POSIXct(dataset4$date)
+# No count column in dataset, but each record reflects the capture of a single individual.
+dataset4 = dataset3
+dataset4$count = 1
 
 # Remove NA's:
 
@@ -326,7 +313,7 @@ dataFormattingTable[,'countFormat'] =
 dataFormattingTable[,'Notes_countFormat'] = 
   dataFormattingTableFieldUpdate(datasetID, 'Notes_countFormat', # Fill value below in quotes
                                  
-                                 'Data represents count. There was no original count column, just one row for each individual of a species found at each site/date combination. Count column extracted. There were many 0s to remove, no NAs.')
+                                 'Count of individuals captured by species, grid and date.')
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SPECIES DATA ----
@@ -334,7 +321,7 @@ dataFormattingTable[,'Notes_countFormat'] =
 
 # Look at the individual species present:
 
-levels(dataset5$species) 
+table(dataset5$species) 
 
 # Two species codes that are not associated with a species in metadata: 'MM' and 'UN'
 
@@ -416,21 +403,12 @@ write.csv(dataset7, paste("data/formatted_datasets/dataset_", datasetID, ".csv",
 
 # !GIT-ADD-COMMIT-PUSH THE FORMATTED DATASET IN THE DATA FILE, THEN GIT-ADD-COMMIT-PUSH THE UPDATED DATA FOLDER!
 
-# As we've now successfully created the formatted dataset, we will now update the format priority and format flag fields. 
-
-dataFormattingTable[,'format_priority'] = 
-  dataFormattingTableFieldUpdate(datasetID, 'format_priority',    # Fill value below in quotes 
-                                 
-                                 'NA')
+# As we've now successfully created the formatted dataset, we will now update the format flag field. 
 
 dataFormattingTable[,'format_flag'] = 
   dataFormattingTableFieldUpdate(datasetID, 'format_flag',    # Fill value below
                                  
                                  1)
-
-# And update the data formatting table:
-
-write.csv(dataFormattingTable, 'data_formatting_table.csv', row.names = F)
 
 # !GIT-ADD-COMMIT-PUSH THE DATA FORMATTING TABLE!
 
@@ -514,7 +492,24 @@ head(richnessYearsTest)
 dim(richnessYearsTest) ; dim(dataset7)
 
 #Number of unique sites meeting criteria
-length(unique(richnessYearsTest$analysisSite))
+goodSites = unique(richnessYearsTest$analysisSite)
+length(goodSites)
+
+# Now subset dataset7 to just those goodSites as defined. This is tricky though
+# because assuming Sgrain is not the finest resolution, we will need to use
+# grep to match site names that begin with the string in goodSites.
+# The reason to do this is that sites which don't meet the criteria (e.g. not
+# enough years of data) may also have low sampling intensity that constrains
+# the subsampling level of the well sampled sites.
+
+uniqueSites = unique(dataset7$site)
+fullGoodSites = c()
+for (s in goodSites) {
+  tmp = as.character(uniqueSites[grepl(paste(s, "_", sep = ""), paste(uniqueSites, "_", sep = ""))])
+  fullGoodSites = c(fullGoodSites, tmp)
+}
+
+dataset8 = subset(dataset7, site %in% fullGoodSites)
 
 # Once we've settled on spatial and temporal grains that pass our test above,
 # we then need to 1) figure out what levels of spatial and temporal subsampling
@@ -530,7 +525,8 @@ length(unique(richnessYearsTest$analysisSite))
 # and bases the characterization of the community in that site-year based on
 # the aggregate of those standardized subsamples.
 
-subsettedData = subsetDataFun(dataset7, datasetID, spatialGrain = sGrain, 
+subsettedData = subsetDataFun(dataset8,
+                              datasetID, spatialGrain = sGrain, 
                               temporalGrain = tGrain,
                               minNTime = minNTime, minSpRich = minSpRich,
                               proportionalThreshold = topFractionSites,
@@ -549,6 +545,14 @@ siteSummaryFun(subsettedData)
 # If everything looks good, write the files:
 
 writePropOccSiteSummary(subsettedData)
+
+# Update Data Formatting Table with summary stats of the formatted,
+# properly subsetted dataset
+dataFormattingTable = dataFormattingTableUpdateFinished(datasetID, subsettedData)
+
+# And write the final data formatting table:
+
+write.csv(dataFormattingTable, 'data_formatting_table.csv', row.names = F)
 
 # Remove all objects except for functions from the environment:
 
