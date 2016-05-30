@@ -4,6 +4,7 @@
 #  Aggregation of mosquito occurrence datasets by Hellman et al. 2013
 #  http://esapubs.org/archive/ecol/E094/126/metadata.php
 #
+#  Formatted by Allen Hurlbert
 ################################################################################*
 
 
@@ -44,6 +45,12 @@ list.files('data/raw_datasets')
 dataset = read.csv(unzip('data/raw_datasets/dataset_247.zip'))
 
 dataFormattingTable = read.csv('data_formatting_table.csv')
+
+dataFormattingTable[,'Raw_datafile_name'] = 
+  dataFormattingTableFieldUpdate(datasetID, 'Raw_datafile_name',  
+                                 
+                                 #--! PROVIDE INFO !--#
+                                 'MosquitoDB.zip') 
 
 ########################################################
 # ANALYSIS CRITERIA                                    #  
@@ -93,8 +100,9 @@ names(dataset)
 unusedFields = c(1, 3:6, 10:14, 16, 19:21)
 
 # In addition to weeding out unusedFields, we also restrict data to Adult
-# lifestages and eliminate records with no site info
-dataset1 = dataset[dataset$lifestage == 'Adult' &
+# lifestages and a sampling protocol using New Jersey light traps, 
+# and eliminate records with no site info
+dataset1 = dataset[dataset$lifestage == 'Adult' & dataset$samplingprotocol == 'NJLT' &
                    !(dataset$verbatimlocality == "UNKNOWN" &
                      dataset$verbatimlatitude == "UNKNOWN" &
                      dataset$verbatimlongitude == "UNKNOWN"),
@@ -134,17 +142,29 @@ dataFormattingTable[,'LatLong_sites'] =
 dataset1$month[dataset1$month == 0] = 1
 dataset1$day[dataset1$day == 0] = 1
 
-# Date info is in multiple columns, so let's combine them 
-dataset1$date = as.Date(paste(dataset1$year, dataset1$month, dataset1$day, sep = "-"),
-                        format = "%Y-%m-%d")
-
 # What is the name of the field that has information on sampling date?
-datefield = 'date'
+# If date info is in separate columns (e.g., 'day', 'month', and 'year' cols),
+# then write these field names as a vector from largest to smallest temporal grain.
+# E.g., c('year', 'month', 'day')
+
+#--! PROVIDE INFO !--#
+dateFieldName = c('year', 'month', 'day')
+
+# If necessary, paste together date info from multiple columns into single field
+if (length(dateFieldName) > 1) {
+  newDateField = dataset1[, dateFieldName[1]]
+  for (i in dateFieldName[2:length(dateFieldName)]) { newDateField = paste(newDateField, dataset1[,i], sep = "-") }
+  dataset1$date = newDateField
+  datefield = 'date'
+} else {
+  datefield = dateFieldName
+}
 
 # What is the format in which date data is recorded? For example, if it is
 # recorded as 5/30/94, then this would be '%m/%d/%y', while 1994-5-30 would
 # be '%Y-%m-%d'. Type "?strptime" for other examples of date formatting.
 
+#--! PROVIDE INFO !--#
 dateformat = '%Y-%m-%d'
 
 # If the date is just a year, then make sure it is of class numeric
@@ -169,7 +189,7 @@ head(date)
 dataset2 = dataset1
 
 # Delete the old date field
-dataset2 = dataset2[, -which(names(dataset2) == datefield)]
+dataset2 = dataset2[, -which(names(dataset2) %in% dateFieldName)]
 
 # Assign the new date values in a field called 'date'
 dataset2$date = date
@@ -238,6 +258,21 @@ if (num_grains > 1) {
   } 
 }
 
+# What is the spatial grain of the finest sampling scale? For example, this might be
+# a 0.25 m2 quadrat, or a 5 m transect, or a 50 ml water sample.
+
+dataFormattingTable[,'Raw_spatial_grain'] = 
+  dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain',  
+                                 
+                                 #--! PROVIDE INFO !--#
+                                 1000) 
+
+dataFormattingTable[,'Raw_spatial_grain_unit'] = 
+  dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain_unit',  
+                                 
+                                 #--! PROVIDE INFO !--#
+                                 'm2') 
+
 
 # BEFORE YOU CONTINUE. We need to make sure that there are at least minNTime for sites at the coarsest possilbe spatial grain. 
 
@@ -274,7 +309,9 @@ dataset3 = dataset2
 
 dataset3$site = factor(site)
 
-dataset3 = dataset3[,-c(2:7)]
+dataset3 = dataset3[, !(names(dataset3) %in% c('verbatimlocality',
+                                               'verbatimlatitude', 
+                                               'verbatimlongitude'))]
 
 # Check the new dataset (are the columns as they should be?):
 
@@ -304,9 +341,8 @@ dataFormattingTable[,'spatial_scale_variable'] =
 dataFormattingTable[,'Notes_siteFormat'] = 
   dataFormattingTableFieldUpdate(datasetID, 'Notes_siteFormat',  # Fill value below in quotes
                                  
-                                 'site field is a concatenation of lat and long for some sites, but for others is a provided sitename. The scale of these sites is variable as this is an amalgamation of heterogeneous datasets.')
+                                 'site field is a concatenation of lat and long for some sites, but for others is a provided sitename. Spatial scale arbitrarily listed at 1000 m2 as an area over which mosquitos might be attracted to a light trap (i.e. circle of radius 18 m).')
 
-write.csv(dataset2, "C:/git/core-transient/data/raw_datasets/dataset_247.csv")
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT COUNT DATA ----
 #===============================================================================*
@@ -319,19 +355,43 @@ summary(dataset3)
 countfield = 'individualcount'
 
 # Renaming it
-names(dataset3)[which(names(dataset3) == countfield)] = 'count'
+if (countfield == "") {
+  dataset3$count = 1
+} else {
+  names(dataset3)[which(names(dataset3) == countfield)] = 'count'
+}
+
+# Check that the count field is numeric or integer, and convert if necessary
+class(dataset3$count)
+# For example, dataset3$count = as.numeric(as.character(dataset3$count))
+
 
 # Now we will remove zero counts and NA's:
-
 summary(dataset3)
 
-# Can usually tell if there are any zeros or NAs from that summary(). If there aren't any showing, still run these functions or continue with the update of dataset# so that you are consistent with this template.
+# Can usually tell if there are any zeros or NAs from that summary(). If there 
+# aren't any showing, still run these functions or continue with the update of 
+# dataset# so that you are consistent with this template.
 
 # Subset to records > 0 (if applicable):
-
 dataset4 = subset(dataset3, count > 0) 
 
 summary(dataset4)
+
+# Check to make sure that by removing 0's that you haven't completely removed
+# any sampling events in which nothing was observed. Compare the number of 
+# unique site-dates in dataset3 and dataset4.
+
+# If there are no sampling events lost, then we can go ahead and use the 
+# smaller dataset4 which could save some time in subsequent analyses.
+# If there are sampling events lost, then we'll keep the 0's (use dataset3).
+numEventsd3 = nrow(unique(dataset3[, c('site', 'date')]))
+numEventsd4 = nrow(unique(dataset4[, c('site', 'date')]))
+if(numEventsd3 > numEventsd4) {
+  dataset4 = dataset3
+} else {
+  dataset4 = dataset4
+}
 
 # Remove NA's:
 
@@ -481,12 +541,7 @@ write.csv(dataset7, paste("data/formatted_datasets/dataset_", datasetID, ".csv",
 
 # !GIT-ADD-COMMIT-PUSH THE FORMATTED DATASET IN THE DATA SUBREPOSITORY, THEN GIT-ADD-COMMIT-PUSH FROM THE MAIN REPO!
 
-# As we've now successfully created the formatted dataset, we will now update the format priority and format flag fields. 
-
-dataFormattingTable[,'format_priority'] = 
-  dataFormattingTableFieldUpdate(datasetID, 'format_priority',    # Fill value below in quotes 
-                                 
-                                 'NA')
+# As we've now successfully created the formatted dataset, we will now update the format flag field. 
 
 dataFormattingTable[,'format_flag'] = 
   dataFormattingTableFieldUpdate(datasetID, 'format_flag',    # Fill value below
@@ -499,11 +554,6 @@ dataFormattingTable[,'format_flag'] =
 # 3 = formatting halted, issue
 # 4 = data unavailable
 # 5 = data insufficient for generating occupancy data
-
-
-# And update the data formatting table:
-
-write.csv(dataFormattingTable, 'data_formatting_table.csv', row.names = F)
 
 # !GIT-ADD-COMMIT-PUSH THE DATA FORMATTING TABLE!
 
@@ -586,7 +636,24 @@ head(richnessYearsTest)
 dim(richnessYearsTest) ; dim(dataset7)
 
 #Number of unique sites meeting criteria
-length(unique(richnessYearsTest$analysisSite))
+goodSites = unique(richnessYearsTest$analysisSite)
+length(goodSites)
+
+# Now subset dataset7 to just those goodSites as defined. This is tricky though
+# because assuming Sgrain is not the finest resolution, we will need to use
+# grep to match site names that begin with the string in goodSites.
+# The reason to do this is that sites which don't meet the criteria (e.g. not
+# enough years of data) may also have low sampling intensity that constrains
+# the subsampling level of the well sampled sites.
+
+uniqueSites = unique(dataset7$site)
+fullGoodSites = c()
+for (s in goodSites) {
+  tmp = as.character(uniqueSites[grepl(paste(s, "_", sep = ""), paste(uniqueSites, "_", sep = ""))])
+  fullGoodSites = c(fullGoodSites, tmp)
+}
+
+dataset8 = subset(dataset7, site %in% fullGoodSites)
 
 # Once we've settled on spatial and temporal grains that pass our test above,
 # we then need to 1) figure out what levels of spatial and temporal subsampling
@@ -602,7 +669,8 @@ length(unique(richnessYearsTest$analysisSite))
 # and bases the characterization of the community in that site-year based on
 # the aggregate of those standardized subsamples.
 
-subsettedData = subsetDataFun(dataset7, datasetID, spatialGrain = sGrain, 
+subsettedData = subsetDataFun(dataset8, 
+                              datasetID, spatialGrain = sGrain, 
                               temporalGrain = tGrain,
                               minNTime = minNTime, minSpRich = minSpRich,
                               proportionalThreshold = topFractionSites,
@@ -621,6 +689,14 @@ siteSummaryFun(subsettedData)
 # If everything looks good, write the files:
 
 writePropOccSiteSummary(subsettedData)
+
+# Update Data Formatting Table with summary stats of the formatted,
+# properly subsetted dataset
+dataFormattingTable = dataFormattingTableUpdateFinished(datasetID, subsettedData)
+
+# And write the final data formatting table:
+
+write.csv(dataFormattingTable, 'data_formatting_table.csv', row.names = F)
 
 # Remove all objects except for functions from the environment:
 
