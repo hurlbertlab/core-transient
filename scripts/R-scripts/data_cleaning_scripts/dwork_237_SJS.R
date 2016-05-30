@@ -127,7 +127,7 @@ head(dataset)
 names(dataset)
 
 #--! PROVIDE INFO !--#
-unusedFieldNames = c("ROW", "COL", "HOUR", "SEX", "WT", "SST", "RST", "ST", "F")
+unusedFieldNames = c("ROW", "COL", "HOUR", "SEX", "WT", "SST", "RST", "ST", "F", "AnimalID", "TRT")
 
 dataset1 = dataset[, !names(dataset) %in% unusedFieldNames]
 
@@ -222,7 +222,7 @@ head(date)
 dataset2 = dataset1
 
 # Delete the old date field
-dataset2 = dataset2[, -which(names(dataset2) %in% dateFieldName)]
+dataset2 = dataset2[, !(names(dataset2) %in% c('MO', 'jday', dateFieldName))]
 
 # Assign the new date values in a field called 'date'
 dataset2$date = date
@@ -278,8 +278,11 @@ dataFormattingTable[,'subannualTgrain'] =
 # in hierarchical order from largest to smallest grain. Based on the dataset,
 # fill in the fields that specify nested spatial grains below.
 
+# Add a coarse grain representing all of the trapping grids throughout Bosque Fray Jorge National Park
+dataset2$site = 'BFJNP'
+
 #--! PROVIDE INFO !--#
-site_grain_names = c("GR")
+site_grain_names = c("site", "GR")
 
 # We will now create the site field with these codes concatenated if there
 # are multiple grain fields. Otherwise, site will just be the single grain field.
@@ -378,7 +381,7 @@ dataFormattingTable[,'spatial_scale_variable'] =
   dataFormattingTableFieldUpdate(datasetID, 'spatial_scale_variable',
 
 #--! PROVIDE INFO !--#
-                                 'N')
+                                 'Y')
 
 # Notes_siteFormat. Use this field to THOROUGHLY describe any changes made to the 
 # site field during formatting.
@@ -387,7 +390,7 @@ dataFormattingTable[,'Notes_siteFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_siteFormat', 
 
 #--! PROVIDE INFO !--#
-  'The site field is the grid number at the spatial scale of 75x75 m.')
+  'The site field is the grid number at the spatial scale of 75x75 m. Data may also be aggregated across all grids.')
 
 
 #-------------------------------------------------------------------------------*
@@ -465,13 +468,13 @@ dataFormattingTable[,'countFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'countFormat',  
 
 #--! PROVIDE INFO !--#                                 
-                                 'presence')
+                                 'count')
 
 dataFormattingTable[,'Notes_countFormat'] = 
   dataFormattingTableFieldUpdate(datasetID, 'Notes_countFormat', 
                                  
 #--! PROVIDE INFO !--#                                 
-              'No count data provided, so 1s added to indicate presence')
+              'Count of individuals captured by species, grid and date.')
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SPECIES DATA ----
@@ -514,7 +517,8 @@ data.frame(table(dataset5$species))
 # Because of this, you should really stop here and post an issue on GitHub. 
 
 #--! PROVIDE INFO !--#
-bad_sp = c('')
+# Two species codes that are not associated with a species in metadata: 'MM' and 'UN'
+bad_sp = c('MM','UN')
 
 dataset6 = dataset5[!dataset5$species %in% bad_sp,]
 
@@ -566,7 +570,7 @@ dataFormattingTable[,'Notes_spFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_spFormat',  
 
 #--! PROVIDE INFO !--#                                 
-  'No alterations to species name were necessary since there were only a few names and they were represented wwith two letters. Data in presence/absence format.')
+  'Two species codes  were not associated with any species in the metadata ("MM" and "UN"), and they were removed')
 
 #-------------------------------------------------------------------------------*
 # ---- MAKE DATA FRAME OF COUNT BY SITES, SPECIES, AND YEAR ----
