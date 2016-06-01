@@ -14,14 +14,13 @@ library(maptools)
 library(tidyr)
 library(raster)
 library(rgeos)
+library(sqldf)
 
 # read in temporal occupancy dataset 
 Hurlbert_o = read.csv('Master_RO_Correlates_20110610.csv', header = T)
 # subset species whose occupancies were between 0.3 and 0.7 over a 10 year period
 subsetocc = Hurlbert_o[Hurlbert_o$X10yr.Prop > .3 & Hurlbert_o$X10yr.Prop < .7,]
 # write.csv(subsetocc, "focal.csv")
-# compare green-tailed towhee to spotted towhee occupancies
-towhees = subsetocc[subsetocc$CommonName == "Spotted Towhee"| subsetocc$CommonName == "Green-tailed Towhee",]
 
 # read in BBS data
 bbs = read.csv('dataset_1.csv', header = T)
@@ -30,42 +29,44 @@ bbs = bbs[, (names(bbs) %in% c("stateroute", "Aou", "SpeciesTotal",  'routeID', 
 # read in Coyle occupancy data - organized by site 
 coyle_o = read.csv('site_sp_occupancy_matrix_Coyle.csv', header = T)
 # gather into long format
-# coyle_long = gather(coyle_o, Aou, occupancy, X2881:X22860)
+coyle_long = gather(coyle_o, Aou, occupancy, X2881:X22860)
 # remove x
-# coyle_long$Aou = substring(coyle_long$Aou, 2)
+coyle_long$Aou = substring(coyle_long$Aou, 2)
 # name 1st col stateroute
-colnames(coyle_o)[1] = "stateroute"
+colnames(coyle_long)[1] = "stateroute"
 
 ########NEED  to expand to take any species here
+# compare green-tailed towhee to spotted towhee occupancies
+# towhees = subsetocc[subsetocc$CommonName == "Spotted Towhee"| subsetocc$CommonName == "Green-tailed Towhee",]
 # subset spotted towhees based on AOU code
-spotted = bbs[bbs$Aou == 5880,] 
+# spotted = bbs[bbs$Aou == 5880,] 
 # aggregate based on year to get just spotted towhee abundance
-spot_agg = aggregate(spotted, by = list(spotted$stateroute), FUN = mean) 
+# spot_agg = aggregate(spotted, by = list(spotted$stateroute), FUN = mean) 
 
 # subset GT towhee within coyle occupancy data
-gt_occ = data.frame(coyle_o$stateroute, coyle_o$X5900)
+# gt_occ = data.frame(coyle_o$stateroute, coyle_o$X5900)
 # subset spotted towhee within coyle occupancy data
-spot_occ = data.frame(coyle_o$stateroute, coyle_o$X5880)
+# spot_occ = data.frame(coyle_o$stateroute, coyle_o$X5880)
 # merge occupancy with bbs for spotted towhee to get raw abundances
-t1 = merge(spot_agg, gt_occ, by.x = "stateroute", by.y = "coyle_o.stateroute")
+# t1 = merge(spot_agg, gt_occ, by.x = "stateroute", by.y = "coyle_o.stateroute")
 # insert GT occupancy = 0 instead of NA
-t1$coyle_o.X5900[is.na(t1$coyle_o.X5900)] <- 0
+# t1$coyle_o.X5900[is.na(t1$coyle_o.X5900)] <- 0
 #remove duplicate columns
-drops <- c("Group.1", "Year", "Aou")
-t1 = t1[, !(names(t1) %in% drops)]
+# drops <- c("Group.1", "Year", "Aou")
+# t1 = t1[, !(names(t1) %in% drops)]
 # merge occupancy with bbs for spotted towhee
-t2 = merge(spot_occ, gt_occ, by="coyle_o.stateroute")
+# t2 = merge(spot_occ, gt_occ, by="coyle_o.stateroute")
 
 # read in expected presence data based on BBS 
 # clarify expected
-expect_pres = read.csv('expected_presence_on_BBS_routes.csv', header = T)
+# expect_pres = read.csv('expected_presence_on_BBS_routes.csv', header = T)
 # subset GT towhee within occupancy data
-gt_ep = expect_pres[expect_pres$AOU == 5900,] 
+# gt_ep = expect_pres[expect_pres$AOU == 5900,] 
 # merge expected occupancy w real occupancy SPOT TOTAL 
-obs_exp_total = merge(gt_ep, t1, by = "stateroute")
+# obs_exp_total = merge(gt_ep, t1, by = "stateroute")
 # drop extra columns
-drops <- c("SSTATENUMB","SROUTE", "AOU") # -drops
-obs_exp_total = obs_exp_total[, !(names(obs_exp_total) %in% drops)]
+# drops <- c("SSTATENUMB","SROUTE", "AOU") # -drops
+# obs_exp_total = obs_exp_total[, !(names(obs_exp_total) %in% drops)]
 
 ############# ---- Set up pairwise comparison table ---- #############
 
@@ -97,6 +98,8 @@ AOUsub = AOU2[-grep("sp.", AOU2$CommonName),]
 AOUsub2 = AOUsub[-grep("\\)", AOUsub$CommonName),]
 AOUsub3 = AOUsub2[-grep(" \\(", AOUsub2$CommonName),]
 AOUsub4 = unique(AOUsub3)
+#######REMOVE AOU = NA
+
 
 # merge w all sp list to get info for each sp
 sp_list = merge(AOUsub4, all_unique, by.x = "CommonName", by.y = "unique.allspp.CommonName.")
@@ -113,6 +116,8 @@ sp_list$match = gsub('Setophaga ', 'Dendroica ', sp_list$match)
 sp_list$match[sp_list$match =="Dendroica ruticilla"] = "Setophaga ruticilla"
 
 sp_list$match[sp_list$match =="Picoides nuttallii"] = "Dryobates nuttallii"
+
+sp_list$match[sp_list$match =="Cardellina canadensis"] = "Wilsonia canadensis"
 
 #merge pairwise table with taxonomy info
 comp_AOU = merge(focal_competitor_table, sp_list, by.x = "Competitor", by.y = "CommonName")
@@ -160,15 +165,14 @@ all_spp_list = list.files('Z:/GIS/birds/All/All')
 # for loop to select a genus_spp from pairwise table, read in shp, subset to permanent habitat, plot focal distribution
 filesoutput = c()
 focal_spp = c(new_spec_weights$focalcat)
-comp_spp = c(new_spec_weights$compcat) 
 
-sp_proj = CRS("+proj=laea +lat_0=40 +lon_0=-100") # lambert azimuthal equal area
-usa1 = map(database='state', fill=T, plot=F)
+sp_proj = CRS("+proj=laea +lat_0=40 +lon_0=-100 +units=km") # lambert azimuthal equal area
+usa1 = map(database='state', fill=T, plot=F)  ####REPLACE THIS
 IDs = usa1$names
 usa_sp = map2SpatialPolygons(usa1, IDs, CRS("+proj=longlat"))
 
 for (sp in focal_spp) {
- # sp = 'Sphyrapicus_ruber'
+  sp = 'Eremophila_alpestris'
   print(sp)
   t1 = all_spp_list[grep(sp, all_spp_list)]
   t2 = t1[grep('.shp', t1)]
@@ -181,14 +185,14 @@ for (sp in focal_spp) {
   # subset to just permanent or breeding residents
   sporigin = test.poly[test.poly@data$SEASONAL == 1|test.poly@data$SEASONAL == 2|test.poly@data$SEASONAL ==5,]
   plot(sporigin, add = TRUE, col = colors, border = NA) 
+
+  # list this focal spp competitor
+  tmp = filter(new_spec_weights, sp == new_spec_weights$focalcat)
+  comp_spp = tmp$compcat
   
-  # focal polygon intersection prep: http://gis.stackexchange.com/questions/140504/extracting-intersection-areas-in-r
-  # n1 = as(sporigin, 'SpatialPolygons')
-  #focalpoly = SpatialPolygonsDataFrame(n1, data.frame(focalpoly = focalpoly@data$SISID[1:5]), match.ID = FALSE)
-  
-    for (co in comp_spp) {         # for loop to match competitor sp to focal spp, intersect its range with the focal range, 
-     # co = 'Ammodramus_bairdii' # and calcualte the area of overlap between the two species.
-      print(co)
+  for(co in comp_spp) {         # for loop to match competitor sp to focal spp, intersect its range with the focal range, 
+      co = 'Hirundo_rustica' # and calcualte the area of overlap between the two species.
+      #print(co)
       c1 = all_spp_list[grep(co, all_spp_list)]
       c2 = c1[grep('.shp', c1)]
       c3 = strsplit(c2, ".shp")
@@ -197,31 +201,21 @@ for (sp in focal_spp) {
       plot(corigin, add = TRUE, col = colors, border = NA) 
     
       # intersect from raster package
-      pi = intersect(test.poly, comp.poly)
+      # corigin <-  ST_Buffer(corigin, 0)
+        #gBuffer(corigin, byid=TRUE, width=0)
+
+      #sqldf("UPDATE corigin
+      #      SET geometry=ST_Buffer(geometry, 0.0);") #HELP
+      
+      pi = intersect(sporigin, corigin)
       plot(pi)
-      gArea(sporigin) # in m
-      gArea(corigin)
-      gArea(pi)
-      
-      
-      tmp = gArea(pi)
-      filesoutput = rbind(filesoutput, tmp)
-      
-      # Extract areas from polygon objects then attach as attribute
-      # areas <- data.frame(area=sapply(pi@polygons, FUN=function(x) {slot(x, 'area')}))
-      # row.names(areas) <- sapply(pi@polygons, FUN=function(x) {slot(x, 'ID')})
-      # Combine attributes info and areas 
-      # attArea <- spCbind(pi, areas)
-      
-      # For each field, get area
-      #aggregate(test.poly~comp.poly, data=attArea, FUN=sum) #wrong
+      spArea = gArea(sporigin) # in m
+      coArea = gArea(corigin)
+      area_overlap = gArea(pi)
+      filesoutput = rbind(filesoutput, c(sp, co, spArea, coArea, area_overlap))
   }
 } 
-
-
-roadColors <- c("blue","green","grey","purple", "gold")[test.poly@data$ORIGIN]
-plot(test.poly@data$ORIGIN, col=roadColors,
-     main="NEON Harvard Forest Field Site\n Roads & Trails")
+# convert to data frame, add column names DATA TABLE
 
 ############# ---- Generate total species occupancies ---- #############
 # gathering occupancy data for all species
@@ -257,6 +251,35 @@ avg_occ_dist$occupancy = as.numeric(as.character(avg_occ_dist$occupancy))
 
 #### ---- Plotting ---- ####
 
+#### --- Take species weights table and pre format for calcualtions --- ####
+# compare focal to competitor occupancies
+new_spec_weights_focal = new_spec_weights[,c("Focal", "FocalAOU", "Competitor", "CompetitorAOU")]
+focal_occ = merge(new_spec_weights_focal, coyle_long, by.x = "FocalAOU", by.y = "Aou")
+    # this probably needs to happen in a loop
+# focal_comp_occ = merge(expect_pres, focal_occ, by = "stateroute")
+ # subset GT towhee within coyle occupancy data
+# subset spotted towhee within coyle occupancy data
+# spot_occ = data.frame(coyle_o$stateroute, coyle_o$X5880)
+# merge occupancy with bbs for spotted towhee to get raw abundances
+# t1 = merge(spot_agg, gt_occ, by.x = "stateroute", by.y = "coyle_o.stateroute")
+# insert GT occupancy = 0 instead of NA
+# t1$coyle_o.X5900[is.na(t1$coyle_o.X5900)] <- 0
+#remove duplicate columns
+# drops <- c("Group.1", "Year", "Aou")
+# t1 = t1[, !(names(t1) %in% drops)]
+# merge occupancy with bbs for spotted towhee
+# t2 = merge(spot_occ, gt_occ, by="coyle_o.stateroute")
+
+# read in expected presence data based on BBS 
+# clarify expected
+# expect_pres = read.csv('expected_presence_on_BBS_routes.csv', header = T)
+# subset GT towhee within occupancy data
+# gt_ep = expect_pres[expect_pres$AOU == 5900,] 
+# merge expected occupancy w real occupancy SPOT TOTAL 
+# obs_exp_total = merge(gt_ep, t1, by = "stateroute")
+# drop extra columns
+# drops <- c("SSTATENUMB","SROUTE", "AOU") # -drops
+# obs_exp_total = obs_exp_total[, !(names(obs_exp_total) %in% drops)]
 
 # plot total avg avian occupancy distribution
 plot(avg_occ_dist$occupancy, avg_occ_dist$frequency, type = 'l', 
