@@ -43,6 +43,12 @@ dataset = read.csv(paste('data/raw_datasets/dataset_', datasetID, '.csv', sep = 
 
 dataFormattingTable = read.csv('data_formatting_table.csv')
 
+dataFormattingTable[,'Raw_datafile_name'] = 
+  dataFormattingTableFieldUpdate(datasetID, 'Raw_datafile_name',  
+                                 
+            #--! PROVIDE INFO !--#
+        'Portal_plant_winter_annual_19892002.csv, Portal_plant_winter_perennial_19892002.csv') 
+
 ########################################################
 # ANALYSIS CRITERIA                                    #  
 ########################################################
@@ -221,8 +227,11 @@ dataFormattingTable[,'subannualTgrain'] =
 # in hierarchical order from largest to smallest grain. Based on the dataset,
 # fill in the fields that specify nested spatial grains below.
 
+# Add a field denoting the Portal study site in aggregate
+dataset2$Studysite = 1
+
 #####
-site_grain_names = c("Plot", "Quadrat")
+site_grain_names = c("Studysite", "Plot", "Quadrat")
 
 # We will now create the site field with these codes concatenated if there
 # are multiple grain fields. Otherwise, site will just be the single grain field.
@@ -234,6 +243,21 @@ if (num_grains > 1) {
     site = paste(site, dataset2[, site_grain_names[i]], sep = "_")
   } 
 }
+
+# What is the spatial grain of the finest sampling scale? For example, this might be
+# a 0.25 m2 quadrat, or a 5 m transect, or a 50 ml water sample.
+
+dataFormattingTable[,'Raw_spatial_grain'] = 
+  dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain',  
+                                 
+                                 #--! PROVIDE INFO !--#
+                                 0.0625) 
+
+dataFormattingTable[,'Raw_spatial_grain_unit'] = 
+  dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain_unit',  
+                                 
+                                 #--! PROVIDE INFO !--#
+                                 'm2') 
 
 
 # BEFORE YOU CONTINUE. We need to make sure that there are at least minNTime for sites at the coarsest possilbe spatial grain. 
@@ -274,7 +298,7 @@ dataset3$site = factor(site)
 # Remove any hierarchical site related fields that are no longer needed, IF NECESSARY.
 
 #####
-dataset3 = dataset3[,-c(1:2)]
+dataset3 = dataset3[, !names(dataset3) %in% site_grain_names]
 
 # Check the new dataset (are the columns as they should be?):
 
@@ -284,13 +308,18 @@ head(dataset3)
 
 # !DATA FORMATTING TABLE UPDATE! 
 
-# Raw_siteUnit. How a site is coded (i.e. if the field was concatenated such as this one, it was coded as "site_block_treatment_plot_quad"). Alternatively, if the site were concatenated from latitude and longitude fields, the encoding would be "lat_long". 
+# Raw_siteUnit. How a site is coded (i.e. if the field was concatenated such as this 
+# one, it was coded as "site_quadrat"). Alternatively, if the site were concatenated 
+# from latitude and longitude fields, the encoding would be "lat_long". 
 
-dataFormattingTable[,'Raw_siteUnit'] = 
-  dataFormattingTableFieldUpdate(datasetID, 'Raw_siteUnit',       # Fill value below in quotes
-
-#####
-                                 'Plot_Quadrat') 
+if (dataFormattingTable[dataFormattingTable$dataset_ID == datasetID,'LatLong_sites'] == "N") {
+  dataFormattingTable[,'Raw_siteUnit'] = 
+    dataFormattingTableFieldUpdate(datasetID, 'Raw_siteUnit',  
+                                   paste(site_grain_names, collapse="_")) 
+} else if (dataFormattingTable[dataFormattingTable$dataset_ID == datasetID,'LatLong_sites'] == "Y") {
+  dataFormattingTable[,'Raw_siteUnit'] = 
+    dataFormattingTableFieldUpdate(datasetID, 'Raw_siteUnit', "lat_long") 
+}  
 
 
 # spatial_scale_variable. Is a site potentially nested (e.g., plot within a quad or decimal lat longs that could be scaled up)? Y/N
@@ -307,7 +336,7 @@ dataFormattingTable[,'Notes_siteFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_siteFormat',  # Fill value below in quotes
 
 #####
-  'Plot and Quadrat fields concatenated.')
+  'Studysite has 24 plots each of which contains 16 25x25 cm quads.')
 
 
 #-------------------------------------------------------------------------------*
@@ -490,13 +519,7 @@ write.csv(dataset7, paste("data/formatted_datasets/dataset_", datasetID, ".csv",
 
 # !GIT-ADD-COMMIT-PUSH THE FORMATTED DATASET IN THE DATA FILE, THEN GIT-ADD-COMMIT-PUSH THE UPDATED DATA FOLDER!
 
-# As we've now successfully created the formatted dataset, we will now update the format priority and format flag fields. 
-
-dataFormattingTable[,'format_priority'] = 
-  dataFormattingTableFieldUpdate(datasetID, 'format_priority',    # Fill value below in quotes 
-
-#####                                 
-                                 'NA')
+# As we've now successfully created the formatted dataset, we will now update the format flag field. 
 
 dataFormattingTable[,'format_flag'] = 
   dataFormattingTableFieldUpdate(datasetID, 'format_flag',    # Fill value below
@@ -511,10 +534,6 @@ dataFormattingTable[,'format_flag'] =
 # 3 = formatting halted, issue
 # 4 = data unavailable
 # 5 = data insufficient for generating occupancy data
-
-# And update the data formatting table:
-
-write.csv(dataFormattingTable, 'data_formatting_table.csv', row.names = F)
 
 # !GIT-ADD-COMMIT-PUSH THE DATA FORMATTING TABLE!
 
@@ -577,11 +596,13 @@ tGrain = 'year'
 site_grain_names
 
 #####
-sGrain = 'Plot'
+sGrain = 'Studysite'
 
 # This is a reasonable choice of spatial grain because ...
-# ...the quadrat scale (0.25 m x 0.25 m) is too small, while each Plot includes 
-# 16 quadrats. Plot is also the level of experimental treatment.
+# ...the quadrat scale (0.25 m x 0.25 m) is too small, and even the Plot scale only includes 
+# 16 quadrats, or 1 m2. So even though Plot is the scale of experimental treatment,
+# the study site which covers 24 m2 of plant survey area probably best characterizes
+# the plant assemblage here.
 
 # The function "richnessYearSubsetFun" below will subset the data to sites with an 
 # adequate number of years of sampling and species richness. If there are no 
@@ -602,7 +623,24 @@ head(richnessYearsTest)
 dim(richnessYearsTest) ; dim(dataset7)
 
 #Number of unique sites meeting criteria
-length(unique(richnessYearsTest$analysisSite))
+goodSites = unique(richnessYearsTest$analysisSite)
+length(goodSites)
+
+# Now subset dataset7 to just those goodSites as defined. This is tricky though
+# because assuming Sgrain is not the finest resolution, we will need to use
+# grep to match site names that begin with the string in goodSites.
+# The reason to do this is that sites which don't meet the criteria (e.g. not
+# enough years of data) may also have low sampling intensity that constrains
+# the subsampling level of the well sampled sites.
+
+uniqueSites = unique(dataset7$site)
+fullGoodSites = c()
+for (s in goodSites) {
+  tmp = as.character(uniqueSites[grepl(paste(s, "_", sep = ""), paste(uniqueSites, "_", sep = ""))])
+  fullGoodSites = c(fullGoodSites, tmp)
+}
+
+dataset8 = subset(dataset7, site %in% fullGoodSites)
 
 # Once we've settled on spatial and temporal grains that pass our test above,
 # we then need to 1) figure out what levels of spatial and temporal subsampling
@@ -618,7 +656,8 @@ length(unique(richnessYearsTest$analysisSite))
 # and bases the characterization of the community in that site-year based on
 # the aggregate of those standardized subsamples.
 
-subsettedData = subsetDataFun(dataset7, datasetID, spatialGrain = sGrain, 
+subsettedData = subsetDataFun(dataset8, 
+                              datasetID, spatialGrain = sGrain, 
                               temporalGrain = tGrain,
                               minNTime = minNTime, minSpRich = minSpRich,
                               proportionalThreshold = topFractionSites,
@@ -638,7 +677,14 @@ siteSummaryFun(subsettedData)
 
 writePropOccSiteSummary(subsettedData)
 
-# Remove all objects except for functions from the environment:
+# Update Data Formatting Table with summary stats of the formatted,
+# properly subsetted dataset
+dataFormattingTable = dataFormattingTableUpdateFinished(datasetID, subsettedData)
 
+# And write the final data formatting table:
+
+write.csv(dataFormattingTable, 'data_formatting_table.csv', row.names = F)
+
+# Remove all objects except for functions from the environment:
 rm(list = setdiff(ls(), lsf.str()))
 

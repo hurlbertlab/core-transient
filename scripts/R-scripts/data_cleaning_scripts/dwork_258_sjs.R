@@ -1,31 +1,12 @@
 ################################################################################*
-#  DATA FORMATTING TEMPLATE
-################################################################################*
 #
-# Dataset name:2003 Prescribed Burn Effect on Chihuahuan Desert Grasses and Shrubs at 
+# Dataset name: 2003 Prescribed Burn Effect on Chihuahuan Desert Grasses and Shrubs at 
 # the Sevilleta National Wildlife Refuge, New Mexico: Species Composition Study (2004- )
-# Dataset source (link): http://sev.lternet.edu/sites/default/files/data/sev-166/sev166_burnxquad_11142013_0.txt
-# Formatted by: Sara Snell
 #
-# Start by opening the data formatting table (data_formatting_table.csv). 
-# Datasets to be worked on will have a 'format_flag' of 0.
-
-# Flag codes are as follows:
-  # 0 = not currently worked on
-  # 1 = formatting complete
-  # 2 = formatting in process
-  # 3 = formatting halted, issue
-  # 4 = data unavailable
-  # 5 = data insufficient for generating occupancy data
-
-# NOTE: All changes to the data formatting table will be done in R! 
-# Do not make changes directly to this table, this will create conflicting versions.
-
-# YOU WILL NEED TO ENTER DATASET-SPECIFIC INFO IN EVERY LINE OF CODE PRECEDED
-# BY "#--! PROVIDE INFO !--#". 
-
-# YOU SHOULD RUN, BUT NOT OTHERWISE MODIFY, ALL OTHER LINES OF CODE.
-
+# Metadata: http://sev.lternet.edu/data/sev-166
+#
+# Formatted by: Sara Snell and Allen Hurlbert
+#
 #-------------------------------------------------------------------------------*
 # ---- SET-UP ----
 #===============================================================================*
@@ -128,7 +109,7 @@ head(dataset)
 names(dataset)
 
 #--! PROVIDE INFO !--#
-unusedFieldNames = c('CODE', 'GROWTH', 'SPPTYPE', 'SEASON', 'COMMENTS')
+unusedFieldNames = c('CODE', 'GROWTH', 'SPPTYPE', 'COMMENTS')
 
 dataset1 = dataset[, !names(dataset) %in% unusedFieldNames]
 
@@ -167,14 +148,17 @@ dataFormattingTable[,'LatLong_sites'] =
 # If date info is in separate columns (e.g., 'day', 'month', and 'year' cols),
 # then write these field names as a vector from largest to smallest temporal grain.
 # E.g., c('year', 'month', 'day')
-
+dataset1$MONTH = 5 # for spring survey where SEASON == 1
+dataset1$MONTH[dataset1$SEASON == 3] = 9 # for fall survey where SEASON == 3
+dataset1$DAY = 1 # arbitrary for getting into date format
+  
 #--! PROVIDE INFO !--#
-dateFieldName = c('YEAR')
+dateFieldName = c('YEAR', 'MONTH', 'DAY')
 
 # If necessary, paste together date info from multiple columns into single field
 if (length(dateFieldName) > 1) {
   newDateField = dataset1[, dateFieldName[1]]
-  for (i in dateFieldName[2:length(dateFieldName)]) { newDateField = paste(newDateField, dataset[,i], sep = "-") }
+  for (i in dateFieldName[2:length(dateFieldName)]) { newDateField = paste(newDateField, dataset1[,i], sep = "-") }
   dataset1$date = newDateField
   datefield = 'date'
 } else {
@@ -190,7 +174,7 @@ if (length(dateFieldName) > 1) {
 
 # If date is only listed in years:
 
- dateformat = '%Y'
+ dateformat = '%Y-%m-%d'
 
 # If the date is just a year, then make sure it is of class numeric
 # and not a factor. Otherwise change to a true date object.
@@ -235,7 +219,7 @@ dataFormattingTable[,'Notes_timeFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_timeFormat', 
 
 #--! PROVIDE INFO !--#
-    'The only modification to this field involved converting to a date object.')
+    'Quads surveyed each spring (May) and fall (Sep or Oct); converted SEASON to actual date.')
 
 
 # subannualTgrain. After exploring the time data, was this dataset sampled at a 
@@ -245,7 +229,7 @@ dataFormattingTable[,'subannualTgrain'] =
   dataFormattingTableFieldUpdate(datasetID, 'subannualTgrain', 
 
 #--! PROVIDE INFO !--#                                 
-                                 'N')
+                                 'Y')
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SITE DATA ----
@@ -270,8 +254,10 @@ dataFormattingTable[,'subannualTgrain'] =
 # in hierarchical order from largest to smallest grain. Based on the dataset,
 # fill in the fields that specify nested spatial grains below.
 
+# Each replicate plot is 300 m x 300 m and contains a standard Sevilleta mammal trapping web which consists of 12 transects radiating from a central point. Each transect contains 12 numbered stakes for a total of 144 sample points per web. Vegetation is sampled in permanently located 50 cm x 50 cm quadrats at four evenly spaced points along each radius of each web transect (48 permanent quadrats per replicate). The end of each transect is marked with a long rebar stake with smaller rebar stakes occurring in 10 m increments towards the center of the web. Vegetation is measured in only the first four even numbered stakes from the end of the transect on the trapping web. For example, stakes 12, 10, 8, and 6 are measured for the transect that ends with stake 12.
+
 #--! PROVIDE INFO !--#
-site_grain_names = c("PLOT")
+site_grain_names = c("PLOT", "QUAD")
 
 # We will now create the site field with these codes concatenated if there
 # are multiple grain fields. Otherwise, site will just be the single grain field.
@@ -370,7 +356,7 @@ dataFormattingTable[,'spatial_scale_variable'] =
   dataFormattingTableFieldUpdate(datasetID, 'spatial_scale_variable',
 
 #--! PROVIDE INFO !--#
-                                 'N')
+                                 'Y')
 
 # Notes_siteFormat. Use this field to THOROUGHLY describe any changes made to the 
 # site field during formatting.
@@ -379,7 +365,7 @@ dataFormattingTable[,'Notes_siteFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_siteFormat', 
 
 #--! PROVIDE INFO !--#
-  'The site field is 300 x 300 m plots.')
+  'Each quad is 50 x 50 cm, and there are 48 quads to a plot.')
 
 
 #-------------------------------------------------------------------------------*
@@ -511,9 +497,10 @@ data.frame(table(dataset5$species))
 #--! PROVIDE INFO !--#
 
 bad_sp = c('Amaranthus sp.', 'Aristida spp.', 'Astragalus spp.',
-           'Chamaesyce spp.', 'Opuntia spp.', 'Phacelia spp.', 
+           'Chamaesyce spp.', 'Missing quad', 'Opuntia spp.', 'Phacelia spp.', 
            'Portulaca spp.', 'Sporobolus spp.', 'Unknown_spp._s2010',
-           'Unknown_spp_s2010', ' Unknown_forb_for_s2010')
+           'Unknown_spp_s2010', ' Unknown_forb_for_s2010', 'Unknown species', 'Unknown spp.',
+           'Unknown Cactus', 'UNKNOWN FORB', 'Unknown grass', 'Unknown Lamiacea')
 
 dataset6 = dataset5[!dataset5$species %in% bad_sp,]
 
@@ -527,11 +514,12 @@ table(dataset6$species)
 # correct spellings in good_name, and then replace them using the for loop below:
 
 #--! PROVIDE INFO !--#
-typo_name = c('Asclepias asperula ssp. asperula', ' Cryptantha crassisepila',
-              'Unknown species')          
+typo_name = c('Asclepias asperula ssp. asperula', 'Cryptantha crassisepila',
+              'Phacelia spp.', 'Portulaca spp.')          
 
 #--! PROVIDE INFO !--#
-good_name = c('Asclepias asperula', 'Cryptantha crassisepala', 'Unknown spp.')
+good_name = c('Asclepias asperula', 'Cryptantha crassisepala', 'Phacelia inegrifolia',
+              'Portulaca oleracea')
 
 if (length(typo_name) > 0 & typo_name[1] != "") {
   for (n in 1:length(typo_name)) {
@@ -543,6 +531,14 @@ if (length(typo_name) > 0 & typo_name[1] != "") {
 # Reset the factor levels:
 
 dataset6$species = factor(dataset6$species)
+
+# There is a species name "No vegetation" which we will keep since deleting all
+# "No veg" records may result in the loss of sampling events. However, we will make
+# sure that count == 0 for these records. It currently is for 2821 out of 2824
+# "No veg" records; assuming the other 3 are errors:
+
+dataset6$count[dataset6$species == "No vegetation"] = 0
+
 
 # Let's look at how the removal of bad species and altered the length of the dataset:
 
@@ -566,7 +562,7 @@ dataFormattingTable[,'Notes_spFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_spFormat',  
 
 #--! PROVIDE INFO !--#                                 
-  'Had to use trimws command to remove white space duplicates. A few unknown species were date specific so those were removed, but the total unknown spp data was kept.')
+  'Used trimws command to remove white space duplicates. Several categories of unidentified taxa were removed, and a few others were merged to known taxa.')
 
 #-------------------------------------------------------------------------------*
 # ---- MAKE DATA FRAME OF COUNT BY SITES, SPECIES, AND YEAR ----

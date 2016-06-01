@@ -292,11 +292,14 @@ if (num_grains > 1) {
 # What is the spatial grain of the finest sampling scale? For example, this might be
 # a 0.25 m2 quadrat, or a 5 m transect, or a 50 ml water sample.
 
+# Arbitrarily estimating the area sampled by a single pitfall trap as 10 m2, or circle
+# with radius 1.8 m. It's probably larger.
+
 dataFormattingTable[,'Raw_spatial_grain'] = 
   dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain',  
                                  
 #--! PROVIDE INFO !--#
-                                 4) 
+                                 10) 
 
 dataFormattingTable[,'Raw_spatial_grain_unit'] = 
   dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain_unit',  
@@ -483,11 +486,9 @@ dataFormattingTable[,'Notes_countFormat'] =
 
 #--! PROVIDE INFO !--#
 #####ADDED concatenation of genus_species
-#dataset5$species_name <- paste(dataset5$genus, dataset5$species, sep = " ")
-#dataset5$spp <- dataset5$species
-#dataset5 <- subset(dataset5, select = c("count", 'date', 'site', 'species_name'))  
+dataset5$species_name <- paste(dataset5$genus, dataset5$species, sep = " ")
 
-speciesField = 'species'
+speciesField = 'species_name'
 
 names(dataset5)[names(dataset5) == speciesField] = 'species'
 
