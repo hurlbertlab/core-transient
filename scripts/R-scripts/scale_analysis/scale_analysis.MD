@@ -13,7 +13,6 @@
 --Compare outcomes. 
 
 
-#############
 2 pieces: 
 
 1) independent of breeding bird census stuff - how do these patterns vary with scale, period, independent of bbs and bbc? 
@@ -61,7 +60,6 @@ Scale_analysis.MD
 
 2) 
 
-##############
 
 May: 
 
