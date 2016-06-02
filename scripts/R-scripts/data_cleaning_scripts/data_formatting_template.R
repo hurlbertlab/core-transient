@@ -775,6 +775,13 @@ writePropOccSiteSummary(subsettedData)
 # properly subsetted dataset
 dataFormattingTable = dataFormattingTableUpdateFinished(datasetID, subsettedData)
 
+# Add any final notes about the dataset that might be of interest:
+dataFormattingTable[,'General_notes'] = 
+  dataFormattingTableFieldUpdate(datasetID, 'General_notes', 
+                                 
+                                 #--! PROVIDE INFO !--#                                 
+                                 )
+
 # And write the final data formatting table:
 
 write.csv(dataFormattingTable, 'data_formatting_table.csv', row.names = F)

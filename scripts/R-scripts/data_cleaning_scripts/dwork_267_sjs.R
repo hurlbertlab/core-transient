@@ -1,30 +1,10 @@
 ################################################################################*
-#  DATA FORMATTING TEMPLATE
-################################################################################*
 #
 # Dataset name: A Long-Term Bird Population Study in an Appalachian Spruce Forest
 # Dataset source (link): http://www.jstor.org/stable/4161914
 # Formatted by: Sara Snell
 #
-# Start by opening the data formatting table (data_formatting_table.csv). 
-# Datasets to be worked on will have a 'format_flag' of 0.
-
-# Flag codes are as follows:
-  # 0 = not currently worked on
-  # 1 = formatting complete
-  # 2 = formatting in process
-  # 3 = formatting halted, issue
-  # 4 = data unavailable
-  # 5 = data insufficient for generating occupancy data
-
-# NOTE: All changes to the data formatting table will be done in R! 
-# Do not make changes directly to this table, this will create conflicting versions.
-
-# YOU WILL NEED TO ENTER DATASET-SPECIFIC INFO IN EVERY LINE OF CODE PRECEDED
-# BY "#--! PROVIDE INFO !--#". 
-
-# YOU SHOULD RUN, BUT NOT OTHERWISE MODIFY, ALL OTHER LINES OF CODE.
-
+# NOTE: Tables 3 & 4, singing male numbers determined by the index method, 1962-1983
 #-------------------------------------------------------------------------------*
 # ---- SET-UP ----
 #===============================================================================*
@@ -74,7 +54,7 @@ dataFormattingTable[,'Raw_datafile_name'] =
   dataFormattingTableFieldUpdate(datasetID, 'Raw_datafile_name',  
                                  
 #--! PROVIDE INFO !--#
-  '4161914.pdf') 
+  'extracted from Hall 1984 Wilson Bulletin') 
 
 
 
@@ -379,7 +359,7 @@ dataFormattingTable[,'Notes_siteFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_siteFormat', 
 
 #--! PROVIDE INFO !--#
-  'The site field the number one because the study area is a single plot.')
+  'The study area is a single plot.')
 
 
 #-------------------------------------------------------------------------------*

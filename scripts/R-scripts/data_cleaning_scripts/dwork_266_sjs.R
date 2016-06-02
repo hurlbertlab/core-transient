@@ -1,6 +1,4 @@
 ################################################################################*
-#  DATA FORMATTING TEMPLATE
-################################################################################*
 #
 # Dataset name: The 37-year dynamics of a subalpine passerine bird community, with
 #               special emphasis on the influence of environmental temperature and
@@ -8,24 +6,6 @@
 # Dataset source (link): http://www.luvre.org/data_o_pdf/Luvre-130,%202004%20Enemar%20mfl,%2037%20ar%20skogen.pdf
 # Formatted by: Sara Snell
 #
-# Start by opening the data formatting table (data_formatting_table.csv). 
-# Datasets to be worked on will have a 'format_flag' of 0.
-
-# Flag codes are as follows:
-  # 0 = not currently worked on
-  # 1 = formatting complete
-  # 2 = formatting in process
-  # 3 = formatting halted, issue
-  # 4 = data unavailable
-  # 5 = data insufficient for generating occupancy data
-
-# NOTE: All changes to the data formatting table will be done in R! 
-# Do not make changes directly to this table, this will create conflicting versions.
-
-# YOU WILL NEED TO ENTER DATASET-SPECIFIC INFO IN EVERY LINE OF CODE PRECEDED
-# BY "#--! PROVIDE INFO !--#". 
-
-# YOU SHOULD RUN, BUT NOT OTHERWISE MODIFY, ALL OTHER LINES OF CODE.
 
 #-------------------------------------------------------------------------------*
 # ---- SET-UP ----
@@ -76,7 +56,7 @@ dataFormattingTable[,'Raw_datafile_name'] =
   dataFormattingTableFieldUpdate(datasetID, 'Raw_datafile_name',  
                                  
 #--! PROVIDE INFO !--#
-  'Luvre-130, 2004 Enemar mfl, 37 ar skogen.pdf') 
+  'extracted from Enemar et al. 2004 Ornis Svecica') 
 
 
 
@@ -380,7 +360,7 @@ dataFormattingTable[,'Notes_siteFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_siteFormat', 
 
 #--! PROVIDE INFO !--#
-  'The site field is the number 1 bc all observations from one site.')
+  'All observations are from one site.')
 
 
 #-------------------------------------------------------------------------------*

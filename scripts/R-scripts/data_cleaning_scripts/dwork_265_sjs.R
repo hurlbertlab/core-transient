@@ -1,6 +1,4 @@
 ################################################################################*
-#  DATA FORMATTING TEMPLATE
-################################################################################*
 #
 # Dataset name: Species trends, turnover and composition of a woodland bird
 #               community in southern Sweden during a period of fifty-seven years 
@@ -75,7 +73,7 @@ dataFormattingTable[,'Raw_datafile_name'] =
   dataFormattingTableFieldUpdate(datasetID, 'Raw_datafile_name',  
                                  
 #--! PROVIDE INFO !--#
-  'Vol 20(1), 31-44, Svensson mfl.pdf') 
+  'extracted from Svensson et al. 2010 Ornis Svecica') 
 
 
 

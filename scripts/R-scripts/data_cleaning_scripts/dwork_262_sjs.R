@@ -76,10 +76,33 @@ dataFormattingTable[,'Raw_datafile_name'] =
   dataFormattingTableFieldUpdate(datasetID, 'Raw_datafile_name',  
                                  
 #--! PROVIDE INFO !--#
-  '2461182.pdf') 
+  'extracted from Grossman 1982') 
 
+dataFormattingTable[,'format_flag'] = 
+  dataFormattingTableFieldUpdate(datasetID, 'format_flag', 
+                                 
+                                 #--! PROVIDE INFO !--#                                 
+                                 5)
 
+# Flag codes are as follows:
+# 0 = not currently worked on
+# 1 = formatting complete
+# 2 = formatting in process
+# 3 = formatting halted, issue
+# 4 = data unavailable
+# 5 = data insufficient for generating occupancy data
 
+dataFormattingTable[,'General_notes'] = 
+  dataFormattingTableFieldUpdate(datasetID, 'General_notes', 
+                                 
+                                 #--! PROVIDE INFO !--#                                 
+                                 'data only spans 3 years')
+
+# And write the final data formatting table:
+
+write.csv(dataFormattingTable, 'data_formatting_table.csv', row.names = F)
+
+if(0) {
 ########################################################
 # ANALYSIS CRITERIA                                    #  
 ########################################################
@@ -783,6 +806,7 @@ dataFormattingTable = dataFormattingTableUpdateFinished(datasetID, subsettedData
 write.csv(dataFormattingTable, 'data_formatting_table.csv', row.names = F)
 
 # Remove all objects except for functions from the environment:
+}
 
 rm(list = setdiff(ls(), lsf.str()))
 
