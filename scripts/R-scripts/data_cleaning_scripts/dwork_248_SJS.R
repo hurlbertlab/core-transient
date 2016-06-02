@@ -1,29 +1,12 @@
 ################################################################################*
-#  DATA FORMATTING TEMPLATE
-################################################################################*
 #
 # Dataset name:SBC LTER: Reef: Kelp Forest Community Dynamics: Fish abundance
 # Dataset source (link):https://portal.lternet.edu/nis/mapbrowse?packageid=knb-lter-sbc.17.27
 # Formatted by: Sara Snell
 #
-# Start by opening the data formatting table (data_formatting_table.csv). 
-# Datasets to be worked on will have a 'format_flag' of 0.
-
-# Flag codes are as follows:
-  # 0 = not currently worked on
-  # 1 = formatting complete
-  # 2 = formatting in process
-  # 3 = formatting halted, issue
-  # 4 = data unavailable
-  # 5 = data insufficient for generating occupancy data
-
-# NOTE: All changes to the data formatting table will be done in R! 
-# Do not make changes directly to this table, this will create conflicting versions.
-
-# YOU WILL NEED TO ENTER DATASET-SPECIFIC INFO IN EVERY LINE OF CODE PRECEDED
-# BY "#--! PROVIDE INFO !--#". 
-
-# YOU SHOULD RUN, BUT NOT OTHERWISE MODIFY, ALL OTHER LINES OF CODE.
+# In these surveys, fish were counted in either a 40x2m benthic quadrat, or in the water parcel 0-2m
+# off the bottom over the same area. We consider these surveys together to reflect bottom fish
+# assemblages.
 
 #-------------------------------------------------------------------------------*
 # ---- SET-UP ----
@@ -127,7 +110,7 @@ head(dataset)
 names(dataset)
 
 #--! PROVIDE INFO !--#
-unusedFieldNames = c('record_id', 'year', 'month', 'side', 'size', 'area',
+unusedFieldNames = c('record_id', 'year', 'month', 'side', 'size', 'area', 'quad',
                      'vis', 'obs_code', 'notes', 'survey_timing', 'grp', 'survey',
                      'taxon_kingdom', 'taxon_phylum', 'taxon_sporder', 'taxon_family',
                      'taxon_former_genus', 'common_name', 'substrate_type',
@@ -275,6 +258,10 @@ dataFormattingTable[,'subannualTgrain'] =
 
 #--! PROVIDE INFO !--#
 site_grain_names = c("site", "transect")
+
+# Note that there is also a "quad" field which splits a transect in 2 (0-20 m vs 20-40 m),
+# however, this is only relevant for the benthic surveys, and not the regular surveys
+# (0-2 m above bottom) which are being combined here, so we ignore quad.
 
 # We will now create the site field with these codes concatenated if there
 # are multiple grain fields. Otherwise, site will just be the single grain field.
@@ -466,7 +453,7 @@ dataFormattingTable[,'Notes_countFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_countFormat', 
                                  
 #--! PROVIDE INFO !--#                                 
-              'Count data provided for number of species within a transect and site.')
+              'Count data provided for number of individuals per species within 2 m of the ocean bottom, including a pass for cryptic benthic species.')
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SPECIES DATA ----
@@ -511,9 +498,14 @@ data.frame(table(dataset5$species))
 # Because of this, you should really stop here and post an issue on GitHub. 
 
 #--! PROVIDE INFO !--#
-bad_sp = c('')
+bad_sp = c('', 'Embiotoca spp.', 'Sebastes spp.')
 
 dataset6 = dataset5[!dataset5$species %in% bad_sp,]
+
+# NOTE: I am retaining records where the genus is "No fish" because otherwise there
+# is no record that a survey was carried out. The 'count' field is 0 for 4621 of 
+# 4622 "No fish" records. Setting the remaining record to a count of 0:
+dataset6$count[dataset6$taxon_genus == 'No fish'] = 0
 
 # It may be useful to count the number of times each name occurs, as misspellings 
 # or typos will likely only show up one time.
@@ -563,7 +555,7 @@ dataFormattingTable[,'Notes_spFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_spFormat',  
 
 #--! PROVIDE INFO !--#                                 
-  'No typos or bad species were found, genus and species were combined using the paste function.')
+  'One blank and two unidentified taxa removed; "No species" retained with count of 0 for accurate calcuation of temporal occupancy.')
 
 #-------------------------------------------------------------------------------*
 # ---- MAKE DATA FRAME OF COUNT BY SITES, SPECIES, AND YEAR ----

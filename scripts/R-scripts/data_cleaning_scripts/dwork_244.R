@@ -2,27 +2,10 @@
 # Dataset 244, Channel Islands, CA benthos
 #
 # Data and metadata can be found here: http://esapubs.org/archive/ecol/E094/245
-#Edited by Sara Snell
+# Formatted by Sara Snell and Allen Hurlbert
 
 # Note that this is the Benthic Density data, which includes more species than
 # the Benthic Cover data within this dataset.
-
-# NOTE:
-# "Some species have been added to the monitoring protocols during the 30+ years 
-# of monitoring. Thus the absence of these species from the data early in 
-# monitoring cannot be taken as evidence of absence. For this reason, instead of
-# a 0 or blank, the code "NA" is entered into the dataset as the density for 
-# species in years they were not counted."
-
-# So need to make sure functions will accurately assess annual occupancy vector
-# of c(NA, NA, 1, 0, 1, 1) as 0.75, not 0.5, and consider whether it is a fair 
-# comparison to another species that was sampled over the full period with a
-# vector of c(1, 1, 1, 0, 1, 1) at the same site. For that second species,
-# should we use all data available to us (occ = 0.83), or the time series 
-# matching the other species (occ = 0.75). Finally, make sure that number of 
-# years each site is sampled is not affected by this...
-
-# Script in progress
 
 #-------------------------------------------------------------------------------*
 # ---- SET-UP ----
@@ -59,6 +42,12 @@ list.files('data/raw_datasets/dataset_244')
 dataset = read.csv(paste('data/raw_datasets/dataset_244.csv', sep = ''))
 
 dataFormattingTable = read.csv('data_formatting_table.csv')
+
+dataFormattingTable[,'Raw_datafile_name'] = 
+  dataFormattingTableFieldUpdate(datasetID, 'Raw_datafile_name',  
+                                 
+                                 #--! PROVIDE INFO !--#
+                                 'Benthic Density Data.csv') 
 
 ########################################################
 # ANALYSIS CRITERIA                                    #  
@@ -106,7 +95,7 @@ head(dataset)
 names(dataset)
 
 #####
-unusedFieldNames = c('record_id', 'replicates', 'areaperreplicate', 'densityse')
+unusedFieldNames = c('Replicates', 'AreaPerReplicate', 'DensitySE')
 
 
 unusedFields = which(names(dataset) %in% unusedFieldNames)
@@ -145,7 +134,7 @@ dataFormattingTable[,'LatLong_sites'] =
 # then write these field names as a vector from largest to smallest temporal grain.
 
 #####
-dateFieldName = c('record_date')
+dateFieldName = c('Date')
 
 # If necessary, paste together date info from multiple columns into single field
 if (length(dateFieldName) > 1) {
@@ -200,12 +189,6 @@ dataset2$date = date
 head(dataset2)
 str(dataset2)
 
-# In this dataset, a number of taxa 
-siteinfo = read.csv('C:/git/core-transient/data/raw_datasets/dataset_244/Table1_Monitoring_sites.csv', header=T)
-years = 1982:2011
-numSitesEachYear = sapply(years, function(x) sum(siteinfo$StartYear <= x))
-numNAsEachYear = aggregate(dataset2$densitymean, by = list(dataset2$species, dataset2$year),
-                           function(x) sum(is.na(x)))
 
 # !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE DATE DATA WERE MODIFIED!
 
@@ -249,7 +232,7 @@ dataFormattingTable[,'subannualTgrain'] =
 # fill in the fields that specify nested spatial grains below.
 
 #####
-site_grain_names = c("site")
+site_grain_names = c("Site")
 
 # We will now create the site field with these codes concatenated if there
 # are multiple grain fields. Otherwise, site will just be the single grain field.
@@ -261,6 +244,21 @@ if (num_grains > 1) {
     site = paste(site, dataset2[, site_grain_names[i]], sep = "_")
   } 
 }
+
+# What is the spatial grain of the finest sampling scale? For example, this might be
+# a 0.25 m2 quadrat, or a 5 m transect, or a 50 ml water sample.
+
+dataFormattingTable[,'Raw_spatial_grain'] = 
+  dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain',  
+                                 
+                                 #--! PROVIDE INFO !--#
+                                 60) 
+
+dataFormattingTable[,'Raw_spatial_grain_unit'] = 
+  dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain_unit',  
+                                 
+                                 #--! PROVIDE INFO !--#
+                                 'm2') 
 
 
 # BEFORE YOU CONTINUE. We need to make sure that there are at least minNTime for sites at the coarsest possilbe spatial grain. 
@@ -326,7 +324,7 @@ dataFormattingTable[,'Raw_siteUnit'] =
   dataFormattingTableFieldUpdate(datasetID, 'Raw_siteUnit',       # Fill value below in quotes
 
 #####
-                                 'site') 
+                                 'Site') 
 
 
 # spatial_scale_variable. Is a site potentially nested (e.g., plot within a quad or decimal lat longs that could be scaled up)? Y/N
@@ -357,10 +355,15 @@ summary(dataset3)
 # Fill in the original field name here
 
 #####
-countfield = 'densitymean'
+countfield = 'DensityMean'
 
 # Renaming it
 names(dataset3)[which(names(dataset3) == countfield)] = 'count'
+
+# Raw values are densities per m2 aggregating across multiple sampling methods of
+# different spatial scales. We here multiply the density x 60 to reflect the
+# number of individuals expected over the coarsest of the sampling scales, 60 m2.
+dataset3$count = dataset3$count * 60
 
 # Now we will remove zero counts and NA's:
 
@@ -369,13 +372,25 @@ summary(dataset3)
 # Can usually tell if there are any zeros or NAs from that summary(). If there aren't any showing, still run these functions or continue with the update of dataset# so that you are consistent with this template.
 
 # Subset to records > 0 (if applicable):
-
-# Raw data is long form of a site x species matrix that had 0's. Keeping 0's
-# because there is at least one sampling event for which there were no 
-# individuals.
-dataset4 = subset(dataset3, count >= 0) 
+dataset4 = subset(dataset3, count > 0) 
 
 summary(dataset4)
+
+# Check to make sure that by removing 0's that you haven't completely removed
+# any sampling events in which nothing was observed. Compare the number of 
+# unique site-dates in dataset3 and dataset4.
+
+# If there are no sampling events lost, then we can go ahead and use the 
+# smaller dataset4 which could save some time in subsequent analyses.
+# If there are sampling events lost, then we'll keep the 0's (use dataset3).
+numEventsd3 = nrow(unique(dataset3[, c('site', 'date')]))
+numEventsd4 = nrow(unique(dataset4[, c('site', 'date')]))
+if(numEventsd3 > numEventsd4) {
+  dataset4 = dataset3
+} else {
+  dataset4 = dataset4
+}
+
 
 # Remove NA's:
 
@@ -396,13 +411,13 @@ dataFormattingTable[,'countFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'countFormat',    # Fill value below in quotes
 
 #####                                 
-                                 'density')
+                                 'count')
 
 dataFormattingTable[,'Notes_countFormat'] = 
   dataFormattingTableFieldUpdate(datasetID, 'Notes_countFormat', # Fill value below in quotes
                                  
 #####                                 
-                                 "Data in mean density format, ranging 0-154.")
+                                 "Raw data are density per m2 based on multiple sampling methods of  different spatial scales. We here multiply the density x 60 to reflect the number of individuals expected over the coarsest of the sampling scales, 60 m2 (band transects).")
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SPECIES DATA ----
@@ -413,11 +428,10 @@ dataFormattingTable[,'Notes_countFormat'] =
 # It will get converted to 'species'
 
 #####
-dataset5$species <- as.factor(dataset5$species)
-speciesField = 'species'
+speciesField = 'Species'
 
-#dataset5$species = dataset5[, speciesField]
-#dataset5 = dataset5[, -which(names(dataset5) == speciesField)]
+dataset5$species = dataset5[, speciesField]
+dataset5 = dataset5[, -which(names(dataset5) == speciesField)]
 
 # Look at the individual species present and how frequently they occur: This way you can more easily scan the species names (listed alphabetically) and identify potential misspellings, extra characters or blank space, or other issues.
 
@@ -430,32 +444,36 @@ table(dataset5$species)
 
 # If species names are coded (not scientific names) go back to study's metadata to learn what species should and shouldn't be in the data. 
 
-# Species information is available in Table4_Species_sampled.csv from 
-# http://esapubs.org/archive/ecol/E094/244/metadata.php
+# Species information is available in Table4B_benthic_density_variables.csv from 
+# http://esapubs.org/archive/ecol/E094/245/metadata.php
 
 #####
-bad_sp = c(0,   #Bare substratum
-           70,  #barnacle
-           79,  #unknown sponge
-           97,  #unknown tunicate
-           98,  #Serpulid worm
-           108, #unidentified species
-           110, #mucus tube
-           111, #worm tube sand
-           148, #rubble, shell
-           151, #unidentified ophiuroid
-           507, #Gigartina spp.
-           521, #filamentous red algae
-           542, #sand
-           551, #red algae spp.
-           555, #kelp holdfast
-           558, #young Laminariales
-           579, #diatom film
-           585, #filamentous brown
-           595, #filamentous green algae
-           533) #Laurencia spp.
-           
 
+# Excluding spiny lobster and fishes from "benthic community", so that it
+# includes algae, sponges, corals, gastropods, sea stars and urchins.
+# Also excluding species where only presences come towards the end of the time series b/c:
+# "Some species have been added to the monitoring protocols during the 30+ years 
+# of monitoring. Thus the absence of these species from the data early in 
+# monitoring cannot be taken as evidence of absence. For this reason, instead of
+# a 0 or blank, the code "NA" is entered into the dataset as the density for 
+# species in years they were not counted."
+
+#foo = ddply(dataset, .(Year, Species), summarize, mean = mean(DensityMean, na.rm = T))
+#foo = foo[order(foo$Species, foo$Year),]
+#View(foo)
+
+bad_sp = c('8001', # spiny lobster
+           '14025', # goby
+           '14026', # goby
+           '14027', # kelpfish
+           '2015', # Dictyoneuropsis reticulata/Agarum fimbriatum
+           '2015.5', # Dictyoneuropsis reticulata/Agarum fimbriatum
+           '2016', # Sargassum horneri, invasive
+           '2016.5', # Sargassum horneri, invasive
+           '9012', # Haliotis assimilis, only a single record from 2011
+           '9014', # Tegula regina, NA prior to 2006
+           '11009') # Centrostephanus coronatus, NA prior to 1996
+           
 dataset6 = dataset5[!dataset5$species %in% bad_sp,]
 
 # It may be useful to count the number of times each name occurs, as misspellings or typos will likely
@@ -468,20 +486,14 @@ table(dataset6$species)
 # and then replace them using the for loop below:
 
 #####
-typo_name = c(589, #large Macrocystis pyrifera)
-              117, #Anthopleura spp.
-              522, #Cladophora spp.
-              78,  #Dodecaceria spp.
-              501, #Gelidium spp.
-              556) #Laminaria spp.
+typo_name = c(2002.5, #small Macrocystis pyrifera)
+              2015.5, #Dictyoneuropsis reticulata/Agarum fimbriatum, juvenile
+              2016.5) #Sargassum horneri, juvenile (less than 50cm in height and no recepticles)
+
 #####
-good_name = c(557, #combined with small M. pyrifera)
-              2,   #combined with Anthopleura sola (only member of Anthopleura in dataset)
-              572, #combined with Cladophora graminea
-              12,  #combined with Dodecaceria fewkesi
-              568, #combined with Gelidium robustum
-              616) #combined with Laminaria setchellii
-              
+good_name = c(2002, #combined with large M. pyrifera)
+              2015, #combined with large Dictyoneuropsis reticulata/Agarum fimbriatum
+              2016) #combined with large Sargassum horneri
               
 
 if (length(typo_name) > 0) {
@@ -517,7 +529,7 @@ dataFormattingTable[,'Notes_spFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_spFormat',    # Fill value below in quotes
 
 #####                                 
-  'A number of non-organismal cover classes, and taxa not identified to species were removed while several "spp" taxa were assigned to the only species of that genus in the dataset.')
+  'Codes reflecting different size classes of the same species were lumped; several species that were probably not targeted originally for sampling were removed (i.e. present only for the end of the time series).')
 
 #-------------------------------------------------------------------------------*
 # ---- MAKE DATA FRAME OF COUNT BY SITES, SPECIES, AND YEAR ----
@@ -562,13 +574,7 @@ write.csv(dataset7, paste("data/formatted_datasets/dataset_", datasetID, ".csv",
 
 # !GIT-ADD-COMMIT-PUSH THE FORMATTED DATASET IN THE DATA FILE, THEN GIT-ADD-COMMIT-PUSH THE UPDATED DATA FOLDER!
 
-# As we've now successfully created the formatted dataset, we will now update the format priority and format flag fields. 
-
-#dataFormattingTable[,'format_priority'] = 
-#  dataFormattingTableFieldUpdate(datasetID, 'format_priority',    # Fill value below in quotes 
-#
-#####                                 
-#                                 'NA')
+# As we've now successfully created the formatted dataset, we will now update the format flag field. 
 
 dataFormattingTable[,'format_flag'] = 
   dataFormattingTableFieldUpdate(datasetID, 'format_flag',    # Fill value below
@@ -583,10 +589,6 @@ dataFormattingTable[,'format_flag'] =
 # 3 = formatting halted, issue
 # 4 = data unavailable
 # 5 = data insufficient for generating occupancy data
-
-# And update the data formatting table:
-
-write.csv(dataFormattingTable, 'data_formatting_table.csv', row.names = F)
 
 # !GIT-ADD-COMMIT-PUSH THE DATA FORMATTING TABLE!
 
@@ -675,7 +677,24 @@ head(richnessYearsTest)
 dim(richnessYearsTest) ; dim(dataset7)
 
 #Number of unique sites meeting criteria
-length(unique(richnessYearsTest$analysisSite))
+goodSites = unique(richnessYearsTest$analysisSite)
+length(goodSites)
+
+# Now subset dataset7 to just those goodSites as defined. This is tricky though
+# because assuming Sgrain is not the finest resolution, we will need to use
+# grep to match site names that begin with the string in goodSites.
+# The reason to do this is that sites which don't meet the criteria (e.g. not
+# enough years of data) may also have low sampling intensity that constrains
+# the subsampling level of the well sampled sites.
+
+uniqueSites = unique(dataset7$site)
+fullGoodSites = c()
+for (s in goodSites) {
+  tmp = as.character(uniqueSites[grepl(paste(s, "_", sep = ""), paste(uniqueSites, "_", sep = ""))])
+  fullGoodSites = c(fullGoodSites, tmp)
+}
+
+dataset8 = subset(dataset7, site %in% fullGoodSites)
 
 # Once we've settled on spatial and temporal grains that pass our test above,
 # we then need to 1) figure out what levels of spatial and temporal subsampling
@@ -691,7 +710,8 @@ length(unique(richnessYearsTest$analysisSite))
 # and bases the characterization of the community in that site-year based on
 # the aggregate of those standardized subsamples.
 
-subsettedData = subsetDataFun(dataset7, datasetID, spatialGrain = sGrain, 
+subsettedData = subsetDataFun(dataset8,
+                              datasetID, spatialGrain = sGrain, 
                               temporalGrain = tGrain,
                               minNTime = minNTime, minSpRich = minSpRich,
                               proportionalThreshold = topFractionSites,
@@ -710,6 +730,14 @@ siteSummaryFun(subsettedData)
 # If everything looks good, write the files:
 
 writePropOccSiteSummary(subsettedData)
+
+# Update Data Formatting Table with summary stats of the formatted,
+# properly subsetted dataset
+dataFormattingTable = dataFormattingTableUpdateFinished(datasetID, subsettedData)
+
+# And write the final data formatting table:
+
+write.csv(dataFormattingTable, 'data_formatting_table.csv', row.names = F)
 
 # Remove all objects except for functions from the environment:
 

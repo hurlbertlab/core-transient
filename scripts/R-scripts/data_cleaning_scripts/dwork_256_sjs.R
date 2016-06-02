@@ -4,27 +4,12 @@
 #
 # Dataset name:Identifying zones of phenetic compression in West Mediterranean butterflies 
 #             (Satyrinae): refugia, invasion and hybridization
-# Dataset source (link): https://www.researchgate.net/publication/225129821_Core_and_satellite_butterfly_species_on_Elba_island_Tuscan_Archipelago_Italy_A_study_on_persistence_based_on_https://www.researchgate.net/publication/225129821_Core_and_satellite_butterfly_species_on_Elba_island_Tuscan_Archipelago_Italy_A_study_on_persistence_based_on_120_years_of_collection_data
+# Dataset source (link): https://www.researchgate.net/publication/225129821_Core_and_satellite_butterfly_species_on_Elba_island_Tuscan_Archipelago_Italy_A_study_on_persistence_based_on_120_years_of_collection_data
 # Formatted by: Sara Snell
 #
-# Start by opening the data formatting table (data_formatting_table.csv). 
-# Datasets to be worked on will have a 'format_flag' of 0.
 
-# Flag codes are as follows:
-  # 0 = not currently worked on
-  # 1 = formatting complete
-  # 2 = formatting in process
-  # 3 = formatting halted, issue
-  # 4 = data unavailable
-  # 5 = data insufficient for generating occupancy data
+# DATA DEEMED INAPPROPRIATE FOR OUR PURPOSES, AS THE TEMPORAL GRAIN OF EACH "SAMPLE" IS 20 YEARS.
 
-# NOTE: All changes to the data formatting table will be done in R! 
-# Do not make changes directly to this table, this will create conflicting versions.
-
-# YOU WILL NEED TO ENTER DATASET-SPECIFIC INFO IN EVERY LINE OF CODE PRECEDED
-# BY "#--! PROVIDE INFO !--#". 
-
-# YOU SHOULD RUN, BUT NOT OTHERWISE MODIFY, ALL OTHER LINES OF CODE.
 
 #-------------------------------------------------------------------------------*
 # ---- SET-UP ----
@@ -75,10 +60,53 @@ dataFormattingTable[,'Raw_datafile_name'] =
   dataFormattingTableFieldUpdate(datasetID, 'Raw_datafile_name',  
                                  
 #--! PROVIDE INFO !--#
-  'Dapporto2009JICO.pdf') 
+  'extracted from Dapporto 2009, J Ins Cons') 
+
+
+dataFormattingTable[,'format_flag'] = 
+  dataFormattingTableFieldUpdate(datasetID, 'format_flag', 
+                                 
+                                 #--! PROVIDE INFO !--#                                 
+                                 5)
+
+# Flag codes are as follows:
+# 0 = not currently worked on
+# 1 = formatting complete
+# 2 = formatting in process
+# 3 = formatting halted, issue
+# 4 = data unavailable
+# 5 = data insufficient for generating occupancy data
+
+dataFormattingTable[,'General_notes'] = 
+  dataFormattingTableFieldUpdate(datasetID, 'General_notes', 
+                                 
+                                 #--! PROVIDE INFO !--#                                 
+                                 'Data deemed inappropriate for our purposes as the temporal grain of each "sample" is 20 years (i.e. 1909-1928, 1929-1948, etc).')
+
+
+# And write the final data formatting table:
+
+write.csv(dataFormattingTable, 'data_formatting_table.csv', row.names = F)
+
+
+####################### END ###################################################
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+# original cleaning script
+if(0) {
 ########################################################
 # ANALYSIS CRITERIA                                    #  
 ########################################################
@@ -784,6 +812,6 @@ dataFormattingTable = dataFormattingTableUpdateFinished(datasetID, subsettedData
 write.csv(dataFormattingTable, 'data_formatting_table.csv', row.names = F)
 
 # Remove all objects except for functions from the environment:
-
+}
 rm(list = setdiff(ls(), lsf.str()))
 

@@ -173,7 +173,7 @@ dateFieldName = c('sampledate')
 # If necessary, paste together date info from multiple columns into single field
 if (length(dateFieldName) > 1) {
   newDateField = dataset1[, dateFieldName[1]]
-  for (i in dateFieldName[2:length(dateFieldName)]) { newDateField = paste(newDateField, dataset[,i], sep = "-") }
+  for (i in dateFieldName[2:length(dateFieldName)]) { newDateField = paste(newDateField, dataset1[,i], sep = "-") }
   dataset1$date = newDateField
   datefield = 'date'
 } else {
