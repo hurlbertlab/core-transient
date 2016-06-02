@@ -11,7 +11,7 @@ names(bbs50)
 #bbs as matrix or dataframe 
 bbs = bbs50$species
 bbsrts= bbs50$routes #Year columns missing from both datasets?
-names(bbsrts)
+names(bbs)
 setwd("C:/git/core-transient")
 library(raster)
 counts5 = read.csv('data/raw_datasets/dataset_1_full.csv', header=T) #in groups of ten 
@@ -47,7 +47,7 @@ occ_counts = function(countData, countColumn) {
 }
 
 #########
-occ_counts = function(countData, countColumn, variable v) {
+occ_counts = function(countData, countColumn, v) {
   bbsu = unique(countData[countData[, countColumn] != 0, c('stateroute', 'Year', 'Aou')])
   bbsu.rt.occ = data.frame(table(bbsu[,c('stateroute', 'Aou')])/15)
   bbsu.rt.occ2 = bbsu.rt.occ[bbsu.rt.occ$Freq!=0,]
