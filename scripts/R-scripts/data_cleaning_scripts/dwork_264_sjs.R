@@ -1,9 +1,7 @@
 ################################################################################*
-#  DATA FORMATTING TEMPLATE
-################################################################################*
 #
 # Dataset name: Breeding Bird Dynamics in a Primeval Temperate Forest Over Forty
-                    #Years: Variation and Stability in the Changing World
+#               Years: Variation and Stability in the Changing World
 
 # Dataset source (link): http://www.bioone.org/doi/pdf/10.3161/000164510X551354
 # Link only has 5 years of data - Acquired full dataset from author
@@ -77,7 +75,7 @@ dataFormattingTable[,'Raw_datafile_name'] =
   dataFormattingTableFieldUpdate(datasetID, 'Raw_datafile_name',  
                                  
 #--! PROVIDE INFO !--#
-  '000164510x551354.pdf') 
+  'extracted from Wesolowski et al. 2010') 
 
 
 
