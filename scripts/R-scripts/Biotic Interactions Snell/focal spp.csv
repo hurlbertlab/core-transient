@@ -26,7 +26,6 @@ SubsetSppID,AOU,CommonName,Competitor
 14,6600,Bay-breasted Warbler,Chestnut-sided Warbler
 14,6600,Bay-breasted Warbler,Wilson's Warbler
 14,6600,Bay-breasted Warbler,Black-throated Green Warbler
-14,6600,Bay-breasted Warbler,Townsend's Warbler
 14,6600,Bay-breasted Warbler,Mourning Warbler
 86,6330,Bell's Vireo,Warbling Vireo
 86,6330,Bell's Vireo,Yellow-throated Vireo
@@ -51,7 +50,6 @@ SubsetSppID,AOU,CommonName,Competitor
 16,6620,Blackburnian Warbler,Chestnut-sided Warbler
 16,6620,Blackburnian Warbler,Wilson's Warbler
 16,6620,Blackburnian Warbler,Black-throated Green Warbler
-16,6620,Blackburnian Warbler,Townsend's Warbler
 16,6620,Blackburnian Warbler,Mourning Warbler
 15,4290,Black-chinned Hummingbird,Broad-tailed Hummingbird
 63,5650,Black-chinned Sparrow,Rufous-crowned Sparrow
@@ -116,7 +114,6 @@ SubsetSppID,AOU,CommonName,Competitor
 11,6500,Cape May Warbler,Chestnut-sided Warbler
 11,6500,Cape May Warbler,Wilson's Warbler
 11,6500,Cape May Warbler,Black-throated Green Warbler
-11,6500,Cape May Warbler,Townsend's Warbler
 11,6500,Cape May Warbler,Mourning Warbler
 48,5180,Cassin's Finch,House Finch
 20,4480,Cassin's Kingbird,Ash-throated Flycatcher
@@ -164,7 +161,6 @@ SubsetSppID,AOU,CommonName,Competitor
 140,7590,Hermit Thrush,Swainson's Thrush
 19,6690,Hermit Warbler,Yellow-breasted Chat
 19,6690,Hermit Warbler,Black-throated Gray Warbler
-19,6690,Hermit Warbler,Townsend's Warbler
 19,6690,Hermit Warbler,Common Yellowthroat
 19,6690,Hermit Warbler,Yellow Warbler
 19,6690,Hermit Warbler,Yellow-rumped Warbler
@@ -174,8 +170,6 @@ SubsetSppID,AOU,CommonName,Competitor
 28,6840,Hooded Warbler,Yellow-breasted Chat
 28,6840,Hooded Warbler,Prairie Warbler
 28,6840,Hooded Warbler,Common Yellowthroat
-34,4740,Horned Lark,Barn Swallow
-34,4740,Horned Lark,Cliff Swallow
 85,6320,Hutton's Vireo,Cassin's Vireo
 85,6320,Hutton's Vireo,Warbling Vireo
 7,3210,Inca Dove,White-winged Dove
@@ -244,7 +238,6 @@ SubsetSppID,AOU,CommonName,Competitor
 25,6790,Mourning Warbler,Chestnut-sided Warbler
 25,6790,Mourning Warbler,Wilson's Warbler
 25,6790,Mourning Warbler,Black-throated Green Warbler
-25,6790,Mourning Warbler,Townsend's Warbler
 8,6450,Nashville Warbler,Orange-crowned Warbler
 8,6450,Nashville Warbler,Tennessee Warbler
 8,6450,Nashville Warbler,Cape May Warbler

@@ -98,7 +98,7 @@ AOUsub = AOU2[-grep("sp.", AOU2$CommonName),]
 AOUsub2 = AOUsub[-grep("\\)", AOUsub$CommonName),]
 AOUsub3 = AOUsub2[-grep(" \\(", AOUsub2$CommonName),]
 AOUsub4 = unique(AOUsub3)
-#######REMOVE AOU = NA
+AOUsub4 = na.omit(AOUsub4)
 
 
 # merge w all sp list to get info for each sp
@@ -119,6 +119,31 @@ sp_list$match[sp_list$match =="Picoides nuttallii"] = "Dryobates nuttallii"
 
 sp_list$match[sp_list$match =="Cardellina canadensis"] = "Wilsonia canadensis"
 
+sp_list$match[sp_list$match =="Geothlypis philadelphia"] = "Oporornis philadelphia"
+
+sp_list$match[sp_list$match =="Oreothlypis ruficapilla"] = "Vermivora ruficapilla"
+
+sp_list$match[sp_list$match =="Oreothlypis celata"] = "Vermivora celata"
+
+sp_list$match[sp_list$match =="Cardellina pusilla"] = "Wilsonia pusilla"
+
+sp_list$match[sp_list$match =="Oreothlypis virginiae"] = "Vermivora virginiae"
+
+sp_list$match[sp_list$match =="Poecile hudsonica"] = "Parus hudsonicus"
+
+sp_list$match[sp_list$match =="Pica hudsonia"] = "Pica pica"
+
+sp_list$match = gsub('Poecile ', 'Parus ', sp_list$match)
+
+sp_list$match[sp_list$match =="Dendroica citrina"] = "Wilsonia citrina"
+
+sp_list$match[sp_list$match =="Geothlypis formosus"] = "Oporornis formosus"
+
+sp_list$match[sp_list$match =="Oreothlypis luciae"] = "Vermivora luciae"
+
+sp_list$match[sp_list$match =="Geothlypis tolmiei"] = "Oporornis tolmiei"
+
+sp_list$match[sp_list$match =="Troglodytes hiemalis"] = "Troglodytes troglodytes"
 #merge pairwise table with taxonomy info
 comp_AOU = merge(focal_competitor_table, sp_list, by.x = "Competitor", by.y = "CommonName")
 comp_AOU <- plyr::rename(comp_AOU, c("Competitor" = "Competitor", "focalAOU" = "focalAOU", 
@@ -134,9 +159,10 @@ focal_AOU$SciName = NULL
 focal_AOU <- plyr::rename(focal_AOU, c("Focal" = "Focal", "Competitor" = "Competitor", "focalAOU" = "focalAOU", 
                                       "CompAOU" = "CompAOU", "CompSciName" = "CompSciName", "match" = "FocalSciName"))
 
-focal_AOU <- focal_AOU[-394, ] #deleting duplicate willow flycather
 # import body size data
 bsize = read.csv("DunningBodySize_old_2008.11.12.csv", header = TRUE)
+bsize$AOU = NULL
+bsize = bsize[!duplicated(bsize),]
 
 # merge in competitor and focal body size
 spec_w_bsize = merge(focal_AOU, bsize, by.x = "Focal", by.y = "CommonName")
@@ -166,46 +192,51 @@ all_spp_list = list.files('Z:/GIS/birds/All/All')
 filesoutput = c()
 focal_spp = c(new_spec_weights$focalcat)
 
-sp_proj = CRS("+proj=laea +lat_0=40 +lon_0=-100 +units=km") # lambert azimuthal equal area
-usa1 = map(database='state', fill=T, plot=F)  ####REPLACE THIS
-IDs = usa1$names
-usa_sp = map2SpatialPolygons(usa1, IDs, CRS("+proj=longlat"))
+sp_proj = CRS("+proj=laea +lon_0=-40 +lat_0=-100 +units=km")
+  #("+proj=laea +lat_0=40 +lon_0=-100 +units=m") # lambert azimuthal equal area
+usa = readShapePoly('Z:/GIS/geography/na_base_Lambert_Azimuthal', proj4string = sp_proj)
+#usa = readOGR('Z:/GIS/geography', 'na_base_Lambert_Azimuthal')
+# usa = spTransform(usa, sp_proj)
+proj4string(usa) <- sp_proj
+plot(usa)
 
 for (sp in focal_spp) {
-  sp = 'Eremophila_alpestris'
+  #sp = 'Parus_hudsonicus'
   print(sp)
   t1 = all_spp_list[grep(sp, all_spp_list)]
   t2 = t1[grep('.shp', t1)]
   t3 = strsplit(t2, ".shp")
  # filesoutput = rbind(filesoutput)
+  #readOGR("Z:/GIS/birds/All/All", t3)
   test.poly <- readShapePoly(paste("Z:/GIS/birds/All/All/", t3, sep = ""), proj4string = sp_proj) # reads in species-specific shapefile
-  plot(usa_sp)
+  proj4string(test.poly) <- sp_proj
   colors = c("red", "yellow", "green", "blue", "purple")
-  
   # subset to just permanent or breeding residents
   sporigin = test.poly[test.poly@data$SEASONAL == 1|test.poly@data$SEASONAL == 2|test.poly@data$SEASONAL ==5,]
-  plot(sporigin, add = TRUE, col = colors, border = NA) 
-
+  sporigin = spTransform(sporigin, CRS("+proj=laea +lon_0=-40 +lat_0=-100 +units=km"))
+  plot(sporigin, col = colors, border = NA) 
+  
+  # projection(sporigin), is.projected(sporigin)
   # list this focal spp competitor
   tmp = filter(new_spec_weights, sp == new_spec_weights$focalcat)
   comp_spp = tmp$compcat
   
+
   for(co in comp_spp) {         # for loop to match competitor sp to focal spp, intersect its range with the focal range, 
-      co = 'Hirundo_rustica' # and calcualte the area of overlap between the two species.
+      #co = 'Pica_pica' # and calcualte the area of overlap between the two species.
       #print(co)
       c1 = all_spp_list[grep(co, all_spp_list)]
       c2 = c1[grep('.shp', c1)]
       c3 = strsplit(c2, ".shp")
       comp.poly <- readShapePoly(paste("Z:/GIS/birds/All/All/", c3, sep = ""), proj4string = sp_proj) # reads in species-specific shapefile
       corigin = comp.poly[comp.poly@data$SEASONAL == 1|comp.poly@data$SEASONAL == 2|comp.poly@data$SEASONAL ==5,]
-      plot(corigin, add = TRUE, col = colors, border = NA) 
-    
+      corigin = spTransform(corigin, sp_proj)
+      plot(corigin, add = TRUE ,col = colors, border = NA) 
       # intersect from raster package
-      # corigin <-  ST_Buffer(corigin, 0)
-        #gBuffer(corigin, byid=TRUE, width=0)
+      sporigin = gBuffer(sporigin, byid=TRUE, width=0)
+      corigin = gBuffer(corigin, byid=TRUE, width=0)
 
-      #sqldf("UPDATE corigin
-      #      SET geometry=ST_Buffer(geometry, 0.0);") #HELP
+      #gIsValid(corigin,reason=TRUE,byid=TRUE)
       
       pi = intersect(sporigin, corigin)
       plot(pi)
