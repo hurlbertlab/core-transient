@@ -3,7 +3,7 @@
 # Dataset name: Long-Term Community Dynamics of Small Landbirds with and Without 
 # Exposure to Extensive Disturbance from Military Training Activities
 # Dataset source (link): http://link.springer.com/article/10.1007/s00267-009-9421-6/fulltext.html
-# Formatted by: Sara Snell 
+# Formatted by: Allen Hurlbert
 
 # Occupancy data (not counts or raw survey data) provided for two sites:
 # Ft. Riley and Konza Prairie
