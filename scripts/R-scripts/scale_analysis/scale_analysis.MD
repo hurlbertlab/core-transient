@@ -8,9 +8,9 @@
 
 * Does scale of sample play a role in explaining discrepancies between sites? 
  
-- Run variation partitioning analysis for each scale. 
+	- Run variation partitioning analysis for each scale. 
 
-- Compare outcomes. 
+	- Compare outcomes. 
 
 
 2 pieces: 
@@ -21,25 +21,25 @@
 
 * shift in temporal occupancy from transient to core 
 
-- how does that shift happen and what impacts it? 
+	- how does that shift happen and what impacts it? 
 
 * geographic context within a site sits: landscape heterogeneity, ndvi 
 
-- we already know bbs routes in more hetero vs homog at same scale has more transient spp 
+	- we already know bbs routes in more hetero vs homog at same scale has more transient spp 
 
 * scale patterns: could be that we expect mean occupancy to increase with higher spatial scales 
 
 * how do these patterns differ between homo and hetero landscapes as scale increases? 
 
-- might include diffs in slope and leveling off between two curves 
+	- might include diffs in slope and leveling off between two curves 
 
-- as we change scale in a more hetero region or route, how does temp occupancy vary? 
+	- as we change scale in a more hetero region or route, how does temp occupancy vary? 
 
-- at the scale of a bbs route and below (sets of 10 or below) 
+	- at the scale of a bbs route and below (sets of 10 or below) 
 
 * can extract temporal occupancy values for every spp 
 
-- most immediate piece to work on first
+	- most immediate piece to work on first
 
 2) Bigger picture comparisons I wrote above 
 
