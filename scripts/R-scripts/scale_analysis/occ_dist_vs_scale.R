@@ -21,7 +21,11 @@ routes = read.csv('scripts/R-scripts/scale_analysis/routes.csv')
 routes$stateroute = 1000*routes$statenum + routes$Route
 
 # All-BBS scale (50 pt count scale):
-uniqSpYr = unique(bbs[, c('Year', 'Aou')])
+uniqSpYr = unique(counts5[, c('Year', 'Aou')])
+BBS.occ = data.frame(table(uniqSpYr$Aou)/15)
+
+# All-BBS scale Molly prototype (50 pt count scale):
+uniqSpYr = unique(bbs[, c('Year', 'Aou')]) #AOU capitalized; year columns aren't present 
 BBS.occ = data.frame(table(uniqSpYr$Aou)/15)
 
 bbs.occ.mat = occupancy.matrix[floor(as.numeric(row.names(occupancy.matrix))/1000),]
