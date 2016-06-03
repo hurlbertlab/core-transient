@@ -63,11 +63,11 @@ Scale_analysis.MD
 
 May: 
 
-* next week: work on making function run 
+* ~~next week: work on making function run~~ 
 
 June: 
 
-* week 1:
+* week 1: fix softcoding within a function issue
  
 * week 2:
 
