@@ -4,26 +4,25 @@
 #
 # Dataset name: El Verde Grid long-term invertebrate data - Snails
 # Dataset source (link):http://luq2.lternet.edu/data/luqmetadata107
-# Formatted by: Sara Snell
+# Additional metadata here: http://luq.lternet.edu/node/3634/eml
+# Formatted by: Sara Snell and Allen Hurlbert
 #
-# Start by opening the data formatting table (data_formatting_table.csv). 
-# Datasets to be worked on will have a 'format_flag' of 0.
+# "One hundred sixty points were selected on the Hurricane Recovery Plot at El Verde. Circular quadrats (r = 3 m) were established at each point. From June 1991 to present, 40 points were sampled four times seasonally for the presence of terrestrial snails and walking sticks, with the following exceptions: (1) in 1995, 1996, and 1997, the wet season surveys comprised 160 points, (2) in 1998, the wet season survey comprised 100 points, (3) walking stick surveys began in the wet season of 1992, (4) walking sticks were sampled only twice per season until 1994, (5) snails were sampled only once in Dry season 1991, twice in Wet season 1991, Wet and Dry seasons 1992, and Wet and Dry seasons of 1993, and three times in Wet and Dry seasons 1994."
 
-# Flag codes are as follows:
-  # 0 = not currently worked on
-  # 1 = formatting complete
-  # 2 = formatting in process
-  # 3 = formatting halted, issue
-  # 4 = data unavailable
-  # 5 = data insufficient for generating occupancy data
+# SEASON: Wet, July-Dec; Dry, Jan - Jul [sic]
+# RUN: "Identifies which night of sampling the data represent within a season.
+# POINT: "Point in the grid where the observation was performed. There is no record of the grid point if no observation was performed."
 
-# NOTE: All changes to the data formatting table will be done in R! 
-# Do not make changes directly to this table, this will create conflicting versions.
+# d2 = unique(dataset1[, c('DATE', 'RUN', 'SEASON', 'YEAR','POINT')])
+# datcount = data.frame(table(d2[, c('DATE', 'RUN', 'SEASON', 'YEAR')]));
+# datcount2 = datcount[datcount$Freq>0,]; datcount2
 
-# YOU WILL NEED TO ENTER DATASET-SPECIFIC INFO IN EVERY LINE OF CODE PRECEDED
-# BY "#--! PROVIDE INFO !--#". 
+# Code shows that 35-39 POINTs are surveyed in each YEAR-SEASON-RUN combination. A RUN frequently
+# spans multiple dates, so any individual date will not include a complete sample of all points.
+# Sampling of 4 runs per season in both seasons does not begin until 1996.
 
-# YOU SHOULD RUN, BUT NOT OTHERWISE MODIFY, ALL OTHER LINES OF CODE.
+# Multiple runs within a season are often separated by only a few days, so unclear on their purpose.
+
 
 #-------------------------------------------------------------------------------*
 # ---- SET-UP ----
@@ -126,7 +125,7 @@ head(dataset)
 names(dataset)
 
 #--! PROVIDE INFO !--#
-unusedFieldNames = c('SEASON', 'DATE', 'COMMENTS')
+unusedFieldNames = c('COMMENTS', 'DATE')
 
 dataset1 = dataset[, !names(dataset) %in% unusedFieldNames]
 
@@ -161,19 +160,37 @@ dataFormattingTable[,'LatLong_sites'] =
 #===============================================================================*
 # Here, we need to extract the sampling dates. 
 
+# Before dealing with dates, let's subset the data to just the 40 POINTs that were
+# regularly sampled throughout this time series (see note above).
+
+pointyears = unique(dataset1[, c('YEAR', 'POINT')])
+pointyrcount = data.frame(table(pointyears$POINT))
+goodpoints = as.integer(as.character(pointyrcount$Var1[pointyrcount$Freq == 24])) #counted in 24 years
+
+dataset1a = dataset1[dataset1$POINT %in% goodpoints,]
+
 # What is the name of the field that has information on sampling date?
 # If date info is in separate columns (e.g., 'day', 'month', and 'year' cols),
 # then write these field names as a vector from largest to smallest temporal grain.
 # E.g., c('year', 'month', 'day')
 
+# BECAUSE WITHIN-SEASON SAMPLING EFFORT IS VARIABLE ACROSS YEARS, BUT ALL YEARS 
+# HAVE SAMPLING IN BOTH Wet AND Dry SEASONS, WE WILL SUBSET DOWN TO DATA FOR RUN==1,
+# AND CONVERT SEASON TO A FAKE DATE.
+
+dataset1b = dataset1a[dataset1a$RUN == 1, c('YEAR', 'SEASON', 'POINT', 'sp', 'count')]
+dataset1b$MONTH = 3
+dataset1b$MONTH[dataset1b$SEASON == 'Wet'] = 7
+dataset1b$DAY = 1
+
 #--! PROVIDE INFO !--#
-dateFieldName = c('YEAR')
+dateFieldName = c('YEAR', 'MONTH', 'DAY')
 
 # If necessary, paste together date info from multiple columns into single field
 if (length(dateFieldName) > 1) {
-  newDateField = dataset1[, dateFieldName[1]]
-  for (i in dateFieldName[2:length(dateFieldName)]) { newDateField = paste(newDateField, dataset[,i], sep = "-") }
-  dataset1$date = newDateField
+  newDateField = dataset1b[, dateFieldName[1]]
+  for (i in dateFieldName[2:length(dateFieldName)]) { newDateField = paste(newDateField, dataset1b[,i], sep = "-") }
+  dataset1b$date = newDateField
   datefield = 'date'
 } else {
   datefield = dateFieldName
@@ -184,18 +201,15 @@ if (length(dateFieldName) > 1) {
 # be '%Y-%m-%d'. Type "?strptime" for other examples of date formatting.
 
 #--! PROVIDE INFO !--#
-
-# If date is only listed in years:
-
-dateformat = '%Y'
+dateformat = '%Y-%m-%d'
 
 # If the date is just a year, then make sure it is of class numeric
 # and not a factor. Otherwise change to a true date object.
 
 if (dateformat == '%Y' | dateformat == '%y') {
-  date = as.numeric(as.character(dataset1[, datefield]))
+  date = as.numeric(as.character(dataset1b[, datefield]))
 } else {
-  date = as.POSIXct(strptime(dataset1[, datefield], dateformat))
+  date = as.POSIXct(strptime(dataset1b[, datefield], dateformat))
 }
 
 # A check on the structure lets you know that date field is now a date object:
@@ -204,14 +218,14 @@ class(date)
 
 # Give a double-check, if everything looks okay replace the column:
 
-head(dataset1[, datefield])
+head(dataset1b[, datefield])
 
 head(date)
 
-dataset2 = dataset1
+dataset2 = dataset1b
 
 # Delete the old date field
-dataset2 = dataset2[, -which(names(dataset2) %in% dateFieldName)]
+dataset2 = dataset2[, !(names(dataset2) %in% c(dateFieldName, 'SEASON'))]
 
 # Assign the new date values in a field called 'date'
 dataset2$date = date
@@ -232,7 +246,7 @@ dataFormattingTable[,'Notes_timeFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_timeFormat', 
 
 #--! PROVIDE INFO !--#
-    'The only modification to this field involved converting to a date object. there was a finer grain date column but not all entries had a date.')
+    'We use two sampling events per year, RUN=1 in Dry and Run=1 in Wet seasons. Other sampling events exist, but effort and distribution within the year are variable across years. See metadata.')
 
 
 # subannualTgrain. After exploring the time data, was this dataset sampled at a 
@@ -242,7 +256,7 @@ dataFormattingTable[,'subannualTgrain'] =
   dataFormattingTableFieldUpdate(datasetID, 'subannualTgrain', 
 
 #--! PROVIDE INFO !--#                                 
-                                 'N')
+                                 'Y')
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SITE DATA ----
@@ -267,8 +281,10 @@ dataFormattingTable[,'subannualTgrain'] =
 # in hierarchical order from largest to smallest grain. Based on the dataset,
 # fill in the fields that specify nested spatial grains below.
 
+dataset2$SITE = "El Verde"
+
 #--! PROVIDE INFO !--#
-site_grain_names = c("RUN", "POINT")
+site_grain_names = c("SITE", "POINT")
 
 # We will now create the site field with these codes concatenated if there
 # are multiple grain fields. Otherwise, site will just be the single grain field.
@@ -281,14 +297,15 @@ if (num_grains > 1) {
   } 
 }
 
-# What is the spatial grain of the finest sampling scale? For example, this might be
-# a 0.25 m2 quadrat, or a 5 m transect, or a 50 ml water sample.
+# What is the spatial grain of the finest sampling scale? 
+
+# Circular plots of radius 3 m
 
 dataFormattingTable[,'Raw_spatial_grain'] = 
   dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain',  
                                  
 #--! PROVIDE INFO !--#
-                                 400) 
+                                 28.3) 
 
 dataFormattingTable[,'Raw_spatial_grain_unit'] = 
   dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain_unit',  
@@ -376,7 +393,7 @@ dataFormattingTable[,'Notes_siteFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_siteFormat', 
 
 #--! PROVIDE INFO !--#
-  'The site field is a concatenation of run and point on the quadrat. Grain was det from a 500 m plot being divided into 400 20x20 m quadrats.')
+  'A site is a circular quadrat of radius 3 m, but all points at El Verde should probably be aggregated.')
 
 
 #-------------------------------------------------------------------------------*
@@ -555,7 +572,7 @@ dataFormattingTable[,'Notes_spFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_spFormat',  
 
 #--! PROVIDE INFO !--#                                 
-  'Removed total abundances from species, TOTABU.')
+  'Removed code indicating total abundance across species, TOTABU.')
 
 #-------------------------------------------------------------------------------*
 # ---- MAKE DATA FRAME OF COUNT BY SITES, SPECIES, AND YEAR ----
@@ -688,13 +705,13 @@ tGrain = 'year'
 site_grain_names
 
 #--! PROVIDE INFO !--#
-sGrain = 'RUN'
+sGrain = 'POINT'
 
 # This is a reasonable choice of spatial grain because ...
 #--! PROVIDE INFO !--#
-# quadrats are only 0.25 m2 and record presence absence, whereas sites encompass
-# 28-52 quadrats per depth interval providing a greater sample and an effective
-# abundance measure.
+# 28 m2 seems like a large area encompossing multiple snail home ranges. That said, 
+# meanAbundance per survey at this scale is <50, so perhaps the larger aggregate
+# scale of the entire SITE should be considered.
 
 # The function "richnessYearSubsetFun" below will subset the data to sites with an 
 # adequate number of years of sampling and species richness. If there are no 
@@ -772,6 +789,13 @@ writePropOccSiteSummary(subsettedData)
 # Update Data Formatting Table with summary stats of the formatted,
 # properly subsetted dataset
 dataFormattingTable = dataFormattingTableUpdateFinished(datasetID, subsettedData)
+
+# Add any final notes about the dataset that might be of interest:
+dataFormattingTable[,'General_notes'] = 
+  dataFormattingTableFieldUpdate(datasetID, 'General_notes', 
+                                 
+                                 #--! PROVIDE INFO !--#                                 
+  'Raw data presented with species in columns, which begs question of whether transient species are adequately sampled or represented, or whether focus was on common or expected species.')
 
 # And write the final data formatting table:
 
