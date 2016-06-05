@@ -756,7 +756,24 @@ head(richnessYearsTest)
 dim(richnessYearsTest) ; dim(dataset7)
 
 #Number of unique sites meeting criteria
-length(unique(richnessYearsTest$analysisSite))
+goodSites = unique(richnessYearsTest$analysisSite)
+length(goodSites)
+
+# Now subset dataset7 to just those goodSites as defined. This is tricky though
+# because assuming Sgrain is not the finest resolution, we will need to use
+# grep to match site names that begin with the string in goodSites.
+# The reason to do this is that sites which don't meet the criteria (e.g. not
+# enough years of data) may also have low sampling intensity that constrains
+# the subsampling level of the well sampled sites.
+
+uniqueSites = unique(dataset7$site)
+fullGoodSites = c()
+for (s in goodSites) {
+  tmp = as.character(uniqueSites[grepl(paste(s, "_", sep = ""), paste(uniqueSites, "_", sep = ""))])
+  fullGoodSites = c(fullGoodSites, tmp)
+}
+
+dataset8 = subset(dataset7, site %in% fullGoodSites)
 
 # Once we've settled on spatial and temporal grains that pass our test above,
 # we then need to 1) figure out what levels of spatial and temporal subsampling
@@ -772,7 +789,8 @@ length(unique(richnessYearsTest$analysisSite))
 # and bases the characterization of the community in that site-year based on
 # the aggregate of those standardized subsamples.
 
-subsettedData = subsetDataFun(dataset7, datasetID, spatialGrain = sGrain, 
+subsettedData = subsetDataFun(dataset8, 
+                              datasetID, spatialGrain = sGrain, 
                               temporalGrain = tGrain,
                               minNTime = minNTime, minSpRich = minSpRich,
                               proportionalThreshold = topFractionSites,
