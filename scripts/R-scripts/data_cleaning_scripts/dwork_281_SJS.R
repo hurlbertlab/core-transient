@@ -221,6 +221,15 @@ dataset2$date = date
 head(dataset2)
 str(dataset2)
 
+# Rough look at total_quadrats_sampled by site over years:
+d = unique(dataset[, c('lakeid', 'year', 'site', 'total_quadrats_sampled')])
+b = ddply(d, .(lakeid, year, site), summarize, quads = sum(total_quadrats_sampled, na.rm=T))
+plot(b$year, b$quads, type = 'n')
+sapply(c(7,31,50,56), function(x) points(b$year[b$site==x], b$quads[b$site==x], type = 'l', col = x))
+
+dataset2 = dataset2[dataset2$date >= 1993,]
+
+
 # !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE DATE DATA WERE MODIFIED!
 
 #!DATA FORMATTING TABLE UPDATE!
@@ -232,7 +241,7 @@ dataFormattingTable[,'Notes_timeFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_timeFormat', 
 
 #--! PROVIDE INFO !--#
-    'The only modification to this field involved converting to a date object for year only.')
+    'Date is simply Year; years prior to 1993 were removed due to variable sampling effort.')
 
 
 # subannualTgrain. After exploring the time data, was this dataset sampled at a 
@@ -247,29 +256,15 @@ dataFormattingTable[,'subannualTgrain'] =
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SITE DATA ----
 #===============================================================================*
-# From the previous head commmand, we can see that sites are broken up into 
-# (potentially) 2 fields. Find the metadata link in the data formatting table use 
-# that link to determine how sites are characterized.
+# 
+# At each site, sampling of 0.25 m2 quadrats occurs at 1-m intervals along a transect
+# that spans a variety of depths and is variable in length.
 
-#  -- If sampling is nested (e.g., quadrats within sites as in this study), use 
-#     each of the identifying fields and separate each field with an underscore. 
-#     For nested samples be sure the order of concatenated columns goes from 
-#     coarser to finer scales (e.g. "km_m_cm")
 
-# -- If sites are listed as lats and longs, use the finest available grain and 
-#    separate lat and long fields with an underscore.
-
-# -- If the site definition is clear, make a new site column as necessary.
-
-# -- If the dataset is for just a single site, and there is no site column, then add one.
-
-# Here, we will concatenate all of the potential fields that describe the site 
-# in hierarchical order from largest to smallest grain. Based on the dataset,
-# fill in the fields that specify nested spatial grains below.
+# This plot reveals that transects were much more variable prior to 1993
 
 #--! PROVIDE INFO !--#
-dataset2$depthcat <- paste(dataset2$min_depth, dataset2$max_depth, sep = "-")
-site_grain_names = c('lakeid', 'site', 'depthcat')
+site_grain_names = c('lakeid', 'site')
 
 # We will now create the site field with these codes concatenated if there
 # are multiple grain fields. Otherwise, site will just be the single grain field.
@@ -285,11 +280,13 @@ if (num_grains > 1) {
 # What is the spatial grain of the finest sampling scale? For example, this might be
 # a 0.25 m2 quadrat, or a 5 m transect, or a 50 ml water sample.
 
+# Transect on average consists of 159 0.25 m2 quadrats.
+
 dataFormattingTable[,'Raw_spatial_grain'] = 
   dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain',  
                                  
 #--! PROVIDE INFO !--#
-                                 0.25) 
+                                 39.7) 
 
 dataFormattingTable[,'Raw_spatial_grain_unit'] = 
   dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain_unit',  
@@ -377,7 +374,7 @@ dataFormattingTable[,'Notes_siteFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_siteFormat', 
 
 #--! PROVIDE INFO !--#
-  'The site field is a concatenation of site, depth, lake id. Depth was concatenated min and max columns.')
+  'At each site a transect of variable length was surveyed, with an average of 159 0.25 m2 quadrats per transect over 1993-2014.')
 
 
 #-------------------------------------------------------------------------------*
@@ -461,7 +458,7 @@ dataFormattingTable[,'Notes_countFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_countFormat', 
                                  
 #--! PROVIDE INFO !--#                                 
-              'Species present is a count, described as the number of species found at each site/depth/lake combo.')
+              'Count is number of 0.25 m2 quadrats a species is present in, so is a minimum estimate of the number of individuals.')
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SPECIES DATA ----
@@ -504,8 +501,7 @@ data.frame(table(dataset5$species))
 # Because of this, you should really stop here and post an issue on GitHub. 
 
 #--! PROVIDE INFO !--#
-bad_sp = c('CERATOPHYLLUM', 'ELODEA', 'LITTORELLA', 'LOBELIA',
-           'MEGALODONTA', 'NAJAS', 'SAJ.', 'VAL.')
+bad_sp = c()
 
 dataset6 = dataset5[!dataset5$species %in% bad_sp,]
 
@@ -519,18 +515,21 @@ table(dataset6$species)
 # correct spellings in good_name, and then replace them using the for loop below:
 
 #--! PROVIDE INFO !--#
-typo_name = c('CHARA', 'ELEOCHARIS', 'ISOETES', 'JUNCUS', 'MYRIO. ALT.',
-              'MYRIO. TENELLUM', 'MYRIO. VERT.', 'P. ALPINUS', 'P. AMPLIFOLIUS',
+typo_name = c('CERATOPHYLLUM DEMERSUM', 'CHARA', 'ELEOCHARIS', 'ELODEA CANADENSIS',
+              'ISOETES', 'JUNCUS', 'LITTORELLA UNIFLORA ASCH. VAR. AMERICANA', 
+              'LOBELIA DORTMANNA', 'MYRIO. ALT.','MYRIO. TENELLUM', 'MYRIO. VERT.', 
+              'NAJAS FLEXILIS', 'P. ALPINUS', 'P. AMPLIFOLIUS',
               'P. GRAMINEUS', 'P. PRAELONGUS ', 'P. PUSILLUS', 'P. RICHARDSONII',
-              'P. ROBBINSII', 'P. ZOSTERIFORMIS')          
+              'P. ROBBINSII', 'P. ZOSTERIFORMIS', 'SAJ.', 'VAL.')          
 
 #--! PROVIDE INFO !--#
-good_name = c('CHARA SP', 'ELEOCHARIS SP', 'ISOETES SP', 'JUNCUS SP',
+good_name = c('CERATOPHYLLUM', 'CHARA SP', 'ELEOCHARIS SP', 'ELODEA', 'ISOETES SP', 
+              'JUNCUS SP', 'LITTORELLA', 'LOBELIA',
               'MYRIOPHYLLUM ALTERNIFLORUM', 'MYRIOPHYLLUM TENELLUM',
-              'MYRIOPHYLLUM VERTICILLATUM', 'POTAMOGETON ALPINUS', 
+              'MYRIOPHYLLUM VERTICILLATUM', 'NAJAS', 'POTAMOGETON ALPINUS', 
               'POTAMOGETON AMPLIFOLIUS', 'POTAMOGETON GRAMINEUS', 'POTAMOGETON PRAELONGUS',
               'POTAMOGETON PUSILLUS', 'POTAMOGETON RICHARDSONII', 'POTAMOGETON ROBBINSII',
-              'POTAMOGETON ZOSTERIFORMIS')
+              'POTAMOGETON ZOSTERIFORMIS', 'SAGITTARIA LATIFOLIA', 'VALLISNERIA AMERICANA')
 
 if (length(typo_name) > 0 & typo_name[1] != "") {
   for (n in 1:length(typo_name)) {
@@ -565,7 +564,7 @@ dataFormattingTable[,'Notes_spFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_spFormat',  
 
 #--! PROVIDE INFO !--#                                 
-  'A number of names represented in two obvious forms and were corrected by combining;some were assumed to be in shorthand (Myrio alt and Myrio vert) and were combined with their long form names.')
+  'A number of names represented in two obvious forms and were corrected by combining; some were assumed to be in shorthand (Myrio alt and Myrio vert, SAJ., VAL.) and were combined with their long form names.')
 
 #-------------------------------------------------------------------------------*
 # ---- MAKE DATA FRAME OF COUNT BY SITES, SPECIES, AND YEAR ----
