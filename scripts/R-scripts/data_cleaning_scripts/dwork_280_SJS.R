@@ -487,6 +487,8 @@ names(dataset5)[names(dataset5) == speciesField] = 'species'
 # potential misspellings, extra characters or blank space, or other issues.
 
 data.frame(table(dataset5$species))
+dataset5$species = trimws(dataset5$species, which = "both")
+data.frame(table(dataset5$species))
 
 # If there are entries that only specify the genus while there are others that 
 # specify the species in addition to that same genus, they need to be regrouped 
@@ -507,15 +509,14 @@ data.frame(table(dataset5$species))
 # Because of this, you should really stop here and post an issue on GitHub. 
 
 #--! PROVIDE INFO !--#
-bad_sp = c('','Achnanthes', 'Amphora sp1', 'Anabaena', 'Aphanocapsa', 'Aphanothece', 
-           'Carteria','Chlamydomonas (palmeloid stage)','Characium', 'Coelastrum  ', 
-           'Cryptomonas sp1 ', 'Cryptomonas sp3', 'Chroococcus', 'Closterium',
-           'Cyclotella   ', 'Cymbella  ','Dinobryon', 'Fragilaria ', 'Gloeotrichia',
+bad_sp = c('','Achnanthes', 'Anabaena', 'Aphanocapsa', 'Aphanothece', 
+           'Carteria','Chlamydomonas (palmeloid stage)', 'Coelastrum', 
+            'Chroococcus', 'Closterium',
+           'Cyclotella', 'Cymbella','Dinobryon', 'Fragilaria', 
            'Kephyrion ','Kirchneriella' ,'Lagerheimia',
-           'Lyngbya  ', 'Microcystis ', 'Monomastix', 'Navicula', 
-           'Nitzschia', 'Oscillatoria', 'Peridinium', 'Phormidium',
-           'Pseudanabaena', 'Pyramichlamys', 'Rhoicosphenia',
-           'Scenedesmus', 'Scenedesmus sp2', 'Selenastrum', 'Synedra')
+           'Lyngbya', 'Microcystis', 'Miscellaneous', 'Monomastix', 'Navicula', 
+           'Nitzschia', 'Oscillatoria', 'Peridinium', 
+           'Pseudanabaena', 'Scenedesmus', 'Selenastrum', 'Synedra')
 
 dataset6 = dataset5[!dataset5$species %in% bad_sp,]
 
@@ -532,18 +533,27 @@ table(dataset6$species)
 #--! PROVIDE INFO !--#
 typo_name = c('Chrysocapsa', 'Colonial chrysophyte', 'Cosmarium tenue',
               'Deasonia Gigantica', 'Diatoma tenue', 'Euglenophyta',
-              'Fragilaria capucina capicina', 'Gloeocystis vesiculosa',
+              'Fragilaria capucina capicina', 'Fragilaria capucina subsp. rumpens', 
+              'Fragilaria capucina var. vaucheriae', 'Gloeotrichia echinulata', 
+              'Gloeocystis vesiculosa', 'Phormidium mucicola', 'Pyramichlamys dissecta',
               'Gomphonema parvulum', 'Gymnodinium sp1', 'Gymnodinium sp2',
               'Gymnodinium sp3', 'Lobomonas cf verrucosa', 'Mallomonas akrokomas',
               'Mallomonas caudata', 'Pedinomonas minutissima', 'Rhizosolenia longiseta',
-              'Surirella minuta', 'Synechococcus sp1', 'Synura uvella-sphagnicola')          
+              'Surirella minuta', 'Synechococcus sp1', 'Synura uvella-sphagnicola',
+              'Characium', 'Rhoicosphenia', 'Scenedesmus opoliensis var. carinatus',
+              'Scenedesmus quadricauda var. longispina', 'Scenedesmus quadricauda var. quadrispina',
+              'Synedra cyclopum var. incisa')          
 
 #--! PROVIDE INFO !--#
 good_name = c('Chrysocapsaceae', 'Colonial', 'Cosmarium', 'Deasonia gigantica',
-              'Diatoma tenuis', 'Euglena', 'Fragilaria capucina', 'Gloeocystis',
+              'Diatoma tenuis', 'Euglena', 'Fragilaria capucina', 'Fragilaria capucina',
+              'Fragilaria capucina', 'Gloeotrichia', 'Gloeocystis', 'Phormidium',
+              'Pyramichlamys',
               'Gomphonema', 'Gymnodinium sp. 1', 'Gymnodinium sp. 2', 'Gymnodinium sp. 3',
               'Lobomonas', 'Mallomonas', 'Mallomonas', 'Pedinomonas', 'Rhizosolenia',
-              'Surirella', 'Synechococcus sp. 1', 'Synura')
+              'Surirella', 'Synechococcus sp. 1', 'Synura','Characium limneticum',
+              'Rhoicosphenia curvata', 'Scenedesmus opoliensis', 'Scenedesmus quadricauda',
+              'Scenedesmus quadricauda', 'Synedra cyclopum')
 
 if (length(typo_name) > 0 & typo_name[1] != "") {
   for (n in 1:length(typo_name)) {
@@ -578,7 +588,7 @@ dataFormattingTable[,'Notes_spFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_spFormat',  
 
 #--! PROVIDE INFO !--#                                 
-  'Lots of species had the same name but different spacing, so all of those were combined using trimws command. Other species had 1 entry at the genus level and several at the species level, so genus-only entries were removed. Additionally, when there were more genus-level entries than species, species-level entries were changed to just genus.')
+  "Lots of white space trimmed around names. Some species had 1 entry at the genus level and several at the species level within that genus, so genus-only entries were removed. Additionally, when there were more genus-level entries than species, species-level entries were changed to just genus. Several cases of '<GENUS> sp. #', e.g. Gymnodinium sp. 1, were taken to represent unidentified yet distinct taxa and so were kept.")
 
 #-------------------------------------------------------------------------------*
 # ---- MAKE DATA FRAME OF COUNT BY SITES, SPECIES, AND YEAR ----
