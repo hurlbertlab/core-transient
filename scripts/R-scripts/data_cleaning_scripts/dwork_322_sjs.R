@@ -167,10 +167,11 @@ dataFormattingTable[,'LatLong_sites'] =
 # then write these field names as a vector from largest to smallest temporal grain.
 # E.g., c('year', 'month', 'day')
 
-#--! PROVIDE INFO !--#
-dataset1$MONTH[dataset1$MONTH == 'february'] = "February"  ##MONTH not working
+# Need to add an arbitrary 'day' column since only year and month provided
+dataset1$DAY = 1
 
-dateFieldName = c('YEAR')
+#--! PROVIDE INFO !--#
+dateFieldName = c('YEAR', 'MONTH', 'DAY')
 
 # If necessary, paste together date info from multiple columns into single field
 if (length(dateFieldName) > 1) {
@@ -187,7 +188,7 @@ if (length(dateFieldName) > 1) {
 # be '%Y-%m-%d'. Type "?strptime" for other examples of date formatting.
 
 #--! PROVIDE INFO !--#
-dateformat = '%Y'
+dateformat = '%Y-%B-%d'
 
 # If date is only listed in years:
 
@@ -236,7 +237,7 @@ dataFormattingTable[,'Notes_timeFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_timeFormat', 
 
 #--! PROVIDE INFO !--#
-    'The only modification to this field involved converting to a date object.')
+    'Only month and year provided, converted to date by adding arbitrary DAY of 1')
 
 
 # subannualTgrain. After exploring the time data, was this dataset sampled at a 
@@ -303,7 +304,7 @@ dataFormattingTable[,'Raw_spatial_grain_unit'] =
   dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain_unit',  
                                  
 #--! PROVIDE INFO !--#
-                                 'ha') 
+                                 'm2') 
 
 
 # BEFORE YOU CONTINUE. We need to make sure that there are at least minNTime for 
@@ -385,7 +386,7 @@ dataFormattingTable[,'Notes_siteFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_siteFormat', 
 
 #--! PROVIDE INFO !--#
-  'The site field is a concatenation of site, plot, and coordinate.')
+  'The site field is a concatenation of site, plot, and coordinate, with 3 1-ha plots per site and 49 1-m2 quadrats (coordinates) per plot.')
 
 
 #-------------------------------------------------------------------------------*
@@ -705,13 +706,14 @@ tGrain = 'year'
 site_grain_names
 
 #--! PROVIDE INFO !--#
-sGrain = 'SITE_PLOT_COORDINATE'
+sGrain = 'SITE_PLOT'
 
 # This is a reasonable choice of spatial grain because ...
 #--! PROVIDE INFO !--#
-# a series of three herbivory treatments and a control were randomly assigned to 
-# contiguous 1-ha plots replicated three times at each of three sites along a rainfall 
-# gradient (36 total plots).
+# a single 1-m2 quadrat is too small, while a plot includes 49 such quadrats.
+# Using the coarsest SITE scale will be the same as the PLOT scale since
+# we have here excluded the other PLOTs within a site which represent different
+# herbivore exclosure treatments.
 
 # The function "richnessYearSubsetFun" below will subset the data to sites with an 
 # adequate number of years of sampling and species richness. If there are no 
@@ -795,7 +797,7 @@ dataFormattingTable[,'General_notes'] =
   dataFormattingTableFieldUpdate(datasetID, 'General_notes', 
                                  
                                  #--! PROVIDE INFO !--#                                 
-                                 )
+                                 "Herbivore exclosure plots excluded; control plots only")
 
 # And write the final data formatting table:
 
