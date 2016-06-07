@@ -78,7 +78,7 @@ dataFormattingTable[,'Raw_datafile_name'] =
   dataFormattingTableFieldUpdate(datasetID, 'Raw_datafile_name',  
                                  
 #--! PROVIDE INFO !--#
-  'birdpopulationsi52kend.pdf ') 
+  'extracted from Kendeigh 1982 ') 
 
 
 
@@ -379,7 +379,7 @@ dataFormattingTable[,'Notes_siteFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_siteFormat', 
 
 #--! PROVIDE INFO !--#
-  'The site field is the number 1 because all surveys were conducted in William Trelease Woods in a 24 ha plot.')
+  'Dataset from a single site, William Trelease Woods in a 24 ha plot.')
 
 
 #-------------------------------------------------------------------------------*
@@ -520,10 +520,10 @@ table(dataset6$species)
 # correct spellings in good_name, and then replace them using the for loop below:
 
 #--! PROVIDE INFO !--#
-typo_name = c()           
+typo_name = c("")           
 
 #--! PROVIDE INFO !--#
-good_name = c()
+good_name = c("")
 
 if (length(typo_name) > 0 & typo_name[1] != "") {
   for (n in 1:length(typo_name)) {
@@ -558,7 +558,7 @@ dataFormattingTable[,'Notes_spFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_spFormat',  
 
 #--! PROVIDE INFO !--#                                 
-  'Data was entered by hand, common species name was provided.')
+  'No issues found')
 
 #-------------------------------------------------------------------------------*
 # ---- MAKE DATA FRAME OF COUNT BY SITES, SPECIES, AND YEAR ----
