@@ -1,30 +1,9 @@
 ################################################################################*
-#  DATA FORMATTING TEMPLATE
-################################################################################*
 #
 # Dataset name: Konza bird grids
 # Dataset source (http://www.konza.ksu.edu/knz/pages/data/KnzEntity.aspx?id=CBP011):
 # Formatted by: Robbie Burger and Allen Hurlbert
 #
-# Start by opening the data formatting table (data_formatting_table.csv). 
-# Datasets to be worked on will have a 'format_flag' of 0.
-
-# Flag codes are as follows:
-  # 0 = not currently worked on
-  # 1 = formatting complete
-  # 2 = formatting in process
-  # 3 = formatting halted, issue
-  # 4 = data unavailable
-  # 5 = data insufficient for generating occupancy data
-
-# NOTE: All changes to the data formatting table will be done in R! 
-# Do not make changes directly to this table, this will create conflicting versions.
-
-# YOU WILL NEED TO ENTER DATASET-SPECIFIC INFO IN EVERY LINE OF CODE PRECEDED
-# BY "#--! PROVIDE INFO !--#". 
-
-# YOU SHOULD RUN, BUT NOT OTHERWISE MODIFY, ALL OTHER LINES OF CODE.
-
 #-------------------------------------------------------------------------------*
 # ---- SET-UP ----
 #===============================================================================*
@@ -42,7 +21,6 @@ library(ggplot2)
 library(grid)
 library(gridExtra)
 library(MASS)
-
 
 # Source the functions file:
 
@@ -286,17 +264,20 @@ if (num_grains > 1) {
 
 # What is the spatial grain of the finest sampling scale? 
 
+# Transects vary in length from 281 m to 1402 m, with a mean of 742 m.
+# 99% of birds detected within 200 m of transect line, so multiply by 400.
+
 dataFormattingTable[,'Raw_spatial_grain'] = 
   dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain',  
                                  
 #--! PROVIDE INFO !--#
-                                 500) 
+                                 296800) 
 
 dataFormattingTable[,'Raw_spatial_grain_unit'] = 
   dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain_unit',  
                                  
 #--! PROVIDE INFO !--#
-                                 'm') 
+                                 'm2') 
 
 
 # BEFORE YOU CONTINUE. We need to make sure that there are at least minNTime for 
@@ -375,7 +356,7 @@ dataFormattingTable[,'Notes_siteFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_siteFormat', 
 
 #--! PROVIDE INFO !--#
-  'The site field is a concatenation of site and transect number.')
+  'Transects of variable length (281-1402, mean = 742 m) within Konza site.')
 
 
 #-------------------------------------------------------------------------------*
@@ -456,7 +437,7 @@ dataFormattingTable[,'Notes_countFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_countFormat', 
                                  
 #--! PROVIDE INFO !--#                                 
-              'No count data provided, so 1s added to indicate presence')
+              'Each record indicates 1 individual')
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SPECIES DATA ----
@@ -500,7 +481,7 @@ data.frame(table(dataset5$species))
 # Because of this, you should really stop here and post an issue on GitHub. 
 
 #--! PROVIDE INFO !--#
-bad_sp = c('')
+bad_sp = c('bird', 'birds', 'obir', '')
 
 dataset6 = dataset5[!dataset5$species %in% bad_sp,]
 
@@ -514,10 +495,10 @@ table(dataset6$species)
 # correct spellings in good_name, and then replace them using the for loop below:
 
 #--! PROVIDE INFO !--#
-typo_name = c('birds', 'eat0', 'md0v', 'o bir')           
+typo_name = c('birds', 'eat0', 'md0v', 'o bir', 'acfc', 'bcgn')           
 
 #--! PROVIDE INFO !--#
-good_name = c('bird', 'eato', 'mdov', 'obir')
+good_name = c('bird', 'eato', 'mdov', 'obir', 'acfl', 'bggn')
 
 if (length(typo_name) > 0) {
   for (n in 1:length(typo_name)) {
