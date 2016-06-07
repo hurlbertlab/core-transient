@@ -1,30 +1,9 @@
 ################################################################################*
-#  DATA FORMATTING TEMPLATE
-################################################################################*
 #
 # Dataset name:HJ Andrews TP108: Herb Layer in Uncut Plots: Cover, Height, Number of Tree Seedlings (U-B3)
 # Dataset source (link):http://andrewsforest.oregonstate.edu/data/abstract.cfm?dbcode=TP108&topnav=97 
 # Formatted by: Laura Hamon and Allen Hurlbert
 #
-# Start by opening the data formatting table (data_formatting_table.csv). 
-# Datasets to be worked on will have a 'format_flag' of 0.
-
-# Flag codes are as follows:
-  # 0 = not currently worked on
-  # 1 = formatting complete
-  # 2 = formatting in process
-  # 3 = formatting halted, issue
-  # 4 = data unavailable
-  # 5 = data insufficient for generating occupancy data
-
-# NOTE: All changes to the data formatting table will be done in R! 
-# Do not make changes directly to this table, this will create conflicting versions.
-
-# YOU WILL NEED TO ENTER DATASET-SPECIFIC INFO IN EVERY LINE OF CODE PRECEDED
-# BY "#--! PROVIDE INFO !--#". 
-
-# YOU SHOULD RUN, BUT NOT OTHERWISE MODIFY, ALL OTHER LINES OF CODE.
-
 #-------------------------------------------------------------------------------*
 # ---- SET-UP ----
 #===============================================================================*
@@ -351,6 +330,14 @@ dataFormattingTable[,'format_flag'] =
 # 3 = formatting halted, issue
 # 4 = data unavailable
 # 5 = data insufficient for generating occupancy data
+
+# Add any final notes about the dataset that might be of interest:
+dataFormattingTable[,'General_notes'] = 
+  dataFormattingTableFieldUpdate(datasetID, 'General_notes', 
+                                 
+                                 #--! PROVIDE INFO !--#                                 
+  'Although there are 6 years of data, no site was surveyed for more than 3 years.')
+
 
 
 # And write the final data formatting table:

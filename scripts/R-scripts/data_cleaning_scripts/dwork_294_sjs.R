@@ -133,7 +133,7 @@ head(dataset)
 names(dataset)
 
 #--! PROVIDE INFO !--#
-unusedFieldNames = c("record_id", "effort")
+unusedFieldNames = c("record_id")
 
 dataset1 = dataset[, !names(dataset) %in% unusedFieldNames]
 
@@ -293,22 +293,22 @@ if (num_grains > 1) {
   } 
 }
 
-# What is the spatial grain of the finest sampling scale? For example, this might be
-# a 0.25 m2 quadrat, or a 5 m transect, or a 50 ml water sample.
-######ADDED to det most diverse sampling method for a consistent spatial grain
-#levels(dataset2$gearid)
-BSEINE <- dataset2[ which(dataset2$gearid == "BSEINE"), ]   #2719
-length(unique(BSEINE$spname))
-#FYKNET <- dataset2[ which(dataset2$gearid == "FYKNET"), ]  #2056
-#ELFISH <- dataset2[ which(dataset2$gearid == "ELFISH"), ]  #2503
+# THIS DATASET ONLY: SUBSET TO SPECIFIC SAMPLING METHOD:
+dataset2 <- dataset2[dataset2$gearid == "BSEINE", ]
 
-dataset2 <- dataset2[ which(dataset2$gearid == "BSEINE"), ]
+# Evaluate effort variation using this method, and subset to proper effort if necessary
+table(dataset2$effort)
+# 
+dataset2 = dataset2[dataset2$effort >= 11, ]
+
+# What is the spatial grain of the finest sampling scale? 
+# Seining a 100 m shoreline with 2 people holding net 8 m apart.
 
 dataFormattingTable[,'Raw_spatial_grain'] = 
   dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain',  
                                  
 #--! PROVIDE INFO !--#
-                                 1464) 
+                                 800) 
 
 dataFormattingTable[,'Raw_spatial_grain_unit'] = 
   dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain_unit',  
@@ -575,7 +575,7 @@ dataFormattingTable[,'Notes_spFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_spFormat',  
 
 #--! PROVIDE INFO !--#                                 
-  'No typos were found; spname renamed to species but otherwise left as-is.')
+  'No issues found')
 
 #-------------------------------------------------------------------------------*
 # ---- MAKE DATA FRAME OF COUNT BY SITES, SPECIES, AND YEAR ----
@@ -792,6 +792,14 @@ writePropOccSiteSummary(subsettedData)
 # Update Data Formatting Table with summary stats of the formatted,
 # properly subsetted dataset
 dataFormattingTable = dataFormattingTableUpdateFinished(datasetID, subsettedData)
+
+# Add any final notes about the dataset that might be of interest:
+dataFormattingTable[,'General_notes'] = 
+  dataFormattingTableFieldUpdate(datasetID, 'General_notes', 
+                                 
+                                 #--! PROVIDE INFO !--#                                 
+  'This is a subset of the North Temperate Lakes LTER Fish Abundance dataset based on seining only')
+
 
 # And write the final data formatting table:
 
