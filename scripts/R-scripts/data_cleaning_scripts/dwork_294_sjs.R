@@ -259,6 +259,15 @@ dataset2 <- dataset2[ which(dataset2$date > 1997), ] #more recent = 6447, older 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SITE DATA ----
 #===============================================================================*
+
+# THIS DATASET ONLY: SUBSET TO SPECIFIC SAMPLING METHOD:
+dataset2 <- dataset2[dataset2$gearid == "BSEINE", ]
+
+# Evaluate effort variation using this method, and subset to proper effort if necessary
+table(dataset2$effort)
+# 
+dataset2 = dataset2[dataset2$effort >= 11, ]
+
 # From the previous head commmand, we can see that sites are broken up into 
 # (potentially) 2 fields. Find the metadata link in the data formatting table use 
 # that link to determine how sites are characterized.
@@ -293,13 +302,6 @@ if (num_grains > 1) {
   } 
 }
 
-# THIS DATASET ONLY: SUBSET TO SPECIFIC SAMPLING METHOD:
-dataset2 <- dataset2[dataset2$gearid == "BSEINE", ]
-
-# Evaluate effort variation using this method, and subset to proper effort if necessary
-table(dataset2$effort)
-# 
-dataset2 = dataset2[dataset2$effort >= 11, ]
 
 # What is the spatial grain of the finest sampling scale? 
 # Seining a 100 m shoreline with 2 people holding net 8 m apart.
@@ -523,7 +525,7 @@ data.frame(table(dataset5$species))
 # Because of this, you should really stop here and post an issue on GitHub. 
 
 #--! PROVIDE INFO !--#
-bad_sp = c('')
+bad_sp = c('UNIDENTIFIED', 'UNIDCHUB', 'UNIDDARTER', 'UNIDMINNOW', 'UNIDREDHORSE', 'UNIDSHINER')
 
 dataset6 = dataset5[!dataset5$species %in% bad_sp,]
 
@@ -537,10 +539,10 @@ table(dataset6$species)
 # correct spellings in good_name, and then replace them using the for loop below:
 
 #--! PROVIDE INFO !--#
-typo_name = c()           
+typo_name = c("")           
 
 #--! PROVIDE INFO !--#
-good_name = c()
+good_name = c("")
 
 if (length(typo_name) > 0 & typo_name[1] != "") {
   for (n in 1:length(typo_name)) {
