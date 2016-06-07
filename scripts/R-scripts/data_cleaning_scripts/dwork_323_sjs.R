@@ -488,7 +488,7 @@ names(dataset5)[names(dataset5) == speciesField] = 'species'
 # you can more easily scan the species names (listed alphabetically) and identify 
 # potential misspellings, extra characters or blank space, or other issues.
 
-data.frame(table(dataset5$species))
+data.frame(table(dataset5$species)) ### NOT ENOGUH SPP (n = 6)
 
 # If there are entries that only specify the genus while there are others that 
 # specify the species in addition to that same genus, they need to be regrouped 
@@ -624,7 +624,7 @@ dataFormattingTable[,'format_flag'] =
   dataFormattingTableFieldUpdate(datasetID, 'format_flag', 
      
 #--! PROVIDE INFO !--#                                 
-                                 1)
+                                 5)
 
 # Flag codes are as follows:
 # 0 = not currently worked on
