@@ -78,7 +78,7 @@ dataFormattingTable[,'Raw_datafile_name'] =
   dataFormattingTableFieldUpdate(datasetID, 'Raw_datafile_name',  
                                  
 #--! PROVIDE INFO !--#
-  'birdpopulationsi52kend.pdf ') 
+  'extracted from Kendeigh 1982 Appendix 4') 
 
 
 
@@ -378,7 +378,7 @@ dataFormattingTable[,'Notes_siteFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_siteFormat', 
 
 #--! PROVIDE INFO !--#
-  'The site field consists of the number 1 because all birds were observed on abandoned farmland plot in Robert Allerton Park (40 ha).')
+  'This dataset includes a single site, Robert Allerton Park (40 ha).')
 
 
 #-------------------------------------------------------------------------------*
@@ -557,7 +557,7 @@ dataFormattingTable[,'Notes_spFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_spFormat',  
 
 #--! PROVIDE INFO !--#                                 
-  'Data was entered by hand, common species name was provided. No typos or bad spp found.')
+  'No issues found.')
 
 #-------------------------------------------------------------------------------*
 # ---- MAKE DATA FRAME OF COUNT BY SITES, SPECIES, AND YEAR ----
