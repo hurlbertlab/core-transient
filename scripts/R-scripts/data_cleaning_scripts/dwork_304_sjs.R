@@ -1,31 +1,10 @@
 ################################################################################*
-#  DATA FORMATTING TEMPLATE
-################################################################################*
 #
 # Dataset name: Long-term sampling of a herpetofaunal assemblage on an isolated
 # urban bushland remnant, Bold Park, Perth
 # Dataset source (link): http://www.rswa.org.au/publications/Journal/81%283%29/81%283%29how.pdf
 # Formatted by: Sara Snell
 #
-# Start by opening the data formatting table (data_formatting_table.csv). 
-# Datasets to be worked on will have a 'format_flag' of 0.
-
-# Flag codes are as follows:
-  # 0 = not currently worked on
-  # 1 = formatting complete
-  # 2 = formatting in process
-  # 3 = formatting halted, issue
-  # 4 = data unavailable
-  # 5 = data insufficient for generating occupancy data
-
-# NOTE: All changes to the data formatting table will be done in R! 
-# Do not make changes directly to this table, this will create conflicting versions.
-
-# YOU WILL NEED TO ENTER DATASET-SPECIFIC INFO IN EVERY LINE OF CODE PRECEDED
-# BY "#--! PROVIDE INFO !--#". 
-
-# YOU SHOULD RUN, BUT NOT OTHERWISE MODIFY, ALL OTHER LINES OF CODE.
-
 #-------------------------------------------------------------------------------*
 # ---- SET-UP ----
 #===============================================================================*
@@ -75,7 +54,7 @@ dataFormattingTable[,'Raw_datafile_name'] =
   dataFormattingTableFieldUpdate(datasetID, 'Raw_datafile_name',  
                                  
 #--! PROVIDE INFO !--#
-  '81(3)how.pdf') 
+  'extracted from How 1998') 
 
 
 
@@ -220,6 +199,14 @@ dataset2$date = date
 head(dataset2)
 str(dataset2)
 
+# EXTRA CLEANING:
+# Sampling effort varied by year, with number of trapping days between 86/87 and 92/93
+# given as 20, 55, 56, 70, 56, 49, 92. For this reason, we remove the first year
+# with low effort. While the last year had high effort, species richness for that 
+# year (23) was typical of the preceding years (21-25), so it is kept.
+
+dataset2 = dataset2[dataset2$date != 1986, ]
+
 # !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE DATE DATA WERE MODIFIED!
 
 #!DATA FORMATTING TABLE UPDATE!
@@ -281,20 +268,28 @@ if (num_grains > 1) {
   } 
 }
 
-# What is the spatial grain of the finest sampling scale? For example, this might be
-# a 0.25 m2 quadrat, or a 5 m transect, or a 50 ml water sample.
+# What is the spatial grain of the finest sampling scale? 
+
+# The fenced pitfall traplines consisted of six pitfall traps placed in a line
+# between 7 and 8 metres apart. Each pit trap consisted of a 17.5 cm diameter 
+# PVC pipe that was 60 cm deep and sealed at the bottom with fly-screen mesh. 
+# Drift fences that were 50 m long fly-screen mesh, 30 cm high and dug
+# 5 cm into the substrate, crossed each of the 6 pitfall traps. 
+
+# So one pitfall trapline sampled ~50 m x 40 m (20 m on either side of fenceline),
+# and one trapline was placed in each of 4 different habitats, so 50 x 40 x 4
 
 dataFormattingTable[,'Raw_spatial_grain'] = 
   dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain',  
                                  
 #--! PROVIDE INFO !--#
-                                 330) 
+                                 8000) 
 
 dataFormattingTable[,'Raw_spatial_grain_unit'] = 
   dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain_unit',  
                                  
 #--! PROVIDE INFO !--#
-                                 'ha') 
+                                 'm2') 
 
 
 # BEFORE YOU CONTINUE. We need to make sure that there are at least minNTime for 
@@ -376,7 +371,7 @@ dataFormattingTable[,'Notes_siteFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_siteFormat', 
 
 #--! PROVIDE INFO !--#
-  'The site field is Bold park bc the study was conducted within the park; there were 4 sites but the data were summed by year for all sites.')
+  'Although pitfall traplines set out in 4 different habitats, data lumped together for single site.')
 
 
 #-------------------------------------------------------------------------------*
@@ -770,6 +765,13 @@ writePropOccSiteSummary(subsettedData)
 # Update Data Formatting Table with summary stats of the formatted,
 # properly subsetted dataset
 dataFormattingTable = dataFormattingTableUpdateFinished(datasetID, subsettedData)
+
+# Add any final notes about the dataset that might be of interest:
+dataFormattingTable[,'General_notes'] = 
+  dataFormattingTableFieldUpdate(datasetID, 'General_notes', 
+                                 
+                                 #--! PROVIDE INFO !--#                                 
+  'First year (86/87) removed for low sampling effort.')
 
 # And write the final data formatting table:
 
