@@ -1,10 +1,8 @@
 ################################################################################*
-#  DATA FORMATTING TEMPLATE
-################################################################################*
 #
 # Dataset name: Zooplankton survey of Oneida Lake, New York
 # Dataset source (link): https://knb.ecoinformatics.org/#view/kgordon.17.56
-# Formatted by: Sara Snell
+# Formatted by: Sara Snell and Allen Hurlbert
 #
 # Start by opening the data formatting table (data_formatting_table.csv). 
 # Datasets to be worked on will have a 'format_flag' of 0.
@@ -74,7 +72,7 @@ dataFormattingTable[,'Raw_datafile_name'] =
   dataFormattingTableFieldUpdate(datasetID, 'Raw_datafile_name',  
                                  
 #--! PROVIDE INFO !--#
-  'cbfs.132.csv') 
+  'cbfs.25.11.csv') 
 
 
 
@@ -127,9 +125,10 @@ head(dataset)
 names(dataset)
 
 #--! PROVIDE INFO !--#
-unusedFieldNames = c('total')
+unusedFieldNames = c('DateString', 'StandardSample', 'SamplingWeek', 'Year', 'Biomass..mg.m3.',
+                     'AveLength', 'Count', 'X', 'X.1', 'X.2')
 
-dataset1 = dataset[, !names(dataset) %in% unusedFieldNames]
+dataset1 = dataset[dataset$StandardSample == "yes", !names(dataset) %in% unusedFieldNames]
 
 # Note that I've given a new name here "dataset1", this is to ensure that 
 # we don't have to go back to square 1 if we've miscoded anything.
@@ -168,7 +167,7 @@ dataFormattingTable[,'LatLong_sites'] =
 # E.g., c('year', 'month', 'day')
 
 #--! PROVIDE INFO !--#
-dateFieldName = c('Year')
+dateFieldName = c('Date')
 
 # If necessary, paste together date info from multiple columns into single field
 if (length(dateFieldName) > 1) {
@@ -185,7 +184,7 @@ if (length(dateFieldName) > 1) {
 # be '%Y-%m-%d'. Type "?strptime" for other examples of date formatting.
 
 #--! PROVIDE INFO !--#
-dateformat = '%Y'
+dateformat = '%m/%d/%Y'
 
 # If the date is just a year, then make sure it is of class numeric
 # and not a factor. Otherwise change to a true date object.
@@ -240,7 +239,7 @@ dataFormattingTable[,'subannualTgrain'] =
   dataFormattingTableFieldUpdate(datasetID, 'subannualTgrain', 
 
 #--! PROVIDE INFO !--#                                 
-                                 'N')
+                                 'Y')
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SITE DATA ----
@@ -265,8 +264,10 @@ dataFormattingTable[,'subannualTgrain'] =
 # in hierarchical order from largest to smallest grain. Based on the dataset,
 # fill in the fields that specify nested spatial grains below.
 
+dataset2$site = "OneidaLake"
+
 #--! PROVIDE INFO !--#
-site_grain_names = c("Site")
+site_grain_names = c("site", "Station")
 
 # We will now create the site field with these codes concatenated if there
 # are multiple grain fields. Otherwise, site will just be the single grain field.
@@ -279,20 +280,22 @@ if (num_grains > 1) {
   } 
 }
 
-# What is the spatial grain of the finest sampling scale? For example, this might be
-# a 0.25 m2 quadrat, or a 5 m transect, or a 50 ml water sample.
+# What is the spatial grain of the finest sampling scale? 
+
+# Plankton sampling gear uncertain, and subsampling counts used, but estimates
+# are of density per m3.
 
 dataFormattingTable[,'Raw_spatial_grain'] = 
   dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain',  
                                  
 #--! PROVIDE INFO !--#
-                                 0.25) #0.5 m wide to 0.5 m high
+                                 1) #0.5 m wide to 0.5 m high
 
 dataFormattingTable[,'Raw_spatial_grain_unit'] = 
   dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain_unit',  
                                  
 #--! PROVIDE INFO !--#
-                                 'm2') 
+                                 'm3') 
 
 
 # BEFORE YOU CONTINUE. We need to make sure that there are at least minNTime for 
@@ -365,7 +368,7 @@ dataFormattingTable[,'spatial_scale_variable'] =
   dataFormattingTableFieldUpdate(datasetID, 'spatial_scale_variable',
 
 #--! PROVIDE INFO !--#
-                                 'N')
+                                 'Y')
 
 # Notes_siteFormat. Use this field to THOROUGHLY describe any changes made to the 
 # site field during formatting.
@@ -391,7 +394,7 @@ summary(dataset3)
 # If there is no countfield, set this equal to "".
 
 #--! PROVIDE INFO !--#
-countfield = "count"
+countfield = "Density"
 
 # Renaming it
 if (countfield == "") {
@@ -458,7 +461,7 @@ dataFormattingTable[,'Notes_countFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_countFormat', 
                                  
 #--! PROVIDE INFO !--#                                 
-              'Density data provided: 1 mL samples drawn until 100 individuals counted')
+              'Density data provided: 1 mL samples drawn until 100 individuals counted to estimate density per m3')
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SPECIES DATA ----
@@ -472,8 +475,7 @@ dataFormattingTable[,'Notes_countFormat'] =
 # It will get converted to 'species'
 
 #--! PROVIDE INFO !--#
-dataset5$species = substring(dataset5$species, 2)
-speciesField = 'species'
+speciesField = 'Taxon'
 
 names(dataset5)[names(dataset5) == speciesField] = 'species'
 
@@ -502,7 +504,7 @@ data.frame(table(dataset5$species))
 # Because of this, you should really stop here and post an issue on GitHub. 
 
 #--! PROVIDE INFO !--#
-bad_sp = c('')
+bad_sp = c('Nauplii')
 
 dataset6 = dataset5[!dataset5$species %in% bad_sp,]
 
@@ -554,7 +556,7 @@ dataFormattingTable[,'Notes_spFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_spFormat',  
 
 #--! PROVIDE INFO !--#                                 
-  'Species assigned numbers so no corrections needed to be made.')
+  'Nauplii removed, all other names fine')
 
 #-------------------------------------------------------------------------------*
 # ---- MAKE DATA FRAME OF COUNT BY SITES, SPECIES, AND YEAR ----
@@ -687,7 +689,7 @@ tGrain = 'year'
 site_grain_names
 
 #--! PROVIDE INFO !--#
-sGrain = 'site'
+sGrain = 'site_Station'
 
 # This is a reasonable choice of spatial grain because ...
 #--! PROVIDE INFO !--#
