@@ -1,30 +1,9 @@
 ################################################################################*
-#  DATA FORMATTING TEMPLATE
-################################################################################*
 #
 # Dataset name: Arthropod Pitfall Traps at LTER II NPP sites. Jornada LTER
-# Dataset source (link): http://jornada.nmsu.edu/lter/project/49395/view
-# Formatted by: Sara Snell
+# Dataset source (link): http://jornada.nmsu.edu/lter/dataset/49779/view
+# Formatted by: Allen Hurlbert
 #
-# Start by opening the data formatting table (data_formatting_table.csv). 
-# Datasets to be worked on will have a 'format_flag' of 0.
-
-# Flag codes are as follows:
-  # 0 = not currently worked on
-  # 1 = formatting complete
-  # 2 = formatting in process
-  # 3 = formatting halted, issue
-  # 4 = data unavailable
-  # 5 = data insufficient for generating occupancy data
-
-# NOTE: All changes to the data formatting table will be done in R! 
-# Do not make changes directly to this table, this will create conflicting versions.
-
-# YOU WILL NEED TO ENTER DATASET-SPECIFIC INFO IN EVERY LINE OF CODE PRECEDED
-# BY "#--! PROVIDE INFO !--#". 
-
-# YOU SHOULD RUN, BUT NOT OTHERWISE MODIFY, ALL OTHER LINES OF CODE.
-
 #-------------------------------------------------------------------------------*
 # ---- SET-UP ----
 #===============================================================================*
@@ -74,7 +53,7 @@ dataFormattingTable[,'Raw_datafile_name'] =
   dataFormattingTableFieldUpdate(datasetID, 'Raw_datafile_name',  
                                  
 #--! PROVIDE INFO !--#
-  'JornadaStudy_008_npp_arthropod_pitfall_trap_1988_1994_data.csv') 
+  'JornadaStudy_008_npp_arthropod_pitfall_trap_1995_2000_data.csv') 
 
 
 
@@ -127,7 +106,7 @@ head(dataset)
 names(dataset)
 
 #--! PROVIDE INFO !--#
-unusedFieldNames = c('')
+unusedFieldNames = c('period', 'zone')
 
 dataset1 = dataset[, !names(dataset) %in% unusedFieldNames]
 
@@ -168,7 +147,7 @@ dataFormattingTable[,'LatLong_sites'] =
 # E.g., c('year', 'month', 'day')
 
 #--! PROVIDE INFO !--#
-dateFieldName = c('Year')
+dateFieldName = c('date')
 
 # If necessary, paste together date info from multiple columns into single field
 if (length(dateFieldName) > 1) {
@@ -185,7 +164,7 @@ if (length(dateFieldName) > 1) {
 # be '%Y-%m-%d'. Type "?strptime" for other examples of date formatting.
 
 #--! PROVIDE INFO !--#
-dateformat = '%Y'
+dateformat = '%m/%d/%Y'
 
 # If the date is just a year, then make sure it is of class numeric
 # and not a factor. Otherwise change to a true date object.
@@ -240,7 +219,7 @@ dataFormattingTable[,'subannualTgrain'] =
   dataFormattingTableFieldUpdate(datasetID, 'subannualTgrain', 
 
 #--! PROVIDE INFO !--#                                 
-                                 'N')
+                                 'Y')
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SITE DATA ----
@@ -265,8 +244,13 @@ dataFormattingTable[,'subannualTgrain'] =
 # in hierarchical order from largest to smallest grain. Based on the dataset,
 # fill in the fields that specify nested spatial grains below.
 
+dataset2$bigsite = "Jornada"
+
+# "plot" seems to be redundant with "site" (although there are a few cases [1 in 50]
+# where they don't line up)
+
 #--! PROVIDE INFO !--#
-site_grain_names = c("SITE")
+site_grain_names = c("bigsite", "site", "trap")
 
 # We will now create the site field with these codes concatenated if there
 # are multiple grain fields. Otherwise, site will just be the single grain field.
@@ -279,14 +263,18 @@ if (num_grains > 1) {
   } 
 }
 
-# What is the spatial grain of the finest sampling scale? For example, this might be
-# a 0.25 m2 quadrat, or a 5 m transect, or a 50 ml water sample.
+# What is the spatial grain of the finest sampling scale? 
+
+# Each site has 5 pitfall traps arrayed in a line separated by 15 m.
+# Recent paper by Zhao et al. 2013 (unrelated) estimated effective trapping 
+# radius of pitfalls to be 1.18 - 1.61 m. Here we assume a trapping radius of 
+# 2 m, times 5 traps = 
 
 dataFormattingTable[,'Raw_spatial_grain'] = 
   dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain',  
                                  
 #--! PROVIDE INFO !--#
-                                 41) #40 cm deep on a 16 trap plot - assumed square so (16 * 40)^2
+                                 62.8) 
 
 dataFormattingTable[,'Raw_spatial_grain_unit'] = 
   dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain_unit',  
@@ -365,7 +353,7 @@ dataFormattingTable[,'spatial_scale_variable'] =
   dataFormattingTableFieldUpdate(datasetID, 'spatial_scale_variable',
 
 #--! PROVIDE INFO !--#
-                                 'N')
+                                 'Y')
 
 # Notes_siteFormat. Use this field to THOROUGHLY describe any changes made to the 
 # site field during formatting.
@@ -374,7 +362,7 @@ dataFormattingTable[,'Notes_siteFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_siteFormat', 
 
 #--! PROVIDE INFO !--#
-  'The site field denotes each plot in the grid.')
+  'Each site has 5 pitfall traps')
 
 
 #-------------------------------------------------------------------------------*
@@ -402,7 +390,7 @@ if (countfield == "") {
 
 # Check that the count field is numeric or integer, and convert if necessary
 class(dataset3$count)
-# For example, dataset3$count = as.numeric(as.character(dataset3$count))
+dataset3$count = as.numeric(as.character(dataset3$count))
 
 
 # Now we will remove zero counts and NA's:
@@ -471,8 +459,18 @@ dataFormattingTable[,'Notes_countFormat'] =
 # First, what is the field name in which species or taxonomic data are stored? 
 # It will get converted to 'species'
 
+dataset5$species = gsub("O1", "1", dataset5$species)
+dataset5$species = gsub("1", "01", dataset5$species)
+dataset5$species = gsub("2", "02", dataset5$species)
+dataset5$genus = gsub("1", "01", dataset5$genus)
+dataset5$family = gsub("1", "01", dataset5$family)
+names(dataset5)[5] = "sp"
+
+dataset5$spname = paste(dataset5$order, dataset5$family, dataset5$genus, 
+                        dataset5$sp, sep = '-')
+
 #--! PROVIDE INFO !--#
-speciesField = 'species'
+speciesField = 'spname'
 
 names(dataset5)[names(dataset5) == speciesField] = 'species'
 
@@ -501,7 +499,7 @@ data.frame(table(dataset5$species))
 # Because of this, you should really stop here and post an issue on GitHub. 
 
 #--! PROVIDE INFO !--#
-bad_sp = c('')
+bad_sp = c('AR-GN-MI-01', 'AR-GN-ZE-01', 'AR-PH-EB-01', 'AR-PH-TH-01', 'CO-ME-EP-01')
 
 dataset6 = dataset5[!dataset5$species %in% bad_sp,]
 
@@ -515,10 +513,34 @@ table(dataset6$species)
 # correct spellings in good_name, and then replace them using the for loop below:
 
 #--! PROVIDE INFO !--#
-typo_name = c('')           
+typo_name = c('AR-DI-CI-01',
+              'AR-GN-DD-01',
+              'AR-GN-DR-01',
+              'AR-GN-HA-01',
+              'AR-GN-HE-01',
+              'AR-TH-XY-CU',
+              'AR-TH-XY-FA',
+              'AR-TH-XY-LA',
+              'CO-CU-OP-VI',
+              'CO-EL-AG-01',
+              'OR-AC-ME-AR',
+              'OR-AC-ME-BO',
+              'OR-TE-AR-GR')           
 
 #--! PROVIDE INFO !--#
-good_name = c('')
+good_name = c('AR-DI-CI-VA',
+              'AR-GN-DD-GO',
+              'AR-GN-DR-LE',
+              'AR-GN-HA-CH',
+              'AR-GN-HE-BU',
+              'AR-TH-XY-01',
+              'AR-TH-XY-01',
+              'AR-TH-XY-01',
+              'CO-CU-OP-01',
+              'CO-EL-AG-RE',
+              'OR-AC-ME-01',
+              'OR-AC-ME-01',
+              'OR-TE-AR-01')
 
 if (length(typo_name) > 0 & typo_name[1] != "") {
   for (n in 1:length(typo_name)) {
@@ -553,7 +575,7 @@ dataFormattingTable[,'Notes_spFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_spFormat',  
 
 #--! PROVIDE INFO !--#                                 
-  'No bad spp were found bc the full names list could not be found on the website or with google so names were left as-is.')
+  'I assume that species==1 means unidentified species in the genus; if this represented the only member of the genus (or family) then it was kept; if there was only one other species in the genus they were merged together; if there were several other species in the genus and unids were in the minority they were dropped.')
 
 #-------------------------------------------------------------------------------*
 # ---- MAKE DATA FRAME OF COUNT BY SITES, SPECIES, AND YEAR ----
@@ -686,13 +708,13 @@ tGrain = 'year'
 site_grain_names
 
 #--! PROVIDE INFO !--#
-sGrain = 'site'
+sGrain = 'bigsite_site'
 
 # This is a reasonable choice of spatial grain because ...
 #--! PROVIDE INFO !--#
-# quadrats are only 0.25 m2 and record presence absence, whereas sites encompass
-# 28-52 quadrats per depth interval providing a greater sample and an effective
-# abundance measure.
+# a single pitfall trap is a poor characterization of an assemblage. It's hoped
+# that the multiple traps per year over 5 pitfall traps will be sufficient. 
+# The scale of the entire Jornada seems too large.
 
 # The function "richnessYearSubsetFun" below will subset the data to sites with an 
 # adequate number of years of sampling and species richness. If there are no 
