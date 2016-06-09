@@ -3,20 +3,21 @@
 #grant proposal preliminary analysis: 1) scale of 10 BBS stops, 
 # 2) BBS route, 3) aggregate of 27 BBS routes within state of MD.
 #pull in 50 stop data from ecoretriever
-setwd("C:/Program Files (x86)/EcoDataRetriever")
-library(ecoretriever)
-ecoretriever::datasets()
-bbs50 = ecoretriever::fetch("BBS50")
+setwd("//bioark.ad.unc.edu/hurlbertlab/Databases/BBS/FiftyStopData")
+bbs50 = read.csv("fiftystop_thru2010_goodspp_goodrtes.csv", header = TRUE)
+#disregard ecodataretriever for now bc very buggy and BBS files incomplete 
+#setwd("C:/Program Files (x86)/EcoDataRetriever")
+#library(ecoretriever)
+#ecoretriever::datasets()
+#bbs50 = ecoretriever::fetch("BBS50")
+#names(bbs50)
+#bbs = bbs50$species
+#bbsrts= bbs50$routes #Year columns missing from both datasets?
 names(bbs50)
-#bbs as matrix or dataframe 
-bbs = bbs50$species
-bbsrts= bbs50$routes #Year columns missing from both datasets?
-names(bbs)
-names(bbsrts)
 setwd("C:/git/core-transient")
 library(raster)
-counts5 = read.csv('data/raw_datasets/dataset_1_full.csv', header=T) #in groups of ten #is this the full bbs dataset broken by 10 stops? 
-#want to merge counts5 with bbs 50 stop data; why does counts5 have year data and not the others? 
+counts5 = read.csv('data/raw_datasets/dataset_1_full.csv', header=T) #1996-2010 #in groups of ten #is this the full bbs dataset broken by 10 stops? 
+#want to merge counts5 with bbs 50 stop data? why does counts5 have year data and not the others? 
 occupancy.matrix = as.matrix(
   read.csv('scripts/R-scripts/scale_analysis/occ_matrix_BBS.csv', header=T, row.names = 1))
 routes = read.csv('scripts/R-scripts/scale_analysis/routes.csv')
