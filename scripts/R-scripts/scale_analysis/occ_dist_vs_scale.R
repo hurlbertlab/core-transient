@@ -3,20 +3,21 @@
 #grant proposal preliminary analysis: 1) scale of 10 BBS stops, 
 # 2) BBS route, 3) aggregate of 27 BBS routes within state of MD.
 #pull in 50 stop data from ecoretriever
-setwd("C:/Program Files (x86)/EcoDataRetriever")
-library(ecoretriever)
-ecoretriever::datasets()
-bbs50 = ecoretriever::fetch("BBS50")
+setwd("//bioark.ad.unc.edu/hurlbertlab/Databases/BBS/FiftyStopData")
+bbs50 = read.csv("fiftystop_thru2010_goodspp_goodrtes.csv", header = TRUE)
+#disregard ecodataretriever for now bc very buggy and BBS files incomplete 
+#setwd("C:/Program Files (x86)/EcoDataRetriever")
+#library(ecoretriever)
+#ecoretriever::datasets()
+#bbs50 = ecoretriever::fetch("BBS50")
+#names(bbs50)
+#bbs = bbs50$species
+#bbsrts= bbs50$routes #Year columns missing from both datasets?
 names(bbs50)
-#bbs as matrix or dataframe 
-bbs = bbs50$species
-bbsrts= bbs50$routes #Year columns missing from both datasets?
-names(bbs)
-names(bbsrts)
 setwd("C:/git/core-transient")
 library(raster)
-counts5 = read.csv('data/raw_datasets/dataset_1_full.csv', header=T) #in groups of ten #is this the full bbs dataset broken by 10 stops? 
-#want to merge counts5 with bbs 50 stop data; why does counts5 have year data and not the others? 
+counts5 = read.csv('data/raw_datasets/dataset_1_full.csv', header=T) #1996-2010 #in groups of ten #is this the full bbs dataset broken by 10 stops? 
+#want to merge counts5 with bbs 50 stop data? why does counts5 have year data and not the others? 
 occupancy.matrix = as.matrix(
   read.csv('scripts/R-scripts/scale_analysis/occ_matrix_BBS.csv', header=T, row.names = 1))
 routes = read.csv('scripts/R-scripts/scale_analysis/routes.csv')
@@ -29,12 +30,11 @@ uniqSpYr = unique(counts5[, c('Year', 'Aou')])
 BBS.occ = data.frame(table(uniqSpYr$Aou)/15)
 
 # All-BBS scale Molly prototype (50 pt count scale):
-uniqSpYr = unique(bbs[, c('Year', 'AOU')]) #AOU capitalized; year columns aren't present 
-BBS.occ = data.frame(table(uniqSpYr$Aou)/15)
-
 bbs.occ.mat = occupancy.matrix[floor(as.numeric(row.names(occupancy.matrix))/1000),] #round down so no longer decimals 
-bbs.uniq = unique(counts5[,c('Year','Aou')])
-bbs.occ = data.frame(table(bbs.uniq$Aou)/15)
+bbs.uniq = unique(bbs50[,c('year','AOU')]) #AOU capitalized in 50 stop data, year columns not present in 50 stop data 
+#can't get past this point with the bbs species data in the first place because missing year data 
+#do I have to merge routes and spp before moving forward too?
+bbs.occ = data.frame(table(bbs.uniq$AOU)/15)
 
 ###So for the whole dataset, 10 pt count stops: #we are only getting one out of five chunks along 
 #want to estimate occupancy across each one, as of now only estimating for count 10 column 
@@ -44,13 +44,13 @@ bbs.occ = data.frame(table(bbs.uniq$Aou)/15)
 #figure out then how to group aggregating over multiple columns 
 #fifty pt count data and then taking pts 1-5 and collapsing them all together 
 occ_counts = function(countData, countColumn) {
-  bbsu = unique(countData[countData[ , countColumn] != 0, c('stateroute', 'Year', 'Aou')])
-  bbsu.rt.occ = data.frame(table(bbsu[,c('stateroute', 'Aou')])/15)
+  bbsu = unique(countData[countData[ , countColumn] != 0, c('stateroute', 'year', 'AOU')])
+  bbsu.rt.occ = data.frame(table(bbsu[,c('stateroute', 'AOU')])/15)
   bbsu.rt.occ2 = bbsu.rt.occ[bbsu.rt.occ$Freq!=0,]
   names(bbsu.rt.occ2)[3] = 'occupancy'
   bbsu.rt.occ2$scale = 10
   bbsu.rt.occ2$subrouteID = countColumn
-  bbsu.rt.occ2 = bbsu.rt.occ2[, c('stateroute', 'scale', 'subrouteID', 'Aou', 'occupancy')]
+  bbsu.rt.occ2 = bbsu.rt.occ2[, c('stateroute', 'scale', 'subrouteID', 'AOU', 'occupancy')]
   return(bbsu.rt.occ2)
 }
 
@@ -67,7 +67,7 @@ occ_counts = function(countData, countColumn, v) {
   return(bbsu.rt.occ2)
 }
 #state route stop, scale at which (1 or 10 stops etc), sub-route ID (if scale is 10 stops, it's count20), species, occupany
-bb1<-occ_counts(counts5, counts5$Count10, 10)
+bb1<-occ_counts(bbs50, bbs$Stop10)
 head(bb1)
 #scale of 1 pt count 
 bbs1 = subset(fifty, stateroute %in% unique(bbs10.rt.occ$stateroute) & year > 1995 & year < 2011 & Stop1!=0, 
