@@ -29,11 +29,10 @@ uniqSpYr = unique(counts5[, c('Year', 'Aou')])
 BBS.occ = data.frame(table(uniqSpYr$Aou)/15)
 
 # All-BBS scale Molly prototype (50 pt count scale):
-uniqSpYr = unique(bbs[, c('Year', 'AOU')]) #AOU capitalized; year columns aren't present 
-BBS.occ = data.frame(table(uniqSpYr$Aou)/15)
-
 bbs.occ.mat = occupancy.matrix[floor(as.numeric(row.names(occupancy.matrix))/1000),] #round down so no longer decimals 
-bbs.uniq = unique(counts5[,c('Year','Aou')])
+bbs.uniq = unique(counts5[,c('Year','Aou')]) #AOU capitalized in 50 stop data, year columns not present in 50 stop data 
+#can't get past this point with the bbs species data in the first place because missing year data 
+#do I have to merge routes and spp before moving forward too?
 bbs.occ = data.frame(table(bbs.uniq$Aou)/15)
 
 ###So for the whole dataset, 10 pt count stops: #we are only getting one out of five chunks along 
@@ -67,7 +66,7 @@ occ_counts = function(countData, countColumn, v) {
   return(bbsu.rt.occ2)
 }
 #state route stop, scale at which (1 or 10 stops etc), sub-route ID (if scale is 10 stops, it's count20), species, occupany
-bb1<-occ_counts(counts5, counts5$Count10, 10)
+bb1<-occ_counts(counts5, counts5$Count10)
 head(bb1)
 #scale of 1 pt count 
 bbs1 = subset(fifty, stateroute %in% unique(bbs10.rt.occ$stateroute) & year > 1995 & year < 2011 & Stop1!=0, 
