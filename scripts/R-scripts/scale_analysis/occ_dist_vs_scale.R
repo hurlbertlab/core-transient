@@ -12,23 +12,27 @@ names(bbs50)
 bbs = bbs50$species
 bbsrts= bbs50$routes #Year columns missing from both datasets?
 names(bbs)
+names(bbsrts)
 setwd("C:/git/core-transient")
 library(raster)
-counts5 = read.csv('data/raw_datasets/dataset_1_full.csv', header=T) #in groups of ten 
+counts5 = read.csv('data/raw_datasets/dataset_1_full.csv', header=T) #in groups of ten #is this the full bbs dataset broken by 10 stops? 
+#want to merge counts5 with bbs 50 stop data; why does counts5 have year data and not the others? 
 occupancy.matrix = as.matrix(
   read.csv('scripts/R-scripts/scale_analysis/occ_matrix_BBS.csv', header=T, row.names = 1))
 routes = read.csv('scripts/R-scripts/scale_analysis/routes.csv')
 routes$stateroute = 1000*routes$statenum + routes$Route
+names(routes)
+names(counts5)
 
-# All-BBS scale (50 pt count scale):
+# Jes' All-BBS scale (50 pt count scale):
 uniqSpYr = unique(counts5[, c('Year', 'Aou')])
 BBS.occ = data.frame(table(uniqSpYr$Aou)/15)
 
 # All-BBS scale Molly prototype (50 pt count scale):
-uniqSpYr = unique(bbs[, c('Year', 'Aou')]) #AOU capitalized; year columns aren't present 
+uniqSpYr = unique(bbs[, c('Year', 'AOU')]) #AOU capitalized; year columns aren't present 
 BBS.occ = data.frame(table(uniqSpYr$Aou)/15)
 
-bbs.occ.mat = occupancy.matrix[floor(as.numeric(row.names(occupancy.matrix))/1000),]
+bbs.occ.mat = occupancy.matrix[floor(as.numeric(row.names(occupancy.matrix))/1000),] #round down so no longer decimals 
 bbs.uniq = unique(counts5[,c('Year','Aou')])
 bbs.occ = data.frame(table(bbs.uniq$Aou)/15)
 
