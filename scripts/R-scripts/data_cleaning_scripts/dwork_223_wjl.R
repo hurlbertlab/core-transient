@@ -276,6 +276,20 @@ dataset3 = dataset3[,!names(dataset3) %in% c('block', 'plot', 'quad')]
 
 head(dataset3)
 
+# A quick check reveals that there are a few site combinations that appear only once, compared
+# to the 22-30 unique dates that all other quads are surveyed. Specifically, C_3_1_35 and
+# G_2_2_24 through G_2_2_36:
+table(unique(dataset3[, c('site', 'date')])$site)
+
+# A check reveals that there are missing quads caused by typos which are here fixed:
+dataset3$site = gsub("C_3_1", "C_1_1", dataset3$site)
+dataset3$site = gsub("G_2_2", "G_2_3", dataset3$site)
+
+# Also, for G_1, there are two extra plots sampled in 2008 (meaning a total of 5 which contradicts the sampling layout of 4 plots per block): G_1_C_1 and G_1_R_4, but in this case the typo (of the final plot #) explanation seems to make more sense as in all other years there are surveys for G_1_C_4 and G_1_R_2, respectively, except for in 2008. Thus G1C1 can probably be converted to G1C4, and G1R4 to G1R2, which will fix some sources of variation in effort. [note, treatment letter is not being used, but same correction applies]
+dataset3$site = gsub("G_1_1", "G_1_4", dataset3$site)
+dataset3$site = gsub("G_1_4", "G_1_2", dataset3$site)
+
+
 # !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE SITE DATA WERE MODIFIED!
 
 # !DATA FORMATTING TABLE UPDATE! 
@@ -303,7 +317,7 @@ dataFormattingTable[,'Notes_siteFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_siteFormat',  # Fill value below in quotes
                                  
                                  #####
-                                 'site fields concatenated. metadata suggests site-block-plot-quad describes the order of nested sites from large to small.')
+                                 'Metadata suggests site-block-plot-quad describes the order of nested sites from large to small. Several typos in site location identified and fixed.')
 
 
 #-------------------------------------------------------------------------------*
