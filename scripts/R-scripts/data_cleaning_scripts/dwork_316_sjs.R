@@ -1,30 +1,9 @@
 ################################################################################*
-#  DATA FORMATTING TEMPLATE
-################################################################################*
 #
-# Dataset name: Small Mammal Exclosure Study. Jornada LTER
+# Dataset name: Small Mammal Exclosure Study rodent trapping data, Jornada LTER
 # Dataset source (link): http://jornada.nmsu.edu/lter/project/49356/view
-# Formatted by: Sara Snell
+# Formatted by: Sara Snell and Allen Hurlbert
 #
-# Start by opening the data formatting table (data_formatting_table.csv). 
-# Datasets to be worked on will have a 'format_flag' of 0.
-
-# Flag codes are as follows:
-  # 0 = not currently worked on
-  # 1 = formatting complete
-  # 2 = formatting in process
-  # 3 = formatting halted, issue
-  # 4 = data unavailable
-  # 5 = data insufficient for generating occupancy data
-
-# NOTE: All changes to the data formatting table will be done in R! 
-# Do not make changes directly to this table, this will create conflicting versions.
-
-# YOU WILL NEED TO ENTER DATASET-SPECIFIC INFO IN EVERY LINE OF CODE PRECEDED
-# BY "#--! PROVIDE INFO !--#". 
-
-# YOU SHOULD RUN, BUT NOT OTHERWISE MODIFY, ALL OTHER LINES OF CODE.
-
 #-------------------------------------------------------------------------------*
 # ---- SET-UP ----
 #===============================================================================*
@@ -127,7 +106,10 @@ head(dataset)
 names(dataset)
 
 #--! PROVIDE INFO !--#
-unusedFieldNames = c('total')
+unusedFieldNames = c('year', 'season', 'night', 'trap', 'recap', 'sex', 'age',
+                     'weight', 'repro', 'recond', 'incomplete', 'marked', 'dead',
+                     'closed', 'newborn', 'keyfield', 'datasetid', 'POINT_X',
+                     'POINT_Y', 'table_id', 'layer_id')
 
 dataset1 = dataset[, !names(dataset) %in% unusedFieldNames]
 
@@ -168,7 +150,7 @@ dataFormattingTable[,'LatLong_sites'] =
 # E.g., c('year', 'month', 'day')
 
 #--! PROVIDE INFO !--#
-dateFieldName = c('year')
+dateFieldName = c('date')
 
 # If necessary, paste together date info from multiple columns into single field
 if (length(dateFieldName) > 1) {
@@ -185,7 +167,7 @@ if (length(dateFieldName) > 1) {
 # be '%Y-%m-%d'. Type "?strptime" for other examples of date formatting.
 
 #--! PROVIDE INFO !--#
-dateformat = '%Y'
+dateformat = '%m/%d/%Y'
 
 # If the date is just a year, then make sure it is of class numeric
 # and not a factor. Otherwise change to a true date object.
@@ -240,7 +222,7 @@ dataFormattingTable[,'subannualTgrain'] =
   dataFormattingTableFieldUpdate(datasetID, 'subannualTgrain', 
 
 #--! PROVIDE INFO !--#                                 
-                                 'N')
+                                 'Y')
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SITE DATA ----
@@ -265,8 +247,10 @@ dataFormattingTable[,'subannualTgrain'] =
 # in hierarchical order from largest to smallest grain. Based on the dataset,
 # fill in the fields that specify nested spatial grains below.
 
+dataset2$site = "Jornada"
+
 #--! PROVIDE INFO !--#
-site_grain_names = c("web")
+site_grain_names = c("site", "habitat", "web")
 
 # We will now create the site field with these codes concatenated if there
 # are multiple grain fields. Otherwise, site will just be the single grain field.
@@ -279,20 +263,22 @@ if (num_grains > 1) {
   } 
 }
 
-# What is the spatial grain of the finest sampling scale? For example, this might be
-# a 0.25 m2 quadrat, or a 5 m transect, or a 50 ml water sample.
+# What is the spatial grain of the finest sampling scale? 
+
+# Each trapping web includes 12 equally spaced transect lines radiating from 
+# the center, with a radius of 100 m.
 
 dataFormattingTable[,'Raw_spatial_grain'] = 
   dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain',  
                                  
 #--! PROVIDE INFO !--#
-                                 0.5) 
+                                 31416) 
 
 dataFormattingTable[,'Raw_spatial_grain_unit'] = 
   dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain_unit',  
                                  
 #--! PROVIDE INFO !--#
-                                 'km2') 
+                                 'm2') 
 
 
 # BEFORE YOU CONTINUE. We need to make sure that there are at least minNTime for 
@@ -365,7 +351,7 @@ dataFormattingTable[,'spatial_scale_variable'] =
   dataFormattingTableFieldUpdate(datasetID, 'spatial_scale_variable',
 
 #--! PROVIDE INFO !--#
-                                 'N')
+                                 'Y')
 
 # Notes_siteFormat. Use this field to THOROUGHLY describe any changes made to the 
 # site field during formatting.
@@ -374,7 +360,7 @@ dataFormattingTable[,'Notes_siteFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_siteFormat', 
 
 #--! PROVIDE INFO !--#
-  'The site field is a the rodent trapping web identifier.')
+  'The site field is a the rodent trapping web identifier, nested within one of two habitats.')
 
 
 #-------------------------------------------------------------------------------*
@@ -391,7 +377,7 @@ summary(dataset3)
 # If there is no countfield, set this equal to "".
 
 #--! PROVIDE INFO !--#
-countfield = "count"
+countfield = ""
 
 # Renaming it
 if (countfield == "") {
@@ -458,7 +444,7 @@ dataFormattingTable[,'Notes_countFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_countFormat', 
                                  
 #--! PROVIDE INFO !--#                                 
-              'Count data provided')
+              'Each record reflects the capture of 1 individual')
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SPECIES DATA ----
@@ -472,7 +458,7 @@ dataFormattingTable[,'Notes_countFormat'] =
 # It will get converted to 'species'
 
 #--! PROVIDE INFO !--#
-speciesField = 'species'
+speciesField = 'spp'
 
 names(dataset5)[names(dataset5) == speciesField] = 'species'
 
@@ -501,7 +487,7 @@ data.frame(table(dataset5$species))
 # Because of this, you should really stop here and post an issue on GitHub. 
 
 #--! PROVIDE INFO !--#
-bad_sp = c('Peromyscus.spp')
+bad_sp = c('.', 'DIPO1', 'PERO1')
 
 dataset6 = dataset5[!dataset5$species %in% bad_sp,]
 
@@ -553,7 +539,7 @@ dataFormattingTable[,'Notes_spFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_spFormat',  
 
 #--! PROVIDE INFO !--#                                 
-  'there was one genus only entry so that was removed (3 genus/spp entries of same genus).')
+  'One code for missing species, and two unidentified taxa were removed')
 
 #-------------------------------------------------------------------------------*
 # ---- MAKE DATA FRAME OF COUNT BY SITES, SPECIES, AND YEAR ----
@@ -690,9 +676,10 @@ sGrain = 'site'
 
 # This is a reasonable choice of spatial grain because ...
 #--! PROVIDE INFO !--#
-# quadrats are only 0.25 m2 and record presence absence, whereas sites encompass
-# 28-52 quadrats per depth interval providing a greater sample and an effective
-# abundance measure.
+# a single web is clearly too small, and each habitat only has 3 trapping webs.
+# Jornada as a whole has 6 trapping webs. Also, the species list at the Grassland
+# habitat site is perfectly nested within the species list for the Creosote site,
+# so it's not like the two habitats have different fauna.
 
 # The function "richnessYearSubsetFun" below will subset the data to sites with an 
 # adequate number of years of sampling and species richness. If there are no 

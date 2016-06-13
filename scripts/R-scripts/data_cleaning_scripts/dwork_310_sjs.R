@@ -3,7 +3,8 @@
 ################################################################################*
 #
 # Dataset name: Population estimates of Appalachian salamanders
-# Dataset source (link): http://tropical.lternet.edu/knb/metacat/knb-ltercwt.1044.4/lter
+# Dataset source (link): http://datadryad.org/handle/10255/dryad.25564
+# Metadata:  http://datadryad.org/handle/10255/dryad.25564?show=full
 # Formatted by: Sara Snell
 #
 # Start by opening the data formatting table (data_formatting_table.csv). 
@@ -610,7 +611,7 @@ dataFormattingTable[,'format_flag'] =
   dataFormattingTableFieldUpdate(datasetID, 'format_flag', 
      
 #--! PROVIDE INFO !--#                                 
-                                 1)
+                                 5)
 
 # Flag codes are as follows:
 # 0 = not currently worked on
@@ -713,64 +714,14 @@ richnessYearsTest = richnessYearSubsetFun(dataset7, spatialGrain = sGrain,
 head(richnessYearsTest)
 dim(richnessYearsTest) ; dim(dataset7)
 
-#Number of unique sites meeting criteria
-goodSites = unique(richnessYearsTest$analysisSite)
-length(goodSites)
 
-# Now subset dataset7 to just those goodSites as defined. This is tricky though
-# because assuming Sgrain is not the finest resolution, we will need to use
-# grep to match site names that begin with the string in goodSites.
-# The reason to do this is that sites which don't meet the criteria (e.g. not
-# enough years of data) may also have low sampling intensity that constrains
-# the subsampling level of the well sampled sites.
+# Add any final notes about the dataset that might be of interest:
+dataFormattingTable[,'General_notes'] = 
+  dataFormattingTableFieldUpdate(datasetID, 'General_notes', 
+                                 
+                                 #--! PROVIDE INFO !--#                                 
+  'Only data on 6 species')
 
-uniqueSites = unique(dataset7$site)
-fullGoodSites = c()
-for (s in goodSites) {
-  tmp = as.character(uniqueSites[grepl(paste(s, "_", sep = ""), paste(uniqueSites, "_", sep = ""))])
-  fullGoodSites = c(fullGoodSites, tmp)
-}
-
-dataset8 = subset(dataset7, site %in% fullGoodSites)
-
-# Once we've settled on spatial and temporal grains that pass our test above,
-# we then need to 1) figure out what levels of spatial and temporal subsampling
-# we should use to characterize that analysis grain, and 2) subset the
-# formatted dataset down to that standardized level of subsampling.
-
-# For example, if some sites had 20 spatial subsamples (e.g. quads) per year while
-# others had only 16, or 10, we would identify the level of subsampling that 
-# at least 'topFractionSites' of sites met (with a default of 50%). We would 
-# discard "poorly subsampled" sites (based on this criterion) from further analysis. 
-# For the "well-sampled" sites, the function below randomly samples the 
-# appropriate number of subsamples for each year or site,
-# and bases the characterization of the community in that site-year based on
-# the aggregate of those standardized subsamples.
-
-subsettedData = subsetDataFun(dataset8, 
-                              datasetID, 
-                              spatialGrain = sGrain, 
-                              temporalGrain = tGrain,
-                              minNTime = minNTime, minSpRich = minSpRich,
-                              proportionalThreshold = topFractionSites,
-                              dataDescription)
-# Take a look at the propOcc:
-
-head(propOccFun(subsettedData))
-
-hist(propOccFun(subsettedData)$propOcc)
-
-# Take a look at the site summary frame:
-
-siteSummaryFun(subsettedData)
-
-# If everything looks good, write the files:
-
-writePropOccSiteSummary(subsettedData)
-
-# Update Data Formatting Table with summary stats of the formatted,
-# properly subsetted dataset
-dataFormattingTable = dataFormattingTableUpdateFinished(datasetID, subsettedData)
 
 # And write the final data formatting table:
 

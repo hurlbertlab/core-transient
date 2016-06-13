@@ -4,6 +4,7 @@
 #
 # Dataset name: Monitoring the Abundance of Butterflies 1976-1985
 # Dataset source (link): http://jncc.defra.gov.uk/page-2614
+# Metadata in Pollard, Hall and Bibby 1986. Monitoring the Abundance of Butterflies 1976-1985.
 # Formatted by: Sara Snell
 #
 # Start by opening the data formatting table (data_formatting_table.csv). 
@@ -74,7 +75,7 @@ dataFormattingTable[,'Raw_datafile_name'] =
   dataFormattingTableFieldUpdate(datasetID, 'Raw_datafile_name',  
                                  
 #--! PROVIDE INFO !--#
-  'Pubs86_Monitoring_ butterflies_PRINT.pdf') 
+  'acquired from GPDD via https://github.com/gmyenni/RareStabilizationData') 
 
 
 
@@ -279,14 +280,18 @@ if (num_grains > 1) {
   } 
 }
 
-# What is the spatial grain of the finest sampling scale? For example, this might be
-# a 0.25 m2 quadrat, or a 5 m transect, or a 50 ml water sample.
+# What is the spatial grain of the finest sampling scale? 
+
+# Surveys are Pollard walks along transects with a width of 5 m, however can't 
+# find any info on the length of these transects! In a more recent document
+# on butterfly monitoring, when discussing Pollard walks they argue for limiting
+# transects to 1 km or less ("Guidelines for Standardised Global Butterfly Monitoring").
 
 dataFormattingTable[,'Raw_spatial_grain'] = 
   dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain',  
                                  
 #--! PROVIDE INFO !--#
-                                 25) # 5 m search radius 
+                                 5000) 
 
 dataFormattingTable[,'Raw_spatial_grain_unit'] = 
   dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain_unit',  
@@ -770,6 +775,13 @@ writePropOccSiteSummary(subsettedData)
 # Update Data Formatting Table with summary stats of the formatted,
 # properly subsetted dataset
 dataFormattingTable = dataFormattingTableUpdateFinished(datasetID, subsettedData)
+
+# Add any final notes about the dataset that might be of interest:
+dataFormattingTable[,'General_notes'] = 
+  dataFormattingTableFieldUpdate(datasetID, 'General_notes', 
+                                 
+                                 #--! PROVIDE INFO !--#                                 
+  'Spatial scale is an estimate since transect lengths are unspecified. Also, since data are coming from GPDD it may be unlikely to include transient species.')
 
 # And write the final data formatting table:
 

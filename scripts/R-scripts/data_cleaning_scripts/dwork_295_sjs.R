@@ -4,7 +4,7 @@
 #
 # Dataset name: North Temperate Lakes LTER: Fish Abundance 1981 - current
 # Dataset source (link): https://portal.lternet.edu/nis/mapbrowse?packageid=knb-lter-ntl.7.10
-# Formatted by: Sara Snell
+# Formatted by: Sara Snell and Allen Hurlbert
 
 
 #FYKNET collection method (gearid field) ONLY! Lots of gear collection methods at different 
@@ -256,6 +256,15 @@ dataFormattingTable[,'subannualTgrain'] =
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SITE DATA ----
 #===============================================================================*
+
+# THIS DATASET ONLY: SUBSET TO SPECIFIC SAMPLING METHOD:
+dataset2 <- dataset2[dataset2$gearid == "FYKNET", ]
+
+# Evaluate effort variation using this method, and subset to proper effort if necessary
+table(dataset2$effort)
+
+dataset2 = dataset2[dataset2$effort == 6, ]
+
 # From the previous head commmand, we can see that sites are broken up into 
 # (potentially) 2 fields. Find the metadata link in the data formatting table use 
 # that link to determine how sites are characterized.
@@ -290,27 +299,21 @@ if (num_grains > 1) {
   } 
 }
 
+
 # What is the spatial grain of the finest sampling scale? For example, this might be
 # a 0.25 m2 quadrat, or a 5 m transect, or a 50 ml water sample.
-######ADDED to det most diverse sampling method for a consistent spatial grain
-#levels(dataset2$gearid)
-#SEINE <- dataset2[ which(dataset2$gearid == "BSEINE"), ]   #2719
-FYKNET <- dataset2[ which(dataset2$gearid == "FYKNET"), ]  #2056
-length(unique(FYKNET$spname))
-#ELFISH <- dataset2[ which(dataset2$gearid == "ELFISH"), ]  #2503
 
-dataset2 <- dataset2[ which(dataset2$gearid == "FYKNET"), ]
+# "For the Northern Higland lakes, each fyke net is approximately 12 m long and consists of two rectangular steel frames 90 cm wide by 75 cm high and 4 steel hoops, all covered by 7 mm delta stretch mesh nylon netting. An 8 m long by 1.25 m deep leader net made of 7 mm delta stretch mesh nylon netting is attached to a center bar of the first rectangular frame (net mouth). The second rectangular frame has two 10 cm wide by 70 cm high openings, one on each side of the frame s center bar. The four hoops follow the second frame. Throats 10 cm in diameter are located between the second and third hoops. The net ends in a bag with a 20.4 cm opening at the end, which is tied shut while the net is fishing."
 
-#####ADDED IN only using same sampling effort fyke net, effort = 6
-#data after 1997 only
-dataset2 <- dataset2[ which(dataset2$effort == '6'), ] 
+# But nets are passive samplers of larger area. "Three fyke net sites are set per day (for two days), each with a single net in the middle of a 100m site, for a total of 6 fyke net sites per lake."
 
+# If a fyke net is taken to sample a circular area of diameter 100 (7854 m2), then 6 nets would sample:
 
 dataFormattingTable[,'Raw_spatial_grain'] = 
   dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain',  
                                  
 #--! PROVIDE INFO !--#
-                                 80680) 
+                                 47124) 
 
 dataFormattingTable[,'Raw_spatial_grain_unit'] = 
   dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain_unit',  
@@ -525,7 +528,7 @@ data.frame(table(dataset5$species))
 # Because of this, you should really stop here and post an issue on GitHub. 
 
 #--! PROVIDE INFO !--#
-bad_sp = c('')
+bad_sp = c('UNIDENTIFIED', 'UNIDCHUB', 'UNIDDARTER', 'UNIDMINNOW', 'UNIDREDHORSE', 'UNIDSHINER')
 
 dataset6 = dataset5[!dataset5$species %in% bad_sp,]
 
@@ -539,10 +542,10 @@ table(dataset6$species)
 # correct spellings in good_name, and then replace them using the for loop below:
 
 #--! PROVIDE INFO !--#
-typo_name = c()           
+typo_name = c("")           
 
 #--! PROVIDE INFO !--#
-good_name = c()
+good_name = c("")
 
 if (length(typo_name) > 0 & typo_name[1] != "") {
   for (n in 1:length(typo_name)) {
@@ -577,7 +580,7 @@ dataFormattingTable[,'Notes_spFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_spFormat',  
 
 #--! PROVIDE INFO !--#                                 
-  'No typos were found; spname renamed to species but otherwise left as-is.')
+  'No issues found.')
 
 #-------------------------------------------------------------------------------*
 # ---- MAKE DATA FRAME OF COUNT BY SITES, SPECIES, AND YEAR ----
@@ -714,9 +717,7 @@ sGrain = 'lakeid'
 
 # This is a reasonable choice of spatial grain because ...
 #--! PROVIDE INFO !--#
-# quadrats are only 0.25 m2 and record presence absence, whereas sites encompass
-# 28-52 quadrats per depth interval providing a greater sample and an effective
-# abundance measure.
+# it's the only grain available.
 
 # The function "richnessYearSubsetFun" below will subset the data to sites with an 
 # adequate number of years of sampling and species richness. If there are no 
@@ -794,6 +795,13 @@ writePropOccSiteSummary(subsettedData)
 # Update Data Formatting Table with summary stats of the formatted,
 # properly subsetted dataset
 dataFormattingTable = dataFormattingTableUpdateFinished(datasetID, subsettedData)
+
+# Add any final notes about the dataset that might be of interest:
+dataFormattingTable[,'General_notes'] = 
+  dataFormattingTableFieldUpdate(datasetID, 'General_notes', 
+                                 
+                                 #--! PROVIDE INFO !--#                                 
+                                 'This is a subset of the North Temperate Lakes LTER Fish Abundance dataset based on Fyke Nets only')
 
 # And write the final data formatting table:
 

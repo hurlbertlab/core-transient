@@ -1,30 +1,9 @@
 ################################################################################*
-#  DATA FORMATTING TEMPLATE
-################################################################################*
 #
 # Dataset name: Neotropical Migratory Bird Communities in a Developing Pine Plantation
 # Dataset source (link): http://www.seafwa.org/resource/dynamic/private/PDF/DICKSON-439-446.pdf
 # Formatted by: Sara Snell
 #
-# Start by opening the data formatting table (data_formatting_table.csv). 
-# Datasets to be worked on will have a 'format_flag' of 0.
-
-# Flag codes are as follows:
-  # 0 = not currently worked on
-  # 1 = formatting complete
-  # 2 = formatting in process
-  # 3 = formatting halted, issue
-  # 4 = data unavailable
-  # 5 = data insufficient for generating occupancy data
-
-# NOTE: All changes to the data formatting table will be done in R! 
-# Do not make changes directly to this table, this will create conflicting versions.
-
-# YOU WILL NEED TO ENTER DATASET-SPECIFIC INFO IN EVERY LINE OF CODE PRECEDED
-# BY "#--! PROVIDE INFO !--#". 
-
-# YOU SHOULD RUN, BUT NOT OTHERWISE MODIFY, ALL OTHER LINES OF CODE.
-
 #-------------------------------------------------------------------------------*
 # ---- SET-UP ----
 #===============================================================================*
@@ -74,7 +53,7 @@ dataFormattingTable[,'Raw_datafile_name'] =
   dataFormattingTableFieldUpdate(datasetID, 'Raw_datafile_name',  
                                  
 #--! PROVIDE INFO !--#
-  'DICKSON-439-446.pdf') 
+  'extracted from Dickson et al 1993') 
 
 
 
@@ -287,7 +266,7 @@ dataFormattingTable[,'Raw_spatial_grain'] =
   dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain',  
                                  
 #--! PROVIDE INFO !--#
-                                20000) #4 250x80 m transects
+                                40000) #4 250x80 m transects
 
 dataFormattingTable[,'Raw_spatial_grain_unit'] = 
   dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain_unit',  
@@ -375,7 +354,7 @@ dataFormattingTable[,'Notes_siteFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_siteFormat', 
 
 #--! PROVIDE INFO !--#
-  'The site field is number because the smaples were lumped into 1 total value per year and werent separated out by transect.')
+  'The dataset includes only a single site (separate transects not split out)')
 
 
 #-------------------------------------------------------------------------------*
@@ -610,7 +589,7 @@ dataFormattingTable[,'format_flag'] =
   dataFormattingTableFieldUpdate(datasetID, 'format_flag', 
      
 #--! PROVIDE INFO !--#                                 
-                                 1)
+                                 5)
 
 # Flag codes are as follows:
 # 0 = not currently worked on
@@ -618,7 +597,12 @@ dataFormattingTable[,'format_flag'] =
 # 2 = formatting in process
 # 3 = formatting halted, issue
 # 4 = data unavailable
-# 5 = data insufficient for generating occupancy data
+# 5 = data insufficient or inappropriate for generating occupancy data
+
+# THIS DATASET EXAMINES HOW BIRD COMMUNITY CHANGES OVER TIME WITH SUCCESSION
+# OF A PINE PLANTATION FROM VEGETATION CLEARING THROUGH REGROWTH. AS SUCH,
+# MOST SPECIES HAVE INTERMEDIATE TEMPORAL OCCUPANCY BECAUSE COMPOSITION CHANGES.
+# IN APPROPRIATE FOR BASELINE EXAMINATION OF CORE/TRANSIENCE.
 
 
 # !GIT-ADD-COMMIT-PUSH THE DATA FORMATTING TABLE!
@@ -771,6 +755,12 @@ writePropOccSiteSummary(subsettedData)
 # Update Data Formatting Table with summary stats of the formatted,
 # properly subsetted dataset
 dataFormattingTable = dataFormattingTableUpdateFinished(datasetID, subsettedData)
+
+dataFormattingTable[,'General_notes'] = 
+  dataFormattingTableFieldUpdate(datasetID, 'General_notes', 
+                                 
+                                 #--! PROVIDE INFO !--#                                 
+  'This is an explicitly successional dataset, and hence is ')
 
 # And write the final data formatting table:
 

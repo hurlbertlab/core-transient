@@ -1,30 +1,9 @@
 ################################################################################*
-#  DATA FORMATTING TEMPLATE
-################################################################################*
 #
 # Dataset name: Effects of rangeland management on community dynamics of herpetofauna to the tallgrass prairie
-# Dataset source (link): http://www.bioone.org/doi/pdf/10.1655/0018-0831%282006%2962%5B378%3AEORMOC%5D2.0.CO%3B2
+# Dataset source (link): http://www.bioone.org/doi/full/10.1655/0018-0831%282006%2962[378%3AEORMOC]2.0.CO%3B2
 # Formatted by: Sara Snell
 #
-# Start by opening the data formatting table (data_formatting_table.csv). 
-# Datasets to be worked on will have a 'format_flag' of 0.
-
-# Flag codes are as follows:
-  # 0 = not currently worked on
-  # 1 = formatting complete
-  # 2 = formatting in process
-  # 3 = formatting halted, issue
-  # 4 = data unavailable
-  # 5 = data insufficient for generating occupancy data
-
-# NOTE: All changes to the data formatting table will be done in R! 
-# Do not make changes directly to this table, this will create conflicting versions.
-
-# YOU WILL NEED TO ENTER DATASET-SPECIFIC INFO IN EVERY LINE OF CODE PRECEDED
-# BY "#--! PROVIDE INFO !--#". 
-
-# YOU SHOULD RUN, BUT NOT OTHERWISE MODIFY, ALL OTHER LINES OF CODE.
-
 #-------------------------------------------------------------------------------*
 # ---- SET-UP ----
 #===============================================================================*
@@ -74,7 +53,7 @@ dataFormattingTable[,'Raw_datafile_name'] =
   dataFormattingTableFieldUpdate(datasetID, 'Raw_datafile_name',  
                                  
 #--! PROVIDE INFO !--#
-  '0018-0831%282006%2962%5B378%3Aeormoc%5D2%2E0%2Eco%3B2 (1).pdf') 
+  'extracted from Wilgers et al. 2006') 
 
 
 
@@ -375,7 +354,7 @@ dataFormattingTable[,'Notes_siteFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_siteFormat', 
 
 #--! PROVIDE INFO !--#
-  'The site field is the number 1 beacuse the same transect was walked for all sampled over the study period.')
+  'This dataset is for a single site.')
 
 
 #-------------------------------------------------------------------------------*

@@ -7,7 +7,7 @@
 # Formatted by: Sara Snell
 
 #NOTE: dataset 298 is one of 4 datasets from Bird populations in East central
-#IL: Fluctuations, variations, and development over a helf-century. Data from
+#IL: Fluctuations, variations, and development over a half-century. Data from
 #Appendix 1 of document
 
 # Start by opening the data formatting table (data_formatting_table.csv). 
@@ -78,7 +78,7 @@ dataFormattingTable[,'Raw_datafile_name'] =
   dataFormattingTableFieldUpdate(datasetID, 'Raw_datafile_name',  
                                  
 #--! PROVIDE INFO !--#
-  'birdpopulationsi52kend.pdf ') 
+  'extracted from Kendeigh 1982 Appendix 1') 
 
 
 
@@ -379,7 +379,7 @@ dataFormattingTable[,'Notes_siteFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_siteFormat', 
 
 #--! PROVIDE INFO !--#
-  'The site field is the number 1 because all surveys were conducted in William Trelease Woods in a 24 ha plot. This dataset is different than app 1 bc it is the average number of wintering bird populations.')
+  'The dataset includes only a single site, William Trelease Woods in a 24 ha plot.')
 
 
 #-------------------------------------------------------------------------------*
@@ -773,6 +773,14 @@ writePropOccSiteSummary(subsettedData)
 # Update Data Formatting Table with summary stats of the formatted,
 # properly subsetted dataset
 dataFormattingTable = dataFormattingTableUpdateFinished(datasetID, subsettedData)
+
+dataFormattingTable[,'General_notes'] = 
+  dataFormattingTableFieldUpdate(datasetID, 'General_notes', 
+                                 
+                                 #--! PROVIDE INFO !--#                                 
+  'This dataset is different than app 1 bc it is the average number of wintering bird populations.')
+
+
 
 # And write the final data formatting table:
 

@@ -1,30 +1,9 @@
 ################################################################################*
-#  DATA FORMATTING TEMPLATE
-################################################################################*
 #
 # Dataset name: Census totals for large herbivores in the Kruger National Park summarized by year
-# Dataset source (link): http://datak np.sanparks. org/sanparks /metacat/jud ithk.814.4/sa nparks
-# Formatted by: Sara Snell
+# Dataset source (link): http://dataknp.sanparks.org/sanparks/metacat/judithk.814.4/sanparks
+# Formatted by: Sara Snell and Allen Hurlbert
 #
-# Start by opening the data formatting table (data_formatting_table.csv). 
-# Datasets to be worked on will have a 'format_flag' of 0.
-
-# Flag codes are as follows:
-  # 0 = not currently worked on
-  # 1 = formatting complete
-  # 2 = formatting in process
-  # 3 = formatting halted, issue
-  # 4 = data unavailable
-  # 5 = data insufficient for generating occupancy data
-
-# NOTE: All changes to the data formatting table will be done in R! 
-# Do not make changes directly to this table, this will create conflicting versions.
-
-# YOU WILL NEED TO ENTER DATASET-SPECIFIC INFO IN EVERY LINE OF CODE PRECEDED
-# BY "#--! PROVIDE INFO !--#". 
-
-# YOU SHOULD RUN, BUT NOT OTHERWISE MODIFY, ALL OTHER LINES OF CODE.
-
 #-------------------------------------------------------------------------------*
 # ---- SET-UP ----
 #===============================================================================*
@@ -37,7 +16,7 @@
 # Load libraries:
 
 library(stringr)
-library(plyr)
+#library(plyr)
 library(ggplot2)
 library(grid)
 library(gridExtra)
@@ -74,7 +53,7 @@ dataFormattingTable[,'Raw_datafile_name'] =
   dataFormattingTableFieldUpdate(datasetID, 'Raw_datafile_name',  
                                  
 #--! PROVIDE INFO !--#
-  'judithk.815.1-815.1') 
+  'judithk.815.1-815.1.txt') 
 
 
 
@@ -127,7 +106,7 @@ head(dataset)
 names(dataset)
 
 #--! PROVIDE INFO !--#
-unusedFieldNames = c('total')
+unusedFieldNames = c('')
 
 dataset1 = dataset[, !names(dataset) %in% unusedFieldNames]
 
@@ -265,8 +244,10 @@ dataFormattingTable[,'subannualTgrain'] =
 # in hierarchical order from largest to smallest grain. Based on the dataset,
 # fill in the fields that specify nested spatial grains below.
 
+dataset2$site = "KrugerNP"
+
 #--! PROVIDE INFO !--#
-site_grain_names = c("area")
+site_grain_names = c("site", "area")
 
 # We will now create the site field with these codes concatenated if there
 # are multiple grain fields. Otherwise, site will just be the single grain field.
@@ -286,13 +267,13 @@ dataFormattingTable[,'Raw_spatial_grain'] =
   dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain',  
                                  
 #--! PROVIDE INFO !--#
-                                 1880) #park divided into 4 quadrants, divided total park area by 4
+                                 4870) #park divided into 4 quadrants, divided total park area by 4
 
 dataFormattingTable[,'Raw_spatial_grain_unit'] = 
   dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain_unit',  
                                  
 #--! PROVIDE INFO !--#
-                                 'mi2') 
+                                 'km2') 
 
 
 # BEFORE YOU CONTINUE. We need to make sure that there are at least minNTime for 
@@ -365,7 +346,7 @@ dataFormattingTable[,'spatial_scale_variable'] =
   dataFormattingTableFieldUpdate(datasetID, 'spatial_scale_variable',
 
 #--! PROVIDE INFO !--#
-                                 'N')
+                                 'Y')
 
 # Notes_siteFormat. Use this field to THOROUGHLY describe any changes made to the 
 # site field during formatting.
@@ -374,7 +355,7 @@ dataFormattingTable[,'Notes_siteFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_siteFormat', 
 
 #--! PROVIDE INFO !--#
-  'The site field describes which quarter of the park the animal was found in.')
+  'The site is Kruger NP, within which there are 4 areas')
 
 
 #-------------------------------------------------------------------------------*
@@ -472,7 +453,7 @@ dataFormattingTable[,'Notes_countFormat'] =
 # It will get converted to 'species'
 
 #--! PROVIDE INFO !--#
-speciesField = 'species'
+speciesField = 'Species'
 
 names(dataset5)[names(dataset5) == speciesField] = 'species'
 
@@ -553,7 +534,7 @@ dataFormattingTable[,'Notes_spFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_spFormat',  
 
 #--! PROVIDE INFO !--#                                 
-  'common names used so no bad spp or typos found.')
+  'No issues')
 
 #-------------------------------------------------------------------------------*
 # ---- MAKE DATA FRAME OF COUNT BY SITES, SPECIES, AND YEAR ----
@@ -686,7 +667,7 @@ tGrain = 'year'
 site_grain_names
 
 #--! PROVIDE INFO !--#
-sGrain = 'site'
+sGrain = 'site_area'
 
 # This is a reasonable choice of spatial grain because ...
 #--! PROVIDE INFO !--#
@@ -768,6 +749,13 @@ writePropOccSiteSummary(subsettedData)
 # Update Data Formatting Table with summary stats of the formatted,
 # properly subsetted dataset
 dataFormattingTable = dataFormattingTableUpdateFinished(datasetID, subsettedData)
+
+# Add any final notes about the dataset that might be of interest:
+dataFormattingTable[,'General_notes'] = 
+  dataFormattingTableFieldUpdate(datasetID, 'General_notes', 
+                                 
+                                 #--! PROVIDE INFO !--#                                 
+  'Unsure of whether the sampling protocol records transient species.')
 
 # And write the final data formatting table:
 

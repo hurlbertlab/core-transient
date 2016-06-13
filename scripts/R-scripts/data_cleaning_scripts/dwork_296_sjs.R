@@ -1,35 +1,12 @@
 ################################################################################*
-#  DATA FORMATTING TEMPLATE
-################################################################################*
 #
 # Dataset name: North Temperate Lakes LTER: Fish Abundance 1981 - current
 # Dataset source (link): https://portal.lternet.edu/nis/mapbrowse?packageid=knb-lter-ntl.7.10
-# Formatted by: Sara Snell
+# Formatted by: Sara Snell and Allen Hurlbert
 
-
-#ELFISH collection method (gearid field) ONLY! Lots of gear collection methods at different 
-#spatial scales. Took most common methods and ran separate scripts but used same dataset.
-#Applies to d294, 295, 296.
-
-
-# Start by opening the data formatting table (data_formatting_table.csv). 
-# Datasets to be worked on will have a 'format_flag' of 0.
-
-# Flag codes are as follows:
-  # 0 = not currently worked on
-  # 1 = formatting complete
-  # 2 = formatting in process
-  # 3 = formatting halted, issue
-  # 4 = data unavailable
-  # 5 = data insufficient for generating occupancy data
-
-# NOTE: All changes to the data formatting table will be done in R! 
-# Do not make changes directly to this table, this will create conflicting versions.
-
-# YOU WILL NEED TO ENTER DATASET-SPECIFIC INFO IN EVERY LINE OF CODE PRECEDED
-# BY "#--! PROVIDE INFO !--#". 
-
-# YOU SHOULD RUN, BUT NOT OTHERWISE MODIFY, ALL OTHER LINES OF CODE.
+# ELFISH collection method (gearid field) ONLY! Lots of gear collection methods at different 
+# spatial scales. Took most common methods and ran separate scripts but used same dataset.
+# Applies to d294, 295, 296.
 
 #-------------------------------------------------------------------------------*
 # ---- SET-UP ----
@@ -135,7 +112,7 @@ head(dataset)
 names(dataset)
 
 #--! PROVIDE INFO !--#
-unusedFieldNames = c("record_id", "effort")
+unusedFieldNames = c("record_id")
 
 dataset1 = dataset[, !names(dataset) %in% unusedFieldNames]
 
@@ -257,6 +234,13 @@ dataFormattingTable[,'subannualTgrain'] =
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SITE DATA ----
 #===============================================================================*
+
+# THIS DATASET ONLY: SUBSET TO SPECIFIC SAMPLING METHOD:
+dataset2 <- dataset2[dataset2$gearid == "ELFISH", ]
+
+# Evaluate effort variation using this method, and subset to proper effort if necessary
+table(dataset2$effort)
+
 # From the previous head commmand, we can see that sites are broken up into 
 # (potentially) 2 fields. Find the metadata link in the data formatting table use 
 # that link to determine how sites are characterized.
@@ -293,23 +277,16 @@ if (num_grains > 1) {
 
 # What is the spatial grain of the finest sampling scale? For example, this might be
 # a 0.25 m2 quadrat, or a 5 m transect, or a 50 ml water sample.
-######ADDED to det most diverse sampling method for a consistent spatial grain
-#levels(dataset2$gearid)
 
-#BSEINE <- dataset2[ which(dataset2$gearid == "BSEINE"), ]   #2719
-#FYKNET <- dataset2[ which(dataset2$gearid == "FYKNET"), ]  #2056
-
-ELFISH <- dataset2[ which(dataset2$gearid == "ELFISH"), ]  #2503
-length(unique(ELFISH$spname))
-
-dataset2 <- dataset2[ which(dataset2$gearid == "ELFISH"), ]
-
+# Each lake has 3 30-minute transects "with the boat moving...at a slow steady speed".
+# At 1 m/s, a transect would be 180 m long. Assuming fish are impacted within 2.5 m
+# of the electrofishing boom, then 3 x 180 x 2.5 = 
 
 dataFormattingTable[,'Raw_spatial_grain'] = 
   dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain',  
                                  
 #--! PROVIDE INFO !--#
-                                 60) 
+                                 1350) 
 
 dataFormattingTable[,'Raw_spatial_grain_unit'] = 
   dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain_unit',  
@@ -397,7 +374,7 @@ dataFormattingTable[,'Notes_siteFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_siteFormat', 
 
 #--! PROVIDE INFO !--#
-  'The site field is lakeid; also only used fyke net data to keep spatial scale consistent.')
+  'The site field is lakeid')
 
 
 #-------------------------------------------------------------------------------*
@@ -524,7 +501,7 @@ data.frame(table(dataset5$species))
 # Because of this, you should really stop here and post an issue on GitHub. 
 
 #--! PROVIDE INFO !--#
-bad_sp = c('')
+bad_sp = c('UNIDENTIFIED', 'UNIDCHUB', 'UNIDDARTER', 'UNIDMINNOW', 'UNIDREDHORSE', 'UNIDSHINER')
 
 dataset6 = dataset5[!dataset5$species %in% bad_sp,]
 
@@ -538,10 +515,10 @@ table(dataset6$species)
 # correct spellings in good_name, and then replace them using the for loop below:
 
 #--! PROVIDE INFO !--#
-typo_name = c()           
+typo_name = c("")           
 
 #--! PROVIDE INFO !--#
-good_name = c()
+good_name = c("")
 
 if (length(typo_name) > 0 & typo_name[1] != "") {
   for (n in 1:length(typo_name)) {
@@ -576,7 +553,7 @@ dataFormattingTable[,'Notes_spFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_spFormat',  
 
 #--! PROVIDE INFO !--#                                 
-  'No typos were found; spname renamed to species but otherwise left as-is.')
+  'No issues found')
 
 #-------------------------------------------------------------------------------*
 # ---- MAKE DATA FRAME OF COUNT BY SITES, SPECIES, AND YEAR ----
@@ -793,6 +770,13 @@ writePropOccSiteSummary(subsettedData)
 # Update Data Formatting Table with summary stats of the formatted,
 # properly subsetted dataset
 dataFormattingTable = dataFormattingTableUpdateFinished(datasetID, subsettedData)
+
+# Add any final notes about the dataset that might be of interest:
+dataFormattingTable[,'General_notes'] = 
+  dataFormattingTableFieldUpdate(datasetID, 'General_notes', 
+                                 
+                                 #--! PROVIDE INFO !--#                                 
+                                 'This is a subset of the North Temperate Lakes LTER Fish Abundance dataset based on Electrofishing only')
 
 # And write the final data formatting table:
 

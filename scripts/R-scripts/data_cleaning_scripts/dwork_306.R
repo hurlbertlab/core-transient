@@ -1,31 +1,10 @@
 ################################################################################*
-#  DATA FORMATTING TEMPLATE
-################################################################################*
 #
-# Dataset name: Long-term trends in abundance of Lepidoptera larvae at Hubbard Brook 
-# Experimental Forest and three additional northern hardwood forest sites
-# Dataset source (link): http://www.hubbardbrook.org/data/dataset.php?id=82
-# Formatted by: Sara Snell
+# Dataset name: Temporal variation in richness and composition of recruits in a diverse
+#               cnidarian assemblage of subtropical Brazil
+# Dataset source (link): http://www.sciencedirect.com/science/article/pii/S0022098114001877
+# Formatted by: Allen Hurlbert
 #
-# Start by opening the data formatting table (data_formatting_table.csv). 
-# Datasets to be worked on will have a 'format_flag' of 0.
-
-# Flag codes are as follows:
-  # 0 = not currently worked on
-  # 1 = formatting complete
-  # 2 = formatting in process
-  # 3 = formatting halted, issue
-  # 4 = data unavailable
-  # 5 = data insufficient for generating occupancy data
-
-# NOTE: All changes to the data formatting table will be done in R! 
-# Do not make changes directly to this table, this will create conflicting versions.
-
-# YOU WILL NEED TO ENTER DATASET-SPECIFIC INFO IN EVERY LINE OF CODE PRECEDED
-# BY "#--! PROVIDE INFO !--#". 
-
-# YOU SHOULD RUN, BUT NOT OTHERWISE MODIFY, ALL OTHER LINES OF CODE.
-
 #-------------------------------------------------------------------------------*
 # ---- SET-UP ----
 #===============================================================================*
@@ -57,7 +36,7 @@ source('scripts/R-scripts/core-transient_functions.R')
 # Get data. First specify the dataset number ('datasetID') you are working with.
 
 #--! PROVIDE INFO !--#
-datasetID = 306 
+datasetID = 306
 
 list.files('data/raw_datasets')
 
@@ -75,7 +54,7 @@ dataFormattingTable[,'Raw_datafile_name'] =
   dataFormattingTableFieldUpdate(datasetID, 'Raw_datafile_name',  
                                  
 #--! PROVIDE INFO !--#
-  'leps.txt') 
+  'mmc3.docx') 
 
 
 
@@ -128,7 +107,7 @@ head(dataset)
 names(dataset)
 
 #--! PROVIDE INFO !--#
-unusedFieldNames = c('yearday', 'tree.spec', 'tree.rep', 'lep.length', 'lepbio.mass.mg.', 'count')
+unusedFieldNames = c('year')
 
 dataset1 = dataset[, !names(dataset) %in% unusedFieldNames]
 
@@ -174,7 +153,7 @@ dateFieldName = c('date')
 # If necessary, paste together date info from multiple columns into single field
 if (length(dateFieldName) > 1) {
   newDateField = dataset1[, dateFieldName[1]]
-  for (i in dateFieldName[2:length(dateFieldName)]) { newDateField = paste(newDateField, dataset[,i], sep = "-") }
+  for (i in dateFieldName[2:length(dateFieldName)]) { newDateField = paste(newDateField, dataset1[,i], sep = "-") }
   dataset1$date = newDateField
   datefield = 'date'
 } else {
@@ -186,7 +165,7 @@ if (length(dateFieldName) > 1) {
 # be '%Y-%m-%d'. Type "?strptime" for other examples of date formatting.
 
 #--! PROVIDE INFO !--#
-dateformat = '%m/%d/%Y'
+dateformat = '%Y-%b-%d'
 
 # If date is only listed in years:
 
@@ -270,8 +249,10 @@ dataFormattingTable[,'subannualTgrain'] =
 # in hierarchical order from largest to smallest grain. Based on the dataset,
 # fill in the fields that specify nested spatial grains below.
 
+# Add a site field
+dataset2$site = "YachtClub"
+
 #--! PROVIDE INFO !--#
-dataset2$site = 1
 site_grain_names = c("site")
 
 # We will now create the site field with these codes concatenated if there
@@ -285,20 +266,36 @@ if (num_grains > 1) {
   } 
 }
 
-# What is the spatial grain of the finest sampling scale? For example, this might be
-# a 0.25 m2 quadrat, or a 5 m transect, or a 50 ml water sample.
+# What is the spatial grain of the finest sampling scale? 
+
+# Recruitment of benthic cnidarian propagules was measured on sets
+#of black experimental test panels conformed by two polyethylene
+#square plates (12 × 12 cm each, 144 cm2 area) parallel to each other
+#and held together with a PVC tube to form 'sandwich' with a 2 cm gap
+#between plates. Thus, the experimental panels provided two exposed
+#(outer) surfaces and two sheltered (inner surfaces) within the gap.
+#Inner surfaces were protected from direct solar radiation and from
+#potential large predators, and probably altered hydrodynamics as
+#compared to outer surfaces. Between February 2010 and February
+#2012, 15 experimental units (30 plates) were deployed 5-20 m apart
+#hanging down from a floating pier at ~2 m depth.
+
+# Individuals were counted on one exposed (outer) and one sheltered 
+# (inner) surface chosen at random from each experimental unit on each time period.
+
+# So 30 plates X 2 surfaces X 144 cm2 =
 
 dataFormattingTable[,'Raw_spatial_grain'] = 
   dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain',  
                                  
 #--! PROVIDE INFO !--#
-                                 10) 
+                                 8640) 
 
 dataFormattingTable[,'Raw_spatial_grain_unit'] = 
-  dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain',  
+  dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain_unit',  
                                  
 #--! PROVIDE INFO !--#
-                                 'ha') 
+                                 'cm2') 
 
 
 # BEFORE YOU CONTINUE. We need to make sure that there are at least minNTime for 
@@ -371,7 +368,7 @@ dataFormattingTable[,'spatial_scale_variable'] =
   dataFormattingTableFieldUpdate(datasetID, 'spatial_scale_variable',
 
 #--! PROVIDE INFO !--#
-                                 'Y')
+                                 'N')
 
 # Notes_siteFormat. Use this field to THOROUGHLY describe any changes made to the 
 # site field during formatting.
@@ -380,7 +377,7 @@ dataFormattingTable[,'Notes_siteFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_siteFormat', 
 
 #--! PROVIDE INFO !--#
-  'The site field is a concatenation of plot, grid letter, and grid number.')
+  'Data aggregated across sampling plates to single site')
 
 
 #-------------------------------------------------------------------------------*
@@ -397,7 +394,7 @@ summary(dataset3)
 # If there is no countfield, set this equal to "".
 
 #--! PROVIDE INFO !--#
-countfield = "number.lep"
+countfield = "count"
 
 # Renaming it
 if (countfield == "") {
@@ -452,7 +449,7 @@ head(dataset5)
 
 #!DATA FORMATTING TABLE UPDATE!
 
-# Possible values for countFormat field are density, cover, presence and count.
+# Possible values for countFormat field are density, cover, presence, biomass and count.
 
 dataFormattingTable[,'countFormat'] = 
   dataFormattingTableFieldUpdate(datasetID, 'countFormat',  
@@ -464,7 +461,7 @@ dataFormattingTable[,'Notes_countFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_countFormat', 
                                  
 #--! PROVIDE INFO !--#                                 
-              'Count data provided')
+              'Number per one outer + one inner surface on each of 30 plates')
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SPECIES DATA ----
@@ -478,7 +475,7 @@ dataFormattingTable[,'Notes_countFormat'] =
 # It will get converted to 'species'
 
 #--! PROVIDE INFO !--#
-speciesField = 'lep.species'
+speciesField = 'Species'
 
 names(dataset5)[names(dataset5) == speciesField] = 'species'
 
@@ -521,7 +518,7 @@ table(dataset6$species)
 # correct spellings in good_name, and then replace them using the for loop below:
 
 #--! PROVIDE INFO !--#
-typo_name = c('')           
+typo_name = c('')
 
 #--! PROVIDE INFO !--#
 good_name = c('')
@@ -559,8 +556,7 @@ dataFormattingTable[,'Notes_spFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_spFormat',  
 
 #--! PROVIDE INFO !--#                                 
-  'Codes for lep species provided: 2 = Geometrid, 3 = Noctuid, 4 = Notodontid, 
-  5 = Pyraloid, Tortricoid, Coliophorid, Psychid, 6 = other.')
+  'No issues found')
 
 #-------------------------------------------------------------------------------*
 # ---- MAKE DATA FRAME OF COUNT BY SITES, SPECIES, AND YEAR ----
@@ -679,7 +675,10 @@ dataDescription$subannualTgrain
 # group. Justify your spatial scale below with a comment.
 
 #--! PROVIDE INFO !--#
-tGrain = 'year'
+tGrain = 'month'
+
+# Sampling was carried out every 3 months for 8 sampling periods over 2 years, and given
+# the expected lifespan of cnidarians these sampling periods are reasonably independent.
 
 # Refresh your memory about the spatial grain names if this is NOT a lat-long-only
 # based dataset. Set sGrain = to the hierarchical scale for analysis, including
@@ -697,8 +696,7 @@ sGrain = 'site'
 
 # This is a reasonable choice of spatial grain because ...
 #--! PROVIDE INFO !--#
-# Each plot is made up of a grid with letters representing the grid and the number
-# representing an existent grid. There are 4 plots.
+# there is only a single scale in this dataset.
 
 # The function "richnessYearSubsetFun" below will subset the data to sites with an 
 # adequate number of years of sampling and species richness. If there are no 
@@ -776,6 +774,13 @@ writePropOccSiteSummary(subsettedData)
 # Update Data Formatting Table with summary stats of the formatted,
 # properly subsetted dataset
 dataFormattingTable = dataFormattingTableUpdateFinished(datasetID, subsettedData)
+
+# Add any final notes about the dataset that might be of interest:
+dataFormattingTable[,'General_notes'] = 
+  dataFormattingTableFieldUpdate(datasetID, 'General_notes', 
+                                 
+                                 #--! PROVIDE INFO !--#                                 
+                                 'Samples taken every 3 months for 8 periods')
 
 # And write the final data formatting table:
 

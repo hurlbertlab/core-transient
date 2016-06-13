@@ -292,7 +292,7 @@ zFinder = function(inData, minNTime = 10, proportionalThreshold = .5){
         spaceTimeGTEz = spaceTime[spaceTime$temporalSubsamples >= zPossible[i], ]
       # Determine sites and siteTimes in which the temporal subsampling was greater 
       # than equal to z for at least the minimum time samples:
-        yearCountBySiteGTEz = count(spaceTimeGTEz, analysisSite)
+        yearCountBySiteGTEz = dplyr::count(spaceTimeGTEz, analysisSite)
         goodSites = yearCountBySiteGTEz$analysisSite[yearCountBySiteGTEz$n >= minNTime]
         goodSiteTimes = spaceTimeGTEz$siteTime[spaceTimeGTEz$analysisSite %in% goodSites]
       # Construct matrix of z values, the number and proportion of siteYears with that level of subsampling:
