@@ -59,9 +59,9 @@ colnames(coyle_long)[1] = "stateroute"
 
 # read in expected presence data based on BBS 
 # clarify expected
-# expect_pres = read.csv('expected_presence_on_BBS_routes.csv', header = T)
+expect_pres = read.csv('expected_presence_on_BBS_routes.csv', header = T)
 # subset GT towhee within occupancy data
-# gt_ep = expect_pres[expect_pres$AOU == 5900,] 
+
 # merge expected occupancy w real occupancy SPOT TOTAL 
 # obs_exp_total = merge(gt_ep, t1, by = "stateroute")
 # drop extra columns
@@ -201,13 +201,13 @@ proj4string(usa) <- sp_proj
 plot(usa)
 
 for (sp in focal_spp) {
-  #sp = 'Parus_hudsonicus'
+  #sp = 'Sphyrapicus_ruber'
   print(sp)
   t1 = all_spp_list[grep(sp, all_spp_list)]
   t2 = t1[grep('.shp', t1)]
   t3 = strsplit(t2, ".shp")
  # filesoutput = rbind(filesoutput)
-  #readOGR("Z:/GIS/birds/All/All", t3)
+ # tp = readOGR("Z:/GIS/birds/All/All", paste(t3, sep = ""), proj4string = sp_proj)
   test.poly <- readShapePoly(paste("Z:/GIS/birds/All/All/", t3, sep = ""), proj4string = sp_proj) # reads in species-specific shapefile
   proj4string(test.poly) <- sp_proj
   colors = c("red", "yellow", "green", "blue", "purple")
@@ -215,15 +215,16 @@ for (sp in focal_spp) {
   sporigin = test.poly[test.poly@data$SEASONAL == 1|test.poly@data$SEASONAL == 2|test.poly@data$SEASONAL ==5,]
   sporigin = spTransform(sporigin, CRS("+proj=laea +lon_0=-40 +lat_0=-100 +units=km"))
   plot(sporigin, col = colors, border = NA) 
-  
+  gArea(spTransform(sporigin, CRS("+proj=laea +lon_0=-40 +lat_0=100 +datum=WGS84")))
   # projection(sporigin), is.projected(sporigin)
+  #areas<- unlist(lapply(sporigin@polygons, function(x) a<- x@area)) 
   # list this focal spp competitor
   tmp = filter(new_spec_weights, sp == new_spec_weights$focalcat)
   comp_spp = tmp$compcat
   
 
   for(co in comp_spp) {         # for loop to match competitor sp to focal spp, intersect its range with the focal range, 
-      #co = 'Pica_pica' # and calcualte the area of overlap between the two species.
+      #co = 'Melanerpes_formicivorus ' # and calcualte the area of overlap between the two species.
       #print(co)
       c1 = all_spp_list[grep(co, all_spp_list)]
       c2 = c1[grep('.shp', c1)]
@@ -238,6 +239,7 @@ for (sp in focal_spp) {
 
       #gIsValid(corigin,reason=TRUE,byid=TRUE)
       
+      
       pi = intersect(sporigin, corigin)
       plot(pi)
       spArea = gArea(sporigin) # in m
@@ -246,7 +248,9 @@ for (sp in focal_spp) {
       filesoutput = rbind(filesoutput, c(sp, co, spArea, coArea, area_overlap))
   }
 } 
-# convert to data frame, add column names DATA TABLE
+
+filesoutput = data.frame(filesoutput)
+colnames(filesoutput) = c("sp", "co", "spArea", "coArea", "area_overlap")
 
 ############# ---- Generate total species occupancies ---- #############
 # gathering occupancy data for all species
@@ -256,15 +260,16 @@ all_occ$AOU = as.numeric(substr(all_occ$AOU, 2, nchar(all_occ$AOU)))
 all_occ = all_occ[!is.na(all_occ$occupancy), ]
 
 # pull out stateroutes that have been continuously sampled 1996-2010
-routes = all_occ$stateroute
+routes = all_occ$X
 
+sub_ep = merge(expect_pres, sp_list, by = 'AOU')
 # merge expected presence with occupancy data
-new_occ = merge(expect_pres[, c('stateroute', 'AOU')], all_occ, by = c('stateroute', 'AOU'), all.x = T)
+new_occ = merge(sub_ep, all_occ, by.x = c('stateroute', 'AOU'), by.y = c('X', 'AOU'), all.x = T)
 new_occ$occupancy[is.na(new_occ$occupancy)] = 0
 # subset to routes in the well sampled list of 'routes'
 new_occ2 = new_occ[new_occ$stateroute %in% routes, ]
 
-# Pull out summary of different levels of occupancy by species (Allen wrote for loop)
+# Pull out summary of different levels of occupancy by species (Allen wrote loop)
 occ_dist_output = data.frame(AOU = NA, occupancy = NA, count = NA)
 bins = seq(0.1, 1, by = .1)
 for (s in unique(new_occ2$AOU)) {
@@ -280,13 +285,46 @@ avg_occ_dist = aggregate(occ_dist_output$count, by = list(occ_dist_output$occupa
 names(avg_occ_dist) = c('occupancy', 'frequency')
 avg_occ_dist$occupancy = as.numeric(as.character(avg_occ_dist$occupancy))
 
-#### ---- Plotting ---- ####
+#### ---- Retry of analysis with final list ---- ####
+cooutput = c()
+focal_spp = c(new_spec_weights$focalcat)
+
+# want to determine strongest competitor (most spp within focal range)
+for (sp in focal_spp) {
+  #sp = 'Sphyrapicus_ruber'
+  #print(sp)
+  tmp = filter(new_spec_weights, sp == new_spec_weights$focalcat)
+  comp_spp = unique(tmp$CompetitorAOU)
+  
+  for(co in comp_spp) {
+    cosum = bbs[bbs$Aou == co,]
+    conum = sum(cosum$SpeciesTotal)
+
+    cooutput = rbind(cooutput, c(sp, co, conum))
+  }
+}
+cooutput = data.frame(cooutput)
+colnames(cooutput) = c("Focal", "CompetitorAOU", "CoAbun")
+
+for (sp in focal_spp){ # how to select the larger number?!
+  select(cooutput > ___)
+}
 
 #### --- Take species weights table and pre format for calcualtions --- ####
 # compare focal to competitor occupancies
-new_spec_weights_focal = new_spec_weights[,c("Focal", "FocalAOU", "Competitor", "CompetitorAOU")]
-focal_occ = merge(new_spec_weights_focal, coyle_long, by.x = "FocalAOU", by.y = "Aou")
-    # this probably needs to happen in a loop
+focal_occ = merge(new_spec_weights, new_occ2[, c('AOU', 'occupancy')] , by.x = "FocalAOU", by.y = "AOU")
+
+# for loop to select sp and compare to their competitor ----- focal/stateroute
+focal_spp = c(new_spec_weights$focalcat)
+focalcompoutput = c()
+for (sp in focal_spp) {
+  #sp = "Mniotilta_varia"
+  print(sp)
+  tmp = filter(new_spec_weights, sp == new_spec_weights$focalcat)
+  focal_total = merge(tmp, bbs[, c('Aou', 'SpeciesTotal', 'stateroute')], by.x = "FocalAOU", by.y = "Aou")
+  focalcompoutput = rbind(focalcompoutput, focal_total)
+  }
+
 # focal_comp_occ = merge(expect_pres, focal_occ, by = "stateroute")
  # subset GT towhee within coyle occupancy data
 # subset spotted towhee within coyle occupancy data
@@ -342,21 +380,20 @@ points(GT_abun$Longi.x, GT_abun$Lati.x, col = 3, pch = 16, cex = GT_abun$Species
 all_env = read.csv('All Env Data.csv', header = T)
 # merge in ENV
 all_expected_pres = merge(all_env, expect_pres, by = "stateroute")
-col_keep_1 <- c("stateroute", "Longi", "Lati",  'sum.EVI', 'elev.mean', 'mat', 'ap.mean', "AOU", 'SSTATENUMB', 'SROUTE')
+col_keep_1 <- c("stateroute", "Longi", "Lati",  'sum.EVI', 'elev.mean', 'mat', 'ap.mean', "AOU", 'CommonName', 'match', 'occupancy')
 all_expected_pres = all_expected_pres[, (names(all_expected_pres) %in% col_keep_1)]
 
+latlongs = read.csv('routes 1996-2010 consecutive.csv', header = T)
+bbs_loc = merge(bbs, latlongs, by = "stateroute")
 # for loop subsetting env data to expected occurrence for focal species
-#allspecies = unique(all_expected_pres$AOU)
-allspecies = all_expected_pres$AOU 
-s = 5900
-for (s in allspecies){
-  temp = all_expected_pres[all_expected_pres$AOU == 5900,] # need to automate these
-  focal_abun = bbs_loc[bbs_loc$Aou == 5900,] 
+focal_aou = c(new_spec_weights$FocalAOU)
+output = c()
+for (sp in focal_aou){
+  temp = all_expected_pres[all_expected_pres$AOU == sp,] # need to automate these
+  focal_abun = bbs_loc[bbs_loc$Aou == sp,] 
   env_output = merge(temp, focal_abun, by.x = "AOU", by.y = "Aou", all = FALSE)
-}         ###### how to store separately?
-
-focal_abun = bbs_loc[bbs_loc$Aou == 5900,] 
-competitor = bbs_loc[bbs_loc$Aou == 5880,]
+  output = rbind(output,c(sp, focal_abun$stateroute, env_output))
+}         
 
 # merge focal abundance w expected pres/env variables #NEEDS TO BE IN A LOOP
 env_abun = merge(all_expected_pres, focal_abun, by = "stateroute")
