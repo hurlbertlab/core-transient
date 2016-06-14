@@ -192,7 +192,8 @@ all_spp_list = list.files('Z:/GIS/birds/All/All')
 filesoutput = c()
 focal_spp = c(new_spec_weights$focalcat)
 
-sp_proj = CRS("+proj=laea +lon_0=-40 +lat_0=-100 +units=km")
+intl_proj = CRS("+proj=longlat +datum=WGS84")
+sp_proj = CRS("+proj=laea +lat_0=40 +lon_0=-100 +units=km")
   #("+proj=laea +lat_0=40 +lon_0=-100 +units=m") # lambert azimuthal equal area
 usa = readShapePoly('Z:/GIS/geography/na_base_Lambert_Azimuthal', proj4string = sp_proj)
 #usa = readOGR('Z:/GIS/geography', 'na_base_Lambert_Azimuthal')
@@ -208,14 +209,14 @@ for (sp in focal_spp) {
   t3 = strsplit(t2, ".shp")
  # filesoutput = rbind(filesoutput)
  # tp = readOGR("Z:/GIS/birds/All/All", paste(t3, sep = ""), proj4string = sp_proj)
-  test.poly <- readShapePoly(paste("Z:/GIS/birds/All/All/", t3, sep = ""), proj4string = sp_proj) # reads in species-specific shapefile
-  proj4string(test.poly) <- sp_proj
+  test.poly <- readShapePoly(paste("Z:/GIS/birds/All/All/", t3, sep = "")) # reads in species-specific shapefile
+  proj4string(test.poly) <- intl_proj
   colors = c("red", "yellow", "green", "blue", "purple")
   # subset to just permanent or breeding residents
   sporigin = test.poly[test.poly@data$SEASONAL == 1|test.poly@data$SEASONAL == 2|test.poly@data$SEASONAL ==5,]
-  sporigin = spTransform(sporigin, CRS("+proj=laea +lon_0=-40 +lat_0=-100 +units=km"))
+  sporigin = spTransform(sporigin, CRS("+proj=laea +lat_0=40 +lon_0=-100 +units=km"))
   plot(sporigin, col = colors, border = NA) 
-  gArea(spTransform(sporigin, CRS("+proj=laea +lon_0=-40 +lat_0=100 +datum=WGS84")))
+  gArea(spTransform(sporigin, CRS("+proj=laea +lat_0=40 +lon_0=-100 +units=km")))
   # projection(sporigin), is.projected(sporigin)
   #areas<- unlist(lapply(sporigin@polygons, function(x) a<- x@area)) 
   # list this focal spp competitor
@@ -224,12 +225,13 @@ for (sp in focal_spp) {
   
 
   for(co in comp_spp) {         # for loop to match competitor sp to focal spp, intersect its range with the focal range, 
-      #co = 'Melanerpes_formicivorus ' # and calcualte the area of overlap between the two species.
+      #co = 'Melanerpes_formicivorus' # and calcualte the area of overlap between the two species.
       #print(co)
       c1 = all_spp_list[grep(co, all_spp_list)]
       c2 = c1[grep('.shp', c1)]
       c3 = strsplit(c2, ".shp")
-      comp.poly <- readShapePoly(paste("Z:/GIS/birds/All/All/", c3, sep = ""), proj4string = sp_proj) # reads in species-specific shapefile
+      comp.poly <- readShapePoly(paste("Z:/GIS/birds/All/All/", c3, sep = "")) # reads in species-specific shapefile
+      proj4string(comp.poly) <- intl_proj
       corigin = comp.poly[comp.poly@data$SEASONAL == 1|comp.poly@data$SEASONAL == 2|comp.poly@data$SEASONAL ==5,]
       corigin = spTransform(corigin, sp_proj)
       plot(corigin, add = TRUE ,col = colors, border = NA) 
@@ -306,7 +308,7 @@ for (sp in focal_spp) {
 cooutput = data.frame(cooutput)
 colnames(cooutput) = c("Focal", "CompetitorAOU", "CoAbun")
 
-for (sp in focal_spp){ # how to select the larger number?!
+for (sp in focal_spp){ # how to select the larger number??
   select(cooutput > ___)
 }
 
@@ -314,13 +316,13 @@ for (sp in focal_spp){ # how to select the larger number?!
 # compare focal to competitor occupancies
 focal_occ = merge(new_spec_weights, new_occ2[, c('AOU', 'occupancy')] , by.x = "FocalAOU", by.y = "AOU")
 
-# for loop to select sp and compare to their competitor ----- focal/stateroute
+# for loop to select sp and compare to their competitor ----- focal by stateroute
 focal_spp = c(new_spec_weights$focalcat)
 focalcompoutput = c()
 for (sp in focal_spp) {
   #sp = "Mniotilta_varia"
   print(sp)
-  tmp = filter(new_spec_weights, sp == new_spec_weights$focalcat)
+  tmp = filter(focal_occ, focalcat == sp)
   focal_total = merge(tmp, bbs[, c('Aou', 'SpeciesTotal', 'stateroute')], by.x = "FocalAOU", by.y = "Aou")
   focalcompoutput = rbind(focalcompoutput, focal_total)
   }
