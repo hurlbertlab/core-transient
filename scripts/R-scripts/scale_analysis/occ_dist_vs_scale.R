@@ -16,7 +16,7 @@ bbs50 = read.csv("fiftystop_thru2010_goodspp_goodrtes.csv", header = TRUE)
 names(bbs50)
 setwd("C:/git/core-transient")
 library(raster)
-counts5 = read.csv('data/raw_datasets/dataset_1_full.csv', header=T) #1996-2010 #in groups of ten #is this the full bbs dataset broken by 10 stops? 
+counts5 = read.csv('data/raw_datasets/dataset_1RAW/dataset_1_full.csv', header=T) #1996-2010 #in groups of ten #is this the full bbs dataset broken by 10 stops? 
 #want to merge counts5 with bbs 50 stop data? why does counts5 have year data and not the others? 
 occupancy.matrix = as.matrix(
   read.csv('scripts/R-scripts/scale_analysis/occ_matrix_BBS.csv', header=T, row.names = 1))
