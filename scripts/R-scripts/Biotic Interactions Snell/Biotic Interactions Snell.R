@@ -195,11 +195,10 @@ focal_spp = c(unique(new_spec_weights$focalcat))
 intl_proj = CRS("+proj=longlat +datum=WGS84")
 sp_proj = CRS("+proj=laea +lat_0=40 +lon_0=-100 +units=km")
   #("+proj=laea +lat_0=40 +lon_0=-100 +units=m") # lambert azimuthal equal area
-usa = readShapePoly('Z:/GIS/geography/na_base_Lambert_Azimuthal', proj4string = sp_proj)
-#usa = readOGR('Z:/GIS/geography', 'na_base_Lambert_Azimuthal')
+# usa = readShapePoly('Z:/GIS/geography/na_base_Lambert_Azimuthal', proj4string = sp_proj)
 # usa = spTransform(usa, sp_proj)
-proj4string(usa) <- sp_proj
-plot(usa)
+# proj4string(usa) <- sp_proj
+# plot(usa)
 
 for (sp in focal_spp) {
   #sp = 'Limnothlypis_swainsonii'
@@ -250,7 +249,7 @@ for (sp in focal_spp) {
       filesoutput = rbind(filesoutput, c(sp, co, spArea, coArea, area_overlap))
   }
 } 
-
+write.csv(filesoutput, file = "shapefile_areas.csv")
 filesoutput = data.frame(filesoutput)
 colnames(filesoutput) = c("sp", "co", "spArea", "coArea", "area_overlap")
 
