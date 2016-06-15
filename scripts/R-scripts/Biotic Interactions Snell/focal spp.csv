@@ -285,7 +285,6 @@ SubsetSppID,AOU,CommonName,Competitor
 20,6720,Palm Warbler,Northern Waterthrush
 20,6720,Palm Warbler,Louisiana Waterthrush
 20,6720,Palm Warbler,Kentucky Warbler
-20,6720,Palm Warbler,Swainson's Warbler
 20,6720,Palm Warbler,Ovenbird
 82,6260,Philadelphia Vireo,Blue-headed Vireo
 82,6260,Philadelphia Vireo,Red-eyed Vireo
@@ -333,7 +332,6 @@ SubsetSppID,AOU,CommonName,Competitor
 36,4780,Steller's Jay,Western Scrub-Jay
 36,4780,Steller's Jay,Gray Jay
 139,7580,Swainson's Thrush,Hermit Thrush
-3,6380,Swainson's Warbler,Palm Warbler
 3,6380,Swainson's Warbler,Northern Waterthrush
 3,6380,Swainson's Warbler,Louisiana Waterthrush
 3,6380,Swainson's Warbler,Kentucky Warbler
