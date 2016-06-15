@@ -175,7 +175,6 @@ SubsetSppID,AOU,CommonName,Competitor
 7,3210,Inca Dove,Common Ground-Dove
 129,7331,Juniper Titmouse,Mountain Chickadee
 23,6770,Kentucky Warbler,Swainson's Warbler
-23,6770,Kentucky Warbler,Palm Warbler
 23,6770,Kentucky Warbler,Louisiana Waterthrush
 23,6770,Kentucky Warbler,Northern Waterthrush
 23,6770,Kentucky Warbler,Ovenbird
@@ -284,7 +283,6 @@ SubsetSppID,AOU,CommonName,Competitor
 9,6460,Orange-crowned Warbler,Mourning Warbler
 20,6720,Palm Warbler,Northern Waterthrush
 20,6720,Palm Warbler,Louisiana Waterthrush
-20,6720,Palm Warbler,Kentucky Warbler
 20,6720,Palm Warbler,Ovenbird
 82,6260,Philadelphia Vireo,Blue-headed Vireo
 82,6260,Philadelphia Vireo,Red-eyed Vireo
