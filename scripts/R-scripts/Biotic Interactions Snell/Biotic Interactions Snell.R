@@ -190,7 +190,7 @@ all_spp_list = list.files('Z:/GIS/birds/All/All')
 
 # for loop to select a genus_spp from pairwise table, read in shp, subset to permanent habitat, plot focal distribution
 filesoutput = c()
-focal_spp = c(new_spec_weights$focalcat)
+focal_spp = c(unique(new_spec_weights$focalcat))
 
 intl_proj = CRS("+proj=longlat +datum=WGS84")
 sp_proj = CRS("+proj=laea +lat_0=40 +lon_0=-100 +units=km")
@@ -225,7 +225,7 @@ for (sp in focal_spp) {
   
 
   for(co in comp_spp) {         # for loop to match competitor sp to focal spp, intersect its range with the focal range, 
-      #co = 'Oporornis_agilis' # and calcualte the area of overlap between the two species.
+      #co = 'Seiurus_aurocapilla' # and calcualte the area of overlap between the two species.
       #print(co)
       c1 = all_spp_list[grep(co, all_spp_list)]
       c2 = c1[grep('.shp', c1)]
