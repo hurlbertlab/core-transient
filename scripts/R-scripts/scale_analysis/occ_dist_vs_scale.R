@@ -44,7 +44,7 @@ bbs.occ = data.frame(table(bbs.uniq$AOU)/15)
 #figure out then how to group aggregating over multiple columns 
 #fifty pt count data and then taking pts 1-5 and collapsing them all together 
 occ_counts = function(countData, countColumn) {
-  bbsu = unique(countData[countData[, countColumn] != 0, c('stateroute', 'year', 'AOU')])
+  bbsu = unique(countData[countData[, countColumn] != 0, c('stateroute', 'year', 'AOU')]) #problems start here
   bbsu.rt.occ = data.frame(table(bbsu[,c('stateroute', 'AOU')])/15) #do I change the 15 to reflect # years of bbs? 
   #1966-2010? 44 years
   bbsu.rt.occ2 = bbsu.rt.occ[bbsu.rt.occ$Freq!=0,]
