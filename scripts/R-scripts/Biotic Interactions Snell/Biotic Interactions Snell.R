@@ -308,14 +308,19 @@ colnames(cooutput) = c("Focal", "CompetitorAOU", "CoAbun")
 
 #### --- Take species weights table and pre format for calculations --- ####
 # filter BBS mean abundance by AOU/stateroute by year
-bbs %>% group_by(stateroute, Aou) %>% filter(bbs$Year) %>%
-  summarise(mean(bbs$SpeciesTotal))
+bbs_pool = bbs %>% 
+  group_by(stateroute, Aou) %>% 
+  summarize(mean(SpeciesTotal))
 
-bp = bbs %>% group_by(stateroute, Aou) %>% summarize(mean(SpeciesTotal))
+# filter to relevant species
+bbs_abun = filter(bbs_pool, Aou %in% new_occ2$AOU) 
+  
+# merge in occupancies
+occ_abun = merge(bbs_abun, new_occ2[, c('AOU', 'occupancy')], by.x = "Aou", by.y = "AOU")
 
-# compare focal to competitor occupancies
-focal_occ = merge(new_spec_weights, new_occ2[, c('AOU', 'occupancy')] , by.x = "FocalAOU", by.y = "AOU")
-
+# merge in to split out focal and competitor
+foc_comp_occ_abun = merge(new_spec_weights, occ_abun,  by.x = "FocalAOU", by.y = "Aou")
+foc_comp_occ_abun$stateroute =   
 # for loop to select sp and compare to their competitor ----- focal by stateroute
 focal_spp = c(new_spec_weights$focalcat)
 focalcompoutput = c()
