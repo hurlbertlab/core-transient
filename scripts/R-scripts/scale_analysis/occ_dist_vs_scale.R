@@ -54,7 +54,13 @@ occ_counts = function(countData, countColumn) {
   return(bbsu.rt.occ2)
 }
 
+#state route stop, scale at which (1 or 10 stops etc), sub-route ID (if scale is 10 stops, it's count20), species, occupany
+bbs1 = occ_counts(bbs50, bbs50$Stop10) #undefined columns selected error 
+bbs1 = occ_counts(bbs50, bbs50[[13]]) #error in subset, invalid subscript type 'list'; undefined columns selected 
+#to fix: try setting stop 10 as.numeric, as.character. other formats
+
 #########
+#trying to solve hard coding vs soft coding "scale" column issue
 occ_counts = function(countData, countColumn, v) {
   bbsu = unique(countData[countData[, countColumn] != 0, c('stateroute', 'Year', 'Aou')])
   bbsu.rt.occ = data.frame(table(bbsu[,c('stateroute', 'Aou')])/15)
@@ -66,10 +72,7 @@ occ_counts = function(countData, countColumn, v) {
   bbsu.rt.occ2 = bbsu.rt.occ2[, c('stateroute', 'scale', 'subrouteID', 'Aou', 'occupancy')]
   return(bbsu.rt.occ2)
 }
-#state route stop, scale at which (1 or 10 stops etc), sub-route ID (if scale is 10 stops, it's count20), species, occupany
-bbs1 = occ_counts(bbs50, bbs50$Stop10) #undefined columns selected error 
-bbs1 = occ_counts(bbs50, bbs50[13]) #error in subset, invalid subscript type 'list' 
-#to fix: try setting stop 10 as.numeric, as.character. other formats
+
 head(bb1)
 #scale of 1 pt count 
 bbs1 = subset(fifty, stateroute %in% unique(bbs10.rt.occ$stateroute) & year > 1995 & year < 2011 & Stop1!=0, 
