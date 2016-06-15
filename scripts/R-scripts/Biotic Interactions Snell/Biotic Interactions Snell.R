@@ -25,7 +25,7 @@ subsetocc = Hurlbert_o[Hurlbert_o$X10yr.Prop > .3 & Hurlbert_o$X10yr.Prop < .7,]
 # read in BBS data
 bbs = read.csv('dataset_1.csv', header = T)
 # paring down BBS cols
-bbs = bbs[, (names(bbs) %in% c("stateroute", "Aou", "SpeciesTotal",  'routeID', 'Lati', 'Longi'))]
+bbs = bbs[, (names(bbs) %in% c("stateroute", "Aou", "Year","SpeciesTotal",  'routeID', 'Lati', 'Longi'))]
 # read in Coyle occupancy data - organized by site 
 coyle_o = read.csv('site_sp_occupancy_matrix_Coyle.csv', header = T)
 # gather into long format
@@ -186,7 +186,7 @@ new_spec_weights$focalcat = gsub(" ", "_", new_spec_weights$FocalSciName)
 new_spec_weights$compcat = gsub(" ", "_", new_spec_weights$CompSciName)
 
 # read in bird range shps
-all_spp_list = list.files('Z:/GIS/birds/All/All')
+all_spp_list = list.files('//bioark/HurlbertLab/birds/All/All')
 
 # for loop to select a genus_spp from pairwise table, read in shp, subset to permanent habitat, plot focal distribution
 filesoutput = c()
@@ -308,11 +308,14 @@ for (sp in focal_spp) {
 cooutput = data.frame(cooutput)
 colnames(cooutput) = c("Focal", "CompetitorAOU", "CoAbun")
 
-for (sp in focal_spp){ # how to select the larger number??
-  select(cooutput > ___)
-}
-
 #### --- Take species weights table and pre format for calcualtions --- ####
+# filter BBS mean abundance by AOU/stateroute by year
+bbs %>% group_by(stateroute, Aou) %>% 
+  group_by(Year) %>%
+  summarise_each(mean(bbs$SpeciesTotal))
+
+bbs[,list(mean=SpeciesTotal),by=Year]
+bp = ddply(bbs, .(bbs$Year), numcolwise(mean))
 # compare focal to competitor occupancies
 focal_occ = merge(new_spec_weights, new_occ2[, c('AOU', 'occupancy')] , by.x = "FocalAOU", by.y = "AOU")
 
