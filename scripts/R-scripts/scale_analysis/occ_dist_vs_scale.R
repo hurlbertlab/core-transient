@@ -44,8 +44,8 @@ bbs.occ = data.frame(table(bbs.uniq$AOU)/15)
 #figure out then how to group aggregating over multiple columns 
 #fifty pt count data and then taking pts 1-5 and collapsing them all together 
 occ_counts = function(countData, countColumn) {
-  bbsu = unique(countData[countData[ , countColumn] != 0, c('stateroute', 'year', 'AOU')])
-  bbsu.rt.occ = data.frame(table(bbsu[,c('stateroute', 'AOU')])/15)
+  bbsu = unique(countData[countData[, countColumn] != 0, c('stateroute', 'year', 'AOU')])
+  bbsu.rt.occ = data.frame(table(bbsu[,c('stateroute', 'AOU')])/15) #do I change the 15 to reflect # years of bbs? 
   bbsu.rt.occ2 = bbsu.rt.occ[bbsu.rt.occ$Freq!=0,]
   names(bbsu.rt.occ2)[3] = 'occupancy'
   bbsu.rt.occ2$scale = 10
@@ -67,7 +67,9 @@ occ_counts = function(countData, countColumn, v) {
   return(bbsu.rt.occ2)
 }
 #state route stop, scale at which (1 or 10 stops etc), sub-route ID (if scale is 10 stops, it's count20), species, occupany
-bb1<-occ_counts(bbs50, bbs$Stop10)
+bbs1 = occ_counts(bbs50, bbs50$Stop10) #undefined columns selected error 
+bbs1 = occ_counts(bbs50, bbs50[13]) #error in subset, invalid subscript type 'list' 
+#to fix: try setting stop 10 as.numeric, as.character. other formats
 head(bb1)
 #scale of 1 pt count 
 bbs1 = subset(fifty, stateroute %in% unique(bbs10.rt.occ$stateroute) & year > 1995 & year < 2011 & Stop1!=0, 
