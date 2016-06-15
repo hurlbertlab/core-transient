@@ -201,7 +201,7 @@ sp_proj = CRS("+proj=laea +lat_0=40 +lon_0=-100 +units=km")
 # plot(usa)
 
 for (sp in focal_spp) {
-  #sp = 'Sphyrapicus_ruber'
+  #sp = 'Dendroica_palmarum'
   print(sp)
   t1 = all_spp_list[grep(sp, all_spp_list)]
   t2 = t1[grep('.shp', t1)]
@@ -224,7 +224,7 @@ for (sp in focal_spp) {
   
 
   for(co in comp_spp) {         # for loop to match competitor sp to focal spp, intersect its range with the focal range, 
-      #co = 'Oporornis_agilis' # and calcualte the area of overlap between the two species.
+      #co = 'Seiurus_aurocapilla' # and calcualte the area of overlap between the two species.
       #print(co)
       c1 = all_spp_list[grep(co, all_spp_list)]
       c2 = c1[grep('.shp', c1)]
