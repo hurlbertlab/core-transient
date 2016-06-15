@@ -55,7 +55,8 @@ occ_counts = function(countData, countColumn) {
   return(bbsu.rt.occ2)
 }
 #state route stop, scale at which (1 or 10 stops etc), sub-route ID (if scale is 10 stops, it's count20), species, occupany
-bbs1 = occ_counts(bbs50, Stop10) #undefined columns selected error 
+bbs1 = occ_counts(bbs50, Stop10) #object not found
+bbs1 = occ_counts(bbs50, bbs50$Stop10) #undefined columns selected error 
 bbs1 = occ_counts(bbs50, bbs50[[13]])  #error in subset, invalid subscript type 'list';  
 #^after setting Stop10 to "as.numeric" from integer, "undefined columns selected" message again
 #to fix: try setting stop 10 as.numeric, as.character, other formats
