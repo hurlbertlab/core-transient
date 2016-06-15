@@ -289,7 +289,7 @@ avg_occ_dist$occupancy = as.numeric(as.character(avg_occ_dist$occupancy))
 
 #### ---- Retry of analysis with final list ---- ####
 cooutput = c()
-focal_spp = c(new_spec_weights$focalcat)
+focal_spp = c(unique(new_spec_weights$focalcat))
 
 # want to determine strongest competitor (most spp within focal range)
 for (sp in focal_spp) {
@@ -310,11 +310,11 @@ colnames(cooutput) = c("Focal", "CompetitorAOU", "CoAbun")
 
 #### --- Take species weights table and pre format for calculations --- ####
 # filter BBS mean abundance by AOU/stateroute by year
-bbs %>% group_by(stateroute, Aou) %>% 
+bbs %>% group_by(stateroute, Aou) %>% filter(bbs$Year) %>%
   summarise(mean(bbs$SpeciesTotal))
 
-bbs[,list(mean=SpeciesTotal),by=Year]
-bp = ddply(bbs, .(bbs$Year), numcolwise(mean))
+bp = bbs %>% group_by(stateroute, Aou) %>% summarize(mean(SpeciesTotal))
+
 # compare focal to competitor occupancies
 focal_occ = merge(new_spec_weights, new_occ2[, c('AOU', 'occupancy')] , by.x = "FocalAOU", by.y = "AOU")
 
