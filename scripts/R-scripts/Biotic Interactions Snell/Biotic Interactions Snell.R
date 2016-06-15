@@ -186,11 +186,11 @@ new_spec_weights$focalcat = gsub(" ", "_", new_spec_weights$FocalSciName)
 new_spec_weights$compcat = gsub(" ", "_", new_spec_weights$CompSciName)
 
 # read in bird range shps
-all_spp_list = list.files('//bioark/HurlbertLab/birds/All/All')
+all_spp_list = list.files('Z:/GIS/birds/All/All')
 
 # for loop to select a genus_spp from pairwise table, read in shp, subset to permanent habitat, plot focal distribution
 filesoutput = c()
-focal_spp = c(new_spec_weights$focalcat)
+focal_spp = c(unique(new_spec_weights$focalcat))
 
 intl_proj = CRS("+proj=longlat +datum=WGS84")
 sp_proj = CRS("+proj=laea +lat_0=40 +lon_0=-100 +units=km")
@@ -201,7 +201,7 @@ sp_proj = CRS("+proj=laea +lat_0=40 +lon_0=-100 +units=km")
 # plot(usa)
 
 for (sp in focal_spp) {
-  #sp = 'Limnothlypis_swainsonii'
+  #sp = 'Sphyrapicus_ruber'
   print(sp)
   t1 = all_spp_list[grep(sp, all_spp_list)]
   t2 = t1[grep('.shp', t1)]
@@ -239,7 +239,6 @@ for (sp in focal_spp) {
       corigin = gBuffer(corigin, byid=TRUE, width=0)
 
       #gIsValid(corigin,reason=TRUE,byid=TRUE)
-      
       
       pi = intersect(sporigin, corigin)
       plot(pi)
