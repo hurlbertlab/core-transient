@@ -5,6 +5,7 @@ SubsetSppID,AOU,CommonName,Competitor
 30,6870,American Redstart,Black-throated Blue Warbler
 30,6870,American Redstart,Magnolia Warbler
 30,6870,American Redstart,Canada Warbler
+30,6870,American Redstart,Least Flycatcher
 16,4310,Anna's Hummingbird,Allen's Hummingbird
 22,4540,Ash-throated Flycatcher,Cassin's Kingbird
 22,4540,Ash-throated Flycatcher,Say's Phoebe
@@ -125,11 +126,8 @@ SubsetSppID,AOU,CommonName,Competitor
 53,5380,Chestnut-collared Longspur,Lark Bunting
 39,4870,Chihuahuan Raven,Common Raven
 41,4910,Clark's Nutcracker,Gray Jay
-24,6780,Connecticut Warbler,Swainson's Warbler
-24,6780,Connecticut Warbler,Palm Warbler
 24,6780,Connecticut Warbler,Northern Waterthrush
 24,6780,Connecticut Warbler,Louisiana Waterthrush
-24,6780,Connecticut Warbler,Kentucky Warbler
 24,6780,Connecticut Warbler,Ovenbird
 26,4640,Cordilleran Flycatcher,Gray Flycatcher
 26,4640,Cordilleran Flycatcher,Hammond's Flycatcher
@@ -180,7 +178,6 @@ SubsetSppID,AOU,CommonName,Competitor
 23,6770,Kentucky Warbler,Palm Warbler
 23,6770,Kentucky Warbler,Louisiana Waterthrush
 23,6770,Kentucky Warbler,Northern Waterthrush
-23,6770,Kentucky Warbler,Connecticut Warbler
 23,6770,Kentucky Warbler,Ovenbird
 76,6050,Lark Bunting,Chestnut-collared Longspur
 76,6050,Lark Bunting,Grasshopper Sparrow
@@ -288,7 +285,6 @@ SubsetSppID,AOU,CommonName,Competitor
 20,6720,Palm Warbler,Northern Waterthrush
 20,6720,Palm Warbler,Louisiana Waterthrush
 20,6720,Palm Warbler,Kentucky Warbler
-20,6720,Palm Warbler,Connecticut Warbler
 20,6720,Palm Warbler,Swainson's Warbler
 20,6720,Palm Warbler,Ovenbird
 82,6260,Philadelphia Vireo,Blue-headed Vireo
@@ -341,7 +337,6 @@ SubsetSppID,AOU,CommonName,Competitor
 3,6380,Swainson's Warbler,Northern Waterthrush
 3,6380,Swainson's Warbler,Louisiana Waterthrush
 3,6380,Swainson's Warbler,Kentucky Warbler
-3,6380,Swainson's Warbler,Connecticut Warbler
 3,6380,Swainson's Warbler,Ovenbird
 69,5840,Swamp Sparrow,Lincoln's Sparrow
 69,5840,Swamp Sparrow,White-throated Sparrow

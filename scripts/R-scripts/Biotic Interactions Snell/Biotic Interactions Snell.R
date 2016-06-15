@@ -202,7 +202,7 @@ proj4string(usa) <- sp_proj
 plot(usa)
 
 for (sp in focal_spp) {
-  #sp = 'Sphyrapicus_ruber'
+  #sp = 'Limnothlypis_swainsonii'
   print(sp)
   t1 = all_spp_list[grep(sp, all_spp_list)]
   t2 = t1[grep('.shp', t1)]
@@ -225,7 +225,7 @@ for (sp in focal_spp) {
   
 
   for(co in comp_spp) {         # for loop to match competitor sp to focal spp, intersect its range with the focal range, 
-      #co = 'Melanerpes_formicivorus' # and calcualte the area of overlap between the two species.
+      #co = 'Oporornis_agilis' # and calcualte the area of overlap between the two species.
       #print(co)
       c1 = all_spp_list[grep(co, all_spp_list)]
       c2 = c1[grep('.shp', c1)]
