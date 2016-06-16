@@ -14,7 +14,6 @@ library(maptools)
 library(tidyr)
 library(raster)
 library(rgeos)
-library(sqldf)
 
 # read in temporal occupancy dataset 
 Hurlbert_o = read.csv('Master_RO_Correlates_20110610.csv', header = T)
@@ -295,6 +294,28 @@ plot(avg_occ_dist$occupancy, avg_occ_dist$frequency, type = 'l',
 
 #### ---- Retry analysis with final list ---- ####
 # filter BBS mean abundance by AOU/stateroute by year
+bbs_pool = bbs %>% 
+  group_by(stateroute, Aou) %>% 
+  summarize(mean(SpeciesTotal))
+
+# filter to relevant species
+bbs_abun = filter(bbs_pool, Aou %in% new_occ2$AOU) 
+
+# merge in occupancies of focal and competitor
+occ_abun = merge(bbs_abun, new_occ2[, c('AOU', 'occupancy')], by.x = "Aou", by.y = "AOU")
+# merge in focal/competitor table to split out focal and competitor
+foc_comp_occ_abun = merge(new_spec_weights, occ_abun,  by.x = "FocalAOU", by.y = "Aou")
+# for loop to select sp and compare to their competitor ----- focal by stateroute
+focal_spp = c(new_spec_weights$focalcat)
+names(foc_comp_occ_abun)[names(foc_comp_occ_abun)=="stateroute"] <- "FocalStRoute"
+names(foc_comp_occ_abun)[names(foc_comp_occ_abun)=="mean(SpeciesTotal)"] <- "FocalAbun"
+names(foc_comp_occ_abun)[names(foc_comp_occ_abun)=="occupancy"] <- "FocalOcc"
+
+final_occ_abun = merge(new_spec_weights, occ_abun,  by.x = "CompetitorAOU", by.y = "Aou")
+names(final_occ_abun)[names(final_occ_abun)=="stateroute"] <- "CompStRoute"
+names(final_occ_abun)[names(final_occ_abun)=="mean(SpeciesTotal)"] <- "CompAbun"
+names(final_occ_abun)[names(final_occ_abun)=="occupancy"] <- "CompOcc"
+
 # for loop to select sp and compare to their competitor(s) 
 ### select strongest competitor, sum competitor abundance by stateroute
 focal_spp_2 = c(unique(final_occ_abun$focalcat))
@@ -317,6 +338,7 @@ focalcompoutput = data.frame(focalcompoutput)
 colnames(focalcompoutput) = c( "CompStateRoute", "FocalSciName", "CompetitorAOU","SumCompAbun")
 #focalcompoutput = write.csv(focalcompoutput, "summed_comp_abun.csv")
 
+######## HERE ####
 # merge in lat/long
 latlongs = read.csv('routes 1996-2010 consecutive.csv', header = T)
 plotdata_all = merge(obs_exp_total, latlongs, by = "stateroute") 
