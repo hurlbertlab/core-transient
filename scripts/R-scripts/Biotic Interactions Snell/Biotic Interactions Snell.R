@@ -338,24 +338,25 @@ focalcompoutput = data.frame(focalcompoutput)
 colnames(focalcompoutput) = c( "CompStateRoute", "FocalSciName", "CompetitorAOU","SumCompAbun")
 #focalcompoutput = write.csv(focalcompoutput, "summed_comp_abun.csv")
 
-######## HERE ####
+######## Skipping plots with raw abundances for now, can revisit later ########
 # merge in lat/long
 latlongs = read.csv('routes 1996-2010 consecutive.csv', header = T)
-plotdata_all = merge(obs_exp_total, latlongs, by = "stateroute") 
-plotdata_gaps = merge(GT_gaps, latlongs, by = "stateroute") #where expected didnt equal observed GT only in coyle
+plotdata_all = merge(focalcompoutput, latlongs, by.x = "CompStateRoute",by.y = "stateroute") 
+# plotdata_gaps = merge(GT_gaps, latlongs, by = "stateroute") #where expected didnt equal observed GT only in coyle
 # spotted range in point format
 bbs_loc = merge(bbs, latlongs, by = "stateroute")
-GT_abun = bbs_loc[bbs_loc$Aou == 5900,] #EXPAND TO OTHER SPP HERE
-spotty = bbs_loc[bbs_loc$Aou == 5880,]
+focal_spp_2 = c(unique(final_occ_abun$FocalAOU))
+sp = 7540
+focal_abun = bbs_loc[bbs_loc$Aou == sp,] 
+compabun = bbs_loc[bbs_loc$Aou == co,]
 # view where coyle_occupancy = 0 but predicted presence
-GT_gaps = obs_exp_total[obs_exp_total$coyle_o.X5900 == 0,] 
+# GT_gaps = obs_exp_total[obs_exp_total$coyle_o.X5900 == 0,] 
 
 # plot of states
 map("state") 
 # adding ranges of spp
-# ggplot(spotted, aes(Lati, Longi)) + geom_point(size = spotted$SpeciesTotal)
-points(spotted$Longi, spotted$Lati, col = 2,  pch = 20, cex = spotted$SpeciesTotal/25) #spotted range = RED
-points(GT_abun$Longi.x, GT_abun$Lati.x, col = 3, pch = 16, cex = GT_abun$SpeciesTotal/25) #GT range = GREEN
+points(compabun$Longi.x, compabun$Lati.x, col = 2,  pch = 20, cex = compabun$SpeciesTotal/5) #spotted range = RED
+points(focal_abun$Longi.x, focal_abun$Lati.x, col = 3, pch = 16, cex = focal_abun$SpeciesTotal/5) #GT range = GREEN
 # points(plotdata_gaps$Longi.x, plotdata_gaps$Lati.x, col = 4, pch = 17) #where GT == 0 but predicted presence BLUE 
 
 
