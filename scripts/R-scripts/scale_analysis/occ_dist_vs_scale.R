@@ -67,6 +67,9 @@ bbs1 = occ_counts(bbs50, bbs50[[13]])  #error in subset, invalid subscript type 
 #to fix: try setting stop 10 as.numeric, as.character, other formats
 #do I have to extract Stop10 and each column so that it can be defined as its own object before running it 
 #in the function? how can I call up or specify a column within 'countData'?
+#try brute force method of nesting within 'lapply'? http://www.ats.ucla.edu/stat/r/library/advanced_function_r.htm
+#alternatively, http://stackoverflow.com/questions/2641653/pass-a-data-frame-column-name-to-a-function
+
 
 #########
 #trying to solve hard coding vs soft coding "scale" column issue
