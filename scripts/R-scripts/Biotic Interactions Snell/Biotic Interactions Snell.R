@@ -200,6 +200,8 @@ sp_proj = CRS("+proj=laea +lat_0=40 +lon_0=-100 +units=km")
 # plot(usa)
 
 ####### for loop generating shapefiles and area table for all spp - DO NOT RUN! ######
+if(FALSE) {  #Blocking out the for loop below. Need to change to TRUE if you want the loop to run.
+
 for (sp in focal_spp) {
   #sp = 'Dendroica_palmarum'
   print(sp)
@@ -252,6 +254,8 @@ write.csv(filesoutput, file = "shapefile_areas.csv")
 filesoutput = data.frame(filesoutput)
 colnames(filesoutput) = c("sp", "co", "spArea", "coArea", "area_overlap")
 
+}
+
 # read in area shapefile if not running code 
 filesoutput = read.csv("shapefile_areas.csv", header = TRUE)
 ############# ---- Generate total species occupancies ---- #############
@@ -262,7 +266,7 @@ all_occ$AOU = as.numeric(substr(all_occ$AOU, 2, nchar(all_occ$AOU)))
 all_occ = all_occ[!is.na(all_occ$occupancy), ]
 
 # pull out stateroutes that have been continuously sampled 1996-2010
-routes = all_occ$X
+routes = unique(all_occ$X)
 
 sub_ep = merge(expect_pres, sp_list, by = 'AOU')
 # merge expected presence with occupancy data
@@ -296,15 +300,22 @@ plot(avg_occ_dist$occupancy, avg_occ_dist$frequency, type = 'l',
 # filter BBS mean abundance by AOU/stateroute by year
 bbs_pool = bbs %>% 
   group_by(stateroute, Aou) %>% 
-  summarize(mean(SpeciesTotal))
+  dplyr::summarize(abundance = mean(SpeciesTotal))
+
+focalspecies = unique(new_spec_weights$FocalAOU)
 
 # filter to relevant species
-bbs_abun = filter(bbs_pool, Aou %in% new_occ2$AOU) 
+bbs_abun = filter(bbs_pool, Aou %in% focalspecies) 
 
-# merge in occupancies of focal and competitor
-occ_abun = merge(bbs_abun, new_occ2[, c('AOU', 'occupancy')], by.x = "Aou", by.y = "AOU")
+# merge in occupancies of focal
+occ_abun = merge(bbs_abun, new_occ2[, c('AOU', 'stateroute' ,'occupancy')], 
+                 by.x = c("Aou", "stateroute"), by.y = c("AOU", "stateroute"))
+
+###########################################################################################################
 # merge in focal/competitor table to split out focal and competitor
-foc_comp_occ_abun = merge(new_spec_weights, occ_abun,  by.x = "FocalAOU", by.y = "Aou")
+foc_comp_occ_abun = merge(occ_abun, 
+                          new_spec_weights[, c('FocalAOU', 'CompetitorAOU', 'Focal', 'Competitor')], 
+                          by.y = "FocalAOU", by.x = "Aou", all = T)
 # for loop to select sp and compare to their competitor ----- focal by stateroute
 focal_spp = c(new_spec_weights$focalcat)
 names(foc_comp_occ_abun)[names(foc_comp_occ_abun)=="stateroute"] <- "FocalStRoute"
@@ -316,27 +327,48 @@ names(final_occ_abun)[names(final_occ_abun)=="stateroute"] <- "CompStRoute"
 names(final_occ_abun)[names(final_occ_abun)=="mean(SpeciesTotal)"] <- "CompAbun"
 names(final_occ_abun)[names(final_occ_abun)=="occupancy"] <- "CompOcc"
 
+########################################################################################################
+
+# Take range overlap area to assign "main competitor" for each focal species
+# "area.df" with cols: FocalAOU, CompAOU, focalArea, compArea, intArea, intProp
+
+# 0 and 1 , explain
+
+area.df$mainCompetitor = 0
+for (s in focalspecies) {
+  maxIntProp = max(area.df$intProp[area.df$FocalAOU == s], na.rm = T)
+  area.df$mainCompetitor[area.df$FocalAOU == s & area.df$intProp == maxIntProp] = 1
+}
+
+# NEED TO MERGE area.df and new_spec_weights...
+
 # for loop to select sp and compare to their competitor(s) 
 ### select strongest competitor, sum competitor abundance by stateroute
-focal_spp_2 = c(unique(final_occ_abun$focalcat))
 focalcompoutput = c()
-for (sp in focal_spp_2) {
-  #sp = "Mniotilta_varia"
+for (sp in focalspecies) {
+  #sp = 
   print(sp)
-  tmp = filter(final_occ_abun, focalcat == sp)
-  comp_spp = unique(tmp$CompetitorAOU)
+  tmp = filter(occ_abun, Aou == sp)
+  comp_spp = new_spec_weights[new_spec_weights$FocalAOU == sp, c('CompetitorAOU', 'mainCompetitor')]
   
-  for(co in comp_spp) {
-    #co = 6370
-    compsum = final_occ_abun %>% 
-      group_by(CompStRoute, FocalSciName, CompetitorAOU) %>% 
-      summarize(sum(CompAbun))
-    
-    focalcompoutput = rbind(focalcompoutput,compsum)
-    # for each comp AOU within sp, which species is strongest?
-    focalcompoutput$StrongComp = max(compsum$`sum(CompAbun)`) #need to add in AOU to know which comp it it
-   # ag2 <- aggregate(CompetitorAOU,SumCompAbun, data=focalcompoutput, max) wrong
-}}
+  mainComp = comp_spp$CompetitorAOU[comp_spp$mainCompetitor == 1]
+  bbs_comp = bbs_pool %>% filter(Aou %in% comp_spp$CompetitorAOU & stateroute %in% tmp$stateroute) 
+  bbs_comp2 = merge(bbs_comp, comp_spp, by.x = 'Aou', by.y = 'CompetitorAOU')
+  bbs_comp2$mainCompN = bbs_comp2$abundance * bbs_comp2$mainCompetitor
+  
+  compsum = bbs_comp2 %>% group_by(stateroute) %>% 
+      dplyr::summarize(AllCompN = sum(abundance), MainCompN = sum(mainCompN))
+  
+  focalout = merge(tmp, compsum, by = 'stateroute', all.x = T)  
+  focalout[is.na(focalout)] = 0
+  focalout$MainCompAOU = comp_spp$CompetitorAOU[comp_spp$mainCompetitor == 1] #need?
+  
+  # main competitor occupancy
+  
+  focalcompoutput = rbind(focalcompoutput, focalout)
+}
+
+}
 focalcompoutput1 = data.frame(focalcompoutput)
 colnames(focalcompoutput) = c( "CompStateRoute", "FocalSciName", "CompetitorAOU","SumCompAbun")
 #focalcompoutput = write.csv(focalcompoutput, "summed_comp_abun.csv")
