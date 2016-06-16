@@ -57,19 +57,10 @@ occ_counts = function(countData, countColumn) {
   bbsu.rt.occ2 = bbsu.rt.occ2[, c("stateroute", "scale", "subrouteID", "AOU", "occupancy")]
   return(bbsu.rt.occ2)
 }
-#maybe try as a forloop instead, for(countColumn in countData)
 #state route stop, scale at which (1 or 10 stops etc), sub-route ID (if scale is 10 stops, it's count20), species, occupany
-bbs1 = occ_counts(bbs50, Stop10) #object not found
-bbs1 = occ_counts(bbs50, bbs50$Stop10) #undefined columns selected error, [.data.frame(countData, , countColumn) error
-  #where is the second comma getting thrown in?
-bbs1 = occ_counts(bbs50, bbs50[[13]])  #error in subset, invalid subscript type 'list';  
-#^after setting Stop10 to "as.numeric" from integer, "undefined columns selected" message again
-#to fix: try setting stop 10 as.numeric, as.character, other formats
-#do I have to extract Stop10 and each column so that it can be defined as its own object before running it 
-#in the function? how can I call up or specify a column within 'countData'?
-#try brute force method of nesting within 'lapply'? http://www.ats.ucla.edu/stat/r/library/advanced_function_r.htm
+bbs1 = occ_counts(bbs50, "Stop10") 
 #alternatively, http://stackoverflow.com/questions/2641653/pass-a-data-frame-column-name-to-a-function
-
+#^correct solution; needed quotes around column name when executing function, function itself worked fine
 
 #########
 #trying to solve hard coding vs soft coding "scale" column issue
