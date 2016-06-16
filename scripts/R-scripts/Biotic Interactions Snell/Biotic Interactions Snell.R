@@ -200,6 +200,7 @@ sp_proj = CRS("+proj=laea +lat_0=40 +lon_0=-100 +units=km")
 # proj4string(usa) <- sp_proj
 # plot(usa)
 
+####### for loop generating shapefiles and area table for all spp - DO NOT RUN! ######
 for (sp in focal_spp) {
   #sp = 'Dendroica_palmarum'
   print(sp)
@@ -252,6 +253,8 @@ write.csv(filesoutput, file = "shapefile_areas.csv")
 filesoutput = data.frame(filesoutput)
 colnames(filesoutput) = c("sp", "co", "spArea", "coArea", "area_overlap")
 
+# read in area shapefile if not running code 
+filesoutput = read.csv("shapefile_areas.csv", header = TRUE)
 ############# ---- Generate total species occupancies ---- #############
 # gathering occupancy data for all species
 all_occ = gather(coyle_o, "AOU", "occupancy", 2:ncol(coyle_o))
@@ -285,31 +288,13 @@ avg_occ_dist = aggregate(occ_dist_output$count, by = list(occ_dist_output$occupa
 names(avg_occ_dist) = c('occupancy', 'frequency')
 avg_occ_dist$occupancy = as.numeric(as.character(avg_occ_dist$occupancy))
 
-#### ---- Retry of analysis with final list ---- ####
+# plot total avg avian occupancy distribution
+plot(avg_occ_dist$occupancy, avg_occ_dist$frequency, type = 'l', 
+     xlab = "Average Occupancy Distribution", ylab = "Frequency of Occupancy")
+# add plotting in center, subtract .05 in x axis
 
-#### --- Take species weights table and pre format for calculations --- ####
+#### ---- Retry analysis with final list ---- ####
 # filter BBS mean abundance by AOU/stateroute by year
-bbs_pool = bbs %>% 
-  group_by(stateroute, Aou) %>% 
-  summarize(mean(SpeciesTotal))
-
-# filter to relevant species
-bbs_abun = filter(bbs_pool, Aou %in% new_occ2$AOU) 
-  
-# merge in occupancies
-occ_abun = merge(bbs_abun, new_occ2[, c('AOU', 'occupancy')], by.x = "Aou", by.y = "AOU")
-
-# merge in to split out focal and competitor
-foc_comp_occ_abun = merge(new_spec_weights, occ_abun,  by.x = "FocalAOU", by.y = "Aou")
-names(foc_comp_occ_abun)[names(foc_comp_occ_abun)=="stateroute"] <- "FocalStRoute"
-names(foc_comp_occ_abun)[names(foc_comp_occ_abun)=="mean(SpeciesTotal)"] <- "FocalAbun"
-names(foc_comp_occ_abun)[names(foc_comp_occ_abun)=="occupancy"] <- "FocalOcc"
-
-final_occ_abun = merge(new_spec_weights, occ_abun,  by.x = "CompetitorAOU", by.y = "Aou")
-names(final_occ_abun)[names(final_occ_abun)=="stateroute"] <- "CompStRoute"
-names(final_occ_abun)[names(final_occ_abun)=="mean(SpeciesTotal)"] <- "CompAbun"
-names(final_occ_abun)[names(final_occ_abun)=="occupancy"] <- "CompOcc"
-
 # for loop to select sp and compare to their competitor(s) 
 ### select strongest competitor, sum competitor abundance by stateroute
 focal_spp_2 = c(unique(final_occ_abun$focalcat))
@@ -323,42 +308,14 @@ for (sp in focal_spp_2) {
   for(co in comp_spp) {
     #co = 6370
     compsum = final_occ_abun %>% 
-      group_by(CompStRoute, FocalSciName) %>% 
-      summarize(sum(CompAbun)) 
-    focalcompoutput = rbind(focalcompoutput, compsum)
+      group_by(CompStRoute, FocalSciName, CompetitorAOU) %>% 
+      summarize(sum(CompAbun))
+    
+    focalcompoutput = rbind(focalcompoutput,compsum)
   }}
 focalcompoutput = data.frame(focalcompoutput)
-colnames(focalcompoutput) = c("Focal", "CompetitorAOU", "CompStateRoute", "CompAbun")
-
-# focal_comp_occ = merge(expect_pres, focal_occ, by = "stateroute")
- # subset GT towhee within coyle occupancy data
-# subset spotted towhee within coyle occupancy data
-# spot_occ = data.frame(coyle_o$stateroute, coyle_o$X5880)
-# merge occupancy with bbs for spotted towhee to get raw abundances
-# t1 = merge(spot_agg, gt_occ, by.x = "stateroute", by.y = "coyle_o.stateroute")
-# insert GT occupancy = 0 instead of NA
-# t1$coyle_o.X5900[is.na(t1$coyle_o.X5900)] <- 0
-#remove duplicate columns
-# drops <- c("Group.1", "Year", "Aou")
-# t1 = t1[, !(names(t1) %in% drops)]
-# merge occupancy with bbs for spotted towhee
-# t2 = merge(spot_occ, gt_occ, by="coyle_o.stateroute")
-
-# read in expected presence data based on BBS 
-# clarify expected
-# expect_pres = read.csv('expected_presence_on_BBS_routes.csv', header = T)
-# subset GT towhee within occupancy data
-# gt_ep = expect_pres[expect_pres$AOU == 5900,] 
-# merge expected occupancy w real occupancy SPOT TOTAL 
-# obs_exp_total = merge(gt_ep, t1, by = "stateroute")
-# drop extra columns
-# drops <- c("SSTATENUMB","SROUTE", "AOU") # -drops
-# obs_exp_total = obs_exp_total[, !(names(obs_exp_total) %in% drops)]
-
-# plot total avg avian occupancy distribution
-plot(avg_occ_dist$occupancy, avg_occ_dist$frequency, type = 'l', 
-     xlab = "Average Occupancy Distribution", ylab = "Frequency of Occupancy")
-# add plotting in center, subtract .05 in x axis
+colnames(focalcompoutput) = c( "CompStateRoute", "FocalSciName", "CompetitorAOU","SumCompAbun")
+#focalcompoutput = write.csv(focalcompoutput, "summed_comp_abun.csv")
 
 # merge in lat/long
 latlongs = read.csv('routes 1996-2010 consecutive.csv', header = T)
