@@ -80,6 +80,8 @@ occ_counts = function(countData, countColumn, v) {
 bbs1 = occ_counts(bbs50, "Stop10", 10) 
 bbs2 = occ_counts(bbs50, "Stop25", 25)
 #It works!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
 head(bbs1)
 #scale of 1 pt count 
 bbs1 = subset(fifty, stateroute %in% unique(bbs10.rt.occ$stateroute) & year > 1995 & year < 2011 & Stop1!=0, 
