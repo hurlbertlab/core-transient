@@ -65,18 +65,22 @@ bbs1 = occ_counts(bbs50, "Stop10")
 #########
 #trying to solve hard coding vs soft coding "scale" column issue
 occ_counts = function(countData, countColumn, v) {
-  bbsu = unique(countData[countData[, countColumn] != 0, c('stateroute', 'Year', 'Aou')])
-  bbsu.rt.occ = data.frame(table(bbsu[,c('stateroute', 'Aou')])/15)
+  bbsu = unique(countData[countData[, countColumn]!= 0, c("stateroute", "year", "AOU")])
+  bbsu.rt.occ = data.frame(table(bbsu[,c("stateroute", "AOU")])/15)
   bbsu.rt.occ2 = bbsu.rt.occ[bbsu.rt.occ$Freq!=0,]
-  names(bbsu.rt.occ2)[3] = 'occupancy'
+  names(bbsu.rt.occ2)[3] = "occupancy"
   bbsu.rt.occ2$subrouteID = countColumn
-  bbsu.rt.occ2$scale = v #if subrouteID = Count10, Count20, etc == 10; if = Count25, == 25; if = Count1, == 1, but no need for "ifs"   
-    # modeled after: BBS_Core_agreement = sum(temp.site$occupancy>0.67 & temp.site$status=="breeder", na.rm = T)/sum(temp.site$occupancy>0.67, na.rm = T)
-  bbsu.rt.occ2 = bbsu.rt.occ2[, c('stateroute', 'scale', 'subrouteID', 'Aou', 'occupancy')]
+  bbsu.rt.occ2$scale = v 
+  bbsu.rt.occ2 = bbsu.rt.occ2[, c("stateroute", "scale", "subrouteID", "AOU", "occupancy")]
   return(bbsu.rt.occ2)
 }
-
-head(bb1)
+#if subrouteID = Count10, Count20, etc == 10; if = Count25, == 25; if = Count1, == 1, but no need for "ifs"   
+# modeled after: BBS_Core_agreement = 
+  #sum(temp.site$occupancy>0.67 & temp.site$status=="breeder", na.rm = T)/sum(temp.site$occupancy>0.67, na.rm = T)
+bbs1 = occ_counts(bbs50, "Stop10", 10) 
+bbs2 = occ_counts(bbs50, "Stop25", 25)
+#It works!!!!!!!!!!!!!!!!!!!!!!!!!
+head(bbs1)
 #scale of 1 pt count 
 bbs1 = subset(fifty, stateroute %in% unique(bbs10.rt.occ$stateroute) & year > 1995 & year < 2011 & Stop1!=0, 
               select = c('stateroute','year','AOU','Stop1'))
