@@ -333,8 +333,11 @@ for (sp in focal_spp_2) {
       summarize(sum(CompAbun))
     
     focalcompoutput = rbind(focalcompoutput,compsum)
-  }}
-focalcompoutput = data.frame(focalcompoutput)
+    # for each comp AOU within sp, which species is strongest?
+    focalcompoutput$StrongComp = max(compsum$`sum(CompAbun)`) #need to add in AOU to know which comp it it
+   # ag2 <- aggregate(CompetitorAOU,SumCompAbun, data=focalcompoutput, max) wrong
+}}
+focalcompoutput1 = data.frame(focalcompoutput)
 colnames(focalcompoutput) = c( "CompStateRoute", "FocalSciName", "CompetitorAOU","SumCompAbun")
 #focalcompoutput = write.csv(focalcompoutput, "summed_comp_abun.csv")
 
