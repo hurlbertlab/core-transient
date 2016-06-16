@@ -65,6 +65,8 @@ bbs1 = occ_counts(bbs50, bbs50$Stop10) #undefined columns selected error, [.data
 bbs1 = occ_counts(bbs50, bbs50[[13]])  #error in subset, invalid subscript type 'list';  
 #^after setting Stop10 to "as.numeric" from integer, "undefined columns selected" message again
 #to fix: try setting stop 10 as.numeric, as.character, other formats
+#do I have to extract Stop10 and each column so that it can be defined as its own object before running it 
+#in the function? how can I call up or specify a column within 'countData'?
 
 #########
 #trying to solve hard coding vs soft coding "scale" column issue
