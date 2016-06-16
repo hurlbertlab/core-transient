@@ -15,7 +15,7 @@ bbs50 = read.csv("fiftystop_thru2010_goodspp_goodrtes.csv", header = TRUE)
 #bbsrts= bbs50$routes #Year columns missing from both datasets?
 names(bbs50)
 setwd("C:/git/core-transient")
-library(raster)
+#library(raster)
 counts5 = read.csv('data/raw_datasets/dataset_1RAW/dataset_1_full.csv', header=T) #1996-2010 #in groups of ten #is this the full bbs dataset broken by 10 stops? 
 #want to merge counts5 with bbs 50 stop data? why does counts5 have year data and not the others? 
 occupancy.matrix = as.matrix(
@@ -47,6 +47,7 @@ occ_counts = function(countData, countColumn) {
   bbsu = unique(countData[countData[, countColumn]!= 0, c('stateroute', 'year', 'AOU')]) #problems start here
   #unique is calling unique rows in the dataframe for a given specified column that has any value that is not 0, 
   #and organizing the output generated from those rows by unique combo of stateroute, year, and AOU code
+  #"unique" is also a command in the raster package, so rerunning code without raster package at beginning
   bbsu.rt.occ = data.frame(table(bbsu[,c('stateroute', 'AOU')])/15) #do I change the 15 to reflect # years of bbs? 
   #1966-2010? 44 years
   bbsu.rt.occ2 = bbsu.rt.occ[bbsu.rt.occ$Freq!=0,]
