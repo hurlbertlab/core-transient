@@ -48,18 +48,20 @@ occ_counts = function(countData, countColumn) {
   #unique is calling unique rows in the dataframe for a given specified column that has any value that is not 0, 
   #and organizing the output generated from those rows by unique combo of stateroute, year, and AOU code
   #"unique" is also a command in the raster package, so rerunning code without raster package at beginning
-  bbsu.rt.occ = data.frame(table(bbsu[,c('stateroute', 'AOU')])/15) #do I change the 15 to reflect # years of bbs? 
+  bbsu.rt.occ = data.frame(table(bbsu[,c("stateroute", "AOU")])/15) #do I change the 15 to reflect # years of bbs? 
   #1966-2010? 44 years
   bbsu.rt.occ2 = bbsu.rt.occ[bbsu.rt.occ$Freq!=0,]
-  names(bbsu.rt.occ2)[3] = 'occupancy'
+  names(bbsu.rt.occ2)[3] = "occupancy"
   bbsu.rt.occ2$scale = 10
   bbsu.rt.occ2$subrouteID = countColumn
-  bbsu.rt.occ2 = bbsu.rt.occ2[, c('stateroute', 'scale', 'subrouteID', 'AOU', 'occupancy')]
+  bbsu.rt.occ2 = bbsu.rt.occ2[, c("stateroute", "scale", "subrouteID", "AOU", "occupancy")]
   return(bbsu.rt.occ2)
 }
+#maybe try as a forloop instead, for(countColumn in countData)
 #state route stop, scale at which (1 or 10 stops etc), sub-route ID (if scale is 10 stops, it's count20), species, occupany
 bbs1 = occ_counts(bbs50, Stop10) #object not found
-bbs1 = occ_counts(bbs50, bbs50$Stop10) #undefined columns selected error 
+bbs1 = occ_counts(bbs50, bbs50$Stop10) #undefined columns selected error, [.data.frame(countData, , countColumn) error
+  #where is the second comma getting thrown in?
 bbs1 = occ_counts(bbs50, bbs50[[13]])  #error in subset, invalid subscript type 'list';  
 #^after setting Stop10 to "as.numeric" from integer, "undefined columns selected" message again
 #to fix: try setting stop 10 as.numeric, as.character, other formats
