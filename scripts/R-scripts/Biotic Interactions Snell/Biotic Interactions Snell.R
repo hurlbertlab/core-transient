@@ -34,41 +34,10 @@ coyle_long$Aou = substring(coyle_long$Aou, 2)
 # name 1st col stateroute
 colnames(coyle_long)[1] = "stateroute"
 
-########NEED  to expand to take any species here
-# compare green-tailed towhee to spotted towhee occupancies
-# towhees = subsetocc[subsetocc$CommonName == "Spotted Towhee"| subsetocc$CommonName == "Green-tailed Towhee",]
-# subset spotted towhees based on AOU code
-# spotted = bbs[bbs$Aou == 5880,] 
-# aggregate based on year to get just spotted towhee abundance
-# spot_agg = aggregate(spotted, by = list(spotted$stateroute), FUN = mean) 
-
-# subset GT towhee within coyle occupancy data
-# gt_occ = data.frame(coyle_o$stateroute, coyle_o$X5900)
-# subset spotted towhee within coyle occupancy data
-# spot_occ = data.frame(coyle_o$stateroute, coyle_o$X5880)
-# merge occupancy with bbs for spotted towhee to get raw abundances
-# t1 = merge(spot_agg, gt_occ, by.x = "stateroute", by.y = "coyle_o.stateroute")
-# insert GT occupancy = 0 instead of NA
-# t1$coyle_o.X5900[is.na(t1$coyle_o.X5900)] <- 0
-#remove duplicate columns
-# drops <- c("Group.1", "Year", "Aou")
-# t1 = t1[, !(names(t1) %in% drops)]
-# merge occupancy with bbs for spotted towhee
-# t2 = merge(spot_occ, gt_occ, by="coyle_o.stateroute")
-
 # read in expected presence data based on BBS 
-# clarify expected
 expect_pres = read.csv('expected_presence_on_BBS_routes.csv', header = T)
-# subset GT towhee within occupancy data
-
-# merge expected occupancy w real occupancy SPOT TOTAL 
-# obs_exp_total = merge(gt_ep, t1, by = "stateroute")
-# drop extra columns
-# drops <- c("SSTATENUMB","SROUTE", "AOU") # -drops
-# obs_exp_total = obs_exp_total[, !(names(obs_exp_total) %in% drops)]
 
 ############# ---- Set up pairwise comparison table ---- #############
-
 ttable = read.csv("trophic_table.csv", header = TRUE)
 ttable2 = merge(ttable, Hurlbert_o, by = "AOU")
 write.csv(ttable2, "warbler_all.csv")
@@ -208,8 +177,7 @@ for (sp in focal_spp) {
   t1 = all_spp_list[grep(sp, all_spp_list)]
   t2 = t1[grep('.shp', t1)]
   t3 = strsplit(t2, ".shp")
- # filesoutput = rbind(filesoutput)
- # tp = readOGR("Z:/GIS/birds/All/All", paste(t3, sep = ""), proj4string = sp_proj)
+
   test.poly <- readShapePoly(paste("Z:/GIS/birds/All/All/", t3, sep = "")) # reads in species-specific shapefile
   proj4string(test.poly) <- intl_proj
   colors = c("red", "yellow", "green", "blue", "purple")
@@ -218,15 +186,15 @@ for (sp in focal_spp) {
   sporigin = spTransform(sporigin, CRS("+proj=laea +lat_0=40 +lon_0=-100 +units=km"))
   plot(sporigin, col = colors, border = NA) 
   gArea(spTransform(sporigin, CRS("+proj=laea +lat_0=40 +lon_0=-100 +units=km")))
-  # projection(sporigin), is.projected(sporigin)
-  #areas<- unlist(lapply(sporigin@polygons, function(x) a<- x@area)) 
+
   # list this focal spp competitor
   tmp = filter(new_spec_weights, sp == new_spec_weights$focalcat)
   comp_spp = tmp$compcat
   
-
-  for(co in comp_spp) {         # for loop to match competitor sp to focal spp, intersect its range with the focal range, 
-      #co = 'Seiurus_aurocapilla' # and calcualte the area of overlap between the two species.
+  # match competitor sp to focal spp, intersect its range with the focal range,
+  # and calcualte the area of overlap between the two species.
+  for(co in comp_spp) {          
+      #co = 'Seiurus_aurocapilla' 
       #print(co)
       c1 = all_spp_list[grep(co, all_spp_list)]
       c2 = c1[grep('.shp', c1)]
@@ -239,8 +207,6 @@ for (sp in focal_spp) {
       # intersect from raster package
       sporigin = gBuffer(sporigin, byid=TRUE, width=0)
       corigin = gBuffer(corigin, byid=TRUE, width=0)
-
-      #gIsValid(corigin,reason=TRUE,byid=TRUE)
       
       pi = intersect(sporigin, corigin)
       plot(pi)
@@ -251,6 +217,7 @@ for (sp in focal_spp) {
   }
 } 
 write.csv(filesoutput, file = "shapefile_areas.csv")
+# string split to get sci name with spaces
 filesoutput = data.frame(filesoutput)
 colnames(filesoutput) = c("sp", "co", "spArea", "coArea", "area_overlap")
 
@@ -296,80 +263,72 @@ plot(avg_occ_dist$occupancy, avg_occ_dist$frequency, type = 'l',
      xlab = "Average Occupancy Distribution", ylab = "Frequency of Occupancy")
 # add plotting in center, subtract .05 in x axis
 
-#### ---- Retry analysis with final list ---- ####
+#### ---- Gathering Occupancy and Abundance Data for Biotic Comparisons ---- ####
 # filter BBS mean abundance by AOU/stateroute by year
 bbs_pool = bbs %>% 
   group_by(stateroute, Aou) %>% 
   dplyr::summarize(abundance = mean(SpeciesTotal))
+names(bbs_pool)[names(bbs_pool)=="Aou"] <- "AOU"
 
 focalspecies = unique(new_spec_weights$FocalAOU)
 
 # filter to relevant species
-bbs_abun = filter(bbs_pool, Aou %in% focalspecies) 
+bbs_abun = filter(bbs_pool, AOU %in% focalspecies) 
 
 # merge in occupancies of focal
 occ_abun = merge(bbs_abun, new_occ2[, c('AOU', 'stateroute' ,'occupancy')], 
-                 by.x = c("Aou", "stateroute"), by.y = c("AOU", "stateroute"))
-
-###########################################################################################################
-# merge in focal/competitor table to split out focal and competitor
-foc_comp_occ_abun = merge(occ_abun, 
-                          new_spec_weights[, c('FocalAOU', 'CompetitorAOU', 'Focal', 'Competitor')], 
-                          by.y = "FocalAOU", by.x = "Aou", all = T)
-# for loop to select sp and compare to their competitor ----- focal by stateroute
-focal_spp = c(new_spec_weights$focalcat)
-names(foc_comp_occ_abun)[names(foc_comp_occ_abun)=="stateroute"] <- "FocalStRoute"
-names(foc_comp_occ_abun)[names(foc_comp_occ_abun)=="mean(SpeciesTotal)"] <- "FocalAbun"
-names(foc_comp_occ_abun)[names(foc_comp_occ_abun)=="occupancy"] <- "FocalOcc"
-
-final_occ_abun = merge(new_spec_weights, occ_abun,  by.x = "CompetitorAOU", by.y = "Aou")
-names(final_occ_abun)[names(final_occ_abun)=="stateroute"] <- "CompStRoute"
-names(final_occ_abun)[names(final_occ_abun)=="mean(SpeciesTotal)"] <- "CompAbun"
-names(final_occ_abun)[names(final_occ_abun)=="occupancy"] <- "CompOcc"
-
-########################################################################################################
+                by = c("AOU", "stateroute"))
 
 # Take range overlap area to assign "main competitor" for each focal species
 # "area.df" with cols: FocalAOU, CompAOU, focalArea, compArea, intArea, intProp
+shapefile_areas = read.csv("shapefile_areas.csv", header = TRUE) # from for loop above
+shapefile_areas$X = NULL
+area.df = merge(new_spec_weights[, c('FocalAOU', 'FocalSciName', 'CompetitorAOU', 'CompSciName')], 
+                shapefile_areas, by.x = 'FocalSciName', by.y = 'sp', all = TRUE)
+area.df$co = NULL
+names(area.df)[names(area.df)=="spArea"] <- "FocalArea"
 
-# 0 and 1 , explain
+# calculate proportion of overlap between focal range and overlap range
+area.df$PropOverlap = area.df$area.overlap/area.df$FocalArea
 
-area.df$mainCompetitor = 0
+# Which competitor has greatest area of overlap? -- main competitor
+area.df$mainCompetitor = 0 # set up main competitor column, 0 = not the primary competitor
 for (s in focalspecies) {
-  maxIntProp = max(area.df$intProp[area.df$FocalAOU == s], na.rm = T)
-  area.df$mainCompetitor[area.df$FocalAOU == s & area.df$intProp == maxIntProp] = 1
+  maxOverlap = max(area.df$PropOverlap[area.df$FocalAOU == s], na.rm = TRUE) #largest area of proportion overlap
+  area.df$mainCompetitor[area.df$FocalAOU == s & area.df$PropOverlap == maxOverlap] = 1 # 1 assigns main competitor
 }
-
-# NEED TO MERGE area.df and new_spec_weights...
 
 # for loop to select sp and compare to their competitor(s) 
 ### select strongest competitor, sum competitor abundance by stateroute
 focalcompoutput = c()
 for (sp in focalspecies) {
-  #sp = 
   print(sp)
-  tmp = filter(occ_abun, Aou == sp)
-  comp_spp = new_spec_weights[new_spec_weights$FocalAOU == sp, c('CompetitorAOU', 'mainCompetitor')]
+  tmp = filter(occ_abun, AOU == sp)  #why is this occ_abun
+  comp_spp = area.df[area.df$FocalAOU == sp, c('CompetitorAOU', 'mainCompetitor')]
   
   mainComp = comp_spp$CompetitorAOU[comp_spp$mainCompetitor == 1]
-  bbs_comp = bbs_pool %>% filter(Aou %in% comp_spp$CompetitorAOU & stateroute %in% tmp$stateroute) 
-  bbs_comp2 = merge(bbs_comp, comp_spp, by.x = 'Aou', by.y = 'CompetitorAOU')
+  bbs_comp = bbs_pool %>% filter(AOU %in% comp_spp$CompetitorAOU & stateroute %in% tmp$stateroute) 
+  bbs_comp2 = merge(bbs_comp, comp_spp, by.x = 'AOU', by.y = 'CompetitorAOU')
   bbs_comp2$mainCompN = bbs_comp2$abundance * bbs_comp2$mainCompetitor
   
   compsum = bbs_comp2 %>% group_by(stateroute) %>% 
       dplyr::summarize(AllCompN = sum(abundance), MainCompN = sum(mainCompN))
   
-  focalout = merge(tmp, compsum, by = 'stateroute', all.x = T)  
+  focalout = merge(tmp, compsum, by = 'stateroute', all.x = TRUE)  
   focalout[is.na(focalout)] = 0
   focalout$MainCompAOU = comp_spp$CompetitorAOU[comp_spp$mainCompetitor == 1] #need?
-  
   # main competitor occupancy
+  MainCompAOU =  unique(focalout$MainCompAOU)
+ # focalout$CompOcc =  new_occ2$occupancy[new_occ2$AOU == MainCompAOU]
+  # subset occupancy by state route, merge in main competitor
+  #focalout$CompOcc = new_occ2 %>% 
+   # group_by(stateroute) %>% 
+    
   
   focalcompoutput = rbind(focalcompoutput, focalout)
 }
 
-}
-focalcompoutput1 = data.frame(focalcompoutput)
+focalcompoutput = data.frame(focalcompoutput)
 colnames(focalcompoutput) = c( "CompStateRoute", "FocalSciName", "CompetitorAOU","SumCompAbun")
 #focalcompoutput = write.csv(focalcompoutput, "summed_comp_abun.csv")
 
