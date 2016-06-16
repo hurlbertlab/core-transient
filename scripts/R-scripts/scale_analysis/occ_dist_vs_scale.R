@@ -44,7 +44,7 @@ bbs.occ = data.frame(table(bbs.uniq$AOU)/15)
 #figure out then how to group aggregating over multiple columns 
 #fifty pt count data and then taking pts 1-5 and collapsing them all together 
 occ_counts = function(countData, countColumn) {
-  bbsu = unique(countData[countData[, countColumn]!= 0, c('stateroute', 'year', 'AOU')]) #problems start here
+  bbsu = unique(countData[countData[, countColumn]!= 0, c("stateroute", "year", "AOU")]) #problems start here
   #unique is calling unique rows in the dataframe for a given specified column that has any value that is not 0, 
   #and organizing the output generated from those rows by unique combo of stateroute, year, and AOU code
   #"unique" is also a command in the raster package, so rerunning code without raster package at beginning
