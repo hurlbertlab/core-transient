@@ -286,46 +286,49 @@ names(avg_occ_dist) = c('occupancy', 'frequency')
 avg_occ_dist$occupancy = as.numeric(as.character(avg_occ_dist$occupancy))
 
 #### ---- Retry of analysis with final list ---- ####
-cooutput = c()
-focal_spp = c(unique(new_spec_weights$focalcat))
-
-# want to determine strongest competitor (most spp within focal range)
-for (sp in focal_spp) {
-  #sp = 'Sphyrapicus_ruber'
-  #print(sp)
-  tmp = filter(new_spec_weights, sp == new_spec_weights$focalcat)
-  comp_spp = unique(tmp$CompetitorAOU)
-  
-  for(co in comp_spp) {
-    cosum = bbs[bbs$Aou == co,]
-    conum = sum(cosum$SpeciesTotal)
-
-    cooutput = rbind(cooutput, c(sp, co, conum))
-  }
-}
-cooutput = data.frame(cooutput)
-colnames(cooutput) = c("Focal", "CompetitorAOU", "CoAbun")
 
 #### --- Take species weights table and pre format for calculations --- ####
 # filter BBS mean abundance by AOU/stateroute by year
-bbs %>% group_by(stateroute, Aou) %>% filter(bbs$Year) %>%
-  summarise(mean(bbs$SpeciesTotal))
+bbs_pool = bbs %>% 
+  group_by(stateroute, Aou) %>% 
+  summarize(mean(SpeciesTotal))
 
-bp = bbs %>% group_by(stateroute, Aou) %>% summarize(mean(SpeciesTotal))
+# filter to relevant species
+bbs_abun = filter(bbs_pool, Aou %in% new_occ2$AOU) 
+  
+# merge in occupancies
+occ_abun = merge(bbs_abun, new_occ2[, c('AOU', 'occupancy')], by.x = "Aou", by.y = "AOU")
 
-# compare focal to competitor occupancies
-focal_occ = merge(new_spec_weights, new_occ2[, c('AOU', 'occupancy')] , by.x = "FocalAOU", by.y = "AOU")
+# merge in to split out focal and competitor
+foc_comp_occ_abun = merge(new_spec_weights, occ_abun,  by.x = "FocalAOU", by.y = "Aou")
+names(foc_comp_occ_abun)[names(foc_comp_occ_abun)=="stateroute"] <- "FocalStRoute"
+names(foc_comp_occ_abun)[names(foc_comp_occ_abun)=="mean(SpeciesTotal)"] <- "FocalAbun"
+names(foc_comp_occ_abun)[names(foc_comp_occ_abun)=="occupancy"] <- "FocalOcc"
 
-# for loop to select sp and compare to their competitor ----- focal by stateroute
-focal_spp = c(new_spec_weights$focalcat)
+final_occ_abun = merge(new_spec_weights, occ_abun,  by.x = "CompetitorAOU", by.y = "Aou")
+names(final_occ_abun)[names(final_occ_abun)=="stateroute"] <- "CompStRoute"
+names(final_occ_abun)[names(final_occ_abun)=="mean(SpeciesTotal)"] <- "CompAbun"
+names(final_occ_abun)[names(final_occ_abun)=="occupancy"] <- "CompOcc"
+
+# for loop to select sp and compare to their competitor(s) 
+### select strongest competitor, sum competitor abundance by stateroute
+focal_spp_2 = c(unique(final_occ_abun$focalcat))
 focalcompoutput = c()
-for (sp in focal_spp) {
+for (sp in focal_spp_2) {
   #sp = "Mniotilta_varia"
   print(sp)
-  tmp = filter(focal_occ, focalcat == sp)
-  focal_total = merge(tmp, bbs[, c('Aou', 'SpeciesTotal', 'stateroute')], by.x = "FocalAOU", by.y = "Aou")
-  focalcompoutput = rbind(focalcompoutput, focal_total)
-  }
+  tmp = filter(final_occ_abun, focalcat == sp)
+  comp_spp = unique(tmp$CompetitorAOU)
+  
+  for(co in comp_spp) {
+    #co = 6370
+    compsum = final_occ_abun %>% 
+      group_by(CompStRoute, FocalSciName) %>% 
+      summarize(sum(CompAbun)) 
+    focalcompoutput = rbind(focalcompoutput, compsum)
+  }}
+focalcompoutput = data.frame(focalcompoutput)
+colnames(focalcompoutput) = c("Focal", "CompetitorAOU", "CompStateRoute", "CompAbun")
 
 # focal_comp_occ = merge(expect_pres, focal_occ, by = "stateroute")
  # subset GT towhee within coyle occupancy data
