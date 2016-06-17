@@ -238,8 +238,12 @@ routes = unique(all_occ$X)
 
 sub_ep = merge(expect_pres, sp_list, by = 'AOU')
 # merge expected presence with occupancy data
-new_occ = merge(sub_ep, all_occ, by.x = c('stateroute', 'AOU'), by.y = c('X', 'AOU'), all.x = T)
+new_occ = merge(sub_ep, all_occ, by.x = c('stateroute', 'AOU'), by.y = c('X', 'AOU'), all = TRUE)
 new_occ$occupancy[is.na(new_occ$occupancy)] = 0
+
+new_occ$CommonName[new_occ$AOU == 7220] == "Winter Wren" ######NOT WORKING!
+new_occ$SciName[new_occ$AOU == 7220] == "Troglodytes troglodytes"
+
 # subset to routes in the well sampled list of 'routes'
 new_occ2 = new_occ[new_occ$stateroute %in% routes, ]
 
@@ -278,7 +282,7 @@ bbs_abun = filter(bbs_pool, AOU %in% focalspecies)
 
 # merge in occupancies of focal
 occ_abun = merge(bbs_abun, new_occ2[, c('AOU', 'stateroute' ,'occupancy', 'SciName')], 
-                by = c("AOU", "stateroute"))
+                by = c("AOU", "stateroute"), all = TRUE)
 
 # Take range overlap area to assign "main competitor" for each focal species
 # "area.df" with cols: FocalAOU, CompAOU, focalArea, compArea, intArea, intProp
@@ -321,13 +325,13 @@ for (sp in focalspecies) {
   
   focalout = merge(tmp, compsum, by = 'stateroute', all.x = TRUE)  
   focalout[is.na(focalout)] = 0
-  focalout$MainCompAOU = comp_spp$CompetitorAOU[comp_spp$mainCompetitor == 1] 
+  focalout$MainCompAOU = unique(comp_spp$CompetitorAOU[comp_spp$mainCompetitor == 1]) 
   # main competitor occupancy
   MainCompAOU =  unique(focalout$MainCompAOU)
- # focalout$CompOcc =  new_occ2$occupancy[new_occ2$AOU == MainCompAOU]
+  #focalout$CompOcc =  new_occ2$occupancy[new_occ2$AOU == MainCompAOU]
   # subset occupancy by state route, merge in main competitor
-  #focalout$CompOcc = new_occ2 %>% 
-   # group_by(stateroute) %>% 
+  #match_occ_stroute = new_occ2[new_occ2$stateroute == focalout$state,]
+  #match_comp_occ = focalout[focalout$stateroute == match_occ_stroute]
     
   
   focalcompoutput = rbind(focalcompoutput, focalout)
