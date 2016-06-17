@@ -43,25 +43,6 @@ bbs.occ = data.frame(table(bbs.uniq$AOU)/15)
 #confirm whether or not raw data (50 stop original) differs in aou vs Aou vs AOU 
 #figure out then how to group aggregating over multiple columns 
 #fifty pt count data and then taking pts 1-5 and collapsing them all together 
-occ_counts = function(countData, countColumn) {
-  bbsu = unique(countData[countData[, countColumn]!= 0, c("stateroute", "year", "AOU")]) #problems start here
-  #unique is calling unique rows in the dataframe for a given specified column that has any value that is not 0, 
-  #and organizing the output generated from those rows by unique combo of stateroute, year, and AOU code
-  #"unique" is also a command in the raster package, so rerunning code without raster package at beginning
-  bbsu.rt.occ = data.frame(table(bbsu[,c("stateroute", "AOU")])/15) #do I change the 15 to reflect # years of bbs? 
-  #1966-2010? 44 years
-  bbsu.rt.occ2 = bbsu.rt.occ[bbsu.rt.occ$Freq!=0,]
-  names(bbsu.rt.occ2)[3] = "occupancy"
-  bbsu.rt.occ2$scale = 10
-  bbsu.rt.occ2$subrouteID = countColumn
-  bbsu.rt.occ2 = bbsu.rt.occ2[, c("stateroute", "scale", "subrouteID", "AOU", "occupancy")]
-  return(bbsu.rt.occ2)
-}
-#state route stop, scale at which (1 or 10 stops etc), sub-route ID (if scale is 10 stops, it's count20), species, occupany
-bbs1 = occ_counts(bbs50, "Stop10") 
-#alternatively, http://stackoverflow.com/questions/2641653/pass-a-data-frame-column-name-to-a-function
-#^correct solution; needed quotes around column name when executing function, function itself worked fine
-
 #########
 #trying to solve hard coding vs soft coding "scale" column issue
 occ_counts = function(countData, countColumn, v) {
