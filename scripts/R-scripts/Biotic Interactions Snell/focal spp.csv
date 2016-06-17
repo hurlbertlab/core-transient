@@ -139,8 +139,6 @@ SubsetSppID,AOU,CommonName,Competitor
 70,5850,Fox Sparrow,Lincoln's Sparrow
 70,5850,Fox Sparrow,White-crowned Sparrow
 135,7480,Golden-crowned Kinglet,Ruby-crowned Kinglet
-61,5570,Golden-crowned Sparrow,White-crowned Sparrow
-61,5570,Golden-crowned Sparrow,Lincoln's Sparrow
 56,5460,Grasshopper Sparrow,Baird's Sparrow
 56,5460,Grasshopper Sparrow,Chipping Sparrow
 32,4691,Gray Flycatcher,Cordilleran Flycatcher
@@ -190,7 +188,6 @@ SubsetSppID,AOU,CommonName,Competitor
 57,5480,Le Conte's Sparrow,Chipping Sparrow
 51,5300,Lesser Goldfinch,House Finch
 51,5300,Lesser Goldfinch,Pine Siskin
-68,5830,Lincoln's Sparrow,Golden-crowned Sparrow
 68,5830,Lincoln's Sparrow,White-crowned Sparrow
 68,5830,Lincoln's Sparrow,Swamp Sparrow
 68,5830,Lincoln's Sparrow,Fox Sparrow
@@ -365,7 +362,6 @@ SubsetSppID,AOU,CommonName,Competitor
 7,6440,Virginia's Warbler,Orange-crowned Warbler
 142,7670,Western Bluebird,Hermit Thrush
 142,7670,Western Bluebird,American Robin
-37,4810,Western Scrub-Jay,Yellow-billed Magpie
 37,4810,Western Scrub-Jay,Steller's Jay
 60,5540,White-crowned Sparrow,Golden-crowned Sparrow
 60,5540,White-crowned Sparrow,Lincoln's Sparrow
@@ -374,9 +370,9 @@ SubsetSppID,AOU,CommonName,Competitor
 50,5220,White-winged Crossbill,Purple Finch
 5,3100,Wild Turkey,Ring-necked Pheasant
 28,4660,Willow Flycatcher,Alder Flycatcher
-125,7220,Winter Wren,House Wren
-125,7220,Winter Wren,Marsh Wren
-125,7220,Winter Wren,Sedge Wren
+125,7222,Winter Wren,House Wren
+125,7222,Winter Wren,Marsh Wren
+125,7222,Winter Wren,Sedge Wren
 4,6390,Worm-eating Warbler,Blue-winged Warbler
 4,6390,Worm-eating Warbler,Pine Warbler
 4,6390,Worm-eating Warbler,Northern Parula
@@ -387,8 +383,6 @@ SubsetSppID,AOU,CommonName,Competitor
 4,6390,Worm-eating Warbler,Hooded Warbler
 133,7420,Wrentit,Oak Titmouse
 133,7420,Wrentit,Bushtit
-35,4760,Yellow-billed Magpie,Western Scrub-Jay
-35,4760,Yellow-billed Magpie,American Crow
 27,6830,Yellow-breasted Chat,Hooded Warbler
 27,6830,Yellow-breasted Chat,Worm-eating Warbler
 27,6830,Yellow-breasted Chat,Blue-winged Warbler

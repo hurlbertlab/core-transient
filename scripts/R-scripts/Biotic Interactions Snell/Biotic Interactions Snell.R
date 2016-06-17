@@ -62,13 +62,13 @@ AOU2 = data.frame(AOU$SCI_NAME, AOU$AOU_OUT, AOU$PRIMARY_COM_NAME)
 AOU2 = plyr::rename(AOU2, c("AOU.SCI_NAME" = "SciName", "AOU.AOU_OUT" = "AOU", "AOU.PRIMARY_COM_NAME" = "CommonName"))
 
 # remove duplicates/subspecies
-AOUsub = AOU2[-grep("sp.", AOU2$CommonName),]
+AOUsub = AOU2[-grep("sp.", AOU2$CommonName),] 
 AOUsub2 = AOUsub[-grep("\\)", AOUsub$CommonName),]
 AOUsub3 = AOUsub2[-grep(" \\(", AOUsub2$CommonName),]
 AOUsub4 = unique(AOUsub3)
 AOUsub4 = na.omit(AOUsub4)
 
-
+############# ----  nomenclature corrections for shapefiles,correct name is "match" column ---- ######
 # merge w all sp list to get info for each sp
 sp_list = merge(AOUsub4, all_unique, by.x = "CommonName", by.y = "unique.allspp.CommonName.")
 sp_list$match = as.character(sp_list$SciName)
@@ -112,6 +112,8 @@ sp_list$match[sp_list$match =="Oreothlypis luciae"] = "Vermivora luciae"
 sp_list$match[sp_list$match =="Geothlypis tolmiei"] = "Oporornis tolmiei"
 
 sp_list$match[sp_list$match =="Troglodytes hiemalis"] = "Troglodytes troglodytes"
+
+###### ---- Continued cleaning to create final focal-comp table ----######
 #merge pairwise table with taxonomy info
 comp_AOU = merge(focal_competitor_table, sp_list, by.x = "Competitor", by.y = "CommonName")
 comp_AOU <- plyr::rename(comp_AOU, c("Competitor" = "Competitor", "focalAOU" = "focalAOU", 
@@ -177,8 +179,8 @@ for (sp in focal_spp) {
   t1 = all_spp_list[grep(sp, all_spp_list)]
   t2 = t1[grep('.shp', t1)]
   t3 = strsplit(t2, ".shp")
-
-  test.poly <- readShapePoly(paste("Z:/GIS/birds/All/All/", t3, sep = "")) # reads in species-specific shapefile
+ # GET LINK FIXED AND WRITE IN FOCAL AND COMP AOU
+  test.poly <- readShapePoly("Z:/GIS/birds/All/All/", paste(, t3, sep = "")) # reads in species-specific shapefile
   proj4string(test.poly) <- intl_proj
   colors = c("red", "yellow", "green", "blue", "purple")
   # subset to just permanent or breeding residents
@@ -226,6 +228,7 @@ write.csv(filesoutput, file = "shapefile_areas.csv")
 
 # read in area shapefile if not running code 
 filesoutput = read.csv("shapefile_areas.csv", header = TRUE)
+
 ############# ---- Generate total species occupancies ---- #############
 # gathering occupancy data for all species
 all_occ = gather(coyle_o, "AOU", "occupancy", 2:ncol(coyle_o))
@@ -233,10 +236,13 @@ all_occ$AOU = as.character(all_occ$AOU)
 all_occ$AOU = as.numeric(substr(all_occ$AOU, 2, nchar(all_occ$AOU)))
 all_occ = all_occ[!is.na(all_occ$occupancy), ]
 
+# Winter Wren had AOU code change (7220 to 7222), changing in occ code to reflect that
+all_occ$AOU[all_occ$AOU == 7220] <- 7222
+
 # pull out stateroutes that have been continuously sampled 1996-2010
 routes = unique(all_occ$X)
 
-sub_ep = merge(expect_pres, sp_list, by = 'AOU')
+sub_ep = merge(expect_pres, sp_list, by = 'AOU', all = TRUE) ############################################
 # merge expected presence with occupancy data
 new_occ = merge(sub_ep, all_occ, by.x = c('stateroute', 'AOU'), by.y = c('X', 'AOU'), all = TRUE)
 new_occ$occupancy[is.na(new_occ$occupancy)] = 0
@@ -282,7 +288,7 @@ bbs_abun = filter(bbs_pool, AOU %in% focalspecies)
 
 # merge in occupancies of focal
 occ_abun = merge(bbs_abun, new_occ2[, c('AOU', 'stateroute' ,'occupancy', 'SciName')], 
-                by = c("AOU", "stateroute"), all = TRUE)
+                by = c("AOU", "stateroute"))
 
 # Take range overlap area to assign "main competitor" for each focal species
 # "area.df" with cols: FocalAOU, CompAOU, focalArea, compArea, intArea, intProp
