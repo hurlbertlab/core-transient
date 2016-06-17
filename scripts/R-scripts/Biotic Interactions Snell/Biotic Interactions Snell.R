@@ -216,11 +216,12 @@ for (sp in focal_spp) {
       filesoutput = rbind(filesoutput, c(sp, co, spArea, coArea, area_overlap))
   }
 } 
-write.csv(filesoutput, file = "shapefile_areas.csv")
-# string split to get sci name with spaces
+
 filesoutput = data.frame(filesoutput)
 colnames(filesoutput) = c("sp", "co", "spArea", "coArea", "area_overlap")
-
+# string split to get sci name with spaces
+filesoutput = gsub('_',' ',filesoutput$sp)
+write.csv(filesoutput, file = "shapefile_areas.csv")
 }
 
 # read in area shapefile if not running code 
@@ -276,16 +277,20 @@ focalspecies = unique(new_spec_weights$FocalAOU)
 bbs_abun = filter(bbs_pool, AOU %in% focalspecies) 
 
 # merge in occupancies of focal
-occ_abun = merge(bbs_abun, new_occ2[, c('AOU', 'stateroute' ,'occupancy')], 
+occ_abun = merge(bbs_abun, new_occ2[, c('AOU', 'stateroute' ,'occupancy', 'SciName')], 
                 by = c("AOU", "stateroute"))
 
 # Take range overlap area to assign "main competitor" for each focal species
 # "area.df" with cols: FocalAOU, CompAOU, focalArea, compArea, intArea, intProp
 shapefile_areas = read.csv("shapefile_areas.csv", header = TRUE) # from for loop above
 shapefile_areas$X = NULL
-area.df = merge(new_spec_weights[, c('FocalAOU', 'FocalSciName', 'CompetitorAOU', 'CompSciName')], 
-                shapefile_areas, by.x = 'FocalSciName', by.y = 'sp', all = TRUE)
-area.df$co = NULL
+# merge focal_competitor table in with shapefile areas 
+# have to do 2X to get right focal and comps to line up (wasn't capturing both before)
+area.prep = merge(new_spec_weights[, c('FocalAOU', 'FocalSciName')], 
+                  shapefile_areas, by.x = 'FocalSciName', by.y = 'sp', all = TRUE)
+area.df = merge(new_spec_weights[, c('CompetitorAOU', 'CompSciName')], 
+               area.prep, by.x = 'CompSciName', by.y = 'co', all = TRUE)
+
 names(area.df)[names(area.df)=="spArea"] <- "FocalArea"
 
 # calculate proportion of overlap between focal range and overlap range
@@ -316,7 +321,7 @@ for (sp in focalspecies) {
   
   focalout = merge(tmp, compsum, by = 'stateroute', all.x = TRUE)  
   focalout[is.na(focalout)] = 0
-  focalout$MainCompAOU = comp_spp$CompetitorAOU[comp_spp$mainCompetitor == 1] #need?
+  focalout$MainCompAOU = comp_spp$CompetitorAOU[comp_spp$mainCompetitor == 1] 
   # main competitor occupancy
   MainCompAOU =  unique(focalout$MainCompAOU)
  # focalout$CompOcc =  new_occ2$occupancy[new_occ2$AOU == MainCompAOU]
