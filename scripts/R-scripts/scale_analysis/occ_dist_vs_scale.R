@@ -87,7 +87,7 @@ bbs2 = occ_counts(bbs50, "Stop25", 25)
 #we have already done the analysis for all 50, that was what we first started with, but we can re-run for clarity
 #can I write a forloop to do this for every stop so that I don't have to run the above code 50 times? 
 #and how will I then cluster stops together, or sum their totals at each scale interval?
-#if I do a forloop fdo I have to use the tidy function to flip and restructure the 50stop data 
+#if I do a forloop do I have to use the tidy function to flip and restructure the 50stop data 
 #so that each row is a stop, and I can run through each row? 
 #but then I will have to rework my occ_counts function to work with the new dataframe
 #----Create two further subsetted and tidied dataframes from BBS data----
