@@ -85,7 +85,8 @@ bbs2 = occ_counts(bbs50, "Stop25", 25)
 #then for every 10, which are the fives doubled, scale = 10 
 #then for every 25, which is just the fifty halved, scale = 25 
 #we have already done the analysis for all 50, that was what we first started with, but we can re-run for clarity
-
+#can I write a forloop to do this so that I don't have to run the above code 50 times? 
+#and how will I then cluster stops together, or sum their totals at each scale interval?
 
 head(bbs1)
 #scale of 1 pt count 
