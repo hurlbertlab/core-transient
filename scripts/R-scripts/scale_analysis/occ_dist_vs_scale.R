@@ -85,8 +85,33 @@ bbs2 = occ_counts(bbs50, "Stop25", 25)
 #then for every 10, which are the fives doubled, scale = 10 
 #then for every 25, which is just the fifty halved, scale = 25 
 #we have already done the analysis for all 50, that was what we first started with, but we can re-run for clarity
-#can I write a forloop to do this so that I don't have to run the above code 50 times? 
+#can I write a forloop to do this for every stop so that I don't have to run the above code 50 times? 
 #and how will I then cluster stops together, or sum their totals at each scale interval?
+#if I do a forloop fdo I have to use the tidy function to flip and restructure the 50stop data 
+#so that each row is a stop, and I can run through each row? 
+#but then I will have to rework my occ_counts function to work with the new dataframe
+#----Create two further subsetted and tidied dataframes from BBS data----
+#one with headers "BBS Route", "Lat", and "Long", one with BBS route, AOU codes, and occupancy values---- 
+require(tidyr)
+tidystops <- gather(data = bbs50, 
+                    key = AOU, 
+                    value = occupancy, 
+                    X2881:X22860,
+                    na.rm=TRUE)
+
+output=c()
+for(Stopx in bbs50){
+  Stop_1=bbs$Stop1[bbs$Stop==Stopx]
+  temp.lon= bbc_lat_long$longitude[bbc_lat_long$siteID==bbc] 
+  distances = rdist.earth(matrix(c(BBSlatlon$Longi,BBSlatlon$Lati), ncol=2),matrix(c(temp.lon,temp.lat), ncol=2),miles=FALSE, R=6371)
+  minDist= min(distances)
+  closestBBS=BBSlatlon$stateroute[distances==minDist]
+  output=rbind(output, c(bbc, closestBBS, minDist))
+}
+output = as.data.frame(output)
+
+
+
 
 head(bbs1)
 #scale of 1 pt count 
