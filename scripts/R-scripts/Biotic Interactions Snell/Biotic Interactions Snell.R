@@ -326,20 +326,23 @@ for (sp in focalspecies) {
   focalout = merge(tmp, compsum, by = 'stateroute', all.x = TRUE)  
   focalout[is.na(focalout)] = 0
   focalout$MainCompAOU = unique(comp_spp$CompetitorAOU[comp_spp$mainCompetitor == 1]) 
+  
+  names(focalout)[names(focalout)=="occupancy"] <- "FocalOcc"
   # main competitor occupancy
   MainCompAOU =  unique(focalout$MainCompAOU)
-  #focalout$CompOcc =  new_occ2$occupancy[new_occ2$AOU == MainCompAOU]
-  # subset occupancy by state route, merge in main competitor
-  #match_occ_stroute = new_occ2[new_occ2$stateroute == focalout$state,]
-  #match_comp_occ = focalout[focalout$stateroute == match_occ_stroute]
-    
   
-  focalcompoutput = rbind(focalcompoutput, focalout)
+  # subset occupancy by state route, merge in main competitor
+  match_occ_stroute = filter(new_occ2, new_occ2$stateroute %in% focalout$stateroute)
+
+  focal_comp_occ = merge(focalout, match_occ_stroute[,c('AOU', 'occupancy')], by.x = 'MainCompAOU', by.y = 'AOU')
+  names(focal_comp_occ)[names(focal_comp_occ)=="occupancy"] <- "CompOcc"
+  focalcompoutput = rbind(focalcompoutput, focal_comp_occ)
 }
 
 focalcompoutput = data.frame(focalcompoutput)
-colnames(focalcompoutput) = c( "CompStateRoute", "FocalSciName", "CompetitorAOU","SumCompAbun")
-#focalcompoutput = write.csv(focalcompoutput, "summed_comp_abun.csv")
+colnames(focalcompoutput) = c( "MainCompAOU", "stateroute","FocalAOU", "FocalAbundance", "FocalOcc","FocalSciName",
+                               "AllCompSum", "MainCompSum", "CompOcc")
+
 
 ######## Skipping plots with raw abundances for now, can revisit later ########
 # merge in lat/long
