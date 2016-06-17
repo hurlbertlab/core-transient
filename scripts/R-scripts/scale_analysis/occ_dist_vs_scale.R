@@ -80,6 +80,11 @@ occ_counts = function(countData, countColumn, v) {
 bbs1 = occ_counts(bbs50, "Stop10", 10) 
 bbs2 = occ_counts(bbs50, "Stop25", 25)
 #It works!!!!!!!!!!!!!!!!!!!!!!!!!
+##clustering - do for all 50 stops 1 by one, scale = 1 
+#then for every five, added together and grouped by fives, scale = 5 
+#then for every 10, which are the fives doubled, scale = 10 
+#then for every 25, which is just the fifty halved, scale = 25 
+#we have already done the analysis for all 50, that was what we first started with, but we can re-run for clarity
 
 
 head(bbs1)
