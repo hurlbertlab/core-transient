@@ -15,14 +15,6 @@
 
 # Site lat-longs and chemistry data also available
 
-
-############ INCOMPLETE #############
-
-# Trying to figure out site naming conventions and spatial scales, and 
-# whether to include pre-2000 data.
-
-
-
 #-------------------------------------------------------------------------------*
 # ---- SET-UP ----
 #===============================================================================*
@@ -166,7 +158,7 @@ dataFormattingTable[,'LatLong_sites'] =
 # E.g., c('year', 'month', 'day')
 
 #--! PROVIDE INFO !--#
-dateFieldName = c('DATE')
+dateFieldName = c('Year')
 
 # If necessary, paste together date info from multiple columns into single field
 if (length(dateFieldName) > 1) {
@@ -183,11 +175,7 @@ if (length(dateFieldName) > 1) {
 # be '%Y-%m-%d'. Type "?strptime" for other examples of date formatting.
 
 #--! PROVIDE INFO !--#
-dateformat = '%d-%b-%y'
-
-# If date is only listed in years:
-
-# dateformat = '%Y'
+dateformat = '%Y'
 
 # If the date is just a year, then make sure it is of class numeric
 # and not a factor. Otherwise change to a true date object.
@@ -242,7 +230,7 @@ dataFormattingTable[,'subannualTgrain'] =
   dataFormattingTableFieldUpdate(datasetID, 'subannualTgrain', 
 
 #--! PROVIDE INFO !--#                                 
-                                 'Y')
+                                 'N')
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SITE DATA ----
@@ -376,7 +364,7 @@ dataFormattingTable[,'Notes_siteFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_siteFormat', 
 
 #--! PROVIDE INFO !--#
-  'The site field is a concatenation of site and quadrat.')
+  'Sites are stream transects nested within streams within watersheds within larger river basins.')
 
 
 #-------------------------------------------------------------------------------*
@@ -393,7 +381,7 @@ summary(dataset3)
 # If there is no countfield, set this equal to "".
 
 #--! PROVIDE INFO !--#
-countfield = ""
+countfield = "TOTAL"
 
 # Renaming it
 if (countfield == "") {
@@ -454,13 +442,13 @@ dataFormattingTable[,'countFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'countFormat',  
 
 #--! PROVIDE INFO !--#                                 
-                                 'presence')
+                                 'count')
 
 dataFormattingTable[,'Notes_countFormat'] = 
   dataFormattingTableFieldUpdate(datasetID, 'Notes_countFormat', 
                                  
 #--! PROVIDE INFO !--#                                 
-              'No count data provided, so 1s added to indicate presence')
+              'Counts are number of individuals per transect')
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SPECIES DATA ----
@@ -474,7 +462,7 @@ dataFormattingTable[,'Notes_countFormat'] =
 # It will get converted to 'species'
 
 #--! PROVIDE INFO !--#
-speciesField = 'species_name'
+speciesField = 'FishTaxa'
 
 names(dataset5)[names(dataset5) == speciesField] = 'species'
 
@@ -503,7 +491,13 @@ data.frame(table(dataset5$species))
 # Because of this, you should really stop here and post an issue on GitHub. 
 
 #--! PROVIDE INFO !--#
-bad_sp = c('')
+bad_sp = c('BULLHEAD (UNKNOWN)', 'CYPRINELLA SP.', 'CYPRINID (UNKNOWN)', 'CYPRINID HYBRID',
+           'DARTER (UNKNOWN)', 'LAMPREY (UNKNOWN)', 'LAMPREY SP.', 'LEPOMIS HYBRID',
+           'LUXILUS SP.', 'NOTROPIS SP.', 'SCULPIN (UNKNOWN)', 'SUNFISH (HYBRID)',
+           'SUNFISH (UNKNOWN)', 'NOTROPIS HYBRID')
+
+# Leaving in 'ENNEACANTHUS SP.' as there do not seem to be any other entries of this Genus.
+# Also leaving "NO FISH OBSERVED" to make sure that sampling events are not lost.
 
 dataset6 = dataset5[!dataset5$species %in% bad_sp,]
 
@@ -517,10 +511,10 @@ table(dataset6$species)
 # correct spellings in good_name, and then replace them using the for loop below:
 
 #--! PROVIDE INFO !--#
-typo_name = c('CERATOPHYLLUM')           #no other genus begins with these letters
+typo_name = c('')           
 
 #--! PROVIDE INFO !--#
-good_name = c('CERATOPHYLLUM DEMERSUM')
+good_name = c('')
 
 if (length(typo_name) > 0 & typo_name[1] != "") {
   for (n in 1:length(typo_name)) {
@@ -555,7 +549,7 @@ dataFormattingTable[,'Notes_spFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_spFormat',  
 
 #--! PROVIDE INFO !--#                                 
-  'A number of names represented in two obvious forms; 2 names (SAJ and VAL) assumed to be shorthand for Sagitarria and Vallisneria.')
+  "Several unidentified or hybrid taxa were removed. Rare, threatened and endangered taxa are listed as 'RTE Taxa #'")
 
 #-------------------------------------------------------------------------------*
 # ---- MAKE DATA FRAME OF COUNT BY SITES, SPECIES, AND YEAR ----
@@ -688,13 +682,12 @@ tGrain = 'year'
 site_grain_names
 
 #--! PROVIDE INFO !--#
-sGrain = 'site'
+sGrain = 'MDE8Name'
 
 # This is a reasonable choice of spatial grain because ...
 #--! PROVIDE INFO !--#
-# quadrats are only 0.25 m2 and record presence absence, whereas sites encompass
-# 28-52 quadrats per depth interval providing a greater sample and an effective
-# abundance measure.
+# most transects are only ever sampled once, but any given stream or small watershed
+# almost certainly has repeat samples within it over time. 
 
 # The function "richnessYearSubsetFun" below will subset the data to sites with an 
 # adequate number of years of sampling and species richness. If there are no 
@@ -778,7 +771,7 @@ dataFormattingTable[,'General_notes'] =
   dataFormattingTableFieldUpdate(datasetID, 'General_notes', 
                                  
                                  #--! PROVIDE INFO !--#                                 
-                                 )
+                                 '')
 
 # And write the final data formatting table:
 
