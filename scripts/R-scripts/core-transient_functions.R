@@ -193,7 +193,8 @@ getNestedSiteDataset = function(dataset, siteGrain, dataDescription){
        # Get the definition for a site and store each level as separate columns:
       # siteLevels = strsplit(siteGrain, '_')[[1]]
        # Convert site data to a table and add names based on site definition:
-       siteTable = read.table(text = as.character(dataset$site), sep = '_', stringsAsFactors = F)
+       siteTable = read.table(text = as.character(dataset$site), sep = '_',
+                              quote = '\"', stringsAsFactors = F)
        siteDefinition = dataDescription$Raw_siteUnit
        names(siteTable) = strsplit(as.character(siteDefinition), '_')[[1]]
        # Get pre-determined site levels and maintain site based on match: 
