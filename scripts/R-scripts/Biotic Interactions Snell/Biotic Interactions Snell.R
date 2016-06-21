@@ -180,7 +180,7 @@ for (sp in focal_spp) {
   t2 = t1[grep('.shp', t1)]
   t3 = strsplit(t2, ".shp")
  # GET LINK FIXED AND WRITE IN FOCAL AND COMP AOU
-  test.poly <- readShapePoly("Z:/GIS/birds/All/All/", paste(, t3, sep = "")) # reads in species-specific shapefile
+  test.poly <- readShapePoly(paste("z:/GIS/birds/All/All/", t3, sep = "")) # reads in species-specific shapefile
   proj4string(test.poly) <- intl_proj
   colors = c("red", "yellow", "green", "blue", "purple")
   # subset to just permanent or breeding residents
@@ -196,7 +196,7 @@ for (sp in focal_spp) {
   # match competitor sp to focal spp, intersect its range with the focal range,
   # and calcualte the area of overlap between the two species.
   for(co in comp_spp) {          
-      #co = 'Seiurus_aurocapilla' 
+      #co = 'Parkesia_noveboracensis' 
       #print(co)
       c1 = all_spp_list[grep(co, all_spp_list)]
       c2 = c1[grep('.shp', c1)]
@@ -211,18 +211,20 @@ for (sp in focal_spp) {
       corigin = gBuffer(corigin, byid=TRUE, width=0)
       
       pi = intersect(sporigin, corigin)
-      plot(pi)
+      #plot(pi)
       spArea = gArea(sporigin) # in m
       coArea = gArea(corigin)
       area_overlap = gArea(pi)
-      filesoutput = rbind(filesoutput, c(sp, co, spArea, coArea, area_overlap))
+      focalAOU = unique(new_spec_weights[new_spec_weights$focalcat == sp, c('FocalAOU')])
+      compAOU = unique(new_spec_weights[new_spec_weights$compcat == co, c('CompetitorAOU')])
+      filesoutput = rbind(filesoutput, c(sp, focalAOU, co, compAOU, spArea, coArea, area_overlap))
   }
 } 
 
 filesoutput = data.frame(filesoutput)
-colnames(filesoutput) = c("sp", "co", "spArea", "coArea", "area_overlap")
+colnames(filesoutput) = c("Focal", "focalAOU","Competitor", "compAOU","FocalArea", "CompArea", "area_overlap")
 # string split to get sci name with spaces
-filesoutput = gsub('_',' ',filesoutput$sp)
+filesoutput$Focal = gsub('_',' ',filesoutput$Focal)
 write.csv(filesoutput, file = "shapefile_areas.csv")
 }
 
@@ -242,13 +244,10 @@ all_occ$AOU[all_occ$AOU == 7220] <- 7222
 # pull out stateroutes that have been continuously sampled 1996-2010
 routes = unique(all_occ$X)
 
-sub_ep = merge(expect_pres, sp_list, by = 'AOU', all = TRUE) ############################################
+sub_ep = merge(expect_pres, sp_list, by = 'AOU', all = TRUE) 
 # merge expected presence with occupancy data
 new_occ = merge(sub_ep, all_occ, by.x = c('stateroute', 'AOU'), by.y = c('X', 'AOU'), all = TRUE)
 new_occ$occupancy[is.na(new_occ$occupancy)] = 0
-
-new_occ$CommonName[new_occ$AOU == 7220] == "Winter Wren" ######NOT WORKING!
-new_occ$SciName[new_occ$AOU == 7220] == "Troglodytes troglodytes"
 
 # subset to routes in the well sampled list of 'routes'
 new_occ2 = new_occ[new_occ$stateroute %in% routes, ]
@@ -280,6 +279,8 @@ bbs_pool = bbs %>%
   group_by(stateroute, Aou) %>% 
   dplyr::summarize(abundance = mean(SpeciesTotal))
 names(bbs_pool)[names(bbs_pool)=="Aou"] <- "AOU"
+# need to change winter wren AOU to 7222 from 7220 in bbs_pool
+bbs_pool$AOU[bbs_pool$AOU == 7220] <- 7222
 
 focalspecies = unique(new_spec_weights$FocalAOU)
 
@@ -294,23 +295,15 @@ occ_abun = merge(bbs_abun, new_occ2[, c('AOU', 'stateroute' ,'occupancy', 'SciNa
 # "area.df" with cols: FocalAOU, CompAOU, focalArea, compArea, intArea, intProp
 shapefile_areas = read.csv("shapefile_areas.csv", header = TRUE) # from for loop above
 shapefile_areas$X = NULL
-# merge focal_competitor table in with shapefile areas 
-# have to do 2X to get right focal and comps to line up (wasn't capturing both before)
-area.prep = merge(new_spec_weights[, c('FocalAOU', 'FocalSciName')], 
-                  shapefile_areas, by.x = 'FocalSciName', by.y = 'sp', all = TRUE)
-area.df = merge(new_spec_weights[, c('CompetitorAOU', 'CompSciName')], 
-               area.prep, by.x = 'CompSciName', by.y = 'co', all = TRUE)
-
-names(area.df)[names(area.df)=="spArea"] <- "FocalArea"
 
 # calculate proportion of overlap between focal range and overlap range
-area.df$PropOverlap = area.df$area.overlap/area.df$FocalArea
+shapefile_areas$PropOverlap = shapefile_areas$area_overlap/shapefile_areas$FocalArea
 
 # Which competitor has greatest area of overlap? -- main competitor
-area.df$mainCompetitor = 0 # set up main competitor column, 0 = not the primary competitor
+shapefile_areas$mainCompetitor = 0 # set up main competitor column, 0 = not the primary competitor
 for (s in focalspecies) {
-  maxOverlap = max(area.df$PropOverlap[area.df$FocalAOU == s], na.rm = TRUE) #largest area of proportion overlap
-  area.df$mainCompetitor[area.df$FocalAOU == s & area.df$PropOverlap == maxOverlap] = 1 # 1 assigns main competitor
+  maxOverlap = max(shapefile_areas$PropOverlap[shapefile_areas$focalAOU == s], na.rm = TRUE) #largest area of proportion overlap
+  shapefile_areas$mainCompetitor[shapefile_areas$focalAOU == s & shapefile_areas$PropOverlap == maxOverlap] = 1 # 1 assigns main competitor
 }
 
 # for loop to select sp and compare to their competitor(s) 
@@ -319,11 +312,11 @@ focalcompoutput = c()
 for (sp in focalspecies) {
   print(sp)
   tmp = filter(occ_abun, AOU == sp)  #why is this occ_abun
-  comp_spp = area.df[area.df$FocalAOU == sp, c('CompetitorAOU', 'mainCompetitor')]
+  comp_spp = shapefile_areas[shapefile_areas$focalAOU == sp, c('compAOU', 'mainCompetitor')]
   
-  mainComp = comp_spp$CompetitorAOU[comp_spp$mainCompetitor == 1]
-  bbs_comp = bbs_pool %>% filter(AOU %in% comp_spp$CompetitorAOU & stateroute %in% tmp$stateroute) 
-  bbs_comp2 = merge(bbs_comp, comp_spp, by.x = 'AOU', by.y = 'CompetitorAOU')
+  mainComp = comp_spp$compAOU[comp_spp$mainCompetitor == 1]
+  bbs_comp = bbs_pool %>% filter(AOU %in% comp_spp$compAOU & stateroute %in% tmp$stateroute) 
+  bbs_comp2 = merge(bbs_comp, comp_spp, by.x = 'AOU', by.y = 'compAOU')
   bbs_comp2$mainCompN = bbs_comp2$abundance * bbs_comp2$mainCompetitor
   
   compsum = bbs_comp2 %>% group_by(stateroute) %>% 
@@ -331,7 +324,7 @@ for (sp in focalspecies) {
   
   focalout = merge(tmp, compsum, by = 'stateroute', all.x = TRUE)  
   focalout[is.na(focalout)] = 0
-  focalout$MainCompAOU = unique(comp_spp$CompetitorAOU[comp_spp$mainCompetitor == 1]) 
+  focalout$MainCompAOU = unique(comp_spp$compAOU[comp_spp$mainCompetitor == 1]) 
   
   names(focalout)[names(focalout)=="occupancy"] <- "FocalOcc"
   # main competitor occupancy
@@ -341,7 +334,7 @@ for (sp in focalspecies) {
   match_occ_stroute = filter(new_occ2, new_occ2$stateroute %in% focalout$stateroute)
 
   focal_comp_occ = merge(focalout, match_occ_stroute[,c('AOU', 'occupancy')], by.x = 'MainCompAOU', by.y = 'AOU')
-  names(focal_comp_occ)[names(focal_comp_occ)=="occupancy"] <- "CompOcc"
+  names(focal_comp_occ)[names(focal_comp_occ)=="occupancy"] <- "CompOcc" # do we need competitor occ? makes DF huge
   focalcompoutput = rbind(focalcompoutput, focal_comp_occ)
 }
 
@@ -372,99 +365,73 @@ points(focal_abun$Longi.x, focal_abun$Lati.x, col = 3, pch = 16, cex = focal_abu
 # points(plotdata_gaps$Longi.x, plotdata_gaps$Lati.x, col = 4, pch = 17) #where GT == 0 but predicted presence BLUE 
 
 
-#### ---- Processing Environmental Data ---- ####
+#### ---- Processing Environmental Data - Re-done from Snell_code.R ---- ####
 # read in raw env data (from Coyle et al)
 all_env = read.csv('All Env Data.csv', header = T)
 # merge in ENV
-all_expected_pres = merge(all_env, expect_pres, by = "stateroute")
-col_keep_1 <- c("stateroute", "Longi", "Lati",  'sum.EVI', 'elev.mean', 'mat', 'ap.mean', "AOU", 'CommonName', 'match', 'occupancy')
-all_expected_pres = all_expected_pres[, (names(all_expected_pres) %in% col_keep_1)]
+all_expected_pres = merge(all_env[,c("stateroute", "Longi", "Lati",  'sum.EVI', 'elev.mean', 'mat', 'ap.mean')], 
+     focalcompoutput, by = "stateroute")
 
-latlongs = read.csv('routes 1996-2010 consecutive.csv', header = T)
-bbs_loc = merge(bbs, latlongs, by = "stateroute")
-# for loop subsetting env data to expected occurrence for focal species
-focal_aou = c(new_spec_weights$FocalAOU)
-output = c()
-for (sp in focal_aou){
-  temp = all_expected_pres[all_expected_pres$AOU == sp,] # need to automate these
-  focal_abun = bbs_loc[bbs_loc$Aou == sp,] 
-  env_output = merge(temp, focal_abun, by.x = "AOU", by.y = "Aou", all = FALSE)
-  output = rbind(output,c(sp, focal_abun$stateroute, env_output))
-}         
-
-# merge focal abundance w expected pres/env variables #NEEDS TO BE IN A LOOP
-env_abun = merge(all_expected_pres, focal_abun, by = "stateroute")
-env_abun_subset = env_abun[, (names(env_abun) %in% c("stateroute", "elev.mean", "sum.EVI", 
-                                                     "mat", "ap.mean","SpeciesTotal","AOU"))]
-
-# NEED: for loop for species-spec weighted avg of env variables
-env_abun_subset$meantemp = (env_abun_subset$mat * env_abun_subset$SpeciesTotal)/sum(env_abun_subset$SpeciesTotal)
-env_abun_subset$meanelev = (env_abun_subset$elev.mean * env_abun_subset$SpeciesTotal)/sum(env_abun_subset$SpeciesTotal)
-env_abun_subset$meanprecip = (env_abun_subset$ap.mean * env_abun_subset$SpeciesTotal)/sum(env_abun_subset$SpeciesTotal)
-env_abun_subset$meanevi = (env_abun_subset$sum.EVI * env_abun_subset$SpeciesTotal)/sum(env_abun_subset$SpeciesTotal)
-
-
-env_focal = env_abun_subset[env_abun_subset$AOU == 5900,]
-
-# weighted SD
-output = c()
-for (r in env_abun_subset$stateroute){
-  output = c(output, rep(env_abun_subset$meantemp, env_abun_subset$SpeciesTotal))
+#For loop to calculate mean & standard dev environmental variables for each unique species (from BIOL 465)
+birdsoutputm = c()
+for (sp in focalspecies) {
+  spec.routes <- all_expected_pres[(all_expected_pres$FocalAOU) == sp, "stateroute"] #subset routes for each species (i) in tidybirds
+  env.sub <- all_expected_pres[all_expected_pres$stateroute %in% routes,] #subset routes for each env in tidybirds
+  envmeans = as.vector(apply(all_expected_pres[, c("mat", "ap.mean","elev.mean","sum.EVI")], 2, mean))
+  envsd = as.vector(apply(all_expected_pres[, c("mat", "ap.mean","elev.mean","sum.EVI")], 2, sd))
+  
+  birdsoutputm = rbind(birdsoutputm, c(sp, envmeans, envsd))
   
 }
+birdsoutputm = data.frame(birdsoutputm)
+names(birdsoutputm) = c("Species", "Mean.Temp", "Mean.Precip", "Mean.Elev", "Mean.EVI", "SD.Temp", "SD.Precip", "SD.Elev", "SD.EVI")
 
-# read in env data from biol 465 final project, Snell Project Final.R script
-env = read.csv('occuenv.csv', header = T)
-# subset to GT species  
-env_gt = env[env$Species == 5900 |env$Species == 5880,] 
-# pulling out environmental z-scores by state route 
-col_keeps <- c("stateroute", "Species", "Lati", "Longi", "zTemp","zPrecip", "zElev", "zEVI")
-env_zscore = env_gt[, (names(env_gt) %in% col_keeps)]
+# merge in global mean env data with species-specific env data & occ data
+occuenv = merge(birdsoutputm, all_expected_pres, by.x = "Species", by.y = "FocalAOU")
+
+#Calculating z scores for each environmental variable (observed mean - predicted mean/predicted SD)
+occuenv$zTemp = (occuenv$mat - occuenv$Mean.Temp) / occuenv$SD.Temp
+occuenv$zPrecip = (occuenv$ap.mean - occuenv$Mean.Precip) / occuenv$SD.Precip
+occuenv$zElev = (occuenv$elev.mean - occuenv$Mean.Elev) / occuenv$SD.Elev
+occuenv$zEVI = (occuenv$sum.EVI - occuenv$Mean.EVI) / occuenv$SD.EVI
+
+# for loop subsetting env data to expected occurrence for focal species
+envoutput = c()
+for (sp in focalspecies){
+  temp = occuenv[occuenv$Species == sp,] 
+
+  competition <- lm(temp$FocalOcc ~  temp$MainCompSum) #LOGIT LINK HERE
+  # z scores separated out for env effects (as opposed to multivariate variable)
+  env_z = lm(temp$FocalOcc ~ abs(temp$zTemp)+abs(temp$zElev)+abs(temp$zPrecip)+abs(temp$zEVI), data = temp)
+  # z scores separated out for env effects
+  both_z = lm(temp$FocalOcc ~  temp$MainCompSum + abs(temp$zTemp)+abs(temp$zElev)+abs(temp$zPrecip)+abs(temp$zEVI), data = temp)
+  
+  #variance_partitioning = function(x, y) { # change to x and y
+    ENV = summary(both_z)$r.squared - summary(competition)$r.squared
+    print(ENV) #env only
+    COMP = summary(both_z)$r.squared - summary(env_z)$r.squared
+    print(COMP) #competition only
+    SHARED = summary(competition)$r.squared - COMP
+    print(SHARED) #shared variance
+    NONE = 1 - summary(both_z)$r.squared
+    print(NONE) #neither variance
+ # }
+  envoutput = rbind(envoutput, c(sp, ENV, COMP, SHARED, NONE))
+}         
+envoutput = data.frame(envoutput)
+names(envoutput) = c("FocalAOU", "ENV", "COMP", "SHARED", "NONE")
 
 
-library(dplyr)
-
-
-# subset to stateroute, recalculate z-scores from scratch
-unique(env_zscore$stateroute)
-
-competitor_focal_env = merge(env_zscore, test, by = "stateroute")
-
-# pulling out environmental z-scores by state route 
-col_keep_2 <- c("stateroute", "SpeciesTotal", "coyle_o.X5900")
-obs_exp_edit = obs_exp_total[, (names(obs_exp_total) %in% col_keep_2)]
-
-# merge env data w obs_exp_total
-env_occu_matrix = merge(env_zscore, obs_exp_edit, by = "stateroute") 
-#calculate euclidean distance with z scores
-env_occu_matrix$eucdist = sqrt((env_occu_matrix$zTemp)^2 + (env_occu_matrix$zPrecip)^2 + (env_occu_matrix$zElev)^2 + (env_occu_matrix$zEVI)^2)
-#renaming columns
-colnames(env_occu_matrix)[colnames(env_occu_matrix)=="SpeciesTotal"] <- "SpottedTotal"
-colnames(env_occu_matrix)[colnames(env_occu_matrix)=="coyle_o.X5900"] <- "GT_occ"
+# Which competitor has greatest area of overlap? -- main competitor
+envoutput$VarPar = 0 # set up main competitor column, 0 = not the primary competitor
+for (s in focalspecies) {
+  maxVarPar = pmax(envoutput$ENV|envoutput$COMP|envoutput$ENV|envoutput$NONE[envoutput$FocalAOU == s], na.rm = TRUE) 
+  envoutput$VarPar[envoutput$focalAOU == s & shapefile_areas$PropOverlap == maxOverlap] = 1 # 1 assigns main competitor
+}
 
 #### ---- Variance partitioning ---- ####
 # create logit transformation function
-occ_logit =  log(env_occu_matrix$GT_occ / (1 - env_occu_matrix$GT_occ))
-
-# Interaction between GT occupancy and ST abundance where GT exists
-competition <- lm(trans.arcsine(GT_occ) ~  SpottedTotal, data = env_occu_matrix) #LOGIT LINK HERE
-# z scores separated out for env effects (as opposed to multivariate variable)
-env_z = lm(GT_occ ~ abs(zTemp)+abs(zElev)+abs(zPrecip)+abs(zEVI), data = env_occu_matrix)
-# z scores separated out for env effects
-both_z = lm(GT_occ ~  Spotted_abun + abs(zTemp)+abs(zElev)+abs(zPrecip)+abs(zEVI), data = env_occu_matrix)
-
-# Variance partitioning analysis
-variance_partitioning = function(x, y) { # change to x and y
-  ENV = summary(both_z)$r.squared - summary(competition)$r.squared
-  print(ENV) #env only
-  COMP = summary(both_z)$r.squared - summary(env_z)$r.squared
-  print(COMP) #competition only
-  SHARED = summary(competition)$r.squared - COMP
-  print(SHARED) #shared variance
-  NONE = 1 - summary(both_z)$r.squared
-  print(NONE) #neither variance
-}
-# abiotic variables explain twice as much variation as biotic
+occ_logit =  log(env_occu_matrix$GT_occ / (1 - env_occu_matrix$GT_occ)) #### NEED LOGIT
 
 #### ---- Plotting LMs ---- ####
 library(ggplot2)
