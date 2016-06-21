@@ -485,10 +485,12 @@ data.frame(table(dataset5$species))
 
 
 #--! PROVIDE INFO !--#
-bad_sp = c('Aeshnidae', 'Limnephilidae', 'Tipulidae', 'Cambaridae', 'Simuliidae',
+bad_sp = c('Aeshnidae', 'Limnephilidae', 'Tipulidae', 'Simuliidae',
            'Oligochaeta', 'Lepidoptera', 'Ceratopogonidae', 'Perlodidae',
-           'Empididae', 'Amphipoda', 'Leptophlebiidae', 'Leuctridae',
-           )
+           'Empididae', 'Amphipoda', 'Leptophlebiidae', 'Leuctridae','Asellidae',
+           'Baetidae','Bivalvia', 'Calamoceratidae','Capniidae','Chloroperlidae',
+           'Chrysomelidae','Coenagrionidae','Corduliidae', 'Corydalidae', 'Crangonyctidae', 
+           'Culicidae','Dixidae')
 
 dataset6 = dataset5[!dataset5$species %in% bad_sp,]
 
@@ -530,7 +532,17 @@ typo_name = c('Ameletus',
               'Paragnetina',
               'Perlesta',
               'Perlinella',
-              '')           
+              'Ancylidae', 
+              'Brachycentridae', 
+              'Calopterygidae',
+              'Cambarus',
+              'Cambaridae',
+              'Orconectes',
+              'Procambarus',
+              'Isotomidae',
+              'Collembola',
+              'Diamesinae',
+              'Dugesiidae')           
 
 #--! PROVIDE INFO !--#
 good_name = c('Ameletidae',
@@ -560,7 +572,18 @@ good_name = c('Ameletidae',
               'Perlidae',
               'Perlidae',
               'Perlidae',
-              'Perlidae',)
+              'Perlidae',
+              'Ferrissia',
+              'Brachycentrus',
+              'Calopteryx',
+              'Cambaridae',
+              'Cambaridae',
+              'Cambaridae',
+              'Cambaridae',
+              'Isotomurus',
+              'Isotomurus',
+              'Diamesa',
+              'Cura')
 
 if (length(typo_name) > 0 & typo_name[1] != "") {
   for (n in 1:length(typo_name)) {
