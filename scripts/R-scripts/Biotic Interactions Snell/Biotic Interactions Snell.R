@@ -347,16 +347,7 @@ colnames(focalcompoutput) = c( "MainCompAOU", "stateroute","FocalAOU", "FocalAbu
 ######## Skipping plots with raw abundances for now, can revisit later ########
 # merge in lat/long
 latlongs = read.csv('routes 1996-2010 consecutive.csv', header = T)
-plotdata_all = merge(focalcompoutput, latlongs, by.x = "CompStateRoute",by.y = "stateroute") 
-# plotdata_gaps = merge(GT_gaps, latlongs, by = "stateroute") #where expected didnt equal observed GT only in coyle
-# spotted range in point format
-bbs_loc = merge(bbs, latlongs, by = "stateroute")
-focal_spp_2 = c(unique(final_occ_abun$FocalAOU))
-sp = 7540
-focal_abun = bbs_loc[bbs_loc$Aou == sp,] 
-compabun = bbs_loc[bbs_loc$Aou == co,]
-# view where coyle_occupancy = 0 but predicted presence
-# GT_gaps = obs_exp_total[obs_exp_total$coyle_o.X5900 == 0,] 
+plotdata_all = merge(focalcompoutput, latlongs, by = "stateroute") 
 
 # plot of states
 map("state") 
@@ -365,7 +356,15 @@ points(compabun$Longi.x, compabun$Lati.x, col = 2,  pch = 20, cex = compabun$Spe
 points(focal_abun$Longi.x, focal_abun$Lati.x, col = 3, pch = 16, cex = focal_abun$SpeciesTotal/5) #GT range = GREEN
 # points(plotdata_gaps$Longi.x, plotdata_gaps$Lati.x, col = 4, pch = 17) #where GT == 0 but predicted presence BLUE 
 
+pdf('Plots_RangeMaps.pdf', height = 8, width = 10)
+par(mfrow = c(3, 4))
 
+for(sp in focalspecies){ 
+  map("state") 
+  plot(plotdata_all$Longi, plotdata_all$Lati, pch = 20, xlab = sp, main = plotdata_all$FocalSciName[plotdata_all$FocalAOU == sp][1])
+}
+
+dev.off()   
 #### ---- Processing Environmental Data - Re-done from Snell_code.R ---- ####
 # read in raw env data (from Coyle et al)
 all_env = read.csv('All Env Data.csv', header = T)
