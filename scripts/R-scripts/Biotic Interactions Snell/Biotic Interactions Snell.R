@@ -333,8 +333,9 @@ for (sp in focalspecies) {
   # subset occupancy by state route, merge in main competitor
   match_occ_stroute = filter(new_occ2, new_occ2$stateroute %in% focalout$stateroute)
 
-  focal_comp_occ = merge(focalout, match_occ_stroute[,c('AOU', 'occupancy')], by.x = 'MainCompAOU', by.y = 'AOU')
-  names(focal_comp_occ)[names(focal_comp_occ)=="occupancy"] <- "CompOcc" # do we need competitor occ? makes DF huge
+  focal_comp_occ = merge(focalout, match_occ_stroute[,c('AOU', 'stateroute', 'occupancy')], 
+                         by.x = c('MainCompAOU', 'stateroute'), by.y = c('AOU', 'stateroute'))
+  names(focal_comp_occ)[names(focal_comp_occ)=="occupancy"] <- "MainCompOcc" # do we need competitor occ? makes DF huge
   focalcompoutput = rbind(focalcompoutput, focal_comp_occ)
 }
 
@@ -402,7 +403,7 @@ for (sp in focalspecies){
 
   competition <- lm(temp$FocalOcc ~  temp$MainCompSum) #LOGIT LINK HERE
   # z scores separated out for env effects (as opposed to multivariate variable)
-  env_z = lm(temp$FocalOcc ~ abs(temp$zTemp)+abs(temp$zElev)+abs(temp$zPrecip)+abs(temp$zEVI), data = temp)
+  env_z = lm(FocalOcc ~ abs(zTemp)+abs(zElev)+abs(zPrecip)+abs(zEVI), data = temp)
   # z scores separated out for env effects
   both_z = lm(temp$FocalOcc ~  temp$MainCompSum + abs(temp$zTemp)+abs(temp$zElev)+abs(temp$zPrecip)+abs(temp$zEVI), data = temp)
   
