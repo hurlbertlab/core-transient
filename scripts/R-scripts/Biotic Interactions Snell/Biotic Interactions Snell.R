@@ -343,8 +343,20 @@ focalcompoutput = data.frame(focalcompoutput)
 colnames(focalcompoutput) = c( "MainCompAOU", "stateroute","FocalAOU", "FocalAbundance", "FocalOcc","FocalSciName",
                                "AllCompSum", "MainCompSum", "CompOcc")
 
+# need to filter number to spp present at at least 20 routes for decent model results
+select(focalcompoutput, stateroute, FocalAOU)
+filter(FocalAOU %in% focalcompoutput & stateroute %in% focalcompoutput)
+group_by(focalcompoutput$stateroute)
+  table(focalcompoutput$stateroute)
+  
+focalcompoutput$stcount = table(focalcompoutput$stateroute, focalcompoutput$FocalAOU)
+summarise(group_by(focalcompoutput$FocalAOU), sum = )
 
-######## Skipping plots with raw abundances for now, can revisit later ########
+focalcompoutput$tally = 1
+grouped = group_by(as.character(focalcompoutput$FocalAOU)) 
+%>% summarise(sum = focalcompoutput$tally)
+  
+######## PDF of each species BBS occurrences ########
 # merge in lat/long
 latlongs = read.csv('routes 1996-2010 consecutive.csv', header = T)
 plotdata_all = merge(focalcompoutput, latlongs, by = "stateroute") 
@@ -360,11 +372,15 @@ pdf('Plots_RangeMaps.pdf', height = 8, width = 10)
 par(mfrow = c(3, 4))
 
 for(sp in focalspecies){ 
+  print(sp)
+  plotsub = plotdata_all[plotdata_all$FocalAOU == sp,]
   map("state") 
-  plot(plotdata_all$Longi, plotdata_all$Lati, pch = 20, xlab = sp, main = plotdata_all$FocalSciName[plotdata_all$FocalAOU == sp][1])
+  points(plotsub$Longi, plotsub$Lati, col = 3,  pch = 20)
+  title(main = (unique(plotdata_all$FocalSciName[plotdata_all$FocalAOU == sp])))
 }
 
 dev.off()   
+
 #### ---- Processing Environmental Data - Re-done from Snell_code.R ---- ####
 # read in raw env data (from Coyle et al)
 all_env = read.csv('All Env Data.csv', header = T)
@@ -395,16 +411,19 @@ occuenv$zPrecip = (occuenv$ap.mean - occuenv$Mean.Precip) / occuenv$SD.Precip
 occuenv$zElev = (occuenv$elev.mean - occuenv$Mean.Elev) / occuenv$SD.Elev
 occuenv$zEVI = (occuenv$sum.EVI - occuenv$Mean.EVI) / occuenv$SD.EVI
 
+# create logit transformation function
+occuenv$occ_logit =  log(occuenv$FocalOcc/(1-occuenv$FocalOcc)) #### get rid of Inf?!
+
 # for loop subsetting env data to expected occurrence for focal species
 envoutput = c()
 for (sp in focalspecies){
   temp = occuenv[occuenv$Species == sp,] 
 
-  competition <- lm(temp$FocalOcc ~  temp$MainCompSum) #LOGIT LINK HERE
+  competition <- lm(temp$occ_logit ~  temp$MainCompSum) #LOGIT LINK HERE
   # z scores separated out for env effects (as opposed to multivariate variable)
-  env_z = lm(FocalOcc ~ abs(zTemp)+abs(zElev)+abs(zPrecip)+abs(zEVI), data = temp)
+  env_z = lm(occ_logit ~ abs(zTemp)+abs(zElev)+abs(zPrecip)+abs(zEVI), data = temp)
   # z scores separated out for env effects
-  both_z = lm(temp$FocalOcc ~  temp$MainCompSum + abs(temp$zTemp)+abs(temp$zElev)+abs(temp$zPrecip)+abs(temp$zEVI), data = temp)
+  both_z = lm(temp$occ_logit ~  temp$MainCompSum + abs(temp$zTemp)+abs(temp$zElev)+abs(temp$zPrecip)+abs(temp$zEVI), data = temp)
   
   #variance_partitioning = function(x, y) { # change to x and y
     ENV = summary(both_z)$r.squared - summary(competition)$r.squared
@@ -428,10 +447,6 @@ for (s in focalspecies) {
   maxVarPar = pmax(envoutput$ENV|envoutput$COMP|envoutput$ENV|envoutput$NONE[envoutput$FocalAOU == s], na.rm = TRUE) 
   envoutput$VarPar[envoutput$focalAOU == s & shapefile_areas$PropOverlap == maxOverlap] = 1 # 1 assigns main competitor
 }
-
-#### ---- Variance partitioning ---- ####
-# create logit transformation function
-occ_logit =  log(env_occu_matrix$GT_occ / (1 - env_occu_matrix$GT_occ)) #### NEED LOGIT
 
 #### ---- Plotting LMs ---- ####
 library(ggplot2)
