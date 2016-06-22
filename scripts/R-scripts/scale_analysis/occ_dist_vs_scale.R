@@ -125,17 +125,37 @@ bbsbound<- rbind(bbs1, bbs2, bbs3, bbs4, bbs5, bbs6, bbs7, bbs8, bbs9, bbs10,
 #then for every 25, which is just the fifty halved, scale = 25 
 #we have already done the analysis for all 50, that was what we first started with, but we can re-run for clarity
 bbs5bound_1<-rbind(bbs1, bbs2, bbs3, bbs4, bbs5) 
+bbs5bound_1$subrouteID<-"1-5"
+bbs5bound_1$scale<-"5"
 bbs5bound_2<-rbind(bbs6, bbs7, bbs8, bbs9, bbs10)
+bbs5bound_2$subrouteID<-"6-10"
+bbs5bound_2$scale<-"5"
 bbs5bound_3<-rbind(bbs11, bbs12, bbs13, bbs14, bbs15)
+bbs5bound_3$subrouteID<-"11-15"
+bbs5bound_3$scale<-"5"
 bbs5bound_4<-rbind(bbs16, bbs17, bbs18, bbs19, bbs20)
+bbs5bound_4$subrouteID<-"16-20"
+bbs5bound_4$scale<-"5"
 bbs5bound_5<-rbind(bbs21, bbs22, bbs23, bbs24, bbs25)
+bbs5bound_5$subrouteID<-"21-25"
+bbs5bound_5$scale<-"5"
 bbs5bound_6<-rbind(bbs26, bbs27, bbs28, bbs29, bbs30)
+bbs5bound_6$subrouteID<-"26-30"
+bbs5bound_6$scale<-"5"
 bbs5bound_7<-rbind(bbs31, bbs32, bbs33, bbs34, bbs35)
+bbs5bound_7$subrouteID<-"31-35"
+bbs5bound_7$scale<-"5"
 bbs5bound_8<-rbind(bbs36, bbs37, bbs38, bbs39, bbs40)
+bbs5bound_8$subrouteID<-"36-40"
+bbs5bound_8$scale<-"5"
 bbs5bound_9<-rbind(bbs41, bbs42, bbs43, bbs44, bbs45)
+bbs5bound_9$subrouteID<-"41-45"
+bbs5bound_9$scale<-"5"
 bbs5bound_10<-rbind(bbs46, bbs47, bbs48, bbs49, bbs50)
-#now collapse the data and merge by....route # & AOU code?
-
+bbs5bound_10$subrouteID<-"46-50"
+bbs5bound_10$scale<-"5"
+#now collapse the data and merge by....route # & AOU code? so that sub ID is Stops 1-5
+#need to add occupancy data while this is merging
 
 #can I write a forloop to do this for every stop so that I don't have to run the above code 50 times? 
 #and how will I then cluster stops together, or sum their totals at each scale interval?
