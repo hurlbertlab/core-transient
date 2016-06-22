@@ -109,39 +109,59 @@ bbs48 = occ_counts(bbs50, "Stop48", 1)
 bbs49 = occ_counts(bbs50, "Stop49", 1)
 bbs50 = occ_counts(bbs50, "Stop50", 1)
 
+#stitch all of these together into one dataframe 
+bbsbound<- rbind(bbs1, bbs2, bbs3, bbs4, bbs5, bbs6, bbs7, bbs8, bbs9, bbs10, 
+                 bbs11, bbs12, bbs13, bbs14, bbs15, bbs16, bbs17, bbs18, bbs19, bbs20,
+                 bbs21, bbs22, bbs23, bbs24, bbs25, bbs26, bbs27, bbs28, bbs29, bbs30, 
+                 bbs31, bbs32, bbs33, bbs34, bbs35, bbs36, bbs37, bbs38, bbs39, 
+                 bbs40, bbs41, bbs42, bbs43, bbs44, bbs45, bbs46, bbs47, bbs48, bbs49, bbs50)
+
+?rbind
+
 #It works!!!!!!!!!!!!!!!!!!!!!!!!!
 ##clustering - do for all 50 stops 1 by one, scale = 1 
 #then for every five, added together and grouped by fives, scale = 5 
 #then for every 10, which are the fives doubled, scale = 10 
 #then for every 25, which is just the fifty halved, scale = 25 
 #we have already done the analysis for all 50, that was what we first started with, but we can re-run for clarity
+bbs5bound_1<-rbind(bbs1, bbs2, bbs3, bbs4, bbs5) 
+bbs5bound_1$subrouteID<-"1-5"
+bbs5bound_1$scale<-"5"
+bbs5bound_2<-rbind(bbs6, bbs7, bbs8, bbs9, bbs10)
+bbs5bound_2$subrouteID<-"6-10"
+bbs5bound_2$scale<-"5"
+bbs5bound_3<-rbind(bbs11, bbs12, bbs13, bbs14, bbs15)
+bbs5bound_3$subrouteID<-"11-15"
+bbs5bound_3$scale<-"5"
+bbs5bound_4<-rbind(bbs16, bbs17, bbs18, bbs19, bbs20)
+bbs5bound_4$subrouteID<-"16-20"
+bbs5bound_4$scale<-"5"
+bbs5bound_5<-rbind(bbs21, bbs22, bbs23, bbs24, bbs25)
+bbs5bound_5$subrouteID<-"21-25"
+bbs5bound_5$scale<-"5"
+bbs5bound_6<-rbind(bbs26, bbs27, bbs28, bbs29, bbs30)
+bbs5bound_6$subrouteID<-"26-30"
+bbs5bound_6$scale<-"5"
+bbs5bound_7<-rbind(bbs31, bbs32, bbs33, bbs34, bbs35)
+bbs5bound_7$subrouteID<-"31-35"
+bbs5bound_7$scale<-"5"
+bbs5bound_8<-rbind(bbs36, bbs37, bbs38, bbs39, bbs40)
+bbs5bound_8$subrouteID<-"36-40"
+bbs5bound_8$scale<-"5"
+bbs5bound_9<-rbind(bbs41, bbs42, bbs43, bbs44, bbs45)
+bbs5bound_9$subrouteID<-"41-45"
+bbs5bound_9$scale<-"5"
+bbs5bound_10<-rbind(bbs46, bbs47, bbs48, bbs49, bbs50)
+bbs5bound_10$subrouteID<-"46-50"
+bbs5bound_10$scale<-"5"
+#now collapse the data and merge by....route # & AOU code? so that sub ID is Stops 1-5
+#need to add occupancy data while this is merging
+
 #can I write a forloop to do this for every stop so that I don't have to run the above code 50 times? 
 #and how will I then cluster stops together, or sum their totals at each scale interval?
 #if I do a forloop do I have to use the tidy function to flip and restructure the 50stop data 
 #so that each row is a stop, and I can run through each row? 
 #but then I will have to rework my occ_counts function to work with the new dataframe
-#----Create two further subsetted and tidied dataframes from BBS data----
-#one with headers "BBS Route", "Lat", and "Long", one with BBS route, AOU codes, and occupancy values---- 
-require(tidyr)
-tidystops <- gather(data = bbs50, 
-                    key = AOU, 
-                    value = occupancy, 
-                    X2881:X22860,
-                    na.rm=TRUE)
-
-output=c()
-for(Stopx in bbs50){
-  Stop_1=bbs$Stop1[bbs$Stop==Stopx]
-  temp.lon= bbc_lat_long$longitude[bbc_lat_long$siteID==bbc] 
-  distances = rdist.earth(matrix(c(BBSlatlon$Longi,BBSlatlon$Lati), ncol=2),matrix(c(temp.lon,temp.lat), ncol=2),miles=FALSE, R=6371)
-  minDist= min(distances)
-  closestBBS=BBSlatlon$stateroute[distances==minDist]
-  output=rbind(output, c(bbc, closestBBS, minDist))
-}
-output = as.data.frame(output)
-
-
-
 
 head(bbs1)
 #scale of 1 pt count 
