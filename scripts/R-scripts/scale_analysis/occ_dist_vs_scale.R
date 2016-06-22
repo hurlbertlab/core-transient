@@ -124,13 +124,24 @@ bbsbound<- rbind(bbs1, bbs2, bbs3, bbs4, bbs5, bbs6, bbs7, bbs8, bbs9, bbs10,
 #then for every 10, which are the fives doubled, scale = 10 
 #then for every 25, which is just the fifty halved, scale = 25 
 #we have already done the analysis for all 50, that was what we first started with, but we can re-run for clarity
+bbs5bound_1<-rbind(bbs1, bbs2, bbs3, bbs4, bbs5) 
+bbs5bound_2<-rbind(bbs6, bbs7, bbs8, bbs9, bbs10)
+bbs5bound_3<-rbind(bbs11, bbs12, bbs13, bbs14, bbs15)
+bbs5bound_4<-rbind(bbs16, bbs17, bbs18, bbs19, bbs20)
+bbs5bound_5<-rbind(bbs21, bbs22, bbs23, bbs24, bbs25)
+bbs5bound_6<-rbind(bbs26, bbs27, bbs28, bbs29, bbs30)
+bbs5bound_7<-rbind(bbs31, bbs32, bbs33, bbs34, bbs35)
+bbs5bound_8<-rbind(bbs36, bbs37, bbs38, bbs39, bbs40)
+bbs5bound_9<-rbind(bbs41, bbs42, bbs43, bbs44, bbs45)
+bbs5bound_10<-rbind(bbs46, bbs47, bbs48, bbs49, bbs50)
+#now collapse the data and merge by....route # & AOU code?
+
+
 #can I write a forloop to do this for every stop so that I don't have to run the above code 50 times? 
 #and how will I then cluster stops together, or sum their totals at each scale interval?
 #if I do a forloop do I have to use the tidy function to flip and restructure the 50stop data 
 #so that each row is a stop, and I can run through each row? 
 #but then I will have to rework my occ_counts function to work with the new dataframe
-#----Create two further subsetted and tidied dataframes from BBS data----
-#one with headers "BBS Route", "Lat", and "Long", one with BBS route, AOU codes, and occupancy values---- 
 
 head(bbs1)
 #scale of 1 pt count 
