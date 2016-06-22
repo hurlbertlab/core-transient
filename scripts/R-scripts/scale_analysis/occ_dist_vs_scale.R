@@ -109,6 +109,15 @@ bbs48 = occ_counts(bbs50, "Stop48", 1)
 bbs49 = occ_counts(bbs50, "Stop49", 1)
 bbs50 = occ_counts(bbs50, "Stop50", 1)
 
+#stitch all of these together into one dataframe 
+bbsbound<- rbind(bbs1, bbs2, bbs3, bbs4, bbs5, bbs6, bbs7, bbs8, bbs9, bbs10, 
+                 bbs11, bbs12, bbs13, bbs14, bbs15, bbs16, bbs17, bbs18, bbs19, bbs20,
+                 bbs21, bbs22, bbs23, bbs24, bbs25, bbs26, bbs27, bbs28, bbs29, bbs30, 
+                 bbs31, bbs32, bbs33, bbs34, bbs35, bbs36, bbs37, bbs38, bbs39, 
+                 bbs40, bbs41, bbs42, bbs43, bbs44, bbs45, bbs46, bbs47, bbs48, bbs49, bbs50)
+
+?rbind
+
 #It works!!!!!!!!!!!!!!!!!!!!!!!!!
 ##clustering - do for all 50 stops 1 by one, scale = 1 
 #then for every five, added together and grouped by fives, scale = 5 
