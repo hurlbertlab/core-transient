@@ -131,26 +131,6 @@ bbsbound<- rbind(bbs1, bbs2, bbs3, bbs4, bbs5, bbs6, bbs7, bbs8, bbs9, bbs10,
 #but then I will have to rework my occ_counts function to work with the new dataframe
 #----Create two further subsetted and tidied dataframes from BBS data----
 #one with headers "BBS Route", "Lat", and "Long", one with BBS route, AOU codes, and occupancy values---- 
-require(tidyr)
-tidystops <- gather(data = bbs50, 
-                    key = AOU, 
-                    value = occupancy, 
-                    X2881:X22860,
-                    na.rm=TRUE)
-
-output=c()
-for(Stopx in bbs50){
-  Stop_1=bbs$Stop1[bbs$Stop==Stopx]
-  temp.lon= bbc_lat_long$longitude[bbc_lat_long$siteID==bbc] 
-  distances = rdist.earth(matrix(c(BBSlatlon$Longi,BBSlatlon$Lati), ncol=2),matrix(c(temp.lon,temp.lat), ncol=2),miles=FALSE, R=6371)
-  minDist= min(distances)
-  closestBBS=BBSlatlon$stateroute[distances==minDist]
-  output=rbind(output, c(bbc, closestBBS, minDist))
-}
-output = as.data.frame(output)
-
-
-
 
 head(bbs1)
 #scale of 1 pt count 
