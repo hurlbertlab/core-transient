@@ -155,7 +155,16 @@ bbs5bound_10<-rbind(bbs46, bbs47, bbs48, bbs49, bbs50)
 bbs5bound_10$subrouteID<-"46-50"
 bbs5bound_10$scale<-"5"
 #now collapse the data and merge by....route # & AOU code? so that sub ID is Stops 1-5
-#need to add occupancy data while this is merging
+#need to add occupancy data from duplicate AOU codes and state routes while this is merging
+#instead of clustering like the above, maybe I have to merge each dataset forward again and again,
+#can I write a forloop to do this? or can I just run ddply on the clusters I have, using the function "sum" 
+#and applying sum to occupancy values, grouping by AOU and route # 
+#sum on the value of "occupancy" for each group, broken down by AOU and stateroute 
+library(plyr)
+bdata <- ddply(bbs5bound_1, c("stateroute", "AOU"), summarise,
+               N    = length(occupancy),
+               sum = sum(occupancy) #occupancy tricky, need to be aggregating it in diff way
+)
 
 #can I write a forloop to do this for every stop so that I don't have to run the above code 50 times? 
 #and how will I then cluster stops together, or sum their totals at each scale interval?
