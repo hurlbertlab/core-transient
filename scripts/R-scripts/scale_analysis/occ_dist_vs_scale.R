@@ -163,14 +163,14 @@ bbs5bound_10$scale<-"5"
 library(plyr)
 bdata <- ddply(bbs5bound_1, c("stateroute", "AOU"), summarise,
                N    = length(occupancy),
-               sum = sum(occupancy) #occupancy tricky, need to be aggregating it in diff way
+               occupancy = sum(occupancy) #occupancy tricky, need to be aggregating it in diff way
 )
 #^^incorporate in function loop where instead of bbs5bound_1 I have "data"
 bbs_cluster = function(countData) {
   bdata = ddply(countData, c("stateroute", "AOU"), summarise,
         N    = length(occupancy),
-        sum = sum(occupancy)) 
-  bdata = bdata[, c("stateroute", "AOU", "N", "sum")]
+        occupancy = sum(occupancy)) 
+  bdata = bdata[, c("stateroute", "AOU", "N", "occupancy")]
   return(bdata) 
 }
 b1 = bbs_cluster(bbs5bound_1)
@@ -184,8 +184,18 @@ b8 = bbs_cluster(bbs5bound_8)
 b9 = bbs_cluster(bbs5bound_9)
 b10 = bbs_cluster(bbs5bound_10)
 
+#pair 1&2, 3&4, etc for scale 10 
+bbs10_bound1 = rbind(b1, b2)
+bbs10_bound2 = rbind(b3, b4)
+bbs10_bound3 = rbind(b5, b6)
+bbs10_bound4 = rbind(b7, b8)
+bbs10_bound5 = rbind(b9, b10)
 
-
+b10_1 = bbs_cluster(bbs10_bound1)
+b10_2 = bbs_cluster(bbs10_bound2)
+b10_3 = bbs_cluster(bbs10_bound3)
+b10_4 = bbs_cluster(bbs10_bound4)
+b10_5 = bbs_cluster(bbs10_bound5)
 #########
 head(bbs1)
 #scale of 1 pt count 
