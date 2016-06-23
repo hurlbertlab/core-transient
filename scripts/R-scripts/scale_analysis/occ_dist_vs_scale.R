@@ -165,6 +165,16 @@ bdata <- ddply(bbs5bound_1, c("stateroute", "AOU"), summarise,
                N    = length(occupancy),
                sum = sum(occupancy) #occupancy tricky, need to be aggregating it in diff way
 )
+#^^incorporate in function loop where instead of bbs5bound_1 I have "data"
+bbs_cluster = function(countData) {
+  bdata = ddply(countData, c("stateroute", "AOU"), summarise,
+        N    = length(occupancy),
+        sum = sum(occupancy)) 
+  bdata = bdata[, c("stateroute", "AOU", "N", "sum")]
+  return(bdata) 
+}
+b1 = bbs_cluster(bbs5bound_1)
+#it works!
 
 #can I write a forloop to do this for every stop so that I don't have to run the above code 50 times? 
 #and how will I then cluster stops together, or sum their totals at each scale interval?
