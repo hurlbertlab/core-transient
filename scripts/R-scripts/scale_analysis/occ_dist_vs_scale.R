@@ -174,14 +174,19 @@ bbs_cluster = function(countData) {
   return(bdata) 
 }
 b1 = bbs_cluster(bbs5bound_1)
-#it works!
+b2 = bbs_cluster(bbs5bound_2)
+b3 = bbs_cluster(bbs5bound_3)
+b4 = bbs_cluster(bbs5bound_4)
+b5 = bbs_cluster(bbs5bound_5)
+b6 = bbs_cluster(bbs5bound_6)
+b7 = bbs_cluster(bbs5bound_7)
+b8 = bbs_cluster(bbs5bound_8)
+b9 = bbs_cluster(bbs5bound_9)
+b10 = bbs_cluster(bbs5bound_10)
 
-#can I write a forloop to do this for every stop so that I don't have to run the above code 50 times? 
-#and how will I then cluster stops together, or sum their totals at each scale interval?
-#if I do a forloop do I have to use the tidy function to flip and restructure the 50stop data 
-#so that each row is a stop, and I can run through each row? 
-#but then I will have to rework my occ_counts function to work with the new dataframe
 
+
+#########
 head(bbs1)
 #scale of 1 pt count 
 bbs1 = subset(fifty, stateroute %in% unique(bbs10.rt.occ$stateroute) & year > 1995 & year < 2011 & Stop1!=0, 
