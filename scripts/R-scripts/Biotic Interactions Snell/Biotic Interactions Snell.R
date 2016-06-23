@@ -14,6 +14,9 @@ library(maptools)
 library(tidyr)
 library(raster)
 library(rgeos)
+library(ggplot2)
+library(lme4)
+library(lmtest)
 
 # read in temporal occupancy dataset 
 Hurlbert_o = read.csv('Master_RO_Correlates_20110610.csv', header = T)
@@ -343,35 +346,29 @@ focalcompoutput = data.frame(focalcompoutput)
 colnames(focalcompoutput) = c( "MainCompAOU", "stateroute","FocalAOU", "FocalAbundance", "FocalOcc","FocalSciName",
                                "AllCompSum", "MainCompSum", "CompOcc")
 
-# need to filter number to spp present at at least 20 routes for decent model results
-select(focalcompoutput, stateroute, FocalAOU)
-filter(FocalAOU %in% focalcompoutput & stateroute %in% focalcompoutput)
-group_by(focalcompoutput$stateroute)
-  table(focalcompoutput$stateroute)
-  
-focalcompoutput$stcount = table(focalcompoutput$stateroute, focalcompoutput$FocalAOU)
-summarise(group_by(focalcompoutput$FocalAOU), sum = )
+# Filter number to spp present in at least 20 routes for better model results
+# Subset to get the count of routes for each spp
+numroutes = focalcompoutput %>%
+  group_by(FocalAOU) %>%
+  summarise(count = n_distinct(stateroute))
 
-focalcompoutput$tally = 1
-grouped = group_by(as.character(focalcompoutput$FocalAOU)) 
-%>% summarise(sum = focalcompoutput$tally)
-  
+# Filter count to greater than or equal to 20
+focalcompoutput1 = filter(numroutes, count >= 20)
+
+# Merge with original data table, new # of focal spp is 63
+focalcompsub = merge(focalcompoutput, focalcompoutput1, by = "FocalAOU")
+# Creating new focalspecies index
+subfocalspecies = unique(focalcompsub$FocalAOU)
 ######## PDF of each species BBS occurrences ########
 # merge in lat/long
 latlongs = read.csv('routes 1996-2010 consecutive.csv', header = T)
-plotdata_all = merge(focalcompoutput, latlongs, by = "stateroute") 
+plotdata_all = merge(focalcompsub, latlongs, by = "stateroute") 
 
-# plot of states
-map("state") 
-# adding ranges of spp
-points(compabun$Longi.x, compabun$Lati.x, col = 2,  pch = 20, cex = compabun$SpeciesTotal/5) #spotted range = RED
-points(focal_abun$Longi.x, focal_abun$Lati.x, col = 3, pch = 16, cex = focal_abun$SpeciesTotal/5) #GT range = GREEN
-# points(plotdata_gaps$Longi.x, plotdata_gaps$Lati.x, col = 4, pch = 17) #where GT == 0 but predicted presence BLUE 
-
+# Making pdf of ranges for each focal spp
 pdf('Plots_RangeMaps.pdf', height = 8, width = 10)
 par(mfrow = c(3, 4))
 
-for(sp in focalspecies){ 
+for(sp in subfocalspecies){ 
   print(sp)
   plotsub = plotdata_all[plotdata_all$FocalAOU == sp,]
   map("state") 
@@ -386,15 +383,16 @@ dev.off()
 all_env = read.csv('All Env Data.csv', header = T)
 # merge in ENV
 all_expected_pres = merge(all_env[,c("stateroute", "Longi", "Lati",  'sum.EVI', 'elev.mean', 'mat', 'ap.mean')], 
-     focalcompoutput, by = "stateroute")
+     focalcompsub, by = "stateroute")
 
 #For loop to calculate mean & standard dev environmental variables for each unique species (from BIOL 465)
 birdsoutputm = c()
-for (sp in focalspecies) {
+for (sp in subfocalspecies) {
+  print(sp)
   spec.routes <- all_expected_pres[(all_expected_pres$FocalAOU) == sp, "stateroute"] #subset routes for each species (i) in tidybirds
-  env.sub <- all_expected_pres[all_expected_pres$stateroute %in% routes,] #subset routes for each env in tidybirds
-  envmeans = as.vector(apply(all_expected_pres[, c("mat", "ap.mean","elev.mean","sum.EVI")], 2, mean))
-  envsd = as.vector(apply(all_expected_pres[, c("mat", "ap.mean","elev.mean","sum.EVI")], 2, sd))
+  env.sub <- all_expected_pres[all_expected_pres$stateroute %in% spec.routes,] #subset routes for each env in tidybirds
+  envmeans = as.vector(apply(env.sub[, c("mat", "ap.mean","elev.mean","sum.EVI")], 2, mean))
+  envsd = as.vector(apply(env.sub[, c("mat", "ap.mean","elev.mean","sum.EVI")], 2, sd))
   
   birdsoutputm = rbind(birdsoutputm, c(sp, envmeans, envsd))
   
@@ -411,15 +409,17 @@ occuenv$zPrecip = (occuenv$ap.mean - occuenv$Mean.Precip) / occuenv$SD.Precip
 occuenv$zElev = (occuenv$elev.mean - occuenv$Mean.Elev) / occuenv$SD.Elev
 occuenv$zEVI = (occuenv$sum.EVI - occuenv$Mean.EVI) / occuenv$SD.EVI
 
+# Inf values generated for occupancy of 1, so changing to 0.9999999999
+occuenv$FocalOcc[occuenv$FocalOcc == 1] <- 0.99999 
 # create logit transformation function
-occuenv$occ_logit =  log(occuenv$FocalOcc/(1-occuenv$FocalOcc)) #### get rid of Inf?!
+occuenv$occ_logit =  log(occuenv$FocalOcc/(1-occuenv$FocalOcc)) 
 
 # for loop subsetting env data to expected occurrence for focal species
 envoutput = c()
-for (sp in focalspecies){
+for (sp in subfocalspecies){
   temp = occuenv[occuenv$Species == sp,] 
 
-  competition <- lm(temp$occ_logit ~  temp$MainCompSum) #LOGIT LINK HERE
+  competition <- lm(temp$occ_logit ~  temp$MainCompSum) 
   # z scores separated out for env effects (as opposed to multivariate variable)
   env_z = lm(occ_logit ~ abs(zTemp)+abs(zElev)+abs(zPrecip)+abs(zEVI), data = temp)
   # z scores separated out for env effects
@@ -441,24 +441,38 @@ envoutput = data.frame(envoutput)
 names(envoutput) = c("FocalAOU", "ENV", "COMP", "SHARED", "NONE")
 
 
-# Which competitor has greatest area of overlap? -- main competitor
-envoutput$VarPar = 0 # set up main competitor column, 0 = not the primary competitor
-for (s in focalspecies) {
-  maxVarPar = pmax(envoutput$ENV|envoutput$COMP|envoutput$ENV|envoutput$NONE[envoutput$FocalAOU == s], na.rm = TRUE) 
-  envoutput$VarPar[envoutput$focalAOU == s & shapefile_areas$PropOverlap == maxOverlap] = 1 # 1 assigns main competitor
-}
+# Which variable explains the most variance?
+envoutput$VarPar = 0 # set up variance partiioning winner column, 0 = not the winner
+for (s in subfocalspecies) {
+  pmax(envoutput$ENV[envoutput$FocalAOU == s], na.rm = TRUE) = 1
+  
+} ##NOT WORKING
 
 #### ---- Plotting LMs ---- ####
-library(ggplot2)
-
+# Making pdf of ranges for each focal spp
+pdf('Lin_Reg.pdf', height = 8, width = 10)
+par(mfrow = c(3, 4))
 # Plotting basic lms to understand relationships
-ggplot(env_occu_matrix, aes(x = GT_occ, y = SpottedTotal)) + 
-  geom_point(pch = 16) +
-  stat_smooth(method = "lm", col = "red") + theme_classic()
+for(sp in subfocalspecies){ 
+  print(sp)
+  psub = occuenv[occuenv$Species == sp,]
+  #t = ggplot(psub, aes(x = FocalOcc, y = AllCompSum)) + geom_point(data=psub, pch = 16)
+  #+ stat_smooth(method = "lm", col = "red") + theme_classic()
+  #+ ggtitle(title[1])
+  competition <- lm(psub$occ_logit ~  psub$MainCompSum) 
+  # z scores separated out for env effects (as opposed to multivariate variable)
+  env_z = lm(occ_logit ~ abs(zTemp)+abs(zElev)+abs(zPrecip)+abs(zEVI), data = psub)
+  # z scores separated out for env effects
+  both_z = lm(psub$occ_logit ~  psub$MainCompSum + abs(psub$zTemp)+abs(psub$zElev)+abs(psub$zPrecip)+abs(psub$zEVI), data = psub)
+  
+  plot(psub$occ_logit, psub$MainCompSum, pch = 20, xlab = "Focal Occupancy (logit link)", ylab = "Main Competitor Abundnace", main = psub$FocalSciName[1], sub = "Competition", abline(competition, col = "red"))
+  plot(psub$occ_logit, psub$MainCompSum, pch = 20, xlab = "Focal Occupancy (logit link)", ylab = "Main Competitor Abundnace", main = psub$FocalSciName[1], sub = "Environment", abline(env_z, col = "red"))
+  plot(psub$occ_logit, psub$MainCompSum, pch = 20, xlab = "Focal Occupancy (logit link)", ylab = "Main Competitor Abundnace", main = psub$FocalSciName[1], sub = "Both", abline(both_z, col = "red"))
+}
+dev.off()
 
 ggplotRegression <- function (fit) {
   
-  require(ggplot2)
   
   ggplot(fit$model, aes_string(x = names(fit$model)[2], y = names(fit$model)[1])) + 
     geom_point() + ylim(0, 1)
@@ -469,62 +483,62 @@ ggplotRegression <- function (fit) {
                        " P =",signif(summary(fit)$coef[2,4], 5)))
 }
 
-ggplotRegression(lm((GT_occ) ~ (SpottedTotal), data = env_occu_matrix))
 # source = https://susanejohnston.wordpress.com/2012/08/09/a-quick-and-easy-function-to-plot-lm-results-in-r/
 
 #### ---- GLM fitting  ---- ####
 # add on success and failure columns by creating # of sites where birds were found
 # and # of sites birds were not found from original bbs data
-library(lme4)
 
-# subset to get just GT towhees in raw bbs data
-gt_bbs_subset = subset(bbs, Aou == 5900, 
-                       select = c("stateroute", "Aou", "SpeciesTotal", "Year"))
-# add column of ones to sum up # of sites for each row
-gt_bbs_subset$counter = 1
-
-# need to have env info for competitor species
-gt_comp_subset = subset(bbs, Aou == 5880,
-                        select = c("stateroute", "Aou", "SpeciesTotal", "Year"))
-
+# create counter column to sum across years
+occuenv$counter = 1
 # aggregate to sum across years by site
-gt_binom = aggregate(gt_bbs_subset$counter, by = list(gt_bbs_subset$stateroute), FUN = sum) 
+binom = aggregate(occuenv$counter, by = list(occuenv$stateroute), FUN = sum) 
 #rename columns to make more clear
-colnames(gt_binom) <- c("stateroute", "numyears")
+colnames(binom) <- c("stateroute", "numyears")
 
 # merge success/failure columns w environmnetal data, missing 0 occupancies
-env_occu_matrix_1 = merge(env_occu_matrix, gt_binom, by = "stateroute", all.x = TRUE)
+occumatrix = merge(occuenv, binom, by = "stateroute", all.x = TRUE)
 
 # using equation species sum*GT occ to get success and failure for binomial anlaysis
-env_occu_matrix_1$sp_success = as.factor(env_occu_matrix_1$numyears * env_occu_matrix_1$GT_occ)
-env_occu_matrix_1$sp_fail = as.factor(env_occu_matrix_1$numyears * (1 - env_occu_matrix_1$GT_occ))
-
-# merge Hurlbert_o w env to get diet guilds
-# dietguild = merge(occ_dist_output, Hurlbert_o, by = "AOU")
-library(lmtest)
-library(lme4)
-# GLM trials
+occumatrix$sp_success = as.factor(occumatrix$numyears * occumatrix$FocalOcc)
+occumatrix$sp_fail = as.factor(occumatrix$numyears * (1 - occumatrix$FocalOcc))
 
 cs <- function(x) scale(x,scale=TRUE,center=TRUE)
 # source: http://permalink.gmane.org/gmane.comp.lang.r.lme4.devel/12080
 # need to scale predictor variables
+beta = matrix(NA, nrow = length(subfocalspecies), ncol = 10)
+pdf('Occupancy_glms.pdf', height = 8, width = 10)
+par(mfrow = c(3, 4))
+for(i in 1:length(subfocalspecies)){ 
+  print(i)
+  occsub = occuenv[occumatrix$Species == i,]
+  glm_abundance_binom = glm(cbind(sp_success, sp_fail) ~ MainCompSum + 
+       abs(zTemp)+abs(zElev)+abs(zPrecip)+abs(zEVI), family = binomial(link = logit), data = occsub)
+  summary(glm_abundance_binom)
 
-glm_abundance_binom = glm(cbind(sp_success, sp_fail) ~ SpottedTotal + 
-                            abs(zTemp)+abs(zElev)+abs(zPrecip)+abs(zEVI), family = binomial(link = logit), data = env_occu_matrix_1)
-summary(glm_abundance_binom)
+  glm_abundance_quasibinom = glm(cbind(sp_success, sp_fail) ~ MainCompSum + 
+      abs(zTemp)+abs(zElev)+abs(zPrecip)+abs(zEVI), family = quasibinomial, data = occsub)
+  summary(glm_abundance_quasibinom)
 
-glm_abundance_quasibinom = glm(cbind(sp_success, sp_fail) ~ SpottedTotal + 
-                                 abs(zTemp)+abs(zElev)+abs(zPrecip)+abs(zEVI), family = quasibinomial, data = env_occu_matrix_1)
-summary(glm_abundance_quasibinom)
+  glm_abundance_rand_site = glmer(cbind(sp_success, sp_fail) ~ cs(MainCompSum) + 
+     abs(zTemp)+abs(zElev)+abs(zPrecip)+abs(zEVI) + (1|stateroute), family = binomial(link = logit), data = occsub)
+  summary(glm_abundance_rand_site) 
+ 
+  beta[i,1] = subfocalspecies[i]
+  beta[i,2] = summary(lmtemp)$coef[2,"Estimate"]
+  beta[i,3] = summary(lmtemp)$coef[2,"Pr(>|t|)"]
+  beta[i,4] = summary(lmtemp)$r.squared #output of summary distinct from lmtemp
 
-glm_abundance_rand_site = glmer(cbind(sp_success, sp_fail) ~ cs(SpottedTotal) + 
-                                  abs(zTemp)+abs(zElev)+abs(zPrecip)+abs(zEVI) + (1|stateroute), family = binomial(link = logit), data = env_occu_matrix_1)
-summary(glm_abundance_rand_site) 
+  beta[i,5] = summary(lmelev)$coef[2,"Estimate"]
+  beta[i,6] = summary(lmelev)$coef[2,"Pr(>|t|)"]
+  beta[i,7] = summary(lmelev)$r.squared 
 
+  beta[i,8] = summary(lmprecip)$coef[2,"Estimate"]
+  beta[i,9] = summary(lmprecip)$coef[2,"Pr(>|t|)"]
+  beta[i,10] = summary(lmprecip)$r.squared 
+}
 
-# what is the cs?!
-
-# want to do a likelihood ratio test on them
+# likelihood ratio test
 anova(glm_abundance_rand_site, test = "Chisq")
 anova(glm_abundance_quasibinom, test = "Chisq")
 anova(glm_abundance_binom, test = "Chisq")
@@ -534,15 +548,6 @@ lrtest(glm_abundance_quasibinom)
 lrtest(glm_abundance_rand_site)
 
 
-#lr test
-logLik(glm_abundance_binom)
-logLik(glm_abundance_rand_site)
-
-d0 = deviance(glm_abundance_binom)
-d1 = deviance(glm_abundance_rand_site)
-
-LR = d0- d1
-pchisq(LR, 1, lower = FALSE)
 
 
 
