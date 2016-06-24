@@ -414,18 +414,33 @@ occuenv$FocalOcc[occuenv$FocalOcc == 1] <- 0.99999
 # create logit transformation function
 occuenv$occ_logit =  log(occuenv$FocalOcc/(1-occuenv$FocalOcc)) 
 
+# create beta output data frame
+beta_lm = matrix(NA, nrow = length(subfocalspecies), ncol = 10)
+# create pdf plot output
+pdf('Occupancy_lm.pdf', height = 8, width = 10)
+par(mfrow = c(3, 4))
 # for loop subsetting env data to expected occurrence for focal species
 envoutput = c()
-for (sp in subfocalspecies){
-  temp = occuenv[occuenv$Species == sp,] 
-
+for (sp in 1:length(subfocalspecies)){
+  temp = occuenv[occuenv$Species == subfocalspecies[sp],] 
+  
   competition <- lm(temp$occ_logit ~  temp$MainCompSum) 
   # z scores separated out for env effects (as opposed to multivariate variable)
   env_z = lm(occ_logit ~ abs(zTemp)+abs(zElev)+abs(zPrecip)+abs(zEVI), data = temp)
   # z scores separated out for env effects
   both_z = lm(temp$occ_logit ~  temp$MainCompSum + abs(temp$zTemp)+abs(temp$zElev)+abs(temp$zPrecip)+abs(temp$zEVI), data = temp)
   
-  #variance_partitioning = function(x, y) { # change to x and y
+  beta_lm[sp,1] = subfocalspecies[sp]
+  beta_lm[sp,2] = summary(competition)$coef[2,"Estimate"]
+  beta_lm[sp,3] = summary(competition)$coef[2,"Pr(>|t|)"]
+  beta_lm[sp,4] = summary(competition)$r.squared #using multiple rsquared
+  beta_lm[sp,5] = summary(env_z)$coef[2,"Estimate"]
+  beta_lm[sp,6] = summary(env_z)$coef[2,"Pr(>|t|)"]
+  beta_lm[sp,7] = summary(env_z)$r.squared 
+  beta_lm[sp,8] = summary(both_z)$coef[2,"Estimate"]
+  beta_lm[sp,9] = summary(both_z)$coef[2,"Pr(>|t|)"]
+  beta_lm[sp,10] = summary(both_z)$r.squared 
+  #variance_partitioning 
     ENV = summary(both_z)$r.squared - summary(competition)$r.squared
     print(ENV) #env only
     COMP = summary(both_z)$r.squared - summary(env_z)$r.squared
@@ -434,12 +449,13 @@ for (sp in subfocalspecies){
     print(SHARED) #shared variance
     NONE = 1 - summary(both_z)$r.squared
     print(NONE) #neither variance
- # }
-  envoutput = rbind(envoutput, c(sp, ENV, COMP, SHARED, NONE))
+  sp1 = unique(temp$Species)
+  envoutput = rbind(envoutput, c(sp1, ENV, COMP, SHARED, NONE))
 }         
 envoutput = data.frame(envoutput)
 names(envoutput) = c("FocalAOU", "ENV", "COMP", "SHARED", "NONE")
-
+beta_lm = data.frame(beta_lm)
+names(beta_lm) = c("FocalAOU", "Competition_Est", "Competition_P", "Competition_R2", "EnvZ_Est", "EnvZ_P", "EnvZ_R2", "BothZ_Est", "BothZ_P", "BothZ_R2")
 
 # Which variable explains the most variance?
 envoutput$VarPar = 0 # set up variance partiioning winner column, 0 = not the winner
@@ -506,12 +522,14 @@ occumatrix$sp_fail = as.factor(occumatrix$numyears * (1 - occumatrix$FocalOcc))
 cs <- function(x) scale(x,scale=TRUE,center=TRUE)
 # source: http://permalink.gmane.org/gmane.comp.lang.r.lme4.devel/12080
 # need to scale predictor variables
-beta = matrix(NA, nrow = length(subfocalspecies), ncol = 10)
+beta = matrix(NA, nrow = length(subfocalspecies), ncol = 31)
 pdf('Occupancy_glms.pdf', height = 8, width = 10)
 par(mfrow = c(3, 4))
+# for loop to store model output as a DF
 for(i in 1:length(subfocalspecies)){ 
   print(i)
-  occsub = occuenv[occumatrix$Species == i,]
+
+  occsub = occumatrix[occumatrix$Species == subfocalspecies[i],]
   glm_abundance_binom = glm(cbind(sp_success, sp_fail) ~ MainCompSum + 
        abs(zTemp)+abs(zElev)+abs(zPrecip)+abs(zEVI), family = binomial(link = logit), data = occsub)
   summary(glm_abundance_binom)
@@ -525,18 +543,44 @@ for(i in 1:length(subfocalspecies)){
   summary(glm_abundance_rand_site) 
  
   beta[i,1] = subfocalspecies[i]
-  beta[i,2] = summary(lmtemp)$coef[2,"Estimate"]
-  beta[i,3] = summary(lmtemp)$coef[2,"Pr(>|t|)"]
-  beta[i,4] = summary(lmtemp)$r.squared #output of summary distinct from lmtemp
+  beta[i,2] = summary(glm_abundance_binom)$coef[2,"Estimate"] # MainCompSum
+  beta[i,3] = summary(glm_abundance_binom)$coef[3,"Estimate"] # abs(zTemp)
+  beta[i,4] = summary(glm_abundance_binom)$coef[4,"Estimate"] # abs(zElev)
+  beta[i,5] = summary(glm_abundance_binom)$coef[5,"Estimate"] # abs(zPrecip)
+  beta[i,6] = summary(glm_abundance_binom)$coef[6,"Estimate"] # abs(zEVI)
+  beta[i,7] = summary(glm_abundance_binom)$coef[2,"Pr(>|z|)"] # MainCompSum
+  beta[i,8] = summary(glm_abundance_binom)$coef[3,"Pr(>|z|)"] # abs(zTemp)
+  beta[i,9] = summary(glm_abundance_binom)$coef[4,"Pr(>|z|)"] # abs(zElev)
+  beta[i,10] = summary(glm_abundance_binom)$coef[5,"Pr(>|z|)"] # abs(zPrecip)
+  beta[i,11] = summary(glm_abundance_binom)$coef[6,"Pr(>|z|)"] # abs(zEVI)
+    
+  beta[i,12] = summary(glm_abundance_quasibinom)$coef[2,"Estimate"] # MainCompSum
+  beta[i,13] = summary(glm_abundance_quasibinom)$coef[3,"Estimate"] # abs(zTemp)
+  beta[i,14] = summary(glm_abundance_quasibinom)$coef[4,"Estimate"] # abs(zElev)
+  beta[i,15] = summary(glm_abundance_quasibinom)$coef[5,"Estimate"] # abs(zPrecip)
+  beta[i,16] = summary(glm_abundance_quasibinom)$coef[6,"Estimate"] # abs(zEVI)
+  beta[i,17] = summary(glm_abundance_quasibinom)$coef[2,"Pr(>|t|)"] # MainCompSum
+  beta[i,18] = summary(glm_abundance_quasibinom)$coef[3,"Pr(>|t|)"] # abs(zTemp)
+  beta[i,19] = summary(glm_abundance_quasibinom)$coef[4,"Pr(>|t|)"] # abs(zElev)
+  beta[i,20] = summary(glm_abundance_quasibinom)$coef[5,"Pr(>|t|)"] # abs(zPrecip)
+  beta[i,21] = summary(glm_abundance_quasibinom)$coef[6,"Pr(>|t|)"] # abs(zEVI)
 
-  beta[i,5] = summary(lmelev)$coef[2,"Estimate"]
-  beta[i,6] = summary(lmelev)$coef[2,"Pr(>|t|)"]
-  beta[i,7] = summary(lmelev)$r.squared 
+  beta[i,22] = summary(glm_abundance_rand_site)$coef[2,"Estimate"] # MainCompSum
+  beta[i,23] = summary(glm_abundance_rand_site)$coef[3,"Estimate"] # abs(zTemp)
+  beta[i,24] = summary(glm_abundance_rand_site)$coef[4,"Estimate"] # abs(zElev)
+  beta[i,25] = summary(glm_abundance_rand_site)$coef[5,"Estimate"] # abs(zPrecip)
+  beta[i,26] = summary(glm_abundance_rand_site)$coef[6,"Estimate"] # abs(zEVI)
+  beta[i,27] = summary(glm_abundance_rand_site)$coef[2,"Pr(>|z|)"] # MainCompSum
+  beta[i,28] = summary(glm_abundance_rand_site)$coef[3,"Pr(>|z|)"] # abs(zTemp)
+  beta[i,29] = summary(glm_abundance_rand_site)$coef[4,"Pr(>|z|)"] # abs(zElev)
+  beta[i,30] = summary(glm_abundance_rand_site)$coef[5,"Pr(>|z|)"] # abs(zPrecip)
+  beta[i,31] = summary(glm_abundance_rand_site)$coef[6,"Pr(>|z|)"] # abs(zEVI)
 
-  beta[i,8] = summary(lmprecip)$coef[2,"Estimate"]
-  beta[i,9] = summary(lmprecip)$coef[2,"Pr(>|t|)"]
-  beta[i,10] = summary(lmprecip)$r.squared 
 }
+beta = data.frame(beta)
+names(beta) = c("FocalAOU", "Binom_MainCompSum_Estimate", "Binom_zTemp_Estimate", "Binom_zElev_Estimate", "Binom_zPrecip_Estimate", "Binom_zEVI_Estimate", "Binom_MainCompSum_P", "Binom_zTemp_P", "Binom_zElev_P", "Binom_zPrecip_P", "Binom_zEVI_P", "Quasibinom_MainCompSum_Estimate","Quasibinom_zTemp_Estimate","Quasibinom_zElev_Estimate","Quasibinom_zPrecip_Estimate","Quasibinom_zEVI_Estimate","Quasibinom_MainCompSum_P", "Quasibinom_zTemp_P", "Quasibinom_zElev_P", "Quasibinom_zPrecip_P", "Quasibinom_zEVI_P", "Randsite_MainCompSum_Estimate", "Randsite_zTemp_Estimate", "Randsite_zElev_Estimate", "Randsite_zPrecip_Estimate", "Randsite_zEVI_Estimate", "Randsite_MainCompSum_P", "Randsite_zTemp_P", "Randsite_zElev_P", "Randsite_zPrecip_P", "Randsite_zEVI_P")
+
+AIC(glm_abundance_binom, glm_abundance_quasibinom,glm_abundance_rand_site) ## rand site is clear winner
 
 # likelihood ratio test
 anova(glm_abundance_rand_site, test = "Chisq")
