@@ -164,7 +164,7 @@ library(plyr)
 #^^incorporate in function loop where instead of bbs5bound_1 I have "data"
 bbs_cluster = function(countData) {
   bdata = ddply(countData, c("stateroute", "AOU"), summarise,
-        N = length(occupancy),
+        N = sum(length(occupancy)),
         occupancy = sum(occupancy)) #occupancy tricky, need to be aggregating it in diff way
   bdata = bdata[, c("stateroute", "AOU", "N", "occupancy")] #how to preserve the subrouteIDs ?
   return(bdata) 
@@ -202,7 +202,9 @@ b25_2 = bbs_cluster(bbs25_bound2)
 ######### do I have to add N's for the second run, too? 
 
 ## do 5 spp at one route at whatever resolution and compare occupancy from what it is vs what it should be 
-
+#specify out stateroute and 4 AOU codes associated at each level, check to see if compounded accurately 
+#occupancy is just a frequency, so it SHOULD be able to be added from multiple sites, 
+#and it is ok if that means values greater than 1 crop up
 
 head(bbs1)
 #scale of 1 pt count 
