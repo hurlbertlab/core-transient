@@ -196,7 +196,15 @@ b10_2 = bbs_cluster(bbs10_bound2)
 b10_3 = bbs_cluster(bbs10_bound3)
 b10_4 = bbs_cluster(bbs10_bound4)
 b10_5 = bbs_cluster(bbs10_bound5)
-#########
+
+#pairings for scale 25 
+bbs25_bound1 = rbind(b1, b2, b3, b4, b5)
+bbs25_bound2 = rbind(b6, b7, b8, b9, b10)
+
+b25_1 = bbs_cluster(bbs25_bound1)
+b25_2 = bbs_cluster(bbs25_bound2)
+######### do I have to add N's for the second run, too? 
+
 head(bbs1)
 #scale of 1 pt count 
 bbs1 = subset(fifty, stateroute %in% unique(bbs10.rt.occ$stateroute) & year > 1995 & year < 2011 & Stop1!=0, 
