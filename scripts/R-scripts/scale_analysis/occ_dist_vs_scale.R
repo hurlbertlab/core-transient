@@ -3,8 +3,7 @@
 #grant proposal preliminary analysis: 1) scale of 10 BBS stops, 
 # 2) BBS route, 3) aggregate of 27 BBS routes within state of MD.
 #pull in 50 stop data from ecoretriever
-setwd("//bioark.ad.unc.edu/hurlbertlab/Databases/BBS/FiftyStopData")
-bbs50 = read.csv("fiftystop_thru2010_goodspp_goodrtes.csv", header = TRUE)
+bbs50 = read.csv("//bioark.ad.unc.edu/hurlbertlab/Databases/BBS/FiftyStopData/fiftystop_thru2010_goodspp_goodrtes.csv", header = TRUE)
 #disregard ecodataretriever for now bc very buggy and BBS files incomplete 
 #setwd("C:/Program Files (x86)/EcoDataRetriever")
 #library(ecoretriever)
@@ -14,7 +13,6 @@ bbs50 = read.csv("fiftystop_thru2010_goodspp_goodrtes.csv", header = TRUE)
 #bbs = bbs50$species
 #bbsrts= bbs50$routes #Year columns missing from both datasets?
 names(bbs50)
-setwd("C:/git/core-transient")
 #library(raster)
 counts5 = read.csv('data/raw_datasets/dataset_1RAW/dataset_1_full.csv', header=T) #1996-2010 #in groups of ten #is this the full bbs dataset broken by 10 stops? 
 #want to merge counts5 with bbs 50 stop data? why does counts5 have year data and not the others? 
@@ -45,78 +43,35 @@ bbs.occ = data.frame(table(bbs.uniq$AOU)/15)
 #fifty pt count data and then taking pts 1-5 and collapsing them all together 
 #########
 #trying to solve hard coding vs soft coding "scale" column issue
-occ_counts = function(countData, countColumn, v) {
+occ_counts = function(countData, countColumn, scale) {
   bbsu = unique(countData[countData[, countColumn]!= 0, c("stateroute", "year", "AOU")])
   bbsu.rt.occ = data.frame(table(bbsu[,c("stateroute", "AOU")])/15)
   bbsu.rt.occ2 = bbsu.rt.occ[bbsu.rt.occ$Freq!=0,]
   names(bbsu.rt.occ2)[3] = "occupancy"
   bbsu.rt.occ2$subrouteID = countColumn
-  bbsu.rt.occ2$scale = v 
+  bbsu.rt.occ2$scale = scale 
   bbsu.rt.occ2 = bbsu.rt.occ2[, c("stateroute", "scale", "subrouteID", "AOU", "occupancy")]
   return(bbsu.rt.occ2)
 }
 #if subrouteID = Count10, Count20, etc == 10; if = Count25, == 25; if = Count1, == 1, but no need for "ifs"   
 # modeled after: BBS_Core_agreement = 
   #sum(temp.site$occupancy>0.67 & temp.site$status=="breeder", na.rm = T)/sum(temp.site$occupancy>0.67, na.rm = T)
-bbs1 = occ_counts(bbs50, "Stop1", 1)
-bbs2 = occ_counts(bbs50, "Stop2", 1) 
-bbs3 = occ_counts(bbs50, "Stop3", 1)
-bbs4 = occ_counts(bbs50, "Stop4", 1) 
-bbs5 = occ_counts(bbs50, "Stop5", 1)
-bbs6 = occ_counts(bbs50, "Stop6", 1) 
-bbs7 = occ_counts(bbs50, "Stop7", 1)
-bbs8 = occ_counts(bbs50, "Stop8", 1) 
-bbs9 = occ_counts(bbs50, "Stop9", 1)
-bbs10 = occ_counts(bbs50, "Stop10", 1) 
-bbs11 = occ_counts(bbs50, "Stop11", 1)
-bbs12 = occ_counts(bbs50, "Stop12", 1) 
-bbs13 = occ_counts(bbs50, "Stop13", 1)
-bbs14 = occ_counts(bbs50, "Stop14", 1) 
-bbs15 = occ_counts(bbs50, "Stop15", 1)
-bbs16 = occ_counts(bbs50, "Stop16", 1) 
-bbs17 = occ_counts(bbs50, "Stop17", 1)
-bbs18 = occ_counts(bbs50, "Stop18", 1) 
-bbs19 = occ_counts(bbs50, "Stop19", 1)
-bbs20 = occ_counts(bbs50, "Stop20", 1) 
-bbs21 = occ_counts(bbs50, "Stop21", 1)
-bbs22 = occ_counts(bbs50, "Stop22", 1) 
-bbs23 = occ_counts(bbs50, "Stop23", 1)
-bbs24 = occ_counts(bbs50, "Stop24", 1) 
-bbs25 = occ_counts(bbs50, "Stop25", 1)
-bbs26 = occ_counts(bbs50, "Stop26", 1) 
-bbs27 = occ_counts(bbs50, "Stop27", 1)
-bbs28 = occ_counts(bbs50, "Stop28", 1) 
-bbs29 = occ_counts(bbs50, "Stop29", 1)
-bbs30 = occ_counts(bbs50, "Stop30", 1) 
-bbs31 = occ_counts(bbs50, "Stop31", 1)
-bbs32 = occ_counts(bbs50, "Stop32", 1)
-bbs33 = occ_counts(bbs50, "Stop33", 1) 
-bbs34 = occ_counts(bbs50, "Stop34", 1)
-bbs35 = occ_counts(bbs50, "Stop35", 1)
-bbs36 = occ_counts(bbs50, "Stop36", 1) 
-bbs37 = occ_counts(bbs50, "Stop37", 1)
-bbs38 = occ_counts(bbs50, "Stop38", 1)
-bbs39 = occ_counts(bbs50, "Stop39", 1) 
-bbs40 = occ_counts(bbs50, "Stop40", 1)
-bbs41 = occ_counts(bbs50, "Stop41", 1)
-bbs42 = occ_counts(bbs50, "Stop42", 1)
-bbs43 = occ_counts(bbs50, "Stop43", 1)
-bbs44 = occ_counts(bbs50, "Stop44", 1)
-bbs45 = occ_counts(bbs50, "Stop45", 1)
-bbs46 = occ_counts(bbs50, "Stop46", 1)
-bbs47 = occ_counts(bbs50, "Stop47", 1)
-bbs48 = occ_counts(bbs50, "Stop48", 1)
-bbs49 = occ_counts(bbs50, "Stop49", 1)
-bbs50 = occ_counts(bbs50, "Stop50", 1)
 
-#stitch all of these together into one dataframe 
-bbsbound<- rbind(bbs1, bbs2, bbs3, bbs4, bbs5, bbs6, bbs7, bbs8, bbs9, bbs10, 
-                 bbs11, bbs12, bbs13, bbs14, bbs15, bbs16, bbs17, bbs18, bbs19, bbs20,
-                 bbs21, bbs22, bbs23, bbs24, bbs25, bbs26, bbs27, bbs28, bbs29, bbs30, 
-                 bbs31, bbs32, bbs33, bbs34, bbs35, bbs36, bbs37, bbs38, bbs39, 
-                 bbs40, bbs41, bbs42, bbs43, bbs44, bbs45, bbs46, bbs47, bbs48, bbs49, bbs50)
+scale = 5
 
-?rbind
+# BE SURE TO SUBSET BBS50 DATA TO ONLY THE ROUTES IN THE counts5 DATASET AND ONLY YEARS 1996-2010
+
+
+for (begstop = seq(1, 50 by = 5)) {
+  # stop subsets will be begstop:(begstop+4)      BUT NOT begstop:begstop+4
+}
+
+scale1output = c()
+for (stop in paste("Stop", 1:50, sep = "")) {
+  temp = occ_counts(bbs50, stop, 1)
+  scale1output = rbind(scale1output, temp)
+}
+
 
 #It works!!!!!!!!!!!!!!!!!!!!!!!!!
 ##clustering - do for all 50 stops 1 by one, scale = 1 
