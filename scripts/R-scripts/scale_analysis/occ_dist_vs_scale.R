@@ -165,20 +165,22 @@ library(plyr)
 bbs_cluster = function(countData) {
   bdata = ddply(countData, c("stateroute", "AOU"), summarise,
         N = sum(length(occupancy)),
-        occupancy = sum(occupancy)) #occupancy tricky, need to be aggregating it in diff way
+        occupancy = (sum(occupancy))/(length(occupancy))) #occupancy tricky, need to be aggregating it in diff way
   bdata = bdata[, c("stateroute", "AOU", "N", "occupancy")] #how to preserve the subrouteIDs ?
   return(bdata) 
 }
-b1 = bbs_cluster(bbs5bound_1)
-b2 = bbs_cluster(bbs5bound_2)
-b3 = bbs_cluster(bbs5bound_3)
-b4 = bbs_cluster(bbs5bound_4)
-b5 = bbs_cluster(bbs5bound_5)
-b6 = bbs_cluster(bbs5bound_6)
-b7 = bbs_cluster(bbs5bound_7)
-b8 = bbs_cluster(bbs5bound_8)
-b9 = bbs_cluster(bbs5bound_9)
-b10 = bbs_cluster(bbs5bound_10)
+#but occupancy calculated over amt of time spent at a site, # years, but year data missing 
+#scale 5; naming convention for files = b(scale)_(part # in series)
+b5_1 = bbs_cluster(bbs5bound_1)
+b5_2 = bbs_cluster(bbs5bound_2)
+b5_3 = bbs_cluster(bbs5bound_3)
+b5_4 = bbs_cluster(bbs5bound_4)
+b5_5 = bbs_cluster(bbs5bound_5)
+b5_6 = bbs_cluster(bbs5bound_6)
+b5_7 = bbs_cluster(bbs5bound_7)
+b5_8 = bbs_cluster(bbs5bound_8)
+b5_9 = bbs_cluster(bbs5bound_9)
+b5_10 = bbs_cluster(bbs5bound_10)
 
 #pair 1&2, 3&4, etc for scale 10 
 bbs10_bound1 = rbind(b1, b2)
