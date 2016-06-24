@@ -204,7 +204,7 @@ b25_2 = bbs_cluster(bbs25_bound2)
 ## do 5 spp at one route at whatever resolution and compare occupancy from what it is vs what it should be 
 #specify out stateroute and 4 AOU codes associated at each level, check to see if compounded accurately 
 #occupancy is just a frequency, so it SHOULD be able to be added from multiple sites, 
-#and it is ok if that means values greater than 1 crop up
+#but maybe divided by the N of sites, so we would just have a mean occupancy, because it can't be greater than 1
 
 head(bbs1)
 #scale of 1 pt count 
