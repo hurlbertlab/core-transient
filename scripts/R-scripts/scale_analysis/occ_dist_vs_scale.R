@@ -161,15 +161,11 @@ bbs5bound_10$scale<-"5"
 #and applying sum to occupancy values, grouping by AOU and route # 
 #sum on the value of "occupancy" for each group, broken down by AOU and stateroute 
 library(plyr)
-bdata <- ddply(bbs5bound_1, c("stateroute", "AOU"), summarise,
-               N    = length(occupancy),
-               occupancy = sum(occupancy) #occupancy tricky, need to be aggregating it in diff way
-)
 #^^incorporate in function loop where instead of bbs5bound_1 I have "data"
 bbs_cluster = function(countData) {
   bdata = ddply(countData, c("stateroute", "AOU"), summarise,
         N    = length(occupancy),
-        occupancy = sum(occupancy)) 
+        occupancy = sum(occupancy)) #occupancy tricky, need to be aggregating it in diff way
   bdata = bdata[, c("stateroute", "AOU", "N", "occupancy")]
   return(bdata) 
 }
@@ -196,7 +192,15 @@ b10_2 = bbs_cluster(bbs10_bound2)
 b10_3 = bbs_cluster(bbs10_bound3)
 b10_4 = bbs_cluster(bbs10_bound4)
 b10_5 = bbs_cluster(bbs10_bound5)
-#########
+
+#pairings for scale 25 
+bbs25_bound1 = rbind(b1, b2, b3, b4, b5)
+bbs25_bound2 = rbind(b6, b7, b8, b9, b10)
+
+b25_1 = bbs_cluster(bbs25_bound1)
+b25_2 = bbs_cluster(bbs25_bound2)
+######### do I have to add N's for the second run, too? 
+
 head(bbs1)
 #scale of 1 pt count 
 bbs1 = subset(fifty, stateroute %in% unique(bbs10.rt.occ$stateroute) & year > 1995 & year < 2011 & Stop1!=0, 
