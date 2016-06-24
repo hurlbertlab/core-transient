@@ -164,9 +164,9 @@ library(plyr)
 #^^incorporate in function loop where instead of bbs5bound_1 I have "data"
 bbs_cluster = function(countData) {
   bdata = ddply(countData, c("stateroute", "AOU"), summarise,
-        N    = length(occupancy),
+        N = length(occupancy),
         occupancy = sum(occupancy)) #occupancy tricky, need to be aggregating it in diff way
-  bdata = bdata[, c("stateroute", "AOU", "N", "occupancy")]
+  bdata = bdata[, c("stateroute", "AOU", "N", "occupancy")] #how to preserve the subrouteIDs ?
   return(bdata) 
 }
 b1 = bbs_cluster(bbs5bound_1)
@@ -200,6 +200,9 @@ bbs25_bound2 = rbind(b6, b7, b8, b9, b10)
 b25_1 = bbs_cluster(bbs25_bound1)
 b25_2 = bbs_cluster(bbs25_bound2)
 ######### do I have to add N's for the second run, too? 
+
+## do 5 spp at one route at whatever resolution and compare occupancy from what it is vs what it should be 
+
 
 head(bbs1)
 #scale of 1 pt count 
