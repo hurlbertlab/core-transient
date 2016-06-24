@@ -416,6 +416,7 @@ occuenv$occ_logit =  log(occuenv$FocalOcc/(1-occuenv$FocalOcc))
 
 # create beta output data frame
 beta_lm = matrix(NA, nrow = length(subfocalspecies), ncol = 10)
+beta_abun = matrix(NA, nrow = length(subfocalspecies), ncol = 10)
 # create pdf plot output
 pdf('Occupancy_lm.pdf', height = 8, width = 10)
 par(mfrow = c(3, 4))
@@ -430,6 +431,13 @@ for (sp in 1:length(subfocalspecies)){
   # z scores separated out for env effects
   both_z = lm(temp$occ_logit ~  temp$MainCompSum + abs(temp$zTemp)+abs(temp$zElev)+abs(temp$zPrecip)+abs(temp$zEVI), data = temp)
   
+  # abundance, not temp occ - same results?
+  competition_abun <- lm(temp$FocalAbundance ~  temp$MainCompSum) 
+  # z scores separated out for env effects - abundance
+  env_abun = lm(temp$FocalAbundance ~ abs(zTemp)+abs(zElev)+abs(zPrecip)+abs(zEVI), data = temp)
+  # z scores separated out for env effects - abundance
+  both_abun = lm(temp$FocalAbundance ~  MainCompSum + abs(zTemp)+abs(zElev)+abs(zPrecip)+abs(zEVI), data = temp)
+  
   beta_lm[sp,1] = subfocalspecies[sp]
   beta_lm[sp,2] = summary(competition)$coef[2,"Estimate"]
   beta_lm[sp,3] = summary(competition)$coef[2,"Pr(>|t|)"]
@@ -440,6 +448,18 @@ for (sp in 1:length(subfocalspecies)){
   beta_lm[sp,8] = summary(both_z)$coef[2,"Estimate"]
   beta_lm[sp,9] = summary(both_z)$coef[2,"Pr(>|t|)"]
   beta_lm[sp,10] = summary(both_z)$r.squared 
+  
+  beta_abun[sp,1] = subfocalspecies[sp]
+  beta_abun[sp,2] = summary(competition_abun)$coef[2,"Estimate"]
+  beta_abun[sp,3] = summary(competition_abun)$coef[2,"Pr(>|t|)"]
+  beta_abun[sp,4] = summary(competition_abun)$r.squared #using multiple rsquared
+  beta_abun[sp,5] = summary(env_abun)$coef[2,"Estimate"]
+  beta_abun[sp,6] = summary(env_abun)$coef[2,"Pr(>|t|)"]
+  beta_abun[sp,7] = summary(env_abun)$r.squared 
+  beta_abun[sp,8] = summary(both_abun)$coef[2,"Estimate"]
+  beta_abun[sp,9] = summary(both_abun)$coef[2,"Pr(>|t|)"]
+  beta_abun[sp,10] = summary(both_abun)$r.squared
+  
   #variance_partitioning 
     ENV = summary(both_z)$r.squared - summary(competition)$r.squared
     print(ENV) #env only
@@ -456,6 +476,8 @@ envoutput = data.frame(envoutput)
 names(envoutput) = c("FocalAOU", "ENV", "COMP", "SHARED", "NONE")
 beta_lm = data.frame(beta_lm)
 names(beta_lm) = c("FocalAOU", "Competition_Est", "Competition_P", "Competition_R2", "EnvZ_Est", "EnvZ_P", "EnvZ_R2", "BothZ_Est", "BothZ_P", "BothZ_R2")
+beta_abun = data.frame(beta_abun)
+names(beta_abun) = c("FocalAOU", "Competition_Est", "Competition_P", "Competition_R2", "EnvZ_Est", "EnvZ_P", "EnvZ_R2", "BothZ_Est", "BothZ_P", "BothZ_R2")
 
 # Which variable explains the most variance?
 envoutput$VarPar = 0 # set up variance partiioning winner column, 0 = not the winner
@@ -498,8 +520,29 @@ ggplotRegression <- function (fit) {
                        " Slope =",signif(fit$coef[[2]], 5),
                        " P =",signif(summary(fit)$coef[2,4], 5)))
 }
-
 # source = https://susanejohnston.wordpress.com/2012/08/09/a-quick-and-easy-function-to-plot-lm-results-in-r/
+
+hist(beta_lm$Competition_R2, 10, main = "R Squared Distribution for Competition", xlab = "Competition R Squared")
+hist(beta_lm$EnvZ_R2, 10, main = "R Squared Distribution for Env", xlab = "Env R Squared")
+hist(beta_lm$BothZ_R2, 10, main = "R Squared Distribution for Both", xlab = "Both R Squared")
+
+hist(beta_lm$Competition_Est, 10, main = "Slope Distribution for Competition", xlab = "Competition Slope")
+abline(v = mean(beta_lm$Competition_Est), col = "red", lwd = 3)
+hist(beta_lm$EnvZ_Est, 10, main = "Slope Distribution for Environment", xlab = "Environment Slope")
+abline(v = mean(beta_lm$EnvZ_Est), col = "red", lwd = 3)
+hist(beta_lm$BothZ_Est, 10, main = "Slope Distribution for Both", xlab = "Both Slope")
+abline(v = mean(beta_lm$BothZ_Est), col = "red", lwd = 3)
+
+hist(beta_abun$Competition_R2, 10, main = "R Squared Distribution for Competition", xlab = "Competition R Squared")
+hist(beta_abun$EnvZ_R2, 10, main = "R Squared Distribution for Env", xlab = "Env R Squared")
+hist(beta_abun$BothZ_R2, 10, main = "R Squared Distribution for Both", xlab = "Both R Squared")
+
+hist(beta_abun$Competition_Est, 10, main = "Slope Distribution for Competition", xlab = "Competition Slope")
+abline(v = mean(beta_abun$Competition_Est), col = "red", lwd = 3)
+hist(beta_abun$EnvZ_Est, 10, main = "Slope Distribution for Environment", xlab = "Environment Slope")
+abline(v = mean(beta_abun$EnvZ_Est), col = "red", lwd = 3)
+hist(beta_abun$BothZ_Est, 10, main = "Slope Distribution for Both", xlab = "Both Slope")
+abline(v = mean(beta_abun$BothZ_Est), col = "red", lwd = 3)
 
 #### ---- GLM fitting  ---- ####
 # add on success and failure columns by creating # of sites where birds were found
