@@ -22,7 +22,7 @@ tmean <- getData("worldclim", var = "tmean", res = 10)
 files<-paste('/Users/terrysnell/Desktop/Biodiv Course Project/tmean_10m_bil/tmean',1:12,'.bil',sep='')
 tmeans<-stack(files)
 mat = calc(tmeans, mean)
-#plot(mat)
+#plot(tmean)
 
 #### ----Precip ----#####
 #read in precip data from world clim, stack data to get 1 MAP value

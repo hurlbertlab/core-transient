@@ -177,15 +177,15 @@ sp_proj = CRS("+proj=laea +lat_0=40 +lon_0=-100 +units=km")
 if(FALSE) {  #Blocking out the for loop below. Need to change to TRUE if you want the loop to run.
 
 for (sp in focal_spp) {
-  #sp = 'Dendroica_palmarum'
+  #sp = 'Sitta_canadensis'
   print(sp)
   t1 = all_spp_list[grep(sp, all_spp_list)]
   t2 = t1[grep('.shp', t1)]
   t3 = strsplit(t2, ".shp")
- # GET LINK FIXED AND WRITE IN FOCAL AND COMP AOU
+
   test.poly <- readShapePoly(paste("z:/GIS/birds/All/All/", t3, sep = "")) # reads in species-specific shapefile
   proj4string(test.poly) <- intl_proj
-  colors = c("red", "yellow", "green", "blue", "purple")
+  colors = c("blue", "yellow", "green", "red", "purple")
   # subset to just permanent or breeding residents
   sporigin = test.poly[test.poly@data$SEASONAL == 1|test.poly@data$SEASONAL == 2|test.poly@data$SEASONAL ==5,]
   sporigin = spTransform(sporigin, CRS("+proj=laea +lat_0=40 +lon_0=-100 +units=km"))
@@ -199,7 +199,7 @@ for (sp in focal_spp) {
   # match competitor sp to focal spp, intersect its range with the focal range,
   # and calcualte the area of overlap between the two species.
   for(co in comp_spp) {          
-      #co = 'Parkesia_noveboracensis' 
+      #co = 'Certhia_americana' 
       #print(co)
       c1 = all_spp_list[grep(co, all_spp_list)]
       c2 = c1[grep('.shp', c1)]
@@ -522,6 +522,7 @@ ggplotRegression <- function (fit) {
 }
 # source = https://susanejohnston.wordpress.com/2012/08/09/a-quick-and-easy-function-to-plot-lm-results-in-r/
 
+# Plotting basic lm hists to understand relationships btwn occ and abun
 hist(beta_lm$Competition_R2, 10, main = "R Squared Distribution for Competition", xlab = "Competition R Squared")
 hist(beta_lm$EnvZ_R2, 10, main = "R Squared Distribution for Env", xlab = "Env R Squared")
 hist(beta_lm$BothZ_R2, 10, main = "R Squared Distribution for Both", xlab = "Both R Squared")
@@ -634,12 +635,24 @@ lrtest(glm_abundance_binom)
 lrtest(glm_abundance_quasibinom)
 lrtest(glm_abundance_rand_site)
 
+# plots for poster
+plotdata = merge(new_occ2, latlongs, by = "stateroute") 
+plotsub = plotdata[plotdata$AOU == 7280,] # red-breasted nuthatch
+comp1 = plotdata[plotdata$AOU == 7260,] # Brown Creeper
+comp2 = plotdata[plotdata$AOU == 7270,] # White-breasted Nuthatch
+map("state") 
+points(plotsub$Longi, plotsub$Lati, col = 2,  pch = 20, cex = 2.5)
 
+points(comp1$Longi, comp1$Lati, col = 4,  pch = 20, cex = 2)
+points(comp2$Longi, comp2$Lati, col = 4,  pch = 20, cex = 2)
 
+test = merge(plotsub, all_env[, c("stateroute","Longi", "Lati","elev.mean","sum.EVI")], by = "stateroute")
+points(test$Longi.x, test$Lati.x, col = 4,  pch = 20, cex = 4)
 
-
-
-
-
-
+#### ----Elev ----#####
+#read in elevation data from world clim
+elev <- getData("worldclim", var = "alt", res = 10)
+plot(elev)
+state.sub <- state[as.character(state@data$STATE_NAME) %in% nestates, ]
+elevation.sub <- crop(elev, extent(state.sub))
 
