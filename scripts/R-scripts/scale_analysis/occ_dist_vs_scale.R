@@ -161,15 +161,11 @@ bbs5bound_10$scale<-"5"
 #and applying sum to occupancy values, grouping by AOU and route # 
 #sum on the value of "occupancy" for each group, broken down by AOU and stateroute 
 library(plyr)
-bdata <- ddply(bbs5bound_1, c("stateroute", "AOU"), summarise,
-               N    = length(occupancy),
-               occupancy = sum(occupancy) #occupancy tricky, need to be aggregating it in diff way
-)
 #^^incorporate in function loop where instead of bbs5bound_1 I have "data"
 bbs_cluster = function(countData) {
   bdata = ddply(countData, c("stateroute", "AOU"), summarise,
         N    = length(occupancy),
-        occupancy = sum(occupancy)) 
+        occupancy = sum(occupancy)) #occupancy tricky, need to be aggregating it in diff way
   bdata = bdata[, c("stateroute", "AOU", "N", "occupancy")]
   return(bdata) 
 }
