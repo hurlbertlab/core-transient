@@ -379,6 +379,7 @@ for(sp in subfocalspecies){
 
 dev.off()   
 
+
 #### ---- Processing Environmental Data - Re-done from Snell_code.R ---- ####
 # read in raw env data (from Coyle et al)
 all_env = read.csv('All Env Data.csv', header = T)
@@ -411,9 +412,9 @@ occuenv$zElev = (occuenv$elev.mean - occuenv$Mean.Elev) / occuenv$SD.Elev
 occuenv$zEVI = (occuenv$sum.EVI - occuenv$Mean.EVI) / occuenv$SD.EVI
 
 # Inf values generated for occupancy of 1, so changing to 0.9999999999
-occuenv$FocalOcc[occuenv$FocalOcc == 1] <- 0.99999 
+occuenv$FocalOcc[occuenv$FocalOcc == 1] <- 0.9900000 ######NEEDS HELP
 # create logit transformation function
-occuenv$occ_logit =  log(occuenv$FocalOcc/(1-occuenv$FocalOcc)) 
+occuenv$occ_logit =  occuenv$FocalOcc/(1-occuenv$FocalOcc) 
 
 # create beta output data frame
 beta_lm = matrix(NA, nrow = length(subfocalspecies), ncol = 10)
@@ -473,6 +474,7 @@ for (sp in 1:length(subfocalspecies)){
   sp1 = unique(temp$Species)
   envoutput = rbind(envoutput, c(sp1, ENV, COMP, SHARED, NONE))
 }         
+dev.off()
 envoutput = data.frame(envoutput)
 names(envoutput) = c("FocalAOU", "ENV", "COMP", "SHARED", "NONE")
 beta_lm = data.frame(beta_lm)
@@ -480,14 +482,16 @@ names(beta_lm) = c("FocalAOU", "Competition_Est", "Competition_P", "Competition_
 beta_abun = data.frame(beta_abun)
 names(beta_abun) = c("FocalAOU", "Competition_Est", "Competition_P", "Competition_R2", "EnvZ_Est", "EnvZ_P", "EnvZ_R2", "BothZ_Est", "BothZ_P", "BothZ_R2")
 
-#####PLOTTING varpar
+#####PLOTTING variance partitioning
 envflip = gather(envoutput, "Type", "value", 2:5)
 #ggplot(envoutput,aes(factor(FocalAOU))) + geom_bar(width = 0.5)
 qplot(factor(FocalAOU), data=envflip, geom="bar", fill=value)
 
 # Stacked bar plot for each focal aou
-ggplot(data=envflip, aes(x=factor(FocalAOU), y=value, fill=Type)) + geom_bar(stat = "identity")
+ggplot(data=envflip, aes(x=factor(FocalAOU), y=value, fill=Type)) +geom_bar(stat = "identity") + xlab("Focal AOU") + ylab("Percent Variance Explained") 
 
+# stacked bar plot for aummary focal aou
+ggplot(data=envflip, aes(x=sum(FocalAOU), y=value, fill=Type)) + geom_bar(stat = "identity") + theme_classic()
 ggplot(envflip, aes(x = Type, y = value, color = Type)) + geom_violin() 
 
 # Which variable explains the most variance?
@@ -505,8 +509,9 @@ par(mfrow = c(3, 4))
 for(sp in subfocalspecies){ 
   print(sp)
   psub = occuenv[occuenv$Species == sp,]
+  psub = filter(psub, occ_logit < 9) # eliminating 100% occ?
   title = unique(psub$FocalSciName)
-  #ggplot(psub, aes(x = psub$occ_logit, y = psub$MainCompSum)) + geom_point(data=psub, pch = 16)+geom_smooth(method = "lm", col = "red")+ theme_classic()+ ggtitle(title)
+  #ggplot(psub, aes(x = psub$occ_logit, y = psub$MainCompSum)) + geom_point(data=psub, pch = 16)+geom_smooth(method = "lm", col = "red")+ theme_classic()+ xlab("Focal Occupancy")+ylab("Competitor Abundance")+ggtitle(title)
 
   
   #+ ggtitle(title[1])
@@ -534,6 +539,16 @@ ggplotRegression <- function (fit) {
                        " P =",signif(summary(fit)$coef[2,4], 5)))
 }
 # source = https://susanejohnston.wordpress.com/2012/08/09/a-quick-and-easy-function-to-plot-lm-results-in-r/
+
+# filter outliers
+outlierfilter = filter(occuenv, MainCompSum < 200) 
+outlierfilter = filter(outlierfilter, occ_logit < 11)
+# lm for all
+plot(outlierfilter$occ_logit, outlierfilter$MainCompSum, pch = 20, abline(competition, col = "red", lwd = 1.5))
+par(new= TRUE)
+plot(outlierfilter$occ_logit, outlierfilter$MainCompSum, pch = 20, abline(env_z, col = "green"), lwd = 1.5)
+par(new= TRUE)
+plot(outlierfilter$occ_logit, outlierfilter$MainCompSum, pch = 20, abline(both_z, col = "blue"), lwd = 1.5, xlab = "Focal Occupancy (logit link)", ylab = "Main Competitor Abundance")
 
 # Plotting basic lm hists to understand relationships btwn occ and abun
 hist(beta_lm$Competition_R2, 10, main = "R Squared Distribution for Competition", xlab = "Competition R Squared")
@@ -638,8 +653,11 @@ beta = data.frame(beta)
 names(beta) = c("FocalAOU", "Binom_MainCompSum_Estimate", "Binom_zTemp_Estimate", "Binom_zElev_Estimate", "Binom_zPrecip_Estimate", "Binom_zEVI_Estimate", "Binom_MainCompSum_P", "Binom_zTemp_P", "Binom_zElev_P", "Binom_zPrecip_P", "Binom_zEVI_P", "Quasibinom_MainCompSum_Estimate","Quasibinom_zTemp_Estimate","Quasibinom_zElev_Estimate","Quasibinom_zPrecip_Estimate","Quasibinom_zEVI_Estimate","Quasibinom_MainCompSum_P", "Quasibinom_zTemp_P", "Quasibinom_zElev_P", "Quasibinom_zPrecip_P", "Quasibinom_zEVI_P", "Randsite_MainCompSum_Estimate", "Randsite_zTemp_Estimate", "Randsite_zElev_Estimate", "Randsite_zPrecip_Estimate", "Randsite_zEVI_Estimate", "Randsite_MainCompSum_P", "Randsite_zTemp_P", "Randsite_zElev_P", "Randsite_zPrecip_P", "Randsite_zEVI_P")
 
 AIC(glm_abundance_binom, glm_abundance_quasibinom,glm_abundance_rand_site) ## rand site is clear winner
+#Plot winning glm
+ggplot(data = occumatrix, aes(x = FocalOcc, y = MainCompSum)) +stat_smooth(data=glm_abundance_rand_site, lwd = 1.5) + theme_bw()
 
-# likelihood ratio test
+
+geom_line()# likelihood ratio test
 anova(glm_abundance_rand_site, test = "Chisq")
 anova(glm_abundance_quasibinom, test = "Chisq")
 anova(glm_abundance_binom, test = "Chisq")
@@ -661,6 +679,15 @@ points(comp2$Longi, comp2$Lati, col = 4,  pch = 20, cex = 2)
 
 test = merge(plotsub, all_env[, c("stateroute","Longi", "Lati","elev.mean","sum.EVI")], by = "stateroute")
 points(test$Longi.x, test$Lati.x, col = 4,  pch = 20, cex = 4)
+
+# showing the number of species present at each route
+numspp_route = focalcompoutput %>%
+  group_by(stateroute) %>%
+  summarise(numspp = n_distinct(FocalAOU))
+numspp = merge(numspp_route, latlongs, by = "stateroute" )
+map("state") 
+points(numspp$Longi, numspp$Lati, col = "dark green",  pch = 20, cex = numspp$numspp/5)
+
 
 #### ----Elev ----#####
 #read in elevation data from world clim
