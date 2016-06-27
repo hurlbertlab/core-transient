@@ -272,9 +272,10 @@ names(avg_occ_dist) = c('occupancy', 'frequency')
 avg_occ_dist$occupancy = as.numeric(as.character(avg_occ_dist$occupancy))
 
 # plot total avg avian occupancy distribution
-plot(avg_occ_dist$occupancy, avg_occ_dist$frequency, type = 'l', 
+plot(avg_occ_dist$occupancy, avg_occ_dist$frequency, type = 'l', lwd = 3,
      xlab = "Average Occupancy Distribution", ylab = "Frequency of Occupancy")
 # add plotting in center, subtract .05 in x axis
+ggplot(data = avg_occ_dist, aes(x = occupancy, y = frequency)) + geom_line(data=avg_occ_dist, lwd = 2) +theme_classic()
 
 #### ---- Gathering Occupancy and Abundance Data for Biotic Comparisons ---- ####
 # filter BBS mean abundance by AOU/stateroute by year
@@ -479,6 +480,16 @@ names(beta_lm) = c("FocalAOU", "Competition_Est", "Competition_P", "Competition_
 beta_abun = data.frame(beta_abun)
 names(beta_abun) = c("FocalAOU", "Competition_Est", "Competition_P", "Competition_R2", "EnvZ_Est", "EnvZ_P", "EnvZ_R2", "BothZ_Est", "BothZ_P", "BothZ_R2")
 
+#####PLOTTING varpar
+envflip = gather(envoutput, "Type", "value", 2:5)
+#ggplot(envoutput,aes(factor(FocalAOU))) + geom_bar(width = 0.5)
+qplot(factor(FocalAOU), data=envflip, geom="bar", fill=value)
+
+# Stacked bar plot for each focal aou
+ggplot(data=envflip, aes(x=factor(FocalAOU), y=value, fill=Type)) + geom_bar(stat = "identity")
+
+ggplot(envflip, aes(x = Type, y = value, color = Type)) + geom_violin() 
+
 # Which variable explains the most variance?
 envoutput$VarPar = 0 # set up variance partiioning winner column, 0 = not the winner
 for (s in subfocalspecies) {
@@ -494,8 +505,10 @@ par(mfrow = c(3, 4))
 for(sp in subfocalspecies){ 
   print(sp)
   psub = occuenv[occuenv$Species == sp,]
-  #t = ggplot(psub, aes(x = FocalOcc, y = AllCompSum)) + geom_point(data=psub, pch = 16)
-  #+ stat_smooth(method = "lm", col = "red") + theme_classic()
+  title = unique(psub$FocalSciName)
+  #ggplot(psub, aes(x = psub$occ_logit, y = psub$MainCompSum)) + geom_point(data=psub, pch = 16)+geom_smooth(method = "lm", col = "red")+ theme_classic()+ ggtitle(title)
+
+  
   #+ ggtitle(title[1])
   competition <- lm(psub$occ_logit ~  psub$MainCompSum) 
   # z scores separated out for env effects (as opposed to multivariate variable)
@@ -503,9 +516,9 @@ for(sp in subfocalspecies){
   # z scores separated out for env effects
   both_z = lm(psub$occ_logit ~  psub$MainCompSum + abs(psub$zTemp)+abs(psub$zElev)+abs(psub$zPrecip)+abs(psub$zEVI), data = psub)
   
-  plot(psub$occ_logit, psub$MainCompSum, pch = 20, xlab = "Focal Occupancy (logit link)", ylab = "Main Competitor Abundnace", main = psub$FocalSciName[1], sub = "Competition", abline(competition, col = "red"))
-  plot(psub$occ_logit, psub$MainCompSum, pch = 20, xlab = "Focal Occupancy (logit link)", ylab = "Main Competitor Abundnace", main = psub$FocalSciName[1], sub = "Environment", abline(env_z, col = "red"))
-  plot(psub$occ_logit, psub$MainCompSum, pch = 20, xlab = "Focal Occupancy (logit link)", ylab = "Main Competitor Abundnace", main = psub$FocalSciName[1], sub = "Both", abline(both_z, col = "red"))
+  plot(psub$occ_logit, psub$MainCompSum, pch = 20, xlab = "Focal Occupancy (logit link)", ylab = "Main Competitor Abundance", main = psub$FocalSciName[1], sub = "Competition", abline(competition, col = "red"))
+  plot(psub$occ_logit, psub$MainCompSum, pch = 20, xlab = "Focal Occupancy (logit link)", ylab = "Main Competitor Abundance", main = psub$FocalSciName[1], sub = "Environment", abline(env_z, col = "red"))
+  plot(psub$occ_logit, psub$MainCompSum, pch = 20, xlab = "Focal Occupancy (logit link)", ylab = "Main Competitor Abundance", main = psub$FocalSciName[1], sub = "Both", abline(both_z, col = "red"))
 }
 dev.off()
 
