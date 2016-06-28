@@ -412,7 +412,7 @@ occuenv$zElev = (occuenv$elev.mean - occuenv$Mean.Elev) / occuenv$SD.Elev
 occuenv$zEVI = (occuenv$sum.EVI - occuenv$Mean.EVI) / occuenv$SD.EVI
 
 # Inf values generated for occupancy of 1, so changing to 0.9999999999
-occuenv$FocalOcc[occuenv$FocalOcc == 1] <- 0.9900000 ######NEEDS HELP
+occuenv$FocalOcc[occuenv$FocalOcc == 1] <- 0.98 ######NEEDS HELP
 # create logit transformation function
 occuenv$occ_logit =  occuenv$FocalOcc/(1-occuenv$FocalOcc) 
 
@@ -482,17 +482,6 @@ names(beta_lm) = c("FocalAOU", "Competition_Est", "Competition_P", "Competition_
 beta_abun = data.frame(beta_abun)
 names(beta_abun) = c("FocalAOU", "Competition_Est", "Competition_P", "Competition_R2", "EnvZ_Est", "EnvZ_P", "EnvZ_R2", "BothZ_Est", "BothZ_P", "BothZ_R2")
 
-#####PLOTTING variance partitioning
-envflip = gather(envoutput, "Type", "value", 2:5)
-#ggplot(envoutput,aes(factor(FocalAOU))) + geom_bar(width = 0.5)
-qplot(factor(FocalAOU), data=envflip, geom="bar", fill=value)
-
-# Stacked bar plot for each focal aou
-ggplot(data=envflip, aes(x=factor(FocalAOU), y=value, fill=Type)) +geom_bar(stat = "identity") + xlab("Focal AOU") + ylab("Percent Variance Explained") 
-
-# stacked bar plot for aummary focal aou
-ggplot(data=envflip, aes(x=sum(FocalAOU), y=value, fill=Type)) + geom_bar(stat = "identity") + theme_classic()
-ggplot(envflip, aes(x = Type, y = value, color = Type)) + geom_violin() 
 
 # Which variable explains the most variance?
 envoutput$VarPar = 0 # set up variance partiioning winner column, 0 = not the winner
@@ -654,10 +643,13 @@ names(beta) = c("FocalAOU", "Binom_MainCompSum_Estimate", "Binom_zTemp_Estimate"
 
 AIC(glm_abundance_binom, glm_abundance_quasibinom,glm_abundance_rand_site) ## rand site is clear winner
 #Plot winning glm
-ggplot(data = occumatrix, aes(x = FocalOcc, y = MainCompSum)) +stat_smooth(data=glm_abundance_rand_site, lwd = 1.5) + theme_bw()
+ggplot(data = occumatrix, aes(x = FocalOcc, y = MainCompSum)) +stat_smooth(data=glm_abundance_rand_site, lwd = 1.5) +theme_bw()
+ggplot(data = occumatrix, aes(x = FocalOcc, y = zEVI)) +stat_smooth(data=glm_abundance_rand_site, lwd = 1.5) +theme_bw()
 
+#occusub = filter(occumatrix, MainCompSum <50)
+#ggplot(data = occusub, aes(x = FocalOcc, y = MainCompSum))+ geom_point(alpha = 1/10)
 
-geom_line()# likelihood ratio test
+# likelihood ratio test
 anova(glm_abundance_rand_site, test = "Chisq")
 anova(glm_abundance_quasibinom, test = "Chisq")
 anova(glm_abundance_binom, test = "Chisq")
@@ -688,6 +680,17 @@ numspp = merge(numspp_route, latlongs, by = "stateroute" )
 map("state") 
 points(numspp$Longi, numspp$Lati, col = "dark green",  pch = 20, cex = numspp$numspp/5)
 
+#####PLOTTING variance partitioning
+envflip = gather(envoutput, "Type", "value", 2:5)
+#ggplot(envoutput,aes(factor(FocalAOU))) + geom_bar(width = 0.5)
+qplot(factor(FocalAOU), data=envflip, geom="bar", fill=value)
+
+# Stacked bar plot for each focal aou
+ggplot(data=envflip, aes(x=factor(FocalAOU), y=value, fill=Type)) +geom_bar(stat = "identity") + xlab("Focal AOU") + ylab("Percent Variance Explained") 
+
+# stacked bar plot for aummary focal aou
+ggplot(data=envflip, aes(x=sum(FocalAOU), y=value, fill=Type)) + geom_bar(stat = "identity") + theme_classic()
+ggplot(envflip, aes(x = Type, y = value, color = Type)) + geom_violin() 
 
 #### ----Elev ----#####
 #read in elevation data from world clim
