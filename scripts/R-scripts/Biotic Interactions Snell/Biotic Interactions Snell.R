@@ -414,7 +414,7 @@ occuenv$zEVI = (occuenv$sum.EVI - occuenv$Mean.EVI) / occuenv$SD.EVI
 # Inf values generated for occupancy of 1, so changing to 0.9999999999
 occuenv$FocalOcc[occuenv$FocalOcc == 1] <- 0.98 ######NEEDS HELP
 # create logit transformation function
-occuenv$occ_logit =  occuenv$FocalOcc/(1-occuenv$FocalOcc) 
+occuenv$occ_logit =  log(occuenv$FocalOcc/(1-occuenv$FocalOcc)) 
 
 # create beta output data frame
 beta_lm = matrix(NA, nrow = length(subfocalspecies), ncol = 10)
@@ -510,9 +510,9 @@ for(sp in subfocalspecies){
   # z scores separated out for env effects
   both_z = lm(psub$occ_logit ~  psub$MainCompSum + abs(psub$zTemp)+abs(psub$zElev)+abs(psub$zPrecip)+abs(psub$zEVI), data = psub)
   
-  plot(psub$occ_logit, psub$MainCompSum, pch = 20, xlab = "Focal Occupancy (logit link)", ylab = "Main Competitor Abundance", main = psub$FocalSciName[1], sub = "Competition", abline(competition, col = "red"))
-  plot(psub$occ_logit, psub$MainCompSum, pch = 20, xlab = "Focal Occupancy (logit link)", ylab = "Main Competitor Abundance", main = psub$FocalSciName[1], sub = "Environment", abline(env_z, col = "red"))
-  plot(psub$occ_logit, psub$MainCompSum, pch = 20, xlab = "Focal Occupancy (logit link)", ylab = "Main Competitor Abundance", main = psub$FocalSciName[1], sub = "Both", abline(both_z, col = "red"))
+  plot(psub$MainCompSum, psub$occ_logit, pch = 20, xlab = "Focal Occupancy (logit link)", ylab = "Main Competitor Abundance", main = psub$FocalSciName[1], sub = "Competition", abline(competition, col = "red"))
+  plot(psub$MainCompSum, psub$occ_logit,  pch = 20, xlab = "Focal Occupancy (logit link)", ylab = "Main Competitor Abundance", main = psub$FocalSciName[1], sub = "Environment", abline(env_z, col = "red"))
+  plot(psub$MainCompSum, psub$occ_logit,  pch = 20, xlab = "Focal Occupancy (logit link)", ylab = "Main Competitor Abundance", main = psub$FocalSciName[1], sub = "Both", abline(both_z, col = "red"))
 }
 dev.off()
 
@@ -643,8 +643,12 @@ names(beta) = c("FocalAOU", "Binom_MainCompSum_Estimate", "Binom_zTemp_Estimate"
 
 AIC(glm_abundance_binom, glm_abundance_quasibinom,glm_abundance_rand_site) ## rand site is clear winner
 #Plot winning glm
-ggplot(data = occumatrix, aes(x = FocalOcc, y = MainCompSum)) +stat_smooth(data=glm_abundance_rand_site, lwd = 1.5) +theme_bw()
-ggplot(data = occumatrix, aes(x = FocalOcc, y = zEVI)) +stat_smooth(data=glm_abundance_rand_site, lwd = 1.5) +theme_bw()
+glm_abundance_rand_site = glmer(cbind(sp_success, sp_fail) ~ cs(MainCompSum) + 
+    abs(zTemp)+abs(zElev)+abs(zPrecip)+abs(zEVI) + (1|stateroute), family = binomial(link = logit), data = occumatrix)
+summary(glm_abundance_rand_site) 
+
+ggplot(data = occumatrix, aes(x = MainCompSum, y = FocalOcc)) +stat_smooth(data=glm_abundance_rand_site, lwd = 1.5,se = FALSE) +theme_bw()
+ggplot(data = occumatrix, aes(x = zEVI, y = FocalOcc)) +stat_smooth(data=glm_abundance_rand_site, lwd = 1.5) +theme_bw()
 
 #occusub = filter(occumatrix, MainCompSum <50)
 #ggplot(data = occusub, aes(x = FocalOcc, y = MainCompSum))+ geom_point(alpha = 1/10)
