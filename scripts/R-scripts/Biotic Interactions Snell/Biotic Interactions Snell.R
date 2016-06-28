@@ -412,7 +412,7 @@ occuenv$zElev = (occuenv$elev.mean - occuenv$Mean.Elev) / occuenv$SD.Elev
 occuenv$zEVI = (occuenv$sum.EVI - occuenv$Mean.EVI) / occuenv$SD.EVI
 
 # Inf values generated for occupancy of 1, so changing to 0.9999999999
-occuenv$FocalOcc[occuenv$FocalOcc == 1] <- 0.98 ######NEEDS HELP
+occuenv$FocalOcc[occuenv$FocalOcc == 1] <- 0.98 ######NEED TO TRANSFORM ALL VARIABLES
 # create logit transformation function
 occuenv$occ_logit =  log(occuenv$FocalOcc/(1-occuenv$FocalOcc)) 
 
@@ -475,6 +475,8 @@ for (sp in 1:length(subfocalspecies)){
   envoutput = rbind(envoutput, c(sp1, ENV, COMP, SHARED, NONE))
 }         
 dev.off()
+dev.off()
+
 envoutput = data.frame(envoutput)
 names(envoutput) = c("FocalAOU", "ENV", "COMP", "SHARED", "NONE")
 beta_lm = data.frame(beta_lm)
@@ -498,10 +500,9 @@ par(mfrow = c(3, 4))
 for(sp in subfocalspecies){ 
   print(sp)
   psub = occuenv[occuenv$Species == sp,]
-  psub = filter(psub, occ_logit < 9) # eliminating 100% occ?
+  #psub = filter(psub, occ_logit < 9) # eliminating 100% occ?
   title = unique(psub$FocalSciName)
   #ggplot(psub, aes(x = psub$occ_logit, y = psub$MainCompSum)) + geom_point(data=psub, pch = 16)+geom_smooth(method = "lm", col = "red")+ theme_classic()+ xlab("Focal Occupancy")+ylab("Competitor Abundance")+ggtitle(title)
-
   
   #+ ggtitle(title[1])
   competition <- lm(psub$occ_logit ~  psub$MainCompSum) 
@@ -510,9 +511,9 @@ for(sp in subfocalspecies){
   # z scores separated out for env effects
   both_z = lm(psub$occ_logit ~  psub$MainCompSum + abs(psub$zTemp)+abs(psub$zElev)+abs(psub$zPrecip)+abs(psub$zEVI), data = psub)
   
-  plot(psub$MainCompSum, psub$occ_logit, pch = 20, xlab = "Focal Occupancy (logit link)", ylab = "Main Competitor Abundance", main = psub$FocalSciName[1], sub = "Competition", abline(competition, col = "red"))
-  plot(psub$MainCompSum, psub$occ_logit,  pch = 20, xlab = "Focal Occupancy (logit link)", ylab = "Main Competitor Abundance", main = psub$FocalSciName[1], sub = "Environment", abline(env_z, col = "red"))
-  plot(psub$MainCompSum, psub$occ_logit,  pch = 20, xlab = "Focal Occupancy (logit link)", ylab = "Main Competitor Abundance", main = psub$FocalSciName[1], sub = "Both", abline(both_z, col = "red"))
+  plot(psub$MainCompSum, psub$occ_logit, pch = 20, xlab = "Main Competitor Abundance", ylab = "Focal Occupancy (logit link)", main = psub$FocalSciName[1], sub = "Competition", abline(competition, col = "red"))
+  plot(psub$MainCompSum,psub$occ_logit,  pch = 20, xlab = "Main Competitor Abundance", ylab = "Focal Occupancy (logit link)", main = psub$FocalSciName[1], sub = "Environment", abline(env_z, col = "red"))
+  plot(psub$MainCompSum, psub$occ_logit,  pch = 20, xlab = "Main Competitor Abundance", ylab = "Focal Occupancy (logit link)", main = psub$FocalSciName[1], sub = "Both", abline(both_z, col = "red"))
 }
 dev.off()
 
@@ -565,7 +566,12 @@ abline(v = mean(beta_abun$BothZ_Est), col = "red", lwd = 3)
 #### ---- GLM fitting  ---- ####
 # add on success and failure columns by creating # of sites where birds were found
 # and # of sites birds were not found from original bbs data
-
+occuenv$comp_scaled = 0
+for (sp in subfocalspecies) {
+  print(sp)
+  occs = occuenv[occuenv$Species == sp,]
+  occuenv$comp_scaled <- sum(occs$MainCompSum)/mean(occuenv$MainCompSum)
+}
 # create counter column to sum across years
 occuenv$counter = 1
 # aggregate to sum across years by site
@@ -644,12 +650,28 @@ names(beta) = c("FocalAOU", "Binom_MainCompSum_Estimate", "Binom_zTemp_Estimate"
 AIC(glm_abundance_binom, glm_abundance_quasibinom,glm_abundance_rand_site) ## rand site is clear winner
 #Plot winning glm
 glm_abundance_rand_site = glmer(cbind(sp_success, sp_fail) ~ cs(MainCompSum) + 
-    abs(zTemp)+abs(zElev)+abs(zPrecip)+abs(zEVI) + (1|stateroute), family = binomial(link = logit), data = occumatrix)
+    abs(zTemp)+abs(zElev)+abs(zPrecip)+abs(zEVI) + (1|stateroute:Species), family = binomial(link = logit), data = occumatrix)
 summary(glm_abundance_rand_site) 
 
 ggplot(data = occumatrix, aes(x = MainCompSum, y = FocalOcc)) +stat_smooth(data=glm_abundance_rand_site, lwd = 1.5,se = FALSE) +theme_bw()
-ggplot(data = occumatrix, aes(x = zEVI, y = FocalOcc)) +stat_smooth(data=glm_abundance_rand_site, lwd = 1.5) +theme_bw()
+ggplot(data = occumatrix, aes(x = zElev, y = FocalOcc)) +stat_smooth(data=glm_abundance_rand_site, lwd = 1.5, se = FALSE) +theme_bw()
 
+
+#### ---- Plotting LMs ---- ####
+# Making pdf of ranges for each focal spp
+pdf('GLM_Reg.pdf', height = 8, width = 10)
+par(mfrow = c(3, 4))
+# Plotting basic lms to understand relationships
+for(sp in subfocalspecies){ 
+  print(sp)
+  psub = occumatrix[occumatrix$Species == sp,]
+  glm_abundance_rand_site = glmer(cbind(sp_success, sp_fail) ~ cs(MainCompSum) + 
+     abs(zTemp)+abs(zElev)+abs(zPrecip)+abs(zEVI) + (1|stateroute:Species), family = binomial(link = logit), data = psub)
+  
+  tes = ggplot(data = psub, aes(x = MainCompSum, y = FocalOcc)) +stat_smooth(data=glm_abundance_rand_site, lwd = 1.5,se = FALSE) +theme_bw()
+  plot(tes)
+}
+dev.off()
 #occusub = filter(occumatrix, MainCompSum <50)
 #ggplot(data = occusub, aes(x = FocalOcc, y = MainCompSum))+ geom_point(alpha = 1/10)
 
