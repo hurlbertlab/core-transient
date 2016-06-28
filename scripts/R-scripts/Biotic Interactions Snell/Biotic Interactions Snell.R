@@ -17,6 +17,7 @@ library(rgeos)
 library(ggplot2)
 library(lme4)
 library(lmtest)
+library(gtools)
 
 # read in temporal occupancy dataset 
 Hurlbert_o = read.csv('Master_RO_Correlates_20110610.csv', header = T)
@@ -360,6 +361,9 @@ focalcompoutput1 = filter(numroutes, count >= 20)
 focalcompsub = merge(focalcompoutput, focalcompoutput1, by = "FocalAOU")
 # Creating new focalspecies index
 subfocalspecies = unique(focalcompsub$FocalAOU)
+
+# Create scaled competitor column
+focalcompsub$comp_scaled = focalcompsub$MainCompSum/(focalcompsub$FocalAbundance + focalcompsub$AllCompSum)
 ######## PDF of each species BBS occurrences ########
 # merge in lat/long
 latlongs = read.csv('routes 1996-2010 consecutive.csv', header = T)
@@ -708,14 +712,20 @@ points(numspp$Longi, numspp$Lati, col = "dark green",  pch = 20, cex = numspp$nu
 
 #####PLOTTING variance partitioning
 envflip = gather(envoutput, "Type", "value", 2:5)
-#ggplot(envoutput,aes(factor(FocalAOU))) + geom_bar(width = 0.5)
-qplot(factor(FocalAOU), data=envflip, geom="bar", fill=value)
 
+envdiet = merge(envflip, Hurlbert_o[, c("AOU","Trophic.Group","migclass")], by.x = "FocalAOU", by.y = "AOU")
+envflip$Loc
+envflip$family
 # Stacked bar plot for each focal aou
-ggplot(data=envflip, aes(x=factor(FocalAOU), y=value, fill=Type)) +geom_bar(stat = "identity") + xlab("Focal AOU") + ylab("Percent Variance Explained") 
+ggplot(data=envflip, aes(x=factor(FocalAOU), y=value, fill=Type)) + geom_bar(stat = "identity") + xlab("Focal AOU") + ylab("Percent Variance Explained") 
 
-# stacked bar plot for aummary focal aou
-ggplot(data=envflip, aes(x=sum(FocalAOU), y=value, fill=Type)) + geom_bar(stat = "identity") + theme_classic()
+# stacked bar plot for summary focal aou
+envrank = envflip %>% 
+  group_by(Type == 'ENV') %>% 
+ mutate(rank = row_number(-value)) # need to get just the envs to rank, then plot
+envrank <- envrank[order(envrank$rank),]
+ggplot(data=envflip, aes(factor(FocalAOU), y=value, fill=Type)) + geom_bar(stat = "identity") + theme_classic()
+
 ggplot(envflip, aes(x = Type, y = value, color = Type)) + geom_violin() 
 
 #### ----Elev ----#####

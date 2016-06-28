@@ -216,7 +216,7 @@ boxplot(summ4$pBimodal ~ summ4$taxa, cex.axis = 1.25, ylab = "p (Bimodal)", boxw
 #########################################################
 # Scale analyses with BBS data compared to other datasets
 
-counts5 = read.csv('data/raw_datasets/dataset_1_full.csv', header=T)
+counts5 = read.csv('data/raw_datasets/dataset_1.csv', header=T)
 occupancy.matrix = as.matrix(
   read.csv('scripts/R-scripts/scale_analysis/occ_matrix_BBS.csv', header=T, row.names = 1))
 fifty = read.csv('scripts/R-scripts/scale_analysis/BBS_fiftystop_MD_CO_CA_OR_1996-2010.csv')
@@ -228,7 +228,7 @@ uniqSpYr = unique(counts5[, c('Year', 'Aou')])
 BBS.occ = data.frame(table(uniqSpYr$Aou)/15)
 
 # MD BBS data
-md.counts = subset(counts5, statenum==46)
+md.counts = subset(counts5, statenum==46)  #not working
 md.occ.mat = occupancy.matrix[floor(as.numeric(row.names(occupancy.matrix))/1000)==46,]
 md.uniq = unique(md.counts[,c('Year','Aou')])
 # MD statewide temporal occupancy (27 routes)
