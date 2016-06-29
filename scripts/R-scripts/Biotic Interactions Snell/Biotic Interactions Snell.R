@@ -350,13 +350,20 @@ colnames(focalcompoutput) = c( "MainCompAOU", "stateroute","FocalAOU", "FocalAbu
 
 # Filter number to spp present in at least 20 routes for better model results
 # Subset to get the count of routes for each spp
-numroutes = focalcompoutput %>%
+numroutes = c()
+for (sp in focalspecies) {
+  print(sp)
+  tmp = filter(focalcompoutput, FocalAOU == sp) 
+  nroutes = tmp %>%
   group_by(FocalAOU) %>%
-  summarise(count = n_distinct(stateroute))
-
+  summarise(n_distinct(stateroute))
+  numroutes = rbind(numroutes, c(unique(tmp$FocalAOU), nroutes))
+}
+numroutes = data.frame(numroutes)
+colnames(numroutes) = c("FocalAOU", "AOU","nroutes")
 # Filter count to greater than or equal to 20
-focalcompoutput1 = filter(numroutes, count >= 20)
-
+focalcompoutput1 = filter(numroutes, nroutes >= 20)
+focalcompoutput1$nroutes = as.numeric(focalcompoutput1$nroutes)
 # Merge with original data table, new # of focal spp is 63
 focalcompsub = merge(focalcompoutput, focalcompoutput1, by = "FocalAOU")
 # Creating new focalspecies index
@@ -691,47 +698,68 @@ lrtest(glm_abundance_rand_site)
 # plots for poster
 plotdata = merge(new_occ2, latlongs, by = "stateroute") 
 plotsub = plotdata[plotdata$AOU == 7280,] # red-breasted nuthatch
+proutes = plotsub$stateroute
 comp1 = plotdata[plotdata$AOU == 7260,] # Brown Creeper
+comp1plot = comp1[comp1$stateroute %in% proutes,]
 comp2 = plotdata[plotdata$AOU == 7270,] # White-breasted Nuthatch
+comp2plot = comp2[comp2$stateroute %in% proutes,]
+
 map("state") 
-points(plotsub$Longi, plotsub$Lati, col = 2,  pch = 20, cex = 2.5)
-
-points(comp1$Longi, comp1$Lati, col = 4,  pch = 20, cex = 2)
-points(comp2$Longi, comp2$Lati, col = 4,  pch = 20, cex = 2)
-
-test = merge(plotsub, all_env[, c("stateroute","Longi", "Lati","elev.mean","sum.EVI")], by = "stateroute")
-points(test$Longi.x, test$Lati.x, col = 4,  pch = 20, cex = 4)
+Red_breasted_Nuthatch = points(plotsub$Longi, plotsub$Lati, col = "cyan3",  pch = 20, cex = 4.25)
+Brown_Creeper = points(comp1plot$Longi, comp1plot$Lati, col = "darkorchid1",  pch = 16, cex = 2)
+White_breasted_Nuthatch = points(comp2plot$Longi, comp2plot$Lati, col = "black",  pch = 20, cex = 2)
+legend("bottomleft", legend = c("Red-breasted Nuthatch", "Brown Creeper", "White-breasted Nuthatch"), col = c("cyan3","darkorchid1","black"), pch = 16)
 
 # showing the number of species present at each route
-numspp_route = focalcompoutput %>%
-  group_by(stateroute) %>%
-  summarise(numspp = n_distinct(FocalAOU))
-numspp = merge(numspp_route, latlongs, by = "stateroute" )
-map("state") 
-points(numspp$Longi, numspp$Lati, col = "dark green",  pch = 20, cex = numspp$numspp/5)
+#numspp_route = focalcompoutput %>%
+ # group_by(stateroute) %>%
+ # summarise(numspp = n_distinct(FocalAOU))
+#numspp = merge(numspp_route, latlongs, by = "stateroute" )
+#map("state") 
+#points(numspp$Longi, numspp$Lati, col = "dark green",  pch = 20, cex = numspp$numspp/5)
 
 #####PLOTTING variance partitioning
-envflip = gather(envoutput, "Type", "value", 2:5)
-
-envdiet = merge(envflip, Hurlbert_o[, c("AOU","Trophic.Group","migclass")], by.x = "FocalAOU", by.y = "AOU")
-envflip$Loc
-envflip$family
-# Stacked bar plot for each focal aou
-ggplot(data=envflip, aes(x=factor(FocalAOU), y=value, fill=Type)) + geom_bar(stat = "identity") + xlab("Focal AOU") + ylab("Percent Variance Explained") 
-
-# stacked bar plot for summary focal aou
+## Creating env data table to plot ranked data
 envrank = envflip %>% 
   group_by(Type == 'ENV') %>% 
- mutate(rank = row_number(-value)) # need to get just the envs to rank, then plot
+  mutate(rank = row_number(-value)) # need to get just the envs to rank, then plot
 envrank <- envrank[order(envrank$rank),]
-ggplot(data=envflip, aes(factor(FocalAOU), y=value, fill=Type)) + geom_bar(stat = "identity") + theme_classic()
 
+nrank = envoutput %>% 
+  mutate(rank = row_number(-ENV))
+envflip = gather(nrank, "Type", "value", 2:5)
+envflip$rank <- factor(envflip$rank, levels = envflip$rank[order(envflip$rank)])
+envflip = arrange(envflip,(envflip$rank),envflip$FocalAOU)
+
+envdiet = merge(envflip, Hurlbert_o[, c("AOU","Trophic.Group","Foraging","migclass")], by.x = "FocalAOU", by.y = "AOU")
+
+# Stacked bar plot for each focal aou
+ggplot(data=envflip, aes(x=factor(FocalAOU), y=value, fill=Type)) + geom_bar(stat = "identity") + xlab("Focal AOU") + ylab("Percent Variance Explained") + theme(axis.text.x=element_text(angle=90,size=10,vjust=0.5)) + theme_classic()
+
+# Plot with ENV ranked in decreasing order
+ggplot(data=envflip, aes(factor(rank), y=value, fill=Type)) + 
+  geom_bar(stat = "identity") + theme_classic() +
+  theme(axis.text.x=element_text(angle=90,size=10,vjust=0.5)) + xlab("Focal Species") + ylab("Percent Variance Explained") +
+  theme(legend.title=element_text(colour="black",size=12,face="bold")) + 
+  scale_fill_discrete(name="Variable", breaks=c("ENV","COMP","SHARED","NONE"),labels=c("Environment", "Competition", "Shared Variance", "Unexplained Variance")) + 
+  scale_x_discrete(labels=unique(envflip$FocalAOU)) 
+
+#Violin plots w location, trophic group, mig
 ggplot(envflip, aes(x = Type, y = value, color = Type)) + geom_violin() 
+ggplot(envdiet, aes(x = Trophic.Group, y = value, color = Type)) + geom_violin() 
+ggplot(envdiet, aes(x = migclass, y = value, color = Type)) + geom_violin() 
+ggplot(envdiet, aes(x = Foraging, y = value, color = Type)) + geom_violin() 
+# midpoint long of US is -98.5795, so 1 indicates east of that line, 0 = west
+envfliploc = merge(envflip, plotdata_all, by = 'FocalAOU', all = TRUE)
+envfliploc$EW <- 0
+envfliploc$EW[envfliploc$Longi >= -98] <- 1
+envfliploc$EW[is.na(envfliploc$EW)] = 0
 
-#### ----Elev ----#####
-#read in elevation data from world clim
-elev <- getData("worldclim", var = "alt", res = 10)
-plot(elev)
-state.sub <- state[as.character(state@data$STATE_NAME) %in% nestates, ]
-elevation.sub <- crop(elev, extent(state.sub))
+ggplot(envfliploc, aes(x = factor(EW), y = value, color = Type)) + geom_violin() + scale_x_discrete(labels=c("West", "East")) 
+
+# R2 plot
+R2plot = merge(beta_lm, beta_abun, by = "FocalAOU")
+qplot(R2plot$Competition_R2.x, R2plot$Competition_R2.y)+stat_smooth()
+qplot(R2plot$EnvZ_R2.x, R2plot$EnvZ_R2.y)+stat_smooth()
+qplot(R2plot$BothZ_R2.x, R2plot$BothZ_R2.y)+stat_smooth()
 
