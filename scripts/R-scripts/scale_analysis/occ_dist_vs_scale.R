@@ -63,7 +63,7 @@ scale = 5
 
 
 for(begstop = seq(1, 50 by = 5)) {
-  # stop subsets will be begstop:(begstop+4)      BUT NOT begstop:begstop+4
+  begstop:(begstop+4)      #BUT NOT begstop:begstop+4
 }
 
 scale1output = c()
