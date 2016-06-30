@@ -14,11 +14,11 @@ bbs50 = read.csv("//bioark.ad.unc.edu/hurlbertlab/Databases/BBS/FiftyStopData/fi
 #bbsrts= bbs50$routes #Year columns missing from both datasets?
 names(bbs50)
 #library(raster)
-counts5 = read.csv('data/raw_datasets/dataset_1RAW/dataset_1_full.csv', header=T) #1996-2010 #in groups of ten #is this the full bbs dataset broken by 10 stops? 
+counts5 = read.csv('C://git/core-transient/data/raw_datasets/dataset_1RAW/dataset_1_full.csv', header=T) #1996-2010 #in groups of ten #is this the full bbs dataset broken by 10 stops? 
 #want to merge counts5 with bbs 50 stop data? why does counts5 have year data and not the others? 
 occupancy.matrix = as.matrix(
-  read.csv('scripts/R-scripts/scale_analysis/occ_matrix_BBS.csv', header=T, row.names = 1))
-routes = read.csv('scripts/R-scripts/scale_analysis/routes.csv')
+  read.csv('C://git/core-transient/scripts/R-scripts/scale_analysis/occ_matrix_BBS.csv', header=T, row.names = 1))
+routes = read.csv('C://git/core-transient/scripts/R-scripts/scale_analysis/routes.csv')
 routes$stateroute = 1000*routes$statenum + routes$Route
 names(routes)
 names(counts5)
@@ -62,7 +62,7 @@ scale = 5
 # BE SURE TO SUBSET BBS50 DATA TO ONLY THE ROUTES IN THE counts5 DATASET AND ONLY YEARS 1996-2010
 
 
-for (begstop = seq(1, 50 by = 5)) {
+for(begstop = seq(1, 50 by = 5)) {
   # stop subsets will be begstop:(begstop+4)      BUT NOT begstop:begstop+4
 }
 
