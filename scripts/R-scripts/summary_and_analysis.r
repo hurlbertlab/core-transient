@@ -11,7 +11,7 @@ library(dplyr)
 library(ggplot2)
 library(tidyr)
 library(maps)
-# library(sp)
+library(RColorBrewer)
 
 source('scripts/R-scripts/core-transient_functions.R')
 
@@ -107,7 +107,7 @@ mtext(expression(log[10] ~ " # Assemblages"), 2, cex = 1.5, las = 0, line = 2.5)
 bar1 = barplot(dsetsByTaxa[taxorder], xaxt = "n", axisnames = F,
                col = as.character(taxcolors$color[match(taxorder, taxcolors$taxa)]))
 text(bar1, par("usr")[3], taxorder, srt = 60, adj = c(1, 1), xpd = TRUE, cex = 1.25)
-axis(2, 0:5)
+
 mtext("# Datasets", 2, cex = 1.5, las = 0, line = 2.5)
 bar2 = barplot(log10(sitesByTaxa[taxorder]), axes = F, axisnames = F, ylim = c(0,3),
                col = as.character(taxcolors$color[match(taxorder, taxcolors$taxa)]))
@@ -583,11 +583,11 @@ pdf('fig1map.pdf', height = 8, width = 10)
 par(pin = c(3, 4))
 
 world = map(database='world')
-
+pal = palette(viridis(10))
 # read in lat/long file (preformatted)
 latlong = read.csv("data/latlongs/latlongs.csv", header = T)
-points(latlong$Lon, latlong$Lat, pch = 20, col = as.integer(latlong$taxa.x))
-
+points(latlong$Lon, latlong$Lat, pch = 16, col = as.integer(latlong$taxa.x), cex = 1)
+legend("bottomleft", legend = unique(latlong$taxa.x), col = 1:length(as.integer(latlong$taxa.x)), pch = 16, cex = 0.75)
 #points(plot248$long, plot248$lat, col = "green", pch = 20)
 #points(plot269$long, plot269$lat, col = "blue", pch = 20)
 #points(plot289$Longitude, plot289$Latitude, col = "cyan", pch = 20) 
@@ -596,7 +596,7 @@ points(latlong$Lon, latlong$Lat, pch = 20, col = as.integer(latlong$taxa.x))
 #points(plot315$long, plot315$lat, col = "black", pch = 20)
 #points(plot247$long, plot247$lat, col = "purple", pch = 20)
 
-out.file<-"output/tabular_data/fig1map.pdf"
+out.file<-"output/plots/fig1map.pdf"
 dev.off()
 
 ##################################################################
