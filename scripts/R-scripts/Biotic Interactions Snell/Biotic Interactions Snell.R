@@ -586,9 +586,13 @@ colnames(binom) <- c("stateroute", "numyears")
 # merge success/failure columns w environmnetal data, missing 0 occupancies
 occumatrix = merge(occuenv, binom, by = "stateroute", all.x = TRUE)
 
-# using equation species sum*GT occ to get success and failure for binomial anlaysis
+# using equation species sum*Focal occ to get success and failure for binomial anlaysis
 occumatrix$sp_success = as.factor(occumatrix$numyears * occumatrix$FocalOcc)
 occumatrix$sp_fail = as.factor(occumatrix$numyears * (1 - occumatrix$FocalOcc))
+
+# using equation species sum*Focal abun to get success and failure for binomial anlaysis
+occumatrix$sp_success_abun = as.factor(occumatrix$numyears * occumatrix$FocalAbundance)
+occumatrix$sp_fail_abun = as.factor(occumatrix$numyears * (1 - occumatrix$FocalAbundance))
 
 cs <- function(x) scale(x,scale=TRUE,center=TRUE)
 # source: http://permalink.gmane.org/gmane.comp.lang.r.lme4.devel/12080
@@ -601,17 +605,18 @@ for(i in 1:length(subfocalspecies)){
   print(i)
 
   occsub = occumatrix[occumatrix$Species == subfocalspecies[i],]
+  
   glm_abundance_binom = glm(cbind(sp_success, sp_fail) ~ comp_scaled + 
        abs(zTemp)+abs(zElev)+abs(zPrecip)+abs(zEVI), family = binomial(link = logit), data = occsub)
   summary(glm_abundance_binom)
 
-  glm_abundance_quasibinom = glm(cbind(sp_success, sp_fail) ~ comp_scaled + 
-      abs(zTemp)+abs(zElev)+abs(zPrecip)+abs(zEVI), family = quasibinomial, data = occsub)
-  summary(glm_abundance_quasibinom)
+  glm_abundance_rand_site = glmer(cbind(sp_success_abun, sp_fail_abun) ~ cs(comp_scaled) + 
+      abs(zTemp)+abs(zElev)+abs(zPrecip)+abs(zEVI) + (1|stateroute), family = binomial(link = logit), data = occsub)
+  summary(glm_abundance_rand_site)
 
-  glm_abundance_rand_site = glmer(cbind(sp_success, sp_fail) ~ cs(comp_scaled) + 
+  glm_occ_rand_site = glmer(cbind(sp_success, sp_fail) ~ cs(comp_scaled) + 
      abs(zTemp)+abs(zElev)+abs(zPrecip)+abs(zEVI) + (1|stateroute), family = binomial(link = logit), data = occsub)
-  summary(glm_abundance_rand_site) 
+  summary(glm_occ_rand_site) 
  
   beta[i,1] = subfocalspecies[i]
   beta[i,2] = summary(glm_abundance_binom)$coef[2,"Estimate"] # comp_scaled
@@ -625,40 +630,45 @@ for(i in 1:length(subfocalspecies)){
   beta[i,10] = summary(glm_abundance_binom)$coef[5,"Pr(>|z|)"] # abs(zPrecip)
   beta[i,11] = summary(glm_abundance_binom)$coef[6,"Pr(>|z|)"] # abs(zEVI)
     
-  beta[i,12] = summary(glm_abundance_quasibinom)$coef[2,"Estimate"] # comp_scaled
-  beta[i,13] = summary(glm_abundance_quasibinom)$coef[3,"Estimate"] # abs(zTemp)
-  beta[i,14] = summary(glm_abundance_quasibinom)$coef[4,"Estimate"] # abs(zElev)
-  beta[i,15] = summary(glm_abundance_quasibinom)$coef[5,"Estimate"] # abs(zPrecip)
-  beta[i,16] = summary(glm_abundance_quasibinom)$coef[6,"Estimate"] # abs(zEVI)
-  beta[i,17] = summary(glm_abundance_quasibinom)$coef[2,"Pr(>|t|)"] # comp_scaled
-  beta[i,18] = summary(glm_abundance_quasibinom)$coef[3,"Pr(>|t|)"] # abs(zTemp)
-  beta[i,19] = summary(glm_abundance_quasibinom)$coef[4,"Pr(>|t|)"] # abs(zElev)
-  beta[i,20] = summary(glm_abundance_quasibinom)$coef[5,"Pr(>|t|)"] # abs(zPrecip)
-  beta[i,21] = summary(glm_abundance_quasibinom)$coef[6,"Pr(>|t|)"] # abs(zEVI)
+  beta[i,12] = summary(glm_abundance_rand_site)$coef[2,"Estimate"] # comp_scaled
+  beta[i,13] = summary(glm_abundance_rand_site)$coef[3,"Estimate"] # abs(zTemp)
+  beta[i,14] = summary(glm_abundance_rand_site)$coef[4,"Estimate"] # abs(zElev)
+  beta[i,15] = summary(glm_abundance_rand_site)$coef[5,"Estimate"] # abs(zPrecip)
+  beta[i,16] = summary(glm_abundance_rand_site)$coef[6,"Estimate"] # abs(zEVI)
+  beta[i,17] = summary(glm_abundance_rand_site)$coef[2,"Pr(>|z|)"] # comp_scaled
+  beta[i,18] = summary(glm_abundance_rand_site)$coef[3,"Pr(>|z|)"] # abs(zTemp)
+  beta[i,19] = summary(glm_abundance_rand_site)$coef[4,"Pr(>|z|)"] # abs(zElev)
+  beta[i,20] = summary(glm_abundance_rand_site)$coef[5,"Pr(>|z|)"] # abs(zPrecip)
+  beta[i,21] = summary(glm_abundance_rand_site)$coef[6,"Pr(>|z|)"] # abs(zEVI)
 
-  beta[i,22] = summary(glm_abundance_rand_site)$coef[2,"Estimate"] # comp_scaled
-  beta[i,23] = summary(glm_abundance_rand_site)$coef[3,"Estimate"] # abs(zTemp)
-  beta[i,24] = summary(glm_abundance_rand_site)$coef[4,"Estimate"] # abs(zElev)
-  beta[i,25] = summary(glm_abundance_rand_site)$coef[5,"Estimate"] # abs(zPrecip)
-  beta[i,26] = summary(glm_abundance_rand_site)$coef[6,"Estimate"] # abs(zEVI)
-  beta[i,27] = summary(glm_abundance_rand_site)$coef[2,"Pr(>|z|)"] # comp_scaled
-  beta[i,28] = summary(glm_abundance_rand_site)$coef[3,"Pr(>|z|)"] # abs(zTemp)
-  beta[i,29] = summary(glm_abundance_rand_site)$coef[4,"Pr(>|z|)"] # abs(zElev)
-  beta[i,30] = summary(glm_abundance_rand_site)$coef[5,"Pr(>|z|)"] # abs(zPrecip)
-  beta[i,31] = summary(glm_abundance_rand_site)$coef[6,"Pr(>|z|)"] # abs(zEVI)
+  beta[i,22] = summary(glm_occ_rand_site)$coef[2,"Estimate"] # comp_scaled
+  beta[i,23] = summary(glm_occ_rand_site)$coef[3,"Estimate"] # abs(zTemp)
+  beta[i,24] = summary(glm_occ_rand_site)$coef[4,"Estimate"] # abs(zElev)
+  beta[i,25] = summary(glm_occ_rand_site)$coef[5,"Estimate"] # abs(zPrecip)
+  beta[i,26] = summary(glm_occ_rand_site)$coef[6,"Estimate"] # abs(zEVI)
+  beta[i,27] = summary(glm_occ_rand_site)$coef[2,"Pr(>|z|)"] # comp_scaled
+  beta[i,28] = summary(glm_occ_rand_site)$coef[3,"Pr(>|z|)"] # abs(zTemp)
+  beta[i,29] = summary(glm_occ_rand_site)$coef[4,"Pr(>|z|)"] # abs(zElev)
+  beta[i,30] = summary(glm_occ_rand_site)$coef[5,"Pr(>|z|)"] # abs(zPrecip)
+  beta[i,31] = summary(glm_occ_rand_site)$coef[6,"Pr(>|z|)"] # abs(zEVI)
 
 }
 beta = data.frame(beta)
-names(beta) = c("FocalAOU", "Binom_comp_scaled_Estimate", "Binom_zTemp_Estimate", "Binom_zElev_Estimate", "Binom_zPrecip_Estimate", "Binom_zEVI_Estimate", "Binom_comp_scaled_P", "Binom_zTemp_P", "Binom_zElev_P", "Binom_zPrecip_P", "Binom_zEVI_P", "Quasibinom_comp_scaled_Estimate","Quasibinom_zTemp_Estimate","Quasibinom_zElev_Estimate","Quasibinom_zPrecip_Estimate","Quasibinom_zEVI_Estimate","Quasibinom_comp_scaled_P", "Quasibinom_zTemp_P", "Quasibinom_zElev_P", "Quasibinom_zPrecip_P", "Quasibinom_zEVI_P", "Randsite_comp_scaled_Estimate", "Randsite_zTemp_Estimate", "Randsite_zElev_Estimate", "Randsite_zPrecip_Estimate", "Randsite_zEVI_Estimate", "Randsite_comp_scaled_P", "Randsite_zTemp_P", "Randsite_zElev_P", "Randsite_zPrecip_P", "Randsite_zEVI_P")
-
-AIC(glm_abundance_binom, glm_abundance_quasibinom,glm_abundance_rand_site) ## rand site is clear winner
+names(beta) = c("FocalAOU", "Binom_comp_scaled_Estimate", "Binom_zTemp_Estimate", "Binom_zElev_Estimate", "Binom_zPrecip_Estimate", "Binom_zEVI_Estimate", "Binom_comp_scaled_P", "Binom_zTemp_P", "Binom_zElev_P", "Binom_zPrecip_P", "Binom_zEVI_P", "Abundance_comp_scaled_Estimate","Abundance_zTemp_Estimate","Abundance_zElev_Estimate","Abundance_zPrecip_Estimate","Abundance_zEVI_Estimate","Abundance_comp_scaled_P", "Abundance_zTemp_P", "Abundance_zElev_P", "Abundance_zPrecip_P", "Abundance_zEVI_P", "Randsite_comp_scaled_Estimate", "Randsite_zTemp_Estimate", "Randsite_zElev_Estimate", "Randsite_zPrecip_Estimate", "Randsite_zEVI_Estimate", "Randsite_comp_scaled_P", "Randsite_zTemp_P", "Randsite_zElev_P", "Randsite_zPrecip_P", "Randsite_zEVI_P")
+dev.off()
+AIC(glm_abundance_binom, glm_abundance_rand_site,glm_occ_rand_site) ## abundace rand site is clear winner
 #Plot winning glm
-glm_abundance_rand_site = glmer(cbind(sp_success, sp_fail) ~ cs(comp_scaled) + 
+# GLM of all matrices not just subset
+glm_occ_rand_site = glmer(cbind(sp_success, sp_fail) ~ cs(comp_scaled) + 
     abs(zTemp)+abs(zElev)+abs(zPrecip)+abs(zEVI) + (1|stateroute:Species), family = binomial(link = logit), data = occumatrix)
 summary(glm_abundance_rand_site) 
 
-ggplot(data = occumatrix, aes(x = comp_scaled, y = FocalOcc)) +stat_smooth(data=glm_abundance_rand_site, lwd = 1.5) +theme_bw()
-ggplot(data = occumatrix, aes(x = zElev, y = FocalOcc)) +stat_smooth(data=glm_abundance_rand_site, lwd = 1.5, se = FALSE) +theme_bw()
+glm_abun_rand_site = glmer(cbind(sp_success_abun, sp_fail_abun) ~ cs(comp_scaled) + 
+   abs(zTemp)+abs(zElev)+abs(zPrecip)+abs(zEVI) + (1|stateroute:Species), family = binomial(link = logit), data = occumatrix)
+summary(glm_abundance_rand_site) 
+ggplot(data = occumatrix, aes(x = comp_scaled, y = FocalOcc)) +stat_smooth(data=glm_occ_rand_site, lwd = 1.5) +theme_bw()
+ggplot(data = occumatrix, aes(x = comp_scaled, y = FocalAbundance)) +stat_smooth(data=glm_abun_rand_site, lwd = 1.5) +theme_bw()
+ggplot(data = occumatrix, aes(x = zElev, y = FocalOcc)) +stat_smooth(data=glm_occ_rand_site, lwd = 1.5, se = FALSE) +theme_bw()
 
 
 #### ---- Plotting LMs ---- ####
@@ -672,12 +682,10 @@ for(sp in subfocalspecies){
   glm_abundance_rand_site = glmer(cbind(sp_success, sp_fail) ~ cs(comp_scaled) + 
      abs(zTemp)+abs(zElev)+abs(zPrecip)+abs(zEVI) + (1|stateroute:Species), family = binomial(link = logit), data = psub)
   
-  tes = ggplot(data = psub, aes(x = MainCompSum, y = FocalOcc)) +stat_smooth(data=glm_abundance_rand_site, lwd = 1.5,se = FALSE) +theme_bw()
+  tes = ggplot(data = psub, aes(x = comp_scaled, y = FocalOcc)) +stat_smooth(data=glm_occ_rand_site, lwd = 1.5,se = FALSE) +theme_bw()
   plot(tes)
 }
 dev.off()
-#occusub = filter(occumatrix, MainCompSum <50)
-#ggplot(data = occusub, aes(x = FocalOcc, y = MainCompSum))+ geom_point(alpha = 1/10)
 
 # likelihood ratio test
 anova(glm_abundance_rand_site, test = "Chisq")
@@ -750,9 +758,12 @@ envfliploc$EW[is.na(envfliploc$EW)] = 0
 
 ggplot(envfliploc, aes(x = factor(EW), y = value, color = Type)) + geom_violin() + scale_x_discrete(labels=c("West", "East")) 
 
-# R2 plot
+# R2 plot - lm
 R2plot = merge(beta_lm, beta_abun, by = "FocalAOU")
 qplot(R2plot$Competition_R2.x, R2plot$Competition_R2.y)+stat_smooth() +geom_abline(intercept = 0, slope = 1, col = "red", lwd = 1.25) + xlab("Occupancy R2") + ylab("Abundance R2")
 qplot(R2plot$EnvZ_R2.x, R2plot$EnvZ_R2.y)+stat_smooth()+geom_abline(intercept = 0, slope = 1, col = "red", lwd = 1.25)+ xlab("Occupancy R2") + ylab("Abundance R2")
 qplot(R2plot$BothZ_R2.x, R2plot$BothZ_R2.y)+stat_smooth()+geom_abline(intercept = 0, slope = 1, col = "red", lwd = 1.25)+ xlab("Occupancy R2") + ylab("Abundance R2")
+
+# R2 plot - glm
+qplot(beta$Abundance_comp_scaled_Estimate, beta$Randsite_comp_scaled_Estimate)+stat_smooth() +geom_abline(intercept = 0, slope = 1, col = "red", lwd = 1.25) + xlab("Occupancy est") + ylab("Abundance est")
 
