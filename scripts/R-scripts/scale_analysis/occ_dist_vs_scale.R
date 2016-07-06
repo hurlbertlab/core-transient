@@ -56,18 +56,32 @@ occ_counts = function(countData, countColumn, scale) {
 #if subrouteID = Count10, Count20, etc == 10; if = Count25, == 25; if = Count1, == 1, but no need for "ifs"   
 # modeled after: BBS_Core_agreement = 
   #sum(temp.site$occupancy>0.67 & temp.site$status=="breeder", na.rm = T)/sum(temp.site$occupancy>0.67, na.rm = T)
+#example of working single line 
+#need to adapt this to forloop to run for all sites and scales 
+
+bbs1<-occ_counts(bbs50, "Stop1", 5)
 
 scale = 5
 
 # BE SURE TO SUBSET BBS50 DATA TO ONLY THE ROUTES IN THE counts5 DATASET AND ONLY YEARS 1996-2010
+#why two forloops? one to go thru sequence and build on it 
 
+#dummy practice loop 
+foo = seq(1, 50, by = 5)
+seqoutput = c() 
 
-for(begstop = seq(1, 50 by = 5)) {
-  begstop:(begstop+4)      #BUT NOT begstop:begstop+4
+for (i in 1:50){
+  seqoutput[i] = foo[i:i+4]
 }
+#problem solved! needed brackets 
+seqoutput = c()
+for(begstop in seq(1, 50, by = 5)) {  #creating stop sequence of numbers, 
+  #like creating a triplicate sequence of amino acid codons, but in fives instead of threes) 
+ temporderbegstop = begstop:(begstop+4)      #BUT NOT begstop:begstop+4 
+ seqoutput = rbind(seqoutput, temporder) }
 
 scale1output = c()
-for (stop in paste("Stop", 1:50, sep = "")) {
+for (stop in paste("Stop", 1:50, sep = "")) { #actually running the function
   temp = occ_counts(bbs50, stop, 1)
   scale1output = rbind(scale1output, temp)
 }
