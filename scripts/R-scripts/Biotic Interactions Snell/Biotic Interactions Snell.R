@@ -276,8 +276,7 @@ avg_occ_dist$occupancy = as.numeric(as.character(avg_occ_dist$occupancy))
 plot(avg_occ_dist$occupancy, avg_occ_dist$frequency, type = 'l', lwd = 3,
      xlab = "Average Occupancy Distribution", ylab = "Frequency of Occupancy")
 # add plotting in center, subtract .05 in x axis
-ggplot(data = avg_occ_dist, aes(x = occupancy, y = frequency)) + geom_line(data=avg_occ_dist, lwd = 2) +theme_classic()
-
+ggplot(data = avg_occ_dist, aes(x = occupancy, y = frequency)) + geom_line(data=avg_occ_dist, lwd = 2) +theme_classic()+ geom_line(aes((avg_occ_dist$occupancy = 0.3)), col = "red", lwd = 2)
 #### ---- Gathering Occupancy and Abundance Data for Biotic Comparisons ---- ####
 # filter BBS mean abundance by AOU/stateroute by year
 bbs_pool = bbs %>% 
@@ -360,7 +359,7 @@ for (sp in focalspecies) {
   numroutes = rbind(numroutes, c(unique(tmp$FocalAOU), nroutes))
 }
 numroutes = data.frame(numroutes)
-colnames(numroutes) = c("FocalAOU", "nroutes")
+colnames(numroutes) = c("FocalAOU", "AOU","nroutes")
 # Filter count to greater than or equal to 20
 focalcompoutput1 = filter(numroutes, nroutes >= 20)
 focalcompoutput1$nroutes = as.numeric(focalcompoutput1$nroutes)
@@ -371,6 +370,7 @@ subfocalspecies = unique(focalcompsub$FocalAOU)
 
 # Create scaled competitor column
 focalcompsub$comp_scaled = focalcompsub$MainCompSum/(focalcompsub$FocalAbundance + focalcompsub$AllCompSum)
+
 ######## PDF of each species BBS occurrences ########
 # merge in lat/long
 latlongs = read.csv('routes 1996-2010 consecutive.csv', header = T)
@@ -422,22 +422,13 @@ occuenv$zPrecip = (occuenv$ap.mean - occuenv$Mean.Precip) / occuenv$SD.Precip
 occuenv$zElev = (occuenv$elev.mean - occuenv$Mean.Elev) / occuenv$SD.Elev
 occuenv$zEVI = (occuenv$sum.EVI - occuenv$Mean.EVI) / occuenv$SD.EVI
 
-# Inf values generated for occupancy of 1, so changing to 0.9999999999
-occuenv$FocalOcc[occuenv$FocalOcc == 1] <- 0.98 ######NEED TO TRANSFORM ALL VARIABLES
-# create logit transformation function
-occuenv$occ_logit =  log(occuenv$FocalOcc/(1-occuenv$FocalOcc)) 
-# scale competition based on total abundance
-occuenv_comp_scaled = c()
-for (sp in subfocalspecies) {
-  print(sp)
-  occs = occuenv[occuenv$Species == sp,]
-  
-  occuenv_scaled = occs %>% group_by(stateroute)
-  occuenv_scaled$CompScale = occuenv_scaled$MainCompSum/sum(occuenv_scaled$MainCompSum + occuenv_scaled$FocalAbundance)
- 
-  occuenv_comp_scaled = rbind(occuenv_comp_scaled, occuenv_scaled)
-}
-occuenv = data.frame(occuenv_comp_scaled)
+# rescaling all occupancy values  - odds ratio
+# need to get rid of ones in order to not have infinity values 
+occuenv$FocalOcc_scale = (occuenv$FocalOcc * .99) + .005
+occuenv$CompOcc_scale = (occuenv$comp_scaled * .99) + .005
+# create logit transformation function, did on rescaled vals
+occuenv$occ_logit =  log(occuenv$FocalOcc_scale/(1-occuenv$FocalOcc_scale)) 
+
 # create beta output data frame
 beta_lm = matrix(NA, nrow = length(subfocalspecies), ncol = 10)
 beta_abun = matrix(NA, nrow = length(subfocalspecies), ncol = 10)
@@ -494,7 +485,6 @@ for (sp in 1:length(subfocalspecies)){
   sp1 = unique(temp$Species)
   envoutput = rbind(envoutput, c(sp1, ENV, COMP, SHARED, NONE))
 }         
-dev.off()
 dev.off()
 
 envoutput = data.frame(envoutput)
@@ -661,7 +651,7 @@ AIC(glm_abundance_binom, glm_abundance_rand_site,glm_occ_rand_site) ## abundace 
 # GLM of all matrices not just subset
 glm_occ_rand_site = glmer(cbind(sp_success, sp_fail) ~ cs(comp_scaled) + 
     abs(zTemp)+abs(zElev)+abs(zPrecip)+abs(zEVI) + (1|stateroute:Species), family = binomial(link = logit), data = occumatrix)
-summary(glm_abundance_rand_site) 
+summary(glm_occ_rand_site) 
 
 glm_abun_rand_site = glmer(cbind(sp_success_abun, sp_fail_abun) ~ cs(comp_scaled) + 
    abs(zTemp)+abs(zElev)+abs(zPrecip)+abs(zEVI) + (1|stateroute:Species), family = binomial(link = logit), data = occumatrix)
@@ -721,18 +711,19 @@ legend("bottomleft", legend = c("Red-breasted Nuthatch", "Brown Creeper", "White
 
 #####PLOTTING variance partitioning
 ## Creating env data table to plot ranked data
-envrank = envflip %>% 
-  group_by(Type == 'ENV') %>% 
-  mutate(rank = row_number(-value)) # need to get just the envs to rank, then plot
-envrank <- envrank[order(envrank$rank),]
-
 nrank = envoutput %>% 
   mutate(rank = row_number(-ENV))
 envflip = gather(nrank, "Type", "value", 2:5)
 envflip$rank <- factor(envflip$rank, levels = envflip$rank[order(envflip$rank)])
-envflip = arrange(envflip,(envflip$rank),envflip$FocalAOU)
+envflip = plyr::arrange(envflip,(envflip$rank),envflip$FocalAOU)
 
 envdiet = merge(envflip, Hurlbert_o[, c("AOU","Trophic.Group","Foraging","migclass")], by.x = "FocalAOU", by.y = "AOU")
+envfam = merge(envflip, AOU[, c("AOU_OUT","FAMILY")], by.x = "FocalAOU", by.y = "AOU_OUT")
+
+envrank = envflip %>% 
+  group_by(Type == 'ENV') %>% 
+  mutate(rank = row_number(-value)) # need to get just the envs to rank, then plot
+envrank <- envrank[order(envrank$rank),]
 
 # Stacked bar plot for each focal aou
 ggplot(data=envflip, aes(x=factor(FocalAOU), y=value, fill=Type)) + geom_bar(stat = "identity") + xlab("Focal AOU") + ylab("Percent Variance Explained") + theme(axis.text.x=element_text(angle=90,size=10,vjust=0.5)) + theme_classic()
@@ -750,6 +741,8 @@ ggplot(envflip, aes(x = Type, y = value, color = Type)) + geom_violin()
 ggplot(envdiet, aes(x = Trophic.Group, y = value, color = Type)) + geom_violin() 
 ggplot(envdiet, aes(x = migclass, y = value, color = Type)) + geom_violin() 
 ggplot(envdiet, aes(x = Foraging, y = value, color = Type)) + geom_violin() 
+ggplot(envfam, aes(x = FAMILY, y = value, color = Type)) + geom_violin() 
+
 # midpoint long of US is -98.5795, so 1 indicates east of that line, 0 = west
 envfliploc = merge(envflip, plotdata_all, by = 'FocalAOU', all = TRUE)
 envfliploc$EW <- 0
