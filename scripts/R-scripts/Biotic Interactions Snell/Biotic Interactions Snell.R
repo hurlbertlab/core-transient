@@ -276,7 +276,7 @@ avg_occ_dist$occupancy = as.numeric(as.character(avg_occ_dist$occupancy))
 plot(avg_occ_dist$occupancy, avg_occ_dist$frequency, type = 'l', lwd = 3,
      xlab = "Average Occupancy Distribution", ylab = "Frequency of Occupancy")
 # add plotting in center, subtract .05 in x axis
-ggplot(data = avg_occ_dist, aes(x = occupancy, y = frequency)) + geom_line(data=avg_occ_dist, lwd = 2) +theme_classic()+ geom_line(aes((avg_occ_dist$occupancy = 0.3)), col = "red", lwd = 2)
+ggplot(data = avg_occ_dist, aes(x = occupancy, y = frequency)) + geom_line(data=avg_occ_dist, lwd = 2) +theme_classic()+ geom_line(aes((avg_occ_dist$occupancy = 0.3)), col = "red", lwd = 1.5) + geom_line(aes((avg_occ_dist$occupancy = 0.7)), col = "red", lwd = 1.5)
 #### ---- Gathering Occupancy and Abundance Data for Biotic Comparisons ---- ####
 # filter BBS mean abundance by AOU/stateroute by year
 bbs_pool = bbs %>% 
