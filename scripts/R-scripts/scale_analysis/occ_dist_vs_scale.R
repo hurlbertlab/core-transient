@@ -67,18 +67,24 @@ scale = 5
 #why two forloops? one to go thru sequence and build on it 
 
 #dummy practice loop 
-foo = seq(1, 50, by = 5)
+
 seqoutput = c() 
 
 for (i in 1:50){
+  foo = seq(1, 50, by = 5)
   seqoutput[i] = foo[i:i+4]
 }
-#problem solved! needed brackets 
+
+
+#problem solved! needed brackets...but a new problem opened: I'm not JUST creating a sequence, 
+#I'm creating a sequence for the "Stop_" columns! 
 seqoutput = c()
 for(begstop in seq(1, 50, by = 5)) {  #creating stop sequence of numbers, 
   #like creating a triplicate sequence of amino acid codons, but in fives instead of threes) 
- temporderbegstop = begstop:(begstop+4)      #BUT NOT begstop:begstop+4 
+ begstop = begstop:(begstop+4)      #BUT NOT begstop:begstop+4 
  seqoutput = rbind(seqoutput, temporder) }
+
+#then I need to use the above to dictate to the below function where to lump stop data together and where to cut it off 
 
 scale1output = c()
 for (stop in paste("Stop", 1:50, sep = "")) { #actually running the function
