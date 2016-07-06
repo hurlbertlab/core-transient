@@ -66,11 +66,19 @@ scale = 5
 # BE SURE TO SUBSET BBS50 DATA TO ONLY THE ROUTES IN THE counts5 DATASET AND ONLY YEARS 1996-2010
 #why two forloops? one to go thru sequence and build on it 
 
+#dummy practice loop 
+foo = seq(1, 50, by = 5)
+seqoutput = c() 
 
+for (i in 1:50){
+  seqoutput[i] = foo[i:i+4]
+}
+#problem solved! needed brackets 
+seqoutput = c()
 for(begstop in seq(1, 50, by = 5)) {  #creating stop sequence of numbers, 
   #like creating a triplicate sequence of amino acid codons, but in fives instead of threes) 
- begstop:(begstop+4)      #BUT NOT begstop:begstop+4 
-  }
+ temporderbegstop = begstop:(begstop+4)      #BUT NOT begstop:begstop+4 
+ seqoutput = rbind(seqoutput, temporder) }
 
 scale1output = c()
 for (stop in paste("Stop", 1:50, sep = "")) { #actually running the function
