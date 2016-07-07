@@ -2,7 +2,7 @@
 #  DATA FORMATTING TEMPLATE
 ################################################################################*
 #
-# Dataset name: Lake Kasumigaura database , Table 12-1 Density of Rotifer, Cladocera and Copepoda
+# Dataset name: Lake Kasumigaura database, Table 10 Phytoplankton density
 # Dataset source (link): http://db.cger.nies.go.jp/gem/moni-e/inter/GEMS/database/kasumi/contents/database/datalist.html
 # Formatted by: Sara Snell
 #
@@ -56,7 +56,7 @@ source('scripts/R-scripts/core-transient_functions.R')
 # Get data. First specify the dataset number ('datasetID') you are working with.
 
 #--! PROVIDE INFO !--#
-datasetID = 326 
+datasetID = 325 
 
 list.files('data/raw_datasets')
 
@@ -74,7 +74,7 @@ dataFormattingTable[,'Raw_datafile_name'] =
   dataFormattingTableFieldUpdate(datasetID, 'Raw_datafile_name',  
                                  
 #--! PROVIDE INFO !--#
-  'combined 4 datasets: 12-1_zooplankton_80-95_eng,12-2_rotifer_eng,12-3_cladocera_eng,12-4_copepoda_eng') 
+  'combined 2 datasets: ERDP-2012-02.2.2-Kasumi_Phyto_Sta3, ERDP-2012-02.2.2-Kasumi_Phyto_Sta9') 
 
 
 
@@ -127,7 +127,7 @@ head(dataset)
 names(dataset)
 
 #--! PROVIDE INFO !--#
-unusedFieldNames = c()
+unusedFieldNames = c('Taxonomic.ID')
 
 dataset1 = dataset[, !names(dataset) %in% unusedFieldNames]
 
@@ -227,11 +227,6 @@ str(dataset2)
 
 #!DATA FORMATTING TABLE UPDATE!
 
-####### ADDED  ######
-# Based on metadata, only include May 1987 to present
-# http://db.cger.nies.go.jp/gem/moni-e/inter/GEMS/database/kasumi/pdf/methods/12_zooplankton.pdf
-dataset2 = filter(dataset2, date > "1986-12-31")
-
 # Notes_timeFormat. Provide a thorough description of any modifications that 
 # were made to the time field.
 
@@ -295,13 +290,13 @@ dataFormattingTable[,'Raw_spatial_grain'] =
   dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain',  
                                  
 #--! PROVIDE INFO !--#
-                                 10000) 
+                                 2) # column sampler from 0-2 m
                                        
 dataFormattingTable[,'Raw_spatial_grain_unit'] = 
   dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain_unit',  
                                  
 #--! PROVIDE INFO !--#
-                                 'ml') 
+                                 'm') 
 
 
 # BEFORE YOU CONTINUE. We need to make sure that there are at least minNTime for 
@@ -383,7 +378,7 @@ dataFormattingTable[,'Notes_siteFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_siteFormat', 
 
 #--! PROVIDE INFO !--#
-  'The site field is the station the zooplankton were found at.')
+  'The site field is the station where the zooplankton were found.')
 
 
 #-------------------------------------------------------------------------------*
@@ -400,7 +395,7 @@ summary(dataset3)
 # If there is no countfield, set this equal to "".
 
 #--! PROVIDE INFO !--#
-countfield = "Count"
+countfield = "Bio.volume"
 
 # Renaming it
 if (countfield == "") {
@@ -411,8 +406,6 @@ if (countfield == "") {
 
 # Check that the count field is numeric or integer, and convert if necessary
 class(dataset3$count)
-dataset3$count = as.numeric(as.character(dataset3$count))
-
 
 # Now we will remove zero counts and NA's:
 summary(dataset3)
@@ -467,7 +460,7 @@ dataFormattingTable[,'Notes_countFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_countFormat', 
                                  
 #--! PROVIDE INFO !--#                                 
-              'Density data provided for zooplankton')
+              'Biomass volume (micrometers cubed) per mL of water provided for phytoplankton')
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SPECIES DATA ----
@@ -481,7 +474,7 @@ dataFormattingTable[,'Notes_countFormat'] =
 # It will get converted to 'species'
 
 #--! PROVIDE INFO !--#
-speciesField = 'Species'
+speciesField = 'Taxa..species.or.genus.'
 
 names(dataset5)[names(dataset5) == speciesField] = 'species'
 
@@ -510,7 +503,7 @@ data.frame(table(dataset5$species))
 # Because of this, you should really stop here and post an issue on GitHub. 
 
 #--! PROVIDE INFO !--#
-bad_sp = c('Calanoida.adult', 'Cladocera.2', 'Cyclopoida.adult', 'Trichocerca.spp.')
+bad_sp = c('Anabaena spp.', 'Aulacoseira spp.', 'Planktothrix spp.', 'unidentified cryptophytes')
 
 dataset6 = dataset5[!dataset5$species %in% bad_sp,]
 
@@ -524,10 +517,10 @@ table(dataset6$species)
 # correct spellings in good_name, and then replace them using the for loop below:
 
 #--! PROVIDE INFO !--#
-typo_name = c('Alona.sp.', 'Asplanchna.spp.', 'Bosmina.fatalis', 'Bosmina.longirostris', 'Calanoid.copepodid', 'Conochiloides.sp.', 'Conochilus.sp.', 'Cyclopoid.copepodid', 'Diaphanosoma..brachyurum', 'Filinia.spp.', 'Keratella.cochlearis.var...Javana', 'Keratella.cochlearis.var..cochlearis', 'Keratella.cochlearis.var..tecta', 'Pompholyx.spp.', 'Synchaeta.sp.')           
+typo_name = c('Anabaenopsis spp.')           
 
 #--! PROVIDE INFO !--#
-good_name = c('Alona.spp.', 'Asplanchna.priodonta', 'Bosmina.spp.', 'Bosmina.spp.', 'Calanoida.copepodid', 'Conochiloides.coenobass', 'Conochilus.unicornis', 'Cyclopoida.copepodid', 'Diaphanosoma.brachyurum', 'Filinia.longiseta', 'Keratella.cochlearis', 'Keratella.cochlearis','Keratella.cochlearis', 'Pompholyx.complanata', 'Synchaeta.spp.')
+good_name = c('Anabaenopsis circularis')
 
 if (length(typo_name) > 0 & typo_name[1] != "") {
   for (n in 1:length(typo_name)) {
@@ -562,7 +555,7 @@ dataFormattingTable[,'Notes_spFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_spFormat',  
 
 #--! PROVIDE INFO !--#                                 
-  'Lots of cleanings required in excel sheet and pre format, so most of the typos were human error. However, some genuses were combined and typos were corrected')
+  'Most of the spp were at the genus level, but some genus/spp were consolidated')
 
 #-------------------------------------------------------------------------------*
 # ---- MAKE DATA FRAME OF COUNT BY SITES, SPECIES, AND YEAR ----
@@ -783,7 +776,7 @@ dataFormattingTable[,'General_notes'] =
   dataFormattingTableFieldUpdate(datasetID, 'General_notes', 
                                  
                                  #--! PROVIDE INFO !--#                                 
-                                 "lots of cleaning needed - original files in raw folder, then cleaned excel files, then preformat")
+                                 "")
 
 # And write the final data formatting table:
 
