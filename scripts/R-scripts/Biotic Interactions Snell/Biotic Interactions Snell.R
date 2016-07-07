@@ -276,7 +276,8 @@ avg_occ_dist$occupancy = as.numeric(as.character(avg_occ_dist$occupancy))
 plot(avg_occ_dist$occupancy, avg_occ_dist$frequency, type = 'l', lwd = 3,
      xlab = "Average Occupancy Distribution", ylab = "Frequency of Occupancy")
 # add plotting in center, subtract .05 in x axis
-ggplot(data = avg_occ_dist, aes(x = occupancy, y = frequency)) + geom_line(data=avg_occ_dist, lwd = 2) +theme_classic()+ geom_line(aes((avg_occ_dist$occupancy = 0.3)), col = "red", lwd = 1.5) + geom_line(aes((avg_occ_dist$occupancy = 0.7)), col = "red", lwd = 1.5)
+ggplot(data = avg_occ_dist, aes(x = occupancy, y = frequency)) + geom_line(data=avg_occ_dist, lwd = 2) +theme_classic() +xlab("Temporal occupancy")+ylab("Species frequency at given site")+ annotate("rect", xmin = 0.3, xmax = 0.7, ymin = 0.03, ymax = 0.06, alpha = .2, fill = "Red") + annotate("text", x = 0.5, y = 0.05, label = "Species of Interest")
+
 #### ---- Gathering Occupancy and Abundance Data for Biotic Comparisons ---- ####
 # filter BBS mean abundance by AOU/stateroute by year
 bbs_pool = bbs %>% 
@@ -494,7 +495,6 @@ names(beta_lm) = c("FocalAOU", "Competition_Est", "Competition_P", "Competition_
 beta_abun = data.frame(beta_abun)
 names(beta_abun) = c("FocalAOU", "Competition_Est", "Competition_P", "Competition_R2", "EnvZ_Est", "EnvZ_P", "EnvZ_R2", "BothZ_Est", "BothZ_P", "BothZ_R2")
 
-
 #### ---- Plotting LMs ---- ####
 # Making pdf of ranges for each focal spp
 pdf('Lin_Reg.pdf', height = 8, width = 10)
@@ -697,7 +697,7 @@ comp2plot = comp2[comp2$stateroute %in% proutes,]
 
 map("state") 
 Red_breasted_Nuthatch = points(plotsub$Longi, plotsub$Lati, col = "cyan3",  pch = 20, cex = 4.25)
-Brown_Creeper = points(comp1plot$Longi, comp1plot$Lati, col = "darkorchid1",  pch = 16, cex = 2)
+Brown_Creeper = points(comp1plot$Longi, comp1plot$Lati, col = "pin",  pch = 16, cex = 2)
 White_breasted_Nuthatch = points(comp2plot$Longi, comp2plot$Lati, col = "black",  pch = 20, cex = 2)
 legend("bottomleft", legend = c("Red-breasted Nuthatch", "Brown Creeper", "White-breasted Nuthatch"), col = c("cyan3","darkorchid1","black"), pch = 16)
 
@@ -728,9 +728,10 @@ envrank <- envrank[order(envrank$rank),]
 # Stacked bar plot for each focal aou
 ggplot(data=envflip, aes(x=factor(FocalAOU), y=value, fill=Type)) + geom_bar(stat = "identity") + xlab("Focal AOU") + ylab("Percent Variance Explained") + theme(axis.text.x=element_text(angle=90,size=10,vjust=0.5)) + theme_classic()
 
+
 # Plot with ENV ranked in decreasing order
 ggplot(data=envflip, aes(factor(rank), y=value, fill=Type)) + 
-  geom_bar(stat = "identity") + theme_classic() +
+  geom_bar(stat = "identity")  + scale_fill_manual(values = c("red","yellow", "green", "white")) + theme_classic() +
   theme(axis.text.x=element_text(angle=90,size=10,vjust=0.5)) + xlab("Focal Species") + ylab("Percent Variance Explained") +
   theme(legend.title=element_text(colour="black",size=12,face="bold")) + 
   scale_fill_discrete(name="Variable", breaks=c("ENV","COMP","SHARED","NONE"),labels=c("Environment", "Competition", "Shared Variance", "Unexplained Variance")) + 
