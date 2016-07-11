@@ -178,7 +178,7 @@ sp_proj = CRS("+proj=laea +lat_0=40 +lon_0=-100 +units=km")
 if(FALSE) {  #Blocking out the for loop below. Need to change to TRUE if you want the loop to run.
 
 for (sp in focal_spp) {
-  #sp = 'Sitta_canadensis'
+  #sp = 'Troglodytes_troglodytes'
   print(sp)
   t1 = all_spp_list[grep(sp, all_spp_list)]
   t2 = t1[grep('.shp', t1)]
@@ -200,7 +200,7 @@ for (sp in focal_spp) {
   # match competitor sp to focal spp, intersect its range with the focal range,
   # and calcualte the area of overlap between the two species.
   for(co in comp_spp) {          
-      #co = 'Certhia_americana' 
+      #co = 'Cistothorus_palustris' 
       #print(co)
       c1 = all_spp_list[grep(co, all_spp_list)]
       c2 = c1[grep('.shp', c1)]
@@ -730,13 +730,14 @@ ggplot(data=envflip, aes(x=factor(FocalAOU), y=value, fill=Type)) + geom_bar(sta
 
 
 # Plot with ENV ranked in decreasing order
-ggplot(data=envflip, aes(factor(rank), y=value, fill=Type)) + 
-  geom_bar(stat = "identity")  + scale_fill_manual(values = c("red","yellow", "green", "white")) + theme_classic() +
+t = ggplot(data=envflip, aes(factor(rank), y=value, fill=Type)) + 
+  geom_bar(stat = "identity")  + theme_classic() +
   theme(axis.text.x=element_text(angle=90,size=10,vjust=0.5)) + xlab("Focal Species") + ylab("Percent Variance Explained") +
   theme(legend.title=element_text(colour="black",size=12,face="bold")) + 
   scale_fill_discrete(name="Variable", breaks=c("ENV","COMP","SHARED","NONE"),labels=c("Environment", "Competition", "Shared Variance", "Unexplained Variance")) + 
   scale_x_discrete(labels=unique(envflip$FocalAOU)) 
-
+#+ scale_fill_manual(values = c("red","yellow", "green", "white")) 
+t + scale_fill_manual(values=c("#dd1c77","#2ca25f","white","#43a2ca"))
 #Violin plots w location, trophic group, mig
 ggplot(envflip, aes(x = Type, y = value, color = Type)) + geom_violin() 
 ggplot(envdiet, aes(x = Trophic.Group, y = value, color = Type)) + geom_violin() 
