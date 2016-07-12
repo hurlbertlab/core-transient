@@ -127,7 +127,7 @@ head(dataset)
 names(dataset)
 
 #--! PROVIDE INFO !--#
-unusedFieldNames = c('ID', 'Unique.number', 'Juveniles...calves', 'Distance...Strip', 'Observer...L.R', 'Comments')
+unusedFieldNames = c('')
 
 dataset1 = dataset[, !names(dataset) %in% unusedFieldNames]
 
@@ -168,7 +168,7 @@ dataFormattingTable[,'LatLong_sites'] =
 # E.g., c('year', 'month', 'day')
 
 #--! PROVIDE INFO !--#
-dateFieldName = c('Date')
+dateFieldName = c('Year')
 
 # If necessary, paste together date info from multiple columns into single field
 if (length(dateFieldName) > 1) {
@@ -185,7 +185,7 @@ if (length(dateFieldName) > 1) {
 # be '%Y-%m-%d'. Type "?strptime" for other examples of date formatting.
 
 #--! PROVIDE INFO !--#
-dateformat = '%m/%d/%Y %H:%M'
+dateformat = '%Y'
 
 # If the date is just a year, then make sure it is of class numeric
 # and not a factor. Otherwise change to a true date object.
@@ -266,7 +266,7 @@ dataFormattingTable[,'subannualTgrain'] =
 # fill in the fields that specify nested spatial grains below.
 
 #--! PROVIDE INFO !--#
-site_grain_names = c("Block...Stratum", "Transect")
+site_grain_names = c("site")
 
 # We will now create the site field with these codes concatenated if there
 # are multiple grain fields. Otherwise, site will just be the single grain field.
@@ -286,13 +286,13 @@ dataFormattingTable[,'Raw_spatial_grain'] =
   dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain',  
                                  
 #--! PROVIDE INFO !--#
-                                 97) # distance between lat/long sampling quadrat
+                                 ) # NOTE : no spatial grain provided
 
 dataFormattingTable[,'Raw_spatial_grain_unit'] = 
   dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain_unit',  
                                  
 #--! PROVIDE INFO !--#
-                                 'km') 
+                                 'm2') 
 
 
 # BEFORE YOU CONTINUE. We need to make sure that there are at least minNTime for 
@@ -365,7 +365,7 @@ dataFormattingTable[,'spatial_scale_variable'] =
   dataFormattingTableFieldUpdate(datasetID, 'spatial_scale_variable',
 
 #--! PROVIDE INFO !--#
-                                 'Y')
+                                 'N')
 
 # Notes_siteFormat. Use this field to THOROUGHLY describe any changes made to the 
 # site field during formatting.
@@ -374,7 +374,7 @@ dataFormattingTable[,'Notes_siteFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_siteFormat', 
 
 #--! PROVIDE INFO !--#
-  'The site field is the concatenation of block and transect.')
+  'The site field is the name of the national park - no site specification.')
 
 
 #-------------------------------------------------------------------------------*
@@ -391,7 +391,7 @@ summary(dataset3)
 # If there is no countfield, set this equal to "".
 
 #--! PROVIDE INFO !--#
-countfield = "Total.number"
+countfield = "count"
 
 # Renaming it
 if (countfield == "") {
@@ -472,7 +472,7 @@ dataFormattingTable[,'Notes_countFormat'] =
 # It will get converted to 'species'
 
 #--! PROVIDE INFO !--#
-speciesField = 'Species'
+speciesField = 'species'
 
 names(dataset5)[names(dataset5) == speciesField] = 'species'
 
@@ -501,7 +501,7 @@ data.frame(table(dataset5$species))
 # Because of this, you should really stop here and post an issue on GitHub. 
 
 #--! PROVIDE INFO !--#
-bad_sp = c('ag', 'b.ea', 'b.eagle', 'B.eagle', 'ba', 'bb', 'bbse', 'BBSE', 'bc', 'be', 'BE', 'bec', 'bf', 'bl', 'Bl.eagle', 'bn', 'bo', 'bo.eagle', 'bob', 'br', 'BR', 'br(c)', 'bt', 'bte', 'BTE', 'bu', 'bw', 'c', 'ca', 'CARA', 'carcass', 'cattle', 'ec', 'el(c)', 'elc', 'ELC', 'fd', 'FD', 'FP', 'gemcar', 'gr (c)', 'g(c)', 'g/carc', 'gc', 'GC', 'GYM', 'h', 'hcar', 'jb', 'JB', 'JP', 'k(c)', 'k/carc', 'kb', 'KB', 'kc', 'KC', 'kl','ks', 'ku', 'ku.car', 'lb', 'LB', 'm', 'm,z', 'm.eagle', 'me', 'mz(c)','mz/carc', 'mzc', 'MZC', 'o', 'O', 'o(c)', 'on', 'pcg', 'pq', 'q', 'r', 'rb','rh/carc', 'rhc', 'RHC', 'rr', 'sb', 'sp(c)', 'spc', 'sp/carc', 'stb', 'STB', 'tawny', 'v', 'v.carc', 'v/nest', 'v/vest', 'vm', 'z(c)','z.car')
+bad_sp = c('')
 
 dataset6 = dataset5[!dataset5$species %in% bad_sp,]
 
@@ -515,46 +515,10 @@ table(dataset6$species)
 # correct spellings in good_name, and then replace them using the for loop below:
 
 #--! PROVIDE INFO !--#
-typo_name = c('B', 'b',
-              'B.fox', 
-              'BAB', 
-              'BEF', 
-              'cows', 'Cows', 
-              'd', 'D', 'dui', 
-              'e', 'el', 'EL', 
-              'gem', 
-              'goats', 
-              'gr', 'GR', 
-              'j', 'J', 
-              'k', 'K', 
-              'kp', 'KP', 
-              'mr', 'MR', 
-              'mz', 'MZ', 
-              'rh', 'RH', 
-              'sp', 'SP', 
-              'st', 'ST', 
-              'z', 'Z')           
+typo_name = c('')           
 
 #--! PROVIDE INFO !--#
-good_name = c('buffalo', 'buffalo', 
-              'b.fox', 
-              'bab', 
-              'bef', 
-              'cow', 'cow', 
-              'duiker','duiker','duiker',
-              'eland','eland','eland',
-              'gemsbok', 
-              'goat', 
-              'grey rhebok','grey rhebok',
-              'jackal','jackal',
-              'kudu','kudu',
-              'klipspringer','klipspringer',
-              'mountain reedbuck','mountain reedbuck',
-              'mtn zeebra','mtn zeebra', 
-              'red hartebeast', 'red hartebeast', 
-              'springbok','springbok',
-              'steenbok','steenbok', 
-              'zebra', 'zebra')
+good_name = c('')
 
 if (length(typo_name) > 0 & typo_name[1] != "") {
   for (n in 1:length(typo_name)) {
@@ -589,7 +553,7 @@ dataFormattingTable[,'Notes_spFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_spFormat',  
 
 #--! PROVIDE INFO !--#                                 
-  'Very messy dataset - cleaned based on census codes but many spp eliminated bc wrong taxa or carcasee.')
+  'No bad spp or typos found.')
 
 #-------------------------------------------------------------------------------*
 # ---- MAKE DATA FRAME OF COUNT BY SITES, SPECIES, AND YEAR ----
@@ -722,11 +686,13 @@ tGrain = 'year'
 site_grain_names
 
 #--! PROVIDE INFO !--#
-sGrain = "Transect"  
+sGrain = 'site'
 
 # This is a reasonable choice of spatial grain because ...
 #--! PROVIDE INFO !--#
-# Large animals that are travelling long distances so want detailed community info"
+# quadrats are only 0.25 m2 and record presence absence, whereas sites encompass
+# 28-52 quadrats per depth interval providing a greater sample and an effective
+# abundance measure.
 
 # The function "richnessYearSubsetFun" below will subset the data to sites with an 
 # adequate number of years of sampling and species richness. If there are no 
