@@ -290,13 +290,13 @@ dataFormattingTable[,'Raw_spatial_grain'] =
   dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain',  
                                  
 #--! PROVIDE INFO !--#
-                                 ) #####################TBD
+                              439.03) 
 
 dataFormattingTable[,'Raw_spatial_grain_unit'] = 
   dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain_unit',  
                                  
 #--! PROVIDE INFO !--#
-                                 '') 
+                                 'm3') 
 
 
 # BEFORE YOU CONTINUE. We need to make sure that there are at least minNTime for 
