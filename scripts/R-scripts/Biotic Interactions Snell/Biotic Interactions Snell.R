@@ -425,8 +425,8 @@ occuenv$zEVI = (occuenv$sum.EVI - occuenv$Mean.EVI) / occuenv$SD.EVI
 
 # rescaling all occupancy values  - odds ratio
 # need to get rid of ones in order to not have infinity values 
-occuenv$FocalOcc_scale = (occuenv$FocalOcc * .99) + .005
-occuenv$CompOcc_scale = (occuenv$comp_scaled * .99) + .005
+edge_adjust = .005 
+occuenv$FocalOcc_scale = (occuenv$FocalOcc * (1 - 2*edge_adjust)) + edge_adjust
 # create logit transformation function, did on rescaled vals
 occuenv$occ_logit =  log(occuenv$FocalOcc_scale/(1-occuenv$FocalOcc_scale)) 
 
