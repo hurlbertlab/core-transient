@@ -360,7 +360,7 @@ for (sp in focalspecies) {
   numroutes = rbind(numroutes, c(unique(tmp$FocalAOU), nroutes))
 }
 numroutes = data.frame(numroutes)
-colnames(numroutes) = c("FocalAOU", "nroutes")
+colnames(numroutes) = c("FocalAOU","AOU", "nroutes")
 # Filter count to greater than or equal to 20
 focalcompoutput1 = filter(numroutes, nroutes >= 20)
 focalcompoutput1$nroutes = as.numeric(focalcompoutput1$nroutes)
@@ -370,7 +370,7 @@ focalcompsub = merge(focalcompoutput, focalcompoutput1, by = "FocalAOU")
 subfocalspecies = unique(focalcompsub$FocalAOU)
 
 # Create scaled competitor column
-focalcompsub$comp_scaled = focalcompsub$MainCompSum/(focalcompsub$FocalAbundance + focalcompsub$AllCompSum)
+focalcompsub$comp_scaled = focalcompsub$MainCompSum/(focalcompsub$FocalAbundance + focalcompsub$MainCompSum)
 
 ######## PDF of each species BBS occurrences ########
 # merge in lat/long
@@ -430,6 +430,7 @@ occuenv$FocalOcc_scale = (occuenv$FocalOcc * (1 - 2*edge_adjust)) + edge_adjust
 # create logit transformation function, did on rescaled vals
 occuenv$occ_logit =  log(occuenv$FocalOcc_scale/(1-occuenv$FocalOcc_scale)) 
 
+##### LIN REG #######
 # create beta output data frame
 beta_lm = matrix(NA, nrow = length(subfocalspecies), ncol = 10)
 beta_abun = matrix(NA, nrow = length(subfocalspecies), ncol = 10)
@@ -656,9 +657,15 @@ summary(glm_occ_rand_site)
 glm_abun_rand_site = glmer(cbind(sp_success_abun, sp_fail_abun) ~ cs(comp_scaled) + 
    abs(zTemp)+abs(zElev)+abs(zPrecip)+abs(zEVI) + (1|stateroute:Species), family = binomial(link = logit), data = occumatrix)
 summary(glm_abundance_rand_site) 
-ggplot(data = occumatrix, aes(x = comp_scaled, y = FocalOcc)) +stat_smooth(data=glm_occ_rand_site, lwd = 1.5) +theme_bw()
+
+
+ggplot(data = occumatrix, aes(x = comp_scaled, y = FocalOcc)) +stat_smooth(data=glm_occ_rand_site, lwd = 1.5) +xlab("Scaled Competitor Abundance")+ylab("Focal Occupancy") +theme_bw()
 ggplot(data = occumatrix, aes(x = comp_scaled, y = FocalAbundance)) +stat_smooth(data=glm_abun_rand_site, lwd = 1.5) +theme_bw()
-ggplot(data = occumatrix, aes(x = zElev, y = FocalOcc)) +stat_smooth(data=glm_occ_rand_site, lwd = 1.5, se = FALSE) +theme_bw()
+
+ggplot(data = occumatrix, aes(x = zTemp, y = FocalOcc)) +stat_smooth(data=glm_occ_rand_site, lwd = 1.5, se = FALSE) +xlab("Deviation from Mean Temperature")+ylab("Focal Occupancy")+ geom_vline(xintercept = 0, colour="red", linetype = "longdash") +theme_bw() 
+ggplot(data = occumatrix, aes(x = zElev, y = FocalOcc)) +stat_smooth(data=glm_occ_rand_site, lwd = 1.5, se = FALSE) +xlab("Deviation from Mean Elevation")+ylab("Focal Occupancy")+ geom_vline(xintercept = 0, colour="red", linetype = "longdash") +theme_bw() 
+ggplot(data = occumatrix, aes(x = zPrecip, y = FocalOcc)) +stat_smooth(data=glm_occ_rand_site, lwd = 1.5, se = FALSE) +xlab("Deviation from Mean Precipitation")+ylab("Focal Occupancy")+ geom_vline(xintercept = 0, colour="red", linetype = "longdash") +theme_bw() 
+ggplot(data = occumatrix, aes(x = zEVI, y = FocalOcc)) +stat_smooth(data=glm_occ_rand_site, lwd = 1.5, se = FALSE) +xlab("Deviation from Mean Vegetation Index (EVI)")+ylab("Focal Occupancy")+ geom_vline(xintercept = 0, colour="red", linetype = "longdash") +theme_bw() 
 
 
 #### ---- Plotting LMs ---- ####
@@ -686,20 +693,18 @@ lrtest(glm_abundance_binom)
 lrtest(glm_abundance_quasibinom)
 lrtest(glm_abundance_rand_site)
 
-# plots for poster
-plotdata = merge(new_occ2, latlongs, by = "stateroute") 
-plotsub = plotdata[plotdata$AOU == 7280,] # red-breasted nuthatch
+###### plots for poster ######
+plotsub = all_expected_pres[all_expected_pres$AOU == 7280,] # red-breasted nuthatch
 proutes = plotsub$stateroute
-comp1 = plotdata[plotdata$AOU == 7260,] # Brown Creeper
+comp1 = plotdata[plotdata$AOU == 7260|plotdata$AOU == 7270,] # Brown Creeper
 comp1plot = comp1[comp1$stateroute %in% proutes,]
-comp2 = plotdata[plotdata$AOU == 7270,] # White-breasted Nuthatch
-comp2plot = comp2[comp2$stateroute %in% proutes,]
+#comp2 = plotdata[plotdata$AOU == 7270,] # White-breasted Nuthatch
+#comp2plot = comp2[comp2$stateroute %in% proutes,]
 
 map("state") 
-Red_breasted_Nuthatch = points(plotsub$Longi, plotsub$Lati, col = "cyan3",  pch = 20, cex = 4.25)
-Brown_Creeper = points(comp1plot$Longi, comp1plot$Lati, col = "pin",  pch = 16, cex = 2)
-White_breasted_Nuthatch = points(comp2plot$Longi, comp2plot$Lati, col = "black",  pch = 20, cex = 2)
-legend("bottomleft", legend = c("Red-breasted Nuthatch", "Brown Creeper", "White-breasted Nuthatch"), col = c("cyan3","darkorchid1","black"), pch = 16)
+Red_breasted_Nuthatch = points(plotsub$Longi, plotsub$Lati, col = "black",  pch = 16, cex = plotsub$FocalOcc*6)
+Brown_Creeper = points(comp1plot$Longi.x, comp1plot$Lati.x, col = alpha("darkorchid1", 0.5),  pch = 16, cex = comp1$comp_scaled*6)
+legend("bottomleft", legend = c("Red-breasted Nuthatch", "Competitors"), col = c("black","darkorchid1"), pch = 19)
 
 # showing the number of species present at each route
 #numspp_route = focalcompoutput %>%
@@ -738,6 +743,15 @@ t = ggplot(data=envflip, aes(factor(rank), y=value, fill=Type)) +
   scale_x_discrete(labels=unique(envflip$FocalAOU)) 
 #+ scale_fill_manual(values = c("red","yellow", "green", "white")) 
 t + scale_fill_manual(values=c("#dd1c77","#2ca25f","white","#43a2ca"))
+###t +annotate(geom = "text", x = seq_len(nrow(envdiet)), y = 34, label = envdiet$Trophic.Group, size = 4) +
+ # annotate(geom = "text", x = 2.5 + 8 * (0:7), y = 32, label = unique(envdiet$Trophic.Group), size = 6) +
+ # theme_bw() +
+  #theme(plot.margin = unit(c(1, 1, 4, 1), "lines"),
+      #  axis.title.x = element_blank(),
+      #  axis.text.x = element_blank(),
+       # panel.grid.major.x = element_blank(),
+       # panel.grid.minor.x = element_blank()) 
+
 #Violin plots w location, trophic group, mig
 ggplot(envflip, aes(x = Type, y = value, color = Type)) + geom_violin() 
 ggplot(envdiet, aes(x = Trophic.Group, y = value, color = Type)) + geom_violin() 
@@ -755,7 +769,7 @@ ggplot(envfliploc, aes(x = factor(EW), y = value, color = Type)) + geom_violin()
 
 # R2 plot - lm
 R2plot = merge(beta_lm, beta_abun, by = "FocalAOU")
-qplot(R2plot$Competition_R2.x, R2plot$Competition_R2.y)+stat_smooth() +geom_abline(intercept = 0, slope = 1, col = "red", lwd = 1.25) + xlab("Occupancy R2") + ylab("Abundance R2")
+qplot(R2plot$Competition_R2.x, R2plot$Competition_R2.y) +geom_abline(intercept = 0, slope = 1, col = "red", lwd = 1.25) + xlab("Occupancy R2") + ylab("Abundance R2")
 qplot(R2plot$EnvZ_R2.x, R2plot$EnvZ_R2.y)+stat_smooth()+geom_abline(intercept = 0, slope = 1, col = "red", lwd = 1.25)+ xlab("Occupancy R2") + ylab("Abundance R2")
 qplot(R2plot$BothZ_R2.x, R2plot$BothZ_R2.y)+stat_smooth()+geom_abline(intercept = 0, slope = 1, col = "red", lwd = 1.25)+ xlab("Occupancy R2") + ylab("Abundance R2")
 
