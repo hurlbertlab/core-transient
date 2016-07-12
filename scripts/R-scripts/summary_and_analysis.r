@@ -11,6 +11,7 @@ library(dplyr)
 library(ggplot2)
 library(tidyr)
 library(maps)
+library(viridis)
 library(RColorBrewer)
 
 source('scripts/R-scripts/core-transient_functions.R')
@@ -534,7 +535,7 @@ load_data <- function(path) {
 site_data <- read.csv("output/tabular_data/core-transient_summary.csv")
 sp_data <- load_data("data/propOcc_datasets/")
 dataset_taxa_link <- site_data %>%
-  select(datasetID, system, taxa) %>%
+  dplyr::select(datasetID, system, taxa) %>%
   distinct()
 sp_data_full <- inner_join(sp_data, dataset_taxa_link)
 
@@ -566,7 +567,7 @@ ggsave("output/plots/alpha_beta_by_taxa.png", alpha_beta_by_taxa)
 # Violin plots of proportions of core and transitient by taxa
 
 stacked_site_data <- site_data %>%
-  select(datasetID, site, system, taxa, propCore, propTrans) %>%
+  dplyr::select(datasetID, site, system, taxa, propCore, propTrans) %>%
   mutate(propNeither = 1 - propCore - propTrans) %>%
   gather(key = sp_category, value = prop, propTrans, propNeither, propCore)
 
@@ -579,15 +580,13 @@ ggsave("output/plots/core_trans_prop_violins.png")
 
 #################################################################
 # Map of each community - a few for now
-pdf('fig1map.pdf', height = 8, width = 10)
-par(pin = c(3, 4))
-
+pdf('output/plots/map.pdf', height = 6, width = 7.5)
 world = map(database='world')
 pal = palette(viridis(10))
 # read in lat/long file (preformatted)
 latlong = read.csv("data/latlongs/latlongs.csv", header = T)
-points(latlong$Lon, latlong$Lat, pch = 16, col = as.integer(latlong$taxa.x), cex = 1)
-legend("bottomleft", legend = unique(latlong$taxa.x), col = 1:length(as.integer(latlong$taxa.x)), pch = 16, cex = 0.75)
+points(latlong$Lon, latlong$Lat, pch = 16, col = as.integer(latlong$taxa.x), cex = 0.6)
+legend("bottomleft", legend = unique(latlong$taxa.x), col = 1:length(as.integer(latlong$taxa.x)), pch = 16, cex = 0.55)
 #points(plot248$long, plot248$lat, col = "green", pch = 20)
 #points(plot269$long, plot269$lat, col = "blue", pch = 20)
 #points(plot289$Longitude, plot289$Latitude, col = "cyan", pch = 20) 
@@ -595,9 +594,9 @@ legend("bottomleft", legend = unique(latlong$taxa.x), col = 1:length(as.integer(
 #points(plot309$long, plot309$lat, col = "gold", pch = 20)
 #points(plot315$long, plot315$lat, col = "black", pch = 20)
 #points(plot247$long, plot247$lat, col = "purple", pch = 20)
-
-out.file<-"output/plots/fig1map.pdf"
 dev.off()
+jpeg('output/plots/world.jpg')
+
 
 ##################################################################
 # GAM for Figure 5

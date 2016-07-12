@@ -360,7 +360,7 @@ for (sp in focalspecies) {
   numroutes = rbind(numroutes, c(unique(tmp$FocalAOU), nroutes))
 }
 numroutes = data.frame(numroutes)
-colnames(numroutes) = c("FocalAOU", "AOU","nroutes")
+colnames(numroutes) = c("FocalAOU", "nroutes")
 # Filter count to greater than or equal to 20
 focalcompoutput1 = filter(numroutes, nroutes >= 20)
 focalcompoutput1$nroutes = as.numeric(focalcompoutput1$nroutes)
