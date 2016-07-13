@@ -84,7 +84,7 @@ seqoutput = c()
 for(begstop in seq(1, 50, by = 5)) {  #creating stop sequence of numbers, 
   #like creating a triplicate sequence of amino acid codons, but in fives instead of threes) 
   begstop = begstop:(begstop+4)      #BUT NOT begstop:begstop+4 
-  seqoutput = rbind(seqoutput, temporder) }
+  seqoutput = rbind(seqoutput, begstop) }
 
 #then I need to use the above to dictate to the below function where to lump stop data together and where to cut it off 
 
