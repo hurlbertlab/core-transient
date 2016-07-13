@@ -62,8 +62,8 @@ all_unique = data.frame(unique(allspp$CommonName))
   
 # read in taxonomy data
 AOU = read.csv("Bird_Taxonomy.csv", header = TRUE)
-AOU2 = data.frame(AOU$SCI_NAME, AOU$AOU_OUT, AOU$PRIMARY_COM_NAME)
-AOU2 = plyr::rename(AOU2, c("AOU.SCI_NAME" = "SciName", "AOU.AOU_OUT" = "AOU", "AOU.PRIMARY_COM_NAME" = "CommonName"))
+AOU2 = data.frame(AOU$SCI_NAME, AOU$AOU_OUT, AOU$PRIMARY_COM_NAME, AOU$FAMILY)
+AOU2 = plyr::rename(AOU2, c("AOU.SCI_NAME" = "SciName", "AOU.AOU_OUT" = "AOU", "AOU.PRIMARY_COM_NAME" = "CommonName", "AOU.FAMILY" = "Family"))
 
 # remove duplicates/subspecies
 AOUsub = AOU2[-grep("sp.", AOU2$CommonName),] 
@@ -496,6 +496,21 @@ names(beta_lm) = c("FocalAOU", "Competition_Est", "Competition_P", "Competition_
 beta_abun = data.frame(beta_abun)
 names(beta_abun) = c("FocalAOU", "Competition_Est", "Competition_P", "Competition_R2", "EnvZ_Est", "EnvZ_P", "EnvZ_R2", "BothZ_Est", "BothZ_P", "BothZ_R2")
 
+tax_code = read.csv("Tax_AOU_Alpha.csv", header = TRUE)
+forplots = merge(Hurlbert_o[, c("AOU","Trophic.Group","Foraging","migclass")], AOUsub4[, c("AOU","Family", "CommonName")], by = "AOU")
+# midpoint long of US is -98.5795, so 1 indicates east of that line, 0 = west
+envloc = merge(envoutput, plotdata_all, by = 'FocalAOU', all = TRUE)
+envloc$EW <- 0
+envloc$EW[envloc$Longi >= -98] <- 1
+envloc$EW[is.na(envloc$EW)] = 0
+
+envoutput = merge(envoutput, tax_code[,c('AOU_OUT', 'ALPHA.CODE')], by.x = 'FocalAOU', by.y = "AOU_OUT")
+envoutput = merge(envoutput, forplots, by.x = "FocalAOU", by.y = "AOU")
+#envoutput = merge(envoutput, envfliploc[,c("FocalAOU", "EW")], by = "FocalAOU")
+
+
+write.csv(envoutput, "envouput.csv")
+
 #### ---- Plotting LMs ---- ####
 # Making pdf of ranges for each focal spp
 pdf('Lin_Reg.pdf', height = 8, width = 10)
@@ -684,26 +699,17 @@ for(sp in subfocalspecies){
 }
 dev.off()
 
-# likelihood ratio test
-anova(glm_abundance_rand_site, test = "Chisq")
-anova(glm_abundance_quasibinom, test = "Chisq")
-anova(glm_abundance_binom, test = "Chisq")
-
-lrtest(glm_abundance_binom)
-lrtest(glm_abundance_quasibinom)
-lrtest(glm_abundance_rand_site)
-
 ###### plots for poster ######
 plotsub = all_expected_pres[all_expected_pres$AOU == 7280,] # red-breasted nuthatch
 proutes = plotsub$stateroute
-comp1 = plotdata[plotdata$AOU == 7260|plotdata$AOU == 7270,] # Brown Creeper
+comp1 = all_expected_pres[all_expected_pres$AOU == 7260|all_expected_pres$AOU == 7270,] # Brown Creeper
 comp1plot = comp1[comp1$stateroute %in% proutes,]
 #comp2 = plotdata[plotdata$AOU == 7270,] # White-breasted Nuthatch
 #comp2plot = comp2[comp2$stateroute %in% proutes,]
 
 map("state") 
 Red_breasted_Nuthatch = points(plotsub$Longi, plotsub$Lati, col = "black",  pch = 16, cex = plotsub$FocalOcc*6)
-Brown_Creeper = points(comp1plot$Longi.x, comp1plot$Lati.x, col = alpha("darkorchid1", 0.5),  pch = 16, cex = comp1$comp_scaled*6)
+Brown_Creeper = points(comp1plot$Longi, comp1plot$Lati, col = alpha("darkorchid1", 0.5),  pch = 16, cex = comp1$comp_scaled*6)
 legend("bottomleft", legend = c("Red-breasted Nuthatch", "Competitors"), col = c("black","darkorchid1"), pch = 19)
 
 # showing the number of species present at each route
@@ -713,7 +719,7 @@ legend("bottomleft", legend = c("Red-breasted Nuthatch", "Competitors"), col = c
 #numspp = merge(numspp_route, latlongs, by = "stateroute" )
 #map("state") 
 #points(numspp$Longi, numspp$Lati, col = "dark green",  pch = 20, cex = numspp$numspp/5)
-
+envoutput = read.csv("envoutput.csv", header = TRUE)
 #####PLOTTING variance partitioning
 ## Creating env data table to plot ranked data
 nrank = envoutput %>% 
@@ -722,35 +728,25 @@ envflip = gather(nrank, "Type", "value", 2:5)
 envflip$rank <- factor(envflip$rank, levels = envflip$rank[order(envflip$rank)])
 envflip = plyr::arrange(envflip,(envflip$rank),envflip$FocalAOU)
 
-envdiet = merge(envflip, Hurlbert_o[, c("AOU","Trophic.Group","Foraging","migclass")], by.x = "FocalAOU", by.y = "AOU")
-envfam = merge(envflip, AOU[, c("AOU_OUT","FAMILY")], by.x = "FocalAOU", by.y = "AOU_OUT")
-
 envrank = envflip %>% 
   group_by(Type == 'ENV') %>% 
   mutate(rank = row_number(-value)) # need to get just the envs to rank, then plot
 envrank <- envrank[order(envrank$rank),]
 
+
 # Stacked bar plot for each focal aou
 ggplot(data=envflip, aes(x=factor(FocalAOU), y=value, fill=Type)) + geom_bar(stat = "identity") + xlab("Focal AOU") + ylab("Percent Variance Explained") + theme(axis.text.x=element_text(angle=90,size=10,vjust=0.5)) + theme_classic()
 
-
 # Plot with ENV ranked in decreasing order
-t = ggplot(data=envflip, aes(factor(rank), y=value, fill=Type)) + 
+t = ggplot(data=envflip, aes(factor(rank), y=value, fill=factor(Type, levels = c("ENV","COMP","SHARED","NONE")))) + 
   geom_bar(stat = "identity")  + theme_classic() +
   theme(axis.text.x=element_text(angle=90,size=10,vjust=0.5)) + xlab("Focal Species") + ylab("Percent Variance Explained") +
-  theme(legend.title=element_text(colour="black",size=12,face="bold")) + 
-  scale_fill_discrete(name="Variable", breaks=c("ENV","COMP","SHARED","NONE"),labels=c("Environment", "Competition", "Shared Variance", "Unexplained Variance")) + 
-  scale_x_discrete(labels=unique(envflip$FocalAOU)) 
-#+ scale_fill_manual(values = c("red","yellow", "green", "white")) 
-t + scale_fill_manual(values=c("#dd1c77","#2ca25f","white","#43a2ca"))
-###t +annotate(geom = "text", x = seq_len(nrow(envdiet)), y = 34, label = envdiet$Trophic.Group, size = 4) +
- # annotate(geom = "text", x = 2.5 + 8 * (0:7), y = 32, label = unique(envdiet$Trophic.Group), size = 6) +
- # theme_bw() +
-  #theme(plot.margin = unit(c(1, 1, 4, 1), "lines"),
-      #  axis.title.x = element_blank(),
-      #  axis.text.x = element_blank(),
-       # panel.grid.major.x = element_blank(),
-       # panel.grid.minor.x = element_blank()) 
+  theme(legend.title=element_text(colour="black",size=12,face="bold")) +  
+  scale_x_discrete(labels=unique(envflip$ALPHA.CODE)) + scale_fill_manual(values=c("#2ca25f","#dd1c77","#43a2ca","white"), labels=c("Environment", "Competition","Shared Variance", "")) +  guides(fill=guide_legend(title="Type of Variance"))
+
+t + facet_grid(~migclass, switch = "x", scales = "free_x", space = "free_x") 
+
+#scale_fill_discrete(name="Variable", breaks=c("ENV","COMP","SHARED","NONE"),labels=c("Environment", "Competition", "Shared Variance", "Unexplained Variance")) 
 
 #Violin plots w location, trophic group, mig
 ggplot(envflip, aes(x = Type, y = value, color = Type)) + geom_violin() 
@@ -758,12 +754,6 @@ ggplot(envdiet, aes(x = Trophic.Group, y = value, color = Type)) + geom_violin()
 ggplot(envdiet, aes(x = migclass, y = value, color = Type)) + geom_violin() 
 ggplot(envdiet, aes(x = Foraging, y = value, color = Type)) + geom_violin() 
 ggplot(envfam, aes(x = FAMILY, y = value, color = Type)) + geom_violin() 
-
-# midpoint long of US is -98.5795, so 1 indicates east of that line, 0 = west
-envfliploc = merge(envflip, plotdata_all, by = 'FocalAOU', all = TRUE)
-envfliploc$EW <- 0
-envfliploc$EW[envfliploc$Longi >= -98] <- 1
-envfliploc$EW[is.na(envfliploc$EW)] = 0
 
 ggplot(envfliploc, aes(x = factor(EW), y = value, color = Type)) + geom_violin() + scale_x_discrete(labels=c("West", "East")) 
 
