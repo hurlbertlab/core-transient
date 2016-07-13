@@ -3,7 +3,9 @@
 #grant proposal preliminary analysis: 1) scale of 10 BBS stops, 
 # 2) BBS route, 3) aggregate of 27 BBS routes within state of MD.
 #pull in 50 stop data from ecoretriever
-bbs50 = read.csv("//bioark.ad.unc.edu/hurlbertlab/Databases/BBS/FiftyStopData/fiftystop_thru2010_goodspp_goodrtes.csv", header = TRUE)
+#bbs50 = read.csv("//bioark.ad.unc.edu/hurlbertlab/Databases/BBS/FiftyStopData/fiftystop_thru2010_goodspp_goodrtes.csv", header = TRUE)
+bbs50 = read.csv("C://Git/core-transient/scripts/R-scripts/scale_analysis/BBS_fiftystop_MD_CO_CA_OR_1996-2010.csv")
+#need to subset down to 1996-2010 for all states, not just OR-MD-CO-CA
 #disregard ecodataretriever for now bc very buggy and BBS files incomplete 
 #setwd("C:/Program Files (x86)/EcoDataRetriever")
 #library(ecoretriever)
@@ -14,11 +16,11 @@ bbs50 = read.csv("//bioark.ad.unc.edu/hurlbertlab/Databases/BBS/FiftyStopData/fi
 #bbsrts= bbs50$routes #Year columns missing from both datasets?
 names(bbs50)
 #library(raster)
-counts5 = read.csv('C://git/core-transient/data/raw_datasets/dataset_1RAW/dataset_1_full.csv', header=T) #1996-2010 #in groups of ten #is this the full bbs dataset broken by 10 stops? 
+counts5 = read.csv('C://Git/core-transient/data/raw_datasets/dataset_1RAW/dataset_1_full.csv', header=T) #1996-2010 #in groups of ten #is this the full bbs dataset broken by 10 stops? 
 #want to merge counts5 with bbs 50 stop data? why does counts5 have year data and not the others? 
 occupancy.matrix = as.matrix(
-  read.csv('C://git/core-transient/scripts/R-scripts/scale_analysis/occ_matrix_BBS.csv', header=T, row.names = 1))
-routes = read.csv('C://git/core-transient/scripts/R-scripts/scale_analysis/routes.csv')
+  read.csv('C://Git/core-transient/scripts/R-scripts/scale_analysis/occ_matrix_BBS.csv', header=T, row.names = 1))
+routes = read.csv('C://Git/core-transient/scripts/R-scripts/scale_analysis/routes.csv')
 routes$stateroute = 1000*routes$statenum + routes$Route
 names(routes)
 names(counts5)
@@ -55,7 +57,7 @@ occ_counts = function(countData, countColumn, scale) {
 }
 #if subrouteID = Count10, Count20, etc == 10; if = Count25, == 25; if = Count1, == 1, but no need for "ifs"   
 # modeled after: BBS_Core_agreement = 
-  #sum(temp.site$occupancy>0.67 & temp.site$status=="breeder", na.rm = T)/sum(temp.site$occupancy>0.67, na.rm = T)
+#sum(temp.site$occupancy>0.67 & temp.site$status=="breeder", na.rm = T)/sum(temp.site$occupancy>0.67, na.rm = T)
 #example of working single line 
 #need to adapt this to forloop to run for all sites and scales 
 
@@ -81,8 +83,8 @@ for (i in 1:50){
 seqoutput = c()
 for(begstop in seq(1, 50, by = 5)) {  #creating stop sequence of numbers, 
   #like creating a triplicate sequence of amino acid codons, but in fives instead of threes) 
- begstop = begstop:(begstop+4)      #BUT NOT begstop:begstop+4 
- seqoutput = rbind(seqoutput, temporder) }
+  begstop = begstop:(begstop+4)      #BUT NOT begstop:begstop+4 
+  seqoutput = rbind(seqoutput, temporder) }
 
 #then I need to use the above to dictate to the below function where to lump stop data together and where to cut it off 
 
@@ -139,8 +141,8 @@ library(plyr)
 #^^incorporate in function loop where instead of bbs5bound_1 I have "data"
 bbs_cluster = function(countData) {
   bdata = ddply(countData, c("stateroute", "AOU"), summarise,
-        N = sum(length(occupancy)),
-        occupancy = (sum(occupancy))/(length(occupancy))) #occupancy tricky, need to be aggregating it in diff way
+                N = sum(length(occupancy)),
+                occupancy = (sum(occupancy))/(length(occupancy))) #occupancy tricky, need to be aggregating it in diff way
   bdata = bdata[, c("stateroute", "AOU", "N", "occupancy")] #how to preserve the subrouteIDs ?
   return(bdata) 
 }
