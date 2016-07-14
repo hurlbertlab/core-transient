@@ -80,11 +80,6 @@ for (i in 1:50){
 
 #problem solved! needed brackets...but a new problem opened: I'm not JUST creating a sequence, 
 #I'm creating a sequence for the "Stop_" columns! 
-seqoutput = c()
-for(begstop in seq(1, 50, by = 5)) {  #creating stop sequence of numbers, 
-  #like creating a triplicate sequence of amino acid codons, but in fives instead of threes) 
-  begstop = begstop:(begstop+4)      #BUT NOT begstop:begstop+4 
-  seqoutput = rbind(seqoutput, begstop) }
 
 #then I need to use the above to dictate to the below function where to lump stop data together and where to cut it off 
 
@@ -94,11 +89,24 @@ for (stop in paste("Stop", 1:50, sep = "")) { #actually running the function
   scale1output = rbind(scale1output, temp)
 }
 
+seqoutput = c()
+for(begstop in seq(1, 50, by = 5)) {  #creating stop sequence of numbers, 
+  #like creating a triplicate sequence of amino acid codons, but in fives instead of threes) 
+  begstop = begstop:(begstop+4)      #BUT NOT begstop:begstop+4 
+  seqoutput = rbind(seqoutput, begstop) }
+
 scale5output = c()
-for (stop in paste("Stop", 1:50, sep = "")) {
+for (stop in paste("Stop", seqoutput, sep = "")) {
   temp = occ_counts(bbs50, stop, 5)
   scale5output = rbind(scale5output, temp)
 }
+
+seqoutput = c()
+for(begstop in seq(1, 50, by = 5)) {  #creating stop sequence of numbers, 
+  #like creating a triplicate sequence of amino acid codons, but in fives instead of threes) 
+  begstop = begstop:(begstop+4)      #BUT NOT begstop:begstop+4 
+  seqoutput = rbind(seqoutput, begstop) }
+
 
 
 #It works!!!!!!!!!!!!!!!!!!!!!!!!!
