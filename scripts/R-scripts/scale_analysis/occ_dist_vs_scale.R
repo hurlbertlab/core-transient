@@ -95,9 +95,6 @@ for(begstop in seq(1, 50, by = 5)) {  #creating stop sequence of numbers,
   begstop = begstop:(begstop+4)      #BUT NOT begstop:begstop+4 
   seqoutput = rbind(seqoutput, begstop) }
 
-#seqoutput[2:25]<-list(NULL) #trying to remove excess columns in sequence
-#if I remove seqoutput from the rbind, I am left only with the last 5 stops
-#or does it make more sense to remove them AFTER scale_output loop? 
 
 scale5output = c()
 for (stop in paste("Stop", seqoutput, sep = "")) {
@@ -115,9 +112,6 @@ for (stop in paste("Stop", seqoutput, sep = "")) {
   temp = occ_counts(bbs50, stop, 10)
   scale10output = rbind(scale10output, temp)
 }
-
-#need to limit to V1; first column of sequence matrix created? 
-#Or do we want to have diff potential scenarios with diff starting points that aren't always stop1? 
 
 seqoutput = c()
 for(begstop in seq(1, 50, by = 25)) {  
@@ -142,10 +136,7 @@ for (stop in paste("Stop", seqoutput, sep = "")) {
 }
 #It works!!!!!!!!!!!!!!!!!!!!!!!!!
 
-#need to chop off excess stops 
-#can I, within the loop process, designate all contents of columns in each seqoutput iteration
-#including and following V2 to NA, and then omit 
-#using NA omit? prior to running the occ_counts forloop? 
+#full matrix is necessary because totalling occupancy across column groupings, duh 
 #then combine outputs into ONE dataframe organized with a "scale" column
 #run a model testing occupancy ~ scale relationships
 
