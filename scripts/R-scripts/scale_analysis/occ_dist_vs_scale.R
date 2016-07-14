@@ -137,7 +137,12 @@ for (stop in paste("Stop", seqoutput, sep = "")) {
 #It works!!!!!!!!!!!!!!!!!!!!!!!!!
 
 #full matrix is necessary because totalling occupancy across column groupings, duh 
-#then combine outputs into ONE dataframe organized with a "scale" column
+#scale 50 = only one row, because inclusive of all columns at one large scale 
+#scale 1 = 50 rows and 1 column, because each site taken into account 
+#totalling across 
+#but the output is being presented in longform! 
+#how do we total across each "row" when each stop has associated data? 
+
 #run a model testing occupancy ~ scale relationships
 
 
