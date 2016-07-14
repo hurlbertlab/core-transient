@@ -95,6 +95,10 @@ for(begstop in seq(1, 50, by = 5)) {  #creating stop sequence of numbers,
   begstop = begstop:(begstop+4)      #BUT NOT begstop:begstop+4 
   seqoutput = rbind(seqoutput, begstop) }
 
+#seqoutput[2:25]<-list(NULL) #trying to remove excess columns in sequence
+#if I remove seqoutput from the rbind, I am left only with the last 5 stops
+#or does it make more sense to remove them AFTER scale_output loop? 
+
 scale5output = c()
 for (stop in paste("Stop", seqoutput, sep = "")) {
   temp = occ_counts(bbs50, stop, 5)
