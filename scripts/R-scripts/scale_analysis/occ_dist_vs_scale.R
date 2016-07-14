@@ -112,7 +112,8 @@ for (stop in paste("Stop", seqoutput, sep = "")) {
   scale10output = rbind(scale10output, temp)
 }
 
-#need to limit to V1; first column of sequence matrix created?
+#need to limit to V1; first column of sequence matrix created? 
+#Or do we want to have diff potential scenarios with diff starting points that aren't always stop1? 
 
 seqoutput = c()
 for(begstop in seq(1, 50, by = 25)) {  
