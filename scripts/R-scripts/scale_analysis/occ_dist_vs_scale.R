@@ -137,6 +137,16 @@ for (stop in paste("Stop", seqoutput, sep = "")) {
   scale50output = rbind(scale50output, temp)
 }
 #It works!!!!!!!!!!!!!!!!!!!!!!!!!
+
+#need to chop off excess stops 
+#can I, within the loop process, designate all contents of columns in each seqoutput iteration
+#including and following V2 to NA, and then omit 
+#using NA omit? prior to running the occ_counts forloop? 
+#then combine outputs into ONE dataframe organized with a "scale" column
+#run a model testing occupancy ~ scale relationships
+
+
+
 ##clustering - do for all 50 stops 1 by one, scale = 1 
 #then for every five, added together and grouped by fives, scale = 5 
 #then for every 10, which are the fives doubled, scale = 10 
