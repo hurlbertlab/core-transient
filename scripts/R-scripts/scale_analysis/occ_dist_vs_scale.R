@@ -101,10 +101,6 @@ for (stop in paste("Stop", seqoutput, sep = "")) {
   scale5output = rbind(scale5output, temp)
 }
 
-
-#somewhere along the way, scale5output getting tampered with, Stop50 being only stop,
-#and resulting in NULL scale10output
-
 seqoutput = c()
 for(begstop in seq(1, 50, by = 10)) {  
   begstop = begstop:(begstop+9)      #BUT NOT begstop:begstop+9 
@@ -113,7 +109,7 @@ for(begstop in seq(1, 50, by = 10)) {
 scale10output = c()
 for (stop in paste("Stop", seqoutput, sep = "")) {
   temp = occ_counts(bbs50, stop, 10)
-  scale5output = rbind(scale10output, temp)
+  scale10output = rbind(scale10output, temp)
 }
 
 #It works!!!!!!!!!!!!!!!!!!!!!!!!!
