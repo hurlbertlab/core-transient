@@ -78,7 +78,7 @@ June:
 
 July: 
 
-* ~~week 1: forloop construction and troubleshooting ~~ 
+* ~~week 1: forloop construction and troubleshooting~~ 
 
 * ~~week 2: forloop and sequences finalized~~  
 
