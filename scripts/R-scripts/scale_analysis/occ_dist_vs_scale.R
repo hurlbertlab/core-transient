@@ -94,6 +94,12 @@ for (stop in paste("Stop", 1:50, sep = "")) { #actually running the function
   scale1output = rbind(scale1output, temp)
 }
 
+scale5output = c()
+for (stop in paste("Stop", 1:50, sep = "")) {
+  temp = occ_counts(bbs50, stop, 5)
+  scale5output = rbind(scale5output, temp)
+}
+
 
 #It works!!!!!!!!!!!!!!!!!!!!!!!!!
 ##clustering - do for all 50 stops 1 by one, scale = 1 
