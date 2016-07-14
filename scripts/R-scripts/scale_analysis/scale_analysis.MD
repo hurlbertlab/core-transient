@@ -67,28 +67,28 @@ May:
 
 June: 
 
-* week 1: fix softcoding within a function issue
+* ~~week 1: fix softcoding within a function issue~~
  
-* week 2:
+* ~~week 2: occ_counts function fixed~~
 
-* week 3:
+* ~~week 3: tentative groupings assembled~~
 
-* week 4:
+* ~~week 4: groupings trashed in lieu of generating "Stop_" sequence by forloop~~
 
 
 July: 
 
-* week 1: 
+* ~~week 1: forloop construction and troubleshooting ~~ 
 
-* week 2: 
+* ~~week 2: forloop and sequences finalized~~  
 
-* week 3: 
+* week 3: Calculate occupancy for scale clusters based on presence/absence at each stop 
 
-* week 4:
+* week 4: Calculate relationship between scale and occupancy in BBS data alone
 
 
 August: 
 
-* week 1: wrap up. 
+* week 1: Preliminarily test out BBC-BBS pairings at multiple scales; geog + env distance analyses. Wrap up. Outline August-Sept plan for return to Fall semester. 
 
 
