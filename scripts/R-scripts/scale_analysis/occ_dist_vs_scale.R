@@ -101,13 +101,20 @@ for (stop in paste("Stop", seqoutput, sep = "")) {
   scale5output = rbind(scale5output, temp)
 }
 
+
+#somewhere along the way, scale5output getting tampered with, Stop50 being only stop,
+#and resulting in NULL scale10output
+
 seqoutput = c()
-for(begstop in seq(1, 50, by = 5)) {  #creating stop sequence of numbers, 
-  #like creating a triplicate sequence of amino acid codons, but in fives instead of threes) 
-  begstop = begstop:(begstop+4)      #BUT NOT begstop:begstop+4 
+for(begstop in seq(1, 50, by = 10)) {  
+  begstop = begstop:(begstop+9)      #BUT NOT begstop:begstop+9 
   seqoutput = rbind(seqoutput, begstop) }
 
-
+scale10output = c()
+for (stop in paste("Stop", seqoutput, sep = "")) {
+  temp = occ_counts(bbs50, stop, 10)
+  scale5output = rbind(scale10output, temp)
+}
 
 #It works!!!!!!!!!!!!!!!!!!!!!!!!!
 ##clustering - do for all 50 stops 1 by one, scale = 1 
@@ -115,84 +122,7 @@ for(begstop in seq(1, 50, by = 5)) {  #creating stop sequence of numbers,
 #then for every 10, which are the fives doubled, scale = 10 
 #then for every 25, which is just the fifty halved, scale = 25 
 #we have already done the analysis for all 50, that was what we first started with, but we can re-run for clarity
-bbs5bound_1<-rbind(bbs1, bbs2, bbs3, bbs4, bbs5) 
-bbs5bound_1$subrouteID<-"1-5"
-bbs5bound_1$scale<-"5"
-bbs5bound_2<-rbind(bbs6, bbs7, bbs8, bbs9, bbs10)
-bbs5bound_2$subrouteID<-"6-10"
-bbs5bound_2$scale<-"5"
-bbs5bound_3<-rbind(bbs11, bbs12, bbs13, bbs14, bbs15)
-bbs5bound_3$subrouteID<-"11-15"
-bbs5bound_3$scale<-"5"
-bbs5bound_4<-rbind(bbs16, bbs17, bbs18, bbs19, bbs20)
-bbs5bound_4$subrouteID<-"16-20"
-bbs5bound_4$scale<-"5"
-bbs5bound_5<-rbind(bbs21, bbs22, bbs23, bbs24, bbs25)
-bbs5bound_5$subrouteID<-"21-25"
-bbs5bound_5$scale<-"5"
-bbs5bound_6<-rbind(bbs26, bbs27, bbs28, bbs29, bbs30)
-bbs5bound_6$subrouteID<-"26-30"
-bbs5bound_6$scale<-"5"
-bbs5bound_7<-rbind(bbs31, bbs32, bbs33, bbs34, bbs35)
-bbs5bound_7$subrouteID<-"31-35"
-bbs5bound_7$scale<-"5"
-bbs5bound_8<-rbind(bbs36, bbs37, bbs38, bbs39, bbs40)
-bbs5bound_8$subrouteID<-"36-40"
-bbs5bound_8$scale<-"5"
-bbs5bound_9<-rbind(bbs41, bbs42, bbs43, bbs44, bbs45)
-bbs5bound_9$subrouteID<-"41-45"
-bbs5bound_9$scale<-"5"
-bbs5bound_10<-rbind(bbs46, bbs47, bbs48, bbs49, bbs50)
-bbs5bound_10$subrouteID<-"46-50"
-bbs5bound_10$scale<-"5"
-#now collapse the data and merge by....route # & AOU code? so that sub ID is Stops 1-5
-#need to add occupancy data from duplicate AOU codes and state routes while this is merging
-#instead of clustering like the above, maybe I have to merge each dataset forward again and again,
-#can I write a forloop to do this? or can I just run ddply on the clusters I have, using the function "sum" 
-#and applying sum to occupancy values, grouping by AOU and route # 
-#sum on the value of "occupancy" for each group, broken down by AOU and stateroute 
-library(plyr)
-#^^incorporate in function loop where instead of bbs5bound_1 I have "data"
-bbs_cluster = function(countData) {
-  bdata = ddply(countData, c("stateroute", "AOU"), summarise,
-                N = sum(length(occupancy)),
-                occupancy = (sum(occupancy))/(length(occupancy))) #occupancy tricky, need to be aggregating it in diff way
-  bdata = bdata[, c("stateroute", "AOU", "N", "occupancy")] #how to preserve the subrouteIDs ?
-  return(bdata) 
-}
-#but occupancy calculated over amt of time spent at a site, # years, but year data missing 
-#scale 5; naming convention for files = b(scale)_(part # in series)
-b5_1 = bbs_cluster(bbs5bound_1)
-b5_2 = bbs_cluster(bbs5bound_2)
-b5_3 = bbs_cluster(bbs5bound_3)
-b5_4 = bbs_cluster(bbs5bound_4)
-b5_5 = bbs_cluster(bbs5bound_5)
-b5_6 = bbs_cluster(bbs5bound_6)
-b5_7 = bbs_cluster(bbs5bound_7)
-b5_8 = bbs_cluster(bbs5bound_8)
-b5_9 = bbs_cluster(bbs5bound_9)
-b5_10 = bbs_cluster(bbs5bound_10)
 
-#pair 1&2, 3&4, etc for scale 10 
-bbs10_bound1 = rbind(b1, b2)
-bbs10_bound2 = rbind(b3, b4)
-bbs10_bound3 = rbind(b5, b6)
-bbs10_bound4 = rbind(b7, b8)
-bbs10_bound5 = rbind(b9, b10)
-
-b10_1 = bbs_cluster(bbs10_bound1)
-b10_2 = bbs_cluster(bbs10_bound2)
-b10_3 = bbs_cluster(bbs10_bound3)
-b10_4 = bbs_cluster(bbs10_bound4)
-b10_5 = bbs_cluster(bbs10_bound5)
-
-#pairings for scale 25 
-bbs25_bound1 = rbind(b1, b2, b3, b4, b5)
-bbs25_bound2 = rbind(b6, b7, b8, b9, b10)
-
-b25_1 = bbs_cluster(bbs25_bound1)
-b25_2 = bbs_cluster(bbs25_bound2)
-######### do I have to add N's for the second run, too? 
 
 ## do 5 spp at one route at whatever resolution and compare occupancy from what it is vs what it should be 
 #specify out stateroute and 4 AOU codes associated at each level, check to see if compounded accurately 
