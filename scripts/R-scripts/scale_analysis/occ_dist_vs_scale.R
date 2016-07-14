@@ -112,6 +112,29 @@ for (stop in paste("Stop", seqoutput, sep = "")) {
   scale10output = rbind(scale10output, temp)
 }
 
+#need to limit to V1; first column of sequence matrix created?
+
+seqoutput = c()
+for(begstop in seq(1, 50, by = 25)) {  
+  begstop = begstop:(begstop+24)      #BUT NOT begstop:begstop+9 
+  seqoutput = rbind(seqoutput, begstop) }
+
+scale25output = c()
+for (stop in paste("Stop", seqoutput, sep = "")) {
+  temp = occ_counts(bbs50, stop, 25)
+  scale25output = rbind(scale25output, temp)
+}
+
+seqoutput = c()
+for(begstop in seq(1, 50, by = 50)) {  
+  begstop = begstop:(begstop+49)      #BUT NOT begstop:begstop+9 
+  seqoutput = rbind(seqoutput, begstop) }
+
+scale50output = c()
+for (stop in paste("Stop", seqoutput, sep = "")) {
+  temp = occ_counts(bbs50, stop, 50)
+  scale50output = rbind(scale50output, temp)
+}
 #It works!!!!!!!!!!!!!!!!!!!!!!!!!
 ##clustering - do for all 50 stops 1 by one, scale = 1 
 #then for every five, added together and grouped by fives, scale = 5 
