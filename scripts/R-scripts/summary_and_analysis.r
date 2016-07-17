@@ -217,7 +217,7 @@ boxplot(summ4$pBimodal ~ summ4$taxa, cex.axis = 1.25, ylab = "p (Bimodal)", boxw
 #########################################################
 # Scale analyses with BBS data compared to other datasets
 
-counts5 = read.csv('data/raw_datasets/dataset_1_full.csv', header=T)
+counts5 = read.csv('data/raw_datasets/dataset_1RAW/dataset_1_full.csv', header=T)
 occupancy.matrix = as.matrix(
   read.csv('scripts/R-scripts/scale_analysis/occ_matrix_BBS.csv', header=T, row.names = 1))
 fifty = read.csv('scripts/R-scripts/scale_analysis/BBS_fiftystop_MD_CO_CA_OR_1996-2010.csv')
@@ -356,6 +356,8 @@ legend('topleft',
        col = c(col1, col2, col3, col4), pch = 16, cex = 1.5, pt.cex = 2)
 dev.off()
 
+
+
 #####################################################################################
 # Get mean community size (per year) for each of the above scales of BBS data
 numMDroutes = length(unique(md.counts$stateroute))
@@ -431,12 +433,14 @@ points(log10(meanN), meanOcc, pch = 16, col = c('black', col1, col2, col3, col4)
 points(log10(datasetMean$meanN), datasetMean$meanOcc, pch = datasetMean$pch, 
        cex = 3, col = datasetMean$color, font = 5)
 legend('topleft', legend = unique(summ$taxa), pch = symbols7, 
-       col = c(colors7[1:5], 'white', colors7[7]), pt.cex = 2, cex = 1.5)
+       col = c(colors7[1:5], 'white', colors7[7]), pt.cex = 1, cex = 1)
 points(0.79, 0.79, pch = symbols7[6], font = 5, col = colors7[6], cex = 2)
 dev.off()
 
+# GGplot attempt
+ggplot(datasetMean, aes(x = log10(meanN), y = datasetMean$meanOcc, color = taxa)) + geom_point(cex = 5) + xlab("log10 Community Size") + ylab("Mean Occupancy")
 
-# Plot dataset level means along with BBS (with regression lines)
+# Plot dataset level means along with BBS (with regression lines) ######################################################
 pdf('output/plots/occ_vs_communitySize_byDataset_withLines.pdf', height = 6, width = 7.5)
 par(mfrow = c(1, 1), mar = c(6, 6, 1, 1), mgp = c(4, 1, 0), 
     cex.axis = 1.5, cex.lab = 2, las = 1)
@@ -449,6 +453,8 @@ points(log10(meanN), meanOcc, pch = 16, col = c('black', col1, col2, col3, col4)
 
 points(log10(datasetMean$meanN), datasetMean$meanOcc, pch = datasetMean$pch, 
        cex = 3, col = datasetMean$color, font = 5)
+
+
 # Plot regression lines
 lines(arthXrange, arthYpred, lwd = 3, 
       col = as.character(datasetMean$color[datasetMean$taxa == 'Arthropod'][1]))
@@ -555,11 +561,12 @@ ggsave("output/plots/densitites_by_taxa_rect.png", densities_by_taxa_rect)
 ###############################################################
 # Alpha vs Beta comparison by taxa
 
-alpha_beta_by_taxa <- ggplot(data = site_data, aes(x = alpha, y = beta, color = datasetID)) +
+alpha_beta_by_taxa <- ggplot(data = site_data, aes(x = alpha, y = beta)) +
   geom_point() +
   facet_wrap(~taxa) +
   scale_x_log10() +
-  scale_y_log10()
+  scale_y_log10() +
+  theme_bw()
 
 ggsave("output/plots/alpha_beta_by_taxa.png", alpha_beta_by_taxa)
 
@@ -581,12 +588,15 @@ ggsave("output/plots/core_trans_prop_violins.png")
 #################################################################
 # Map of each community - a few for now
 pdf('output/plots/map.pdf', height = 6, width = 7.5)
-world = map(database='world')
-pal = palette(viridis(10))
+world = map(database='world', col = "black")
+pal = palette(viridis(9))
 # read in lat/long file (preformatted)
 latlong = read.csv("data/latlongs/latlongs.csv", header = T)
-points(latlong$Lon, latlong$Lat, pch = 16, col = as.integer(latlong$taxa.x), cex = 0.6)
-legend("bottomleft", legend = unique(latlong$taxa.x), col = 1:length(as.integer(latlong$taxa.x)), pch = 16, cex = 0.55)
+latlong_nobirds = filter(latlong, datasetID != 1)
+
+points(latlong$Lon, latlong$Lat, pch = 16, col = as.integer(latlong$taxa.x), cex = 0.5)
+points(latlong_nobirds$Lon, latlong_nobirds$Lat, pch = 16, col = as.integer(latlong_nobirds$taxa.x), cex = 0.5)
+legend("bottomleft", legend = levels(latlong$taxa.x), col = 1:length(as.integer(latlong$taxa.x)), pch = 16, cex = 0.5)
 #points(plot248$long, plot248$lat, col = "green", pch = 20)
 #points(plot269$long, plot269$lat, col = "blue", pch = 20)
 #points(plot289$Longitude, plot289$Latitude, col = "cyan", pch = 20) 

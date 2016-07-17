@@ -795,7 +795,7 @@ lab1$Fam_abbrevf = gsub('meet','#60a0df', lab1$Fam_abbrevf)
 lab1$Fam_abbrevf = gsub('gooooo','#7f7fff', lab1$Fam_abbrevf)
 lab1$Fam_abbrevf = gsub('over','#3e8cd2', lab1$Fam_abbrevf)
 lab1$Fam_abbrevf = gsub('everything','#032731', lab1$Fam_abbrevf)
-famlabel = lab1$Fam_abbrevf
+famlabel = lab1$Fam_abbrev
 ####### OTHER LABEL ######
 lab1$mig_abbrev = lab1$migclass
 lab1$mig_abbrev = gsub("neotrop", 'L', lab1$mig_abbrev)
@@ -803,32 +803,49 @@ lab1$mig_abbrev = gsub("resid", 'R', lab1$mig_abbrev)
 lab1$mig_abbrev = gsub("short", 'S', lab1$mig_abbrev)
 lab1$mig_abbrevf = as.factor(as.character(lab1$mig_abbrev))
 lab1$mig_abbrevf = as.factor(as.numeric(lab1$mig_abbrevf))
-lab1$mig_abbrevf = gsub('1','#66b266', lab1$Fam_abbrevf)
-lab1$Fam_abbrevf = gsub('2','#99cc99', lab1$Fam_abbrevf)
-lab1$Fam_abbrevf = gsub('3','#cce5cc', lab1$Fam_abbrevf)
-miglabel= lab1$mig_abbrevf
+lab1$mig_abbrevf = gsub('1','hello', lab1$mig_abbrevf)
+lab1$mig_abbrevf = gsub('2','its', lab1$mig_abbrevf)
+lab1$mig_abbrevf = gsub('3','meee', lab1$mig_abbrevf)
+lab1$mig_abbrevf = gsub('hello','#bae4b3', lab1$mig_abbrevf)
+lab1$mig_abbrevf = gsub('its','#31a354', lab1$mig_abbrevf)
+lab1$mig_abbrevf = gsub('meee','#006d2c', lab1$mig_abbrevf)
+miglabel= lab1$mig_abbrev
 
 lab1$trophlabel = lab1$Trophic.Group
 lab1$trophlabel = gsub("frugivore", 'F', lab1$trophlabel)
 lab1$trophlabel = gsub("granivore", 'G', lab1$trophlabel)
 lab1$trophlabel = gsub("herbivore", 'H', lab1$trophlabel)
-lab1$trophlabel = gsub("insct/om", 'I/O', lab1$trophlabel)
-lab1$trophlabel = gsub("insectivore", 'I', lab1$trophlabel)
+lab1$trophlabel = gsub("insct/om", 'X', lab1$trophlabel)
+lab1$trophlabel = gsub("insectivore", 'T', lab1$trophlabel)
 lab1$trophlabel = gsub("nectarivore", 'N', lab1$trophlabel)
-lab1$trophlabel = gsub("omnivore", 'I', lab1$trophlabel)
+lab1$trophlabel = gsub("omnivore", 'O', lab1$trophlabel)
+lab1$trophlabelf = as.factor(as.character(lab1$trophlabel))
+lab1$trophlabelf = as.factor(as.numeric(lab1$trophlabelf))
+lab1$trophlabelf = gsub('1','hello', lab1$trophlabelf)
+lab1$trophlabelf = gsub('2','its', lab1$trophlabelf)
+lab1$trophlabelf = gsub('3','meee', lab1$trophlabelf)
+lab1$trophlabelf = gsub('4','ive', lab1$trophlabelf)
+lab1$trophlabelf = gsub('hello','#fbb4b9', lab1$trophlabelf)
+lab1$trophlabelf = gsub('its','#f768a1', lab1$trophlabelf)
+lab1$trophlabelf = gsub('meee','#c51b8a', lab1$trophlabelf)
+lab1$trophlabelf = gsub('ive','#7a0177', lab1$trophlabelf)
 
-trophlabel = lab1$trophlabel
+lab1$lab = "O"
+
+envoutput$total = envoutput$ENV + envoutput$COMP + envoutput$SHARED
+ggplot(data = envoutput, aes(x = FocalAOU, y = total, color = ALPHA.CODE)) + geom_bar(stat = "identity")  + theme_classic()
+
 
 # Plot with ENV ranked in decreasing order
 t = ggplot(data=envflip, aes(factor(rank), y=value, fill=factor(Type, levels = c("ENV","COMP","SHARED","NONE")))) + 
   geom_bar(stat = "identity")  + theme_classic() +
   theme(axis.text.x=element_text(angle=90,size=10,vjust=0.5)) + xlab("Focal Species") + ylab("Percent Variance Explained") +
   theme(legend.title=element_text(colour="black",size=12,face="bold")) +  
-  scale_fill_manual(values=c("#2ca25f","#dd1c77","#43a2ca","white"), labels=c("Environment", "Competition","Shared Variance", "")) + guides(fill=guide_legend(title="Type of Variance"))+theme(axis.text.x=element_text(size=15),axis.text.y=element_text(size=15),axis.title.x=element_text(size=15),axis.title.y=element_text(size=15, angle=90),legend.title=element_text(size=15), legend.text=element_text(size=15))
+  scale_fill_manual(values=c("#2ca25f","#dd1c77","#43a2ca","white"), labels=c("Environment", "Competition","Shared Variance", "")) + guides(fill=guide_legend(title="Type of Variance"))+theme(axis.text.x=element_text(size=15),axis.text.y=element_text(size=15),axis.title.x=element_text(size=15),axis.title.y=element_text(size=15, angle=90),legend.title=element_text(size=12), legend.text=element_text(size=12))
 
-t + annotate("text", x = 1:61, y = -.06, label = unique(envflip$ALPHA.CODE), angle=90,size=5,vjust=0.5, color = "black") + annotate("text", x = 1:61, y = -.15, label = famlabel, angle=90,size=5,vjust=0.5, color = lab1$Fam_abbrevf) + annotate("text", x = 1:61, y = -.24, label = miglabel, angle=90,size=5,vjust=0.5, color = "purple") + annotate("text", x = 1:61, y = -.30, label = trophlabel, angle=90,size=5,vjust=0.5, color = "pink") + theme(axis.line=element_blank(),axis.text.x=element_blank(),axis.ticks=element_blank())
+t + annotate("text", x = 1:61, y = -.06, label = unique(envflip$ALPHA.CODE), angle=90,size=5,vjust=0.5, color = "black") + annotate("text", x = 1:61, y = -.15, label = lab1$Fam_abbrev, angle=90,size=5,vjust=0.5, color = lab1$Fam_abbrevf, fontface =2) + annotate("text", x = 1:61, y = -.2, label = lab1$mig_abbrev, angle=90,size=5,vjust=0.5, color = lab1$mig_abbrevf, fontface =2) + annotate("text", x = 1:61, y = -.25, label = lab1$trophlabel, angle=90,size=5,vjust=0.5, color = lab1$trophlabelf, fontface =2) + theme(axis.line=element_blank(),axis.text.x=element_blank(),axis.ticks=element_blank())
 
-t + facet_grid(~migclass, switch = "x", scales = "free_x", space = "free_x") + scale_x_discrete(labels=envflip$ALPHA.CODE)
+#t + facet_grid(~migclass, switch = "x", scales = "free_x", space = "free_x") + scale_x_discrete(labels=envflip$ALPHA.CODE)
 
 #Violin plots w location, trophic group, mig
 ggplot(envflip, aes(x = Type, y = value, color = Type)) + geom_violin() 
