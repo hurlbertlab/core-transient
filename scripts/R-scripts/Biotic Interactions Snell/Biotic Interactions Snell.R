@@ -617,11 +617,11 @@ for(i in 1:length(subfocalspecies)){
   summary(glm_abundance_binom)
 
   glm_abundance_rand_site = glmer(cbind(sp_success_abun, sp_fail_abun) ~ cs(comp_scaled) + 
-      abs(zTemp)+abs(zElev)+abs(zPrecip)+abs(zEVI) + (1|stateroute), family = binomial(link = logit), data = occsub)
+      abs(zTemp)+abs(zElev)+abs(zPrecip)+abs(zEVI) + (1|stateroute:Species), family = binomial(link = logit), data = occsub)
   summary(glm_abundance_rand_site)
 
   glm_occ_rand_site = glmer(cbind(sp_success, sp_fail) ~ cs(comp_scaled) + 
-     abs(zTemp)+abs(zElev)+abs(zPrecip)+abs(zEVI) + (1|stateroute), family = binomial(link = logit), data = occsub)
+     abs(zTemp)+abs(zElev)+abs(zPrecip)+abs(zEVI) + (1|stateroute:Species), family = binomial(link = logit), data = occsub)
   summary(glm_occ_rand_site) 
  
   beta[i,1] = subfocalspecies[i]
@@ -673,14 +673,21 @@ glm_abun_rand_site = glmer(cbind(sp_success_abun, sp_fail_abun) ~ cs(comp_scaled
    abs(zTemp)+abs(zElev)+abs(zPrecip)+abs(zEVI) + (1|stateroute:Species), family = binomial(link = logit), data = occumatrix)
 summary(glm_abundance_rand_site) 
 
+#### PLOTTING MODELS ####
+ggplot(data = occumatrix, aes(x = comp_scaled, y = FocalOcc)) +stat_smooth(data=glm_occ_rand_site, lwd = 1.5) +xlab("Scaled Competitor Abundance")+ylab("Focal Occupancy") +theme_bw() +theme(axis.title.x=element_text(size=12),axis.title.y=element_text(size=12, angle=90), axis.text=element_text(size=12)) + theme(plot.margin = unit(c(.5,6,.5,.5),"lines"))
+ggsave("C:/Git/core-transient/scripts/R-scripts/Biotic Interactions Snell/glmoutput.png")
 
-ggplot(data = occumatrix, aes(x = comp_scaled, y = FocalOcc)) +stat_smooth(data=glm_occ_rand_site, lwd = 1.5) +xlab("Scaled Competitor Abundance")+ylab("Focal Occupancy") +theme_bw()
 ggplot(data = occumatrix, aes(x = comp_scaled, y = FocalAbundance)) +stat_smooth(data=glm_abun_rand_site, lwd = 1.5) +theme_bw()
 
-ggplot(data = occumatrix, aes(x = zTemp, y = FocalOcc)) +stat_smooth(data=glm_occ_rand_site, lwd = 1.5, se = FALSE) +xlab("Deviation from Mean Temperature")+ylab("Focal Occupancy")+ geom_vline(xintercept = 0, colour="red", linetype = "longdash") +theme_bw() 
-ggplot(data = occumatrix, aes(x = zElev, y = FocalOcc)) +stat_smooth(data=glm_occ_rand_site, lwd = 1.5, se = FALSE) +xlab("Deviation from Mean Elevation")+ylab("Focal Occupancy")+ geom_vline(xintercept = 0, colour="red", linetype = "longdash") +theme_bw() 
-ggplot(data = occumatrix, aes(x = zPrecip, y = FocalOcc)) +stat_smooth(data=glm_occ_rand_site, lwd = 1.5, se = FALSE) +xlab("Deviation from Mean Precipitation")+ylab("Focal Occupancy")+ geom_vline(xintercept = 0, colour="red", linetype = "longdash") +theme_bw() 
-ggplot(data = occumatrix, aes(x = zEVI, y = FocalOcc)) +stat_smooth(data=glm_occ_rand_site, lwd = 1.5, se = FALSE) +xlab("Deviation from Mean Vegetation Index (EVI)")+ylab("Focal Occupancy")+ geom_vline(xintercept = 0, colour="red", linetype = "longdash") +theme_bw() 
+
+ggplot(data = occumatrix, aes(x = zTemp, y = FocalOcc)) +stat_smooth(data=glm_occ_rand_site, lwd = 1.5, se = FALSE) +xlab("Deviation from Mean Temperature")+ylab("Focal Occupancy")+ geom_vline(xintercept = 0, colour="red", linetype = "longdash") +theme_bw() +theme_bw() +theme(axis.title.x=element_text(size=12),axis.title.y=element_text(size=12, angle=90), axis.text=element_text(size=12)) + theme(plot.margin = unit(c(.5,6,.5,.5),"lines"))
+ggsave("C:/Git/core-transient/scripts/R-scripts/Biotic Interactions Snell/glmtemp.png")
+ggplot(data = occumatrix, aes(x = zElev, y = FocalOcc)) +stat_smooth(data=glm_occ_rand_site, lwd = 1.5, se = FALSE) +xlab("Deviation from Mean Elevation")+ylab("Focal Occupancy")+ geom_vline(xintercept = 0, colour="red", linetype = "longdash") +theme_bw() +theme_bw() +theme(axis.title.x=element_text(size=12),axis.title.y=element_text(size=12, angle=90), axis.text=element_text(size=12)) + theme(plot.margin = unit(c(.5,6,.5,.5),"lines"))
+ggsave("C:/Git/core-transient/scripts/R-scripts/Biotic Interactions Snell/glmelev.png")
+ggplot(data = occumatrix, aes(x = zPrecip, y = FocalOcc)) +stat_smooth(data=glm_occ_rand_site, lwd = 1.5, se = FALSE) +xlab("Deviation from Mean Precipitation")+ylab("Focal Occupancy")+ geom_vline(xintercept = 0, colour="red", linetype = "longdash") +theme_bw() +theme_bw() +theme(axis.title.x=element_text(size=12),axis.title.y=element_text(size=12, angle=90), axis.text=element_text(size=12)) + theme(plot.margin = unit(c(.5,6,.5,.5),"lines"))
+ggsave("C:/Git/core-transient/scripts/R-scripts/Biotic Interactions Snell/glmprecip.png")
+ggplot(data = occumatrix, aes(x = zEVI, y = FocalOcc)) +stat_smooth(data=glm_occ_rand_site, lwd = 1.5, se = FALSE) +xlab("Deviation from Mean Vegetation Index")+ylab("Focal Occupancy")+ geom_vline(xintercept = 0, colour="red", linetype = "longdash") +theme_bw() +theme_bw() +theme(axis.title.x=element_text(size=12),axis.title.y=element_text(size=12, angle=90), axis.text=element_text(size=12)) + theme(plot.margin = unit(c(.5,6,.5,.5),"lines"))
+ggsave("C:/Git/core-transient/scripts/R-scripts/Biotic Interactions Snell/glmevi.png")
 
 
 #### ---- Plotting LMs ---- ####
@@ -722,14 +729,15 @@ legend("bottomleft", legend = c("Red-breasted Nuthatch", "Competitors"), col = c
 envoutput = read.csv("envoutput.csv", header = TRUE)
 #####PLOTTING variance partitioning
 ## Creating env data table to plot ranked data
+envoutput$total = envoutput$ENV + envoutput$COMP + envoutput$SHARED
 nrank = envoutput %>% 
-  mutate(rank = row_number(-ENV))
+  mutate(rank = row_number(-ENV))# change here for comp
 envflip = gather(nrank, "Type", "value", 2:5)
 envflip$rank <- factor(envflip$rank, levels = envflip$rank[order(envflip$rank)])
 envflip = plyr::arrange(envflip,(envflip$rank),envflip$FocalAOU)
 
 envrank = envflip %>% 
-  group_by(Type == 'ENV') %>% 
+  group_by(Type == 'ENV') %>% # change here for comp
   mutate(rank = row_number(-value)) # need to get just the envs to rank, then plot
 envrank <- envrank[order(envrank$rank),]
 
@@ -738,12 +746,12 @@ envrank <- envrank[order(envrank$rank),]
 ggplot(data=envflip, aes(x=factor(FocalAOU), y=value, fill=Type)) + geom_bar(stat = "identity") + xlab("Focal AOU") + ylab("Percent Variance Explained") + theme(axis.text.x=element_text(angle=90,size=10,vjust=0.5)) + theme_classic()
 
 ### CREATE LABEL DF FAMilY ########
-lab1 = filter(envflip, Type == "ENV")
+lab1 = filter(envflip, Type == "ENV") # change here for comp
 lab1$Fam_abbrev = lab1$Family
 lab1$Fam_abbrev = gsub('Emberizidae','E', lab1$Fam_abbrev)
 lab1$Fam_abbrev = gsub('Turdidae','Tu', lab1$Fam_abbrev)
 lab1$Fam_abbrev = gsub('Fringillidae','F', lab1$Fam_abbrev)
-lab1$Fam_abbrev = gsub('Parulidae','Pa', lab1$Fam_abbrev)
+lab1$Fam_abbrev = gsub('Parulidae','P', lab1$Fam_abbrev)
 lab1$Fam_abbrev = gsub('Tyrannidae','Ty', lab1$Fam_abbrev)
 lab1$Fam_abbrev = gsub('Mimidae','M', lab1$Fam_abbrev)
 lab1$Fam_abbrev = gsub('Hirundinidae','H', lab1$Fam_abbrev)
@@ -751,10 +759,10 @@ lab1$Fam_abbrev = gsub('Regulidae','R', lab1$Fam_abbrev)
 lab1$Fam_abbrev = gsub('Vireonidae','V', lab1$Fam_abbrev)
 lab1$Fam_abbrev = gsub('Aegithalidae','A', lab1$Fam_abbrev)                        
 lab1$Fam_abbrev = gsub('Corvidae','Co', lab1$Fam_abbrev)
-lab1$Fam_abbrev = gsub('Troglodytidae','Tr', lab1$Fam_abbrev)
-lab1$Fam_abbrev = gsub('Certhiidae','Ce', lab1$Fam_abbrev)
+lab1$Fam_abbrev = gsub('Troglodytidae','T', lab1$Fam_abbrev)
+lab1$Fam_abbrev = gsub('Certhiidae','C', lab1$Fam_abbrev)
 lab1$Fam_abbrev = gsub('Cuculidae','Cu', lab1$Fam_abbrev)
-lab1$Fam_abbrev = gsub('Sittidae','i', lab1$Fam_abbrev)
+lab1$Fam_abbrev = gsub('Sittidae','S', lab1$Fam_abbrev)
 lab1$Fam_abbrev = gsub('Icteridae','I', lab1$Fam_abbrev)
 lab1$Fam_abbrev = gsub('Picidae','Pi', lab1$Fam_abbrev)
 
@@ -816,7 +824,7 @@ lab1$trophlabel = gsub("frugivore", 'F', lab1$trophlabel)
 lab1$trophlabel = gsub("granivore", 'G', lab1$trophlabel)
 lab1$trophlabel = gsub("herbivore", 'H', lab1$trophlabel)
 lab1$trophlabel = gsub("insct/om", 'X', lab1$trophlabel)
-lab1$trophlabel = gsub("insectivore", 'T', lab1$trophlabel)
+lab1$trophlabel = gsub("insectivore", 'I', lab1$trophlabel)
 lab1$trophlabel = gsub("nectarivore", 'N', lab1$trophlabel)
 lab1$trophlabel = gsub("omnivore", 'O', lab1$trophlabel)
 lab1$trophlabelf = as.factor(as.character(lab1$trophlabel))
@@ -832,18 +840,19 @@ lab1$trophlabelf = gsub('ive','#7a0177', lab1$trophlabelf)
 
 lab1$lab = "O"
 
-envoutput$total = envoutput$ENV + envoutput$COMP + envoutput$SHARED
-ggplot(data = envoutput, aes(x = FocalAOU, y = total, color = ALPHA.CODE)) + geom_bar(stat = "identity")  + theme_classic()
+
+ggplot(data = envflip, aes(x = FocalAOU, y = total, color = ALPHA.CODE)) + geom_bar(stat = "identity")  + theme_classic()
 
 
 # Plot with ENV ranked in decreasing order
 t = ggplot(data=envflip, aes(factor(rank), y=value, fill=factor(Type, levels = c("ENV","COMP","SHARED","NONE")))) + 
   geom_bar(stat = "identity")  + theme_classic() +
   theme(axis.text.x=element_text(angle=90,size=10,vjust=0.5)) + xlab("Focal Species") + ylab("Percent Variance Explained") +
-  theme(legend.title=element_text(colour="black",size=12,face="bold")) +  
-  scale_fill_manual(values=c("#2ca25f","#dd1c77","#43a2ca","white"), labels=c("Environment", "Competition","Shared Variance", "")) + guides(fill=guide_legend(title="Type of Variance"))+theme(axis.text.x=element_text(size=15),axis.text.y=element_text(size=15),axis.title.x=element_text(size=15),axis.title.y=element_text(size=15, angle=90),legend.title=element_text(size=12), legend.text=element_text(size=12))
+  scale_fill_manual(values=c("#2ca25f","#dd1c77","#43a2ca","white"), labels=c("Environment", "Competition","Shared Variance", "")) +theme(axis.title.x=element_text(size=15),axis.title.y=element_text(size=15, angle=90),legend.title=element_text(size=12), legend.text=element_text(size=12)) + guides(fill=guide_legend(title=""))+ theme(plot.margin = unit(c(.5,6,.5,.5),"lines")) 
 
-t + annotate("text", x = 1:61, y = -.06, label = unique(envflip$ALPHA.CODE), angle=90,size=5,vjust=0.5, color = "black") + annotate("text", x = 1:61, y = -.15, label = lab1$Fam_abbrev, angle=90,size=5,vjust=0.5, color = lab1$Fam_abbrevf, fontface =2) + annotate("text", x = 1:61, y = -.2, label = lab1$mig_abbrev, angle=90,size=5,vjust=0.5, color = lab1$mig_abbrevf, fontface =2) + annotate("text", x = 1:61, y = -.25, label = lab1$trophlabel, angle=90,size=5,vjust=0.5, color = lab1$trophlabelf, fontface =2) + theme(axis.line=element_blank(),axis.text.x=element_blank(),axis.ticks=element_blank())
+tt = t + annotate("text", x = 1:61, y = -.06, label = unique(envflip$ALPHA.CODE), angle=90,size=5,vjust=0.5, color = "black") + annotate("text", x = 1:61, y = -.15, label = lab1$Fam_abbrev, size=5,vjust=0.5, color = lab1$Fam_abbrevf, fontface =2) + annotate("text", x = 1:61, y = -.2, label = lab1$mig_abbrev, size=5,vjust=0.5, color = lab1$mig_abbrevf, fontface =2) + annotate("text", x = 1:61, y = -.25, label = lab1$trophlabel, size=5,vjust=0.5, color = lab1$trophlabelf, fontface =2) + theme(axis.line=element_blank(),axis.text.x=element_blank(),axis.ticks=element_blank()) 
+
+ggsave("C:/Git/core-transient/scripts/R-scripts/Biotic Interactions Snell/barplot.pdf", height = 16, width = 20)
 
 #t + facet_grid(~migclass, switch = "x", scales = "free_x", space = "free_x") + scale_x_discrete(labels=envflip$ALPHA.CODE)
 
