@@ -117,6 +117,10 @@ seqoutput = c()
 for(begstop in seq(1, 50, by = 25)) {  
   begstop = begstop:(begstop+24)      #BUT NOT begstop:begstop+9 
   seqoutput = rbind(seqoutput, begstop) }
+#using seqoutput, tally occupancies from each row ie "begstop" 
+#to calculate occupancy for each row ie scaled cluster 
+#remember to incorporate NA's as 0's for calculating overall proportion of occupancy 
+
 
 scale25output = c()
 for (stop in paste("Stop", seqoutput, sep = "")) {
