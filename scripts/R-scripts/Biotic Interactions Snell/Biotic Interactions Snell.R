@@ -869,8 +869,9 @@ ggplot(envfliploc, aes(x = factor(EW), y = value, color = Type)) + geom_violin()
 R2plot = merge(beta_lm, beta_abun, by = "FocalAOU")
 qplot(R2plot$Competition_R2.x, R2plot$Competition_R2.y) +geom_abline(intercept = 0, slope = 1, col = "red", lwd = 1.25) + xlab("Occupancy R2") + ylab("Abundance R2")
 qplot(R2plot$EnvZ_R2.x, R2plot$EnvZ_R2.y)+stat_smooth()+geom_abline(intercept = 0, slope = 1, col = "red", lwd = 1.25)+ xlab("Occupancy R2") + ylab("Abundance R2")
-qplot(R2plot$BothZ_R2.x, R2plot$BothZ_R2.y)+stat_smooth()+geom_abline(intercept = 0, slope = 1, col = "red", lwd = 1.25)+ xlab("Occupancy R2") + ylab("Abundance R2")
+## USE THIS ONE
+qplot(R2plot$BothZ_R2.x, R2plot$BothZ_R2.y)+geom_abline(intercept = 0, slope = 1, col = "red", lwd = 1.25)+ xlab("Occupancy") + ylab("Abundance")+theme(axis.title.x=element_text(size=15),axis.title.y=element_text(size=15, angle=90),legend.title=element_text(size=12), legend.text=element_text(size=12))
 
 # R2 plot - glm
-qplot(beta$Abundance_comp_scaled_Estimate, beta$Randsite_comp_scaled_Estimate)+stat_smooth() +geom_abline(intercept = 0, slope = 1, col = "red", lwd = 1.25) + xlab("Occupancy est") + ylab("Abundance est")
+qplot(beta$Abundance_comp_scaled_Estimate, beta$Randsite_comp_scaled_Estimate) +geom_abline(intercept = 0, slope = 1, col = "red", lwd = 1.25) + xlab("Occupancy est") + ylab("Abundance est")
 
