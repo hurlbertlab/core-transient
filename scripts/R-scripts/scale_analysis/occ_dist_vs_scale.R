@@ -55,33 +55,9 @@ occ_counts = function(countData, countColumn, scale) {
   bbsu.rt.occ2 = bbsu.rt.occ2[, c("stateroute", "scale", "subrouteID", "AOU", "occupancy")]
   return(bbsu.rt.occ2)
 }
-#if subrouteID = Count10, Count20, etc == 10; if = Count25, == 25; if = Count1, == 1, but no need for "ifs"   
-# modeled after: BBS_Core_agreement = 
-#sum(temp.site$occupancy>0.67 & temp.site$status=="breeder", na.rm = T)/sum(temp.site$occupancy>0.67, na.rm = T)
-#example of working single line 
-#need to adapt this to forloop to run for all sites and scales 
 
-bbs1<-occ_counts(bbs50, "Stop1", 5)
+bbs1<-occ_counts(bbs50, "Stop1", 5) #test to ensure function working
 
-scale = 5
-
-# BE SURE TO SUBSET BBS50 DATA TO ONLY THE ROUTES IN THE counts5 DATASET AND ONLY YEARS 1996-2010
-#why two forloops? one to go thru sequence and build on it 
-
-#dummy practice loop 
-
-seqoutput = c() 
-
-for (i in 1:50){
-  foo = seq(1, 50, by = 5)
-  seqoutput[i] = foo[i:i+4]
-}
-
-
-#problem solved! needed brackets...but a new problem opened: I'm not JUST creating a sequence, 
-#I'm creating a sequence for the "Stop_" columns! 
-
-#then I need to use the above to dictate to the below function where to lump stop data together and where to cut it off 
 
 scale1output = c()
 for (stop in paste("Stop", 1:50, sep = "")) { #actually running the function
@@ -98,7 +74,7 @@ for(begstop in seq(1, 50, by = 5)) {  #creating stop sequence of numbers,
 
 scale5output = c()
 for (stop in paste("Stop", seqoutput, sep = "")) {
-  temp = occ_counts(bbs50, stop, 5)
+  temp = occ_counts(bbs50, stop, 5) #occ_counts should be calculating occupancy - use to calc occ across rows?
   scale5output = rbind(scale5output, temp)
 }
 
