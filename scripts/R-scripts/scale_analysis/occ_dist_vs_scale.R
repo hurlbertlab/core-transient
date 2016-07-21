@@ -46,7 +46,7 @@ bbs.occ = data.frame(table(bbs.uniq$AOU)/15)
 #########
 #trying to solve hard coding vs soft coding "scale" column issue
 occ_counts = function(countData, countColumn, scale) {
-  bbsu = unique(countData[countData[, countColumn]!= 0, c("stateroute", "year", "AOU")])
+  bbsu = unique(countData[countData[, countColumn]!= 0, c("stateroute", "year", "AOU")]) #because this gets rid of 0's...
   bbsu.rt.occ = data.frame(table(bbsu[,c("stateroute", "AOU")])/15)
   bbsu.rt.occ2 = bbsu.rt.occ[bbsu.rt.occ$Freq!=0,]
   names(bbsu.rt.occ2)[3] = "occupancy"
