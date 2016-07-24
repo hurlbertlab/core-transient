@@ -579,6 +579,7 @@ abline(v = mean(beta_abun$EnvZ_Est), col = "red", lwd = 3)
 hist(beta_abun$BothZ_Est, 10, main = "Slope Distribution for Both", xlab = "Both Slope")
 abline(v = mean(beta_abun$BothZ_Est), col = "red", lwd = 3)
 
+beta_lm$sumR2 = beta_lm$BothZ_R2+beta_lm$Competition_R2+beta_lm$EnvZ_R2 
 #### ---- GLM fitting  ---- ####
 # add on success and failure columns by creating # of sites where birds were found
 # and # of sites birds were not found from original bbs data
@@ -674,19 +675,20 @@ glm_abun_rand_site = glmer(cbind(sp_success_abun, sp_fail_abun) ~ cs(comp_scaled
 summary(glm_abundance_rand_site) 
 
 #### PLOTTING MODELS ####
-ggplot(data = occumatrix, aes(x = comp_scaled, y = FocalOcc)) +stat_smooth(data=glm_occ_rand_site, lwd = 1.5) +xlab("Scaled Competitor Abundance")+ylab("Focal Occupancy") +theme_bw() +theme(axis.title.x=element_text(size=12),axis.title.y=element_text(size=12, angle=90), axis.text=element_text(size=12)) + theme(plot.margin = unit(c(.5,6,.5,.5),"lines"))
+ggplot(data = occumatrix, aes(x = comp_scaled, y = FocalOcc)) +stat_smooth(data=glm_occ_rand_site, lwd = 1.5) +xlab("Scaled Competitor Abundance")+ylab("Focal Occupancy") +theme_bw() +theme(axis.title.x=element_text(size=24),axis.title.y=element_text(size=24, angle=90), axis.text=element_text(size=12)) + theme(plot.margin = unit(c(.5,6,.5,.5),"lines")) 
 ggsave("C:/Git/core-transient/scripts/R-scripts/Biotic Interactions Snell/glmoutput.png")
 
 ggplot(data = occumatrix, aes(x = comp_scaled, y = FocalAbundance)) +stat_smooth(data=glm_abun_rand_site, lwd = 1.5) +theme_bw()
 
 
-ggplot(data = occumatrix, aes(x = zTemp, y = FocalOcc)) +stat_smooth(data=glm_occ_rand_site, lwd = 1.5, se = FALSE) +xlab("Deviation from Mean Temperature")+ylab("Focal Occupancy")+ geom_vline(xintercept = 0, colour="red", linetype = "longdash") +theme_bw() +theme_bw() +theme(axis.title.x=element_text(size=12),axis.title.y=element_text(size=12, angle=90), axis.text=element_text(size=12)) + theme(plot.margin = unit(c(.5,6,.5,.5),"lines"))
+ggplot(data = occumatrix, aes(x = zTemp, y = FocalOcc)) +stat_smooth(data=glm_occ_rand_site, lwd = 1.5, se = FALSE) +xlab("Mean Temperature Deviation")+ylab("Focal Occupancy")+ geom_vline(xintercept = 0, colour="red", linetype = "longdash") +theme_bw() +theme_bw() +theme(axis.title.x=element_text(size=28),axis.title.y=element_text(size=28, angle=90), axis.text=element_text(size=12)) + theme(plot.margin = unit(c(.5,6,.5,.5),"lines"))#+ annotate("text", x = 3, y = 0.56, label = "Environmental centroid\n for focal species", size=7,vjust=0.5, color = "black")
 ggsave("C:/Git/core-transient/scripts/R-scripts/Biotic Interactions Snell/glmtemp.png")
-ggplot(data = occumatrix, aes(x = zElev, y = FocalOcc)) +stat_smooth(data=glm_occ_rand_site, lwd = 1.5, se = FALSE) +xlab("Deviation from Mean Elevation")+ylab("Focal Occupancy")+ geom_vline(xintercept = 0, colour="red", linetype = "longdash") +theme_bw() +theme_bw() +theme(axis.title.x=element_text(size=12),axis.title.y=element_text(size=12, angle=90), axis.text=element_text(size=12)) + theme(plot.margin = unit(c(.5,6,.5,.5),"lines"))
+
+ggplot(data = occumatrix, aes(x = zElev, y = FocalOcc)) +stat_smooth(data=glm_occ_rand_site, lwd = 1.5, se = FALSE) +xlab("Mean Elevation Deviation")+ylab("Focal Occupancy")+ geom_vline(xintercept = 0, colour="red", linetype = "longdash") +theme_bw() +theme_bw() +theme(axis.title.x=element_text(size=28),axis.title.y=element_text(size=28, angle=90), axis.text=element_text(size=12)) + theme(plot.margin = unit(c(.5,6,.5,.5),"lines"))
 ggsave("C:/Git/core-transient/scripts/R-scripts/Biotic Interactions Snell/glmelev.png")
-ggplot(data = occumatrix, aes(x = zPrecip, y = FocalOcc)) +stat_smooth(data=glm_occ_rand_site, lwd = 1.5, se = FALSE) +xlab("Deviation from Mean Precipitation")+ylab("Focal Occupancy")+ geom_vline(xintercept = 0, colour="red", linetype = "longdash") +theme_bw() +theme_bw() +theme(axis.title.x=element_text(size=12),axis.title.y=element_text(size=12, angle=90), axis.text=element_text(size=12)) + theme(plot.margin = unit(c(.5,6,.5,.5),"lines"))
+ggplot(data = occumatrix, aes(x = zPrecip, y = FocalOcc)) +stat_smooth(data=glm_occ_rand_site, lwd = 1.5, se = FALSE) +xlab("Mean Precipitation Deviation")+ylab("Focal Occupancy")+ geom_vline(xintercept = 0, colour="red", linetype = "longdash") +theme_bw() +theme_bw() +theme(axis.title.x=element_text(size=28),axis.title.y=element_text(size=28, angle=90), axis.text=element_text(size=12)) + theme(plot.margin = unit(c(.5,6,.5,.5),"lines"))
 ggsave("C:/Git/core-transient/scripts/R-scripts/Biotic Interactions Snell/glmprecip.png")
-ggplot(data = occumatrix, aes(x = zEVI, y = FocalOcc)) +stat_smooth(data=glm_occ_rand_site, lwd = 1.5, se = FALSE) +xlab("Deviation from Mean Vegetation Index")+ylab("Focal Occupancy")+ geom_vline(xintercept = 0, colour="red", linetype = "longdash") +theme_bw() +theme_bw() +theme(axis.title.x=element_text(size=12),axis.title.y=element_text(size=12, angle=90), axis.text=element_text(size=12)) + theme(plot.margin = unit(c(.5,6,.5,.5),"lines"))
+ggplot(data = occumatrix, aes(x = zEVI, y = FocalOcc)) +stat_smooth(data=glm_occ_rand_site, lwd = 1.5, se = FALSE) +xlab("Mean Vegetation Deviation")+ylab("Focal Occupancy")+ geom_vline(xintercept = 0, colour="red", linetype = "longdash") +theme_bw() +theme_bw() +theme(axis.title.x=element_text(size=28),axis.title.y=element_text(size=28, angle=90), axis.text=element_text(size=12)) + theme(plot.margin = unit(c(.5,6,.5,.5),"lines"))
 ggsave("C:/Git/core-transient/scripts/R-scripts/Biotic Interactions Snell/glmevi.png")
 
 
@@ -786,23 +788,23 @@ lab1$Fam_abbrevf = gsub('hellowondering','gooooo', lab1$Fam_abbrevf)
 lab1$Fam_abbrevf = gsub('helloiffffff','over', lab1$Fam_abbrevf)
 lab1$Fam_abbrevf = gsub('helloafter','everything', lab1$Fam_abbrevf)
 
-lab1$Fam_abbrevf = gsub('hello','#cee8ff', lab1$Fam_abbrevf)
-lab1$Fam_abbrevf = gsub('its','#a7d5ff', lab1$Fam_abbrevf)
-lab1$Fam_abbrevf = gsub('meee','#85c4ff', lab1$Fam_abbrevf)
-lab1$Fam_abbrevf = gsub('was','#9ed1ff', lab1$Fam_abbrevf)
-lab1$Fam_abbrevf = gsub('wondering','#b8ddff', lab1$Fam_abbrevf)
-lab1$Fam_abbrevf = gsub('iffffff','#d1e9ff', lab1$Fam_abbrevf)
-lab1$Fam_abbrevf = gsub('after','#0000ff', lab1$Fam_abbrevf)
-lab1$Fam_abbrevf = gsub('all','#01aae8', lab1$Fam_abbrevf)
-lab1$Fam_abbrevf = gsub('these','#028dbe', lab1$Fam_abbrevf)
-lab1$Fam_abbrevf = gsub('years','#046e91', lab1$Fam_abbrevf)                        
-lab1$Fam_abbrevf = gsub('youd','#0080ff', lab1$Fam_abbrevf)
-lab1$Fam_abbrevf = gsub('like','#2a334f', lab1$Fam_abbrevf)
-lab1$Fam_abbrevf = gsub('tooooo','#96b5c7', lab1$Fam_abbrevf)
-lab1$Fam_abbrevf = gsub('meet','#60a0df', lab1$Fam_abbrevf)
+lab1$Fam_abbrevf = gsub('hello','#000000', lab1$Fam_abbrevf)
+lab1$Fam_abbrevf = gsub('its','#000000', lab1$Fam_abbrevf)
+lab1$Fam_abbrevf = gsub('meee','#000000', lab1$Fam_abbrevf)
+lab1$Fam_abbrevf = gsub('was','#000000', lab1$Fam_abbrevf)
+lab1$Fam_abbrevf = gsub('wondering','#9ecae1', lab1$Fam_abbrevf)
+lab1$Fam_abbrevf = gsub('iffffff','#000000', lab1$Fam_abbrevf)
+lab1$Fam_abbrevf = gsub('after','#000000', lab1$Fam_abbrevf)
+lab1$Fam_abbrevf = gsub('all','#000000', lab1$Fam_abbrevf)
+lab1$Fam_abbrevf = gsub('these','#000000', lab1$Fam_abbrevf)
+lab1$Fam_abbrevf = gsub('years','#0080ff', lab1$Fam_abbrevf)                       
+lab1$Fam_abbrevf = gsub('youd','#000000', lab1$Fam_abbrevf)
+lab1$Fam_abbrevf = gsub('like','#000000', lab1$Fam_abbrevf)
+lab1$Fam_abbrevf = gsub('tooooo','#000000', lab1$Fam_abbrevf)
+lab1$Fam_abbrevf = gsub('meet','#000000', lab1$Fam_abbrevf)
 lab1$Fam_abbrevf = gsub('gooooo','#7f7fff', lab1$Fam_abbrevf)
-lab1$Fam_abbrevf = gsub('over','#3e8cd2', lab1$Fam_abbrevf)
-lab1$Fam_abbrevf = gsub('everything','#032731', lab1$Fam_abbrevf)
+lab1$Fam_abbrevf = gsub('over','#0000ff', lab1$Fam_abbrevf)
+lab1$Fam_abbrevf = gsub('everything','#048691', lab1$Fam_abbrevf)
 famlabel = lab1$Fam_abbrev
 ####### OTHER LABEL ######
 lab1$mig_abbrev = lab1$migclass
@@ -848,9 +850,9 @@ ggplot(data = envflip, aes(x = FocalAOU, y = total, color = ALPHA.CODE)) + geom_
 t = ggplot(data=envflip, aes(factor(rank), y=value, fill=factor(Type, levels = c("ENV","COMP","SHARED","NONE")))) + 
   geom_bar(stat = "identity")  + theme_classic() +
   theme(axis.text.x=element_text(angle=90,size=10,vjust=0.5)) + xlab("Focal Species") + ylab("Percent Variance Explained") +
-  scale_fill_manual(values=c("#2ca25f","#dd1c77","#43a2ca","white"), labels=c("Environment", "Competition","Shared Variance", "")) +theme(axis.title.x=element_text(size=15),axis.title.y=element_text(size=15, angle=90),legend.title=element_text(size=12), legend.text=element_text(size=12)) + guides(fill=guide_legend(title=""))+ theme(plot.margin = unit(c(.5,6,.5,.5),"lines")) 
+  scale_fill_manual(values=c("#2ca25f","#dd1c77","#43a2ca","white"), labels=c("Environment", "Competition","Shared Variance", "")) +theme(axis.title.x=element_text(size=20),axis.title.y=element_text(size=20, angle=90),legend.title=element_text(size=12), legend.text=element_text(size=12)) + guides(fill=guide_legend(title=""))+ theme(plot.margin = unit(c(.5,6,.5,.5),"lines")) 
 
-tt = t + annotate("text", x = 1:61, y = -.06, label = unique(envflip$ALPHA.CODE), angle=90,size=5,vjust=0.5, color = "black") + annotate("text", x = 1:61, y = -.15, label = lab1$Fam_abbrev, size=5,vjust=0.5, color = lab1$Fam_abbrevf, fontface =2) + annotate("text", x = 1:61, y = -.2, label = lab1$mig_abbrev, size=5,vjust=0.5, color = lab1$mig_abbrevf, fontface =2) + annotate("text", x = 1:61, y = -.25, label = lab1$trophlabel, size=5,vjust=0.5, color = lab1$trophlabelf, fontface =2) + theme(axis.line=element_blank(),axis.text.x=element_blank(),axis.ticks=element_blank()) 
+tt = t + annotate("text", x = 1:61, y = -.06, label = unique(envflip$ALPHA.CODE), angle=90,size=5.5,vjust=0.5, color = "black") + annotate("text", x = 1:61, y = -.15, label = lab1$Fam_abbrev, size=5,vjust=0.5, color = lab1$Fam_abbrevf, fontface =2) + annotate("text", x = 1:61, y = -.2, label = lab1$mig_abbrev, size=5.5,vjust=0.5, color = lab1$mig_abbrevf, fontface =2) + annotate("text", x = 1:61, y = -.25, label = lab1$trophlabel, size=5.5,vjust=0.5, color = lab1$trophlabelf, fontface =2) + theme(axis.line=element_blank(),axis.text.x=element_blank(),axis.ticks=element_blank()) 
 
 ggsave("C:/Git/core-transient/scripts/R-scripts/Biotic Interactions Snell/barplot.pdf", height = 16, width = 20)
 
@@ -875,3 +877,7 @@ qplot(R2plot$BothZ_R2.x, R2plot$BothZ_R2.y)+geom_abline(intercept = 0, slope = 1
 # R2 plot - glm
 qplot(beta$Abundance_comp_scaled_Estimate, beta$Randsite_comp_scaled_Estimate) +geom_abline(intercept = 0, slope = 1, col = "red", lwd = 1.25) + xlab("Occupancy est") + ylab("Abundance est")
 
+ggplot(beta_lm, aes(x = FocalAOU, y = BothZ_R2)) + geom_violin() + xlab("Focal Species") + ylab("Shared R2 Value")+theme(axis.title.x=element_text(size=15),axis.title.y=element_text(size=15, angle=90),legend.title=element_text(size=12), legend.text=element_text(size=12)) + theme(axis.line=element_blank(),axis.text.x=element_blank(),axis.ticks=element_blank())
+ggplot(beta_lm, aes(x = FocalAOU, y = Competition_R2)) + geom_violin() + xlab("Focal Species") + ylab("Competition R2 Value")+theme(axis.title.x=element_text(size=15),axis.title.y=element_text(size=15, angle=90),legend.title=element_text(size=12), legend.text=element_text(size=12)) + theme(axis.line=element_blank(),axis.text.x=element_blank(),axis.ticks=element_blank())
+ggplot(beta_lm, aes(x = FocalAOU, y = EnvZ_R2)) + geom_violin() + xlab("Focal Species") + ylab("Environment R2 Value")+theme(axis.title.x=element_text(size=15),axis.title.y=element_text(size=15, angle=90),legend.title=element_text(size=12), legend.text=element_text(size=12)) + theme(axis.line=element_blank(),axis.text.x=element_blank(),axis.ticks=element_blank())
+ggplot(beta_lm, aes(x = FocalAOU, y = sumR2)) + geom_violin() + xlab("Focal Species") + ylab("Total R2 Value")+ theme_bw()+theme(axis.title.x=element_text(size=15),axis.title.y=element_text(size=15, angle=90),legend.title=element_text(size=12), legend.text=element_text(size=12)) + theme(axis.line=element_blank(),axis.text.x=element_blank(),axis.ticks=element_blank()) 
