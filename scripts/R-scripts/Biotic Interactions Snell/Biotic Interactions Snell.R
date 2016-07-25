@@ -747,7 +747,7 @@ comp1plot = comp1[comp1$stateroute %in% proutes,]
 map("state") 
 Red_breasted_Nuthatch = points(plotsub$Longi, plotsub$Lati, col = "black",  pch = 16, cex = plotsub$FocalOcc*6)
 Brown_Creeper = points(comp1plot$Longi, comp1plot$Lati, col = alpha("darkorchid1", 0.5),  pch = 16, cex = comp1$comp_scaled*6)
-legend("bottomleft", legend = c("Red-breasted Nuthatch", "Competitors"), col = c("black","darkorchid1"), pch = 19)
+legend("bottomleft", legend = c("Red-breasted Nuthatch", "Competitors"), col = c("black","darkorchid1"), pch = 19, cex = 1)
 
 # showing the number of species present at each route
 #numspp_route = focalcompoutput %>%
@@ -895,17 +895,31 @@ ggplot(envfam, aes(x = FAMILY, y = value, color = Type)) + geom_violin()
 
 ggplot(envfliploc, aes(x = factor(EW), y = value, color = Type)) + geom_violin() + scale_x_discrete(labels=c("West", "East")) 
 
-# R2 plot - lm
+# R2 plot - lm in ggplot
 R2plot = merge(beta_lm, beta_abun, by = "FocalAOU")
-qplot(R2plot$Competition_R2.x, R2plot$Competition_R2.y) +geom_abline(intercept = 0, slope = 1, col = "red", lwd = 1.25) + xlab("Occupancy R2") + ylab("Abundance R2")
-qplot(R2plot$EnvZ_R2.x, R2plot$EnvZ_R2.y)+stat_smooth()+geom_abline(intercept = 0, slope = 1, col = "red", lwd = 1.25)+ xlab("Occupancy R2") + ylab("Abundance R2")
+R2sub = data.frame(R2plot$FocalAOU, R2plot$Competition_R2.x, R2plot$EnvZ_R2.x,R2plot$BothZ_R2.x,R2plot$Competition_R2.y,R2plot$EnvZ_R2.y,R2plot$BothZ_R2.y)
+R2long = gather(R2sub, "cat", "val", R2plot.Competition_R2.x:R2plot.BothZ_R2.y)
+#ggplot(R2long, aes(x=cat, y = val)) + geom_point()
+
+ggplot(R2plot, aes(x = Competition_R2.x, y = Competition_R2.y)) + theme(axis.title.x=element_text(size=30),axis.title.y=element_text(size=30, angle=90),legend.title=element_text(size=24), legend.text=element_text(size=24)) + xlab("Occupancy R2") + ylab("Abundance R2") + geom_point(col = "#9ecae1", cex =4) + geom_point(data = R2plot, aes(R2plot$EnvZ_R2.x,R2plot$EnvZ_R2.y), shape = 24, col = "#3182bd", cex =4, stroke = 1.5) + geom_point(data = R2plot, aes(R2plot$BothZ_R2.x,R2plot$BothZ_R2.y), shape = 3, col = "#253494", cex =5, stroke = 1.5) +geom_abline(intercept = 0, slope = 1, col = "red", lwd = 1.25)
+ + scale_color_manual(name = "Legend", labels = c("#3182bd" = "Competition"))
+
+
+plot(R2plot$Competition_R2.x,R2plot$Competition_R2.y, col = "dark blue", pch = 16, cex = 2, xlab = "Occupancy", ylab = "Abundance", cex.lab=1.5)
+par(new= TRUE)
+points(R2plot$EnvZ_R2.x,R2plot$EnvZ_R2.y, pch = 17, cex = 2, col = "blue")
+par(new= TRUE)
+points(R2plot$BothZ_R2.x,R2plot$BothZ_R2.y, pch = 18, cex = 3, col = ("Dodger Blue"), abline(0,1, col = "red", lwd = 3))
+
+
+qplot(R2plot$EnvZ_R2.x, R2plot$EnvZ_R2.y)+geom_abline(intercept = 0, slope = 1, col = "green", lwd = 1.25)+ xlab("Occupancy R2") + ylab("Abundance R2")
 ## USE THIS ONE
-qplot(R2plot$BothZ_R2.x, R2plot$BothZ_R2.y)+geom_abline(intercept = 0, slope = 1, col = "red", lwd = 1.25)+ xlab("Occupancy") + ylab("Abundance")+theme(axis.title.x=element_text(size=15),axis.title.y=element_text(size=15, angle=90),legend.title=element_text(size=12), legend.text=element_text(size=12))
+qplot(R2plot$BothZ_R2.x, R2plot$BothZ_R2.y)+geom_abline(intercept = 0, slope = 1, col = "blue", lwd = 1.25)+ xlab("Occupancy") + ylab("Abundance")+theme(axis.title.x=element_text(size=15),axis.title.y=element_text(size=15, angle=90),legend.title=element_text(size=12), legend.text=element_text(size=12))
 
 # R2 plot - glm
-qplot(beta$Abundance_comp_scaled_Estimate, beta$Randsite_comp_scaled_Estimate) +geom_abline(intercept = 0, slope = 1, col = "red", lwd = 1.25) + xlab("Occupancy est") + ylab("Abundance est")
+qplot(beta$Abundance_comp_scaled_Estimate, beta$Randsite_comp_scaled_Estimate) +geom_abline(intercept = 0, slope = 1, col = "red", lwd = 1.25) + xlab("Occupancy Est") + ylab("Abundance Est")+theme(axis.title.x=element_text(size=30),axis.title.y=element_text(size=30, angle=90))
 
-ggplot(beta_lm, aes(x = FocalAOU, y = BothZ_R2)) + geom_violin() + xlab("Focal Species") + ylab("Shared R2 Value")+theme(axis.title.x=element_text(size=15),axis.title.y=element_text(size=15, angle=90),legend.title=element_text(size=12), legend.text=element_text(size=12)) + theme(axis.line=element_blank(),axis.text.x=element_blank(),axis.ticks=element_blank())
+ggplot(beta_lm, aes(x = FocalAOU, y = BothZ_R2)) + geom_violin(lwd = 2, fill = "grey") + xlab("Focal Species") + ylab("Shared R2 Value")+theme(axis.title.x=element_text(size=30),axis.title.y=element_text(size=30, angle=90),legend.title=element_text(size=12), legend.text=element_text(size=12)) + theme(axis.line=element_blank(),axis.text.x=element_blank(),axis.ticks=element_blank())
 ggplot(beta_lm, aes(x = FocalAOU, y = Competition_R2)) + geom_violin() + xlab("Focal Species") + ylab("Competition R2 Value")+theme(axis.title.x=element_text(size=15),axis.title.y=element_text(size=15, angle=90),legend.title=element_text(size=12), legend.text=element_text(size=12)) + theme(axis.line=element_blank(),axis.text.x=element_blank(),axis.ticks=element_blank())
 ggplot(beta_lm, aes(x = FocalAOU, y = EnvZ_R2)) + geom_violin() + xlab("Focal Species") + ylab("Environment R2 Value")+theme(axis.title.x=element_text(size=15),axis.title.y=element_text(size=15, angle=90),legend.title=element_text(size=12), legend.text=element_text(size=12)) + theme(axis.line=element_blank(),axis.text.x=element_blank(),axis.ticks=element_blank())
-ggplot(beta_lm, aes(x = FocalAOU, y = sumR2)) + geom_violin() + xlab("Focal Species") + ylab("Total R2 Value")+ theme_bw()+theme(axis.title.x=element_text(size=15),axis.title.y=element_text(size=15, angle=90),legend.title=element_text(size=12), legend.text=element_text(size=12)) + theme(axis.line=element_blank(),axis.text.x=element_blank(),axis.ticks=element_blank()) 
+ggplot(beta_lm, aes(x = FocalAOU, y = sumR2)) + geom_violin(lwd = 2) + xlab("Focal Species") + ylab("Total R2 Value")+ theme_bw()+theme(axis.title.x=element_text(size=30),axis.title.y=element_text(size=30, angle=90)) + theme(axis.line=element_blank(),axis.text.x=element_blank(),axis.ticks=element_blank()) 
