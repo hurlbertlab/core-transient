@@ -86,13 +86,14 @@ for(begstop in seq(1, 50, by = 10)) {
 scale10output = c()
 for (stop in paste("Stop", seqoutput, sep = "")) {
   temp = occ_counts(bbs50, stop, 10)
-  scale10output = rbind(scale10output, temp)
+  scale10output = rbind(scale10output, temp) #should I be using cbind instead of rbind? 
+  #in this iteration or in the seqoutput loop? 
 }
 
 seqoutput = c()
 for(begstop in seq(1, 50, by = 25)) {  
   begstop = begstop:(begstop+24)      #BUT NOT begstop:begstop+9 
-  seqoutput = rbind(seqoutput, begstop) }
+  seqoutput = rbind(seqoutput, begstop) } 
 #using seqoutput, tally occupancies from each row ie "begstop" 
 #to calculate occupancy for each row ie scaled cluster 
 #remember to incorporate NA's as 0's for calculating overall proportion of occupancy 
