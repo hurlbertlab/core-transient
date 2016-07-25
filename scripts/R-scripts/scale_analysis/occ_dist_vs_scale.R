@@ -58,13 +58,13 @@ occ_counts = function(countData, countColumn, scale) {
 
 bbs1<-occ_counts(bbs50, "Stop1", 5) #test to ensure function working
 
-
+#for scale 1
 scale1output = c()
 for (stop in paste("Stop", 1:50, sep = "")) { #actually running the function
   temp = occ_counts(bbs50, stop, 1)
   scale1output = rbind(scale1output, temp)
 }
-
+#for scale 5
 seqoutput = c()
 for(begstop in seq(1, 50, by = 5)) {  #creating stop sequence of numbers, 
   #like creating a triplicate sequence of amino acid codons, but in fives instead of threes) 
@@ -77,7 +77,7 @@ for (stop in paste("Stop", seqoutput, sep = "")) {
   temp = occ_counts(bbs50, stop, 5) #occ_counts should be calculating occupancy - use to calc occ across rows?
   scale5output = rbind(scale5output, temp)
 }
-
+#for scale 10 
 seqoutput = c()
 for(begstop in seq(1, 50, by = 10)) {  
   begstop = begstop:(begstop+9)      #BUT NOT begstop:begstop+9 
@@ -89,7 +89,7 @@ for (stop in paste("Stop", seqoutput, sep = "")) {
   scale10output = rbind(scale10output, temp) #should I be using cbind instead of rbind? 
   #in this iteration or in the seqoutput loop? 
 }
-
+#for scale 25
 seqoutput = c()
 for(begstop in seq(1, 50, by = 25)) {  
   begstop = begstop:(begstop+24)      #BUT NOT begstop:begstop+9 
@@ -105,6 +105,7 @@ for (stop in paste("Stop", seqoutput, sep = "")) {
   scale25output = rbind(scale25output, temp)
 }
 
+#for full 50 stop scale
 seqoutput = c()
 for(begstop in seq(1, 50, by = 50)) {  
   begstop = begstop:(begstop+49)      #BUT NOT begstop:begstop+9 
