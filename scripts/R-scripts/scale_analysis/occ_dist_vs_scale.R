@@ -48,7 +48,7 @@ bbs.occ = data.frame(table(bbs.uniq$AOU)/15)
 occ_counts = function(countData, countColumn, scale) {
   bbsu = unique(countData[countData[, countColumn]!= 0, c("stateroute", "year", "AOU")]) #because this gets rid of 0's...
   bbsu.rt.occ = data.frame(table(bbsu[,c("stateroute", "AOU")])/15)
-  bbsu.rt.occ2 = bbsu.rt.occ[bbsu.rt.occ$Freq!=0,]
+  bbsu.rt.occ2 = bbsu.rt.occ[bbsu.rt.occ$Freq!=0,] #and this also gets rid of occupancy values of 0 total 
   names(bbsu.rt.occ2)[3] = "occupancy"
   bbsu.rt.occ2$subrouteID = countColumn
   bbsu.rt.occ2$scale = scale 
@@ -69,13 +69,13 @@ seqoutput = c()
 for(begstop in seq(1, 50, by = 5)) {  #creating stop sequence of numbers, 
   #like creating a triplicate sequence of amino acid codons, but in fives instead of threes) 
   begstop = begstop:(begstop+4)      #BUT NOT begstop:begstop+4 
-  seqoutput = rbind(seqoutput, begstop) }
+  seqoutput = rbind(seqoutput, begstop) } #using cbind produces the desired restructuring: "1-2-3-4-5, 6-7-8-9-10 etc" 
 
 
 scale5output = c()
 for (stop in paste("Stop", seqoutput, sep = "")) {
-  temp = occ_counts(bbs50, stop, 5) #occ_counts should be calculating occupancy - use to calc occ across rows?
-  scale5output = rbind(scale5output, temp)
+  temp = occ_counts(bbs50, stop, 5) 
+  scale5output = rbind(scale5output, temp)  
 }
 #for scale 10 
 seqoutput = c()
@@ -86,8 +86,7 @@ for(begstop in seq(1, 50, by = 10)) {
 scale10output = c()
 for (stop in paste("Stop", seqoutput, sep = "")) {
   temp = occ_counts(bbs50, stop, 10)
-  scale10output = rbind(scale10output, temp) #should I be using cbind instead of rbind? 
-  #in this iteration or in the seqoutput loop? 
+  scale10output = rbind(scale10output, temp) 
 }
 #for scale 25
 seqoutput = c()
