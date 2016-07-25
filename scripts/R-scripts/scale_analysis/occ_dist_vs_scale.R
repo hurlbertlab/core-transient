@@ -50,7 +50,7 @@ occ_counts = function(countData, countColumn, scale) {
   bbsu.rt.occ = data.frame(table(bbsu[,c("stateroute", "AOU")])/15)
   bbsu.rt.occ2 = bbsu.rt.occ[bbsu.rt.occ$Freq!=0,] #and this also gets rid of occupancy values of 0 total 
   names(bbsu.rt.occ2)[3] = "occupancy"
-  bbsu.rt.occ2$subrouteID = countColumn
+  bbsu.rt.occ2$subrouteID = countColumn #do I want to keep groups of stops as columns?
   bbsu.rt.occ2$scale = scale 
   bbsu.rt.occ2 = bbsu.rt.occ2[, c("stateroute", "scale", "subrouteID", "AOU", "occupancy")]
   return(bbsu.rt.occ2)
@@ -69,8 +69,8 @@ seqoutput = c()
 for(begstop in seq(1, 50, by = 5)) {  #creating stop sequence of numbers, 
   #like creating a triplicate sequence of amino acid codons, but in fives instead of threes) 
   begstop = begstop:(begstop+4)      #BUT NOT begstop:begstop+4 
-  seqoutput = rbind(seqoutput, begstop) } #using cbind produces the desired restructuring: "1-2-3-4-5, 6-7-8-9-10 etc" 
-
+  seqoutput = cbind(seqoutput, begstop) } #using cbind produces the desired restructuring: "1-2-3-4-5, 6-7-8-9-10 etc" 
+#but then it is still doing individual rows for each stop, not totalling
 
 scale5output = c()
 for (stop in paste("Stop", seqoutput, sep = "")) {
