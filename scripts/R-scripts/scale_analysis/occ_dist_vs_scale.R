@@ -10,8 +10,8 @@ bbs50 = read.csv("scripts/R-scripts/scale_analysis/BBS_fiftystop_MD_CO_CA_OR_199
 #setwd("C:/Program Files (x86)/EcoDataRetriever")
 #library(ecoretriever)
 #ecoretriever::datasets()
-#bbs50 = ecoretriever::fetch("BBS50")
-#names(bbs50)
+#bbs = ecoretriever::fetch("BBS")
+#names(bbs)
 #bbs = bbs50$species
 #bbsrts= bbs50$routes #Year columns missing from both datasets?
 names(bbs50)
