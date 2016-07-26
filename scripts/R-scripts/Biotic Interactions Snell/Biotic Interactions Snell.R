@@ -437,6 +437,7 @@ beta_abun = matrix(NA, nrow = length(subfocalspecies), ncol = 10)
 
 # for loop subsetting env data to expected occurrence for focal species
 envoutput = c()
+envoutputa = c()
 for (sp in 1:length(subfocalspecies)){
   temp = occuenv[occuenv$Species == subfocalspecies[sp],] 
   
@@ -486,11 +487,25 @@ for (sp in 1:length(subfocalspecies)){
     print(NONE) #neither variance
   sp1 = unique(temp$Species)
   envoutput = rbind(envoutput, c(sp1, ENV, COMP, SHARED, NONE))
+  
+  #variance_partitioning 
+  ENVa = summary(both_abun)$r.squared - summary(competition_abun)$r.squared
+
+  COMPa = summary(both_abun)$r.squared - summary(env_abun)$r.squared
+
+  SHAREDa = summary(competition_abun)$r.squared - COMP
+
+  NONEa = 1 - summary(both_abun)$r.squared
+
+  sp1 = unique(temp$Species)
+  envoutputa = rbind(envoutputa, c(sp1, ENVa, COMPa, SHAREDa, NONEa))
 }         
 dev.off()
 
 envoutput = data.frame(envoutput)
+envoutputa = data.frame(envoutputa)
 names(envoutput) = c("FocalAOU", "ENV", "COMP", "SHARED", "NONE")
+names(envoutputa) = c("FocalAOU", "ENV", "COMP", "SHARED", "NONE")
 beta_lm = data.frame(beta_lm)
 names(beta_lm) = c("FocalAOU", "Competition_Est", "Competition_P", "Competition_R2", "EnvZ_Est", "EnvZ_P", "EnvZ_R2", "BothZ_Est", "BothZ_P", "BothZ_R2")
 beta_abun = data.frame(beta_abun)
@@ -499,6 +514,12 @@ names(beta_abun) = c("FocalAOU", "Competition_Est", "Competition_P", "Competitio
 tax_code = read.csv("Tax_AOU_Alpha.csv", header = TRUE)
 forplots = merge(Hurlbert_o[, c("AOU","Trophic.Group","Foraging","migclass")], AOUsub4[, c("AOU","Family", "CommonName")], by = "AOU")
 # midpoint long of US is -98.5795, so 1 indicates east of that line, 0 = west
+
+# Dark-eyed Junko and Winter Wren need AOUs changed
+tax_code$AOU_OUT[tax_code$AOU_OUT == 5677] = 5660
+tax_code$AOU_OUT[tax_code$AOU_OUT == 7220] = 7222
+forplots$AOU[forplots$AOU == 7220] = 7222
+
 envloc = merge(envoutput, plotdata_all, by = 'FocalAOU', all = TRUE)
 envloc$EW <- 0
 envloc$EW[envloc$Longi >= -98] <- 1
@@ -506,7 +527,6 @@ envloc$EW[is.na(envloc$EW)] = 0
 
 envoutput = merge(envoutput, tax_code[,c('AOU_OUT', 'ALPHA.CODE')], by.x = 'FocalAOU', by.y = "AOU_OUT")
 envoutput = merge(envoutput, forplots, by.x = "FocalAOU", by.y = "AOU")
-#envoutput = merge(envoutput, envfliploc[,c("FocalAOU", "EW")], by = "FocalAOU")
 
 
 write.csv(envoutput, "envouput.csv")
@@ -759,7 +779,7 @@ legend("bottomleft", legend = c("Red-breasted Nuthatch", "Competitors"), col = c
 envoutput = read.csv("envoutput.csv", header = TRUE)
 #####PLOTTING variance partitioning
 ## Creating env data table to plot ranked data
-envoutput$total = envoutput$ENV + envoutput$COMP + envoutput$SHARED
+
 nrank = envoutput %>% 
   mutate(rank = row_number(-ENV))# change here for comp
 envflip = gather(nrank, "Type", "value", 2:5)
@@ -868,23 +888,17 @@ lab1$trophlabelf = gsub('its','#f768a1', lab1$trophlabelf)
 lab1$trophlabelf = gsub('meee','#c51b8a', lab1$trophlabelf)
 lab1$trophlabelf = gsub('ive','#7a0177', lab1$trophlabelf)
 
-lab1$lab = "O"
-
-
-ggplot(data = envflip, aes(x = FocalAOU, y = total, color = ALPHA.CODE)) + geom_bar(stat = "identity")  + theme_classic()
-
-
+###### PLOTTING #####
 # Plot with ENV ranked in decreasing order
 t = ggplot(data=envflip, aes(factor(rank), y=value, fill=factor(Type, levels = c("ENV","COMP","SHARED","NONE")))) + 
   geom_bar(stat = "identity")  + theme_classic() +
   theme(axis.text.x=element_text(angle=90,size=10,vjust=0.5)) + xlab("Focal Species") + ylab("Percent Variance Explained") +
   scale_fill_manual(values=c("#2ca25f","#dd1c77","#43a2ca","white"), labels=c("Environment", "Competition","Shared Variance", "")) +theme(axis.title.x=element_text(size=20),axis.title.y=element_text(size=20, angle=90),legend.title=element_text(size=12), legend.text=element_text(size=12)) + guides(fill=guide_legend(title=""))+ theme(plot.margin = unit(c(.5,6,.5,.5),"lines")) 
 
-tt = t + annotate("text", x = 1:61, y = -.06, label = unique(envflip$ALPHA.CODE), angle=90,size=5.5,vjust=0.5, color = "black") + annotate("text", x = 1:61, y = -.15, label = lab1$Fam_abbrev, size=5,vjust=0.5, color = lab1$Fam_abbrevf, fontface =2) + annotate("text", x = 1:61, y = -.2, label = lab1$mig_abbrev, size=5.5,vjust=0.5, color = lab1$mig_abbrevf, fontface =2) + annotate("text", x = 1:61, y = -.25, label = lab1$trophlabel, size=5.5,vjust=0.5, color = lab1$trophlabelf, fontface =2) + theme(axis.line=element_blank(),axis.text.x=element_blank(),axis.ticks=element_blank()) 
+tt = t + annotate("text", x = 1:63, y = -.03, label = unique(envflip$ALPHA.CODE), angle=90,size=6,vjust=0.5, color = "black") + annotate("text", x = 1:63, y = -.06, label = lab1$Fam_abbrev, size=6,vjust=0.5, color = lab1$Fam_abbrevf, fontface =2) + annotate("text", x = 1:63, y = -.08, label = lab1$mig_abbrev, size=6,vjust=0.5, color = lab1$mig_abbrevf, fontface =2) + annotate("text", x = 1:63, y = -.1, label = lab1$trophlabel, size=6,vjust=0.5, color = lab1$trophlabelf, fontface =2) + theme(axis.line=element_blank(),axis.text.x=element_blank(),axis.ticks=element_blank()) 
+plot(tt)
 
-ggsave("C:/Git/core-transient/scripts/R-scripts/Biotic Interactions Snell/barplot.pdf", height = 16, width = 20)
-
-#t + facet_grid(~migclass, switch = "x", scales = "free_x", space = "free_x") + scale_x_discrete(labels=envflip$ALPHA.CODE)
+ggsave("C:/Git/core-transient/scripts/R-scripts/Biotic Interactions Snell/barplot.pdf", height = 26, width = 34)
 
 #Violin plots w location, trophic group, mig
 ggplot(envflip, aes(x = Type, y = value, color = Type)) + geom_violin() 
@@ -896,30 +910,25 @@ ggplot(envfam, aes(x = FAMILY, y = value, color = Type)) + geom_violin()
 ggplot(envfliploc, aes(x = factor(EW), y = value, color = Type)) + geom_violin() + scale_x_discrete(labels=c("West", "East")) 
 
 # R2 plot - lm in ggplot
-R2plot = merge(beta_lm, beta_abun, by = "FocalAOU")
-R2sub = data.frame(R2plot$FocalAOU, R2plot$Competition_R2.x, R2plot$EnvZ_R2.x,R2plot$BothZ_R2.x,R2plot$Competition_R2.y,R2plot$EnvZ_R2.y,R2plot$BothZ_R2.y)
-R2long = gather(R2sub, "cat", "val", R2plot.Competition_R2.x:R2plot.BothZ_R2.y)
-#ggplot(R2long, aes(x=cat, y = val)) + geom_point()
+R2plot = merge(envoutput, envoutputa, by = "FocalAOU")
 
-ggplot(R2plot, aes(x = Competition_R2.x, y = Competition_R2.y)) + theme(axis.title.x=element_text(size=30),axis.title.y=element_text(size=30, angle=90),legend.title=element_text(size=24), legend.text=element_text(size=24)) + xlab("Occupancy R2") + ylab("Abundance R2") + geom_point(col = "#9ecae1", cex =4) + geom_point(data = R2plot, aes(R2plot$EnvZ_R2.x,R2plot$EnvZ_R2.y), shape = 24, col = "#3182bd", cex =4, stroke = 1.5) + geom_point(data = R2plot, aes(R2plot$BothZ_R2.x,R2plot$BothZ_R2.y), shape = 3, col = "#253494", cex =5, stroke = 1.5) +geom_abline(intercept = 0, slope = 1, col = "red", lwd = 1.25)
- + scale_color_manual(name = "Legend", labels = c("#3182bd" = "Competition"))
+tomerge = c()
+for (sp in subfocalspecies) {
+  spsub = R2plot[R2plot$FocalAOU == sp,]
+  total.x = sum(spsub$COMP.x + spsub$ENV.x + spsub$SHARED.x)
+  total.y = sum(spsub$COMP.y + spsub$ENV.y + spsub$SHARED.y)
+  tomerge = rbind(tomerge, c(sp, total.x, total.y))
+}
+tomerge = data.frame(tomerge)
+names(tomerge) = c("FocalAOU","Total.x", "Total.y")
 
+R2plot2 = merge(R2plot, tomerge, by = "FocalAOU")
 
-plot(R2plot$Competition_R2.x,R2plot$Competition_R2.y, col = "dark blue", pch = 16, cex = 2, xlab = "Occupancy", ylab = "Abundance", cex.lab=1.5)
-par(new= TRUE)
-points(R2plot$EnvZ_R2.x,R2plot$EnvZ_R2.y, pch = 17, cex = 2, col = "blue")
-par(new= TRUE)
-points(R2plot$BothZ_R2.x,R2plot$BothZ_R2.y, pch = 18, cex = 3, col = ("Dodger Blue"), abline(0,1, col = "red", lwd = 3))
-
-
-qplot(R2plot$EnvZ_R2.x, R2plot$EnvZ_R2.y)+geom_abline(intercept = 0, slope = 1, col = "green", lwd = 1.25)+ xlab("Occupancy R2") + ylab("Abundance R2")
-## USE THIS ONE
-qplot(R2plot$BothZ_R2.x, R2plot$BothZ_R2.y)+geom_abline(intercept = 0, slope = 1, col = "blue", lwd = 1.25)+ xlab("Occupancy") + ylab("Abundance")+theme(axis.title.x=element_text(size=15),axis.title.y=element_text(size=15, angle=90),legend.title=element_text(size=12), legend.text=element_text(size=12))
+ggplot(R2plot2, aes(x = COMP.x, y = COMP.y)) +theme_bw()+ theme(axis.title.x=element_text(size=35),axis.title.y=element_text(size=35, angle=90)) + xlab("Occupancy R2") + ylab("Abundance R2") + geom_point(col = "#9ecae1", cex =4) + geom_point(data = R2plot2, aes(x = ENV.x, y = ENV.y), shape = 24, col = "#3182bd", cex =4, stroke = 1) + geom_point(data = R2plot2, aes(Total.x,Total.y), shape = 3, col = "#253494", cex =5, stroke = 1) +geom_abline(intercept = 0, slope = 1, col = "red", lwd = 1.25)
 
 # R2 plot - glm
-qplot(beta$Abundance_comp_scaled_Estimate, beta$Randsite_comp_scaled_Estimate) +geom_abline(intercept = 0, slope = 1, col = "red", lwd = 1.25) + xlab("Occupancy Est") + ylab("Abundance Est")+theme(axis.title.x=element_text(size=30),axis.title.y=element_text(size=30, angle=90))
+ggplot(R2plot2, aes(x = FocalAOU, y = Total.x)) + geom_violin(lwd = 2, fill = "grey", color = "grey") + xlab("Focal Species") + ylab("Total R2")+ theme_bw()+theme(axis.title.x=element_text(size=30),axis.title.y=element_text(size=30, angle=90)) + theme(axis.line=element_blank(),axis.text.x=element_blank(),axis.ticks=element_blank(), axis.text.y=element_text(size=28, angle=90))
 
-ggplot(beta_lm, aes(x = FocalAOU, y = BothZ_R2)) + geom_violin(lwd = 2, fill = "grey") + xlab("Focal Species") + ylab("Shared R2 Value")+theme(axis.title.x=element_text(size=30),axis.title.y=element_text(size=30, angle=90),legend.title=element_text(size=12), legend.text=element_text(size=12)) + theme(axis.line=element_blank(),axis.text.x=element_blank(),axis.ticks=element_blank())
-ggplot(beta_lm, aes(x = FocalAOU, y = Competition_R2)) + geom_violin() + xlab("Focal Species") + ylab("Competition R2 Value")+theme(axis.title.x=element_text(size=15),axis.title.y=element_text(size=15, angle=90),legend.title=element_text(size=12), legend.text=element_text(size=12)) + theme(axis.line=element_blank(),axis.text.x=element_blank(),axis.ticks=element_blank())
-ggplot(beta_lm, aes(x = FocalAOU, y = EnvZ_R2)) + geom_violin() + xlab("Focal Species") + ylab("Environment R2 Value")+theme(axis.title.x=element_text(size=15),axis.title.y=element_text(size=15, angle=90),legend.title=element_text(size=12), legend.text=element_text(size=12)) + theme(axis.line=element_blank(),axis.text.x=element_blank(),axis.ticks=element_blank())
-ggplot(beta_lm, aes(x = FocalAOU, y = sumR2)) + geom_violin(lwd = 2) + xlab("Focal Species") + ylab("Total R2 Value")+ theme_bw()+theme(axis.title.x=element_text(size=30),axis.title.y=element_text(size=30, angle=90)) + theme(axis.line=element_blank(),axis.text.x=element_blank(),axis.ticks=element_blank()) 
+ggplot(R2plot2, aes(x = FocalAOU, y = COMP.x)) + geom_violin(lwd = 2, fill = "#dd1c77", color = "#dd1c77") + xlab("Focal Species") + ylab("Competition R2")+ theme_bw()+theme(axis.title.x=element_text(size=30),axis.title.y=element_text(size=30, angle=90)) + theme(axis.line=element_blank(),axis.text.x=element_blank(),axis.ticks=element_blank(), axis.text.y=element_text(size=28, angle=90))
+
+ggplot(R2plot2, aes(x = FocalAOU, y = ENV.x)) + geom_violin(lwd = 2, fill = "#2ca25f", color = "#2ca25f") + xlab("Focal Species") + ylab("Environment R2")+ theme_bw()+theme(axis.title.x=element_text(size=30),axis.title.y=element_text(size=30, angle=90),legend.title=element_text(size=12), legend.text=element_text(size=12)) + theme(axis.line=element_blank(),axis.text.x=element_blank(),axis.ticks=element_blank(), axis.text.y=element_text(size=28, angle=90))
