@@ -45,18 +45,41 @@ bbs.occ = data.frame(table(bbs.uniq$AOU)/15)
 #fifty pt count data and then taking pts 1-5 and collapsing them all together 
 #########
 #trying to solve hard coding vs soft coding "scale" column issue
-occ_counts = function(countData, countColumn, scale) {
-  bbsu = unique(countData[countData[, countColumn]!= 0, c("stateroute", "year", "AOU")]) #because this gets rid of 0's...
+occ_counts = function(countData, countColumns, scale) {
+  bbssub = countData[, c("stateroute", "year", "AOU", countColumns)]
+  bbssub$groupCount = rowSums(bbssub[, countColumns])
+  bbsu = unique(bbssub[bbssub[, "groupCount"]!= 0, c("stateroute", "year", "AOU")]) #because this gets rid of 0's...
   bbsu.rt.occ = data.frame(table(bbsu[,c("stateroute", "AOU")])/15)
   bbsu.rt.occ2 = bbsu.rt.occ[bbsu.rt.occ$Freq!=0,] #and this also gets rid of occupancy values of 0 total 
   names(bbsu.rt.occ2)[3] = "occupancy"
-  bbsu.rt.occ2$subrouteID = countColumn #do I want to keep groups of stops as columns?
+  bbsu.rt.occ2$subrouteID = countColumns[1] #do I want to keep groups of stops as columns?
   bbsu.rt.occ2$scale = scale 
   bbsu.rt.occ2 = bbsu.rt.occ2[, c("stateroute", "scale", "subrouteID", "AOU", "occupancy")]
   return(bbsu.rt.occ2)
 }
 
 bbs1<-occ_counts(bbs50, "Stop1", 5) #test to ensure function working
+
+# Generic calculation of occupancy for a specified scale
+
+scale = 5
+
+
+output = c()
+for (scale in c(10, 25)) {
+  numGroups = floor(50/scale)
+  for (g in 1:numGroups) {
+    groupedCols = paste("Stop", ((g-1)*scale + 1):(g*scale), sep = "")
+    temp = occ_counts(bbs50, groupedCols, scale)
+    output = rbind(output, temp)
+  }
+  
+}
+
+
+
+
+
 
 #for scale 1
 scale1output = c()
