@@ -52,21 +52,19 @@ occ_counts = function(countData, countColumns, scale) {
   bbsu.rt.occ = data.frame(table(bbsu[,c("stateroute", "AOU")])/15)
   bbsu.rt.occ2 = bbsu.rt.occ[bbsu.rt.occ$Freq!=0,] #and this also gets rid of occupancy values of 0 total 
   names(bbsu.rt.occ2)[3] = "occupancy"
-  bbsu.rt.occ2$subrouteID = countColumns[1] #do I want to keep groups of stops as columns?
+  bbsu.rt.occ2$subrouteID = countColumns[1] #subrouteID refers to first stop in a grouped sequence, occ refers to the occ for the # of combined stops
   bbsu.rt.occ2$scale = scale 
   bbsu.rt.occ2 = bbsu.rt.occ2[, c("stateroute", "scale", "subrouteID", "AOU", "occupancy")]
   return(bbsu.rt.occ2)
 }
 
-bbs1<-occ_counts(bbs50, "Stop1", 5) #test to ensure function working
-
 # Generic calculation of occupancy for a specified scale
 
-scale = 5
+scales = c(5, 10, 25, 50)
 
 
 output = c()
-for (scale in c(10, 25)) {
+for (scale in scales) {
   numGroups = floor(50/scale)
   for (g in 1:numGroups) {
     groupedCols = paste("Stop", ((g-1)*scale + 1):(g*scale), sep = "")
@@ -80,64 +78,6 @@ for (scale in c(10, 25)) {
 
 
 
-
-#for scale 1
-scale1output = c()
-for (stop in paste("Stop", 1:50, sep = "")) { #actually running the function
-  temp = occ_counts(bbs50, stop, 1)
-  scale1output = rbind(scale1output, temp)
-}
-#for scale 5
-seqoutput = c()
-for(begstop in seq(1, 50, by = 5)) {  #creating stop sequence of numbers, 
-  #like creating a triplicate sequence of amino acid codons, but in fives instead of threes) 
-  begstop = begstop:(begstop+4)      #BUT NOT begstop:begstop+4 
-  seqoutput = rbind(seqoutput, begstop) } #using cbind produces the desired restructuring: "1-2-3-4-5, 6-7-8-9-10 etc" 
-#but then it is still doing individual rows for each stop, not totalling
-
-scale5output = c()
-for (stop in paste("Stop", seqoutput, sep = "")) {
-  temp = occ_counts(bbs50, stop, 5) 
-  scale5output = rbind(scale5output, temp)  
-}
-#for scale 10 
-seqoutput = c()
-for(begstop in seq(1, 50, by = 10)) {  
-  begstop = begstop:(begstop+9)      #BUT NOT begstop:begstop+9 
-  seqoutput = rbind(seqoutput, begstop) }
-
-scale10output = c()
-for (stop in paste("Stop", seqoutput, sep = "")) {
-  temp = occ_counts(bbs50, stop, 10)
-  scale10output = rbind(scale10output, temp) 
-}
-#for scale 25
-seqoutput = c()
-for(begstop in seq(1, 50, by = 25)) {  
-  begstop = begstop:(begstop+24)      #BUT NOT begstop:begstop+9 
-  seqoutput = rbind(seqoutput, begstop) } 
-#using seqoutput, tally occupancies from each row ie "begstop" 
-#to calculate occupancy for each row ie scaled cluster 
-#remember to incorporate NA's as 0's for calculating overall proportion of occupancy 
-
-
-scale25output = c()
-for (stop in paste("Stop", seqoutput, sep = "")) {
-  temp = occ_counts(bbs50, stop, 25)
-  scale25output = rbind(scale25output, temp)
-}
-
-#for full 50 stop scale
-seqoutput = c()
-for(begstop in seq(1, 50, by = 50)) {  
-  begstop = begstop:(begstop+49)      #BUT NOT begstop:begstop+9 
-  seqoutput = rbind(seqoutput, begstop) }
-
-scale50output = c()
-for (stop in paste("Stop", seqoutput, sep = "")) {
-  temp = occ_counts(bbs50, stop, 50)
-  scale50output = rbind(scale50output, temp)
-}
 #It works!!!!!!!!!!!!!!!!!!!!!!!!!
 
 #full matrix is necessary because totalling occupancy across column groupings, duh 
