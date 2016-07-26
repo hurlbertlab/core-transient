@@ -69,7 +69,7 @@ seqoutput = c()
 for(begstop in seq(1, 50, by = 5)) {  #creating stop sequence of numbers, 
   #like creating a triplicate sequence of amino acid codons, but in fives instead of threes) 
   begstop = begstop:(begstop+4)      #BUT NOT begstop:begstop+4 
-  seqoutput = cbind(seqoutput, begstop) } #using cbind produces the desired restructuring: "1-2-3-4-5, 6-7-8-9-10 etc" 
+  seqoutput = rbind(seqoutput, begstop) } #using cbind produces the desired restructuring: "1-2-3-4-5, 6-7-8-9-10 etc" 
 #but then it is still doing individual rows for each stop, not totalling
 
 scale5output = c()
