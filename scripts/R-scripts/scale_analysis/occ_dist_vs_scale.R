@@ -4,7 +4,7 @@
 # 2) BBS route, 3) aggregate of 27 BBS routes within state of MD.
 #pull in 50 stop data from ecoretriever
 #bbs50 = read.csv("//bioark.ad.unc.edu/hurlbertlab/Databases/BBS/FiftyStopData/fiftystop_thru2010_goodspp_goodrtes.csv", header = TRUE)
-bbs50 = read.csv("C://Git/core-transient/scripts/R-scripts/scale_analysis/BBS_fiftystop_MD_CO_CA_OR_1996-2010.csv")
+bbs50 = read.csv("scripts/R-scripts/scale_analysis/BBS_fiftystop_MD_CO_CA_OR_1996-2010.csv")
 #need to subset down to 1996-2010 for all states, not just OR-MD-CO-CA
 #disregard ecodataretriever for now bc very buggy and BBS files incomplete 
 #setwd("C:/Program Files (x86)/EcoDataRetriever")
@@ -16,11 +16,11 @@ bbs50 = read.csv("C://Git/core-transient/scripts/R-scripts/scale_analysis/BBS_fi
 #bbsrts= bbs50$routes #Year columns missing from both datasets?
 names(bbs50)
 #library(raster)
-counts5 = read.csv('C://Git/core-transient/data/raw_datasets/dataset_1RAW/dataset_1_full.csv', header=T) #1996-2010 #in groups of ten #is this the full bbs dataset broken by 10 stops? 
+counts5 = read.csv('data/raw_datasets/dataset_1RAW/dataset_1_full.csv', header=T) #1996-2010 #in groups of ten #is this the full bbs dataset broken by 10 stops? 
 #want to merge counts5 with bbs 50 stop data? why does counts5 have year data and not the others? 
 occupancy.matrix = as.matrix(
-  read.csv('C://Git/core-transient/scripts/R-scripts/scale_analysis/occ_matrix_BBS.csv', header=T, row.names = 1))
-routes = read.csv('C://Git/core-transient/scripts/R-scripts/scale_analysis/routes.csv')
+  read.csv('scripts/R-scripts/scale_analysis/occ_matrix_BBS.csv', header=T, row.names = 1))
+routes = read.csv('scripts/R-scripts/scale_analysis/routes.csv')
 routes$stateroute = 1000*routes$statenum + routes$Route
 names(routes)
 names(counts5)
@@ -45,18 +45,41 @@ bbs.occ = data.frame(table(bbs.uniq$AOU)/15)
 #fifty pt count data and then taking pts 1-5 and collapsing them all together 
 #########
 #trying to solve hard coding vs soft coding "scale" column issue
-occ_counts = function(countData, countColumn, scale) {
-  bbsu = unique(countData[countData[, countColumn]!= 0, c("stateroute", "year", "AOU")]) #because this gets rid of 0's...
+occ_counts = function(countData, countColumns, scale) {
+  bbssub = countData[, c("stateroute", "year", "AOU", countColumns)]
+  bbssub$groupCount = rowSums(bbssub[, countColumns])
+  bbsu = unique(bbssub[bbssub[, "groupCount"]!= 0, c("stateroute", "year", "AOU")]) #because this gets rid of 0's...
   bbsu.rt.occ = data.frame(table(bbsu[,c("stateroute", "AOU")])/15)
   bbsu.rt.occ2 = bbsu.rt.occ[bbsu.rt.occ$Freq!=0,] #and this also gets rid of occupancy values of 0 total 
   names(bbsu.rt.occ2)[3] = "occupancy"
-  bbsu.rt.occ2$subrouteID = countColumn #do I want to keep groups of stops as columns?
+  bbsu.rt.occ2$subrouteID = countColumns[1] #do I want to keep groups of stops as columns?
   bbsu.rt.occ2$scale = scale 
   bbsu.rt.occ2 = bbsu.rt.occ2[, c("stateroute", "scale", "subrouteID", "AOU", "occupancy")]
   return(bbsu.rt.occ2)
 }
 
 bbs1<-occ_counts(bbs50, "Stop1", 5) #test to ensure function working
+
+# Generic calculation of occupancy for a specified scale
+
+scale = 5
+
+
+output = c()
+for (scale in c(10, 25)) {
+  numGroups = floor(50/scale)
+  for (g in 1:numGroups) {
+    groupedCols = paste("Stop", ((g-1)*scale + 1):(g*scale), sep = "")
+    temp = occ_counts(bbs50, groupedCols, scale)
+    output = rbind(output, temp)
+  }
+  
+}
+
+
+
+
+
 
 #for scale 1
 scale1output = c()
