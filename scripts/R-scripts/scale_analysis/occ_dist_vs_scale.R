@@ -93,6 +93,24 @@ setwd("//bioark.ad.unc.edu/hurlbertlab/Databases/BBS/GPS_stoplocations")
 bbs_stops<-read.table("May_2014_All_stops.txt", sep = ",", header = TRUE, fill = TRUE)
 #line 6931 doesn't have 7 elements (missing data!) so setting fill = TRUE in meantime
 
+#First: paste "Stop" in front of stop #'s in bbs_stops$Stop
+#merge by stateroutes and subrouteID from bbs_scalesorted 
+  #by Province_Route and Stop from bbs_stops 
+  #Not all of the stops at each route will have lat_longs, and so these rows will need to be removed 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 head(bbs1)
 #scale of 1 pt count 
 bbs1 = subset(fifty, stateroute %in% unique(bbs10.rt.occ$stateroute) & year > 1995 & year < 2011 & Stop1!=0, 
