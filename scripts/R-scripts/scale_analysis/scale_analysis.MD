@@ -82,13 +82,17 @@ July:
 
 * ~~week 2: forloop and sequences finalized~~  
 
-* week 3: Calculate occupancy for scale clusters based on presence/absence at each stop 
+* ~~week 3: Calculate occupancy for scale clusters based on presence/absence at each stop~~ 
 
-* week 4: Calculate relationship between scale and occupancy in BBS data alone
+* ~~week 4: Calculate relationship between scale and occupancy in BBS data alone~~
 
 
 August: 
 
-* week 1: Preliminarily test out BBC-BBS pairings at multiple scales; geog + env distance analyses. Wrap up. Outline August-Sept plan for return to Fall semester. 
+* week 1: Preliminarily test out BBC-BBS pairings at multiple scales; geog + env distance analyses. Test for occupancy vs habitat heterogeneity at multiple scales. Wrap up.
+
+* week 2: Away. 
+
+* week 3: Clean up code, add graphs. August-Sept plan for return to Fall semester. 
 
 
