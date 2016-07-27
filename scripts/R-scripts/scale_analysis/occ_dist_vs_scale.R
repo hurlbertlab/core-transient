@@ -89,6 +89,19 @@ bbs_scalesorted<-read.csv("bbs_scalesorted.csv", header = T)
 scale_occ_mod = lm(occupancy~scale, data = bbs_scalesorted)
 summary(scale_occ_mod)
 
+#scale at even level of within a bbs stop *MATTERS* 
+#so what happens when we split up data by scale visually, a 10scale, etc and run these by occupancy? 
+
+fig_one<-boxplot(occupancy ~ scale, data = bbs_scalesorted, xlab = "Scale", ylab = "BBS Occupancy")
+
+#Next steps: 
+#1) Calculate and assign lat_longs to BBS segments 
+#2) Use lat_longs to overlay appropriate NDVI data for each sub-site as proxy for habitat heterogeneity
+#3) Test occupancy ~ NDVI for each scale (aes, color = bbs_scalesorted$scale) or a sep panel for each scale 
+#4) Use new lat_longs to dest minDist between newly segmented BBS sites and BBC sites 
+#5) Rerun geog and env distance analysis for multiscale comparison 
+
+
 #It works!!!!!!!!!!!!!!!!!!!!!!!!!
 
 #full matrix is necessary because totalling occupancy across column groupings, duh 
