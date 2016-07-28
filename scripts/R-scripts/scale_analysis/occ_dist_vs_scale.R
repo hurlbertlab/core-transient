@@ -93,14 +93,9 @@ bbs_stops<-read.table("//bioark.ad.unc.edu/hurlbertlab/Databases/BBS/GPS_stoploc
 bbs_stops$Stop = paste("Stop", bbs_stops$Stop, sep = "")
 
 ###!!!! problem: stops in bbs_scalesorted are only ENDpoints of segments, actually encompass several stops 
-#need to break up bbs_stops into segments before merging 
-
-
-
-
-
-
-
+#need to break up bbs_stops into segments before merging ? do I need to have start and end points? 
+#do we just want to measure distance from that endpoint stop location to the nearest BBC route? 
+##sort out later 
 
 
 
@@ -126,6 +121,15 @@ bbs_coords = na.omit(bbs_coords)
 
 
 #2) add NDVI data using lat/longs 
+
+
+
+
+
+
+
+
+
 
 
 
