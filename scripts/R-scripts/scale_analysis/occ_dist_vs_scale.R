@@ -121,14 +121,40 @@ bbs_coords = na.omit(bbs_coords)
 
 
 #2) add NDVI data using lat/longs 
+#first plot newly broken up bbs stop segment points out as sites
+sites<-data.frame(longitude = bbs_coords$POINT_X, latitude = bbs_coords$POINT_Y)
+points(sites$longitude, sites$latitude, col= "red", pch=16)
 
 
+tmean_jan = raster('//bioark.ad.unc.edu/HurlbertLab/GIS/ClimateData/BIOCLIM_meanTemp/tmean1.bil') # note scale off by factor of 10
+plot(tmean_jan)
 
+# Read in stack of layers from all 12 months
+files = paste('//bioark.ad.unc.edu/HurlbertLab/GIS/ClimateData/BIOCLIM_meanTemp/tmean',1:12,'.bil', sep='')
+tmean = stack(files) 
+plot(tmean)
 
+#above code works!!!
 
+# Find MEAN across all months
+meanT = calc(tmean, mean)
+meanT
 
+# Convert to actual temp
+meanT = meanT/10 #done
 
+bbs_coords$temp<-extract(meanT, sites)
 
+#NDVI 
+ndvimean<-raster("//bioark.ad.unc.edu/HurlbertLab/GIS/MODIS NDVI/Vegetation_Indices_may-aug_2000-2010.gri")
+plot(ndvimean)
+points(sites$longitude, sites$latitude, col = 'red', pch = 16)
+test3 = extract(ndvimean, sites)
+head(test3)
+ndvimean<-ndvimean/10000
+bbs_coords$ndvi<-extract(ndvimean, sites)
+
+#need to re-project data points to match projection of raster data?  
 
 
 
