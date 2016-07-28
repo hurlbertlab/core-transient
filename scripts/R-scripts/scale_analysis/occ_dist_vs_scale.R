@@ -92,6 +92,18 @@ bbs_stops<-read.table("//bioark.ad.unc.edu/hurlbertlab/Databases/BBS/GPS_stoploc
 #First: paste "Stop" in front of stop #'s in bbs_stops$Stop
 bbs_stops$Stop = paste("Stop", bbs_stops$Stop, sep = "")
 
+###!!!! problem: stops in bbs_scalesorted are only ENDpoints of segments, actually encompass several stops 
+#need to break up bbs_stops into segments before merging 
+
+
+
+
+
+
+
+
+
+
 
 #merge by stateroutes and subrouteID from bbs_scalesorted 
   #by Province_Route and Stop from bbs_stops ** going with these names
@@ -103,8 +115,17 @@ names(bbs_scalesorted)[4] = "Stop"
 bbs_coords<-merge(bbs_scalesorted, bbs_stops, by= c("Province_Route", "Stop"), all=T)
 
 
+#remove unnecessary columns like X, route, active, and province 
+bbs_coords = bbs_coords[,-3]
+bbs_coords = bbs_coords[,-6]
+bbs_coords = bbs_coords[,-9]
+bbs_coords = bbs_coords[,-8]
+
+#remove rows with no POINT_X and POINT_Y coords or no occ and AOU info 
+bbs_coords = na.omit(bbs_coords)
 
 
+#2) add NDVI data using lat/longs 
 
 
 
