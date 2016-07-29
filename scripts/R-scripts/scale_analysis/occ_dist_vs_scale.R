@@ -10,11 +10,10 @@ bbs50 = subset(bbs50, year > 1995 & year <2011)
 names(bbs50)
 
 
-#!!!! before moving forward, set wd to core-transient github repository! 
-counts5 = read.csv('data/raw_datasets/dataset_1RAW/dataset_1_full.csv', header=T) #1996-2010 #in groups of ten 
+counts5 = read.csv('C:/git/core-transient/data/raw_datasets/dataset_1RAW/dataset_1_full.csv', header=T) #1996-2010 #in groups of ten 
 occupancy.matrix = as.matrix(
-  read.csv('scripts/R-scripts/scale_analysis/occ_matrix_BBS.csv', header=T, row.names = 1))
-routes = read.csv('scripts/R-scripts/scale_analysis/routes.csv')
+  read.csv('C:/git/core-transient/scripts/R-scripts/scale_analysis/occ_matrix_BBS.csv', header=T, row.names = 1))
+routes = read.csv('C:/git/core-transient/scripts/R-scripts/scale_analysis/routes.csv')
 routes$stateroute = 1000*routes$statenum + routes$Route
 
 # Jes' All-BBS scale (50 pt count scale):
