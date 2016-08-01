@@ -45,7 +45,7 @@ for (d in datasetIDs) {
   print(d)
 }
 
-write.csv(summaries, 'output/tabular_data/core-transient_summary_test.csv', 
+write.csv(summaries, 'output/tabular_data/core-transient_summary.csv', 
           row.names = T)
 
 

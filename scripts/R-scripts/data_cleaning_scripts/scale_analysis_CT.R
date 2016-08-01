@@ -1,4 +1,3 @@
-
 #  scale analysis function
 # Load libraries:
 
@@ -12,40 +11,69 @@ library(dplyr)
 library(tidyr)
 
 # Source the functions file:
+source('scripts/R-scripts/core-transient_functions.R')
 
 getwd()
-
 # Set your working directory to be in the home of the core-transient repository
 # e.g., setwd('C:/git/core-transient')
 
-source('scripts/R-scripts/core-transient_functions.R')
+
+dataformattingtable = read.csv('data_formatting_table.csv', header = T) 
+datasetIDs = dataformattingtable$dataset_ID[dataformattingtable$format_flag == 1]
+summ = read.csv('output/tabular_data/core-transient_summary.csv', header=T)
+
+function(datasetIDs) {
+list.files('data/raw_datasets')
+dataset = read.csv(paste('data/raw_datasets/dataset_', datasetIDs, '.csv', sep = ''))
+dataDescription = subset(read.csv("data_formatting_table.csv"),
+                         dataset_ID == datasetID)
+for (s in spatialgrains){
+  
+  richnessTest = tryCatch( 
+    
+    {
+      suppressWarnings(fitdistr(richnessYearsTest, "beta", list(shape1 = 2, shape2 = 2), lower = c(1e-10, 1e-10))) 
+    },
+    error = function(cond) {
+      message(paste("Error in fitdistr; trying new starting values")) 
+      tryCatch(
+        {
+          suppressWarnings(fitdistr(occs, "beta", list(shape1 = 3, shape2 = 3), lower = c(1e-10, 1e-10))) 
+        },
+        error = function(cond) {
+          list(estimate = c(NA, NA)) 
+        },
+        warning = function(cond) {
+          message()
+        })
+    },
+    warning = function(cond) {
+      message(cond) 
+    }
+  )
+  
+    if (a == 'warning') {
+      return_value <- 'myDivide warning result'
+      warning("myDivide warning message")
+    } else if (a == 'error') {
+      return_value <- 'myDivide error result'
+      stop("myDivide error message")
+    } else {
+      return_value = d / as.numeric(a)
+    }
+    return(return_value)
+  
+  
+}
+}
 
 dataset7 = read.csv(paste("data/formatted_datasets/dataset_",
                         datasetID, ".csv", sep =''))
 
-# read data description in from the saved data_formatting_table.csv if skipping lines 1-660.
-
-dataDescription = subset(read.csv("data_formatting_table.csv"),
-                            dataset_ID == datasetID)
-
-
-# Before proceeding, we need to make decisions about the spatial and temporal grains at
-# which we will conduct our analyses. Except in unusual circumstances, the temporal
-# grain will almost always be 'year', but the spatial grain that best represents the
-# scale of a "community" will  vary based on the sampling design and the taxonomic 
-# group. Justify your spatial scale below with a comment.
 
 #--! PROVIDE INFO !--#
 tGrain = 'year'
 
-# Refresh your memory about the spatial grain names if this is NOT a lat-long-only
-# based dataset. Set sGrain = to the hierarchical scale for analysis, including
-# the higher levels separated by underscore. E.g., for a dataset with quads within
-# plots within the site, sGrain = 'site_plot_quad' or sGrain = 'site_plot' or
-# sGrain = 'site'.
-
-# HOWEVER, if the sites are purely defined by lat-longs, then sGrain should equal
-# a numerical value specifying the block size in degrees latitude for analysis.
 
 site_grain_names
 

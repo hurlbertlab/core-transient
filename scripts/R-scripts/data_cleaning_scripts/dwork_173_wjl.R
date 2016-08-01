@@ -216,13 +216,6 @@ site_grain_names = c("site", "block", "treatment", "plot", "quad")
 # Dataset processing put on hold for now
 
 
-dataFormattingTable[,'format_priority'] = 
-  dataFormattingTableFieldUpdate(datasetID, 'format_priority',    # Fill value below in quotes 
-                                 
-                                 #####                                 
-                                 'NA')
-
-
 
 dataFormattingTable[,'format_flag'] = 
   dataFormattingTableFieldUpdate(datasetID, 'format_flag',    # Fill value below
