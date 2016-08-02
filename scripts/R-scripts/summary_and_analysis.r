@@ -179,6 +179,21 @@ points(-.28, 2.65, pch = symbols7[6], font = 5, col = colors7[6], cex = 1.7)
 text(3,3.2, substitute(paste(alpha, " = ", beta)), srt = 40, cex = 2)
 dev.off()
 
+# Summarizing datasets based on beta distribution parameters
+pdf('output/plots/alpha_vs_beta_log.pdf', height = 6, width = 8)
+par(mfrow = c(1,1), mar = c(5,5,1,1), mgp = c(3,1, 0), cex.axis = 1, cex.lab = 1, las = 1)
+plot(summ3$alpha, summ3$beta, type = "n", xlim = c(-0.25,3.5), xlab = "alpha", ylab = "beta",
+     ylim = c(0,4), yaxt = "n")
+axis(2, 0:4, cex = 1)
+points(log(summ3$alpha), log(summ3$beta), pch = summ3$pch, col = summ3$color, font = 5, cex = 1)
+abline(a=0, b=1, lty = 'dotted', lwd = 4)
+rect(-1, -1, 1, 1, lty = 'dashed', lwd = 2)
+legend('topleft', legend = unique(summ$taxa), pch = symbols7, 
+       col = c(colors7, 'white', colors7), pt.cex = 1.5, cex = 1.25)
+points(-.28, 2.65, pch = symbols7[6], font = 5, col = colors7[6], cex = 1.7)
+text(3,3.2, substitute(paste(alpha, " = ", beta)), srt = 40, cex = 2)
+dev.off()
+
 # Tally fraction of sites in each of 3 groups
 # Fraction bimodal
 nrow(summ3[summ3$alpha < 1 & summ3$beta < 1,])/nrow(summ3)

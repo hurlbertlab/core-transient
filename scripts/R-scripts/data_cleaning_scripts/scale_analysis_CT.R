@@ -17,19 +17,29 @@ getwd()
 # Set your working directory to be in the home of the core-transient repository
 # e.g., setwd('C:/git/core-transient')
 
-
 dataformattingtable = read.csv('data_formatting_table.csv', header = T) 
 datasetIDs = dataformattingtable$dataset_ID[dataformattingtable$format_flag == 1]
 summ = read.csv('output/tabular_data/core-transient_summary.csv', header=T)
 
-function(datasetIDs) {
-list.files('data/raw_datasets')
-dataset = read.csv(paste('data/raw_datasets/dataset_', datasetIDs, '.csv', sep = ''))
+function(datasetIDs, dataDescription) {
+dataset7 = read.csv(paste('data/raw_datasets/dataset_', datasetIDs, '.csv', sep = ''))
 dataDescription = subset(read.csv("data_formatting_table.csv"),
-                         dataset_ID == datasetID)
-for (s in spatialgrains){
-  
-  richnessTest = tryCatch( 
+                         dataset_ID == datasetIDs)
+if (as.character(spatial_scale_variable) == 'Y'){
+spatialgrains = dataDescription$Raw_siteUnit
+  for (s in spatialgrains)
+  #--! PROVIDE INFO !--#
+  tGrain = 'year'
+
+  site_grain_names = dataDescription$Raw_siteUnit 
+  #--! PROVIDE INFO !--#
+  sGrain = dataDescription$Raw_siteUnit
+  richnessYearsTest = richnessYearSubsetFun(dataset7, spatialGrain = sGrain, 
+                      temporalGrain = tGrain, 
+                      minNTime = minNTime, 
+                      minSpRich = minSpRich,
+                      dataDescription)
+    richnessTest = tryCatch( 
     
     {
       suppressWarnings(fitdistr(richnessYearsTest, "beta", list(shape1 = 2, shape2 = 2), lower = c(1e-10, 1e-10))) 
@@ -62,10 +72,9 @@ for (s in spatialgrains){
       return_value = d / as.numeric(a)
     }
     return(return_value)
-  
-  
-}
-}
+  }
+  else return(datadescription$Raw_spatial_grain)
+  }}
 
 dataset7 = read.csv(paste("data/formatted_datasets/dataset_",
                         datasetID, ".csv", sep =''))
