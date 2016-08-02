@@ -16,30 +16,56 @@ source('scripts/R-scripts/core-transient_functions.R')
 getwd()
 # Set your working directory to be in the home of the core-transient repository
 # e.g., setwd('C:/git/core-transient')
+# Min number of time samples required 
+minNTime = 6
 
+# Min number of species required
+minSpRich = 10
+
+# Ultimately, the largest number of spatial and 
+# temporal subsamples will be chosen to characterize
+# an assemblage such that at least this fraction
+# of site-years will be represented.
+topFractionSites = 0.5
+
+dataset_ID = 274
+datasetID = 274
 dataformattingtable = read.csv('data_formatting_table.csv', header = T) 
 datasetIDs = dataformattingtable$dataset_ID[dataformattingtable$format_flag == 1]
 summ = read.csv('output/tabular_data/core-transient_summary.csv', header=T)
 
-function(datasetIDs, dataDescription) {
-dataset7 = read.csv(paste('data/raw_datasets/dataset_', datasetIDs, '.csv', sep = ''))
-dataDescription = subset(read.csv("data_formatting_table.csv"),
-                         dataset_ID == datasetIDs)
+function(datasetID, dataDescription) {
+dataset7 = read.csv(paste('data/raw_datasets/dataset_', datasetID, '.csv', sep = ''))
+dataDescription = subset(read.csv("data_formatting_table.csv"),dataset_ID == datasetID)
+
 if (as.character(spatial_scale_variable) == 'Y'){
 spatialgrains = dataDescription$Raw_siteUnit
-  for (s in spatialgrains)
-  #--! PROVIDE INFO !--#
-  tGrain = 'year'
+spatialgrains = as.character(spatialgrains)
+spatialgrains = unlist(strsplit(spatialgrains, '_'))
+spatialgrains = data.frame(spatialgrains)
 
-  site_grain_names = dataDescription$Raw_siteUnit 
-  #--! PROVIDE INFO !--#
-  sGrain = dataDescription$Raw_siteUnit
-  richnessYearsTest = richnessYearSubsetFun(dataset7, spatialGrain = sGrain, 
+s.list <- as.list(as.data.frame(t(spatialgrains)))
+
+spatial_grain = c()
+for (s in 1:length(s.list)) {
+  
+  tGrain = 'year'
+  
+  sGrain = s
+  print(sGrain)
+  richnessYearsTest = richnessYearSubsetFun(dataset7, spatialGrain = sGrain, ### function calling previously formatted datasets!
                       temporalGrain = tGrain, 
                       minNTime = minNTime, 
                       minSpRich = minSpRich,
                       dataDescription)
-    richnessTest = tryCatch( 
+  
+  spatial_grain = rbind(spatial_grain, c(sGrain, richnessYearsTest)) 
+  }
+spatial_grain = data.frame(spatial_grain)
+  
+
+### need the trycatch for a dataset that doesnt work
+  richnessTest = tryCatch( 
     
     {
       suppressWarnings(fitdistr(richnessYearsTest, "beta", list(shape1 = 2, shape2 = 2), lower = c(1e-10, 1e-10))) 
@@ -76,35 +102,11 @@ spatialgrains = dataDescription$Raw_siteUnit
   else return(datadescription$Raw_spatial_grain)
   }}
 
-dataset7 = read.csv(paste("data/formatted_datasets/dataset_",
-                        datasetID, ".csv", sep =''))
-
-
-#--! PROVIDE INFO !--#
-tGrain = 'year'
-
-
-site_grain_names
-
-#--! PROVIDE INFO !--#
-sGrain = 'site'
-
-# for s in spatial grains:
-
-richnessYearsTest = richnessYearSubsetFun(dataset7, spatialGrain = sGrain, 
-                                          temporalGrain = tGrain, 
-                                          minNTime = minNTime, 
-                                          minSpRich = minSpRich,
-                                          dataDescription)
-
-# tryCatch(richnessYearsTest)
-
-
 # return data frame w occ data at that scale
 write.csv(scale_analysis, "scale_analysis.csv", row.names = FALSE)
 
 
-
+###################################################################### TBD
 #Number of unique sites meeting criteria
 goodSites = unique(richnessYearsTest$analysisSite)
 length(goodSites)
