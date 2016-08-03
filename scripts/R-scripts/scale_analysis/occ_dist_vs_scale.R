@@ -91,6 +91,7 @@ fig_one<-boxplot(occupancy ~ scale, data = bbs_scalesorted, xlab = "Scale", ylab
 
 bbs_stops<-read.table("//bioark.ad.unc.edu/hurlbertlab/Databases/BBS/GPS_stoplocations/May_2014_All_stops.txt", sep = ",", header = TRUE, fill = TRUE)
 #line 6931 doesn't have 7 elements (missing data!) so setting fill = TRUE in meantime
+#find other point data!! This is clearly just for Canada and does not include the US stop data
 
 #First: paste "Stop" in front of stop #'s in bbs_stops$Stop
 bbs_stops$Stop = paste("Stop", bbs_stops$Stop, sep = "")
@@ -159,7 +160,7 @@ head(test3)
 ndvimean<-ndvimean/10000
 bbs_coords$ndvi<-extract(ndvimean, sites)
 
-#need to re-project data points to match projection of raster data?  
+#need to re-project data points to match projection of raster data? Presently all in Canada
 
 
 
