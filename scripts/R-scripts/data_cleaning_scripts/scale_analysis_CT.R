@@ -28,40 +28,38 @@ minSpRich = 10
 # of site-years will be represented.
 topFractionSites = 0.5
 
-dataset_ID = 274
-datasetID = 274
 dataformattingtable = read.csv('data_formatting_table.csv', header = T) 
 datasetIDs = dataformattingtable$dataset_ID[dataformattingtable$format_flag == 1]
 summ = read.csv('output/tabular_data/core-transient_summary.csv', header=T)
 
 function(datasetID, dataDescription) {
-dataset7 = read.csv(paste('data/raw_datasets/dataset_', datasetID, '.csv', sep = ''))
+  dataset_ID = 274
+  datasetID = 274
+dataset7 = read.csv(paste('data/formatted_datasets/dataset_', datasetID, '.csv', sep = ''))
+
 dataDescription = subset(read.csv("data_formatting_table.csv"),dataset_ID == datasetID)
 
 if (as.character(spatial_scale_variable) == 'Y'){
-spatialgrains = dataDescription$Raw_siteUnit
-spatialgrains = as.character(spatialgrains)
-spatialgrains = unlist(strsplit(spatialgrains, '_'))
-spatialgrains = data.frame(spatialgrains)
-
-s.list <- as.list(as.data.frame(t(spatialgrains)))
-
+  spatialgrains = dataDescription$Raw_siteUnit
+  spatialgrains = as.character(spatialgrains)
+  spatialgrains = unlist(strsplit(spatialgrains, '_'))
+ 
+  
 spatial_grain = c()
-for (s in 1:length(s.list)) {
   
-  tGrain = 'year'
-  
-  sGrain = s
-  print(sGrain)
-  richnessYearsTest = richnessYearSubsetFun(dataset7, spatialGrain = sGrain, ### function calling previously formatted datasets!
-                      temporalGrain = tGrain, 
-                      minNTime = minNTime, 
-                      minSpRich = minSpRich,
-                      dataDescription)
-  
-  spatial_grain = rbind(spatial_grain, c(sGrain, richnessYearsTest)) 
+  for (s in spatialgrains) {
+    sGrain = s
+    print(sGrain)
+    richnessYearsTest = richnessYearSubsetFun(dataset7, spatialGrain = sGrain, 
+                                              temporalGrain = tGrain, 
+                                              minNTime = minNTime, 
+                                              minSpRich = minSpRich,
+                                              dataDescription)
+    
+    spatial_grain = rbind(spatial_grain,richnessYearsTest)
   }
-spatial_grain = data.frame(spatial_grain)
+  spatial_grain = data.frame(spatial_grain)
+  
   
 
 ### need the trycatch for a dataset that doesnt work
