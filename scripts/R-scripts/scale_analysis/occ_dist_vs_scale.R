@@ -91,7 +91,8 @@ fig_one<-boxplot(occupancy ~ scale, data = bbs_scalesorted, xlab = "Scale", ylab
 
 bbs_stops<-read.table("//bioark.ad.unc.edu/hurlbertlab/Databases/BBS/GPS_stoplocations/May_2014_All_stops.txt", sep = ",", header = TRUE, fill = TRUE)
 #line 6931 doesn't have 7 elements (missing data!) so setting fill = TRUE in meantime
-#find other point data!! This is clearly just for Canada and does not include the US stop data
+#MUST add other point data!! This is clearly just for Canada and does not include the US stop data
+
 
 #First: paste "Stop" in front of stop #'s in bbs_stops$Stop
 bbs_stops$Stop = paste("Stop", bbs_stops$Stop, sep = "")
@@ -132,25 +133,6 @@ sites<-data.frame(longitude = bbs_coords$POINT_X, latitude = bbs_coords$POINT_Y)
 points(sites$longitude, sites$latitude, col= "red", pch=16)
 
 
-tmean_jan = raster('//bioark.ad.unc.edu/HurlbertLab/GIS/ClimateData/BIOCLIM_meanTemp/tmean1.bil') # note scale off by factor of 10
-plot(tmean_jan)
-
-# Read in stack of layers from all 12 months
-files = paste('//bioark.ad.unc.edu/HurlbertLab/GIS/ClimateData/BIOCLIM_meanTemp/tmean',1:12,'.bil', sep='')
-tmean = stack(files) 
-plot(tmean)
-
-#above code works!!!
-
-# Find MEAN across all months
-meanT = calc(tmean, mean)
-meanT
-
-# Convert to actual temp
-meanT = meanT/10 #done
-
-bbs_coords$temp<-extract(meanT, sites)
-
 #NDVI 
 ndvimean<-raster("//bioark.ad.unc.edu/HurlbertLab/GIS/MODIS NDVI/Vegetation_Indices_may-aug_2000-2010.gri")
 plot(ndvimean)
@@ -160,7 +142,6 @@ head(test3)
 ndvimean<-ndvimean/10000
 bbs_coords$ndvi<-extract(ndvimean, sites)
 
-#need to re-project data points to match projection of raster data? Presently all in Canada
 
 
 
