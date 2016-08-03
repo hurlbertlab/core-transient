@@ -91,10 +91,11 @@ bbs_stops<-read.table("//bioark.ad.unc.edu/hurlbertlab/Databases/BBS/GPS_stoploc
 #First: paste "Stop" in front of stop #'s in bbs_stops$Stop
 bbs_stops$Stop = paste("Stop", bbs_stops$Stop, sep = "")
 
-###!!!! problem: stops in bbs_scalesorted are only ENDpoints of segments, actually encompass several stops 
-#need to break up bbs_stops into segments before merging ? do I need to have start and end points? 
+#as it stands, assigned stop coordinates refer only to the endpoint of a segment
+#and they do not comprise the location of the entire segment itself 
+#any distance measurements will be based off of the endpoint of a stop segment, and not a central point
 #do we just want to measure distance from that endpoint stop location to the nearest BBC route? 
-##sort out later 
+
 
 
 
