@@ -1,6 +1,10 @@
 #Variation in occupancy at multiple scales WITHIN BBS sites
 #Molly F. Jenkins 
 #07/27/2016
+
+## Please download and install the following packages:
+# maps, sp, rgdal, raster, maptools, rgeos
+
 #Pull in BBS 50 stop data from BioArk (too big to store on GitHub and Ecoretriever data still incomplete)
 bbs50 = read.csv("//bioark.ad.unc.edu/hurlbertlab/Databases/BBS/FiftyStopData/fiftystop_thru2010_goodspp_goodrtes.csv", header = TRUE)
 
@@ -95,6 +99,7 @@ bbs_stops$Stop = paste("Stop", bbs_stops$Stop, sep = "")
 #and they do not comprise the location of the entire segment itself 
 #any distance measurements will be based off of the endpoint of a stop segment, and not a central point
 #do we just want to measure distance from that endpoint stop location to the nearest BBC route? 
+
 
 
 
