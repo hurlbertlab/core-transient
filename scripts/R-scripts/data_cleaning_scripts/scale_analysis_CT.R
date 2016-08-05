@@ -50,19 +50,23 @@ spatial_grain = c()
   for (s in spatialgrains) {
     sGrain = s
     print(sGrain)
+    tGrain = "year"
+    if (nchar(as.character(dataset7$date)[1]  > 4)) {
+      dataset7$date = as.POSIXct(strptime(as.character(dataset7$date), format = "%Y-%m-%d"))
+    }
     richnessYearsTest = richnessYearSubsetFun(dataset7, spatialGrain = sGrain, 
                                               temporalGrain = tGrain, 
                                               minNTime = minNTime, 
                                               minSpRich = minSpRich,
                                               dataDescription)
       for (s in spatialgrains){
-      looptest = substring(dataset7$site, 6) # only using smaller grain, how do we reset? nested loop?
+      looptest = substring(dataset7$site, 6) # only using smaller grain, nested loop?
       richnessYearsTest = richnessYearSubsetFun(dataset7, spatialGrain = sGrain, 
                                               temporalGrain = tGrain, 
                                               minNTime = minNTime, 
                                               minSpRich = minSpRich,
-                                              dataDescription)
-      }
+                                             dataDescription)
+     }
     spatial_grain = rbind(spatial_grain,richnessYearsTest)
   }
   spatial_grain = data.frame(spatial_grain)
