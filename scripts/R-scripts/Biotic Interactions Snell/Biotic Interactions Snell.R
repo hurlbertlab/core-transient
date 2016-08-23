@@ -700,8 +700,19 @@ ggsave("C:/Git/core-transient/scripts/R-scripts/Biotic Interactions Snell/glmout
 
 ggplot(data = occumatrix, aes(x = comp_scaled, y = FocalAbundance)) +stat_smooth(data=glm_abun_rand_site, lwd = 1.5) +theme_bw()
 
+####### WORKING ######
+temperature = ggplot(data = occumatrix, aes(x = zTemp, y = FocalOcc)) +stat_smooth(data=glm_occ_rand_site, lwd = 1.5, se = FALSE) +xlab("Mean Temperature Deviation")+ylab("Focal Occupancy")+ geom_vline(xintercept = 0, colour="red", linetype = "longdash") +theme_bw() +theme_bw() +theme(axis.title.x=element_text(size=28),axis.title.y=element_text(size=28, angle=90), axis.text=element_text(size=12)) + theme(plot.margin = unit(c(.5,6,.5,.5),"lines"))#+ annotate("text", x = 3, y = 0.56, label = "Environmental centroid\n for focal species", size=7,vjust=0.5, color = "black")
+temperature + layer(geom = "line")
+temperature +
+  layer(geom = "smooth",
+        geom_params = list(lwd = 3),
+        stat_params = list(se = F, method = "lm"),
+        mapping = aes(group = NULL))
+temperature = ggplot(data = occumatrix, aes(x = zTemp, y = FocalOcc)) +stat_smooth(data=glm_occ_rand_site, lwd = 1.5,se = FALSE) +xlab(psub$Species)+theme_bw()
 
-ggplot(data = occumatrix, aes(x = zTemp, y = FocalOcc)) +stat_smooth(data=glm_occ_rand_site, lwd = 1.5, se = FALSE) +xlab("Mean Temperature Deviation")+ylab("Focal Occupancy")+ geom_vline(xintercept = 0, colour="red", linetype = "longdash") +theme_bw() +theme_bw() +theme(axis.title.x=element_text(size=28),axis.title.y=element_text(size=28, angle=90), axis.text=element_text(size=12)) + theme(plot.margin = unit(c(.5,6,.5,.5),"lines"))#+ annotate("text", x = 3, y = 0.56, label = "Environmental centroid\n for focal species", size=7,vjust=0.5, color = "black")
+ggplot(data = occumatrix, aes(x = zTemp, y = FocalOcc)) + geom_line() + stat_smooth(data=glm_occ_rand_site, lwd = 1.5, se = FALSE)
+ 
+
 ggsave("C:/Git/core-transient/scripts/R-scripts/Biotic Interactions Snell/glmtemp.png")
 
 ggplot(data = occumatrix, aes(x = zElev, y = FocalOcc)) +stat_smooth(data=glm_occ_rand_site, lwd = 1.5, se = FALSE) +xlab("Mean Elevation Deviation")+ylab("Focal Occupancy")+ geom_vline(xintercept = 0, colour="red", linetype = "longdash") +theme_bw() +theme_bw() +theme(axis.title.x=element_text(size=28),axis.title.y=element_text(size=28, angle=90), axis.text=element_text(size=12)) + theme(plot.margin = unit(c(.5,6,.5,.5),"lines"))
@@ -922,11 +933,12 @@ for (sp in subfocalspecies) {
 tomerge = data.frame(tomerge)
 names(tomerge) = c("FocalAOU","Total.x", "Total.y")
 
+# R2 plot
 R2plot2 = merge(R2plot, tomerge, by = "FocalAOU")
 
 ggplot(R2plot2, aes(x = COMP.x, y = COMP.y)) +theme_bw()+ theme(axis.title.x=element_text(size=35),axis.title.y=element_text(size=35, angle=90)) + xlab("Occupancy R2") + ylab("Abundance R2") + geom_point(col = "#9ecae1", cex =4) + geom_point(data = R2plot2, aes(x = ENV.x, y = ENV.y), shape = 24, col = "#3182bd", cex =4, stroke = 1) + geom_point(data = R2plot2, aes(Total.x,Total.y), shape = 3, col = "#253494", cex =5, stroke = 1) +geom_abline(intercept = 0, slope = 1, col = "red", lwd = 1.25)+ theme(axis.text.x=element_text(size = 20),axis.ticks=element_blank(), axis.text.y=element_text(size=2))
 
-# R2 plot - glm
+# R2 plot - glm violin plots
 ggplot(R2plot2, aes(x = FocalAOU, y = Total.x)) + geom_violin(lwd = 2, fill = "grey", color = "grey") + xlab("Focal Species") + ylab("Total R2")+ theme_bw()+theme(axis.title.x=element_text(size=30),axis.title.y=element_text(size=30, angle=90)) + theme(axis.line=element_blank(),axis.text.x=element_blank(),axis.ticks=element_blank(), axis.text.y=element_text(size=28, angle=90))
 
 ggplot(R2plot2, aes(x = FocalAOU, y = COMP.x)) + geom_violin(lwd = 2, fill = "#dd1c77", color = "#dd1c77") + xlab("Focal Species") + ylab("Competition R2")+ theme_bw()+theme(axis.title.x=element_text(size=30),axis.title.y=element_text(size=30, angle=90)) + theme(axis.line=element_blank(),axis.text.x=element_blank(),axis.ticks=element_blank(), axis.text.y=element_text(size=28, angle=90))
