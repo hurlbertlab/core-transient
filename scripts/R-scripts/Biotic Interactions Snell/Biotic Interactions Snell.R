@@ -178,7 +178,7 @@ sp_proj = CRS("+proj=laea +lat_0=40 +lon_0=-100 +units=km")
 if(FALSE) {  #Blocking out the for loop below. Need to change to TRUE if you want the loop to run.
 
 for (sp in focal_spp) {
-  #sp = 'Troglodytes_troglodytes'
+  #sp = 'Pyrocephalus_rubinus'
   print(sp)
   t1 = all_spp_list[grep(sp, all_spp_list)]
   t2 = t1[grep('.shp', t1)]
@@ -192,7 +192,7 @@ for (sp in focal_spp) {
   sporigin = spTransform(sporigin, CRS("+proj=laea +lat_0=40 +lon_0=-100 +units=km"))
   plot(sporigin, col = colors, border = NA) 
   gArea(spTransform(sporigin, CRS("+proj=laea +lat_0=40 +lon_0=-100 +units=km")))
-
+  
   # list this focal spp competitor
   tmp = filter(new_spec_weights, sp == new_spec_weights$focalcat)
   comp_spp = tmp$compcat
@@ -222,9 +222,10 @@ for (sp in focal_spp) {
       focalAOU = unique(new_spec_weights[new_spec_weights$focalcat == sp, c('FocalAOU')])
       compAOU = unique(new_spec_weights[new_spec_weights$compcat == co, c('CompetitorAOU')])
       filesoutput = rbind(filesoutput, c(sp, focalAOU, co, compAOU, spArea, coArea, area_overlap))
+      
   }
 } 
-
+  
 filesoutput = data.frame(filesoutput)
 colnames(filesoutput) = c("Focal", "focalAOU","Competitor", "compAOU","FocalArea", "CompArea", "area_overlap")
 # string split to get sci name with spaces
@@ -232,6 +233,30 @@ filesoutput$Focal = gsub('_',' ',filesoutput$Focal)
 write.csv(filesoutput, file = "shapefile_areas.csv")
 }
 
+######## Calculating centroids for each species - using whole range #####
+centroid = c()
+for (sp in focal_spp){
+  print(sp)
+  t1 = all_spp_list[grep(sp, all_spp_list)]
+  t2 = t1[grep('.shp', t1)]
+  t3 = strsplit(t2, ".shp")
+  
+  test.poly <- readShapePoly(paste("z:/GIS/birds/All/All/", t3, sep = "")) # reads in species-specific shapefile
+  proj4string(test.poly) <- intl_proj
+  colors = c("blue", "yellow", "green", "red", "purple")
+  # subset to just permanent or breeding residents
+  sporigin = test.poly[test.poly@data$SEASONAL == 1|test.poly@data$SEASONAL == 2|test.poly@data$SEASONAL ==5,]
+  sporigin = spTransform(sporigin, CRS("+proj=laea +lat_0=40 +lon_0=-100 +units=km"))
+  #plot(sporigin, col = colors, border = NA)
+  trueCentroid = gCentroid(sporigin)
+  coord = coordinates(spTransform(trueCentroid, CRS("+proj=longlat +datum=WGS84")))
+  focalAOU = unique(new_spec_weights[new_spec_weights$focalcat == sp, c('FocalAOU')])
+  centroid = rbind(centroid, c(sp, focalAOU, coord))
+}
+centroid = data.frame(centroid)
+names(centroid) = c("species", "FocalAOU", "Long", "Lat")
+centroid$Lat = as.numeric(paste(centroid$Lat))
+centroid$Long = as.numeric(paste(centroid$Long))
 # read in area shapefile if not running code 
 filesoutput = read.csv("shapefile_areas.csv", header = TRUE)
 
@@ -520,14 +545,14 @@ tax_code$AOU_OUT[tax_code$AOU_OUT == 5677] = 5660
 tax_code$AOU_OUT[tax_code$AOU_OUT == 7220] = 7222
 forplots$AOU[forplots$AOU == 7220] = 7222
 
-envloc = merge(envoutput, plotdata_all, by = 'FocalAOU', all = TRUE)
+envloc = merge(envoutput, centroid[, c("FocalAOU", "Long", "Lat")], by = 'FocalAOU', all = TRUE)
 envloc$EW <- 0
-envloc$EW[envloc$Longi >= -98] <- 1
-envloc$EW[is.na(envloc$EW)] = 0
+envloc$EW[envloc$Long > -98.583333] <- 1 ## from https://tools.wmflabs.org/geohack/geohack.php?pagename=Geographic_center_of_the_contiguous_United_States&params=39_50_N_98_35_W_region:US-KS_type:landmark&title=Geographic+Center+of+the+Contiguous+United+States
+# 1 = East
 
 envoutput = merge(envoutput, tax_code[,c('AOU_OUT', 'ALPHA.CODE')], by.x = 'FocalAOU', by.y = "AOU_OUT")
 envoutput = merge(envoutput, forplots, by.x = "FocalAOU", by.y = "AOU")
-
+# envoutput = merge(envoutput, envloc, by.x = "FocalAOU", by.y = "AOU")
 
 write.csv(envoutput, "envouput.csv")
 
@@ -623,11 +648,18 @@ occumatrix$sp_fail_abun = as.factor(occumatrix$numyears * (1 - occumatrix$FocalA
 
 cs <- function(x) scale(x,scale=TRUE,center=TRUE)
 # source: http://permalink.gmane.org/gmane.comp.lang.r.lme4.devel/12080
+########################################################################### NLCD
+nlcd = read.csv('Z:/GIS/birds/NLCD_buffers/BBS_NLCD_400_m_buffer.csv', header = TRUE)
+# summing dediduous forest (41), evergreen forest (42), mixed forest (43), all have >20% total vegetation cover
+nlcd$forest = (nlcd$NLCD.41 + nlcd$NLCD.42 + nlcd$NLCD.43)/nlcd$SUM
+
+occumatrix1 = merge(occumatrix, nlcd[, c('RT..NO.', 'forest')], by.x = "stateroute", by.y = "RT..NO.")
+
 # need to scale predictor variables
 beta = matrix(NA, nrow = length(subfocalspecies), ncol = 31)
 pdf('Occupancy_glms.pdf', height = 8, width = 10)
 par(mfrow = c(3, 4))
-# for loop to store model output as a DF
+#### for loop to store model output as a DF ####
 for(i in 1:length(subfocalspecies)){ 
   print(i)
 
@@ -685,9 +717,9 @@ names(beta) = c("FocalAOU", "Binom_comp_scaled_Estimate", "Binom_zTemp_Estimate"
 dev.off()
 AIC(glm_abundance_binom, glm_abundance_rand_site,glm_occ_rand_site) ## abundace rand site is clear winner
 #Plot winning glm
-# GLM of all matrices not just subset
+#### GLM of all matrices not just subset #### INCLUDES LC
 glm_occ_rand_site = glmer(cbind(sp_success, sp_fail) ~ cs(comp_scaled) + 
-    abs(zTemp)+abs(zElev)+abs(zPrecip)+abs(zEVI) + (1|stateroute:Species), family = binomial(link = logit), data = occumatrix)
+    abs(zTemp)+abs(zElev)+abs(zPrecip)+abs(zEVI) + forest + (1|stateroute:Species), family = binomial(link = logit), data = occumatrix1)
 summary(glm_occ_rand_site) 
 
 glm_abun_rand_site = glmer(cbind(sp_success_abun, sp_fail_abun) ~ cs(comp_scaled) + 
@@ -695,12 +727,12 @@ glm_abun_rand_site = glmer(cbind(sp_success_abun, sp_fail_abun) ~ cs(comp_scaled
 summary(glm_abundance_rand_site) 
 
 #### PLOTTING MODELS ####
-ggplot(data = occumatrix, aes(x = comp_scaled, y = FocalOcc)) +stat_smooth(data=glm_occ_rand_site, lwd = 1.5) +xlab("Scaled Competitor Abundance")+ylab("Focal Occupancy") +theme_bw() +theme(axis.title.x=element_text(size=24),axis.title.y=element_text(size=24, angle=90), axis.text=element_text(size=12)) + theme(plot.margin = unit(c(.5,6,.5,.5),"lines")) 
+ggplot(data = occumatrix1, aes(x = comp_scaled, y = FocalOcc)) +stat_smooth(data=glm_occ_rand_site, lwd = 1.5) +xlab("Scaled Competitor Abundance")+ylab("Focal Occupancy") +theme_bw() +theme(axis.title.x=element_text(size=24),axis.title.y=element_text(size=24, angle=90), axis.text=element_text(size=12)) + theme(plot.margin = unit(c(.5,6,.5,.5),"lines")) 
 ggsave("C:/Git/core-transient/scripts/R-scripts/Biotic Interactions Snell/glmoutput.png")
 
 ggplot(data = occumatrix, aes(x = comp_scaled, y = FocalAbundance)) +stat_smooth(data=glm_abun_rand_site, lwd = 1.5) +theme_bw()
 
-####### WORKING ######
+####### WORKING ##########################################################################################################
 temperature = ggplot(data = occumatrix, aes(x = zTemp, y = FocalOcc)) +stat_smooth(data=glm_occ_rand_site, lwd = 1.5, se = FALSE) +xlab("Mean Temperature Deviation")+ylab("Focal Occupancy")+ geom_vline(xintercept = 0, colour="red", linetype = "longdash") +theme_bw() +theme_bw() +theme(axis.title.x=element_text(size=28),axis.title.y=element_text(size=28, angle=90), axis.text=element_text(size=12)) + theme(plot.margin = unit(c(.5,6,.5,.5),"lines"))#+ annotate("text", x = 3, y = 0.56, label = "Environmental centroid\n for focal species", size=7,vjust=0.5, color = "black")
 temperature + layer(geom = "line")
 temperature +
@@ -796,6 +828,7 @@ nrank = envoutput %>%
 envflip = gather(nrank, "Type", "value", 2:5)
 envflip$rank <- factor(envflip$rank, levels = envflip$rank[order(envflip$rank)])
 envflip = plyr::arrange(envflip,(envflip$rank),envflip$FocalAOU)
+envflip = merge(envflip, envloc[,c("FocalAOU", "EW")], by = "FocalAOU")
 
 envrank = envflip %>% 
   group_by(Type == 'ENV') %>% # change here for comp
@@ -899,6 +932,8 @@ lab1$trophlabelf = gsub('its','#f768a1', lab1$trophlabelf)
 lab1$trophlabelf = gsub('meee','#c51b8a', lab1$trophlabelf)
 lab1$trophlabelf = gsub('ive','#7a0177', lab1$trophlabelf)
 
+lab1$EW[lab1$EW == 1] <- "E"
+lab1$EW[lab1$EW == 0] <- "W" 
 ###### PLOTTING #####
 # Plot with ENV ranked in decreasing order
 t = ggplot(data=envflip, aes(factor(rank), y=value, fill=factor(Type, levels = c("ENV","COMP","SHARED","NONE")))) + 
@@ -906,19 +941,15 @@ t = ggplot(data=envflip, aes(factor(rank), y=value, fill=factor(Type, levels = c
   theme(axis.text.x=element_text(angle=90,size=10,vjust=0.5)) + xlab("Focal Species") + ylab("Percent Variance Explained") +
   scale_fill_manual(values=c("#2ca25f","#dd1c77","#43a2ca","white"), labels=c("Environment", "Competition","Shared Variance", "")) +theme(axis.title.x=element_text(size=20),axis.title.y=element_text(size=20, angle=90),legend.title=element_text(size=12), legend.text=element_text(size=12)) + guides(fill=guide_legend(title=""))+ theme(plot.margin = unit(c(.5,6,.5,.5),"lines")) 
 
-tt = t + annotate("text", x = 1:63, y = -.03, label = unique(envflip$ALPHA.CODE), angle=90,size=6,vjust=0.5, color = "black") + annotate("text", x = 1:63, y = -.06, label = lab1$Fam_abbrev, size=6,vjust=0.5, color = lab1$Fam_abbrevf, fontface =2) + annotate("text", x = 1:63, y = -.08, label = lab1$mig_abbrev, size=6,vjust=0.5, color = lab1$mig_abbrevf, fontface =2) + annotate("text", x = 1:63, y = -.1, label = lab1$trophlabel, size=6,vjust=0.5, color = lab1$trophlabelf, fontface =2) + theme(axis.line=element_blank(),axis.text.x=element_blank(),axis.ticks=element_blank(), axis.text.y=element_text(size = 20)) 
+tt = t + annotate("text", x = 1:63, y = -.03, label = unique(envflip$ALPHA.CODE), angle=90,size=6,vjust=0.5, color = "black") + annotate("text", x = 1:63, y = -.06, label = lab1$Fam_abbrev, size=6,vjust=0.5, color = lab1$Fam_abbrevf, fontface =2) + annotate("text", x = 1:63, y = -.08, label = lab1$mig_abbrev, size=6,vjust=0.5, color = lab1$mig_abbrevf, fontface =2) + annotate("text", x = 1:63, y = -.1, label = lab1$trophlabel, size=6,vjust=0.5, color = lab1$trophlabelf, fontface =2) + annotate("text", x = 1:63, y = -.12, label = lab1$EW, angle=90,size=6,vjust=0.5, color = "black", fontface =2)+ theme(axis.line=element_blank(),axis.text.x=element_blank(),axis.ticks=element_blank(), axis.text.y=element_text(size = 20)) 
 plot(tt)
 
 ggsave("C:/Git/core-transient/scripts/R-scripts/Biotic Interactions Snell/barplot.pdf", height = 26, width = 34)
 
 #Violin plots w location, trophic group, mig
 ggplot(envflip, aes(x = Type, y = value, color = Type)) + geom_violin() 
-ggplot(envdiet, aes(x = Trophic.Group, y = value, color = Type)) + geom_violin() 
-ggplot(envdiet, aes(x = migclass, y = value, color = Type)) + geom_violin() 
-ggplot(envdiet, aes(x = Foraging, y = value, color = Type)) + geom_violin() 
-ggplot(envfam, aes(x = FAMILY, y = value, color = Type)) + geom_violin() 
 
-ggplot(envfliploc, aes(x = factor(EW), y = value, color = Type)) + geom_violin() + scale_x_discrete(labels=c("West", "East")) 
+ggplot(envloc, aes(x = FocalAOU, y = factor(EW))) + geom_violin() + scale_x_discrete(labels=c("West", "East")) 
 
 # R2 plot - lm in ggplot
 R2plot = merge(envoutput, envoutputa, by = "FocalAOU")
