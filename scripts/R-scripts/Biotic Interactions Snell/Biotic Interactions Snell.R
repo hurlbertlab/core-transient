@@ -733,7 +733,15 @@ ggsave("C:/Git/core-transient/scripts/R-scripts/Biotic Interactions Snell/glmout
 ggplot(data = occumatrix, aes(x = comp_scaled, y = FocalAbundance)) +stat_smooth(data=glm_abun_rand_site, lwd = 1.5) +theme_bw()
 
 ####### WORKING ##########################################################################################################
-temperature = ggplot(data = occumatrix, aes(x = zTemp, y = FocalOcc)) +stat_smooth(data=glm_occ_rand_site, lwd = 1.5, se = FALSE) +xlab("Mean Temperature Deviation")+ylab("Focal Occupancy")+ geom_vline(xintercept = 0, colour="red", linetype = "longdash") +theme_bw() +theme_bw() +theme(axis.title.x=element_text(size=28),axis.title.y=element_text(size=28, angle=90), axis.text=element_text(size=12)) + theme(plot.margin = unit(c(.5,6,.5,.5),"lines"))#+ annotate("text", x = 3, y = 0.56, label = "Environmental centroid\n for focal species", size=7,vjust=0.5, color = "black")
+pTemp = predict(glm_occ_rand_site, newdata=with(occumatrix,data.frame(zTemp=0,comp_scaled,zPrecip,zElev,zEVI,stateroute,Species, FocalOcc)), allow.new.levels = TRUE) #predict values assuming zElev=0
+
+newintercept = mean(exp(pTemp)/(1+exp(pTemp))) #mean of the inverse logit of those values.
+
+ggplot(data = occumatrix, aes(x = zTemp, y = FocalOcc)) + geom_segment(data=occumatrix, aes(x=newintercept, xend = newintercept, y=0, yend =1))+geom_point(colour="black", shape=19, alpha = 0.2)
+
+ggplot(data = occumatrix, aes(x = zTemp, y = FocalOcc)) + abline(glm_occ_rand_site)+geom_point(colour="black", shape=19, alpha = 0.2)
+
+temperature = ggplot(data = occumatrix, aes(x = zTemp, y = FocalOcc))+geom_point(colour="black", shape=19, alpha = 0.2)  + stat_smooth(data=glm_occ_rand_site, lwd = 1.5, se = FALSE)+xlab("Mean Temperature Deviation")+ylab("Focal Occupancy")+ geom_vline(xintercept = newintercept, colour="red", linetype = "longdash") +theme_bw() +theme_bw() +theme(axis.title.x=element_text(size=28),axis.title.y=element_text(size=28, angle=90), axis.text=element_text(size=12)) + theme(plot.margin = unit(c(.5,6,.5,.5),"lines"))#+ annotate("text", x = 3, y = 0.56, label = "Environmental centroid\n for focal species", size=7,vjust=0.5, color = "black")
 temperature + layer(geom = "line")
 temperature +
   layer(geom = "smooth",
