@@ -33,22 +33,30 @@ datasetIDs = dataformattingtable$dataset_ID[dataformattingtable$format_flag == 1
 summ = read.csv('output/tabular_data/core-transient_summary.csv', header=T)
 
 function(datasetID, dataDescription) {
-  dataset_ID = 274
-  datasetID = 274
+  for(datasetID in datasetIDs){
+ dataset_ID = 1 
+ datasetID = 1
 dataset7 = read.csv(paste('data/formatted_datasets/dataset_', datasetID, '.csv', sep = ''))
 
 dataDescription = subset(read.csv("data_formatting_table.csv"),dataset_ID == datasetID)
-
-if (as.character(spatial_scale_variable) == 'Y'){
+print(datasetID)
+# Takes spatial grain input from DFT and manipulates to get output of either each grain 
+# concatenated with _ or single grain unit
+if (as.character(dataDescription$spatial_scale_variable) == 'Y'){
   spatialgrains = dataDescription$Raw_siteUnit
   spatialgrains = as.character(spatialgrains)
   spatialgrains = unlist(strsplit(spatialgrains, '_'))
-  grains = c()
+  spatialgrain = c()
   for (sg in spatialgrains) {
-    grains = c(grains, paste(grains, sg, sep = "_"))
+   spatialgrain = c(spatialgrain, paste(spatialgrain, sg, sep = "_"))
+   spatialgrains = substring(spatialgrain, 2)
   }
+} else{ 
+    spatialgrains= dataDescription$Raw_siteUnit
+    spatialgrains = as.character(spatialgrains)
+}
   
-spatial_grain = c()
+goodsites = c()
   
   for (s in spatialgrains) {
     sGrain = s
@@ -58,7 +66,15 @@ spatial_grain = c()
       dataset7$date = as.POSIXct(strptime(as.character(dataset7$date), format = "%Y-%m-%d"))
     }
     
-    #tryCatch
+    # tryCatch
+richnessTest = tryCatch(    
+  {
+    suppressWarnings(richnessYearsTest)
+  },
+  error = function(cond) {
+    
+    message(paste("no acceptable sites, pasting NAs")) 
+    
     
     richnessYearsTest = richnessYearSubsetFun(dataset7, spatialGrain = sGrain, 
                                               temporalGrain = tGrain, 
@@ -90,17 +106,26 @@ spatial_grain = c()
     writePropOccSiteSummary(subsettedData, spatialGrainAnalysis = TRUE)
     
     # save datasetID, s, length(goodSites)
-    
+    #goodsites = data.frame(datasetID, sGrain, length(goodSites))
+    goodsites = rbind(goodsites, data.frame(datasetID, sGrain, length(goodSites)))
   
     
     # if it doesn't work (i.e. error, no good sites):
     
     # save dataset ID, NA, NA
+    #goodsites = data.frame(datasetID, NA, NA)
     
     # END tryCatch
+    if (a == 'warning') {
+      return_value <- NA
+      warning("no acceptable sites, pasting NAs")
+    } 
+  else {
+    return(richnessYearsTest))}
   }
-  
-  
+  }
+}
+write.csv(goodsites, "data/spatialGrainAnalysis/goodsites.csv", row.names = FALSE)
 
 ### need the trycatch for a dataset that doesnt work
   richnessTest = tryCatch( 
@@ -144,78 +169,5 @@ spatial_grain = c()
 write.csv(scale_analysis, "scale_analysis.csv", row.names = FALSE)
 
 
-###################################################################### TBD
-#Number of unique sites meeting criteria
-goodSites = unique(richnessYearsTest$analysisSite)
-length(goodSites)
 
-# Now subset dataset7 to just those goodSites as defined. This is tricky though
-# because assuming Sgrain is not the finest resolution, we will need to use
-# grep to match site names that begin with the string in goodSites.
-# The reason to do this is that sites which don't meet the criteria (e.g. not
-# enough years of data) may also have low sampling intensity that constrains
-# the subsampling level of the well sampled sites.
-
-uniqueSites = unique(dataset7$site)
-fullGoodSites = c()
-for (s in goodSites) {
-  tmp = as.character(uniqueSites[grepl(paste(s, "_", sep = ""), paste(uniqueSites, "_", sep = ""))])
-  fullGoodSites = c(fullGoodSites, tmp)
-}
-
-dataset8 = subset(dataset7, site %in% fullGoodSites)
-
-# Once we've settled on spatial and temporal grains that pass our test above,
-# we then need to 1) figure out what levels of spatial and temporal subsampling
-# we should use to characterize that analysis grain, and 2) subset the
-# formatted dataset down to that standardized level of subsampling.
-
-# For example, if some sites had 20 spatial subsamples (e.g. quads) per year while
-# others had only 16, or 10, we would identify the level of subsampling that 
-# at least 'topFractionSites' of sites met (with a default of 50%). We would 
-# discard "poorly subsampled" sites (based on this criterion) from further analysis. 
-# For the "well-sampled" sites, the function below randomly samples the 
-# appropriate number of subsamples for each year or site,
-# and bases the characterization of the community in that site-year based on
-# the aggregate of those standardized subsamples.
-
-subsettedData = subsetDataFun(dataset8, 
-                              datasetID, 
-                              spatialGrain = sGrain, 
-                              temporalGrain = tGrain,
-                              minNTime = minNTime, minSpRich = minSpRich,
-                              proportionalThreshold = topFractionSites,
-                              dataDescription)
-# Take a look at the propOcc:
-
-head(propOccFun(subsettedData))
-
-hist(propOccFun(subsettedData)$propOcc)
-
-# Take a look at the site summary frame:
-
-siteSummaryFun(subsettedData)
-
-# If everything looks good, write the files:
-
-writePropOccSiteSummary(subsettedData)
-
-# Update Data Formatting Table with summary stats of the formatted,
-# properly subsetted dataset
-dataFormattingTable = dataFormattingTableUpdateFinished(datasetID, subsettedData)
-
-# Add any final notes about the dataset that might be of interest:
-dataFormattingTable[,'General_notes'] = 
-  dataFormattingTableFieldUpdate(datasetID, 'General_notes', 
-                                 
-                                 #--! PROVIDE INFO !--#                                 
-                                 )
-
-# And write the final data formatting table:
-
-write.csv(dataFormattingTable, 'data_formatting_table.csv', row.names = F)
-
-# Remove all objects except for functions from the environment:
-
-rm(list = setdiff(ls(), lsf.str()))
 
