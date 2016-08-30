@@ -471,14 +471,21 @@ siteSummaryFun = function(subsettedData){
 #------------------------------------------------------------------------------------------------------*
 # Note: This will not work if the temporal or spatial sampling is inadequate! Make sure to run richnessYearSubsetFun prior to to test whether the spatial and temporal scales are adequate!
 
-writePropOccSiteSummary = function(subsettedData){
+writePropOccSiteSummary = function(subsettedData, spatialGrainAnalysis = FALSE){
   propOcc = propOccFun(subsettedData)
   siteSummary = siteSummaryFun(subsettedData)
   datasetID = unique(siteSummary$datasetID)
-  write.csv(propOcc, 
-    paste('data/propOcc_datasets/propOcc_', datasetID, '.csv', sep = ''), row.names = F)
-  write.csv(siteSummary, 
-    paste('data/siteSummaries/siteSummary_', datasetID, '.csv',  sep = ''), row.names = F)
+  if (!spatialGrainAnalysis) {
+    write.csv(propOcc, 
+              paste('data/propOcc_datasets/propOcc_', datasetID, '.csv', sep = ''), row.names = F)
+    write.csv(siteSummary, 
+              paste('data/siteSummaries/siteSummary_', datasetID, '.csv',  sep = ''), row.names = F)
+  } else if (spatialGrainAnalysis) {
+    write.csv(propOcc, 
+              paste('data/spatialGrainAnalysis/propOcc_datasets/propOcc_', datasetID, '.csv', sep = ''), row.names = F)
+    write.csv(siteSummary, 
+              paste('data/spatialGrainAnalysis/siteSummaries/siteSummary_', datasetID, '.csv',  sep = ''), row.names = F)
+  }
 }
 
 
