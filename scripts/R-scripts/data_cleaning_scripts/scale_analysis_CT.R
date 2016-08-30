@@ -43,7 +43,10 @@ if (as.character(spatial_scale_variable) == 'Y'){
   spatialgrains = dataDescription$Raw_siteUnit
   spatialgrains = as.character(spatialgrains)
   spatialgrains = unlist(strsplit(spatialgrains, '_'))
- 
+  grains = c()
+  for (sg in spatialgrains) {
+    grains = c(grains, paste(grains, sg, sep = "_"))
+  }
   
 spatial_grain = c()
   
@@ -54,22 +57,48 @@ spatial_grain = c()
     if (nchar(as.character(dataset7$date)[1]  > 4)) {
       dataset7$date = as.POSIXct(strptime(as.character(dataset7$date), format = "%Y-%m-%d"))
     }
+    
+    #tryCatch
+    
     richnessYearsTest = richnessYearSubsetFun(dataset7, spatialGrain = sGrain, 
                                               temporalGrain = tGrain, 
                                               minNTime = minNTime, 
                                               minSpRich = minSpRich,
                                               dataDescription)
-      for (s in spatialgrains){
-      looptest = substring(dataset7$site, 6) # only using smaller grain, nested loop?
-      richnessYearsTest = richnessYearSubsetFun(dataset7, spatialGrain = sGrain, 
-                                              temporalGrain = tGrain, 
-                                              minNTime = minNTime, 
-                                              minSpRich = minSpRich,
-                                             dataDescription)
-     }
-    spatial_grain = rbind(spatial_grain,richnessYearsTest)
+
+    # if it works:
+    
+    goodSites = unique(richnessYearsTest$analysisSite)
+    
+    uniqueSites = unique(dataset7$site)
+    fullGoodSites = c()
+    for (s in goodSites) {
+      tmp = as.character(uniqueSites[grepl(paste(s, "_", sep = ""), paste(uniqueSites, "_", sep = ""))])
+      fullGoodSites = c(fullGoodSites, tmp)
+    }
+    
+    dataset8 = subset(dataset7, site %in% fullGoodSites)
+    
+    subsettedData = subsetDataFun(dataset8, 
+                                  datasetID, spatialGrain = sGrain, 
+                                  temporalGrain = tGrain,
+                                  minNTime = minNTime, minSpRich = minSpRich,
+                                  proportionalThreshold = topFractionSites,
+                                  dataDescription)
+    
+    # Output will get written to spatialGrainAnalysis folder
+    writePropOccSiteSummary(subsettedData, spatialGrainAnalysis = TRUE)
+    
+    # save datasetID, s, length(goodSites)
+    
+  
+    
+    # if it doesn't work (i.e. error, no good sites):
+    
+    # save dataset ID, NA, NA
+    
+    # END tryCatch
   }
-  spatial_grain = data.frame(spatial_grain)
   
   
 
