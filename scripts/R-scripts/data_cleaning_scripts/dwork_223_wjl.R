@@ -570,7 +570,7 @@ tGrain = 'year'
 site_grain_names
 
 #####
-sGrain = 'site_block_plot_quad'
+sGrain = 'site_block_plot'
 
 # This is a reasonable choice of spatial grain because ...
 # ...a plot includes 36 m2 of sampled area from an extent spanning 1296 m2, and this encompasses hundreds to thousands of individuals.
