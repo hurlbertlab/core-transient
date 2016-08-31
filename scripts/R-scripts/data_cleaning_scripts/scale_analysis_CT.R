@@ -56,12 +56,12 @@ for(datasetID in datasetIDs){
       print(spatialgrains)
       tGrain = "year"
       dataset7$date = as.character(dataset7$date)
-      if (nchar(as.character(dataset7$date)[1]  > 4)) { ###### ISSUE
+        if (nchar(as.character(dataset7$date[1])) > 4) {{ ###### ISSUE
         dataset7$date = as.POSIXct(strptime(as.character(dataset7$date), format = "%Y-%m-%d"))
       }
     #spatialgrain = rbind(spatialgrain, c(datasetID, spatialgrains))
     }
-    } }
+    } 
   #else{ 
   
     #spatialgrains= dataDescription$Raw_siteUnit
@@ -79,7 +79,7 @@ goodsites = c()
    # }
     
     # tryCatch
-richTest = tryCatch({
+#richTest = tryCatch({
   richnessYearsTest = richnessYearSubsetFun(dataset7, spatialGrain = sGrain, 
                                             temporalGrain = tGrain, 
                                             minNTime = minNTime, 
