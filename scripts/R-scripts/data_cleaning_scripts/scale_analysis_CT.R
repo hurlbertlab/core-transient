@@ -32,40 +32,51 @@ dataformattingtable = read.csv('data_formatting_table.csv', header = T)
 datasetIDs = dataformattingtable$dataset_ID[dataformattingtable$format_flag == 1]
 summ = read.csv('output/tabular_data/core-transient_summary.csv', header=T)
 
-function(datasetID, dataDescription) {
-  for(datasetID in datasetIDs){
 
+#function(datasetID, dataDescription) {
+for(datasetID in datasetIDs){
  #dataset_ID = 1 #d/n work = 1, works =254
 # datasetID = 1
-dataset7 = read.csv(paste('data/formatted_datasets/dataset_', datasetID, '.csv', sep = ''))
 
-dataDescription = subset(read.csv("data_formatting_table.csv"),dataset_ID == datasetID)
-print(datasetID)}
+  print(datasetID)
+  
+  dataDescription = subset(read.csv("data_formatting_table.csv"),dataset_ID == datasetID)
 # Takes spatial grain input from DFT and manipulates to get output of either each grain 
 # concatenated with _ or single grain unit
-if (as.character(dataDescription$spatial_scale_variable) == 'Y'){
-  spatialgrains = dataDescription$Raw_siteUnit
-  spatialgrains = as.character(spatialgrains)
-  spatialgrains = unlist(strsplit(spatialgrains, '_'))
-  spatialgrain = c()
-  for (sg in spatialgrains) {
-   spatialgrain = c(spatialgrain, paste(spatialgrain, sg, sep = "_"))
-   spatialgrains = substring(spatialgrain, 2)
-  }
-} else{ 
-    spatialgrains= dataDescription$Raw_siteUnit
+  if (as.character(dataDescription$spatial_scale_variable) == 'Y'){
+    dataset7 = read.csv(paste('data/formatted_datasets/dataset_', datasetID, '.csv', sep = ''))
+  
+    spatialgrains = dataDescription$Raw_siteUnit
     spatialgrains = as.character(spatialgrains)
-}
+    spatialgrains = unlist(strsplit(spatialgrains, '_'))
+    spatialgrain = c()
+    for (sg in spatialgrains) {
+      spatialgrain = c(spatialgrain, paste(spatialgrain, sg, sep = "_"))
+      spatialgrains = substring(spatialgrain, 2)
+      print(spatialgrains)
+      tGrain = "year"
+      dataset7$date = as.character(dataset7$date)
+      if (nchar(as.character(dataset7$date)[1]  > 4)) { ###### ISSUE
+        dataset7$date = as.POSIXct(strptime(as.character(dataset7$date), format = "%Y-%m-%d"))
+      }
+    #spatialgrain = rbind(spatialgrain, c(datasetID, spatialgrains))
+    }
+    } }
+  #else{ 
+  
+    #spatialgrains= dataDescription$Raw_siteUnit
+    #spatialgrains = as.character(spatialgrains)
+#}
   
 goodsites = c()
   
-  for (s in spatialgrains) {
-    sGrain = s
-    print(sGrain)
-    tGrain = "year"
-    if (nchar(as.character(dataset7$date)[1]  > 4)) {
-      dataset7$date = as.POSIXct(strptime(as.character(dataset7$date), format = "%Y-%m-%d"))
-    }
+  #for (s in spatialgrains) {
+   # sGrain = s
+   # print(sGrain)
+   # tGrain = "year"
+   # if (nchar(as.character(dataset7$date)[1]  > 4)) {
+    #  dataset7$date = as.POSIXct(strptime(as.character(dataset7$date), format = "%Y-%m-%d"))
+   # }
     
     # tryCatch
 richTest = tryCatch({
