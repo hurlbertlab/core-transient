@@ -267,7 +267,7 @@ dataFormattingTable[,'Raw_siteUnit'] =
 # spatial_scale_variable. Is a site potentially nested (e.g., plot within a quad or decimal lat longs that could be scaled up)? Y/N
 
 dataFormattingTable[,'spatial_scale_variable'] = 
-  dataFormattingTableFieldUpdate(datasetID, 'spatial_scale_variable', 'NA')
+  dataFormattingTableFieldUpdate(datasetID, 'spatial_scale_variable', 'N')
 
 # Notes_siteFormat. Use this field to THOROUGHLY describe any changes made to the site field during formatting.
 
