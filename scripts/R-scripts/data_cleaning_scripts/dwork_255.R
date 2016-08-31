@@ -21,7 +21,10 @@ dataset = read.csv(paste('data/raw_datasets/dataset_', datasetID, '.csv', sep = 
 
 dataFormattingTable = read.csv('data_formatting_table.csv')
 
+dataFormattingTable[,'spatial_scale_variable'] = 
+  dataFormattingTableFieldUpdate(datasetID, 'spatial_scale_variable', 'N')
 
+write.csv(dataFormattingTable, 'data_formatting_table.csv', row.names = F)
 # Function takes a dataset with two columns: numYrs = the number of years
 # (or other temporal unit) that a species was observed to be present, and
 # numSpp = the number of species observed with that level of temporal frequency.

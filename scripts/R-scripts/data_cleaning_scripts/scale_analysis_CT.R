@@ -34,12 +34,13 @@ summ = read.csv('output/tabular_data/core-transient_summary.csv', header=T)
 
 function(datasetID, dataDescription) {
   for(datasetID in datasetIDs){
- dataset_ID = 1 
- datasetID = 1
+
+ #dataset_ID = 1 #d/n work = 1, works =254
+# datasetID = 1
 dataset7 = read.csv(paste('data/formatted_datasets/dataset_', datasetID, '.csv', sep = ''))
 
 dataDescription = subset(read.csv("data_formatting_table.csv"),dataset_ID == datasetID)
-print(datasetID)
+print(datasetID)}
 # Takes spatial grain input from DFT and manipulates to get output of either each grain 
 # concatenated with _ or single grain unit
 if (as.character(dataDescription$spatial_scale_variable) == 'Y'){
@@ -67,25 +68,22 @@ goodsites = c()
     }
     
     # tryCatch
-richnessTest = tryCatch(    
-  {
-    suppressWarnings(richnessYearsTest)
-  },
-  error = function(cond) {
+richTest = tryCatch({
+  richnessYearsTest = richnessYearSubsetFun(dataset7, spatialGrain = sGrain, 
+                                            temporalGrain = tGrain, 
+                                            minNTime = minNTime, 
+                                            minSpRich = minSpRich,
+                                            dataDescription)
+  #error=function(cond){
+   # cat("Error in richnessYearsTest$analysisSite : 
+  #$ operator is invalid for atomic vectors")
+   # }
+  
+  if (richnessYearsTest == 'No acceptable sites, rethink site definitions or temporal scale'|length(goodSites) == 0) { 
+    goodSites <- NA
+  } else goodSites <- unique(richnessYearsTest$analysisSite)
     
-    message(paste("no acceptable sites, pasting NAs")) 
-    
-    
-    richnessYearsTest = richnessYearSubsetFun(dataset7, spatialGrain = sGrain, 
-                                              temporalGrain = tGrain, 
-                                              minNTime = minNTime, 
-                                              minSpRich = minSpRich,
-                                              dataDescription)
-
-    # if it works:
-    
-    goodSites = unique(richnessYearsTest$analysisSite)
-    
+    if (!is.na(goodSites)){
     uniqueSites = unique(dataset7$site)
     fullGoodSites = c()
     for (s in goodSites) {
@@ -107,25 +105,16 @@ richnessTest = tryCatch(
     
     # save datasetID, s, length(goodSites)
     #goodsites = data.frame(datasetID, sGrain, length(goodSites))
-    goodsites = rbind(goodsites, data.frame(datasetID, sGrain, length(goodSites)))
-  
-    
+    scale_df = rbind(goodsites, data.frame(datasetID, sGrain, length(goodSites)))
+    }
+    else 
     # if it doesn't work (i.e. error, no good sites):
     
     # save dataset ID, NA, NA
-    #goodsites = data.frame(datasetID, NA, NA)
-    
+    scale_df = data.frame(datasetID, NA, NA)
+    write.csv(scale_df, paste("data/spatialGrainAnalysis/siteSummaries/dataset_", datasetID, '.csv', sep = ''))
     # END tryCatch
-    if (a == 'warning') {
-      return_value <- NA
-      warning("no acceptable sites, pasting NAs")
-    } 
-  else {
-    return(richnessYearsTest))}
-  }
-  }
-}
-write.csv(goodsites, "data/spatialGrainAnalysis/goodsites.csv", row.names = FALSE)
+})
 
 ### need the trycatch for a dataset that doesnt work
   richnessTest = tryCatch( 

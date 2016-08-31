@@ -623,7 +623,7 @@ fitBeta = function(occProp, nTime) {
   bi = bimodalityFun(occProp,nTime)
   if (bi != 0 & !is.na(bi))
   {occs  = occsScaledFun(occProp)
-   shape.params = tryCatch( #############################TRYCATCH
+   shape.params = tryCatch( ############################# TRYCATCH
  
        {
          suppressWarnings(fitdistr(occs, "beta", list(shape1 = 2, shape2 = 2), lower = c(1e-10, 1e-10))) ###
