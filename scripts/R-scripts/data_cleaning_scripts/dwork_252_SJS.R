@@ -486,11 +486,7 @@ dataFormattingTable[,'Notes_countFormat'] =
 
 #--! PROVIDE INFO !--#
 #####ADDED concatenation of genus_species
-dataset5$species_name <- paste(dataset5$genus, dataset5$species, sep = " ")
-
-speciesField = 'species_name'
-
-names(dataset5)[names(dataset5) == speciesField] = 'species'
+dataset5$species <- paste(dataset5$genus, dataset5$species, sep = " ")
 
 # Look at the individual species present and how frequently they occur: This way 
 # you can more easily scan the species names (listed alphabetically) and identify 
@@ -699,7 +695,7 @@ tGrain = 'year'
 site_grain_names
 
 #--! PROVIDE INFO !--#
-sGrain = 'site'
+sGrain = 'site_line_trap'
 
 # This is a reasonable choice of spatial grain because ...
 #--! PROVIDE INFO !--#
