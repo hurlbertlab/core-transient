@@ -62,41 +62,59 @@ for(datasetID in datasetIDs){
       }
   
     }
+    df = rbind(df, unique(dataset7$datasetID[1]))
     }
-  df = rbind(df, unique(dataset7$datasetID[1]))
 }
 df = c(unique(df))
 newIDs = sort(df, decreasing = FALSE)
 
-#else{ 
-  
-    #spatialgrains= dataDescription$Raw_siteUnit
-    #spatialgrains = as.character(spatialgrains)
-#}
-
 goodsites = c()
 for(ID in newIDs){
-#tyCatch
-#richTest = tryCatch({
+  print(ID)
+
+  dataset7 = read.csv(paste('data/formatted_datasets/dataset_', ID, '.csv', sep = ''))
+  dataDescription = subset(read.csv("data_formatting_table.csv"),dataset_ID == ID)
+  spatialgrains = dataDescription$Raw_siteUnit
+  spatialgrains = as.character(spatialgrains)
+  spatialgrains = unlist(strsplit(spatialgrains, '_'))
+  spatialgrain = c()
+  for (sg in spatialgrains) {
+    spatialgrain = c(spatialgrain, paste(spatialgrain, sg, sep = "_"))
+    spatialgrains = substring(spatialgrain, 2)
+    print(spatialgrains)
+    sGrain = sg
+    tGrain = "year"
+    dataset7$date = as.character(dataset7$date)
+    if (nchar(as.character(dataset7$date[1])) > 4){ ###### ISSUE
+      dataset7$date = as.POSIXct(strptime(as.character(dataset7$date), format = "%Y-%m-%d"))
+    }
+  }
+  ## dataset210 is erroring bc one of the sub-spatial grains is erroring at getNestedSiteDataset (plot)
+  # need tryCatch to cycle through only viable sGrains
+  #tyCatch
+  richTest = tryCatch({  
   richnessYearsTest = richnessYearSubsetFun(dataset7, spatialGrain = sGrain, 
                                             temporalGrain = tGrain, 
                                             minNTime = minNTime, 
                                             minSpRich = minSpRich,
                                             dataDescription)
-  #error=function(cond){
-   # cat("Error in richnessYearsTest$analysisSite : 
-  #$ operator is invalid for atomic vectors")
-   # }
-  #
-  if (richnessYearsTest == 'No acceptable sites, rethink site definitions or temporal scale'){ 
-    goodSites <- NA
-  } else 
-    goodSites <- unique(richnessYearsTest$analysisSite)
+    
+  error=function(cond){
+    message(paste("Error in richnessYearsTest$analysisSite : 
+  #$ operator is invalid for atomic vectors"))
+    }
+  }) 
+  #if (richnessYearsTest == 'No acceptable sites, rethink site definitions or temporal scale'){ 
+  #  goodSites <- NA
+ 
   
-  if (length(goodSites) == 0){ 
-    goodSites <- NA
-  } 
-  }
+  # else 
+   # goodSites <- unique(richnessYearsTest$analysisSite)
+   # print(length(goodSites))
+ # if (length(goodSites) == 0){ 
+  #  goodSites <- NA
+ # } 
+}
   #else goodSites <- unique(richnessYearsTest$analysisSite)
     
     if (!is.na(goodSites)){
@@ -130,7 +148,7 @@ for(ID in newIDs){
     
     # save dataset ID, NA, NA
     scale_df = data.frame(datasetID, NA, NA)
-    write.csv(scale_df, paste("data/spatialGrainAnalysis/siteSummaries/dataset_", datasetID, '.csv', sep = ''))
+    write.csv(scale_df, paste("data/spatialGrainAnalysis/siteSummaries/dataset_", datasetID, sGrain,'.csv', sep = ''))
     # END tryCatch
 })
 
