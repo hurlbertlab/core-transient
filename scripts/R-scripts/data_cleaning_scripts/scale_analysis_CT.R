@@ -32,7 +32,7 @@ dataformattingtable = read.csv('data_formatting_table.csv', header = T)
 datasetIDs = dataformattingtable$dataset_ID[dataformattingtable$format_flag == 1]
 summ = read.csv('output/tabular_data/core-transient_summary.csv', header=T)
 
-
+df = c()
 #function(datasetID, dataDescription) {
 for(datasetID in datasetIDs){
  #dataset_ID = 1 #d/n work = 1, works =254
@@ -44,6 +44,7 @@ for(datasetID in datasetIDs){
 # Takes spatial grain input from DFT and manipulates to get output of either each grain 
 # concatenated with _ or single grain unit
   if (as.character(dataDescription$spatial_scale_variable) == 'Y'){
+    tmp = datasetID
     dataset7 = read.csv(paste('data/formatted_datasets/dataset_', datasetID, '.csv', sep = ''))
   
     spatialgrains = dataDescription$Raw_siteUnit
@@ -56,29 +57,26 @@ for(datasetID in datasetIDs){
       print(spatialgrains)
       tGrain = "year"
       dataset7$date = as.character(dataset7$date)
-        if (nchar(as.character(dataset7$date[1])) > 4) {{ ###### ISSUE
-        dataset7$date = as.POSIXct(strptime(as.character(dataset7$date), format = "%Y-%m-%d"))
+        if (nchar(as.character(dataset7$date[1])) > 4){ ###### ISSUE
+          dataset7$date = as.POSIXct(strptime(as.character(dataset7$date), format = "%Y-%m-%d"))
       }
-    #spatialgrain = rbind(spatialgrain, c(datasetID, spatialgrains))
+  
     }
-    } 
-  #else{ 
+    }
+  df = rbind(df, unique(dataset7$datasetID[1]))
+}
+df = c(unique(df))
+newIDs = sort(df, decreasing = FALSE)
+
+#else{ 
   
     #spatialgrains= dataDescription$Raw_siteUnit
     #spatialgrains = as.character(spatialgrains)
 #}
-  
+
 goodsites = c()
-  
-  #for (s in spatialgrains) {
-   # sGrain = s
-   # print(sGrain)
-   # tGrain = "year"
-   # if (nchar(as.character(dataset7$date)[1]  > 4)) {
-    #  dataset7$date = as.POSIXct(strptime(as.character(dataset7$date), format = "%Y-%m-%d"))
-   # }
-    
-    # tryCatch
+for(ID in newIDs){
+#tyCatch
 #richTest = tryCatch({
   richnessYearsTest = richnessYearSubsetFun(dataset7, spatialGrain = sGrain, 
                                             temporalGrain = tGrain, 
@@ -89,13 +87,22 @@ goodsites = c()
    # cat("Error in richnessYearsTest$analysisSite : 
   #$ operator is invalid for atomic vectors")
    # }
-  
-  if (richnessYearsTest == 'No acceptable sites, rethink site definitions or temporal scale'|length(goodSites) == 0) { 
+  #
+  if (richnessYearsTest == 'No acceptable sites, rethink site definitions or temporal scale'){ 
     goodSites <- NA
-  } else goodSites <- unique(richnessYearsTest$analysisSite)
+  } else 
+    goodSites <- unique(richnessYearsTest$analysisSite)
+  
+  if (length(goodSites) == 0){ 
+    goodSites <- NA
+  } 
+  }
+  #else goodSites <- unique(richnessYearsTest$analysisSite)
     
     if (!is.na(goodSites)){
     uniqueSites = unique(dataset7$site)
+    
+    }
     fullGoodSites = c()
     for (s in goodSites) {
       tmp = as.character(uniqueSites[grepl(paste(s, "_", sep = ""), paste(uniqueSites, "_", sep = ""))])
