@@ -18,6 +18,7 @@ library(ggplot2)
 library(lme4)
 library(lmtest)
 library(gtools)
+library(ecoretriever)
 
 # read in temporal occupancy dataset 
 Hurlbert_o = read.csv('Master_RO_Correlates_20110610.csv', header = T)
@@ -29,7 +30,24 @@ subsetocc = Hurlbert_o[Hurlbert_o$X10yr.Prop > .3 & Hurlbert_o$X10yr.Prop < .7,]
 bbs = read.csv('dataset_1.csv', header = T)
 # paring down BBS cols
 bbs = bbs[, (names(bbs) %in% c("stateroute", "Aou", "Year","SpeciesTotal",  'routeID', 'Lati', 'Longi'))]
-# read in Coyle occupancy data - organized by site 
+
+##### need to use ecoretriever to download bbs data and get updated occ values #####
+bbs_eco = ecoretriever::fetch('BBS')
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# read in Coyle occupancy data - organized by site
 coyle_o = read.csv('site_sp_occupancy_matrix_Coyle.csv', header = T)
 # gather into long format
 coyle_long = gather(coyle_o, Aou, occupancy, X2881:X22860)
