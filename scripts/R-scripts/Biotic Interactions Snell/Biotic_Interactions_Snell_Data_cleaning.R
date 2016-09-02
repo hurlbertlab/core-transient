@@ -32,7 +32,7 @@ bbs = read.csv('dataset_1.csv', header = T)
 bbs = bbs[, (names(bbs) %in% c("stateroute", "Aou", "Year","SpeciesTotal",  'routeID', 'Lati', 'Longi'))]
 
 ##### need to use ecoretriever to download bbs data and get updated occ values #####
-bbs_eco = ecoretriever::fetch('BBS')
+bbs_eco = ecoretriever::fetch("BBS")
 
 
 
