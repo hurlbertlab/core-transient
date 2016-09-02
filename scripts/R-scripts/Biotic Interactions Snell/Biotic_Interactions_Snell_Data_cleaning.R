@@ -33,11 +33,13 @@ bbs = bbs[, (names(bbs) %in% c("stateroute", "Aou", "Year","SpeciesTotal",  'rou
 
 ##### need to use ecoretriever to download bbs data and get updated occ values #####
 bbs_eco = ecoretriever::fetch("BBS")
+head(bbs_eco$routes)
+Years = (bbs_eco$counts$Year)
 
+bbs_sub = bbs_eco$counts$Year %>% filter(bbs_eco$counts$Year %in% 1996:2010)
 
-
-
-
+bbs_sub = bbs_eco$counts %>% filter(Year >= 1996, Year <= 2010) %>%
+  select(stateroute, Year) %>% unique() %>% tally(stateroute)
 
 
 
