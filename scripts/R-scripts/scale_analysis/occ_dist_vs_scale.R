@@ -36,15 +36,18 @@ bbs50 = subset(bbs50, n == 15)
 
 
 
-#use bbs50 route #'s to subset fifty$counts 
+#use bbs50 route #'s to subset original ecoretriever data via fifty$counts 
 
-fifty = fifty$counts
-fifty$stateroute = fifty$statenum*1000 + fifty$Route
-fifty$stateroute = as.integer(fifty$stateroute)
+fifty_new = fifty$counts
+fifty_new$stateroute = fifty_new$statenum*1000 + fifty_new$Route
+fifty_new$stateroute = as.integer(fifty_new$stateroute)
+
+#merge bbs50 with fifty, leaving behind only matching stateroutes 
+fifty_allyears<-merge(fifty_new, bbs50, by = "stateroute")
 
 
-
-
+#fifty_allyears_final = fifty_allyears
+#write.csv(fifty_allyears_final, "C:/git/core-transient/scripts/R-scripts/scale_analysis/fifty_allyears_final.csv") 
 #Pull in BBS 50 stop data from BioArk (too big to store on GitHub and Ecoretriever data still incomplete)
 #bbs50 = read.csv("//bioark.ad.unc.edu/hurlbertlab/Databases/BBS/FiftyStopData/fiftystop_thru2010_goodspp_goodrtes.csv", header = TRUE)
 
