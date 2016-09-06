@@ -69,22 +69,22 @@ for(datasetID in datasetIDs){
                                             minSpRich = minSpRich,
                                             dataDescription)
     
-  error=function(cond){
-    message(paste("Error in richnessYearsTest$analysisSite : 
+ # error=function(cond){
+   # message(paste("Error in richnessYearsTest$analysisSite : 
   #$ operator is invalid for atomic vectors"))
-    }
-  }) 
+    
+ 
   #if (richnessYearsTest == 'No acceptable sites, rethink site definitions or temporal scale'){ 
   #  goodSites <- NA
  
   
   # else 
-   # goodSites <- unique(richnessYearsTest$analysisSite)
+   goodSites <- unique(richnessYearsTest$analysisSite)
    # print(length(goodSites))
  # if (length(goodSites) == 0){ 
   #  goodSites <- NA
  # } 
-}
+
   #else goodSites <- unique(richnessYearsTest$analysisSite)
     
     if (!is.na(goodSites)){
