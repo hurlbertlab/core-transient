@@ -35,13 +35,17 @@ bbs = bbs[, (names(bbs) %in% c("stateroute", "Aou", "Year","SpeciesTotal",  'rou
 bbs_eco = ecoretriever::fetch("BBS")
 head(bbs_eco$routes)
 Years = (bbs_eco$counts$Year)
+bbs_eco$counts$Year = as.numeric(bbs_eco$counts$Year)
+bbs_eco$counts$stateroute = bbs_eco$counts$statenum*1000 + bbs_eco$counts$Route
+bbs_eco$counts$tally = 1
 
-bbs_sub = bbs_eco$counts$Year %>% filter(bbs_eco$counts$Year %in% 1996:2010)
+bbs_sub = bbs_eco$counts %>% 
+  filter(Year >= 1996, Year <= 2010) %>% 
+  group_by(stateroute, Aou) %>% unique() %>% tally(Year)
 
-bbs_sub = bbs_eco$counts %>% filter(Year >= 1996, Year <= 2010) %>%
-  select(stateroute, Year) %>% unique() %>% tally(stateroute)
-
-
+#### Redo coyle occupancy 
+bbs_sub$occ = bbs_sub %>% group_by(Aou) %>%
+  select(stateroute, Year) %>% tally(stateroute)
 
 
 
