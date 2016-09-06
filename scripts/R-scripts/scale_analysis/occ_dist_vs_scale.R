@@ -27,12 +27,22 @@ bbs50$stateroute = as.integer(bbs50$stateroute)
 # use dplyr to filter and subset
 bbs50 = bbs50 %>% filter(year > 1995, year < 2011) %>%
   select(year, stateroute) %>% unique(bbs50$year, incomparables = FALSE) 
-
+  
 
 #just need to figure out tally...       %>% tally(stateroute)
 
 bbs50 = tally(group_by(bbs50, stateroute)) 
 bbs50 = subset(bbs50, n == 15)
+
+
+
+#use bbs50 route #'s to subset fifty$counts 
+
+fifty = fifty$counts
+fifty$stateroute = fifty$statenum*1000 + fifty$Route
+fifty$stateroute = as.integer(fifty$stateroute)
+
+
 
 
 #Pull in BBS 50 stop data from BioArk (too big to store on GitHub and Ecoretriever data still incomplete)
