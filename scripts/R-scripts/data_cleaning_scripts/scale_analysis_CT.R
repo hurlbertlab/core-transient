@@ -28,6 +28,8 @@ minSpRich = 10
 # of site-years will be represented.
 topFractionSites = 0.5
 
+setwd("C:/git/core-transient")
+
 dataformattingtable = read.csv('data_formatting_table.csv', header = T) 
 datasetIDs = dataformattingtable$dataset_ID[dataformattingtable$format_flag == 1]
 summ = read.csv('output/tabular_data/core-transient_summary.csv', header=T)
@@ -46,7 +48,7 @@ for(datasetID in datasetIDs){
   if (as.character(dataDescription$spatial_scale_variable) == 'Y'){
     tmp = datasetID
     dataset7 = read.csv(paste('data/formatted_datasets/dataset_', datasetID, '.csv', sep = ''))
-  
+    
     spatialgrains = dataDescription$Raw_siteUnit
     spatialgrains = as.character(spatialgrains)
     spatialgrains = unlist(strsplit(spatialgrains, '_'))
@@ -92,7 +94,7 @@ for(ID in newIDs){
   ## dataset210 is erroring bc one of the sub-spatial grains is erroring at getNestedSiteDataset (plot)
   # need tryCatch to cycle through only viable sGrains
   #tyCatch
-  richTest = tryCatch({  
+  #richTest = tryCatch({  
   richnessYearsTest = richnessYearSubsetFun(dataset7, spatialGrain = sGrain, 
                                             temporalGrain = tGrain, 
                                             minNTime = minNTime, 
