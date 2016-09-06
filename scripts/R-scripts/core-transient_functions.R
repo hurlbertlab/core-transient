@@ -226,7 +226,7 @@ getNestedTimeDataset = function(dataset,  temporalGrain, dataDescription){
     dataset$analysisDate = paste(year, timeFrame[,temporalGrain], sep ='_')
     dataset$year = year
     # Summarize data to the new time scale:
-  } else if (class(dataset$date)[1] == 'numeric') { # if analysis will be performed at annual resolution
+  } else if (class(dataset$date)[1] == 'integer') { # if analysis will be performed at annual resolution
     dataset$analysisDate = dataset$date
     dataset$year = dataset$date
   } else { 
