@@ -28,54 +28,23 @@ minSpRich = 10
 # of site-years will be represented.
 topFractionSites = 0.5
 
-setwd("C:/git/core-transient")
+
 
 dataformattingtable = read.csv('data_formatting_table.csv', header = T) 
-datasetIDs = dataformattingtable$dataset_ID[dataformattingtable$format_flag == 1]
+
+datasetIDs = filter(dataformattingtable, spatial_scale_variable == 'Y',
+                               format_flag == 1)$dataset_ID
+
 summ = read.csv('output/tabular_data/core-transient_summary.csv', header=T)
 
-df = c()
+
 #function(datasetID, dataDescription) {
 for(datasetID in datasetIDs){
- #dataset_ID = 1 #d/n work = 1, works =254
-# datasetID = 1
 
   print(datasetID)
-  
+
+  dataset7 = read.csv(paste('data/formatted_datasets/dataset_', datasetID, '.csv', sep = ''))
   dataDescription = subset(read.csv("data_formatting_table.csv"),dataset_ID == datasetID)
-# Takes spatial grain input from DFT and manipulates to get output of either each grain 
-# concatenated with _ or single grain unit
-  if (as.character(dataDescription$spatial_scale_variable) == 'Y'){
-    tmp = datasetID
-    dataset7 = read.csv(paste('data/formatted_datasets/dataset_', datasetID, '.csv', sep = ''))
-    
-    spatialgrains = dataDescription$Raw_siteUnit
-    spatialgrains = as.character(spatialgrains)
-    spatialgrains = unlist(strsplit(spatialgrains, '_'))
-    spatialgrain = c()
-    for (sg in spatialgrains) {
-      spatialgrain = c(spatialgrain, paste(spatialgrain, sg, sep = "_"))
-      spatialgrains = substring(spatialgrain, 2)
-      print(spatialgrains)
-      tGrain = "year"
-      dataset7$date = as.character(dataset7$date)
-        if (nchar(as.character(dataset7$date[1])) > 4){ ###### ISSUE
-          dataset7$date = as.POSIXct(strptime(as.character(dataset7$date), format = "%Y-%m-%d"))
-      }
-  
-    }
-    df = rbind(df, unique(dataset7$datasetID[1]))
-    }
-}
-df = c(unique(df))
-newIDs = sort(df, decreasing = FALSE)
-
-goodsites = c()
-for(ID in newIDs){
-  print(ID)
-
-  dataset7 = read.csv(paste('data/formatted_datasets/dataset_', ID, '.csv', sep = ''))
-  dataDescription = subset(read.csv("data_formatting_table.csv"),dataset_ID == ID)
   spatialgrains = dataDescription$Raw_siteUnit
   spatialgrains = as.character(spatialgrains)
   spatialgrains = unlist(strsplit(spatialgrains, '_'))
@@ -86,7 +55,6 @@ for(ID in newIDs){
     print(spatialgrains)
     sGrain = sg
     tGrain = "year"
-    dataset7$date = as.character(dataset7$date)
     if (nchar(as.character(dataset7$date[1])) > 4){ ###### ISSUE
       dataset7$date = as.POSIXct(strptime(as.character(dataset7$date), format = "%Y-%m-%d"))
     }
