@@ -46,6 +46,8 @@ fifty_new$stateroute = as.integer(fifty_new$stateroute)
 fifty_allyears<-merge(fifty_new, bbs50, by = "stateroute")
 
 
+#fifty_allyears_final = fifty_allyears
+#write.csv(fifty_allyears_final, "C:/git/core-transient/scripts/R-scripts/scale_analysis/fifty_allyears_final.csv") 
 #Pull in BBS 50 stop data from BioArk (too big to store on GitHub and Ecoretriever data still incomplete)
 #bbs50 = read.csv("//bioark.ad.unc.edu/hurlbertlab/Databases/BBS/FiftyStopData/fiftystop_thru2010_goodspp_goodrtes.csv", header = TRUE)
 
