@@ -10,22 +10,33 @@ library(sp)
 library(rgdal)
 library(maptools)
 library(rgeos)
+library(dplyr)
 
 # TO DO: read in bbs50 using ecoretriever package
 # -filter to years 1996-2010 (inclusive)
 # -count how many years each route occurs
 # -filter to the set of routes for which that count == 15
 
-bbs50 = ecoretriever::fetch('BBS50')
+fifty = ecoretriever::fetch('BBS50')
 
-bbs50$counts$stateroute = bbs50$counts$statenum*1000 + bbs50$counts$Route
+bbs50 = fifty
+bbs50 = bbs50$counts
+bbs50$stateroute = bbs50$statenum*1000 + bbs50$Route
 
+bbs50$stateroute = as.integer(bbs50$stateroute)
 # use dplyr to filter and subset
-fifty = bbs50$counts %>% filter(year >= 1996, year <= 2010) %>%
-  select(stateroute, Year) %>% unique() %>% tally(stateroute)
+bbs50 = bbs50 %>% filter(year > 1995, year < 2011) %>%
+  select(year, stateroute) %>% unique(bbs50$year, incomparables = FALSE) 
+
+
+#just need to figure out tally...       %>% tally(stateroute)
+
+bbs50 = tally(group_by(bbs50, stateroute)) 
+bbs50 = subset(bbs50, n == 15)
+
 
 #Pull in BBS 50 stop data from BioArk (too big to store on GitHub and Ecoretriever data still incomplete)
-bbs50 = read.csv("//bioark.ad.unc.edu/hurlbertlab/Databases/BBS/FiftyStopData/fiftystop_thru2010_goodspp_goodrtes.csv", header = TRUE)
+#bbs50 = read.csv("//bioark.ad.unc.edu/hurlbertlab/Databases/BBS/FiftyStopData/fiftystop_thru2010_goodspp_goodrtes.csv", header = TRUE)
 
 
 #need to subset down to 1996-2010 for all states, not just OR-MD-CO-CA
