@@ -73,6 +73,14 @@ for (scale in scales) {
 bbs_scalesorted<-output
 
 #write.csv(bbs_scalesorted, "C:/git/core-transient/scripts/R-scripts/scale_analysis/bbs_scalesorted_new.csv", row.names = FALSE)
+#old values are saved in BIOARK folder bc too large for git 
+
+#compare bbs_scalesorted_old and bbs_scalesorted_new occupancy values (should plot linear)
+
+
+
+
+
 
 
 #want to compare occupancy to scale 
