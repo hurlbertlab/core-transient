@@ -20,12 +20,17 @@ bbs50 = bbs50$counts
 bbs50$stateroute = bbs50$statenum*1000 + bbs50$Route
 
 bbs50$stateroute = as.integer(bbs50$stateroute)
-# use dplyr to filter and subset
-bbs50 = bbs50 %>% filter(year > 1995, year < 2011) %>%
-  select(year, stateroute) %>% unique(bbs50$year, incomparables = FALSE) 
-bbs50 = tally(group_by(bbs50, stateroute)) 
-bbs50 = subset(bbs50, n == 15)
 
+# Get subset of BBS routes btw 1996-2010 surveyed in EVERY year
+good_rtes = bbs50 %>% filter(year > 1995, year < 2011) %>%
+  select(year, stateroute) %>% 
+  unique() %>% 
+  group_by(stateroute) %>%  
+  tally(year) %>%
+  filter(n == 15)$stateroute
+
+# Subset the full BBS dataset to the routes above
+fifty_allyears = filter(bbs50, year > 1995, year < 2011, stateroute %in% good_rtes)
 
 #use bbs50 route #'s to subset original ecoretriever data via fifty$counts 
 
@@ -64,7 +69,7 @@ for (scale in scales) {
   numGroups = floor(50/scale)
   for (g in 1:numGroups) {
     groupedCols = paste("Stop", ((g-1)*scale + 1):(g*scale), sep = "")
-    temp = occ_counts(fifty_allyears_final, groupedCols, scale)
+    temp = occ_counts(fifty_allyears, groupedCols, scale)
     output = rbind(output, temp)
   }
   
@@ -72,8 +77,11 @@ for (scale in scales) {
 
 bbs_scalesorted<-output
 
+
 #write.csv(bbs_scalesorted, "C:/git/core-transient/scripts/R-scripts/scale_analysis/bbs_scalesorted_new.csv", row.names = FALSE)
 #old values are saved in BIOARK folder bc too large for git 
+
+bbs_scalesorted = read.csv('scripts/R-scripts/scale_analysis/bbs_scalesorted_new.csv', header = T)
 
 #compare bbs_scalesorted_old and bbs_scalesorted_new occupancy values (should plot linear)
 
@@ -123,6 +131,8 @@ lats = 100*runif(50)
 ####
 #Jes Coyle's state-by-state scale analysis reference script 
 
+counts5 = read.csv('data/raw_datasets/dataset_1RAW/dataset_1_full.csv', header=T)
+occupancy.matrix = as.matrix(read.csv('scripts/R-scripts/scale_analysis/occ_matrix_BBS.csv', header=T, row.names = 1))
 
 # MD BBS data
 md.counts = subset(counts5, statenum==46) #sub to MD
