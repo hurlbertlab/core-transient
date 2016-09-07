@@ -41,21 +41,27 @@ bbs_eco$counts$stateroute = bbs_eco$counts$statenum*1000 + bbs_eco$counts$Route
 # Get subset of stateroutes that have been surveyed every year from 1996-2010
 good_rtes = bbs_eco$counts %>% 
   filter(Year >= 1996, Year <= 2010) %>% 
-  select(Year, stateroute) %>%
-  unique() %>% 
-  group_by(stateroute) %>% 
-  tally(Year) %>% 
-  filter(n == 15) %>% 
-  select(stateroute)
+  dplyr::select(Year, stateroute) %>%
+  unique() %>%    ## good until here
+  group_by(Year) %>% 
+  count(stateroute) %>% 
+  #tally(Year) 
+  filter(n == 15) #%>% # have to stay at 15 to keep # of years consistent
+# dplyr::select(stateroute)
+
+#plyr::count(bbs_eco$counts, vars = 'Year')
+#tally(group_by(stateroute, Year))
 
 # Calculate occupancy for all species at subset of stateroutes above
-bbs_sub = bbs_eco$counts %>% 
-  filter(Year >= 1996, Year <= 2010, stateroute %in% good_rtes) %>% 
-  select(Year, stateroute, Aou) %>%
+bbs_sub1 = bbs_eco$counts %>% 
+  filter(Year >= 1996, Year <= 2010 & stateroute %in% good_rtes$stateroute) %>% 
+  dplyr::select(Year, stateroute, Aou) %>%
   group_by(stateroute, Aou) %>% 
-  unique() %>% 
-  tally(Year) %>%
-  summarize(occupancy = n/15)
+  unique() #%>% 
+  #count(stateroute) %>%
+
+bbs_sub = merge(bbs_sub1, good_rtes, by = "stateroute", all.x = TRUE)
+bbs_sub$occ = bbs_sub$n/15 # these are all 15 as of now. What happened.
 
 
 
