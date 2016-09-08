@@ -50,86 +50,45 @@ for(datasetID in datasetIDs){
   spatialgrains = as.character(spatialgrains)
   spatialgrains = unlist(strsplit(spatialgrains, '_'))
   spatialgrain = c()
+  grainLevel = 1
   for (sg in spatialgrains) {
-    spatialgrain = c(spatialgrain, paste(spatialgrain, sg, sep = "_"))
-    spatialgrains = substring(spatialgrain, 2)
-    print(spatialgrains)
-    sGrain = sg
+    spatialgrain = paste(spatialgrain, sg, sep = "_")
+    sGrain = substring(spatialgrain, 2)
+    print(sGrain)
     tGrain = "year"
-    if (nchar(as.character(dataset7$date[1])) > 4){ ###### ISSUE
+    if (nchar(as.character(dataset7$date[1])) > 4){ 
       dataset7$date = as.POSIXct(strptime(as.character(dataset7$date), format = "%Y-%m-%d"))
     }
-  }
-  ## dataset210 is erroring bc one of the sub-spatial grains is erroring at getNestedSiteDataset (plot)
-  # need tryCatch to cycle through only viable sGrains
-  #tyCatch
-  #richTest = tryCatch({  
-  richnessYearsTest = richnessYearSubsetFun(dataset7, spatialGrain = sGrain, 
-                                            temporalGrain = tGrain, 
-                                            minNTime = minNTime, 
-                                            minSpRich = minSpRich,
-                                            dataDescription)
   
-  # error=function(cond){
-  # message(paste("Error in richnessYearsTest$analysisSite : 
-  #$ operator is invalid for atomic vectors"))
-  
-  
-  #if (richnessYearsTest == 'No acceptable sites, rethink site definitions or temporal scale'){ 
-  #  goodSites <- NA
-  
-  
-  # else 
-  goodSites <- unique(richnessYearsTest$analysisSite)
-  # print(length(goodSites))
-  # if (length(goodSites) == 0){ 
-  #  goodSites <- NA
-  # } 
-  
-  #else goodSites <- unique(richnessYearsTest$analysisSite)
-  
-  #if (!is.na(goodSites)){
-  #uniqueSites = unique(dataset7$site)
-  
-  #}
-  fullGoodSites = c()
-  for (s in goodSites) {
-    tmp = as.character(uniqueSites[grepl(paste(s, "_", sep = ""), paste(uniqueSites, "_", sep = ""))])
-    fullGoodSites = c(fullGoodSites, tmp)
-  }
-  
-  # dataset8 = subset(dataset7, site %in% fullGoodSites)
-  
-  dataset8 = dataset7
-  
-  subsettedData = subsetDataFun(dataset8, 
-                                datasetID, spatialGrain = sGrain, 
-                                temporalGrain = tGrain,
-                                minNTime = minNTime, minSpRich = minSpRich,
-                                proportionalThreshold = topFractionSites,
-                                dataDescription)
-  
-  # Output will get written to spatialGrainAnalysis folder
-  propOcc = propOccFun(subsettedData)
-  siteSummary = siteSummaryFun(subsettedData)
-  datasetID = unique(siteSummary$datasetID)
-  
-  #writePropOccSiteSummary(subsettedData, spatialGrainAnalysis = TRUE)
-  
-  write.csv(propOcc, 
-            paste('data/spatialGrainAnalysis/propOcc_datasets/propOcc_', datasetID, '_', sGrain,'.csv', sep = ''), row.names = F)
-  write.csv(siteSummary, 
-            paste('data/spatialGrainAnalysis/siteSummaries/siteSummary_', datasetID, '_', sGrain,'.csv',  sep = ''), row.names = F)
-  # save datasetID, s, length(goodSites)
-  #goodsites = data.frame(datasetID, sGrain, length(goodSites))
-  #scale_df = rbind(fullGoodSites, c(datasetID, sGrain))
-  
-  #else 
-  # if it doesn't work (i.e. error, no good sites):
-  
-  # save dataset ID, NA, NA
-  #scale_df = data.frame(datasetID, NA, NA)
-  #write.csv(scale_df, paste("data/spatialGrainAnalysis/siteSummaries/dataset_", datasetID, sGrain,'.csv', sep = ''))
-}
+    richnessYearsTest = richnessYearSubsetFun(dataset7, spatialGrain = sGrain, 
+                                              temporalGrain = tGrain, 
+                                              minNTime = minNTime, 
+                                              minSpRich = minSpRich,
+                                              dataDescription)
+    
+    goodSites <- unique(richnessYearsTest$analysisSite)
+
+    uniqueSites = unique(dataset7$site)
+    fullGoodSites = c()
+    for (s in goodSites) {
+      tmp = as.character(uniqueSites[grepl(paste(s, "_", sep = ""), paste(uniqueSites, "_", sep = ""))])
+      fullGoodSites = c(fullGoodSites, tmp)
+    }
+    
+    dataset8 = subset(dataset7, site %in% fullGoodSites)
+    
+    subsettedData = subsetDataFun(dataset8, 
+                                  datasetID, spatialGrain = sGrain, 
+                                  temporalGrain = tGrain,
+                                  minNTime = minNTime, minSpRich = minSpRich,
+                                  proportionalThreshold = topFractionSites,
+                                  dataDescription)
+
+    writePropOccSiteSummary(subsettedData, spatialGrainAnalysis = TRUE, grainLevel = grainLevel)
+
+    grainLevel = grainLevel + 1
+    } # end of spatial grain loop
+
+} # end dataset loop
 
 
