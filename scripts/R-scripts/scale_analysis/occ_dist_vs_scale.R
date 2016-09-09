@@ -2,6 +2,9 @@
 #Molly F. Jenkins 
 #07/27/2016
 
+#Set working directory to core-transient folder on github i.e. setwd("C:/git/core-transient/")
+
+
 ## Please download and install the following packages:
 # maps, sp, rgdal, raster, maptools, rgeos
 library(raster)
@@ -13,23 +16,29 @@ library(rgeos)
 library(dplyr)
 
 
-fifty = ecoretriever::fetch('BBS50')
+#fifty = ecoretriever::fetch('BBS50')
+#bbs50 = fifty
+#bbs50 = bbs50$counts
+#bbs50$stateroute = bbs50$statenum*1000 + bbs50$Route
+#bbs50$stateroute = as.integer(bbs50$stateroute)
+#^derivation of data from ecoretriever; still too large to host on github so pull from BioArk
 
-bbs50 = fifty
-bbs50 = bbs50$counts
-bbs50$stateroute = bbs50$statenum*1000 + bbs50$Route
+bbs50 = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/bbs50.csv", header = TRUE)
 
-bbs50$stateroute = as.integer(bbs50$stateroute)
-
-# Get subset of BBS routes btw 1996-2010 surveyed in EVERY year
+# Get subset of BBS routes (just routes) btw 1996-2010 surveyed in EVERY year
 good_rtes = bbs50 %>% filter(year > 1995, year < 2011) %>%
   select(year, stateroute) %>% 
   unique() %>% 
-  group_by(stateroute) %>%  
-  tally(year) %>%
-  filter(n == 15)$stateroute
+  group_by(stateroute) %>%
+  tally(year)
+   
 
-# Subset the full BBS dataset to the routes above
+
+#  last piece:  %>% filter(stateroute, n == 15)
+
+#tally is not giving me 1-15, resolve (should group_by come AFTER tally?
+
+# Subset the full BBS dataset to the routes above but including associated data
 fifty_allyears = filter(bbs50, year > 1995, year < 2011, stateroute %in% good_rtes)
 
 #use bbs50 route #'s to subset original ecoretriever data via fifty$counts 
