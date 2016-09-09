@@ -65,7 +65,9 @@ for(datasetID in datasetIDs){
                                               minNTime = minNTime, 
                                               minSpRich = minSpRich,
                                               dataDescription)
-    
+    if(class(richnessYearsTest) == "character"){
+      goodSites = 0
+    }else
     goodSites <- unique(richnessYearsTest$analysisSite)
 
     uniqueSites = unique(dataset7$site)
@@ -77,6 +79,9 @@ for(datasetID in datasetIDs){
     
     dataset8 = subset(dataset7, site %in% fullGoodSites)
     
+    if(goodSites == 0){
+      subsettedData = dataset8
+    }else
     subsettedData = subsetDataFun(dataset8, 
                                   datasetID, spatialGrain = sGrain, 
                                   temporalGrain = tGrain,
@@ -84,7 +89,10 @@ for(datasetID in datasetIDs){
                                   proportionalThreshold = topFractionSites,
                                   dataDescription)
 
-    writePropOccSiteSummary(subsettedData, spatialGrainAnalysis = TRUE, grainLevel = grainLevel)
+    if(goodSites == 0){
+      subsettedData = dataset8
+    }else
+      writePropOccSiteSummary(subsettedData, spatialGrainAnalysis = TRUE, grainLevel = grainLevel)
 
     grainLevel = grainLevel + 1
     } # end of spatial grain loop
