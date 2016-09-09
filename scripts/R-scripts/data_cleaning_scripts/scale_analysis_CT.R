@@ -79,7 +79,7 @@ for(datasetID in datasetIDs){
     
     dataset8 = subset(dataset7, site %in% fullGoodSites)
     
-    if(goodSites == 0){
+   if(goodSites == 0){
       subsettedData = dataset8
     }else
     subsettedData = subsetDataFun(dataset8, 
