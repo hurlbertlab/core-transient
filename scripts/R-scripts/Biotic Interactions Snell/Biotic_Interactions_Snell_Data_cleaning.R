@@ -3,7 +3,7 @@
 # green-tailed towhees and spotted towhees using occupancy, abundance, and environmental data.
 # Env data was formatted in Snell_code.R from BIOL 465 project. Occupancy data from BBS, Coyle, and Hurlbert.
 
-setwd("C:/git/core-transient/scripts/R-scripts/Biotic Interactions Snell")
+#setwd("C:/git/core-transient/scripts/R-scripts/Biotic Interactions Snell")
 #### ---- Inital Formatting ---- ####
 library(plyr)
 library(dplyr)
@@ -33,7 +33,7 @@ bbs = bbs[, (names(bbs) %in% c("stateroute", "Aou", "Year","SpeciesTotal",  'rou
 
 ##### need to use ecoretriever to download bbs data and get updated occ values #####
 bbs_eco = ecoretriever::fetch("BBS")
-head(bbs_eco$routes)
+
 Years = (bbs_eco$counts$Year)
 bbs_eco$counts$Year = as.numeric(bbs_eco$counts$Year)
 bbs_eco$counts$stateroute = bbs_eco$counts$statenum*1000 + bbs_eco$counts$Route
@@ -49,31 +49,19 @@ good_rtes = bbs_eco$counts %>%
   filter(n == 15) #%>% # have to stay at 15 to keep # of years consistent
 # dplyr::select(stateroute)
 
-#plyr::count(bbs_eco$counts, vars = 'Year')
-#tally(group_by(stateroute, Year))
 
 # Calculate occupancy for all species at subset of stateroutes above
 bbs_sub1 = bbs_eco$counts %>% 
-  filter(Year >= 1996, Year <= 2010 & stateroute %in% good_rtes$stateroute) %>% 
+  filter(Year > 1995, Year < 2011, stateroute %in% good_rtes$stateroute) %>% 
   dplyr::select(Year, stateroute, Aou) %>%
-  group_by(stateroute, Aou) %>% 
-  unique() #%>% 
-  #count(stateroute) %>%
-
-bbs_sub = merge(bbs_sub1, good_rtes, by = "stateroute", all.x = TRUE)
-bbs_sub$occ = bbs_sub$n/15 # these are all 15 as of now. What happened.
-
-
+  #group_by(stateroute, Aou) %>% 
+  count(stateroute, Aou) 
+  
+bbs_sub1$occ = bbs_sub1$n/15 # these are all 15 as of now. What happened.
 
 #### Redo coyle occupancy 
 bbs_sub$occ = bbs_sub %>% group_by(Aou) %>%
   select(stateroute, Year) %>% tally(stateroute)
-
-
-
-
-
-
 
 # read in Coyle occupancy data - organized by site
 coyle_o = read.csv('site_sp_occupancy_matrix_Coyle.csv', header = T)

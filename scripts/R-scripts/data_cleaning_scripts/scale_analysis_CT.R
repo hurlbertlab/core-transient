@@ -38,7 +38,7 @@ datasetIDs = filter(dataformattingtable, spatial_scale_variable == 'Y',
 
 summ = read.csv('output/tabular_data/core-transient_summary.csv', header=T)
 
-
+grainlevels = c()
 #function(datasetID, dataDescription) {
 for(datasetID in datasetIDs){
   
@@ -95,8 +95,11 @@ for(datasetID in datasetIDs){
       writePropOccSiteSummary(subsettedData, spatialGrainAnalysis = TRUE, grainLevel = grainLevel)
 
     grainLevel = grainLevel + 1
+    print(grainLevel)
+    
     } # end of spatial grain loop
-
+  grainlevels = rbind(grainlevels, c(datasetID, grainLevel))
 } # end dataset loop
-
-
+grainlevels = data.frame(grainlevels)
+colnames(grainlevels) = c("datasetID", "NumGrains")
+write.csv(grainlevels, "output/grainlevels.csv", row.names=FALSE)
