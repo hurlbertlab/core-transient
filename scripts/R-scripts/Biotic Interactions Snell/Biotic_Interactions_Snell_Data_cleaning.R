@@ -32,7 +32,7 @@ bbs = read.csv('dataset_1.csv', header = T)
 bbs = bbs[, (names(bbs) %in% c("stateroute", "Aou", "Year","SpeciesTotal",  'routeID', 'Lati', 'Longi'))]
 
 ##### need to use ecoretriever to download bbs data and get updated occ values #####
-bbs_eco = ecoretriever::fetch("BBS")
+# bbs_eco = ecoretriever::fetch("BBS") # takes forever!!
 
 Years = (bbs_eco$counts$Year)
 bbs_eco$counts$Year = as.numeric(bbs_eco$counts$Year)
@@ -47,30 +47,30 @@ good_rtes = bbs_eco$counts %>%
   count(stateroute) %>% 
   #tally(Year) 
   filter(n == 15) #%>% # have to stay at 15 to keep # of years consistent
-# dplyr::select(stateroute)
-
 
 # Calculate occupancy for all species at subset of stateroutes above
 bbs_sub1 = bbs_eco$counts %>% 
   filter(Year > 1995, Year < 2011, stateroute %in% good_rtes$stateroute) %>% 
   dplyr::select(Year, stateroute, Aou) %>%
   #group_by(stateroute, Aou) %>% 
-  count(stateroute, Aou) 
+  unique() %>%
+  count(Aou, stateroute) 
   
-bbs_sub1$occ = bbs_sub1$n/15 # these are all 15 as of now. What happened.
+bbs_sub1$occ = bbs_sub1$n/15 # new occupancy values calculated
 
-#### Redo coyle occupancy 
-bbs_sub$occ = bbs_sub %>% group_by(Aou) %>%
-  select(stateroute, Year) %>% tally(stateroute)
+coyle_o = bbs_sub1
 
+write.csv(bbs_sub1, "bbs_sub1.csv", row.names=FALSE)
+
+read.csv("bbs_sub1.csv", header=TRUE)
 # read in Coyle occupancy data - organized by site
-coyle_o = read.csv('site_sp_occupancy_matrix_Coyle.csv', header = T)
+#coyle_o = read.csv('site_sp_occupancy_matrix_Coyle.csv', header = T)
 # gather into long format
-coyle_long = gather(coyle_o, Aou, occupancy, X2881:X22860)
+#coyle_long = gather(coyle_o, Aou, occupancy, X2881:X22860)
 # remove x
-coyle_long$Aou = substring(coyle_long$Aou, 2)
+#coyle_long$Aou = substring(coyle_long$Aou, 2)
 # name 1st col stateroute
-colnames(coyle_long)[1] = "stateroute"
+#colnames(coyle_long)[1] = "stateroute"
 
 # read in expected presence data based on BBS 
 expect_pres = read.csv('expected_presence_on_BBS_routes.csv', header = T)
