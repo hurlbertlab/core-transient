@@ -10,6 +10,7 @@ library(gridExtra)
 library(MASS)
 library(dplyr)
 library(tidyr)
+library(lme4)
 
 # Source the functions file:
 source('scripts/R-scripts/core-transient_functions.R')
@@ -108,14 +109,23 @@ write.csv(grainlevels, "output/grainlevels.csv", row.names=FALSE)
 #grainlevels = read.csv("output/grainlevels.csv", header = TRUE)
 files = list.files("data/spatialGrainAnalysis/propOcc_datasets")
 bigfile = c()
+#scale = c()
 for(file in files){
   nfile= read.csv(paste("data/spatialGrainAnalysis/propOcc_datasets/", file, sep = ""))
+  scale = substring(file, 18,last = 18)
   bigfile = rbind(bigfile, nfile)
+  #scale=rbind(scale, unique(bigfile$datasetID))
 }
 bigfile=data.frame(bigfile)
+#scale = data.frame(scale)
 
 bigfile_taxa = merge(bigfile, dataformattingtable[,c('dataset_ID', 'taxa')], by.x = 'datasetID', by.y = "dataset_ID")
-
+#biggile_scale= merge(bigfile, dataformattingtable[,c('dataset_ID', 'taxa')], )
+  
 write.csv(bigfile_taxa, "output/all_grains_w_taxa.csv", row.names=FALSE)
 
+# working on model - should this go in the master loop?
+# this would be for each dset - the propocc as response and the # of grain levels, lengthsubset = community size, and random effect of taxa would be the predictor variables
+# prob need poisson bc propOcc is continuous not discrete
+mod1 = glm(propOcc ~ grainLevel + length(subsettedData)+(1:taxa), family=poisson(), data=bigfile_taxa)
 
