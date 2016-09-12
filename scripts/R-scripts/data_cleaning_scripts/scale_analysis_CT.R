@@ -103,3 +103,19 @@ for(datasetID in datasetIDs){
 grainlevels = data.frame(grainlevels)
 colnames(grainlevels) = c("datasetID", "NumGrains")
 write.csv(grainlevels, "output/grainlevels.csv", row.names=FALSE)
+
+# Merge all output files into 1 file
+#grainlevels = read.csv("output/grainlevels.csv", header = TRUE)
+files = list.files("data/spatialGrainAnalysis/propOcc_datasets")
+bigfile = c()
+for(file in files){
+  nfile= read.csv(paste("data/spatialGrainAnalysis/propOcc_datasets/", file, sep = ""))
+  bigfile = rbind(bigfile, nfile)
+}
+bigfile=data.frame(bigfile)
+
+bigfile_taxa = merge(bigfile, dataformattingtable[,c('dataset_ID', 'taxa')], by.x = 'datasetID', by.y = "dataset_ID")
+
+write.csv(bigfile_taxa, "output/all_grains_w_taxa.csv", row.names=FALSE)
+
+
