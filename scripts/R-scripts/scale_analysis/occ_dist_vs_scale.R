@@ -29,14 +29,11 @@ bbs50 = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/bbs50.csv"
 good_rtes = bbs50 %>% filter(year > 1995, year < 2011) %>%
   select(year, stateroute) %>% 
   unique() %>% 
-  group_by(stateroute) %>%
-  tally(year)
-   
+  group_by(stateroute) %>% #this part is working, giving me unique year-route combinations 
+  tally(year, sort = TRUE) #tally is not giving me range of 1-15, instead is adding the years themselves, summing n  
+#lowest values are "1996", so it isn't giving me frequencies...why not?  
+   %>% filter(stateroute, n == 15) # last piece, disable or skip until the above works
 
-
-#  last piece:  %>% filter(stateroute, n == 15)
-
-#tally is not giving me 1-15, resolve (should group_by come AFTER tally?
 
 # Subset the full BBS dataset to the routes above but including associated data
 fifty_allyears = filter(bbs50, year > 1995, year < 2011, stateroute %in% good_rtes)
