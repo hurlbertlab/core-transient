@@ -50,6 +50,7 @@ for(datasetID in datasetIDs){
   spatialgrains = dataDescription$Raw_siteUnit
   spatialgrains = as.character(spatialgrains)
   spatialgrains = unlist(strsplit(spatialgrains, '_'))
+  spatialgrains[length(spatialgrains):1] #reversing order to be from small to large
   spatialgrain = c()
   grainLevel = 1
   for (sg in spatialgrains) {
@@ -99,7 +100,7 @@ for(datasetID in datasetIDs){
     print(grainLevel)
     
     } # end of spatial grain loop
-  grainlevels = rbind(grainlevels, c(datasetID, grainLevel))
+  grainlevels = rbind(grainlevels, c(datasetID, grainLevel-1))
 } # end dataset loop
 grainlevels = data.frame(grainlevels)
 colnames(grainlevels) = c("datasetID", "NumGrains")
@@ -123,6 +124,24 @@ bigfile_taxa = merge(bigfile, dataformattingtable[,c('dataset_ID', 'taxa')], by.
 #biggile_scale= merge(bigfile, dataformattingtable[,c('dataset_ID', 'taxa')], )
   
 write.csv(bigfile_taxa, "output/all_grains_w_taxa.csv", row.names=FALSE)
+
+
+# rbind site_summary files
+summfiles = list.files("data/spatialGrainAnalysis/siteSummaries")
+allsummaries = c()
+for(file in summfiles){
+  nfile= read.csv(paste("data/spatialGrainAnalysis/siteSummaries/", file, sep = ""))
+  nfile$scale = as.numeric(substring(file, 22,last = 22))
+  nfile$site = as.factor(nfile$site)
+  allsummaries = rbind(allsummaries, nfile)
+}
+allsummaries = data.frame(allsummaries)
+
+summaries_taxa = merge(allsummaries, dataformattingtable[,c('dataset_ID', 'taxa')], by.x = 'datasetID', by.y = "dataset_ID")
+
+write.csv(summaries_taxa, "output/summaries_grains_w_taxa.csv", row.names=FALSE)
+
+
 
 # working on model - should this go in the master loop?
 # this would be for each dset - the propocc as response and the # of grain levels, lengthsubset = community size, and random effect of taxa would be the predictor variables
