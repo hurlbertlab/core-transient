@@ -36,6 +36,7 @@ dataformattingtable = read.csv('data_formatting_table.csv', header = T)
 
 datasetIDs = filter(dataformattingtable, spatial_scale_variable == 'Y',
                     format_flag == 1)$dataset_ID
+datasetIDs = datasetIDs[datasetIDs  != 317] #dropped 317 bc ended up only being one spatial grain
 
 summ = read.csv('output/tabular_data/core-transient_summary.csv', header=T)
 
