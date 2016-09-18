@@ -38,12 +38,13 @@ good_rtes = bbs50 %>%
   filter(nn == 15) #had to do count THEN tally, then add extra "n" <- clean later 
 
 #write.csv(good_rtes, "//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/filteredrtes.csv")
-#wrote to file just in case <---- OVERWRITE
+#wrote to file just in case 
 
 
 # Subset the full BBS dataset to the routes above but including associated data
 fifty_allyears = bbs50 %>% 
-  filter(year > 1995, year < 2011, stateroute %in% good_rtes) %>% #not populating cells...why? 
+  filter(year >= 1996, year <= 2010) %>% 
+  filter(stateroute %in% good_rtes$stateroute) %>% #finally works because needed $ specification 
   select(year, stateroute, AOU) %>% 
   unique() %>% 
   count(stateroute, AOU)
