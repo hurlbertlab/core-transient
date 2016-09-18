@@ -37,9 +37,6 @@ good_rtes = bbs50 %>%
   tally(n) %>% 
   filter(nn == 15) #had to do count THEN tally, then add extra "n" <- clean later 
 
-#write.csv(good_rtes, "//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/filteredrtes.csv")
-#wrote to file just in case 
-
 
 # Subset the full BBS dataset to the routes above but including associated data
 fifty_allyears = bbs50 %>% 
@@ -49,19 +46,8 @@ fifty_allyears = bbs50 %>%
   unique() %>% 
   count(stateroute, AOU)
 
-
-
-
-
-
-#use bbs50 route #'s to subset original ecoretriever data via fifty$counts 
-
-fifty_new = fifty$counts
-fifty_new$stateroute = fifty_new$statenum*1000 + fifty_new$Route
-fifty_new$stateroute = as.integer(fifty_new$stateroute)
-
-#merge bbs50 with fifty, leaving behind only matching stateroutes 
-fifty_allyears<-merge(fifty_new, bbs50, by = "stateroute")
+#write.csv(fifty_allyears, "//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/filteredrtes.csv")
+#wrote to file just in case 
 
 
 ###So for the whole dataset, 10 pt count stops: #we are only getting one out of five chunks along 
