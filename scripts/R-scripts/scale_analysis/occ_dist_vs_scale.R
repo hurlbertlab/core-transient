@@ -26,17 +26,32 @@ library(dplyr)
 bbs50 = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/bbs50.csv", header = TRUE)
 
 # Get subset of BBS routes (just routes) btw 1996-2010 surveyed in EVERY year
-good_rtes = bbs50 %>% filter(year > 1995, year < 2011) %>%
-  select(year, stateroute) %>% 
-  unique() %>% 
-  group_by(stateroute) %>% #this part is working, giving me unique year-route combinations 
-  tally(year, sort = TRUE) #tally is not giving me range of 1-15, instead is adding the years themselves, summing n  
-#lowest values are "1996", so it isn't giving me frequencies...why not?  
-   %>% filter(stateroute, n == 15) # last piece, disable or skip until the above works
+
+#from Sara's code
+good_rtes = bbs50 %>% 
+  filter(year >= 1996, year <= 2010) %>% 
+  select(year, stateroute) %>%
+  unique() %>%    
+  group_by(stateroute) %>% 
+  count(year) %>% 
+  tally(n) %>% 
+  filter(nn == 15) #had to do count THEN tally, then add extra "n" <- clean later 
+
+#write.csv(good_rtes, "//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/filteredrtes.csv")
+#wrote to file just in case <---- OVERWRITE
 
 
 # Subset the full BBS dataset to the routes above but including associated data
-fifty_allyears = filter(bbs50, year > 1995, year < 2011, stateroute %in% good_rtes)
+fifty_allyears = bbs50 %>% 
+  filter(year > 1995, year < 2011, stateroute %in% good_rtes) %>% #not populating cells...why? 
+  select(year, stateroute, AOU) %>% 
+  unique() %>% 
+  count(stateroute, AOU)
+
+
+
+
+
 
 #use bbs50 route #'s to subset original ecoretriever data via fifty$counts 
 
