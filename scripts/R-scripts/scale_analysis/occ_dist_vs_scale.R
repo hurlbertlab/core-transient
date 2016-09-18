@@ -41,11 +41,8 @@ good_rtes = bbs50 %>%
 # Subset the full BBS dataset to the routes above but including associated data
 fifty_allyears = bbs50 %>% 
   filter(year >= 1996, year <= 2010) %>% 
-  filter(stateroute %in% good_rtes$stateroute) %>% #finally works because needed $ specification 
-  select(year, stateroute, AOU) %>% 
-  unique() %>% 
-  count(stateroute, AOU)
-
+  filter(stateroute %in% good_rtes$stateroute) #finally works because needed $ specification 
+ 
 #write.csv(fifty_allyears, "//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/filteredrtes.csv")
 #wrote to file just in case 
 
@@ -83,19 +80,11 @@ for (scale in scales) {
   
 }
 
-bbs_scalesorted<-output
+bbs_scalesorted2<-output
 
-
-#write.csv(bbs_scalesorted, "C:/git/core-transient/scripts/R-scripts/scale_analysis/bbs_scalesorted_new.csv", row.names = FALSE)
-#old values are saved in BIOARK folder bc too large for git 
-
-bbs_scalesorted = read.csv('scripts/R-scripts/scale_analysis/bbs_scalesorted_new.csv', header = T)
 
 #compare bbs_scalesorted_old and bbs_scalesorted_new occupancy values (should plot linear)
-
-
-
-
+bbs_scalesorted_old<-read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/bbs_scalesorted.csv")
 
 
 
