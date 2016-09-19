@@ -26,26 +26,25 @@ library(dplyr)
 bbs50 = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/bbs50.csv", header = TRUE)
 
 # Get subset of BBS routes (just routes) btw 1996-2010 surveyed in EVERY year
-good_rtes = bbs50 %>% filter(year > 1995, year < 2011) %>%
-  select(year, stateroute) %>% 
-  unique() %>% 
-  group_by(stateroute) %>% #this part is working, giving me unique year-route combinations 
-  tally(year, sort = TRUE) #tally is not giving me range of 1-15, instead is adding the years themselves, summing n  
-#lowest values are "1996", so it isn't giving me frequencies...why not?  
-   %>% filter(stateroute, n == 15) # last piece, disable or skip until the above works
+
+#from Sara's code
+good_rtes = bbs50 %>% 
+  filter(year >= 1996, year <= 2010) %>% 
+  select(year, stateroute) %>%
+  unique() %>%    
+  group_by(year) %>% 
+  count(stateroute) %>% 
+  filter(n == 15) #strange discrepancy between method needed on home laptop and on lab desktop...update R on both, make sure same version
 
 
 # Subset the full BBS dataset to the routes above but including associated data
-fifty_allyears = filter(bbs50, year > 1995, year < 2011, stateroute %in% good_rtes)
-
-#use bbs50 route #'s to subset original ecoretriever data via fifty$counts 
-
-fifty_new = fifty$counts
-fifty_new$stateroute = fifty_new$statenum*1000 + fifty_new$Route
-fifty_new$stateroute = as.integer(fifty_new$stateroute)
-
-#merge bbs50 with fifty, leaving behind only matching stateroutes 
-fifty_allyears<-merge(fifty_new, bbs50, by = "stateroute")
+fifty_allyears = bbs50 %>% 
+  filter(year >= 1996, year <= 2010) %>% 
+  filter(stateroute %in% good_rtes$stateroute) #finally works because needed $ specification, 
+#can probably collapse into one line 
+ 
+#write.csv(fifty_allyears, "//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/filteredrtes.csv")
+#wrote to file just in case 
 
 
 ###So for the whole dataset, 10 pt count stops: #we are only getting one out of five chunks along 
@@ -81,20 +80,68 @@ for (scale in scales) {
   
 }
 
-bbs_scalesorted<-output
+bbs_scalesorted2<-output
 
 
-#write.csv(bbs_scalesorted, "C:/git/core-transient/scripts/R-scripts/scale_analysis/bbs_scalesorted_new.csv", row.names = FALSE)
-#old values are saved in BIOARK folder bc too large for git 
+####Jes Coyle's MD scale analysis reference script#### 
 
-bbs_scalesorted = read.csv('scripts/R-scripts/scale_analysis/bbs_scalesorted_new.csv', header = T)
+counts5 = read.csv('data/raw_datasets/dataset_1RAW/dataset_1_full.csv', header=T)
+occupancy.matrix = as.matrix(read.csv('scripts/R-scripts/scale_analysis/occ_matrix_BBS.csv', header=T, row.names = 1))
 
-#compare bbs_scalesorted_old and bbs_scalesorted_new occupancy values (should plot linear)
+# MD BBS data
+md.counts = subset(counts5, statenum==46) #sub to MD
+md.occ.mat = occupancy.matrix[floor(as.numeric(row.names(occupancy.matrix))/1000)==46,]
+md.uniq = unique(md.counts[,c('Year','Aou')])
+# MD statewide temporal occupancy (27 routes)
+md.occ = data.frame(table(md.uniq$Aou)/15)
+
+#Scale of 10 BBS point count stops (specifically stops 1-10)
+md10 = unique(md.counts[md.counts$Count10!=0,c('stateroute','Year','Aou')])
+md10.rt.occ = data.frame(table(md10[,c('stateroute','Aou')])/15)
+md10.rt.occ2 = md10.rt.occ[md10.rt.occ$Freq!=0,]
 
 
 
+#####Testing occupancy of old vs occupancy of new for consistency####
+y = bbs_scalesorted2 %>% 
+  filter(subrouteID == "Stop1" & scale == 10) %>% 
+  filter(stateroute %in% md10.rt.occ2$stateroute) %>% #47 items when aou not limited, interesting
+  filter(AOU %in% md10.rt.occ2$Aou)
+
+#42 items
 
 
+x = md10.rt.occ2 %>% #we know that these are already just the scale 10 sites from stops 1-10 in MD 
+  filter(stateroute %in% y$stateroute) #42 items as well
+
+
+
+plot(x$Freq, y$occupancy, type = "l") #plots linear? YES awesome perfectly linear for MD subset
+
+##Test again for CA/OR (west coast sample!) just in case 
+
+ca.counts = subset(counts5, statenum==14 | statenum == 69)
+ca.occ.mat = occupancy.matrix[floor(as.numeric(row.names(occupancy.matrix))/1000)==14 |
+                                floor(as.numeric(row.names(occupancy.matrix))/1000)==69,]
+ca.uniq = unique(ca.counts[,c('Year','Aou')])
+# CA/OR statewide temporal occupancy (27 routes)
+ca.occ = data.frame(table(ca.uniq$Aou)/15)
+
+#Scale of 10 BBS point count stops (specifically stops 1-10)
+ca10 = unique(ca.counts[ca.counts$Count10!=0,c('stateroute','Year','Aou')])
+ca10.rt.occ = data.frame(table(ca10[,c('stateroute','Aou')])/15)
+ca10.rt.occ2 = ca10.rt.occ[ca10.rt.occ$Freq!=0,]
+
+y = bbs_scalesorted2 %>% 
+  filter(subrouteID == "Stop1" & scale == 10) %>% 
+  filter(stateroute %in% ca10.rt.occ2$stateroute) %>% #47 items when aou not limited, interesting
+  filter(AOU %in% ca10.rt.occ2$Aou)
+
+#42 items
+
+
+x = ca10.rt.occ2 %>% #we know that these are already just the scale 10 sites from stops 1-10 in MD 
+  filter(stateroute %in% y$stateroute) #42 items as well
 
 
 #want to compare occupancy to scale 
@@ -135,28 +182,9 @@ lats = 100*runif(50)
 
 ###################################################################################
 ####
-#Jes Coyle's state-by-state scale analysis reference script 
 
-counts5 = read.csv('data/raw_datasets/dataset_1RAW/dataset_1_full.csv', header=T)
-occupancy.matrix = as.matrix(read.csv('scripts/R-scripts/scale_analysis/occ_matrix_BBS.csv', header=T, row.names = 1))
 
-# MD BBS data
-md.counts = subset(counts5, statenum==46) #sub to MD
-md.occ.mat = occupancy.matrix[floor(as.numeric(row.names(occupancy.matrix))/1000)==46,]
-md.uniq = unique(md.counts[,c('Year','Aou')])
-# MD statewide temporal occupancy (27 routes)
-md.occ = data.frame(table(md.uniq$Aou)/15)
 
-#Scale of 10 BBS point count stops (specifically stops 1-10)
-md10 = unique(md.counts[md.counts$Count10!=0,c('stateroute','Year','Aou')])
-md10.rt.occ = data.frame(table(md10[,c('stateroute','Aou')])/15)
-md10.rt.occ2 = md10.rt.occ[md10.rt.occ$Freq!=0,]
-
-# Scale of 1 BBS point count stop #use to group in clumps of 5
-fiftyMD1 = subset(fifty, stateroute %in% unique(md10.rt.occ$stateroute) & year > 1995 & year < 2011 & Stop1!=0, 
-                  select = c('stateroute','year','AOU','Stop1'))
-md1.rt.occ = data.frame(table(fiftyMD1[,c('stateroute','AOU')])/15)
-md1.rt.occ2 = md1.rt.occ[md1.rt.occ$Freq!=0,]
 
 
 fiftyMD1 = subset(fifty, stateroute %in% unique(md10.rt.occ$stateroute) & year > 1995 & year < 2011 & Stop1!=0, 
@@ -168,17 +196,7 @@ md1.rt.occ2 = md1.rt.occ[md1.rt.occ$Freq!=0,]
 # OTHER REGIONS ##########################################################################
 
 # CA/OR BBS data
-ca.counts = subset(counts5, statenum==14 | statenum == 69)
-ca.occ.mat = occupancy.matrix[floor(as.numeric(row.names(occupancy.matrix))/1000)==14 |
-                                floor(as.numeric(row.names(occupancy.matrix))/1000)==69,]
-ca.uniq = unique(ca.counts[,c('Year','Aou')])
-# CA/OR statewide temporal occupancy (27 routes)
-ca.occ = data.frame(table(ca.uniq$Aou)/15)
 
-#Scale of 10 BBS point count stops (specifically stops 1-10)
-ca10 = unique(ca.counts[ca.counts$Count10!=0,c('stateroute','Year','Aou')])
-ca10.rt.occ = data.frame(table(ca10[,c('stateroute','Aou')])/15)
-ca10.rt.occ2 = ca10.rt.occ[ca10.rt.occ$Freq!=0,]
 
 # Scale of 1 BBS point count stop
 fiftyca1 = subset(fifty, stateroute %in% unique(ca10.rt.occ$stateroute) & year > 1995 & year < 2011 & Stop1!=0, 
