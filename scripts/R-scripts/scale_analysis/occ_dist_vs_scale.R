@@ -116,7 +116,7 @@ x = md10.rt.occ2 %>% #we know that these are already just the scale 10 sites fro
 
 
 
-plot(x$Freq, y$occupancy, type = "l") #plots linear? YES awesome perfectly linear for MD subset
+plot(x$Freq, y$occupancy, type = "l", main = "MD old occupancy vs new",  ylab = "new", xlab = "old") #plots linear? YES awesome perfectly linear for MD subset
 
 
 
@@ -134,7 +134,7 @@ ca10 = unique(ca.counts[ca.counts$Count10!=0,c('stateroute','Year','Aou')])
 ca10.rt.occ = data.frame(table(ca10[,c('stateroute','Aou')])/15)
 ca10.rt.occ2 = ca10.rt.occ[ca10.rt.occ$Freq!=0,]
 
-y = bbs_scalesorted2 %>% 
+y2 = bbs_scalesorted2 %>% 
   filter(subrouteID == "Stop1" & scale == 10) %>% 
   filter(stateroute %in% ca10.rt.occ2$stateroute) %>% # items when aou not limited, interesting
   filter(AOU %in% ca10.rt.occ2$Aou)
@@ -142,13 +142,13 @@ y = bbs_scalesorted2 %>%
 #58 items
 
 
-x = ca10.rt.occ2 %>% 
-  filter(stateroute %in% y$stateroute) %>% #60 items? 
-  filter(Aou %in% y$AOU) #58 items
+x2 = ca10.rt.occ2 %>% 
+  filter(stateroute %in% y2$stateroute) %>% #60 items? 
+  filter(Aou %in% y2$AOU) #58 items
 
 
 
-plot(x$Freq, y$occupancy) #there are differences for the west coast data, womp 
+plot(x2$Freq, y2$occupancy, main = "CA/OR old occupancy vs new",  ylab = "new", xlab = "old") #there are differences for the west coast data, womp 
 
 
 
@@ -180,7 +180,6 @@ fig_one<-boxplot(occupancy ~ scale, data = bbs_scalesorted, xlab = "Scale", ylab
 
 # figure out how many routes are present in grid cells of varying size
 
-
 # count how many there are per grid cell at different scales
 
 # e.g. doing this for both lat & long
@@ -188,7 +187,15 @@ fig_one<-boxplot(occupancy ~ scale, data = bbs_scalesorted, xlab = "Scale", ylab
 
 grain = 1
 lats = 100*runif(50)
-> floor(lats/grain)*grain
-[1] 10 21 15 86 24 96 47 16 41  9 24 64 63 54 11 78 66 83 32 10 85 51 34 26 95 77 55 85 14 64 62 85  6 54 59 41 22 40 84 93  3
-[42] 18 29 82  2 68  8 94 58 96
-> floor(lats/grain)*grain + grain/2
+floor(lats/grain)*grain
+#below is example of 50 random floored lats generated at grain 1, 
+#where grain is analagous to the scales vector from before
+
+#[1] 10 21 15 86 24 96 47 16 41  
+#9 24 64 63 54 11 78 66 83 32 10 85 51 
+#34 26 95 77 55 85 14 64 62 85  
+#6 54 59 41 22 40 84 93  3
+#[42] 18 29 82  2 68  8 94 58 96
+
+
+floor(lats/grain)*grain + grain/2
