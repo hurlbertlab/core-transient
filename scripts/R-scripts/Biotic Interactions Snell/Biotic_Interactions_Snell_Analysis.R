@@ -1,3 +1,8 @@
+library(lme4)
+library(ggplot2)
+library(tidyr)
+library(dplyr)
+library(plyr)
 #### ---- GLM fitting  ---- ####
 occumatrix = read.csv('occumatrix.csv', header = TRUE)
 # add on success and failure columns by creating # of sites where birds were found
@@ -337,6 +342,14 @@ ggsave("C:/Git/core-transient/scripts/R-scripts/Biotic Interactions Snell/barplo
 ggplot(envflip, aes(x = Type, y = value, color = Type)) + geom_violin() 
 
 ggplot(envloc, aes(x = FocalAOU, y = factor(EW))) + geom_violin() + scale_x_discrete(labels=c("West", "East")) 
+
+##################### TRAITS Model ####################################
+env_binom = merge(occumatrix1, envflip, by.x = "AOU", by.y = "FocalAOU")
+
+glm_traits = glmer(cbind(sp_success, sp_fail) ~ cs(comp_scaled) + 
+           Trophic.Group + migclass + Family + EW + (1|stateroute:Species), family = binomial(link = logit), data = env_binom)
+summary(glm_traits) 
+
 
 # R2 plot - lm in ggplot
 envoutputa = read.csv("envoutputa.csv", header = TRUE)

@@ -142,10 +142,10 @@ summaries_taxa = merge(allsummaries, dataformattingtable[,c('dataset_ID', 'taxa'
 
 write.csv(summaries_taxa, "output/summaries_grains_w_taxa.csv", row.names=FALSE)
 
-
+occ_taxa = merge(all_grains_w_taxa, summaries_taxa[,c("site", "spRich")], by = "site")
 
 # working on model - should this go in the master loop?
 # this would be for each dset - the propocc as response and the # of grain levels, lengthsubset = community size, and random effect of taxa would be the predictor variables
 # prob need poisson bc propOcc is continuous not discrete
-mod1 = glm(propOcc ~ grainLevel + length(subsettedData)+(1:taxa), family=poisson(), data=bigfile_taxa)
-
+mod1 = glmer(propOcc ~ site + spRich + (1|taxa), family=binomial(), data=occ_taxa)
+summary(mod1)
