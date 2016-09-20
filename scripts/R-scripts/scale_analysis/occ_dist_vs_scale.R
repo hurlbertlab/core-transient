@@ -32,8 +32,8 @@ good_rtes = bbs50 %>%
   filter(year >= 1996, year <= 2010) %>% 
   select(year, stateroute) %>%
   unique() %>%    
-  group_by(year) %>% 
-  count(stateroute) %>% 
+  group_by(stateroute) %>% 
+  tally(year) %>% 
   filter(n == 15) #strange discrepancy between method needed on home laptop and on lab desktop...update R on both, make sure same version
 
 
