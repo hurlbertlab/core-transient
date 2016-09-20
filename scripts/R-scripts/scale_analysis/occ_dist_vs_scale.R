@@ -159,7 +159,7 @@ plot(x2$Freq, y2$occupancy, main = "CA/OR old occupancy vs new",  ylab = "new", 
 
 
 #want to compare occupancy to scale 
-scale_occ_mod = lm(occupancy~scale, data = bbs_scalesorted)
+scale_occ_mod = lm(occupancy~scale, data = bbs_scalesorted2)
 summary(scale_occ_mod)
 
 
@@ -167,16 +167,26 @@ summary(scale_occ_mod)
 #so what happens when we split up data by scale visually, a 10scale, etc and run these by occupancy? 
 
 
-fig_one<-boxplot(occupancy ~ scale, data = bbs_scalesorted, xlab = "Scale", ylab = "BBS Occupancy")
+fig_one<-boxplot(occupancy ~ scale, data = bbs_scalesorted2, xlab = "Scale", ylab = "BBS Occupancy")
 
-
+#seeing the same patterns with new occupancy calculations
 
 # -----------------------------------------------------------
-# Calculating occupancy at scales greater than a single route
+####Calculating occupancy at scales greater than a single route####
+
+# bring in bbs routes file 
+routes = read.csv('scripts/R-scripts/scale_analysis/routes.csv')
+routes$stateroute = 1000*routes$statenum + routes$Route
+
 
 # merge lat longs from routes file to the list of "good" routes
 
+good_rtes2 = good_rtes %>% 
+  left_join(routes, good_rtes, by = "stateroute") 
+
 # map these routes
+
+
 
 # figure out how many routes are present in grid cells of varying size
 
