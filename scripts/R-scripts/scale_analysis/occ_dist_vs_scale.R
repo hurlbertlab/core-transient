@@ -203,7 +203,7 @@ grains = c(1, 2, 10)
 output = c()
 for (grain in grains) {
   lats = 100*runif(50)
-  for (g in 1:lats) {
+  for (l in 1:lats) {
     groupedCols = paste("Rt_group", floor(lats/grain)*grain + grain/2, sep = "")
     temp = occ_counts(fifty_allyears, groupedCols, grain)
     output = rbind(output, temp)
