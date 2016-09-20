@@ -147,15 +147,7 @@ x2 = ca10.rt.occ2 %>%
   filter(Aou %in% y2$AOU) #58 items
 
 
-
 plot(x2$Freq, y2$occupancy, main = "CA/OR old occupancy vs new",  ylab = "new", xlab = "old") #there are differences for the west coast data, womp 
-
-
-
-
-
-
-
 
 
 #want to compare occupancy to scale 
@@ -203,12 +195,32 @@ points(sites$longitude, sites$latitude, col= "red", pch=16)
 
 # e.g. doing this for both lat & long
 
+####prototype forloop for generating scaled-up samples for calculating occupancy####
 
+grains = c(1, 2, 10)
+
+
+output = c()
+for (grain in grains) {
+  lats = 100*runif(50)
+  for (g in 1:lats) {
+    groupedCols = paste("Rt_group", floor(lats/grain)*grain + grain/2, sep = "")
+    temp = occ_counts(fifty_allyears, groupedCols, grain)
+    output = rbind(output, temp)
+  }
+  
+}
+
+bbs_scaledup = output
+
+
+
+####reference code for calculating grain and random selection of routes by lat
 grain = 1
 lats = 100*runif(50)
 floor(lats/grain)*grain
 #below is example of 50 random floored lats generated at grain 1, 
-#where grain is analagous to the scales vector from before
+#where grain is analagous to the scales vector from before?
 
 #[1] 10 21 15 86 24 96 47 16 41  
 #9 24 64 63 54 11 78 66 83 32 10 85 51 
