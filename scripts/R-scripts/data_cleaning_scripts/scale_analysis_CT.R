@@ -126,6 +126,7 @@ bigfile_taxa = merge(bigfile, dataformattingtable[,c('dataset_ID', 'taxa')], by.
   
 write.csv(bigfile_taxa, "output/all_grains_w_taxa.csv", row.names=FALSE)
 
+all_grains_w_taxa = read.csv("output/all_grains_w_taxa.csv", header = TRUE) # read in file if not running whole code
 
 # rbind site_summary files
 summfiles = list.files("data/spatialGrainAnalysis/siteSummaries")
@@ -138,17 +139,19 @@ for(file in summfiles){
 }
 allsummaries = data.frame(allsummaries)
 
-summaries_taxa = merge(allsummaries, dataformattingtable[,c('dataset_ID', 'taxa')], by.x = 'datasetID', by.y = "dataset_ID")
+# Summary statistics by datasetID/site, i.e. mean occupancy, % transient species (<=1/3)
+summaries_taxa = merge(allsummaries, dataformattingtable[,c("dataset_ID","taxa","Raw_spatial_grain", "Raw_spatial_grain_unit")], by.x = 'datasetID', by.y = "dataset_ID")
+
+##### put conversion table in too!
 
 write.csv(summaries_taxa, "output/summaries_grains_w_taxa.csv", row.names=FALSE)
 
-# Summary statistics by datasetID/site, i.e. mean occupancy, % transient species (<=1/3)
+summaries_grains_w_taxa = read.csv("output/summaries_grains_w_taxa.csv", header = TRUE) # read in file if not running whole code
+
 
 
 occ_taxa = merge(#######, summaries_taxa, by = c("datasetID", "site"))
 
-# working on model - should this go in the master loop?
-# this would be for each dset - the propocc as response and the # of grain levels, community size, and random effect of taxa would be the predictor variables
-# prob need poisson bc propOcc is continuous not discrete
-mod1 = glmer(###### ~ meanAbundance + (1|taxa), family=binomial(), data=occ_taxa)
+# for each dset - the propocc as response and the # of grain levels, community size, and random effect of taxa would be the predictor variables
+mod1 = glmer(###### ~ meanAbundance * (1|taxa), family=binomial(), data=occ_taxa)
 summary(mod1)
