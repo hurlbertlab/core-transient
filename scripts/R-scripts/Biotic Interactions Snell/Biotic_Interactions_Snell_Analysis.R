@@ -344,11 +344,17 @@ ggplot(envflip, aes(x = Type, y = value, color = Type)) + geom_violin()
 ggplot(envloc, aes(x = FocalAOU, y = factor(EW))) + geom_violin() + scale_x_discrete(labels=c("West", "East")) 
 
 ##################### TRAITS Model ####################################
-env_binom = merge(occumatrix1, envflip, by.x = "AOU", by.y = "FocalAOU")
+env_lm = subset(envflip, Type == 'ENV')
 
-glm_traits = glmer(cbind(sp_success, sp_fail) ~ cs(comp_scaled) + 
-           Trophic.Group + migclass + Family + EW + (1|stateroute:Species), family = binomial(link = logit), data = env_binom)
-summary(glm_traits) 
+lm_traits = lm(FocalAOU ~ Trophic.Group + migclass + EW, data = env_lm)
+summary(lm_traits) 
+
+comp_lm = subset(envflip, Type == 'COMP')
+
+lm_traits_c = lm(FocalAOU ~ Trophic.Group + migclass + EW, data = comp_lm)
+summary(lm_traits_c) 
+
+## same vals for comp and env
 
 
 # R2 plot - lm in ggplot
