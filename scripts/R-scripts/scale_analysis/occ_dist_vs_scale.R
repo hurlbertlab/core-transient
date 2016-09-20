@@ -181,11 +181,20 @@ routes$stateroute = 1000*routes$statenum + routes$Route
 
 # merge lat longs from routes file to the list of "good" routes
 
-good_rtes2 = good_rtes %>% 
+good_rtes = good_rtes %>% 
   left_join(routes, good_rtes, by = "stateroute") 
 
 # map these routes
+# need North American map base first -> modified from "dataset_map.R" script as reference
 
+par(mfrow=c(1,1), mar=c(0,0,0,0))
+cex.terr = 1.3
+
+map('world',xlim=c(-165,-55),ylim=c(25,70), bg='black', fill=T, col='white')
+map('state',add=T)
+
+sites<-data.frame(longitude = good_rtes$Longi, latitude = good_rtes$Lati)
+points(sites$longitude, sites$latitude, col= "red", pch=16)
 
 
 # figure out how many routes are present in grid cells of varying size
