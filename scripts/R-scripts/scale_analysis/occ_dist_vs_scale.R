@@ -23,7 +23,7 @@ library(dplyr)
 #bbs50 = bbs50$counts
 #bbs50$stateroute = bbs50$statenum*1000 + bbs50$Route
 #bbs50$stateroute = as.integer(bbs50$stateroute)
-#^derivation of data from ecoretriever; still too large to host on github so pull from BioArk
+#^derivation of data from ecoretriever; still too large to host on github so save and pull from BioArk
 
 bbs50 = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/bbs50.csv", header = TRUE)
 
@@ -32,28 +32,14 @@ bbs50 = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/bbs50.csv"
 require(dplyr)
 #from Sara's code
 good_rtes = bbs50 %>% 
-  filter(year >= 1996, year <= 2010) %>% 
+  filter(year >= 2000, year <= 2014) %>% #shifted 15 year window up because missing 1996 data, and 2015 data available
   select(year, stateroute) %>%
   unique() %>%    
-  group_by(stateroute) %>% #before changing, look at dataframe produced! groups correctly when year specified, weirdly 
-  count(year) %>% 
-  tally(n) %>% #need both count AND tally 
-  filter(nn == 15) #still only getting 27 routes present thru all of 1996-2010 _> something wrong with ecoretriever data missing?
+  group_by(stateroute) %>%  
+  count(stateroute) %>% 
+  filter(n == 15) #now getting 1005 routes with consecutive data :^)
 
 #compare # of routes and route numbers themselves to old version of bbs50 stored in BioArk 
-
-
-
-
-
-
-
-
-
-
-
-
-
 require(dplyr)
 # Subset the full BBS dataset to the routes above but including associated data
 fifty_allyears = bbs50 %>% 
@@ -131,7 +117,8 @@ y = bbs_scalesorted2 %>%
 
 require(dplyr)
 x = md10.rt.occ2 %>% #we know that these are already just the scale 10 sites from stops 1-10 in MD 
-  filter(stateroute %in% y$stateroute) #42 items as well
+  filter(stateroute %in% y$stateroute) %>% #60 items? 
+  filter(Aou %in% y$AOU) #42 items as well
 
 
 
