@@ -121,6 +121,24 @@ points(sites$longitude, sites$latitude, col= "red", pch=16)
 
 ####prototype forloop for generating scaled-up samples for calculating occupancy####
 
+
+
+#need to mod occ_counts for up-scale data first?
+
+
+occ_counts2 = function(countData, countColumns, grain) {
+  bbssub = countData[, c("stateroute", "year", "AOU", countColumns)]
+  bbssub$groupCount = rowSums(bbssub[, countColumns])
+  bbsu = unique(bbssub[bbssub[, "groupCount"]!= 0, c("stateroute", "year", "AOU")]) #because this gets rid of 0's...
+  bbsu.rt.occ = data.frame(table(bbsu[,c("stateroute", "AOU")])/15)
+  bbsu.rt.occ2 = bbsu.rt.occ[bbsu.rt.occ$Freq!=0,] #and this also gets rid of occupancy values of 0 total 
+  names(bbsu.rt.occ2)[3] = "occupancy"
+  bbsu.rt.occ2$aboverouteID = countColumns[1] #subrouteID refers to first route in a grouped sequence, occ refers to the occ for the # of combined routes
+  bbsu.rt.occ2$grain = grain 
+  bbsu.rt.occ2 = bbsu.rt.occ2[, c("stateroute", "grain", "aboverouteID", "AOU", "occupancy")]
+  return(bbsu.rt.occ2)
+}
+
 grains = c(1, 2, 10)
 
 
@@ -129,11 +147,12 @@ for (grain in grains) {
   lats = 100*runif(50)
   for (l in 1:lats) {
     groupedCols = paste("Rt_group", floor(lats/grain)*grain + grain/2, sep = "")
-    temp = occ_counts(fifty_allyears, groupedCols, grain)
+    temp = occ_counts2(bbs_scalesorted2, groupedCols, grain)
     output = rbind(output, temp)
   }
   
 }
+#getting "undefined columns" error before modifying occ_counts 
 
 bbs_scaledup = output
 
