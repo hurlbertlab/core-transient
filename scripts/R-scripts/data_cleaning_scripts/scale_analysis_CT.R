@@ -124,9 +124,9 @@ bigfile=data.frame(bigfile)
 bigfile_taxa = merge(bigfile, dataformattingtable[,c('dataset_ID', 'taxa')], by.x = 'datasetID', by.y = "dataset_ID")
 #biggile_scale= merge(bigfile, dataformattingtable[,c('dataset_ID', 'taxa')], )
   
-write.csv(bigfile_taxa, "output/all_grains_w_taxa.csv", row.names=FALSE)
+write.csv(bigfile_taxa, "output/propOcc_w_taxa.csv", row.names=FALSE)
 
-all_grains_w_taxa = read.csv("output/all_grains_w_taxa.csv", header = TRUE) # read in file if not running whole code
+propOcc_w_taxa = read.csv("output/propOcc_w_taxa.csv", header = TRUE) # read in file if not running whole code
 
 # rbind site_summary files
 summfiles = list.files("data/spatialGrainAnalysis/siteSummaries")
@@ -144,24 +144,19 @@ summaries_taxa = merge(allsummaries, dataformattingtable[,c("dataset_ID","taxa",
 
 write.csv(summaries_taxa, "output/summaries_grains_w_taxa.csv", row.names=FALSE)
 
-summaries_grains_w_taxa = read.csv("output/summaries_grains_w_taxa.csv", header = TRUE) # read in file if not running whole code
+summaries_taxa = read.csv("output/summaries_grains_w_taxa.csv", header = TRUE) # read in file if not running whole code
 
 # merge in conversion table 
 conversion_table = read.csv("output/conversion_table.csv", header =TRUE)
 
-summaries_grains_w_taxa = merge(summaries_grains_w_taxa, conversion_table, by.x = "Raw_spatial_grain_unit", by.y = "units")
+summaries_grains_w_taxa = merge(summaries_taxa, conversion_table, by.x = "Raw_spatial_grain_unit", by.y = "units")
 
-mean_occ_by_site = all_grains_w_taxa %>%
+mean_occ_by_site = propOcc_w_taxa %>%
   group_by(datasetID, site) %>%
-  dplyr::summarize(mean(propOcc))
+  dplyr::summarize(meanOcc = mean(propOcc), pctTrans = sum(propOcc <= 1/3)/n())
 
-mean_occ_by_site = data.frame(mean_occ_by_site)
-colnames(mean_occ_by_site) = c('datasetID', 'site', 'meanOcc')
-
-perc_trans = mean_occ_by_site[mean_occ_by_site$meanOcc < (1/3),]
-
-occ_taxa = merge(mean_occ_by_site, summaries_taxa, by = c("datasetID", "site"))
+occ_taxa = merge(mean_occ_by_site, summaries_grains_w_taxa, by = c("datasetID", "site"))
 
 # for each dset - the propocc as response and the # of grain levels, community size, and random effect of taxa would be the predictor variables
-mod1 = glmer(meanOcc ~ meanAbundance * (1|taxa), family=binomial(), data=occ_taxa)
+mod1 = glmer(meanOcc ~ meanAbundance * (1|taxa), family=gaussian(), data=occ_taxa)
 summary(mod1)
