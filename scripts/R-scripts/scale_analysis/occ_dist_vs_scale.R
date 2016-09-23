@@ -2,6 +2,8 @@
 #Molly F. Jenkins 
 #07/27/2016
 
+#until dplyr masking issues resolved: require dplyr right before every time it's used
+
 #Set working directory to core-transient folder on github i.e. setwd("C:/git/core-transient/")
 
 
@@ -27,16 +29,32 @@ bbs50 = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/bbs50.csv"
 
 # Get subset of BBS routes (just routes) btw 1996-2010 surveyed in EVERY year
 
+require(dplyr)
 #from Sara's code
 good_rtes = bbs50 %>% 
   filter(year >= 1996, year <= 2010) %>% 
   select(year, stateroute) %>%
   unique() %>%    
-  group_by(stateroute) %>% 
-  tally(year) %>% 
-  filter(n == 15) #strange discrepancy between method needed on home laptop and on lab desktop...update R on both, make sure same version
+  group_by(stateroute) %>% #before changing, look at dataframe produced! groups correctly when year specified, weirdly 
+  count(year) %>% 
+  tally(n) %>% #need both count AND tally 
+  filter(nn == 15) #still only getting 27 routes present thru all of 1996-2010 _> something wrong with ecoretriever data missing?
+
+#compare # of routes and route numbers themselves to old version of bbs50 stored in BioArk 
 
 
+
+
+
+
+
+
+
+
+
+
+
+require(dplyr)
 # Subset the full BBS dataset to the routes above but including associated data
 fifty_allyears = bbs50 %>% 
   filter(year >= 1996, year <= 2010) %>% 
@@ -103,6 +121,7 @@ md10.rt.occ2 = md10.rt.occ[md10.rt.occ$Freq!=0,]
 
 
 #####Testing occupancy of old vs occupancy of new for consistency####
+require(dplyr)
 y = bbs_scalesorted2 %>% 
   filter(subrouteID == "Stop1" & scale == 10) %>% 
   filter(stateroute %in% md10.rt.occ2$stateroute) %>% #47 items when aou not limited, interesting
@@ -110,7 +129,7 @@ y = bbs_scalesorted2 %>%
 
 #42 items
 
-
+require(dplyr)
 x = md10.rt.occ2 %>% #we know that these are already just the scale 10 sites from stops 1-10 in MD 
   filter(stateroute %in% y$stateroute) #42 items as well
 
@@ -134,6 +153,7 @@ ca10 = unique(ca.counts[ca.counts$Count10!=0,c('stateroute','Year','Aou')])
 ca10.rt.occ = data.frame(table(ca10[,c('stateroute','Aou')])/15)
 ca10.rt.occ2 = ca10.rt.occ[ca10.rt.occ$Freq!=0,]
 
+require(dplyr)
 y2 = bbs_scalesorted2 %>% 
   filter(subrouteID == "Stop1" & scale == 10) %>% 
   filter(stateroute %in% ca10.rt.occ2$stateroute) %>% # items when aou not limited, interesting
@@ -141,7 +161,7 @@ y2 = bbs_scalesorted2 %>%
 
 #58 items
 
-
+require(dplyr)
 x2 = ca10.rt.occ2 %>% 
   filter(stateroute %in% y2$stateroute) %>% #60 items? 
   filter(Aou %in% y2$AOU) #58 items
@@ -172,8 +192,8 @@ routes$stateroute = 1000*routes$statenum + routes$Route
 
 
 # merge lat longs from routes file to the list of "good" routes
-
-good_rtes = good_rtes %>% 
+require(dplyr)
+good_rtes2 = good_rtes %>% 
   left_join(routes, good_rtes, by = "stateroute") 
 
 # map these routes
