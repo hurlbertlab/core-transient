@@ -87,89 +87,6 @@ for (scale in scales) {
 bbs_scalesorted2<-output
 
 
-####Jes Coyle's MD scale analysis reference script#### 
-
-counts5 = read.csv('data/raw_datasets/dataset_1RAW/dataset_1_full.csv', header=T)
-occupancy.matrix = as.matrix(read.csv('scripts/R-scripts/scale_analysis/occ_matrix_BBS.csv', header=T, row.names = 1))
-
-# MD BBS data
-md.counts = subset(counts5, statenum==46) #sub to MD
-md.occ.mat = occupancy.matrix[floor(as.numeric(row.names(occupancy.matrix))/1000)==46,]
-md.uniq = unique(md.counts[,c('Year','Aou')])
-# MD statewide temporal occupancy (27 routes)
-md.occ = data.frame(table(md.uniq$Aou)/15)
-
-#Scale of 10 BBS point count stops (specifically stops 1-10)
-md10 = unique(md.counts[md.counts$Count10!=0,c('stateroute','Year','Aou')])
-md10.rt.occ = data.frame(table(md10[,c('stateroute','Aou')])/15)
-md10.rt.occ2 = md10.rt.occ[md10.rt.occ$Freq!=0,]
-
-
-
-#####Testing occupancy of old vs occupancy of new for consistency####
-require(dplyr)
-y = bbs_scalesorted2 %>% 
-  filter(subrouteID == "Stop1" & scale == 10) %>% 
-  filter(stateroute %in% md10.rt.occ2$stateroute) %>% #47 items when aou not limited, interesting
-  filter(AOU %in% md10.rt.occ2$Aou)
-
-#42 items
-
-require(dplyr)
-x = md10.rt.occ2 %>% #we know that these are already just the scale 10 sites from stops 1-10 in MD 
-  filter(stateroute %in% y$stateroute) %>% #60 items? 
-  filter(Aou %in% y$AOU) #42 items as well
-
-
-
-plot(x$Freq, y$occupancy, type = "l", main = "MD old occupancy vs new",  ylab = "new", xlab = "old") #plots linear? YES awesome perfectly linear for MD subset
-
-
-
-##Test again for CA/OR (west coast sample!) just in case 
-
-ca.counts = subset(counts5, statenum==14 | statenum == 69)
-ca.occ.mat = occupancy.matrix[floor(as.numeric(row.names(occupancy.matrix))/1000)==14 |
-                                floor(as.numeric(row.names(occupancy.matrix))/1000)==69,]
-ca.uniq = unique(ca.counts[,c('Year','Aou')])
-# CA/OR statewide temporal occupancy (27 routes)
-ca.occ = data.frame(table(ca.uniq$Aou)/15)
-
-#Scale of 10 BBS point count stops (specifically stops 1-10)
-ca10 = unique(ca.counts[ca.counts$Count10!=0,c('stateroute','Year','Aou')])
-ca10.rt.occ = data.frame(table(ca10[,c('stateroute','Aou')])/15)
-ca10.rt.occ2 = ca10.rt.occ[ca10.rt.occ$Freq!=0,]
-
-require(dplyr)
-y2 = bbs_scalesorted2 %>% 
-  filter(subrouteID == "Stop1" & scale == 10) %>% 
-  filter(stateroute %in% ca10.rt.occ2$stateroute) %>% # items when aou not limited, interesting
-  filter(AOU %in% ca10.rt.occ2$Aou)
-
-#58 items
-
-require(dplyr)
-x2 = ca10.rt.occ2 %>% 
-  filter(stateroute %in% y2$stateroute) %>% #60 items? 
-  filter(Aou %in% y2$AOU) #58 items
-
-
-plot(x2$Freq, y2$occupancy, main = "CA/OR old occupancy vs new",  ylab = "new", xlab = "old") #there are differences for the west coast data, womp 
-
-
-#want to compare occupancy to scale 
-scale_occ_mod = lm(occupancy~scale, data = bbs_scalesorted2)
-summary(scale_occ_mod)
-
-
-#scale at even level of within a bbs stop *MATTERS* 
-#so what happens when we split up data by scale visually, a 10scale, etc and run these by occupancy? 
-
-
-fig_one<-boxplot(occupancy ~ scale, data = bbs_scalesorted2, xlab = "Scale", ylab = "BBS Occupancy")
-
-#seeing the same patterns with new occupancy calculations
-
 # -----------------------------------------------------------
 ####Calculating occupancy at scales greater than a single route####
 
@@ -192,7 +109,7 @@ cex.terr = 1.3
 map('world',xlim=c(-165,-55),ylim=c(25,70), bg='black', fill=T, col='white')
 map('state',add=T)
 
-sites<-data.frame(longitude = good_rtes$Longi, latitude = good_rtes$Lati)
+sites<-data.frame(longitude = good_rtes2$Longi, latitude = good_rtes2$Lati)
 points(sites$longitude, sites$latitude, col= "red", pch=16)
 
 
