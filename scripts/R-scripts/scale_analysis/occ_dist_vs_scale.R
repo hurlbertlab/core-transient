@@ -146,7 +146,7 @@ for (grain in grains) {
   lats = 100*runif(50)
   for (l in 1:lats) {
     groupedCols = paste("Rt_group", floor(lats/grain)*grain + grain/2, sep = "")
-    temp = occ_counts2(bbs_scalesorted2, groupedCols, grain)
+    temp = occ_counts2(fifty_allyears, groupedCols, grain)
     output = rbind(output, temp)
   }
   
@@ -157,7 +157,7 @@ bbs_scaledup = output
 
 
 
-####reference code for calculating grain and random selection of routes by lat
+####reference code for calculating grain and generating random selection of routes *by lat*
 grain = 1
 lats = 100*runif(50)
 floor(lats/grain)*grain
@@ -171,4 +171,12 @@ floor(lats/grain)*grain
 #[42] 18 29 82  2 68  8 94 58 96
 
 
-floor(lats/grain)*grain + grain/2
+scale_selection= floor(lats/grain)*grain + grain/2     
+
+#use scale selection to sample for routes that occur at the above random latitudes 
+#preferential over a fully random sample because the above step stratifies the sample for us geographically (right?)
+#I want to merge data for lats with my "data-data" while also subsetting to leave only routes that match w/random lats
+
+up_scale_bbs = select(good_rtes2, Lati == scale_selection)
+
+#or instead of using dummy/ex variable "lats" do I get to use my own lats but use random to select # of them? 
