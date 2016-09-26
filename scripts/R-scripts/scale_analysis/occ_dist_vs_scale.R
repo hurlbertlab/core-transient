@@ -121,7 +121,7 @@ points(sites$longitude, sites$latitude, col= "red", pch=16)
 
 ####reference code for calculating grain and generating random selection of routes *by lat*
 grain = 1
-lats = runif(50, min = 25, max = 70) #produces all NaN's
+lats = 100*runif(50) #produces all NaN's
 floor(lats/grain)*grain
 #below is example of 50 random floored lats generated at grain 1, 
 #where grain is analagous to the scales vector from before?
@@ -135,21 +135,23 @@ floor(lats/grain)*grain
 
 scale_selection= floor(lats/grain)*grain + grain/2     
 
+#do I want to join or do I want to pair by minimum difference? can I do that given the 1005 vs 50 item problem?
 
 #use scale selection to sample for routes that occur at the above random latitudes 
+
 #preferential over a fully random sample because the above step stratifies the sample for us geographically (right?)
+
 #I want to merge data for lats with my "data-data" while also subsetting to leave only routes that match w/random lats
 
 require(dplyr)
 upscaled_sample_sites = good_rtes2 %>% 
   select(good_rtes2$Lati, good_rtes2$stateroute) %>% 
   good_rtes2$Lati = floor(good_rtes2$Lati/grain)*grain + grain/2 %>% 
-  filter(scale_selection == good_rtes2$Lati) #not working; does filter only work with integers?
+  semi_join(good_rtes2, scale_selection) #keep getting errors about not being able to filter OR join 
+#because object is "of class "c('double', 'numeric') 
 
 
-up_scale_bbs = select(good_rtes2, Lati == scale_selection)
-
-#or instead of using dummy/ex variable "lats" do I get to use my own lats but use random to select # of them? 
+#or instead of using dummy/ex variable "lats" do I get to use my own lats but use random to select # of them? ^
 
 
 
