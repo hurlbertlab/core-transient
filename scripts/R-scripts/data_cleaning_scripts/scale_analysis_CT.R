@@ -48,11 +48,11 @@ for(datasetID in datasetIDs){
   
   dataset7 = read.csv(paste('data/formatted_datasets/dataset_', datasetID, '.csv', sep = ''))
   dataDescription = subset(read.csv("data_formatting_table.csv"),dataset_ID == datasetID)
-  maxGrain = 1
+  maxGrain = 1 ### this needs help.
   spatialgrains = dataDescription$Raw_siteUnit
   spatialgrains = as.character(spatialgrains)
   spatialgrains = unlist(strsplit(spatialgrains, '_'))
-  spatialgrains = spatialgrains[length(spatialgrains):1] #reversing order to be from small to large
+  spatialgrains = spatialgrains[length(spatialgrains):1] #reversing order to be from small to large not working
   #spatialgrains = c(spatialgrains, maxGrain)
   spatialgrain = c()
   grainLevel = 1
@@ -86,7 +86,7 @@ for(datasetID in datasetIDs){
     
    if(goodSites == 0){
       subsettedData = dataset7
-    }else{
+    }else
     subsettedData = subsetDataFun(dataset8, 
                                   datasetID, spatialGrain = sGrain, 
                                   temporalGrain = tGrain,
@@ -95,7 +95,7 @@ for(datasetID in datasetIDs){
                                   dataDescription)
 
     writePropOccSiteSummary(subsettedData, spatialGrainAnalysis = TRUE, grainLevel = grainLevel)
-    }
+    
     grainLevel = grainLevel + 1
     print(grainLevel)
     
