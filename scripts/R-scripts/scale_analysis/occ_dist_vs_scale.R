@@ -85,9 +85,8 @@ for (scale in scales) {
 }
 
 bbs_scalesorted2<-output
-
-
 # -----------------------------------------------------------
+
 ####Calculating occupancy at scales greater than a single route####
 
 # bring in bbs routes file 
@@ -119,6 +118,48 @@ points(sites$longitude, sites$latitude, col= "red", pch=16)
 
 # e.g. doing this for both lat & long
 
+
+####reference code for calculating grain and generating random selection of routes *by lat*
+grain = 1
+lats = 100*runif(50) #produces all NaN's
+floor(lats/grain)*grain
+#below is example of 50 random floored lats generated at grain 1, 
+#where grain is analagous to the scales vector from before?
+
+#[1] 10 21 15 86 24 96 47 16 41  
+#9 24 64 63 54 11 78 66 83 32 10 85 51 
+#34 26 95 77 55 85 14 64 62 85  
+#6 54 59 41 22 40 84 93  3
+#[42] 18 29 82  2 68  8 94 58 96
+
+
+scale_selection= floor(lats/grain)*grain + grain/2     
+
+#do I want to join or do I want to pair by minimum difference? can I do that given the 1005 vs 50 item problem?
+
+#use scale selection to sample for routes that occur at the above random latitudes 
+
+#preferential over a fully random sample because the above step stratifies the sample for us geographically (right?)
+
+#I want to merge data for lats with my "data-data" while also subsetting to leave only routes that match w/random lats
+
+require(dplyr)
+upscaled_sample_sites = good_rtes2 %>% 
+  select(good_rtes2$Lati, good_rtes2$stateroute) %>% 
+  good_rtes2$Lati = floor(good_rtes2$Lati/grain)*grain + grain/2 %>% 
+  semi_join(good_rtes2, scale_selection) #keep getting errors about not being able to filter OR join 
+#because object is "of class "c('double', 'numeric') 
+
+
+#or instead of using dummy/ex variable "lats" do I get to use my own lats but use random to select # of them? ^
+
+
+
+
+
+
+#------------------------------------------------------------------------------------------
+
 ####prototype forloop for generating scaled-up samples for calculating occupancy####
 
 
@@ -147,7 +188,7 @@ for (grain in grains) {
   lats = 100*runif(50)
   for (l in 1:lats) {
     groupedCols = paste("Rt_group", floor(lats/grain)*grain + grain/2, sep = "")
-    temp = occ_counts2(bbs_scalesorted2, groupedCols, grain)
+    temp = occ_counts2(fifty_allyears, groupedCols, grain)
     output = rbind(output, temp)
   }
   
@@ -155,21 +196,3 @@ for (grain in grains) {
 #getting "undefined columns" error before modifying occ_counts 
 
 bbs_scaledup = output
-
-
-
-####reference code for calculating grain and random selection of routes by lat
-grain = 1
-lats = 100*runif(50)
-floor(lats/grain)*grain
-#below is example of 50 random floored lats generated at grain 1, 
-#where grain is analagous to the scales vector from before?
-
-#[1] 10 21 15 86 24 96 47 16 41  
-#9 24 64 63 54 11 78 66 83 32 10 85 51 
-#34 26 95 77 55 85 14 64 62 85  
-#6 54 59 41 22 40 84 93  3
-#[42] 18 29 82  2 68  8 94 58 96
-
-
-floor(lats/grain)*grain + grain/2
