@@ -85,9 +85,8 @@ for (scale in scales) {
 }
 
 bbs_scalesorted2<-output
-
-
 # -----------------------------------------------------------
+
 ####Calculating occupancy at scales greater than a single route####
 
 # bring in bbs routes file 
