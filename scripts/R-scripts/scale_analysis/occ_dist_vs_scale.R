@@ -2,6 +2,8 @@
 #Molly F. Jenkins 
 #07/27/2016
 
+#until dplyr masking issues resolved: require dplyr right before every time it's used
+
 #Set working directory to core-transient folder on github i.e. setwd("C:/git/core-transient/")
 
 
@@ -21,22 +23,24 @@ library(dplyr)
 #bbs50 = bbs50$counts
 #bbs50$stateroute = bbs50$statenum*1000 + bbs50$Route
 #bbs50$stateroute = as.integer(bbs50$stateroute)
-#^derivation of data from ecoretriever; still too large to host on github so pull from BioArk
+#^derivation of data from ecoretriever; still too large to host on github so save and pull from BioArk
 
 bbs50 = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/bbs50.csv", header = TRUE)
 
 # Get subset of BBS routes (just routes) btw 1996-2010 surveyed in EVERY year
 
+require(dplyr)
 #from Sara's code
 good_rtes = bbs50 %>% 
-  filter(year >= 1996, year <= 2010) %>% 
+  filter(year >= 2000, year <= 2014) %>% #shifted 15 year window up because missing 1996 data, and 2015 data available
   select(year, stateroute) %>%
   unique() %>%    
-  group_by(stateroute) %>% 
-  tally(year) %>% 
-  filter(n == 15) #strange discrepancy between method needed on home laptop and on lab desktop...update R on both, make sure same version
+  group_by(stateroute) %>%  
+  count(stateroute) %>% 
+  filter(n == 15) #now getting 1005 routes with consecutive data :^)
 
-
+#compare # of routes and route numbers themselves to old version of bbs50 stored in BioArk 
+require(dplyr)
 # Subset the full BBS dataset to the routes above but including associated data
 fifty_allyears = bbs50 %>% 
   filter(year >= 1996, year <= 2010) %>% 
@@ -83,86 +87,6 @@ for (scale in scales) {
 bbs_scalesorted2<-output
 
 
-####Jes Coyle's MD scale analysis reference script#### 
-
-counts5 = read.csv('data/raw_datasets/dataset_1RAW/dataset_1_full.csv', header=T)
-occupancy.matrix = as.matrix(read.csv('scripts/R-scripts/scale_analysis/occ_matrix_BBS.csv', header=T, row.names = 1))
-
-# MD BBS data
-md.counts = subset(counts5, statenum==46) #sub to MD
-md.occ.mat = occupancy.matrix[floor(as.numeric(row.names(occupancy.matrix))/1000)==46,]
-md.uniq = unique(md.counts[,c('Year','Aou')])
-# MD statewide temporal occupancy (27 routes)
-md.occ = data.frame(table(md.uniq$Aou)/15)
-
-#Scale of 10 BBS point count stops (specifically stops 1-10)
-md10 = unique(md.counts[md.counts$Count10!=0,c('stateroute','Year','Aou')])
-md10.rt.occ = data.frame(table(md10[,c('stateroute','Aou')])/15)
-md10.rt.occ2 = md10.rt.occ[md10.rt.occ$Freq!=0,]
-
-
-
-#####Testing occupancy of old vs occupancy of new for consistency####
-y = bbs_scalesorted2 %>% 
-  filter(subrouteID == "Stop1" & scale == 10) %>% 
-  filter(stateroute %in% md10.rt.occ2$stateroute) %>% #47 items when aou not limited, interesting
-  filter(AOU %in% md10.rt.occ2$Aou)
-
-#42 items
-
-
-x = md10.rt.occ2 %>% #we know that these are already just the scale 10 sites from stops 1-10 in MD 
-  filter(stateroute %in% y$stateroute) #42 items as well
-
-
-
-plot(x$Freq, y$occupancy, type = "l", main = "MD old occupancy vs new",  ylab = "new", xlab = "old") #plots linear? YES awesome perfectly linear for MD subset
-
-
-
-##Test again for CA/OR (west coast sample!) just in case 
-
-ca.counts = subset(counts5, statenum==14 | statenum == 69)
-ca.occ.mat = occupancy.matrix[floor(as.numeric(row.names(occupancy.matrix))/1000)==14 |
-                                floor(as.numeric(row.names(occupancy.matrix))/1000)==69,]
-ca.uniq = unique(ca.counts[,c('Year','Aou')])
-# CA/OR statewide temporal occupancy (27 routes)
-ca.occ = data.frame(table(ca.uniq$Aou)/15)
-
-#Scale of 10 BBS point count stops (specifically stops 1-10)
-ca10 = unique(ca.counts[ca.counts$Count10!=0,c('stateroute','Year','Aou')])
-ca10.rt.occ = data.frame(table(ca10[,c('stateroute','Aou')])/15)
-ca10.rt.occ2 = ca10.rt.occ[ca10.rt.occ$Freq!=0,]
-
-y2 = bbs_scalesorted2 %>% 
-  filter(subrouteID == "Stop1" & scale == 10) %>% 
-  filter(stateroute %in% ca10.rt.occ2$stateroute) %>% # items when aou not limited, interesting
-  filter(AOU %in% ca10.rt.occ2$Aou)
-
-#58 items
-
-
-x2 = ca10.rt.occ2 %>% 
-  filter(stateroute %in% y2$stateroute) %>% #60 items? 
-  filter(Aou %in% y2$AOU) #58 items
-
-
-plot(x2$Freq, y2$occupancy, main = "CA/OR old occupancy vs new",  ylab = "new", xlab = "old") #there are differences for the west coast data, womp 
-
-
-#want to compare occupancy to scale 
-scale_occ_mod = lm(occupancy~scale, data = bbs_scalesorted2)
-summary(scale_occ_mod)
-
-
-#scale at even level of within a bbs stop *MATTERS* 
-#so what happens when we split up data by scale visually, a 10scale, etc and run these by occupancy? 
-
-
-fig_one<-boxplot(occupancy ~ scale, data = bbs_scalesorted2, xlab = "Scale", ylab = "BBS Occupancy")
-
-#seeing the same patterns with new occupancy calculations
-
 # -----------------------------------------------------------
 ####Calculating occupancy at scales greater than a single route####
 
@@ -172,8 +96,8 @@ routes$stateroute = 1000*routes$statenum + routes$Route
 
 
 # merge lat longs from routes file to the list of "good" routes
-
-good_rtes = good_rtes %>% 
+require(dplyr)
+good_rtes2 = good_rtes %>% 
   left_join(routes, good_rtes, by = "stateroute") 
 
 # map these routes
@@ -185,7 +109,7 @@ cex.terr = 1.3
 map('world',xlim=c(-165,-55),ylim=c(25,70), bg='black', fill=T, col='white')
 map('state',add=T)
 
-sites<-data.frame(longitude = good_rtes$Longi, latitude = good_rtes$Lati)
+sites<-data.frame(longitude = good_rtes2$Longi, latitude = good_rtes2$Lati)
 points(sites$longitude, sites$latitude, col= "red", pch=16)
 
 
@@ -197,6 +121,24 @@ points(sites$longitude, sites$latitude, col= "red", pch=16)
 
 ####prototype forloop for generating scaled-up samples for calculating occupancy####
 
+
+
+#need to mod occ_counts for up-scale data first?
+
+
+occ_counts2 = function(countData, countColumns, grain) {
+  bbssub = countData[, c("stateroute", "year", "AOU", countColumns)]
+  bbssub$groupCount = rowSums(bbssub[, countColumns])
+  bbsu = unique(bbssub[bbssub[, "groupCount"]!= 0, c("stateroute", "year", "AOU")]) #because this gets rid of 0's...
+  bbsu.rt.occ = data.frame(table(bbsu[,c("stateroute", "AOU")])/15)
+  bbsu.rt.occ2 = bbsu.rt.occ[bbsu.rt.occ$Freq!=0,] #and this also gets rid of occupancy values of 0 total 
+  names(bbsu.rt.occ2)[3] = "occupancy"
+  bbsu.rt.occ2$aboverouteID = countColumns[1] #subrouteID refers to first route in a grouped sequence, occ refers to the occ for the # of combined routes
+  bbsu.rt.occ2$grain = grain 
+  bbsu.rt.occ2 = bbsu.rt.occ2[, c("stateroute", "grain", "aboverouteID", "AOU", "occupancy")]
+  return(bbsu.rt.occ2)
+}
+
 grains = c(1, 2, 10)
 
 
@@ -205,11 +147,12 @@ for (grain in grains) {
   lats = 100*runif(50)
   for (l in 1:lats) {
     groupedCols = paste("Rt_group", floor(lats/grain)*grain + grain/2, sep = "")
-    temp = occ_counts(fifty_allyears, groupedCols, grain)
+    temp = occ_counts2(bbs_scalesorted2, groupedCols, grain)
     output = rbind(output, temp)
   }
   
 }
+#getting "undefined columns" error before modifying occ_counts 
 
 bbs_scaledup = output
 
