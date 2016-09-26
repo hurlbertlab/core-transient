@@ -48,10 +48,12 @@ for(datasetID in datasetIDs){
   
   dataset7 = read.csv(paste('data/formatted_datasets/dataset_', datasetID, '.csv', sep = ''))
   dataDescription = subset(read.csv("data_formatting_table.csv"),dataset_ID == datasetID)
+  maxGrain = 1
   spatialgrains = dataDescription$Raw_siteUnit
   spatialgrains = as.character(spatialgrains)
   spatialgrains = unlist(strsplit(spatialgrains, '_'))
-  spatialgrains =spatialgrains[length(spatialgrains):1] #reversing order to be from small to large
+  spatialgrains = spatialgrains[length(spatialgrains):1] #reversing order to be from small to large
+  #spatialgrains = c(spatialgrains, maxGrain)
   spatialgrain = c()
   grainLevel = 1
   for (sg in spatialgrains) {
@@ -83,8 +85,8 @@ for(datasetID in datasetIDs){
     dataset8 = subset(dataset7, site %in% fullGoodSites)
     
    if(goodSites == 0){
-      subsettedData = dataset8
-    }else
+      subsettedData = dataset7
+    }else{
     subsettedData = subsetDataFun(dataset8, 
                                   datasetID, spatialGrain = sGrain, 
                                   temporalGrain = tGrain,
@@ -92,8 +94,8 @@ for(datasetID in datasetIDs){
                                   proportionalThreshold = topFractionSites,
                                   dataDescription)
 
-      writePropOccSiteSummary(subsettedData, spatialGrainAnalysis = TRUE, grainLevel = grainLevel)
-    
+    writePropOccSiteSummary(subsettedData, spatialGrainAnalysis = TRUE, grainLevel = grainLevel)
+    }
     grainLevel = grainLevel + 1
     print(grainLevel)
     
@@ -136,6 +138,17 @@ for(file in summfiles){
 }
 allsummaries = data.frame(allsummaries)
 
+# rbind propOcc files
+propOccfiles = list.files("data/spatialGrainAnalysis/propOcc_datasets")
+allpropOcc = c()
+for(file in propOccfiles){
+  nfile= read.csv(paste("data/spatialGrainAnalysis/propOcc_datasets/", file, sep = ""))
+  nfile$scale = as.numeric(substring(file, 22,last = 22))
+  nfile$site = as.factor(nfile$site)
+  allpropOcc = rbind(allpropOcc, nfile)
+}
+allpropOcc = data.frame(allpropOcc)
+
 # Summary statistics by datasetID/site, i.e. mean occupancy, % transient species (<=1/3)
 summaries_taxa = merge(allsummaries, dataformattingtable[,c("dataset_ID","taxa","Raw_spatial_grain", "Raw_spatial_grain_unit")], by.x = 'datasetID', by.y = "dataset_ID")
 
@@ -146,7 +159,7 @@ summaries_taxa = read.csv("output/summaries_grains_w_taxa.csv", header = TRUE) #
 # merge in conversion table 
 conversion_table = read.csv("output/conversion_table.csv", header =TRUE)
 
-summaries_grains_w_taxa = merge(summaries_taxa, conversion_table, by.x = "Raw_spatial_grain_unit", by.y = "units")
+summaries_grains_w_taxa = merge(summaries_taxa, conversion_table, by.x = "Raw_spatial_grain_unit", by.y = "intl_units")
 
 mean_occ_by_site = propOcc_w_taxa %>%
   group_by(datasetID, site) %>%
@@ -154,6 +167,17 @@ mean_occ_by_site = propOcc_w_taxa %>%
 
 occ_taxa = merge(mean_occ_by_site, summaries_grains_w_taxa, by = c("datasetID", "site"))
 
+# Calculating number of core, trans, and total spp for each dataset/site combo
+propOcc_demog = merge(propOcc_w_taxa, occ_taxa, by =  c("datasetID", "site"))
+
+propOcc_w_taxa$spptally = 1
+
+totalspp = propOcc_w_taxa %>% group_by(datasetID, site) %>% tally(spptally)
+
+numCT= propOcc_w_taxa %>% group_by(datasetID, site) %>%  dplyr::summarize(numTrans = sum(propOcc <= 1/3), numCore=sum(propOcc > 2/3))
+
+spptotals = merge(totalspp, numCT, by= c("datasetID", "site"))
+  
 # for each dset - the propocc as response and the # of grain levels, community size, and random effect of taxa would be the predictor variables
-mod1 = glmer(meanOcc ~ meanAbundance * (1|taxa), family=gaussian(), data=occ_taxa)
+mod1 = lmer(meanOcc ~ meanAbundance * (1|taxa), data=occ_taxa)
 summary(mod1)

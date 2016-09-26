@@ -1,4 +1,4 @@
-units,conversion,output
+intl_units,conversion,converted_units
 km,1000,m
 m,1,m
 m2,1,m2
