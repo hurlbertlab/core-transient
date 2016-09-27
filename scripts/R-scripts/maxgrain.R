@@ -45,6 +45,7 @@ for(datasetID in datasetIDs){
   sitesplit = data.frame(sitesplit)
   if(length(unique(unlist(sitesplit[1,]))>1)){
     #calc occ at coarse scale, rbind to propocc, set scale = to prev scale + 1
+    # need to try with dataset other than 207!
     
     tGrain = 'year'
     
