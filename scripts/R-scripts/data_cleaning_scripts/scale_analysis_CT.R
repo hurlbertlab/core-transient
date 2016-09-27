@@ -57,9 +57,15 @@ for(datasetID in datasetIDs){
   spatialgrain = c()
   grainLevel = 1
   for (sg in spatialgrains) {
-    spatialgrain = paste(spatialgrain, sg, sep = "_")
-    sGrain = substring(spatialgrain, 2)
+    spatialgrain = paste(sg, spatialgrain, sep = "_")
+    if (substr(spatialgrain, nchar(spatialgrain), nchar(spatialgrain)) == "_") {
+      sGrain = substring(spatialgrain, 1, nchar(spatialgrain)-1)  
+    } else {
+      sGrain = spatialgrain
+    }
+    
     print(sGrain)
+
     tGrain = "year"
     if (nchar(as.character(dataset7$date[1])) > 4){ 
       dataset7$date = as.POSIXct(strptime(as.character(dataset7$date), format = "%Y-%m-%d"))
