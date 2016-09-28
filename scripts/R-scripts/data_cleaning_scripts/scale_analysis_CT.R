@@ -48,7 +48,6 @@ for(datasetID in datasetIDs){
   
   dataset7 = read.csv(paste('data/formatted_datasets/dataset_', datasetID, '.csv', sep = ''))
   dataDescription = subset(read.csv("data_formatting_table.csv"),dataset_ID == datasetID)
-  maxGrain = 1 ### this needs help.
   spatialgrains = dataDescription$Raw_siteUnit
   spatialgrains = as.character(spatialgrains)
   spatialgrains = unlist(strsplit(spatialgrains, '_'))

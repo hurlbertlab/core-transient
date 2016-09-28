@@ -28,36 +28,40 @@ minSpRich = 10
 # of site-years will be represented.
 topFractionSites = 0.5
 
-
-
 dataformattingtable = read.csv('data_formatting_table.csv', header = T) 
 
 datasetIDs = filter(dataformattingtable, spatial_scale_variable == 'Y',
                     format_flag == 1)$dataset_ID
 
 for(datasetID in datasetIDs){
+    print(datasetID)
   dataset7 = read.csv(paste('data/formatted_datasets/dataset_', datasetID, '.csv', sep = ''))
   #propOcc= read.csv(paste("data/spatialGrainAnalysis/propOcc_datasets/", file, sep = ""))
   #sitsum = 
+  dataDescription = subset(read.csv("data_formatting_table.csv"),dataset_ID == datasetID)
   
   sites = unique(dataset7$site) 
   sitesplit = strsplit(as.character(sites), '_')
   sitesplit = data.frame(sitesplit)
-  if(length(unique(unlist(sitesplit[1,]))>1)){
+  numlevels = unlist(sitesplit[1,])
+  numlevels=unique(as.vector(numlevels))
+  
+  if(length(numlevels)>1){
+      print(datasetID)
+    dataset7$site = 1
     #calc occ at coarse scale, rbind to propocc, set scale = to prev scale + 1
     # need to try with dataset other than 207!
-    
     tGrain = 'year'
     
-    dataset7$maxsite = 1
-    sGrain = dataset7$maxsite
+    dataset3 = dataset2
+    
+    sGrain = "site"
     
     richnessYearsTest = richnessYearSubsetFun(dataset7, spatialGrain = sGrain, 
                                               temporalGrain = tGrain, 
                                               minNTime = minNTime, 
                                               minSpRich = minSpRich,
                                               dataDescription)
-
 
     goodSites = unique(richnessYearsTest$analysisSite)
     length(goodSites)
@@ -81,7 +85,8 @@ for(datasetID in datasetIDs){
 
     
     writePropOccSiteSummary(subsettedData, spatialGrainAnalysis = TRUE)
-  }
+  }else
+    dataset7 = dataset7
 }
 
 
