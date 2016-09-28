@@ -33,8 +33,8 @@ dataformattingtable = read.csv('data_formatting_table.csv', header = T)
 datasetIDs = filter(dataformattingtable, spatial_scale_variable == 'Y',
                     format_flag == 1)$dataset_ID
 
+need_max = c()
 for(datasetID in datasetIDs){
-    print(datasetID)
   dataset7 = read.csv(paste('data/formatted_datasets/dataset_', datasetID, '.csv', sep = ''))
   #propOcc= read.csv(paste("data/spatialGrainAnalysis/propOcc_datasets/", file, sep = ""))
   #sitsum = 
@@ -48,12 +48,14 @@ for(datasetID in datasetIDs){
   
   if(length(numlevels)>1){
       print(datasetID)
-    dataset7$site = 1
+    dID=datasetID
+    need_max = rbind(need_max, dID)
+  }
+}
+    #dataset7$site = paste(1, dataset7$site, sep = "_")
     #calc occ at coarse scale, rbind to propocc, set scale = to prev scale + 1
     # need to try with dataset other than 207!
     tGrain = 'year'
-    
-    dataset3 = dataset2
     
     sGrain = "site"
     
