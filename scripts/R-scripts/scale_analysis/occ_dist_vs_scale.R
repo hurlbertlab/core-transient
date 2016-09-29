@@ -203,6 +203,6 @@ for (grain in grains) {
   }
   
 }
-#getting "undefined columns" error before modifying occ_counts 
+
 
 bbs_scaledup = output
