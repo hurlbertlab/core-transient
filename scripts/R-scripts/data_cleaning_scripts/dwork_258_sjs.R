@@ -257,7 +257,8 @@ dataFormattingTable[,'subannualTgrain'] =
 # Each replicate plot is 300 m x 300 m and contains a standard Sevilleta mammal trapping web which consists of 12 transects radiating from a central point. Each transect contains 12 numbered stakes for a total of 144 sample points per web. Vegetation is sampled in permanently located 50 cm x 50 cm quadrats at four evenly spaced points along each radius of each web transect (48 permanent quadrats per replicate). The end of each transect is marked with a long rebar stake with smaller rebar stakes occurring in 10 m increments towards the center of the web. Vegetation is measured in only the first four even numbered stakes from the end of the transect on the trapping web. For example, stakes 12, 10, 8, and 6 are measured for the transect that ends with stake 12.
 
 #--! PROVIDE INFO !--#
-site_grain_names = c("PLOT", "QUAD")
+dataset2$site="maxgrain"
+site_grain_names = c("site","PLOT", "QUAD")
 
 # We will now create the site field with these codes concatenated if there
 # are multiple grain fields. Otherwise, site will just be the single grain field.

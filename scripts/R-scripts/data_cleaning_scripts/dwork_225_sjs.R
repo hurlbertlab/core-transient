@@ -275,7 +275,8 @@ dataFormattingTable[,'subannualTgrain'] =
 # fill in the fields that specify nested spatial grains below.
 
 #--! PROVIDE INFO !--#
-site_grain_names = c("plot")
+dataset2$site="maxgrain"
+site_grain_names = c("site", "plot")
 
 #need for spec pres dataset, subsetting specific scales
 #dataset2 <- dataset2[ which(dataset2$scale == 1e+02), ]

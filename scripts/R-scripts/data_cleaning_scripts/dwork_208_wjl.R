@@ -156,8 +156,8 @@ dataFormattingTable[,'subannualTgrain'] =
 
 # Here, we will concatenate all of the potential fields that describe the site 
 # in hierarchical order from largest to smallest grain:
-
-site_grain_names = c("Replicate", "Treatment" , "Station")
+dataset2$site="maxgrain"
+site_grain_names = c("site", "Replicate", "Treatment" , "Station")
 
 # We will now create the site field with these codes concatenated if there
 # are multiple grain fields. Otherwise, site will just be the single grain field.

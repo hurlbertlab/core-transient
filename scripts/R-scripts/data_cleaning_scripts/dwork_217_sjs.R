@@ -253,8 +253,9 @@ dataFormattingTable[,'subannualTgrain'] =
 #--! PROVIDE INFO !--#
 ind <- which(with( dataset2, Transect == 'e')) #removing transect e bc only sampled for 2 years
 dataset2 = dataset2[-ind,]
+dataset2$site="maxgrain"
 
-site_grain_names = c("Transect", "Plot")
+site_grain_names = c("site","Transect", "Plot")
 
 # We will now create the site field with these codes concatenated if there
 # are multiple grain fields. Otherwise, site will just be the single grain field.

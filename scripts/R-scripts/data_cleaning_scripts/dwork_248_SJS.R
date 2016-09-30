@@ -257,7 +257,8 @@ dataFormattingTable[,'subannualTgrain'] =
 # fill in the fields that specify nested spatial grains below.
 
 #--! PROVIDE INFO !--#
-site_grain_names = c("site", "transect")
+dataset2$msite="maxgrain"
+site_grain_names = c("msite", "transect")
 
 # Note that there is also a "quad" field which splits a transect in 2 (0-20 m vs 20-40 m),
 # however, this is only relevant for the benthic surveys, and not the regular surveys

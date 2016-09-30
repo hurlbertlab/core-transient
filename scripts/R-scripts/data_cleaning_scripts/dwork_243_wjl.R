@@ -178,8 +178,9 @@ dataFormattingTable[,'subannualTgrain'] =
 # Here, we will concatenate all of the potential fields that describe the site 
 # in hierarchical order from largest to smallest grain. Based on the dataset,
 # fill in the fields that specify nested spatial grains below.
+dataset2$site="maxgrain"
 
-site_grain_names = c("station","transect")
+site_grain_names = c("site","station","transect")
 
 # We will now create the site field with these codes concatenated if there
 # are multiple grain fields. Otherwise, site will just be the single grain field.

@@ -278,7 +278,8 @@ dataset2$SITE[dataset2$SITE == "Central"] = "CENTRAL"
 dataset2$SITE[dataset2$SITE == "North"] = "NORTH" 
 dataset2$SITE[dataset2$SITE == "South"] = "SOUTH" 
 
-site_grain_names = c("SITE","PLOT", "COORDINATE")
+dataset2$msite="maxgrain"
+site_grain_names = c("msite","SITE","PLOT", "COORDINATE")
 
 # We will now create the site field with these codes concatenated if there
 # are multiple grain fields. Otherwise, site will just be the single grain field.

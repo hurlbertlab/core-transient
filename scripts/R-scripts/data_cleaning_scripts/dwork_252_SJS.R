@@ -274,9 +274,9 @@ dataFormattingTable[,'subannualTgrain'] =
 ######ADDING IN 
 #need to cut traps 2,4,6 bc sampling only the first half of the study
 dataset2 <- subset(dataset2, (dataset2$trap == 1)|(dataset2$trap == 3)|(dataset2$trap == 5))
-
+dataset2$msite="maxgrain"
 #--! PROVIDE INFO !--#
-site_grain_names = c("site", "line", "trap")
+site_grain_names = c("msite","site", "line", "trap")
 
 # We will now create the site field with these codes concatenated if there
 # are multiple grain fields. Otherwise, site will just be the single grain field.

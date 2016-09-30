@@ -283,8 +283,9 @@ trim.trailing <- function (x) sub("\\s+$", "", x)
 dataset2$watershed = trim.trailing(as.character(dataset2$watershed))
 dataset2$habitat = trim.trailing(as.character(dataset2$habitat))
 
+dataset2$site="maxgrain"
 #--! PROVIDE INFO !--#
-site_grain_names = c("watershed", "habitat", "replicate")
+site_grain_names = c("site","watershed", "habitat", "replicate")
 
 # We will now create the site field with these codes concatenated if there
 # are multiple grain fields. Otherwise, site will just be the single grain field.
