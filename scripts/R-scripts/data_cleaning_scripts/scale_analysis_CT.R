@@ -111,13 +111,14 @@ write.csv(grainlevels, "output/grainlevels.csv", row.names=FALSE)
 
 # Merge all output files into 1 file
 #grainlevels = read.csv("output/grainlevels.csv", header = TRUE)
-files = list.files("data/spatialGrainAnalysis/propOcc_datasets")
-bigfile = c()
+
+  files = list.files("data/spatialGrainAnalysis/propOcc_datasets")
+  bigfile = c()
 #scale = c()
-for(file in files){
-  nfile= read.csv(paste("data/spatialGrainAnalysis/propOcc_datasets/", file, sep = ""))
-  scale = substring(file, 18,last = 18)
-  bigfile = rbind(bigfile, nfile)
+  for(file in files){
+    nfile= read.csv(paste("data/spatialGrainAnalysis/propOcc_datasets/", file, sep = ""))
+    scale = substring(file, 18,last = 18)
+    bigfile = rbind(bigfile, nfile)
   #scale=rbind(scale, unique(bigfile$datasetID))
 }
 bigfile=data.frame(bigfile)
