@@ -100,10 +100,8 @@ for(datasetID in datasetIDs){
                                   dataDescription)
 
     writePropOccSiteSummary(subsettedData, spatialGrainAnalysis = TRUE, grainLevel = grainLevel)
-    
-    grainLevel = grainLevel + 1
     print(grainLevel)
-    
+    grainLevel = grainLevel + 1
     } # end of spatial grain loop
   grainlevels = rbind(grainlevels, c(datasetID, grainLevel-1))
 } # end dataset loop
