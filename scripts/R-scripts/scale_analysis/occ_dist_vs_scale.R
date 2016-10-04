@@ -43,7 +43,7 @@ good_rtes = bbs50 %>%
 require(dplyr)
 # Subset the full BBS dataset to the routes above but including associated data
 fifty_allyears = bbs50 %>% 
-  filter(year >= 1996, year <= 2010) %>% 
+  filter(year >= 2000, year <= 2014) %>% 
   filter(stateroute %in% good_rtes$stateroute) #finally works because needed $ specification, 
 #can probably collapse into one line 
  
@@ -146,9 +146,13 @@ upscaled_sample_sites = good_rtes2 %>%
 
 ####prototype forloop for generating scaled-up samples for calculating occupancy####
 
+#bring in pared down version of fifty_allyears (good data associated with good routes for continuous 15yr span)
+#honestly should pare it down further back in script and then just use it here as-is
+
+
 #reworked sequel to occ_counts function, but for scales above a single bbs route 
 
-occ_counts2 = function(countData, stateroutes) {
+occ_counts2 = function(countData, stateroutes, grain) {
   subdata = filter(countData, stateroute %in% stateroutes)
   bbssub = countData[, c("year", "AOU")] #take unique combos of spp and year, ignore stateroute, don't need to specify it
   #bbssub$groupCount = rowSums(bbssub[, countColumns]) #do I need this at all? just want unique combos of spp & year
@@ -162,7 +166,7 @@ occ_counts2 = function(countData, stateroutes) {
 }
 
 #creating grain size and reps vectors 
-grains = c(1, 2, 10) 
+grains = c(10) 
 reps = c(100) #100? 50?
 
 #nested forloops defining grid cells (i.e. latitudinal + longitudinal "bins"), 
@@ -182,10 +186,10 @@ for (grain in grains) {
         
         for (i in 1:reps) {
           # sample X routes at random from bin
-          sampled_rtes = sample_n(bin_rtes, X)  #where X = our magic number of routes that can adequately estimate occupancy for each grain; CHANGES with grain
+          sampled_rtes = sample_n(bin_rtes, 5)  #where X = our magic number of routes that can adequately estimate occupancy for each grain; CHANGES with grain
           
         }
-        groupedCols = paste("Rt_group", floor(lats/grain)*grain + grain/2, sep = "")
+        groupedCols = paste("Rt_bin", floor(temproutes$Lati/grain)*grain + grain/2, sep = "")
     temp = occ_counts2(fifty_allyears, groupedCols, grain) #pare down fifty_allyears to just necessary columns AOU, year, stateroute, (total occ column?) 
     output = rbind(output, temp)
     }
