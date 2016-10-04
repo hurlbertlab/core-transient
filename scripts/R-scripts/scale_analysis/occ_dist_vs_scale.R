@@ -142,19 +142,11 @@ upscaled_sample_sites = good_rtes2 %>%
 #or instead of using dummy/ex variable "lats" do I get to use my own lats but use random to select # of them? ^
 
 
-
-
-
-
 #------------------------------------------------------------------------------------------
 
 ####prototype forloop for generating scaled-up samples for calculating occupancy####
 
-
-
-#need to mod occ_counts for up-scale data first?
-#first need to create vector of stateroutes 
-
+#reworked sequel to occ_counts function, but for scales above a single bbs route 
 
 occ_counts2 = function(countData, stateroutes) {
   subdata = filter(countData, stateroute %in% stateroutes)
@@ -169,15 +161,19 @@ occ_counts2 = function(countData, stateroutes) {
   return(bbsu.rt.occ2)
 }
 
+#creating grain size and reps vectors 
 grains = c(1, 2, 10) 
-reps = ??? #100? 50?
+reps = c(100) #100? 50?
+
+#nested forloops defining grid cells (i.e. latitudinal + longitudinal "bins"), 
+#filtering routes sampled to those that fall within a given bin 
+#and calculating occupancy for routes randomly sampled from those grouped within a bin  
 
 output = c()
 for (grain in grains) {
   temproutes = good_rtes2
   temproutes$latbin = floor(temproutes$Lati/grain)*grain + grain/2
   temproutes$longbin = floor(temproutes$Longi/grain)*grain + grain/2
-  
   uniqLatBins = unique(temproutes$latbin)
   uniqLonBins = unique(temproutes$longbin)
     for (lat in uniqLatBins) {
@@ -189,10 +185,8 @@ for (grain in grains) {
           sampled_rtes = sample_n(bin_rtes, X)  #where X = our magic number of routes that can adequately estimate occupancy for each grain; CHANGES with grain
           
         }
-        
-        
         groupedCols = paste("Rt_group", floor(lats/grain)*grain + grain/2, sep = "")
-    temp = occ_counts2(fifty_allyears, groupedCols, grain)
+    temp = occ_counts2(fifty_allyears, groupedCols, grain) #pare down fifty_allyears to just necessary columns AOU, year, stateroute, (total occ column?) 
     output = rbind(output, temp)
     }
   
