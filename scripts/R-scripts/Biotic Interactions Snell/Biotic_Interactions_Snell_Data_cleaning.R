@@ -27,7 +27,7 @@ subsetocc = Hurlbert_o[Hurlbert_o$X10yr.Prop > .3 & Hurlbert_o$X10yr.Prop < .7,]
 # write.csv(subsetocc, "focal.csv")
 
 # read in BBS data
-bbs = read.csv('dataset_1.csv', header = T)
+# bbs = read.csv('dataset_1.csv', header = T)
 # paring down BBS cols
 bbs = bbs[, (names(bbs) %in% c("stateroute", "Aou", "Year","SpeciesTotal",  'routeID', 'Lati', 'Longi'))]
 
@@ -42,7 +42,7 @@ bbs_eco$counts$stateroute = bbs_eco$counts$statenum*1000 + bbs_eco$counts$Route
 good_rtes = bbs_eco$counts %>% 
   filter(Year >= 1996, Year <= 2010) %>% 
   dplyr::select(Year, stateroute) %>%
-  unique() %>%    ## good until here
+  unique() %>%    
   group_by(Year) %>% 
   count(stateroute) %>% 
   #tally(Year) 
@@ -57,12 +57,10 @@ bbs_sub1 = bbs_eco$counts %>%
   count(Aou, stateroute) 
   
 bbs_sub1$occ = bbs_sub1$n/15 # new occupancy values calculated
-
-coyle_o = bbs_sub1
-
 write.csv(bbs_sub1, "bbs_sub1.csv", row.names=FALSE)
 
-read.csv("bbs_sub1.csv", header=TRUE)
+# renaming new bbs date to old coyle_o name
+coyle_o = read.csv("bbs_sub1.csv", header=TRUE)
 # read in Coyle occupancy data - organized by site
 #coyle_o = read.csv('site_sp_occupancy_matrix_Coyle.csv', header = T)
 # gather into long format
@@ -72,6 +70,10 @@ read.csv("bbs_sub1.csv", header=TRUE)
 # name 1st col stateroute
 #colnames(coyle_long)[1] = "stateroute"
 
+# read in BBS data
+bbs = read.csv('dataset_1.csv', header = T)
+# paring down BBS cols
+bbs = bbs[, (names(bbs) %in% c("stateroute", "Aou", "Year","SpeciesTotal",  'routeID', 'Lati', 'Longi'))]
 # read in expected presence data based on BBS 
 expect_pres = read.csv('expected_presence_on_BBS_routes.csv', header = T)
 
@@ -296,21 +298,21 @@ filesoutput = read.csv("shapefile_areas.csv", header = TRUE)
 
 ############# ---- Generate total species occupancies ---- #############
 # gathering occupancy data for all species
-all_occ = gather(coyle_o, "AOU", "occupancy", 2:ncol(coyle_o))
-all_occ$AOU = as.character(all_occ$AOU)
-all_occ$AOU = as.numeric(substr(all_occ$AOU, 2, nchar(all_occ$AOU)))
-all_occ = all_occ[!is.na(all_occ$occupancy), ]
+#all_occ = gather(coyle_o, "AOU", "occupancy", 2:ncol(coyle_o))
+#all_occ$AOU = as.character(all_occ$AOU)
+#all_occ$AOU = as.numeric(substr(all_occ$AOU, 2, nchar(all_occ$AOU)))
+#all_occ = all_occ[!is.na(all_occ$occupancy), ]
 
 # Winter Wren had AOU code change (7220 to 7222), changing in occ code to reflect that
-all_occ$AOU[all_occ$AOU == 7220] <- 7222
+coyle_o$Aou[coyle_o$Aou == 7220] <- 7222
 
 # pull out stateroutes that have been continuously sampled 1996-2010
-routes = unique(all_occ$X)
+routes = unique(coyle_o$stateroute)
 
 sub_ep = merge(expect_pres, sp_list, by = 'AOU', all = TRUE) 
 # merge expected presence with occupancy data
-new_occ = merge(sub_ep, all_occ, by.x = c('stateroute', 'AOU'), by.y = c('X', 'AOU'), all = TRUE)
-new_occ$occupancy[is.na(new_occ$occupancy)] = 0
+new_occ = merge(sub_ep, coyle_o, by.x = c('stateroute', 'AOU'), by.y = c('stateroute', 'Aou'), all = TRUE) 
+new_occ$occ[is.na(new_occ$occ)] <- 0
 
 # subset to routes in the well sampled list of 'routes'
 new_occ2 = new_occ[new_occ$stateroute %in% routes, ]
@@ -352,7 +354,7 @@ focalspecies = unique(new_spec_weights$FocalAOU)
 bbs_abun = filter(bbs_pool, AOU %in% focalspecies) 
 
 # merge in occupancies of focal
-occ_abun = merge(bbs_abun, new_occ2[, c('AOU', 'stateroute' ,'occupancy', 'SciName')], 
+occ_abun = merge(bbs_abun, new_occ2[, c('AOU', 'stateroute' ,'occ', 'SciName')], 
                 by = c("AOU", "stateroute"))
 
 # Take range overlap area to assign "main competitor" for each focal species
@@ -397,7 +399,7 @@ for (sp in focalspecies) {
   # subset occupancy by state route, merge in main competitor
   match_occ_stroute = filter(new_occ2, new_occ2$stateroute %in% focalout$stateroute)
 
-  focal_comp_occ = merge(focalout, match_occ_stroute[,c('AOU', 'stateroute', 'occupancy')], 
+  focal_comp_occ = merge(focalout, match_occ_stroute[,c('AOU', 'stateroute', 'occ')], 
                          by.x = c('MainCompAOU', 'stateroute'), by.y = c('AOU', 'stateroute'))
   names(focal_comp_occ)[names(focal_comp_occ)=="occupancy"] <- "MainCompOcc" # do we need competitor occ? makes DF huge
   focalcompoutput = rbind(focalcompoutput, focal_comp_occ)
@@ -458,7 +460,10 @@ all_env = read.csv('All Env Data.csv', header = T)
 all_expected_pres = merge(all_env[,c("stateroute", "Longi", "Lati",  'sum.EVI', 'elev.mean', 'mat', 'ap.mean')], 
      focalcompsub, by = "stateroute")
 
-write.csv(all_expected_pres,"all_expected_pres.csv",row.names = FALSE)
+all_expected_pres$AOU = as.numeric(all_expected_pres$AOU)
+
+write.csv(all_expected_pres,"all_expected_pres.csv", row.names= FALSE)
+
 #For loop to calculate mean & standard dev environmental variables for each unique species (from BIOL 465)
 birdsoutputm = c()
 for (sp in subfocalspecies) {
@@ -665,12 +670,20 @@ beta_lm$sumR2 = beta_lm$BothZ_R2+beta_lm$Competition_R2+beta_lm$EnvZ_R2
 # add on success and failure columns by creating # of sites where birds were found
 # and # of sites birds were not found from original bbs data
 # create counter column to sum across years
-occuenv$counter = 1
-# aggregate to sum across years by site
-binom = aggregate(occuenv$counter, by = list(occuenv$stateroute), FUN = sum) 
-#rename columns to make more clear
-colnames(binom) <- c("stateroute", "numyears")
+bbs_binom= merge(bbs[,c("Aou", "stateroute", "Year")], occuenv, by.x=c("Aou", "stateroute"),by.y=c("Species", "stateroute"))
 
+binom = bbs_binom %>% 
+  filter(Year >= 1996, Year <= 2010) %>% 
+  dplyr::select(Aou, stateroute, Year) %>%
+  group_by(Aou, Year) %>%
+  count(stateroute, Aou)
+
+#rename columns to make more clear
+colnames(binom) <- c("stateroute", "Aou","numyears")
+
+# merge success/failure columns w environmnetal data, missing 0 occupancies
+occumatrix = merge(occuenv, binom, by = "stateroute", all.x = TRUE)
+write.csv(occumatrix, "occumatrix.csv", row.names = FALSE)
 envloc = merge(envoutput, centroid[, c("FocalAOU", "Long", "Lat")], by = 'FocalAOU', all = TRUE)
 write.csv(envloc, "envloc.csv", row.names = FALSE)
 ####### END DATA CLEANING, see analysis script ##########

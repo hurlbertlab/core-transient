@@ -110,9 +110,10 @@ pTemp = predict(glm_occ_rand_site, newdata=with(occumatrix,data.frame(zTemp=0,co
 inverselogit <- function(p) {exp(p)/(1+exp(p))} 
 newintercept <- function(p) {mean(exp(p)/(1+exp(p)))} 
 
+# this relationship should be negative
 ggplot(data = occumatrix, aes(x = abs(zTemp), y = FocalOcc)) + 
-  stat_function(fun=inverselogit, color = "blue") + 
-  geom_point(colour="black", shape=19, alpha = 0.2)
+  stat_function(fun=inverselogit, color = "blue", lwd=2) + 
+  geom_point(colour="black", shape=19, alpha = 0.2)#+ geom_jitter(width = 0.25)
   
 ggplot(data = occumatrix, aes(x = abs(zEVI), y = FocalOcc)) + 
   stat_function(fun=inverselogit, color = "blue") + 
