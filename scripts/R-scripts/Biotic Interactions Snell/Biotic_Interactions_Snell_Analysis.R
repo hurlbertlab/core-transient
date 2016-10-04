@@ -105,18 +105,21 @@ ggsave("C:/Git/core-transient/scripts/R-scripts/Biotic Interactions Snell/glmout
 ggplot(data = occumatrix, aes(x = comp_scaled, y = FocalAbundance)) +stat_smooth(data=glm_abun_rand_site, lwd = 1.5) +theme_bw()
 
 ####### WORKING ##########################################################################################################
-pTemp = predict(glm_occ_rand_site, newdata=with(occumatrix1,data.frame(zTemp=0,comp_scaled,zPrecip,zElev,zEVI,stateroute,Species, FocalOcc, forest)), allow.new.levels = TRUE) #predict values assuming zTemp=0
-pTemp = data.frame(pTemp)
+pTemp = predict(glm_occ_rand_site, newdata=with(occumatrix,data.frame(zTemp=0,comp_scaled,zPrecip,zElev,zEVI,stateroute,Species, FocalOcc)), allow.new.levels = TRUE) #predict values assuming zTemp=0
 
-newintercept <- function(p) {mean(exp(p)/(1+exp(p)))} # how to get it to plot fit of all values?
+inverselogit <- function(p) {exp(p)/(1+exp(p))} 
+newintercept <- function(p) {mean(exp(p)/(1+exp(p)))} 
 
-{for(p in pTemp){
-  np = newintercept(p)#mean of the inverse logit of those values.
-  p=rbind(p)
-}} 
+ggplot(data = occumatrix, aes(x = abs(zTemp), y = FocalOcc)) + 
+  stat_function(fun=inverselogit, color = "blue") + 
+  geom_point(colour="black", shape=19, alpha = 0.2)
+  
+ggplot(data = occumatrix, aes(x = abs(zEVI), y = FocalOcc)) + 
+  stat_function(fun=inverselogit, color = "blue") + 
+  geom_point(colour="black", shape=19, alpha = 0.2)
 
-ggplot(data = occumatrix, aes(x = zTemp, y = FocalOcc)) + stat_function(fun=newintercept, color = "blue")+geom_point(colour="black", shape=19, alpha = 0.2)
-  geom_segment(data=occumatrix, aes(x=newintercept, xend = newintercept, y=0, yend =1))
+
+
 
 hist(occumatrix$zTemp)
 hist(p) # d/n look right
