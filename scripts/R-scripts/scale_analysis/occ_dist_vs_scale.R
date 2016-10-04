@@ -153,30 +153,24 @@ upscaled_sample_sites = good_rtes2 %>%
 
 
 #need to mod occ_counts for up-scale data first?
+#first need to create vector of stateroutes 
 
 
 occ_counts2 = function(countData, stateroutes) {
   subdata = filter(countData, stateroute %in% stateroutes)
-  
-  
-  
-  
-  
-  
-    bbssub = countData[, c("stateroute", "year", "AOU", countColumns)]
-  bbssub$groupCount = rowSums(bbssub[, countColumns])
-  bbsu = unique(bbssub[bbssub[, "groupCount"]!= 0, c("stateroute", "year", "AOU")]) #because this gets rid of 0's...
-  bbsu.rt.occ = data.frame(table(bbsu[,c("stateroute", "AOU")])/15)
+  bbssub = countData[, c("year", "AOU")] #take unique combos of spp and year, ignore stateroute, don't need to specify it
+  #bbssub$groupCount = rowSums(bbssub[, countColumns]) #do I need this at all? just want unique combos of spp & year
+  bbsu = unique(bbssub[c("year", "AOU")]) #unique combos of year and AOU (spp) 
+  bbsu.rt.occ = data.frame(table(bbsu[,c("AOU")])/15)
   bbsu.rt.occ2 = bbsu.rt.occ[bbsu.rt.occ$Freq!=0,] #and this also gets rid of occupancy values of 0 total 
   names(bbsu.rt.occ2)[3] = "occupancy"
-  bbsu.rt.occ2$aboverouteID = countColumns[1] #subrouteID refers to first route in a grouped sequence, occ refers to the occ for the # of combined routes
-  bbsu.rt.occ2$grain = grain 
-  bbsu.rt.occ2 = bbsu.rt.occ2[, c("stateroute", "grain", "aboverouteID", "AOU", "occupancy")]
+  bbsu.rt.occ2$grain = grain
+  bbsu.rt.occ2 = bbsu.rt.occ2[, c("AOU", "grain", "occupancy")]
   return(bbsu.rt.occ2)
 }
 
-grains = c(1, 2, 10)
-reps = ???
+grains = c(1, 2, 10) 
+reps = ??? #100? 50?
 
 output = c()
 for (grain in grains) {
@@ -192,7 +186,7 @@ for (grain in grains) {
         
         for (i in 1:reps) {
           # sample X routes at random from bin
-          sampled_rtes = sample_n(bin_rtes, X)
+          sampled_rtes = sample_n(bin_rtes, X)  #where X = our magic number of routes that can adequately estimate occupancy for each grain; CHANGES with grain
           
         }
         
@@ -200,9 +194,12 @@ for (grain in grains) {
         groupedCols = paste("Rt_group", floor(lats/grain)*grain + grain/2, sep = "")
     temp = occ_counts2(fifty_allyears, groupedCols, grain)
     output = rbind(output, temp)
-  }
+    }
+  
+    } 
   
 }
+
 
 
 bbs_scaledup = output
