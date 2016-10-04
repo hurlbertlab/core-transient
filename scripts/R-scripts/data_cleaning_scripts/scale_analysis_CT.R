@@ -178,7 +178,12 @@ propOcc_w_taxa$spptally = 1
 
 totalspp = propOcc_w_taxa %>% group_by(datasetID, site) %>% tally(spptally)
 
-numCT= propOcc_w_taxa %>% group_by(datasetID, site) %>%  dplyr::summarize(numTrans = sum(propOcc <= 1/3), numCore=sum(propOcc > 2/3))
+numCT= propOcc_w_taxa %>% group_by(datasetID, site) %>%  
+  dplyr::summarize(numTrans1 = sum(propOcc <= 1/3), 
+                   numTrans2 = sum(propOcc <= 1/4),
+                   numTrans3 = sum(propOcc <= 1/5),
+                   numCore=sum(propOcc > 2/3), 
+                   meanOcc = mean(propOcc, na.rm = T))
 
 spptotals = merge(totalspp, numCT, by= c("datasetID", "site"))
   
