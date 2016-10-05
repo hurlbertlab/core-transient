@@ -189,23 +189,30 @@ numCT= propOcc_w_taxa %>% group_by(datasetID, site) %>%
 spptotals = merge(totalspp, numCT, by= c("datasetID", "site"))
   
 # for each dset - the propocc as response and the # of grain levels, community size, and random effect of taxa would be the predictor variables
-mod1 = lmer(meanOcc ~ meanAbundance * (1|taxa), data=occ_taxa)
-summary(mod1)
-
-# plot of community size vs scale
-cbPalette= c("gold", "dark blue", "blue", "light blue", "dark green", "purple", "red", "green")
-ggplot(data = mod1, aes(x = log10(meanAbundance), y = meanOcc)) + scale_colour_manual(values=cbPalette) + geom_point(aes(col=taxa)) 
-#+ geom_line()
-# Plot regression lines
-lines(arthXrange, arthYpred, lwd = 3, 
-      col = as.character(datasetMean$color[datasetMean$taxa == 'Arthropod'][1]))
-for (s in unique(datasetMean$taxa)) {
-  plotRegLine(datasetMean, mean.lm, s)
+taxorder = c('Bird', 'Plant', 'Mammal', 'Fish', 'Arthropod', 'Benthos', 'Plankton', 'Invertebrate')
+col.palette=c("blue","green", "purple", "light blue","gold", "dark blue", "red",  "dark green")
+taxcolors = data.frame(taxa = taxorder, color = col.Palette)
+c_occ_taxa = merge(occ_taxa, taxcolors, by = "taxa")
+  
+# this seems to be the plot, hmm
+palette(col.palette)
+for(id in datasetIDs){
+plotsub = subset(c_occ_taxa,datasetID == id)
+plot(plotsub$pctTrans, log10(plotsub$meanAbundance), type="l",lwd=1.7, ylim = c(0, 7), xlim = c(0,1.2), col = plotsub$taxa)
+par(new=TRUE)
 }
+legend('topright', legend = unique(occ_taxa$taxa), lty=1,lwd=3,col = col.palette, cex = 0.6)
+dev.off()
 
-#ggplot(data = mod1, aes(x = log10(meanAbundance), y = datasetID)) + scale_colour_manual(values=cbPalette) + geom_line(aes(col=taxa))
-lines(range(log10(meanN[2:5])), range(log10(meanN[2:5]))*BBS.lm$coefficients[2] + BBS.lm$coefficients[1],
-      lwd = 4, lty = 'dashed')
+# our model
+mod1 = lmer(meanOcc ~ meanAbundance * (1|taxa), data=occ_taxa)
 
+# couldnt get it to work in ggplot
+for(id in datasetIDs){
+plotsub = subset(occ_taxa,datasetID == id)
+print(id)
+ggplot(data = plotsub, aes(x = log10(meanAbundance), y = meanOcc)) + scale_colour_manual(values=cbPalette) + 
+  geom_segment(aes(x = 0, y =0, xend = 1.2, yend = 7, colour = "segment"), data = plotsub)
+}
 
 
