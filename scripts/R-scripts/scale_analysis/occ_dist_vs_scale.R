@@ -44,7 +44,9 @@ require(dplyr)
 # Subset the full BBS dataset to the routes above but including associated data
 fifty_allyears = bbs50 %>% 
   filter(year >= 2000, year <= 2014) %>% 
-  filter(stateroute %in% good_rtes$stateroute) #finally works because needed $ specification, 
+  filter(stateroute %in% good_rtes$stateroute)
+ 
+  #finally works because needed $ specification, 
 #can probably collapse into one line 
  
 #write.csv(fifty_allyears, "//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/filteredrtes.csv")
@@ -89,6 +91,32 @@ bbs_scalesorted2<-output
 
 ####Calculating occupancy at scales greater than a single route####
 
+#bring in data that includes stop totals from ecoretriever and subset down as above to 2000-2014 
+fifty2 = ecoretriever::fetch('BBS')
+bbs50_2 = fifty
+bbs50_2 = bbs50$counts
+bbs50_2$stateroute = bbs50$statenum*1000 + bbs50$Route
+bbs50_2$stateroute = as.integer(bbs50$stateroute)
+
+
+require(dplyr)
+#from Sara's code
+good_rtes2 = bbs50_2 %>% 
+  filter(year >= 2000, year <= 2014) %>% #shifted 15 year window up because missing 1996 data, and 2015 data available
+  select(year, stateroute) %>%
+  unique() %>%    
+  group_by(stateroute) %>%  
+  count(stateroute) %>% 
+  filter(n == 15) #now getting 1005 routes with consecutive data :^)
+
+#compare # of routes and route numbers themselves to old version of bbs50 stored in BioArk 
+require(dplyr)
+# Subset the full BBS dataset to the routes above but including associated data
+fifty_allyears2 = bbs50_2 %>% 
+  filter(year >= 2000, year <= 2014) %>% 
+  filter(stateroute %in% good_rtes2$stateroute)
+
+
 # bring in bbs routes file 
 routes = read.csv('scripts/R-scripts/scale_analysis/routes.csv')
 routes$stateroute = 1000*routes$statenum + routes$Route
@@ -130,12 +158,7 @@ points(sites$longitude, sites$latitude, col= "red", pch=16)
 #preferential over a fully random sample because the above step stratifies the sample for us geographically (right?)
 
 #I want to merge data for lats with my "data-data" while also subsetting to leave only routes that match w/random lats
-
-require(dplyr)
-upscaled_sample_sites = good_rtes2 %>% 
-  select(good_rtes2$Lati, good_rtes2$stateroute) %>% 
-  good_rtes2$Lati = floor(good_rtes2$Lati/grain)*grain + grain/2 %>% 
-  semi_join(good_rtes2, scale_selection) #keep getting errors about not being able to filter OR join 
+#keep getting errors about not being able to filter OR join 
 #because object is "of class "c('double', 'numeric') 
 
 
