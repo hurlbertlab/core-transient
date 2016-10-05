@@ -18,8 +18,7 @@ library(rgeos)
 library(dplyr)
 
 
-#fifty = ecoretriever::fetch('BBS50')
-#bbs50 = fifty
+#bbs50 = ecoretriever::fetch('BBS50')
 #bbs50 = bbs50$counts
 #bbs50$stateroute = bbs50$statenum*1000 + bbs50$Route
 #bbs50$stateroute = as.integer(bbs50$stateroute)
@@ -92,16 +91,15 @@ bbs_scalesorted2<-output
 ####Calculating occupancy at scales greater than a single route####
 
 #bring in data that includes stop totals from ecoretriever and subset down as above to 2000-2014 
-fifty2 = ecoretriever::fetch('BBS')
-bbs50_2 = fifty2
-bbs50_2 = bbs50_2$counts
-bbs50_2$stateroute = bbs50_2$statenum*1000 + bbs50_2$Route
-bbs50_2$stateroute = as.integer(bbs50_2$stateroute)
+bbs = ecoretriever::fetch('BBS')
+bbs = bbs$counts
+bbs$stateroute = bbs$statenum*1000 + bbs$Route
+bbs$stateroute = as.integer(bbs$stateroute)
 
 
 require(dplyr)
 #from Sara's code
-good_rtes2 = bbs50_2 %>% 
+good_rtes2 = bbs %>% 
   filter(Year >= 2000, Year <= 2014) %>% #shifted 15 year window up because missing 1996 data, and 2015 data available
   select(Year, stateroute) %>%
   unique() %>%    
@@ -112,7 +110,7 @@ good_rtes2 = bbs50_2 %>%
 #compare # of routes and route numbers themselves to old version of bbs50 stored in BioArk 
 require(dplyr)
 # Subset the full BBS dataset to the routes above but including associated data
-fifty_allyears2 = bbs50_2 %>% 
+bbs_allyears = bbs %>% 
   filter(Year >= 2000, Year <= 2014) %>% 
   filter(stateroute %in% good_rtes2$stateroute)
 
@@ -176,10 +174,10 @@ points(sites$longitude, sites$latitude, col= "red", pch=16)
 #reworked sequel to occ_counts function, but for scales above a single bbs route 
 #instead of count columns, just using stop totals (hard code to StopTotal?)
 occ_counts2 = function(countData, stoptotals, grain) {
-  subdata = filter(countData, stateroute %in% stateroutes)
-  bbssub = countData[, c("Year", "Aou", stoptotals)] #take unique combos of spp and year, ignore stateroute, don't need to specify it
+  subdata = filter(countData, stateroute %in% good_rtes2$stateroute)
+  bbssub = countData[, c("Year", "Aou", stoptotals)] #take unique combos of spp and year, ignore stateroute, 
   bbssub$groupCount = rowSums(bbssub[, stoptotals]) #do I need this at all? just want unique combos of spp & year
-  bbsu = unique(bbssub[bbssub[, "groupCount"]!= 0, c("stateroute", "Year", "Aou")]) #unique combos of year and AOU (spp) 
+  bbsu = unique(bbssub[bbssub[, "groupCount"]!= 0, c("Year", "Aou")]) #unique combos of year and AOU (spp) 
   bbsu.rt.occ = data.frame(table(bbsu[,c("Aou")])/15)
   bbsu.rt.occ2 = bbsu.rt.occ[bbsu.rt.occ$Freq!=0,] #and this also gets rid of occupancy values of 0 total 
   names(bbsu.rt.occ2)[3] = "occupancy"
@@ -213,7 +211,7 @@ for (grain in grains) {
           sampled_rtes = sample_n(bin_rtes, 5)  #where X = our magic number of routes that can adequately estimate occupancy for each grain; CHANGES with grain
                   }
         groupedCols = paste("Rt_bin", floor(temproutes$Lati/grain)*grain + grain/2, sep = "")
-    temp = occ_counts2(fifty_allyears2, groupedCols, grain) #pare down fifty_allyears to just necessary columns AOU, year, stateroute, (total occ column?) 
+    temp = occ_counts2(bbs_allyears, bbs_allyears$StopTotal, grain) #pare down fifty_allyears to just necessary columns AOU, year, stateroute, (total occ column?) 
     output = rbind(output, temp)
     }
   
