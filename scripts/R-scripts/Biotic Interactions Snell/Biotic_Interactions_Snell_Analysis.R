@@ -113,13 +113,19 @@ newintercept <- function(p) {mean(exp(p)/(1+exp(p)))}
 # this relationship should be negative
 ggplot(data = occumatrix, aes(x = abs(zTemp), y = FocalOcc)) + 
   stat_function(fun=inverselogit, color = "blue", lwd=2) + 
-  geom_point(colour="black", shape=19, alpha = 0.2)#+ geom_jitter(width = 0.25)
+  geom_point(colour="black", shape=19, alpha = 0.2)
   
 ggplot(data = occumatrix, aes(x = abs(zEVI), y = FocalOcc)) + 
   stat_function(fun=inverselogit, color = "blue") + 
   geom_point(colour="black", shape=19, alpha = 0.2)
 
+ggplot(data = occumatrix, aes(x = abs(zElev), y = FocalOcc)) + 
+  stat_function(fun=inverselogit, color = "blue") + 
+  geom_point(colour="black", shape=19, alpha = 0.2)
 
+ggplot(data = occumatrix, aes(x = abs(zPrecip), y = FocalOcc)) + 
+  stat_function(fun=inverselogit, color = "blue") + 
+  geom_point(colour="black", shape=19, alpha = 0.2)
 
 
 hist(occumatrix$zTemp)
