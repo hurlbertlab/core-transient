@@ -129,6 +129,7 @@ bigfile_taxa = merge(bigfile, dataformattingtable[,c('dataset_ID', 'taxa')], by.
   
 write.csv(bigfile_taxa, "output/propOcc_w_taxa.csv", row.names=FALSE)
 
+##### If just running analysis #####
 propOcc_w_taxa = read.csv("output/propOcc_w_taxa.csv", header = TRUE) # read in file if not running whole code
 
 # rbind site_summary files
@@ -190,3 +191,21 @@ spptotals = merge(totalspp, numCT, by= c("datasetID", "site"))
 # for each dset - the propocc as response and the # of grain levels, community size, and random effect of taxa would be the predictor variables
 mod1 = lmer(meanOcc ~ meanAbundance * (1|taxa), data=occ_taxa)
 summary(mod1)
+
+# plot of community size vs scale
+cbPalette= c("gold", "dark blue", "blue", "light blue", "dark green", "purple", "red", "green")
+ggplot(data = mod1, aes(x = log10(meanAbundance), y = meanOcc)) + scale_colour_manual(values=cbPalette) + geom_point(aes(col=taxa)) 
+#+ geom_line()
+# Plot regression lines
+lines(arthXrange, arthYpred, lwd = 3, 
+      col = as.character(datasetMean$color[datasetMean$taxa == 'Arthropod'][1]))
+for (s in unique(datasetMean$taxa)) {
+  plotRegLine(datasetMean, mean.lm, s)
+}
+
+#ggplot(data = mod1, aes(x = log10(meanAbundance), y = datasetID)) + scale_colour_manual(values=cbPalette) + geom_line(aes(col=taxa))
+lines(range(log10(meanN[2:5])), range(log10(meanN[2:5]))*BBS.lm$coefficients[2] + BBS.lm$coefficients[1],
+      lwd = 4, lty = 'dashed')
+
+
+
