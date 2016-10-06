@@ -51,7 +51,7 @@ for(datasetID in datasetIDs){
   spatialgrains = dataDescription$Raw_siteUnit
   spatialgrains = as.character(spatialgrains)
   spatialgrains = unlist(strsplit(spatialgrains, '_'))
-  spatialgrains = spatialgrains[length(spatialgrains):1] #reversing order to be from small to large not working
+ # spatialgrains = spatialgrains[length(spatialgrains):1] #reversing order to be from small to large not working
   #spatialgrains = c(spatialgrains, maxGrain)
   spatialgrain = c()
   grainLevel = 1
@@ -87,11 +87,12 @@ for(datasetID in datasetIDs){
       fullGoodSites = c(fullGoodSites, tmp)
     }
     
-    dataset8 = subset(dataset7, site %in% fullGoodSites)
+    dataset8=dataset7
+    #dataset8 = subset(dataset7, s %in% fullGoodSites)
     
    if(goodSites == 0){
       subsettedData = dataset7
-    }else
+    }else{
     subsettedData = subsetDataFun(dataset8, 
                                   datasetID, spatialGrain = sGrain, 
                                   temporalGrain = tGrain,
@@ -99,7 +100,7 @@ for(datasetID in datasetIDs){
                                   proportionalThreshold = topFractionSites,
                                   dataDescription)
 
-    writePropOccSiteSummary(subsettedData, spatialGrainAnalysis = TRUE, grainLevel = grainLevel)
+    writePropOccSiteSummary(subsettedData, spatialGrainAnalysis = TRUE, grainLevel = grainLevel)}
     print(grainLevel)
     grainLevel = grainLevel + 1
     } # end of spatial grain loop
