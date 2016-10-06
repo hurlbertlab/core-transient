@@ -195,6 +195,9 @@ taxcolors = data.frame(taxa = taxorder, color = col.Palette)
 c_occ_taxa = merge(occ_taxa, taxcolors, by = "taxa")
   
 # this seems to be the plot, hmm
+pdf('output/plots/sara_scale.pdf', height = 6, width = 7.5)
+par(mfrow = c(1, 1), mar = c(6, 6, 1, 1), mgp = c(4, 1, 0), 
+    cex.axis = 1.5, cex.lab = 2, las = 1)
 palette(col.palette)
 for(id in datasetIDs){
 plotsub = subset(c_occ_taxa,datasetID == id)
