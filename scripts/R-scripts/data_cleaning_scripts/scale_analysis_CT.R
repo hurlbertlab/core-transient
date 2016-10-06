@@ -172,6 +172,9 @@ mean_occ_by_site = propOcc_w_taxa %>%
 
 occ_taxa = merge(mean_occ_by_site, summaries_grains_w_taxa, by = c("datasetID", "site"))
 
+occ_taxa = occ_taxa[order(occ_taxa$datasetID, occ_taxa$scale, occ_taxa$site, decreasing = F), ]
+
+
 # Calculating number of core, trans, and total spp for each dataset/site combo
 propOcc_demog = merge(propOcc_w_taxa, occ_taxa, by =  c("datasetID", "site"))
 
@@ -191,21 +194,51 @@ spptotals = merge(totalspp, numCT, by= c("datasetID", "site"))
 # for each dset - the propocc as response and the # of grain levels, community size, and random effect of taxa would be the predictor variables
 taxorder = c('Bird', 'Plant', 'Mammal', 'Fish', 'Arthropod', 'Benthos', 'Plankton', 'Invertebrate')
 col.palette=c("blue","green", "purple", "light blue","gold", "dark blue", "red",  "dark green")
-taxcolors = data.frame(taxa = taxorder, color = col.Palette)
-c_occ_taxa = merge(occ_taxa, taxcolors, by = "taxa")
+taxcolors = data.frame(taxa = taxorder, color = col.palette)
+
+
+# Datasets plotted individually versus community size
+pdf('output/plots/indiv_scale_plots.pdf', height = 10, width = 7.5)
+par(mfrow = c(5, 4), mar = c(4, 4, 1, 1), mgp = c(3, 1, 0), 
+    cex.axis = 1, cex.lab = 1, las = 1)
+for(id in datasetIDs){
+  plotsub = subset(c_occ_taxa,datasetID == id)
+  plot(log10(plotsub$meanAbundance), plotsub$pctTrans, pch = 16, xlim = c(0, 7), ylim = c(0,1.2), col = plotsub$taxa, main = id)
   
-# this seems to be the plot, hmm
+}
+dev.off()
+
+# Plot versus categorical grain
+pdf('output/plots/indiv_scale_plots_bygrain.pdf', height = 10, width = 7.5)
+par(mfrow = c(5, 4), mar = c(4, 4, 1, 1), mgp = c(3, 1, 0), 
+    cex.axis = 1, cex.lab = 1, las = 1)
+for(id in datasetIDs){
+  plotsub = subset(c_occ_taxa,datasetID == id)
+  plot(plotsub$scale, log10(plotsub$meanAbundance), pch = 16, xlim = c(0, 7), ylim = c(0,1.2), col = plotsub$taxa, main = id)
+  
+}
+dev.off()
+
+# Summary of % transients versus community size using regression lines
 pdf('output/plots/sara_scale.pdf', height = 6, width = 7.5)
 par(mfrow = c(1, 1), mar = c(6, 6, 1, 1), mgp = c(4, 1, 0), 
     cex.axis = 1.5, cex.lab = 2, las = 1)
 palette(col.palette)
 for(id in datasetIDs){
-plotsub = subset(c_occ_taxa,datasetID == id)
-plot(plotsub$pctTrans, log10(plotsub$meanAbundance), type="l",lwd=1.7, ylim = c(0, 7), xlim = c(0,1.2), col = plotsub$taxa)
-par(new=TRUE)
+  plotsub = subset(c_occ_taxa,datasetID == id)
+  plot(log10(plotsub$meanAbundance), plotsub$pctTrans, type="l",lwd=1.7, xlim = c(0, 7), ylim = c(0,1.2), col = plotsub$taxa)
+  par(new=TRUE)
 }
 legend('topright', legend = unique(occ_taxa$taxa), lty=1,lwd=3,col = col.palette, cex = 0.6)
 dev.off()
+
+
+
+
+
+
+
+
 
 # our model
 mod1 = lmer(meanOcc ~ meanAbundance * (1|taxa), data=occ_taxa)
