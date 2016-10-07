@@ -90,33 +90,9 @@ bbs_scalesorted2<-output
 
 ####Calculating occupancy at scales greater than a single route####
 
-#bring in data that includes stop totals from ecoretriever and subset down as above to 2000-2014 
-bbs = ecoretriever::fetch('BBS')
-bbs = bbs$counts
-bbs$stateroute = bbs$statenum*1000 + bbs$Route
-bbs$stateroute = as.integer(bbs$stateroute)
+good_rtes2 = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/good_rtes2.csv", header = TRUE)
 
-require(dplyr)
-#from Sara's code
-good_rtes2 = bbs %>% 
-  filter(Year >= 2000, Year <= 2014) %>% #shifted 15 year window up because missing 1996 data, and 2015 data available
-  select(Year, stateroute) %>%
-  unique() %>%    
-  group_by(stateroute) %>%  
-  count(stateroute) %>% 
-  filter(n == 15) #now getting 1005 routes with consecutive data :^)
-
-#compare # of routes and route numbers themselves to old version of bbs50 stored in BioArk 
-require(dplyr)
-# Subset the full BBS dataset to the routes above but including associated data
-bbs_allyears = bbs %>% 
-  filter(Year >= 2000, Year <= 2014) %>% 
-  filter(stateroute %in% good_rtes2$stateroute)
-
-
-#write.csv(bbs_allyears, "//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/bbs_allyears.csv")
 bbs_allyears = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/bbs_allyears.csv", header = TRUE)
-
 
 # bring in bbs routes file 
 routes = read.csv('scripts/R-scripts/scale_analysis/routes.csv')
@@ -148,22 +124,6 @@ points(sites$longitude, sites$latitude, col= "red", pch=16)
 # count how many there are per grid cell at different scales
 
 # e.g. doing this for both lat & long
-
-
-
-
-#do I want to join or do I want to pair by minimum difference? can I do that given the 1005 vs 50 item problem?
-
-#use scale selection to sample for routes that occur at the above random latitudes 
-
-#preferential over a fully random sample because the above step stratifies the sample for us geographically (right?)
-
-#I want to merge data for lats with my "data-data" while also subsetting to leave only routes that match w/random lats
-#keep getting errors about not being able to filter OR join 
-#because object is "of class "c('double', 'numeric') 
-
-
-#or instead of using dummy/ex variable "lats" do I get to use my own lats but use random to select # of them? ^
 
 
 #------------------------------------------------------------------------------------------
@@ -229,13 +189,14 @@ for (grain in grains) {
 
 
 bbs_scaledup = output
+
 #-----------------------------------------------------------------------------------------
 
-####Determining ideal magic number "X" assigned to each grain; creating this file to draw from to use in above
+####Determining ideal magic number "X" assigned to each grain; creating this file to draw from to use in below
 #in lieu of hardcoding grain and sample_n portions prior to loops 
 
-library(maps)
-grain = 2
+
+grain = 10
 temproutes$latbin = floor(temproutes$Lati/grain)*grain + grain/2
 temproutes$longbin = floor(temproutes$Longi/grain)*grain + grain/2
 temproutes$latbin = floor(temproutes$Lati/grain)*grain + grain/2
@@ -247,9 +208,8 @@ map('state')
 points(ct$longbin, ct$latbin, cex = 3*ct$n/max(ct$n), pch = 16)
 
 
+
 hist(ct$n)
 median(ct$n)
-
-quantile(ct$n, 0.5)
 
 quantile(ct$n, 0.6)
