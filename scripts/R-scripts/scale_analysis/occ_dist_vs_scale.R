@@ -125,7 +125,7 @@ routes$stateroute = 1000*routes$statenum + routes$Route
 
 # merge lat longs from routes file to the list of "good" routes
 require(dplyr)
-good_rtes2 = good_rtes2 %>% 
+good_rtes3 = good_rtes2 %>% 
   left_join(routes, good_rtes2, by = "stateroute") %>%
   select(stateroute, Lati, Longi)
 
@@ -198,7 +198,7 @@ reps = c(100) #100? 50?
 #filtering routes sampled to those that fall within a given bin 
 #and calculating occupancy for routes randomly sampled from those grouped within a bin  
 
-output = c()
+output = data.frame(grain = NULL, lat = NULL, lon = NULL, rep = NULL, AOU = NULL, occ = NULL)
 for (grain in grains) {
   temproutes = good_rtes2
   temproutes$latbin = floor(temproutes$Lati/grain)*grain + grain/2
@@ -209,18 +209,33 @@ for (grain in grains) {
     for (lon in uniqLonBins) {
       bin_rtes = filter(temproutes, latbin == lat, longbin == lon)
       
+      if() #
+      
       for (i in 1:reps) {
         # sample X routes at random from bin
-        sampled_rtes = sample_n(bin_rtes, 5)  #where X = our magic number of routes that can adequately estimate occupancy for each grain; CHANGES with grain
-      }
-      groupedCols = paste("Rt_bin", floor(temproutes$Lati/grain)*grain + grain/2, sep = "")
-      temp = occ_counts2(bbs_allyears, bbs_allyears$StopTotal, grain) #pare down fifty_allyears to just necessary columns AOU, year, stateroute, (total occ column?) 
-      output = rbind(output, temp)
-    }
+        # where X = our magic number of routes that can adequately 
+        #  estimate occupancy for each grain; CHANGES with grain
+        sampled_rtes = sample_n(bin_rtes, 5)  #pull "5" from pre-defined table
+        bbssub = filter(bbs_allyears, stateroute %in% sampled_rtes$stateroute)
+        bbsuniq = unique(bbssub[, c('AOU', 'Year')])
+        occs = bbsuniq %>% count(AOU) %>% mutate(occ = n/15)
+        
+        temp = data.frame(grain = grain, 
+                          lat = lat, 
+                          lon = lon, 
+                          rep = i,
+                          AOU = occs$AOU,
+                          occ = occs$occ)
+        
+        output = rbind(output, temp)
+        
+      } #end of the rep loop
+      
+    } #end of the lon loop
     
-  } 
+  } #end of the lat loop
   
-}
+} #end of the grain loop
 
 
 
