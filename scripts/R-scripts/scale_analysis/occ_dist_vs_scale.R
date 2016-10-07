@@ -44,10 +44,10 @@ require(dplyr)
 fifty_allyears = bbs50 %>% 
   filter(year >= 2000, year <= 2014) %>% 
   filter(stateroute %in% good_rtes$stateroute)
- 
-  #finally works because needed $ specification, 
+
+#finally works because needed $ specification, 
 #can probably collapse into one line 
- 
+
 #write.csv(fifty_allyears, "//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/filteredrtes.csv")
 #wrote to file just in case 
 
@@ -96,6 +96,9 @@ bbs = bbs$counts
 bbs$stateroute = bbs$statenum*1000 + bbs$Route
 bbs$stateroute = as.integer(bbs$stateroute)
 
+#write.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/bbs50.csv", header = TRUE)
+
+#bbs = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/bbs.csv", header = TRUE)
 
 require(dplyr)
 #from Sara's code
@@ -202,20 +205,20 @@ for (grain in grains) {
   temproutes$longbin = floor(temproutes$Longi/grain)*grain + grain/2
   uniqLatBins = unique(temproutes$latbin)
   uniqLonBins = unique(temproutes$longbin)
-    for (lat in uniqLatBins) {
-      for (lon in uniqLonBins) {
-        bin_rtes = filter(temproutes, latbin == lat, longbin == lon)
-        
-        for (i in 1:reps) {
-          # sample X routes at random from bin
-          sampled_rtes = sample_n(bin_rtes, 5)  #where X = our magic number of routes that can adequately estimate occupancy for each grain; CHANGES with grain
-                  }
-        groupedCols = paste("Rt_bin", floor(temproutes$Lati/grain)*grain + grain/2, sep = "")
-    temp = occ_counts2(bbs_allyears, bbs_allyears$StopTotal, grain) #pare down fifty_allyears to just necessary columns AOU, year, stateroute, (total occ column?) 
-    output = rbind(output, temp)
+  for (lat in uniqLatBins) {
+    for (lon in uniqLonBins) {
+      bin_rtes = filter(temproutes, latbin == lat, longbin == lon)
+      
+      for (i in 1:reps) {
+        # sample X routes at random from bin
+        sampled_rtes = sample_n(bin_rtes, 5)  #where X = our magic number of routes that can adequately estimate occupancy for each grain; CHANGES with grain
+      }
+      groupedCols = paste("Rt_bin", floor(temproutes$Lati/grain)*grain + grain/2, sep = "")
+      temp = occ_counts2(bbs_allyears, bbs_allyears$StopTotal, grain) #pare down fifty_allyears to just necessary columns AOU, year, stateroute, (total occ column?) 
+      output = rbind(output, temp)
     }
-  
-    } 
+    
+  } 
   
 }
 
