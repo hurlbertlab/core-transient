@@ -156,7 +156,7 @@ for (grain in grains) {
     for (lon in uniqLonBins) {
       bin_rtes = filter(temproutes, latbin == lat, longbin == lon)
       
-      #if() 
+      #if(X > binroutes, skip to the next lon in uniqLonBins) 
         #need to  specify that magic number X of sites sampled can't be larger than 
         # of routes available to pool from in a given bin
       
