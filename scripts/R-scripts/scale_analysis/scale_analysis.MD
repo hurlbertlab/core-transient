@@ -40,8 +40,9 @@ It also highlights which pieces of .R code in the folder are associated with spe
 		
 		- bin size (grid cell size) dictated by grain and extent (X # routes sampled within each grid cell/bin) 
 		
-		- grain = degree dimensions of a given grid cell/bin 
-
+		- grain = degree dimensions of a given grid cell/bin (1, 2, 4, 6, 8, 10 - currently experimenting with sizes) 
+		
+		- calculate spp occupancy across routes within a given grid cell/bin based on fixed # of routes sampled for that grain 
 
 * can extract temporal occupancy values for every spp 
 
