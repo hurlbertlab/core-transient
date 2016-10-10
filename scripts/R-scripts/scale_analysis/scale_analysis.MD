@@ -1,21 +1,6 @@
-# Notes on exploring the impacts of spatial scale on temporal occupancy
+2 components: 
 
-* Finish or approach finishing comparison analysis: 
-
-* Finish multi-scale iterations of geographic and environmental distance site pairings. 
-
-* Run models comparing discrepancies at different scales. 
-
-* Does scale of sample play a role in explaining discrepancies between sites? 
- 
-	- Run variation partitioning analysis for each scale. 
-
-	- Compare outcomes. 
-
-
-2 pieces: 
-
-1) independent of breeding bird census stuff * how do these patterns vary with scale, period, independent of bbs and bbc? 
+1) independent of breeding bird census analyses * how do occupancy patterns in BBS vary with scale? 
 
 * for just bbs 
 
@@ -41,58 +26,39 @@
 
 	- most immediate piece to work on first
 
-2) Bigger picture comparisons I wrote above 
+2) Compare BBS occupancy with BBC observer-defined occupancy categories 
+* pair BBS and BBC sites by geographic distance 
+	
+	-compare category agreements and discrepancies 
+	
+	-run for multiple scales: 
+		
+		-at single-route-site paired scale
+		
+		-at scales beneath a single BBS route, encompassing different segment lengths w/in a given route 
+			
+			-because BBC sites are often irregular in size and smaller than a single BBS route, may be closer to a single segment of a route than the entire route itself 
+	
+* pair BBS and BBC sites by distance in environmental space (i.e. axes are environmental variables: NDVI, elevation, precip, etc.) 
+
+	-compare category agreements and discrepancies
+	
+	-run for multiple scales: 
+		
+		-at single-route-site paired scale
+		
+		-at scales beneath a single BBS route, encompassing different segment lengths w/in a given route 
+			
+			-because BBC sites are often irregular in size and smaller than a single BBS route, may be more environmentally similar to a single segment of a route than the entire route itself 
 
 
-Make changes, commit to the repo, every time I make changes commit to git 
-MD files are markdown files - descriptive notes 
+# Notes on exploring the impacts of spatial scale on temporal occupancy
 
-create a markdown file for the R-scripts scale analysis folder  
+* Run models comparing discrepancies at different scales. 
 
-update markdown file 2x every week, treat like a lab notebook that I *have* to keep 
-
-Scale_analysis.MD
-
-
-2 sep functions for 10 pt count and then for 50 stop data 
-
-
-
-2) 
-
-
-May: 
-
-* ~~next week: work on making function run~~ 
-
-June: 
-
-* ~~week 1: fix softcoding within a function issue~~
+* Does scale of sample play a role in explaining discrepancies between sites? 
  
-* ~~week 2: occ_counts function fixed~~
+	- Run variation partitioning analysis for each scale. 
 
-* ~~week 3: tentative groupings assembled~~
-
-* ~~week 4: groupings trashed in lieu of generating "Stop_" sequence by forloop~~
-
-
-July: 
-
-* ~~week 1: forloop construction and troubleshooting~~ 
-
-* ~~week 2: forloop and sequences finalized~~  
-
-* ~~week 3: Calculate occupancy for scale clusters based on presence/absence at each stop~~ 
-
-* ~~week 4: Calculate relationship between scale and occupancy in BBS data alone~~
-
-
-August: 
-
-* week 1: Preliminarily test out BBC-BBS pairings at multiple scales; geog + env distance analyses. Test for occupancy vs habitat heterogeneity at multiple scales. Wrap up.
-
-* week 2: Away. 
-
-* week 3: Clean up code, add graphs. August-Sept plan for return to Fall semester. 
-
+	- Compare outcomes. 
 
