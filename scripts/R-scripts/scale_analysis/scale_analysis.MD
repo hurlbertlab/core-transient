@@ -1,6 +1,10 @@
-2 components: 
+This .md details the overarcing objectives of the Core-Transient scale analyses, hypotheses, and associated questions. 
+It also highlights which pieces of .R code cover specific portions of these analyses. 
 
-1) independent of breeding bird census analyses * how do occupancy patterns in BBS vary with scale? 
+
+2 primary components: 
+
+1) characterize how calculated occupancy patterns in BBS alone vary with scale 
 
 * for just bbs 
 
@@ -14,20 +18,23 @@
 
 * scale patterns: could be that we expect mean occupancy to increase with higher spatial scales 
 
-* how do these patterns differ between homo and hetero landscapes as scale increases? 
+* how do these patterns differ between homogenous and heterogenous landscapes as scale increases? 
 
-	- might include diffs in slope and leveling off between two curves 
+	- might include diffs in slope and leveling off between the two landscapes when plotted as separate curves
 
-	- as we change scale in a more hetero region or route, how does temp occupancy vary? 
+	- as we change scale in a more hetero region or route, how does temporal occupancy vary? 
 
-	- at the scale of a bbs route and below (sets of 10 or below) 
+	- at the scale of a bbs route, of sub-route segments comprised of collapsed stop data, and at the scale above a bbs route 
 
 * can extract temporal occupancy values for every spp 
 
 	- most immediate piece to work on first
 
-2) Compare BBS occupancy with BBC observer-defined occupancy categories 
-* pair BBS and BBC sites by geographic distance 
+2) Characterize the degree to which Breeding Bird Census (BBC) data validate and agree with BBS occupancy data 
+
+* compare BBS occupancy with BBC observer-defined occupancy categories 
+
+* a) pair BBS and BBC sites by geographic distance 
 	
 	-compare category agreements and discrepancies 
 	
@@ -39,7 +46,7 @@
 			
 			-because BBC sites are often irregular in size and smaller than a single BBS route, may be closer to a single segment of a route than the entire route itself 
 	
-* pair BBS and BBC sites by distance in environmental space (i.e. axes are environmental variables: NDVI, elevation, precip, etc.) 
+* b) pair BBS and BBC sites by distance in environmental space (i.e. axes are environmental variables: NDVI, elevation, precip, etc.) 
 
 	-compare category agreements and discrepancies
 	
