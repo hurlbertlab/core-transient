@@ -66,7 +66,7 @@ for(datasetID in datasetIDs){
     print(sGrain)
 
     tGrain = "year"
-    if (nchar(as.character(dataset7$date[1])) > 4){ 
+    if (nchar(as.character(dataset7$date[1])) > 4|is.na(dataset7$date[1])){ 
       dataset7$date = as.POSIXct(strptime(as.character(dataset7$date), format = "%Y-%m-%d"))
     }
   
