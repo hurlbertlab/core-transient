@@ -6,29 +6,46 @@ It also highlights which pieces of .R code in the folder are associated with spe
 
 1) characterize how calculated occupancy patterns in BBS alone vary with scale 
 
-* for just bbs 
-
 * shift in temporal occupancy from transient to core 
 
 	- how does that shift happen and what impacts it? 
 
-* geographic context within a site sits: landscape heterogeneity, ndvi 
+* geographic context within a site: landscape heterogeneity, ndvi 
 
-	- we already know bbs routes in more hetero vs homog at same scale has more transient spp 
+	- we already know bbs routes in more heterogenous landscape have more transient species than homogenous landscapes at the same scale
 
-* scale patterns: could be that we expect mean occupancy to increase with higher spatial scales 
+* scale patterns: we expect mean occupancy (incidence of core species designation) to increase with larger spatial scales 
 
-* how do these patterns differ between homogenous and heterogenous landscapes as scale increases? 
+* how do occupancy patterns differ between homogenous and heterogenous landscapes as scale increases? 
 
 	- might include diffs in slope and leveling off between the two landscapes when plotted as separate curves
 
-	- as we change scale in a more hetero region or route, how does temporal occupancy vary? 
+	- as we change scale in a more heterogenous region or route, how does temporal occupancy vary:
 
-	- at the scale of a bbs route, of sub-route segments comprised of collapsed stop data, and at the scale above a bbs route 
+	- i) at the scale of a bbs route
+	
+	- ii) at scales below a BBS route
+	
+		- at different scale-associated BBS route segments comprised of collapsed 50 stop data 
+		
+		- segments: collapse and calc occupancy for every 25, 10, 5 stops (2, 5, 10 segments generated per BBS route) 
+		
+		- calculate spp occupancy within a given segment 
+	
+	- iii) and at scales above a BBS route? 
+	
+		- across clustered routes 
+		
+		- routes clustered by # of routes that fall within a latitudinal/longitudinal grid cell or "bin" 
+		
+		- bin size (grid cell size) dictated by grain and extent (X # routes sampled within each grid cell/bin) 
+		
+		- grain = degree dimensions of a given grid cell/bin 
+
 
 * can extract temporal occupancy values for every spp 
 
-	- most immediate piece to work on first
+	- plot against averages 
 
 2) Characterize the degree to which Breeding Bird Census (BBC) data validate and agree with BBS occupancy data 
 
