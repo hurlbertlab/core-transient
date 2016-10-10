@@ -1,5 +1,5 @@
-This .md details the overarcing objectives of the Core-Transient scale analyses, hypotheses, and associated questions. 
-It also highlights which pieces of .R code cover specific portions of these analyses. 
+This .md details the overarching objectives of the Core-Transient scale analyses, hypotheses, and associated questions. 
+It also highlights which pieces of .R code in the folder are associated with specific objectives of these analyses. 
 
 
 2 primary components: 
