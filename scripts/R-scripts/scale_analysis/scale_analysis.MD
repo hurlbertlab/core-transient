@@ -1,8 +1,83 @@
+This .md details the overarching objectives of the Core-Transient scale analyses, hypotheses, and associated questions. 
+It also highlights which pieces of .R code in the folder are associated with specific objectives of these analyses. Presently, the entirety of the 1st component is in the occ_dist_vs_scale.R file. The unfinished 2nd component is spread between Gartland_code.R and Spring_code_updates.R 
+
+
+2 primary components: 
+
+1) characterize how calculated occupancy patterns in BBS alone vary with scale 
+
+* shift in temporal occupancy from transient to core 
+
+	- how does that shift happen and what impacts it? 
+
+* geographic context within a site: landscape heterogeneity, ndvi 
+
+	- we already know bbs routes in more heterogenous landscape have more transient species than homogenous landscapes at the same scale
+
+* scale patterns: we expect mean occupancy (incidence of core species designation) to increase with larger spatial scales 
+
+* how do occupancy patterns differ between homogenous and heterogenous landscapes as scale increases? 
+
+	- might include diffs in slope and leveling off between the two landscapes when plotted as separate curves
+
+	- as we change scale in a more heterogenous region or route, how does temporal occupancy vary:
+
+	- i) at the scale of a bbs route
+	
+	- ii) at scales below a BBS route
+	
+		- at different scale-associated BBS route segments comprised of collapsed 50 stop data 
+		
+		- segments: collapse and calc occupancy for every 25, 10, 5 stops (2, 5, 10 segments generated per BBS route) 
+		
+		- calculate spp occupancy within a given segment 
+	
+	- iii) and at scales above a BBS route? 
+	
+		- across clustered routes 
+		
+		- routes clustered by # of routes that fall within a latitudinal/longitudinal grid cell or "bin" 
+		
+		- bin size (grid cell size) dictated by grain and extent (X # routes sampled within each grid cell/bin) 
+		
+		- grain = degree dimensions of a given grid cell/bin (1, 2, 4, 6, 8, 10 - currently experimenting with sizes) 
+		
+		- calculate spp occupancy across routes within a given grid cell/bin based on fixed # of routes sampled for that grain 
+
+* can extract temporal occupancy values for every spp 
+
+	- plot against averages 
+
+2) Characterize the degree to which Breeding Bird Census (BBC) data validate and agree with BBS occupancy data 
+
+* compare BBS occupancy with BBC observer-defined occupancy categories 
+
+* a) pair BBS and BBC sites by geographic distance 
+	
+	-compare category agreements and discrepancies 
+	
+	-run for multiple scales: 
+		
+	- i) at single-route-site paired scale
+		
+	- ii) at scales beneath a single BBS route, encompassing different segment lengths w/in a given route 
+			
+	-because BBC sites are often irregular in size and smaller than a single BBS route, may be closer to a single segment of a route than the entire route itself 
+	
+* b) pair BBS and BBC sites by distance in environmental space (i.e. axes are environmental variables: NDVI, elevation, precip, etc.) 
+
+	-compare category agreements and discrepancies
+	
+	-run for multiple scales: 
+		
+	- i) at single-route-site paired scale
+		
+	- ii) at scales beneath a single BBS route, encompassing different segment lengths w/in a given route 
+			
+	-because BBC sites are often irregular in size and smaller than a single BBS route, may be more environmentally similar to a single segment of a route than the entire route itself 
+
+
 # Notes on exploring the impacts of spatial scale on temporal occupancy
-
-* Finish or approach finishing comparison analysis: 
-
-* Finish multi-scale iterations of geographic and environmental distance site pairings. 
 
 * Run models comparing discrepancies at different scales. 
 
@@ -11,88 +86,4 @@
 	- Run variation partitioning analysis for each scale. 
 
 	- Compare outcomes. 
-
-
-2 pieces: 
-
-1) independent of breeding bird census stuff * how do these patterns vary with scale, period, independent of bbs and bbc? 
-
-* for just bbs 
-
-* shift in temporal occupancy from transient to core 
-
-	- how does that shift happen and what impacts it? 
-
-* geographic context within a site sits: landscape heterogeneity, ndvi 
-
-	- we already know bbs routes in more hetero vs homog at same scale has more transient spp 
-
-* scale patterns: could be that we expect mean occupancy to increase with higher spatial scales 
-
-* how do these patterns differ between homo and hetero landscapes as scale increases? 
-
-	- might include diffs in slope and leveling off between two curves 
-
-	- as we change scale in a more hetero region or route, how does temp occupancy vary? 
-
-	- at the scale of a bbs route and below (sets of 10 or below) 
-
-* can extract temporal occupancy values for every spp 
-
-	- most immediate piece to work on first
-
-2) Bigger picture comparisons I wrote above 
-
-
-Make changes, commit to the repo, every time I make changes commit to git 
-MD files are markdown files - descriptive notes 
-
-create a markdown file for the R-scripts scale analysis folder  
-
-update markdown file 2x every week, treat like a lab notebook that I *have* to keep 
-
-Scale_analysis.MD
-
-
-2 sep functions for 10 pt count and then for 50 stop data 
-
-
-
-2) 
-
-
-May: 
-
-* ~~next week: work on making function run~~ 
-
-June: 
-
-* ~~week 1: fix softcoding within a function issue~~
- 
-* ~~week 2: occ_counts function fixed~~
-
-* ~~week 3: tentative groupings assembled~~
-
-* ~~week 4: groupings trashed in lieu of generating "Stop_" sequence by forloop~~
-
-
-July: 
-
-* ~~week 1: forloop construction and troubleshooting~~ 
-
-* ~~week 2: forloop and sequences finalized~~  
-
-* ~~week 3: Calculate occupancy for scale clusters based on presence/absence at each stop~~ 
-
-* ~~week 4: Calculate relationship between scale and occupancy in BBS data alone~~
-
-
-August: 
-
-* week 1: Preliminarily test out BBC-BBS pairings at multiple scales; geog + env distance analyses. Test for occupancy vs habitat heterogeneity at multiple scales. Wrap up.
-
-* week 2: Away. 
-
-* week 3: Clean up code, add graphs. August-Sept plan for return to Fall semester. 
-
 
