@@ -1,5 +1,5 @@
 This .md details the overarching objectives of the Core-Transient scale analyses, hypotheses, and associated questions. 
-It also highlights which pieces of .R code in the folder are associated with specific objectives of these analyses. 
+It also highlights which pieces of .R code in the folder are associated with specific objectives of these analyses. Presently, the entirety of the 1st component is in the occ_dist_vs_scale.R file. The unfinished 2nd component is spread between Gartland_code.R and Spring_code_updates.R 
 
 
 2 primary components: 
