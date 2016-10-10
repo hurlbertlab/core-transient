@@ -40,11 +40,11 @@ It also highlights which pieces of .R code cover specific portions of these anal
 	
 	-run for multiple scales: 
 		
-		-at single-route-site paired scale
+	- i) at single-route-site paired scale
 		
-		-at scales beneath a single BBS route, encompassing different segment lengths w/in a given route 
+	- ii) at scales beneath a single BBS route, encompassing different segment lengths w/in a given route 
 			
-			-because BBC sites are often irregular in size and smaller than a single BBS route, may be closer to a single segment of a route than the entire route itself 
+	-because BBC sites are often irregular in size and smaller than a single BBS route, may be closer to a single segment of a route than the entire route itself 
 	
 * b) pair BBS and BBC sites by distance in environmental space (i.e. axes are environmental variables: NDVI, elevation, precip, etc.) 
 
@@ -52,11 +52,11 @@ It also highlights which pieces of .R code cover specific portions of these anal
 	
 	-run for multiple scales: 
 		
-		-at single-route-site paired scale
+	- i) at single-route-site paired scale
 		
-		-at scales beneath a single BBS route, encompassing different segment lengths w/in a given route 
+	- ii) at scales beneath a single BBS route, encompassing different segment lengths w/in a given route 
 			
-			-because BBC sites are often irregular in size and smaller than a single BBS route, may be more environmentally similar to a single segment of a route than the entire route itself 
+	-because BBC sites are often irregular in size and smaller than a single BBS route, may be more environmentally similar to a single segment of a route than the entire route itself 
 
 
 # Notes on exploring the impacts of spatial scale on temporal occupancy
