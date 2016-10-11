@@ -156,7 +156,7 @@ for(file in propOccfiles){
 allpropOcc = data.frame(allpropOcc)
 
 # Summary statistics by datasetID/site, i.e. mean occupancy, % transient species (<=1/3)
-summaries_taxa = merge(allsummaries, dataformattingtable[,c("dataset_ID","taxa","Raw_spatial_grain", "Raw_spatial_grain_unit")], by.x = 'datasetID', by.y = "dataset_ID")
+summaries_taxa = merge(allsummaries, dataformattingtable[,c("dataset_ID","taxa","Raw_spatial_grain", "Raw_spatial_grain_unit")], by.x = 'datasetID', by.y = "dataset_ID", all.x=TRUE)
 
 write.csv(summaries_taxa, "output/summaries_grains_w_taxa.csv", row.names=FALSE)
 
@@ -215,12 +215,12 @@ par(mfrow = c(5, 4), mar = c(4, 4, 1, 1), mgp = c(3, 1, 0),
     cex.axis = 1, cex.lab = 1, las = 1)
 for(id in datasetIDs){
   plotsub = subset(occ_taxa,datasetID == id)
-  plot(plotsub$scale, log10(plotsub$meanAbundance), pch = 16, xlim = c(0, 7), ylim = c(0,1.2), col = plotsub$taxa, main = id)
+  plot(plotsub$scale, log10(plotsub$meanAbundance), pch = 16, xlim = c(0, 7), ylim = c(0,10), col = plotsub$taxa, main = id)
   
 }
 dev.off()
 
-# Summary of % transients versus community size using regression lines
+# Summary of % transients versus community size prelim
 pdf('output/plots/sara_scale.pdf', height = 6, width = 7.5)
 par(mfrow = c(1, 1), mar = c(6, 6, 1, 1), mgp = c(4, 1, 0), 
     cex.axis = 1.5, cex.lab = 2, las = 1)
@@ -233,8 +233,23 @@ for(id in datasetIDs){
 legend('topright', legend = unique(occ_taxa$taxa), lty=1,lwd=3,col = col.palette, cex = 0.6)
 dev.off()
 
+# Summary of % transients versus community size using regression lines
+pdf('output/plots/sara_scale_reg.pdf', height = 6, width = 7.5)
+par(mfrow = c(1, 1), mar = c(6, 6, 1, 1), mgp = c(4, 1, 0), 
+    cex.axis = 1.5, cex.lab = 2, las = 1)
+palette(col.palette)
+mod1 = lmer(meanOcc ~ log(meanAbundance) * (1|taxa), data=occ_taxa)
 
 
+for(id in datasetIDs){
+  plotsub = subset(occ_taxa,datasetID == id)
+  mod2=lm(meanOcc ~ log(meanAbundance), data=plotsub)
+  plot(log10(plotsub$meanAbundance), plotsub$pctTrans, type="p", xlim = c(0, 7), ylim = c(0,1.2),lwd=1.7, col = plotsub$taxa)
+  abline(mod2)
+  par(new=TRUE)
+}
+legend('topright', legend = unique(occ_taxa$taxa), lty=1,lwd=3,col = col.palette, cex = 0.6)
+dev.off()
 
 
 

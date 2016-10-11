@@ -177,13 +177,13 @@ dataFormattingTable[,'Raw_spatial_grain'] =
   dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain',  
                                  
                                  #--! PROVIDE INFO !--#
-                                 NA) 
+                                 1) 
 
 dataFormattingTable[,'Raw_spatial_grain_unit'] = 
   dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain_unit',  
                                  
                                  #--! PROVIDE INFO !--#
-                                 NA) 
+                                 m2) #http://lter.kbs.msu.edu/datasets/26.eml
 
 
 # BEFORE YOU CONTINUE. We need to make sure that there are at least minNTime for sites at the coarsest possilbe spatial grain. 
