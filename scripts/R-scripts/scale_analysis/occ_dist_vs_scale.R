@@ -103,7 +103,7 @@ routes$stateroute = 1000*routes$statenum + routes$Route
 require(dplyr)
 good_rtes3 = good_rtes2 %>% 
   left_join(routes, good_rtes2, by = "stateroute") %>%
-  select(stateroute, Lati, Longi)
+  dplyr::select(stateroute, Lati, Longi)
 
 
 # map these routes
@@ -138,7 +138,11 @@ points(sites$longitude, sites$latitude, col= "red", pch=16)
 #instead of count columns, just using stop totals (hard code to StopTotal?)
 
 #creating grain size and reps vectors 
-grains = c(2) 
+grain = matrix(nrow = 6, ncol = 1)
+grain = c(2, 4, 6, 8, 10)
+X_num = matrix(nrow = 6, ncol = 1) 
+X_num = c(4, 10, 21, 25, 28)
+grain_magic = cbind(grain, X_num)
 reps = c(100) #100? 50?
 
 #nested forloops defining grid cells (i.e. latitudinal + longitudinal "bins"), 
@@ -146,7 +150,7 @@ reps = c(100) #100? 50?
 #and calculating occupancy for routes randomly sampled from those grouped within a bin  
 
 output = data.frame(grain = NULL, lat = NULL, lon = NULL, rep = NULL, AOU = NULL, occ = NULL)
-for (grain in grains) {
+for (grain in grain_magic) {
   temproutes = good_rtes3
   temproutes$latbin = floor(temproutes$Lati/grain)*grain + grain/2
   temproutes$longbin = floor(temproutes$Longi/grain)*grain + grain/2
@@ -164,7 +168,8 @@ for (grain in grains) {
         # sample X routes at random from bin
         # where X = our magic number of routes that can adequately 
         #  estimate occupancy for each grain; CHANGES with grain
-        sampled_rtes = sample_n(bin_rtes, 4)  #pull "4" from pre-defined table where paired with associated grain
+        # so need to make table first containing both grains and X's, and change "grain in grains" to "grain in 'table'"
+        sampled_rtes = sample_n(bin_rtes, X_num)  #pull "4" from pre-defined table where paired with associated grain
         bbssub = filter(bbs_allyears, stateroute %in% sampled_rtes$stateroute)
         bbsuniq = unique(bbssub[, c('Aou', 'Year')])
         occs = bbsuniq %>% count(Aou) %>% mutate(occ = n/15)
