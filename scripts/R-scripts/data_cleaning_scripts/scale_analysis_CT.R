@@ -203,7 +203,7 @@ pdf('output/plots/indiv_scale_plots.pdf', height = 10, width = 7.5)
 par(mfrow = c(5, 4), mar = c(4, 4, 1, 1), mgp = c(3, 1, 0), 
     cex.axis = 1, cex.lab = 1, las = 1)
 for(id in datasetIDs){
-  plotsub = subset(c_occ_taxa,datasetID == id)
+  plotsub = subset(occ_taxa, occ_taxa$datasetID == id)
   plot(log10(plotsub$meanAbundance), plotsub$pctTrans, pch = 16, xlim = c(0, 7), ylim = c(0,1.2), col = plotsub$taxa, main = id)
   
 }
@@ -214,7 +214,7 @@ pdf('output/plots/indiv_scale_plots_bygrain.pdf', height = 10, width = 7.5)
 par(mfrow = c(5, 4), mar = c(4, 4, 1, 1), mgp = c(3, 1, 0), 
     cex.axis = 1, cex.lab = 1, las = 1)
 for(id in datasetIDs){
-  plotsub = subset(c_occ_taxa,datasetID == id)
+  plotsub = subset(occ_taxa,datasetID == id)
   plot(plotsub$scale, log10(plotsub$meanAbundance), pch = 16, xlim = c(0, 7), ylim = c(0,1.2), col = plotsub$taxa, main = id)
   
 }
@@ -226,7 +226,7 @@ par(mfrow = c(1, 1), mar = c(6, 6, 1, 1), mgp = c(4, 1, 0),
     cex.axis = 1.5, cex.lab = 2, las = 1)
 palette(col.palette)
 for(id in datasetIDs){
-  plotsub = subset(c_occ_taxa,datasetID == id)
+  plotsub = subset(occ_taxa,datasetID == id)
   plot(log10(plotsub$meanAbundance), plotsub$pctTrans, type="l",lwd=1.7, xlim = c(0, 7), ylim = c(0,1.2), col = plotsub$taxa)
   par(new=TRUE)
 }
