@@ -139,6 +139,7 @@ points(sites$longitude, sites$latitude, col= "red", pch=16)
 
 #creating grain, "magic number" sample size for each grain, and reps vectors 
 grain_sample = data.frame(c(seq(2, 10, by =2)), c(4, 10, 21, 25, 28)) #figure out why stopping at grain 2 
+#- bc need if statement to know how to proceed? will finishing if statement help loops continue?
 names(grain_sample) = c("grain", "sample")
 
 reps = c(100) #100? 50?
