@@ -2,7 +2,7 @@
 #Molly F. Jenkins 
 #07/27/2016
 
-#until dplyr masking issues resolved: require dplyr right before every time it's used
+
 
 #Set working directory to core-transient folder on github i.e. setwd("C:/git/core-transient/")
 
@@ -137,12 +137,10 @@ points(sites$longitude, sites$latitude, col= "red", pch=16)
 #reworked sequel to occ_counts function, but for scales above a single bbs route 
 #instead of count columns, just using stop totals (hard code to StopTotal?)
 
-#creating grain size and reps vectors 
-grain = matrix(nrow = 6, ncol = 1)
-grain = c(2, 4, 6, 8, 10)
-X_num = matrix(nrow = 6, ncol = 1) 
-X_num = c(4, 10, 21, 25, 28)
-grain_magic = cbind(grain, X_num)
+#creating grain, "magic number" sample size for each grain, and reps vectors 
+grain_sample = data.frame(c(seq(2, 10, by =2)), c(4, 10, 21, 25, 28)) 
+names(grain_sample) = c("grain", "sample")
+
 reps = c(100) #100? 50?
 
 #nested forloops defining grid cells (i.e. latitudinal + longitudinal "bins"), 
@@ -150,7 +148,7 @@ reps = c(100) #100? 50?
 #and calculating occupancy for routes randomly sampled from those grouped within a bin  
 
 output = data.frame(grain = NULL, lat = NULL, lon = NULL, rep = NULL, AOU = NULL, occ = NULL)
-for (grain in grain_magic) {
+for (grain in grain_sample) {
   temproutes = good_rtes3
   temproutes$latbin = floor(temproutes$Lati/grain)*grain + grain/2
   temproutes$longbin = floor(temproutes$Longi/grain)*grain + grain/2
@@ -169,7 +167,8 @@ for (grain in grain_magic) {
         # where X = our magic number of routes that can adequately 
         #  estimate occupancy for each grain; CHANGES with grain
         # so need to make table first containing both grains and X's, and change "grain in grains" to "grain in 'table'"
-        sampled_rtes = sample_n(bin_rtes, grain_magic$X_num)  #pull "4" from pre-defined table where paired with associated grain
+        sampled_rtes = sample_n(bin_rtes, grain_sample$sample)  #pull "sample" from grain_sample 
+        #-> how do I make the row correspond to the current grain in the outermost loop? 
         bbssub = filter(bbs_allyears, stateroute %in% sampled_rtes$stateroute)
         bbsuniq = unique(bbssub[, c('Aou', 'Year')])
         occs = bbsuniq %>% count(Aou) %>% mutate(occ = n/15)
