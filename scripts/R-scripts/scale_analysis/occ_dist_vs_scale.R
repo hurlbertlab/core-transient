@@ -158,7 +158,7 @@ for (grain in grain_sample) {
     for (lon in uniqLonBins) {
       bin_rtes = filter(temproutes, latbin == lat, longbin == lon)
       
-      #if(X_num <= length(binrtes), NA, skip to the next lon in uniqLonBins) 
+      #if(grain_sample$sample <= length(binrtes), NA, skip to the next lon in uniqLonBins) 
         #need to  specify that magic number X of sites sampled can't be larger than 
         # of routes available to pool from in a given bin
       
@@ -167,7 +167,8 @@ for (grain in grain_sample) {
         # where X = our magic number of routes that can adequately 
         #  estimate occupancy for each grain; CHANGES with grain
         # so need to make table first containing both grains and X's, and change "grain in grains" to "grain in 'table'"
-        sampled_rtes = sample_n(bin_rtes, grain_sample$sample)  #pull "sample" from grain_sample 
+        sampled_rtes = sample_n(bin_rtes, grain_sample$sample[grain_sample$grain == grain]) 
+        #pull "sample" from grain_sample row where grain in outer loop corresponds to grain in table
         #-> how do I make the row correspond to the current grain in the outermost loop? 
         bbssub = filter(bbs_allyears, stateroute %in% sampled_rtes$stateroute)
         bbsuniq = unique(bbssub[, c('Aou', 'Year')])
