@@ -227,7 +227,7 @@ par(mfrow = c(1, 1), mar = c(6, 6, 1, 1), mgp = c(4, 1, 0),
 palette(col.palette)
 for(id in datasetIDs){
   plotsub = subset(occ_taxa,datasetID == id)
-  plot(log10(plotsub$meanAbundance), plotsub$pctTrans, type="l",lwd=1.7, xlim = c(0, 7), ylim = c(0,1.2), col = plotsub$taxa)
+  plot(log10(plotsub$meanAbundance), plotsub$pctTrans, type="p",lwd=1.7, xlim = c(0, 7), ylim = c(0,1.2), col = plotsub$taxa)
   par(new=TRUE)
 }
 legend('topright', legend = unique(occ_taxa$taxa), lty=1,lwd=3,col = col.palette, cex = 0.6)
@@ -238,32 +238,24 @@ pdf('output/plots/sara_scale_reg.pdf', height = 6, width = 7.5)
 par(mfrow = c(1, 1), mar = c(6, 6, 1, 1), mgp = c(4, 1, 0), 
     cex.axis = 1.5, cex.lab = 2, las = 1)
 palette(col.palette)
-mod1 = lmer(occ_taxa$meanOcc ~ log(occ_taxa$meanAbundance) * (1|occ_taxa$taxa), data=occ_taxa)
-mod2 = occ_taxa$meanOcc ~ log(occ_taxa$meanAbundance)
-
-
-
-lines(yhat ~ xnew)
-summary(mod1)
+#mod1 = lmer(occ_taxa$meanOcc ~ log(occ_taxa$meanAbundance) * (1|occ_taxa$taxa), data=occ_taxa)
+#mod2.2 = lm(occ_taxa$meanOcc ~ log(occ_taxa$meanAbundance), data=occ_taxa)
 
 for(id in datasetIDs){
   print(id)
   plotsub = subset(occ_taxa,datasetID == id)
-  xnew=range(log(plotsub$meanAbundance))
-  yhat <- predict(lm(plotsub$meanOcc ~ log(plotsub$meanAbundance)))
-  yhats = range(yhat)
-  print(yhats)
-  plot(range(log10(plotsub$meanAbundance)), range(plotsub$pctTrans), type="p",pch=16, xlim = c(0, 7), ylim = c(0,1.2),lwd=1.7, col = plotsub$taxa)
-  #lines(yhats)
-  segments(range(log10(plotsub$meanAbundance)),range(plotsub$pctTrans),x1=yhats[1], col="blue") 
+  mod2 = lm(plotsub$meanOcc ~ log10(plotsub$meanAbundance))
+  xnew=range(log10(plotsub$meanAbundance))
+  xhat <- predict(lm(plotsub$meanOcc ~ log10(plotsub$meanAbundance)), newdata = data.frame((xnew)))
+  xhats = range(xhat)
+  print(xhats)
+  y=summary(mod2)$coef[1] + (xhats)*summary(mod2)$coef[2]
+  plot(log10(plotsub$meanAbundance), plotsub$pctTrans, type="p",pch=16, ylim = c(0,1),lwd=1.7, col = plotsub$taxa, xlab = "Log of Mean  Abundance", ylab = "% Transients")
+  lines(xhats, y, col=plotsub$taxa) 
   par(new=TRUE)
 }
 legend('topright', legend = unique(occ_taxa$taxa), lty=1,lwd=3,col = col.palette, cex = 0.6)
 dev.off()
-
-scatterplot(occ_taxa$meanOcc ~ log(occ_taxa$meanAbundance)*(1|occ_taxa$taxa), data=occ_taxa, 
-            xlab="Weight of Car", ylab="Miles Per Gallon", 
-            main="Enhanced Scatter Plot")
 
 
 
