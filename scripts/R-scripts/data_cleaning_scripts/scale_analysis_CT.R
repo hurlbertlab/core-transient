@@ -238,20 +238,32 @@ pdf('output/plots/sara_scale_reg.pdf', height = 6, width = 7.5)
 par(mfrow = c(1, 1), mar = c(6, 6, 1, 1), mgp = c(4, 1, 0), 
     cex.axis = 1.5, cex.lab = 2, las = 1)
 palette(col.palette)
-mod1 = lmer(meanOcc ~ log(meanAbundance) * (1|taxa), data=occ_taxa)
+mod1 = lmer(occ_taxa$meanOcc ~ log(occ_taxa$meanAbundance) * (1|occ_taxa$taxa), data=occ_taxa)
+mod2 = occ_taxa$meanOcc ~ log(occ_taxa$meanAbundance)
 
+
+
+lines(yhat ~ xnew)
+summary(mod1)
 
 for(id in datasetIDs){
+  print(id)
   plotsub = subset(occ_taxa,datasetID == id)
-  mod2=lm(meanOcc ~ log(meanAbundance), data=plotsub)
-  plot(log10(plotsub$meanAbundance), plotsub$pctTrans, type="p", xlim = c(0, 7), ylim = c(0,1.2),lwd=1.7, col = plotsub$taxa)
-  abline(mod2)
+  xnew=range(log(plotsub$meanAbundance))
+  yhat <- predict(lm(plotsub$meanOcc ~ log(plotsub$meanAbundance)))
+  yhats = range(yhat)
+  print(yhats)
+  plot(range(log10(plotsub$meanAbundance)), range(plotsub$pctTrans), type="p",pch=16, xlim = c(0, 7), ylim = c(0,1.2),lwd=1.7, col = plotsub$taxa)
+  #lines(yhats)
+  segments(range(log10(plotsub$meanAbundance)),range(plotsub$pctTrans),x1=yhats[1], col="blue") 
   par(new=TRUE)
 }
 legend('topright', legend = unique(occ_taxa$taxa), lty=1,lwd=3,col = col.palette, cex = 0.6)
 dev.off()
 
-
+scatterplot(occ_taxa$meanOcc ~ log(occ_taxa$meanAbundance)*(1|occ_taxa$taxa), data=occ_taxa, 
+            xlab="Weight of Car", ylab="Miles Per Gallon", 
+            main="Enhanced Scatter Plot")
 
 
 
@@ -263,8 +275,8 @@ mod1 = lmer(meanOcc ~ meanAbundance * (1|taxa), data=occ_taxa)
 for(id in datasetIDs){
 plotsub = subset(occ_taxa,datasetID == id)
 print(id)
-ggplot(data = plotsub, aes(x = log10(meanAbundance), y = meanOcc)) + scale_colour_manual(values=cbPalette) + 
-  geom_segment(aes(x = 0, y =0, xend = 1.2, yend = 7, colour = "segment"), data = plotsub)
+ggplot(data = plotsub, aes(x = log10(meanAbundance), y = meanOcc)) + scale_colour_manual(values=col.palette) + 
+  geom_segment(aes(x = 0, y =0, xend = 1.2, yend = 10, colour = "segment"), data = plotsub)
 }
-
+ggsave("C:/Git/core-transient/output/plots/reg_ggplot.png")
 
