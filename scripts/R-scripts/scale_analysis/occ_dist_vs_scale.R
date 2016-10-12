@@ -148,7 +148,7 @@ reps = c(100) #100? 50?
 #and calculating occupancy for routes randomly sampled from those grouped within a bin  
 
 output = data.frame(grain = NULL, lat = NULL, lon = NULL, rep = NULL, AOU = NULL, occ = NULL)
-for (grain in grain_sample) {
+for (grain in grain_sample$grain) {
   temproutes = good_rtes3
   temproutes$latbin = floor(temproutes$Lati/grain)*grain + grain/2
   temproutes$longbin = floor(temproutes$Longi/grain)*grain + grain/2
@@ -170,6 +170,8 @@ for (grain in grain_sample) {
         sampled_rtes = sample_n(bin_rtes, grain_sample$sample[grain_sample$grain == grain]) 
         #pull "sample" from grain_sample row where grain in outer loop corresponds to grain in table
         #-> how do I make the row correspond to the current grain in the outermost loop? 
+        #currently when I hardcode grain =4, it pulls out correct corresponding sample size (10)
+        #but when I don't, and the loop runs through the first grain in the set, it fails to execute
         bbssub = filter(bbs_allyears, stateroute %in% sampled_rtes$stateroute)
         bbsuniq = unique(bbssub[, c('Aou', 'Year')])
         occs = bbsuniq %>% count(Aou) %>% mutate(occ = n/15)
