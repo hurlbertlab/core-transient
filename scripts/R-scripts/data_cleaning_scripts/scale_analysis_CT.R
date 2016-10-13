@@ -234,6 +234,30 @@ legend('topright', legend = unique(occ_taxa$taxa), lty=1,lwd=3,col = col.palette
 dev.off()
 
 # Summary of % transients versus community size using regression lines
+pdf('output/plots/sara_scale_occ_reg.pdf', height = 6, width = 7.5)
+par(mfrow = c(1, 1), mar = c(6, 6, 1, 1), mgp = c(4, 1, 0), 
+    cex.axis = 1.5, cex.lab = 2, las = 1)
+palette(col.palette)
+mod1 = lmer(occ_taxa$meanOcc ~ log(occ_taxa$meanAbundance) * (1|occ_taxa$taxa), data=occ_taxa)
+mod2 = occ_taxa$meanOcc ~ log(occ_taxa$meanAbundance)
+
+for(id in datasetIDs){
+  print(id)
+  plotsub = subset(occ_taxa,datasetID == id)
+  xnew=range(log(plotsub$meanAbundance))
+  yhat <- predict(lm(plotsub$meanOcc ~ log(plotsub$meanAbundance)))
+  yhats = range(yhat)
+  print(yhats)
+  plot(NA, xlim = c(-1, 7), ylim = c(0,1),lwd=1.7, col = plotsub$taxa, xlab = "Log of Mean Abundance", ylab = "Predicted Occuapncy")
+  lines(range(log10(plotsub$meanAbundance)),yhats, col=plotsub$taxa, lwd=2) 
+  par(new=TRUE)
+  
+}
+legend('topright', legend = unique(occ_taxa$taxa), lty=1,lwd=3,col = col.palette, cex = 0.6)
+dev.off()
+
+
+# Summary of % transients versus community size using regression lines
 pdf('output/plots/sara_scale_reg.pdf', height = 6, width = 7.5)
 par(mfrow = c(1, 1), mar = c(6, 6, 1, 1), mgp = c(4, 1, 0), 
     cex.axis = 1.5, cex.lab = 2, las = 1)
@@ -256,7 +280,6 @@ for(id in datasetIDs){
 }
 legend('topright', legend = unique(occ_taxa$taxa), lty=1,lwd=3,col = col.palette, cex = 0.6)
 dev.off()
-
 
 
 
