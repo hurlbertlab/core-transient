@@ -283,13 +283,3 @@ dev.off()
 
 # our model
 mod1 = lmer(meanOcc ~ meanAbundance * (1|taxa), data=occ_taxa)
-
-# couldnt get it to work in ggplot
-for(id in datasetIDs){
-plotsub = subset(occ_taxa,datasetID == id)
-print(id)
-ggplot(data = plotsub, aes(x = log10(meanAbundance), y = meanOcc)) + scale_colour_manual(values=col.palette) + 
-  geom_segment(aes(x = 0, y =0, xend = 1.2, yend = 10, colour = "segment"), data = plotsub)
-}
-ggsave("C:/Git/core-transient/output/plots/reg_ggplot.png")
-
