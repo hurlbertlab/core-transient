@@ -142,7 +142,7 @@ grain_sample = data.frame(c(seq(2, 10, by =2)), c(4, 10, 21, 25, 28)) #figure ou
 #- bc need if statement to know how to proceed? will finishing if statement help loops continue?
 names(grain_sample) = c("grain", "magic_num")
 
-reps = c(25) #100? 50?
+reps = c(100) #100? 50?
 
 #nested forloops defining grid cells (i.e. latitudinal + longitudinal "bins"), 
 #filtering routes sampled to those that fall within a given bin 
@@ -202,6 +202,8 @@ for (grain in grain_sample$grain) {
 
 
 bbs_scaledup = output
+
+
 
 #-----------------------------------------------------------------------------------------
 
