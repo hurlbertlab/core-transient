@@ -201,9 +201,9 @@ for (grain in grain_sample$grain) {
 
 
 
-bbs_scaledup = output
+bbs_scaledup = output    #wrote to file in case
 
-
+# write.csv(bbs_scaledup, "//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/bbs_scaledup.csv")
 
 #-----------------------------------------------------------------------------------------
 
