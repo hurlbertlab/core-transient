@@ -142,7 +142,7 @@ grain_sample = data.frame(c(seq(2, 10, by =2)), c(4, 10, 21, 25, 28)) #figure ou
 #- bc need if statement to know how to proceed? will finishing if statement help loops continue?
 names(grain_sample) = c("grain", "magic_num")
 
-reps = c(100) #100? 50?
+reps = c(25) #100? 50?
 
 #nested forloops defining grid cells (i.e. latitudinal + longitudinal "bins"), 
 #filtering routes sampled to those that fall within a given bin 
@@ -150,6 +150,7 @@ reps = c(100) #100? 50?
 
 output = data.frame(grain = NULL, lat = NULL, lon = NULL, rep = NULL, AOU = NULL, occ = NULL)
 for (grain in grain_sample$grain) {
+  sampling_lvl = grain_sample$magic_num[grain_sample$grain == grain]
   temproutes = good_rtes3
   temproutes$latbin = floor(temproutes$Lati/grain)*grain + grain/2
   temproutes$longbin = floor(temproutes$Longi/grain)*grain + grain/2
@@ -159,38 +160,38 @@ for (grain in grain_sample$grain) {
     for (lon in uniqLonBins) {
       bin_rtes = filter(temproutes, latbin == lat, longbin == lon)
       
-      if(grain_sample$magic_num > length(binrtes$stateroute)) {
-        replace = FALSE 
-        longbin = lon + 1
+      
+      if(sampling_lvl < length(bin_rtes$stateroute)) {
+         for (i in 1:reps) {
+          # sample X routes at random from bin
+          # where X = our magic number of routes that can adequately 
+          #  estimate occupancy for each grain; CHANGES with grain
+          # so need to make table first containing both grains and X's, and change "grain in grains" to "grain in 'table'"
+          sampled_rtes = sample_n(bin_rtes, sampling_lvl, replace = TRUE) 
+          #pull "sample" from grain_sample row where grain in outer loop corresponds to grain in table
+          #-> how do I make the row correspond to the current grain in the outermost loop? 
+          #currently when I hardcode grain =4, it pulls out correct corresponding sample size (10)
+          #but when I don't, and the loop runs through the first grain in the set, it fails to execute
+          bbssub = filter(bbs_allyears, stateroute %in% sampled_rtes$stateroute)
+          bbsuniq = unique(bbssub[, c('Aou', 'Year')])
+          occs = bbsuniq %>% count(Aou) %>% mutate(occ = n/15)
+          
+          temp = data.frame(grain = grain, 
+                            lat = lat, 
+                            lon = lon, 
+                            rep = i,
+                            Aou = occs$Aou,
+                            occ = occs$occ)
+          
+          output = rbind(output, temp)
+          print(paste("Grain", grain, ", Lat:", lat, ", Lon:", lon))
+        } #end of the rep loop
          } 
         
              #need to  specify that magic number X of sites sampled can't be larger than 
         # of routes available to pool from in a given bin
       
-      for (i in 1:reps) {
-        # sample X routes at random from bin
-        # where X = our magic number of routes that can adequately 
-        #  estimate occupancy for each grain; CHANGES with grain
-        # so need to make table first containing both grains and X's, and change "grain in grains" to "grain in 'table'"
-        sampled_rtes = sample_n(bin_rtes, grain_sample$magic_num[grain_sample$grain == grain], replace = TRUE) 
-        #pull "sample" from grain_sample row where grain in outer loop corresponds to grain in table
-        #-> how do I make the row correspond to the current grain in the outermost loop? 
-        #currently when I hardcode grain =4, it pulls out correct corresponding sample size (10)
-        #but when I don't, and the loop runs through the first grain in the set, it fails to execute
-        bbssub = filter(bbs_allyears, stateroute %in% sampled_rtes$stateroute)
-        bbsuniq = unique(bbssub[, c('Aou', 'Year')])
-        occs = bbsuniq %>% count(Aou) %>% mutate(occ = n/15)
-        
-        temp = data.frame(grain = grain, 
-                          lat = lat, 
-                          lon = lon, 
-                          rep = i,
-                          Aou = occs$Aou,
-                          occ = occs$occ)
-        
-        output = rbind(output, temp)
-        
-      } #end of the rep loop
+      
       
     } #end of the lon loop
     
