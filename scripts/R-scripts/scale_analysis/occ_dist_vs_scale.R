@@ -140,7 +140,7 @@ points(sites$longitude, sites$latitude, col= "red", pch=16)
 #creating grain, "magic number" sample size for each grain, and reps vectors 
 grain_sample = data.frame(c(seq(2, 10, by =2)), c(4, 10, 21, 25, 28)) #figure out why stopping at grain 2 
 #- bc need if statement to know how to proceed? will finishing if statement help loops continue?
-names(grain_sample) = c("grain", "sample")
+names(grain_sample) = c("grain", "magic_num")
 
 reps = c(100) #100? 50?
 
@@ -159,8 +159,12 @@ for (grain in grain_sample$grain) {
     for (lon in uniqLonBins) {
       bin_rtes = filter(temproutes, latbin == lat, longbin == lon)
       
-      #if(grain_sample$sample <= length(binrtes), NA, skip to the next lon in uniqLonBins) 
-        #need to  specify that magic number X of sites sampled can't be larger than 
+      if(grain_sample$magic_num > length(binrtes$stateroute)) {
+        replace = FALSE 
+        longbin = lon + 1
+         } 
+        
+             #need to  specify that magic number X of sites sampled can't be larger than 
         # of routes available to pool from in a given bin
       
       for (i in 1:reps) {
@@ -168,7 +172,7 @@ for (grain in grain_sample$grain) {
         # where X = our magic number of routes that can adequately 
         #  estimate occupancy for each grain; CHANGES with grain
         # so need to make table first containing both grains and X's, and change "grain in grains" to "grain in 'table'"
-        sampled_rtes = sample_n(bin_rtes, grain_sample$sample[grain_sample$grain == grain]) 
+        sampled_rtes = sample_n(bin_rtes, grain_sample$magic_num[grain_sample$grain == grain], replace = TRUE) 
         #pull "sample" from grain_sample row where grain in outer loop corresponds to grain in table
         #-> how do I make the row correspond to the current grain in the outermost loop? 
         #currently when I hardcode grain =4, it pulls out correct corresponding sample size (10)
