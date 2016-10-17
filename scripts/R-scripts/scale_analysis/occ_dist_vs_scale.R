@@ -203,7 +203,26 @@ for (grain in grain_sample$grain) {
 
 bbs_scaledup = output    #wrote to file in case
 
-# write.csv(bbs_scaledup, "//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/bbs_scaledup.csv")
+bbs_scaledup = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/bbs_scaledup.csv")
+bbs_scaledup$X = NULL 
+
+
+
+#for each unique combination of grain and lat and long (and rep?), what is the avg occ across scale at this level? 
+tempbin = unique(paste(bbs_scaledup$lat, bbs_scaledup$lon, sep = ""))
+for (grain in bbs_scaledup$grain){ 
+  bbs_avgs = mean(bbs_scaledup$occ)
+  
+  }
+
+
+
+
+
+
+bbs_avgs = unique(bbs_scaledup[, c("grain", "lat", "lon", "occ")])
+
+
 
 #-----------------------------------------------------------------------------------------
 
