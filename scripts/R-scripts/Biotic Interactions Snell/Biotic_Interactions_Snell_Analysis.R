@@ -313,16 +313,21 @@ ggplot(envloc, aes(x = FocalAOU, y = factor(EW))) + geom_violin() + scale_x_disc
 ##################### TRAITS Model ####################################
 env_lm = subset(envflip, Type == 'ENV')
 
-lm_traits = lm(FocalAOU ~ Trophic.Group + migclass + EW, data = env_lm)
-summary(lm_traits) 
+env_traits = lm(value ~ Trophic.Group + migclass + EW, data = env_lm)
+summary(env_traits) 
 
 comp_lm = subset(envflip, Type == 'COMP')
 
-lm_traits_c = lm(FocalAOU ~ Trophic.Group + migclass + EW, data = comp_lm)
-summary(lm_traits_c) 
+comp_traits = lm(value ~ Trophic.Group + migclass + EW, data = comp_lm)
+summary(comp_traits) 
 
-## same vals for comp and env
+env_sum = subset(envflip, Type != 'NONE')
+total = env_sum %>% 
+  group_by(FocalAOU) %>%
+ summarise(sum(value))
 
+total_traits = lm(value ~ Trophic.Group + migclass + EW, data = env_sum)
+summary(total_traits)
 
 # R2 plot - lm in ggplot
 envoutputa = read.csv("envoutputa.csv", header = TRUE)

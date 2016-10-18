@@ -1,0 +1,253 @@
+"","FocalAOU","ALPHA.CODE","Trophic.Group","Foraging","migclass","Family","CommonName","rank","Type","value","EW"
+"1",3880,"BBCU","insectivore","foliage glean","neotrop","Cuculidae","Black-billed Cuckoo","29","ENV",0.122047056111727,1
+"2",3880,"BBCU","insectivore","foliage glean","neotrop","Cuculidae","Black-billed Cuckoo","29","COMP",0.0450811422317298,1
+"3",3880,"BBCU","insectivore","foliage glean","neotrop","Cuculidae","Black-billed Cuckoo","29","SHARED",0.126639236678888,1
+"4",3880,"BBCU","insectivore","foliage glean","neotrop","Cuculidae","Black-billed Cuckoo","29","NONE",0.706232564977654,1
+"5",4060,"RHWO","omnivore","bark glean","short","Picidae","Red-headed Woodpecker","47","ENV",0.0745836946536919,1
+"6",4060,"RHWO","omnivore","bark glean","short","Picidae","Red-headed Woodpecker","47","COMP",0.174934778721513,1
+"7",4060,"RHWO","omnivore","bark glean","short","Picidae","Red-headed Woodpecker","47","SHARED",0.00842638775410268,1
+"8",4060,"RHWO","omnivore","bark glean","short","Picidae","Red-headed Woodpecker","47","NONE",0.742055138870692,1
+"9",4540,"ATFL","insectivore","hover/glean","neotrop","Tyrannidae","Ash-throated Flycatcher","42","ENV",0.0896317954675128,0
+"10",4540,"ATFL","insectivore","hover/glean","neotrop","Tyrannidae","Ash-throated Flycatcher","42","COMP",0.19058932962285,0
+"11",4540,"ATFL","insectivore","hover/glean","neotrop","Tyrannidae","Ash-throated Flycatcher","42","SHARED",-0.0247414078547793,0
+"12",4540,"ATFL","insectivore","hover/glean","neotrop","Tyrannidae","Ash-throated Flycatcher","42","NONE",0.744520282764417,0
+"13",4570,"SAPH","insectivore","hawks","short","Tyrannidae","Say's Phoebe","60","ENV",0.0228819041757928,0
+"14",4570,"SAPH","insectivore","hawks","short","Tyrannidae","Say's Phoebe","60","COMP",0.0280638302290787,0
+"15",4570,"SAPH","insectivore","hawks","short","Tyrannidae","Say's Phoebe","60","SHARED",0.00693581860418824,0
+"16",4570,"SAPH","insectivore","hawks","short","Tyrannidae","Say's Phoebe","60","NONE",0.94211844699094,0
+"17",4590,"OSFL","insectivore","hawks","neotrop","Tyrannidae","Olive-sided Flycatcher","43","ENV",0.0868191801930513,0
+"18",4590,"OSFL","insectivore","hawks","neotrop","Tyrannidae","Olive-sided Flycatcher","43","COMP",0.136592027083343,0
+"19",4590,"OSFL","insectivore","hawks","neotrop","Tyrannidae","Olive-sided Flycatcher","43","SHARED",0.0440377498565121,0
+"20",4590,"OSFL","insectivore","hawks","neotrop","Tyrannidae","Olive-sided Flycatcher","43","NONE",0.732551042867093,0
+"21",4650,"ACFL","insectivore","hawks","neotrop","Tyrannidae","Acadian Flycatcher","26","ENV",0.142304445516594,1
+"22",4650,"ACFL","insectivore","hawks","neotrop","Tyrannidae","Acadian Flycatcher","26","COMP",0.199404625360499,1
+"23",4650,"ACFL","insectivore","hawks","neotrop","Tyrannidae","Acadian Flycatcher","26","SHARED",-0.00301124618083823,1
+"24",4650,"ACFL","insectivore","hawks","neotrop","Tyrannidae","Acadian Flycatcher","26","NONE",0.661302175303745,1
+"25",4660,"WIFL","insectivore","hawks","neotrop","Tyrannidae","Willow Flycatcher","24","ENV",0.158801227848067,0
+"26",4660,"WIFL","insectivore","hawks","neotrop","Tyrannidae","Willow Flycatcher","24","COMP",0.175726775481433,0
+"27",4660,"WIFL","insectivore","hawks","neotrop","Tyrannidae","Willow Flycatcher","24","SHARED",-0.0312119868237451,0
+"28",4660,"WIFL","insectivore","hawks","neotrop","Tyrannidae","Willow Flycatcher","24","NONE",0.696683983494245,0
+"29",4680,"HAFL","insectivore","hawks","neotrop","Tyrannidae","Hammond's Flycatcher","8","ENV",0.321768217827333,0
+"30",4680,"HAFL","insectivore","hawks","neotrop","Tyrannidae","Hammond's Flycatcher","8","COMP",0.032891686884253,0
+"31",4680,"HAFL","insectivore","hawks","neotrop","Tyrannidae","Hammond's Flycatcher","8","SHARED",0.0432027360918343,0
+"32",4680,"HAFL","insectivore","hawks","neotrop","Tyrannidae","Hammond's Flycatcher","8","NONE",0.60213735919658,0
+"33",4690,"DUFL","insectivore","hawks","neotrop","Tyrannidae","Dusky Flycatcher","15","ENV",0.213140849788842,0
+"34",4690,"DUFL","insectivore","hawks","neotrop","Tyrannidae","Dusky Flycatcher","15","COMP",0.0432358464197753,0
+"35",4690,"DUFL","insectivore","hawks","neotrop","Tyrannidae","Dusky Flycatcher","15","SHARED",-0.00601887181804157,0
+"36",4690,"DUFL","insectivore","hawks","neotrop","Tyrannidae","Dusky Flycatcher","15","NONE",0.749642175609424,0
+"37",4780,"STJA","omnivore","ground glean","resid","Corvidae","Steller's Jay","40","ENV",0.0929026233840676,0
+"38",4780,"STJA","omnivore","ground glean","resid","Corvidae","Steller's Jay","40","COMP",0.263935712452654,0
+"39",4780,"STJA","omnivore","ground glean","resid","Corvidae","Steller's Jay","40","SHARED",-5.69121974453024e-05,0
+"40",4780,"STJA","omnivore","ground glean","resid","Corvidae","Steller's Jay","40","NONE",0.643218576360724,0
+"41",4810,"WESJ","omnivore","ground glean","resid","Corvidae","Western Scrub-Jay","23","ENV",0.163838610647943,0
+"42",4810,"WESJ","omnivore","ground glean","resid","Corvidae","Western Scrub-Jay","23","COMP",0.0084552551876424,0
+"43",4810,"WESJ","omnivore","ground glean","resid","Corvidae","Western Scrub-Jay","23","SHARED",0.00290281716532466,0
+"44",4810,"WESJ","omnivore","ground glean","resid","Corvidae","Western Scrub-Jay","23","NONE",0.82480331699909,0
+"45",4970,"YHBL","insectivore","ground glean","neotrop","Icteridae","Yellow-headed Blackbird","41","ENV",0.0909871401030791,0
+"46",4970,"YHBL","insectivore","ground glean","neotrop","Icteridae","Yellow-headed Blackbird","41","COMP",0.0450448733224164,0
+"47",4970,"YHBL","insectivore","ground glean","neotrop","Icteridae","Yellow-headed Blackbird","41","SHARED",0.0313330197890657,0
+"48",4970,"YHBL","insectivore","ground glean","neotrop","Icteridae","Yellow-headed Blackbird","41","NONE",0.832634966785439,0
+"49",5180,"CAFI","granivore","ground glean","short","Fringillidae","Cassin's Finch","19","ENV",0.181937011691846,0
+"50",5180,"CAFI","granivore","ground glean","short","Fringillidae","Cassin's Finch","19","COMP",0.364227385337797,0
+"51",5180,"CAFI","granivore","ground glean","short","Fringillidae","Cassin's Finch","19","SHARED",-0.0541773961441312,0
+"52",5180,"CAFI","granivore","ground glean","short","Fringillidae","Cassin's Finch","19","NONE",0.508012999114487,0
+"53",5300,"LEGO","granivore","foliage glean","short","Fringillidae","Lesser Goldfinch","4","ENV",0.396095758085566,0
+"54",5300,"LEGO","granivore","foliage glean","short","Fringillidae","Lesser Goldfinch","4","COMP",0.0273198492720707,0
+"55",5300,"LEGO","granivore","foliage glean","short","Fringillidae","Lesser Goldfinch","4","SHARED",0.0241204564679535,0
+"56",5300,"LEGO","granivore","foliage glean","short","Fringillidae","Lesser Goldfinch","4","NONE",0.55246393617441,0
+"57",5330,"PISI","granivore","foliage glean","short","Fringillidae","Pine Siskin","11","ENV",0.266355624431857,0
+"58",5330,"PISI","granivore","foliage glean","short","Fringillidae","Pine Siskin","11","COMP",0.0282075476470067,0
+"59",5330,"PISI","granivore","foliage glean","short","Fringillidae","Pine Siskin","11","SHARED",0.249693583498797,0
+"60",5330,"PISI","granivore","foliage glean","short","Fringillidae","Pine Siskin","11","NONE",0.455743244422339,0
+"61",5460,"GRSP","insct/om","ground glean","neotrop","Emberizidae","Grasshopper Sparrow","13","ENV",0.22790037467595,1
+"62",5460,"GRSP","insct/om","ground glean","neotrop","Emberizidae","Grasshopper Sparrow","13","COMP",0.201996733365561,1
+"63",5460,"GRSP","insct/om","ground glean","neotrop","Emberizidae","Grasshopper Sparrow","13","SHARED",-0.140258803816432,1
+"64",5460,"GRSP","insct/om","ground glean","neotrop","Emberizidae","Grasshopper Sparrow","13","NONE",0.710361695774921,1
+"65",5540,"WCSP","insct/om","ground glean","short","Emberizidae","White-crowned Sparrow","2","ENV",0.431609759177214,0
+"66",5540,"WCSP","insct/om","ground glean","short","Emberizidae","White-crowned Sparrow","2","COMP",0.0333039680076969,0
+"67",5540,"WCSP","insct/om","ground glean","short","Emberizidae","White-crowned Sparrow","2","SHARED",0.0294518104208717,0
+"68",5540,"WCSP","insct/om","ground glean","short","Emberizidae","White-crowned Sparrow","2","NONE",0.505634462394217,0
+"69",5660,"DEJU","insct/om","ground glean","short","Emberizidae","Dark-eyed Junco","54","ENV",0.0397648450716455,0
+"70",5660,"DEJU","insct/om","ground glean","short","Emberizidae","Dark-eyed Junco","54","COMP",0.254231368980256,0
+"71",5660,"DEJU","insct/om","ground glean","short","Emberizidae","Dark-eyed Junco","54","SHARED",0.0611524715255327,0
+"72",5660,"DEJU","insct/om","ground glean","short","Emberizidae","Dark-eyed Junco","54","NONE",0.644851314422566,0
+"73",5840,"SWSP","insct/om","ground glean","short","Emberizidae","Swamp Sparrow","50","ENV",0.0516878302779233,1
+"74",5840,"SWSP","insct/om","ground glean","short","Emberizidae","Swamp Sparrow","50","COMP",0.0600078710523703,1
+"75",5840,"SWSP","insct/om","ground glean","short","Emberizidae","Swamp Sparrow","50","SHARED",0.00912444229400251,1
+"76",5840,"SWSP","insct/om","ground glean","short","Emberizidae","Swamp Sparrow","50","NONE",0.879179856375704,1
+"77",5880,"SPTO","insct/om","ground glean","short","Emberizidae","Spotted Towhee","35","ENV",0.108353024299964,0
+"78",5880,"SPTO","insct/om","ground glean","short","Emberizidae","Spotted Towhee","35","COMP",0.304017268561247,0
+"79",5880,"SPTO","insct/om","ground glean","short","Emberizidae","Spotted Towhee","35","SHARED",-0.0150447609454853,0
+"80",5880,"SPTO","insct/om","ground glean","short","Emberizidae","Spotted Towhee","35","NONE",0.602674468084274,0
+"81",5900,"GTTO","insct/om","ground glean","neotrop","Emberizidae","Green-tailed Towhee","1","ENV",0.459475675897298,0
+"82",5900,"GTTO","insct/om","ground glean","neotrop","Emberizidae","Green-tailed Towhee","1","COMP",0.261407402205141,0
+"83",5900,"GTTO","insct/om","ground glean","neotrop","Emberizidae","Green-tailed Towhee","1","SHARED",-0.06426146834919,0
+"84",5900,"GTTO","insct/om","ground glean","neotrop","Emberizidae","Green-tailed Towhee","1","NONE",0.343378390246751,0
+"85",6050,"LARB","insct/om","ground glean","neotrop","Emberizidae","Lark Bunting","21","ENV",0.173184034880484,0
+"86",6050,"LARB","insct/om","ground glean","neotrop","Emberizidae","Lark Bunting","21","COMP",0.408993838792429,0
+"87",6050,"LARB","insct/om","ground glean","neotrop","Emberizidae","Lark Bunting","21","SHARED",0.0913025562700609,0
+"88",6050,"LARB","insct/om","ground glean","neotrop","Emberizidae","Lark Bunting","21","NONE",0.326519570057026,0
+"89",6150,"VGSW","insectivore","aerial foraging","neotrop","Hirundinidae","Violet-green Swallow","10","ENV",0.279669112935558,0
+"90",6150,"VGSW","insectivore","aerial foraging","neotrop","Hirundinidae","Violet-green Swallow","10","COMP",0.197882963519623,0
+"91",6150,"VGSW","insectivore","aerial foraging","neotrop","Hirundinidae","Violet-green Swallow","10","SHARED",0.106737248800079,0
+"92",6150,"VGSW","insectivore","aerial foraging","neotrop","Hirundinidae","Violet-green Swallow","10","NONE",0.415710674744739,0
+"93",6160,"BANS","insectivore","aerial foraging","neotrop","Hirundinidae","Bank Swallow","17","ENV",0.188089426578371,1
+"94",6160,"BANS","insectivore","aerial foraging","neotrop","Hirundinidae","Bank Swallow","17","COMP",0.0640420980411035,1
+"95",6160,"BANS","insectivore","aerial foraging","neotrop","Hirundinidae","Bank Swallow","17","SHARED",-0.0314986735186985,1
+"96",6160,"BANS","insectivore","aerial foraging","neotrop","Hirundinidae","Bank Swallow","17","NONE",0.779367148899224,1
+"97",6291,"PLVI","insectivore","foliage glean","neotrop","Vireonidae","Plumbeous Vireo","20","ENV",0.18142568707838,0
+"98",6291,"PLVI","insectivore","foliage glean","neotrop","Vireonidae","Plumbeous Vireo","20","COMP",0.0208213088313765,0
+"99",6291,"PLVI","insectivore","foliage glean","neotrop","Vireonidae","Plumbeous Vireo","20","SHARED",0.144089281495103,0
+"100",6291,"PLVI","insectivore","foliage glean","neotrop","Vireonidae","Plumbeous Vireo","20","NONE",0.653663722595141,0
+"101",6292,"CAVI","insectivore","foliage glean","neotrop","Vireonidae","Cassin's Vireo","33","ENV",0.114672974328968,0
+"102",6292,"CAVI","insectivore","foliage glean","neotrop","Vireonidae","Cassin's Vireo","33","COMP",0.0108524072594166,0
+"103",6292,"CAVI","insectivore","foliage glean","neotrop","Vireonidae","Cassin's Vireo","33","SHARED",-0.00205497135944643,0
+"104",6292,"CAVI","insectivore","foliage glean","neotrop","Vireonidae","Cassin's Vireo","33","NONE",0.876529589771062,0
+"105",6320,"HUVI","insectivore","foliage glean","resid","Vireonidae","Hutton's Vireo","18","ENV",0.184589646317415,0
+"106",6320,"HUVI","insectivore","foliage glean","resid","Vireonidae","Hutton's Vireo","18","COMP",8.92647542549696e-08,0
+"107",6320,"HUVI","insectivore","foliage glean","resid","Vireonidae","Hutton's Vireo","18","SHARED",0.000162748698146358,0
+"108",6320,"HUVI","insectivore","foliage glean","resid","Vireonidae","Hutton's Vireo","18","NONE",0.815247515719685,0
+"109",6330,"BEVI","insectivore","foliage glean","neotrop","Vireonidae","Bell's Vireo","36","ENV",0.108223954143345,0
+"110",6330,"BEVI","insectivore","foliage glean","neotrop","Vireonidae","Bell's Vireo","36","COMP",0.0448023114455272,0
+"111",6330,"BEVI","insectivore","foliage glean","neotrop","Vireonidae","Bell's Vireo","36","SHARED",-0.0325210469684282,0
+"112",6330,"BEVI","insectivore","foliage glean","neotrop","Vireonidae","Bell's Vireo","36","NONE",0.879494781379556,0
+"113",6360,"BAWW","insectivore","bark glean","neotrop","Parulidae","Black-and-white Warbler","53","ENV",0.0398857943629149,1
+"114",6360,"BAWW","insectivore","bark glean","neotrop","Parulidae","Black-and-white Warbler","53","COMP",0.0227453728276924,1
+"115",6360,"BAWW","insectivore","bark glean","neotrop","Parulidae","Black-and-white Warbler","53","SHARED",0.00220824145863454,1
+"116",6360,"BAWW","insectivore","bark glean","neotrop","Parulidae","Black-and-white Warbler","53","NONE",0.935160591350758,1
+"117",6370,"PROW","insectivore","bark glean","neotrop","Parulidae","Prothonotary Warbler","28","ENV",0.137295919432944,1
+"118",6370,"PROW","insectivore","bark glean","neotrop","Parulidae","Prothonotary Warbler","28","COMP",0.0171395601599305,1
+"119",6370,"PROW","insectivore","bark glean","neotrop","Parulidae","Prothonotary Warbler","28","SHARED",0.00333340577102765,1
+"120",6370,"PROW","insectivore","bark glean","neotrop","Parulidae","Prothonotary Warbler","28","NONE",0.842231114636098,1
+"121",6380,"SWWA","insectivore","ground glean","neotrop","Parulidae","Swainson's Warbler","12","ENV",0.237047315389578,1
+"122",6380,"SWWA","insectivore","ground glean","neotrop","Parulidae","Swainson's Warbler","12","COMP",0.00225201577949946,1
+"123",6380,"SWWA","insectivore","ground glean","neotrop","Parulidae","Swainson's Warbler","12","SHARED",0.0196507028187635,1
+"124",6380,"SWWA","insectivore","ground glean","neotrop","Parulidae","Swainson's Warbler","12","NONE",0.741049966012159,1
+"125",6390,"WEWA","insectivore","foliage glean","neotrop","Parulidae","Worm-eating Warbler","34","ENV",0.111127481199101,1
+"126",6390,"WEWA","insectivore","foliage glean","neotrop","Parulidae","Worm-eating Warbler","34","COMP",0.0399764386421493,1
+"127",6390,"WEWA","insectivore","foliage glean","neotrop","Parulidae","Worm-eating Warbler","34","SHARED",0.0375104571755962,1
+"128",6390,"WEWA","insectivore","foliage glean","neotrop","Parulidae","Worm-eating Warbler","34","NONE",0.811385622983153,1
+"129",6410,"BWWA","insectivore","foliage glean","neotrop","Parulidae","Blue-winged Warbler","44","ENV",0.0863992001771816,1
+"130",6410,"BWWA","insectivore","foliage glean","neotrop","Parulidae","Blue-winged Warbler","44","COMP",0.0716764666018314,1
+"131",6410,"BWWA","insectivore","foliage glean","neotrop","Parulidae","Blue-winged Warbler","44","SHARED",-0.0209797649031791,1
+"132",6410,"BWWA","insectivore","foliage glean","neotrop","Parulidae","Blue-winged Warbler","44","NONE",0.862904098124166,1
+"133",6450,"NAWA","insectivore","foliage glean","neotrop","Parulidae","Nashville Warbler","48","ENV",0.0581282168227446,1
+"134",6450,"NAWA","insectivore","foliage glean","neotrop","Parulidae","Nashville Warbler","48","COMP",0.44723340658016,1
+"135",6450,"NAWA","insectivore","foliage glean","neotrop","Parulidae","Nashville Warbler","48","SHARED",0.174317895068477,1
+"136",6450,"NAWA","insectivore","foliage glean","neotrop","Parulidae","Nashville Warbler","48","NONE",0.320320481528618,1
+"137",6460,"OCWA","insectivore","foliage glean","neotrop","Parulidae","Orange-crowned Warbler","56","ENV",0.0343757627107961,0
+"138",6460,"OCWA","insectivore","foliage glean","neotrop","Parulidae","Orange-crowned Warbler","56","COMP",0.616430899694629,0
+"139",6460,"OCWA","insectivore","foliage glean","neotrop","Parulidae","Orange-crowned Warbler","56","SHARED",0.00772237636541695,0
+"140",6460,"OCWA","insectivore","foliage glean","neotrop","Parulidae","Orange-crowned Warbler","56","NONE",0.341470961229157,0
+"141",6540,"BTBW","insectivore","hover/glean","neotrop","Parulidae","Black-throated Blue Warbler","55","ENV",0.0347299105879673,1
+"142",6540,"BTBW","insectivore","hover/glean","neotrop","Parulidae","Black-throated Blue Warbler","55","COMP",0.113393962599039,1
+"143",6540,"BTBW","insectivore","hover/glean","neotrop","Parulidae","Black-throated Blue Warbler","55","SHARED",0.0390422155387262,1
+"144",6540,"BTBW","insectivore","hover/glean","neotrop","Parulidae","Black-throated Blue Warbler","55","NONE",0.812833911274267,1
+"145",6570,"MAWA","insectivore","hover/glean","neotrop","Parulidae","Magnolia Warbler","61","ENV",0.0160260230008048,1
+"146",6570,"MAWA","insectivore","hover/glean","neotrop","Parulidae","Magnolia Warbler","61","COMP",0.261401974814591,1
+"147",6570,"MAWA","insectivore","hover/glean","neotrop","Parulidae","Magnolia Warbler","61","SHARED",0.0309513458415184,1
+"148",6570,"MAWA","insectivore","hover/glean","neotrop","Parulidae","Magnolia Warbler","61","NONE",0.691620656343085,1
+"149",6620,"BLBW","insct/om","foliage glean","neotrop","Parulidae","Blackburnian Warbler","58","ENV",0.0291412165108632,1
+"150",6620,"BLBW","insct/om","foliage glean","neotrop","Parulidae","Blackburnian Warbler","58","COMP",0.478333305661472,1
+"151",6620,"BLBW","insct/om","foliage glean","neotrop","Parulidae","Blackburnian Warbler","58","SHARED",0.0471418060323108,1
+"152",6620,"BLBW","insct/om","foliage glean","neotrop","Parulidae","Blackburnian Warbler","58","NONE",0.445383671795354,1
+"153",6630,"YTWA","insectivore","bark glean","neotrop","Parulidae","Yellow-throated Warbler","6","ENV",0.34346850049705,1
+"154",6630,"YTWA","insectivore","bark glean","neotrop","Parulidae","Yellow-throated Warbler","6","COMP",0.013738597621731,1
+"155",6630,"YTWA","insectivore","bark glean","neotrop","Parulidae","Yellow-throated Warbler","6","SHARED",0.0124418048711521,1
+"156",6630,"YTWA","insectivore","bark glean","neotrop","Parulidae","Yellow-throated Warbler","6","NONE",0.630351097010067,1
+"157",6650,"BTYW","insectivore","foliage glean","neotrop","Parulidae","Black-throated Gray Warbler","7","ENV",0.321795498002686,0
+"158",6650,"BTYW","insectivore","foliage glean","neotrop","Parulidae","Black-throated Gray Warbler","7","COMP",0.0680496875519247,0
+"159",6650,"BTYW","insectivore","foliage glean","neotrop","Parulidae","Black-throated Gray Warbler","7","SHARED",-0.0456419150156746,0
+"160",6650,"BTYW","insectivore","foliage glean","neotrop","Parulidae","Black-throated Gray Warbler","7","NONE",0.655796729461064,0
+"161",6760,"LOWA","insectivore","ground glean","neotrop","Parulidae","Louisiana Waterthrush","63","ENV",0.00441885180331029,1
+"162",6760,"LOWA","insectivore","ground glean","neotrop","Parulidae","Louisiana Waterthrush","63","COMP",0.000816147242048852,1
+"163",6760,"LOWA","insectivore","ground glean","neotrop","Parulidae","Louisiana Waterthrush","63","SHARED",0.000755426191807742,1
+"164",6760,"LOWA","insectivore","ground glean","neotrop","Parulidae","Louisiana Waterthrush","63","NONE",0.994009574762833,1
+"165",6770,"KEWA","insectivore","ground glean","neotrop","Parulidae","Kentucky Warbler","62","ENV",0.0114929691867634,1
+"166",6770,"KEWA","insectivore","ground glean","neotrop","Parulidae","Kentucky Warbler","62","COMP",7.93272775678772e-05,1
+"167",6770,"KEWA","insectivore","ground glean","neotrop","Parulidae","Kentucky Warbler","62","SHARED",7.1148633177884e-05,1
+"168",6770,"KEWA","insectivore","ground glean","neotrop","Parulidae","Kentucky Warbler","62","NONE",0.988356554902491,1
+"169",6790,"MOWA","insectivore","foliage glean","neotrop","Parulidae","Mourning Warbler","52","ENV",0.0494223573357473,1
+"170",6790,"MOWA","insectivore","foliage glean","neotrop","Parulidae","Mourning Warbler","52","COMP",0.532594563197522,1
+"171",6790,"MOWA","insectivore","foliage glean","neotrop","Parulidae","Mourning Warbler","52","SHARED",0.0968089209185911,1
+"172",6790,"MOWA","insectivore","foliage glean","neotrop","Parulidae","Mourning Warbler","52","NONE",0.32117415854814,1
+"173",6800,"MGWA","insectivore","foliage glean","neotrop","Parulidae","MacGillivray's Warbler","45","ENV",0.0832103728008032,0
+"174",6800,"MGWA","insectivore","foliage glean","neotrop","Parulidae","MacGillivray's Warbler","45","COMP",0.160636798249841,0
+"175",6800,"MGWA","insectivore","foliage glean","neotrop","Parulidae","MacGillivray's Warbler","45","SHARED",0.0183957087071547,0
+"176",6800,"MGWA","insectivore","foliage glean","neotrop","Parulidae","MacGillivray's Warbler","45","NONE",0.737757120242201,0
+"177",6840,"HOWA","insectivore","foliage glean","neotrop","Parulidae","Hooded Warbler","59","ENV",0.0263794768290713,1
+"178",6840,"HOWA","insectivore","foliage glean","neotrop","Parulidae","Hooded Warbler","59","COMP",0.329404643887411,1
+"179",6840,"HOWA","insectivore","foliage glean","neotrop","Parulidae","Hooded Warbler","59","SHARED",0.0897869043759078,1
+"180",6840,"HOWA","insectivore","foliage glean","neotrop","Parulidae","Hooded Warbler","59","NONE",0.55442897490761,1
+"181",6860,"CAWA","insectivore","hover/glean","neotrop","Parulidae","Canada Warbler","49","ENV",0.0543451280483064,1
+"182",6860,"CAWA","insectivore","hover/glean","neotrop","Parulidae","Canada Warbler","49","COMP",0.0284400740961377,1
+"183",6860,"CAWA","insectivore","hover/glean","neotrop","Parulidae","Canada Warbler","49","SHARED",0.00568511895292816,1
+"184",6860,"CAWA","insectivore","hover/glean","neotrop","Parulidae","Canada Warbler","49","NONE",0.911529678902628,1
+"185",6870,"AMRE","insectivore","hover/glean","neotrop","Parulidae","American Redstart","51","ENV",0.0504175581380712,1
+"186",6870,"AMRE","insectivore","hover/glean","neotrop","Parulidae","American Redstart","51","COMP",0.011055562715437,1
+"187",6870,"AMRE","insectivore","hover/glean","neotrop","Parulidae","American Redstart","51","SHARED",-0.0029984878798535,1
+"188",6870,"AMRE","insectivore","hover/glean","neotrop","Parulidae","American Redstart","51","NONE",0.941525367026345,1
+"189",7020,"SATH","insectivore","ground glean","short","Mimidae","Sage Thrasher","9","ENV",0.299375837848664,0
+"190",7020,"SATH","insectivore","ground glean","short","Mimidae","Sage Thrasher","9","COMP",0.106947828790357,0
+"191",7020,"SATH","insectivore","ground glean","short","Mimidae","Sage Thrasher","9","SHARED",0.00691369040653961,0
+"192",7020,"SATH","insectivore","ground glean","short","Mimidae","Sage Thrasher","9","NONE",0.58676264295444,0
+"193",7030,"NOMO","insectivore","ground glean","resid","Mimidae","Northern Mockingbird","32","ENV",0.114822787889344,0
+"194",7030,"NOMO","insectivore","ground glean","resid","Mimidae","Northern Mockingbird","32","COMP",0.0608997049369488,0
+"195",7030,"NOMO","insectivore","ground glean","resid","Mimidae","Northern Mockingbird","32","SHARED",-0.00882086189369182,0
+"196",7030,"NOMO","insectivore","ground glean","resid","Mimidae","Northern Mockingbird","32","NONE",0.833098369067399,0
+"197",7150,"ROWR","insectivore","ground glean","short","Troglodytidae","Rock Wren","37","ENV",0.108164295310581,0
+"198",7150,"ROWR","insectivore","ground glean","short","Troglodytidae","Rock Wren","37","COMP",0.0224385399393992,0
+"199",7150,"ROWR","insectivore","ground glean","short","Troglodytidae","Rock Wren","37","SHARED",0.0323003607310346,0
+"200",7150,"ROWR","insectivore","ground glean","short","Troglodytidae","Rock Wren","37","NONE",0.837096804018985,0
+"201",7190,"BEWR","insectivore","ground glean","short","Troglodytidae","Bewick's Wren","39","ENV",0.102024067743946,0
+"202",7190,"BEWR","insectivore","ground glean","short","Troglodytidae","Bewick's Wren","39","COMP",0.0471858146605567,0
+"203",7190,"BEWR","insectivore","ground glean","short","Troglodytidae","Bewick's Wren","39","SHARED",0.1105424125521,0
+"204",7190,"BEWR","insectivore","ground glean","short","Troglodytidae","Bewick's Wren","39","NONE",0.740247705043398,0
+"205",7222,"WIWR","insectivore","ground glean","short","Troglodytidae","unid. Pacific Wren / Winter Wren","57","ENV",0.0312169043777771,1
+"206",7222,"WIWR","insectivore","ground glean","short","Troglodytidae","unid. Pacific Wren / Winter Wren","57","COMP",0.53589458092837,1
+"207",7222,"WIWR","insectivore","ground glean","short","Troglodytidae","unid. Pacific Wren / Winter Wren","57","SHARED",0.118449783298802,1
+"208",7222,"WIWR","insectivore","ground glean","short","Troglodytidae","unid. Pacific Wren / Winter Wren","57","NONE",0.314438731395051,1
+"209",7240,"SEWR","insectivore","ground glean","short","Troglodytidae","Sedge Wren","25","ENV",0.149151574605331,1
+"210",7240,"SEWR","insectivore","ground glean","short","Troglodytidae","Sedge Wren","25","COMP",0.240393219904338,1
+"211",7240,"SEWR","insectivore","ground glean","short","Troglodytidae","Sedge Wren","25","SHARED",-0.0104150535093313,1
+"212",7240,"SEWR","insectivore","ground glean","short","Troglodytidae","Sedge Wren","25","NONE",0.620870258999663,1
+"213",7260,"BRCR","insectivore","bark glean","short","Certhiidae","Brown Creeper","27","ENV",0.141615980121236,0
+"214",7260,"BRCR","insectivore","bark glean","short","Certhiidae","Brown Creeper","27","COMP",0.00561430774208091,0
+"215",7260,"BRCR","insectivore","bark glean","short","Certhiidae","Brown Creeper","27","SHARED",-0.00300690042790519,0
+"216",7260,"BRCR","insectivore","bark glean","short","Certhiidae","Brown Creeper","27","NONE",0.855776612564589,0
+"217",7280,"RBNU","insectivore","bark glean","short","Sittidae","Red-breasted Nuthatch","38","ENV",0.102433858027093,0
+"218",7280,"RBNU","insectivore","bark glean","short","Sittidae","Red-breasted Nuthatch","38","COMP",0.0476211052299802,0
+"219",7280,"RBNU","insectivore","bark glean","short","Sittidae","Red-breasted Nuthatch","38","SHARED",-0.0060563512338126,0
+"220",7280,"RBNU","insectivore","bark glean","short","Sittidae","Red-breasted Nuthatch","38","NONE",0.856001387976739,0
+"221",7430,"BUSH","insectivore","foliage glean","resid","Aegithalidae","Bushtit","22","ENV",0.163979274349362,0
+"222",7430,"BUSH","insectivore","foliage glean","resid","Aegithalidae","Bushtit","22","COMP",0.00124849740946939,0
+"223",7430,"BUSH","insectivore","foliage glean","resid","Aegithalidae","Bushtit","22","SHARED",0.00949360108614862,0
+"224",7430,"BUSH","insectivore","foliage glean","resid","Aegithalidae","Bushtit","22","NONE",0.82527862715502,0
+"225",7480,"GCKI","insectivore","foliage glean","short","Regulidae","Golden-crowned Kinglet","14","ENV",0.225781591132889,0
+"226",7480,"GCKI","insectivore","foliage glean","short","Regulidae","Golden-crowned Kinglet","14","COMP",0.0148582131887034,0
+"227",7480,"GCKI","insectivore","foliage glean","short","Regulidae","Golden-crowned Kinglet","14","SHARED",0.0112368063508366,0
+"228",7480,"GCKI","insectivore","foliage glean","short","Regulidae","Golden-crowned Kinglet","14","NONE",0.748123389327571,0
+"229",7490,"RCKI","insectivore","foliage glean","short","Regulidae","Ruby-crowned Kinglet","16","ENV",0.212617126816559,0
+"230",7490,"RCKI","insectivore","foliage glean","short","Regulidae","Ruby-crowned Kinglet","16","COMP",0.107978531279101,0
+"231",7490,"RCKI","insectivore","foliage glean","short","Regulidae","Ruby-crowned Kinglet","16","SHARED",-0.01500159720516,0
+"232",7490,"RCKI","insectivore","foliage glean","short","Regulidae","Ruby-crowned Kinglet","16","NONE",0.694405939109499,0
+"233",7540,"TOSO","insectivore","hawks","short","Turdidae","Townsend's Solitaire","30","ENV",0.119282443158103,0
+"234",7540,"TOSO","insectivore","hawks","short","Turdidae","Townsend's Solitaire","30","COMP",0.126140265902392,0
+"235",7540,"TOSO","insectivore","hawks","short","Turdidae","Townsend's Solitaire","30","SHARED",-0.0115090350809078,0
+"236",7540,"TOSO","insectivore","hawks","short","Turdidae","Townsend's Solitaire","30","NONE",0.766086326020412,0
+"237",7580,"SWTH","insectivore","foliage glean","neotrop","Turdidae","Swainson's Thrush","3","ENV",0.400073190098775,0
+"238",7580,"SWTH","insectivore","foliage glean","neotrop","Turdidae","Swainson's Thrush","3","COMP",0.0154077360210501,0
+"239",7580,"SWTH","insectivore","foliage glean","neotrop","Turdidae","Swainson's Thrush","3","SHARED",0.0196106694585276,0
+"240",7580,"SWTH","insectivore","foliage glean","neotrop","Turdidae","Swainson's Thrush","3","NONE",0.564908404421647,0
+"241",7590,"HETH","insectivore","ground glean","short","Turdidae","Hermit Thrush","31","ENV",0.118108975726906,0
+"242",7590,"HETH","insectivore","ground glean","short","Turdidae","Hermit Thrush","31","COMP",0.0203691800393541,0
+"243",7590,"HETH","insectivore","ground glean","short","Turdidae","Hermit Thrush","31","SHARED",-0.0109034014647716,0
+"244",7590,"HETH","insectivore","ground glean","short","Turdidae","Hermit Thrush","31","NONE",0.872425245698512,0
+"245",7670,"WEBL","insectivore","hawks","short","Turdidae","Western Bluebird","5","ENV",0.354666510881639,0
+"246",7670,"WEBL","insectivore","hawks","short","Turdidae","Western Bluebird","5","COMP",0.0649590082282732,0
+"247",7670,"WEBL","insectivore","hawks","short","Turdidae","Western Bluebird","5","SHARED",-0.0438824263965823,0
+"248",7670,"WEBL","insectivore","hawks","short","Turdidae","Western Bluebird","5","NONE",0.62425690728667,0
+"249",7680,"MOBL","insectivore","swoops","short","Turdidae","Mountain Bluebird","46","ENV",0.0760515753183963,0
+"250",7680,"MOBL","insectivore","swoops","short","Turdidae","Mountain Bluebird","46","COMP",0.0176058923663124,0
+"251",7680,"MOBL","insectivore","swoops","short","Turdidae","Mountain Bluebird","46","SHARED",0.00941204230760191,0
+"252",7680,"MOBL","insectivore","swoops","short","Turdidae","Mountain Bluebird","46","NONE",0.896930490007689,0
