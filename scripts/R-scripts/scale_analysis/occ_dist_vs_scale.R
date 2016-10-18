@@ -203,24 +203,23 @@ for (grain in grain_sample$grain) {
 
 bbs_scaledup = output    #wrote to file in case
 
+####Product of loops with occ by grain, 100 reps per grid cell/bin####
+
 bbs_scaledup = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/bbs_scaledup.csv")
 bbs_scaledup$X = NULL 
 
 
+#for each unique combination of grain and lat and long across reps, what is the avg occ? 
 
-#for each unique combination of grain and lat and long (and rep?), what is the avg occ across scale at this level? 
-tempbin = unique(paste(bbs_scaledup$lat, bbs_scaledup$lon, sep = ""))
-for (grain in bbs_scaledup$grain){ 
-  bbs_avgs = mean(bbs_scaledup$occ)
-  
-  }
+# modify to take means of mean of each rep
+occ_avgs = bbs_scaledup %>% group_by(lat, lon, grain) %>% summarize(mean = mean(occ))
 
+# example code
+g = 6
+occ_g = occ_avgs %>% filter(grain == g)
+map('state')
+points(occ_g$lon, occ_g$lat, pch = 17, col = 'red', cex = 6*(occ_g$mean - min(occ_g$mean)+.05))
 
-
-
-
-
-bbs_avgs = unique(bbs_scaledup[, c("grain", "lat", "lon", "occ")])
 
 
 
@@ -231,15 +230,25 @@ bbs_avgs = unique(bbs_scaledup[, c("grain", "lat", "lon", "occ")])
 
 
 grain = 10
-temproutes$latbin = floor(temproutes$Lati/grain)*grain + grain/2
-temproutes$longbin = floor(temproutes$Longi/grain)*grain + grain/2
-temproutes$latbin = floor(temproutes$Lati/grain)*grain + grain/2
-temproutes$longbin = floor(temproutes$Longi/grain)*grain + grain/2
 
-ct = temproutes %>% count(latbin, longbin)
+map_threshold = function(grain, thresh) {
+  temproutes$latbin = floor(temproutes$Lati/grain)*grain + grain/2
+  temproutes$longbin = floor(temproutes$Longi/grain)*grain + grain/2
+  temproutes$latbin = floor(temproutes$Lati/grain)*grain + grain/2
+  temproutes$longbin = floor(temproutes$Longi/grain)*grain + grain/2
+  
+  ct = temproutes %>% count(latbin, longbin)
+  
+  map('state')
+  points(ct$longbin[ct$n >= thresh], ct$latbin[ct$n >= thresh], 
+         cex = log10(ct$n[ct$n >= thresh]), pch = 16)
+  leg_benchmarks = c(2, max(ct$n)/2, max(ct$n))
+  legend("bottomright", legend = c(2, max(ct$n)/2, max(ct$n)), pch = 16,
+         pt.cex = log10(leg_benchmarks))
+  
+}
 
-map('state')
-points(ct$longbin, ct$latbin, cex = 3*ct$n/max(ct$n), pch = 16)
+text(ct$longbin, ct$latbin, ct$n)
 
 
 
