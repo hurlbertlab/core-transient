@@ -651,11 +651,11 @@ for(id in datasetIDs){
   xhat <- predict(mod3, newdata = data.frame((xnew)))
   xhats = range(xhat)
   print(xhats)
-  taxcolors=subset(taxcolors, taxa == as.character(plotsub$taxa)[1])
+  taxcolor=subset(taxcolors, taxa == as.character(plotsub$taxa)[1])
   y=summary(mod3)$coef[1] + (xhats)*summary(mod3)$coef[2]
-  plot(NA, xlim = c(-1, 7), ylim = c(0,1),lwd=5, col = taxcolors, xlab = "Log of Mean  Abundance", ylab = "% Transients")
-  lines(log10(plotsub$meanAbundance), fitted(mod3), col=taxcolors)
+  plot(NA, xlim = c(-1, 7), ylim = c(0,1), col = as.character(taxcolor$color), xlab = "Log of Mean  Abundance", ylab = "% Transients")
+  lines(log10(plotsub$meanAbundance), fitted(mod3), col=as.character(taxcolor$color),lwd=3)
   par(new=TRUE)
 }
-legend('topright', legend = unique(occ_taxa$taxa), lty=1,lwd=3,col = col.palette, cex = 0.6)
+legend('topright', legend = unique(occ_taxa$taxa), lty=1,lwd=3,col = as.character(taxcolors$color[match(taxorder, taxcolors$taxa)]), cex = 0.6)
 dev.off()
