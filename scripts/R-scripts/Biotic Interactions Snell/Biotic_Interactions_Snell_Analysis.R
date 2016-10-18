@@ -316,6 +316,10 @@ env_lm = subset(envflip, Type == 'ENV')
 env_traits = lm(value ~ Trophic.Group + migclass + EW, data = env_lm)
 summary(env_traits) 
 
+### attempt to plot observed vs expected
+plot(env_lm$value, env_traits$value, xlab="predicted", ylab = "observed")
+abline(env_traits)
+
 comp_lm = subset(envflip, Type == 'COMP')
 
 comp_traits = lm(value ~ Trophic.Group + migclass + EW, data = comp_lm)
@@ -347,9 +351,15 @@ names(tomerge) = c("FocalAOU","Total.x", "Total.y")
 
 # R2 plot
 R2plot2 = merge(R2plot, tomerge, by = "FocalAOU")
+#lm(formula = COMP.y ~ COMP.x, data = R2plot2)
+#lm(formula = ENV.y ~ ENV.x, data = R2plot2)
+#lm(formula = Total.y ~ Total.x, data = R2plot2)
 
-ggplot(R2plot2, aes(x = COMP.x, y = COMP.y)) +theme_bw()+ theme(axis.title.x=element_text(size=35),axis.title.y=element_text(size=35, angle=90)) + xlab("Occupancy R2") + ylab("Abundance R2") + geom_point(col = "#dd1c77", cex =4, shape=24) + geom_point(data = R2plot2, aes(x = ENV.x, y = ENV.y), shape = 16, col = "#2ca25f", cex =4, stroke = 1) + geom_point(data = R2plot2, aes(Total.x,Total.y), shape = 3, col = "#43a2ca", cex =5, stroke = 1) +geom_abline(intercept = 0, slope = 1, col = "red", lwd = 1.25)+ theme(axis.text.x=element_text(size = 20),axis.ticks=element_blank(), axis.text.y=element_text(size=2))
+ggplot(R2plot2, aes(x = COMP.x, y = COMP.y)) +theme_bw()+ theme(axis.title.x=element_text(size=10),axis.title.y=element_text(size=10, angle=90)) + xlab("Occupancy R2") + ylab("Abundance R2") + geom_point(col = "#dd1c77", cex =4, shape=24) + geom_point(data = R2plot2, aes(x = ENV.x, y = ENV.y), shape = 16, col = "#2ca25f", cex =4, stroke = 1) + geom_point(data = R2plot2, aes(Total.x,Total.y), shape = 3, col = "#43a2ca", cex =5, stroke = 1) +geom_abline(intercept = 0, slope = 1, col = "black", lwd = 1.25)+ theme(axis.text.x=element_text(size = 20),axis.ticks=element_blank(), axis.text.y=element_text(size=20))+geom_smooth(method='lm', se=FALSE, col="#dd1c77",linetype="dotdash") + geom_abline(intercept= 0.03536,slope=0.43437, col = "#2ca25f", lwd = 1,linetype="dotdash")+ geom_abline(intercept=0.1424,slope=0.4193, col = "#43a2ca", lwd = 1,linetype="dotdash")
 ggsave("C:/Git/core-transient/scripts/R-scripts/Biotic Interactions Snell/occvabun.png")
+
+
+
 
 # R2 plot - glm violin plots
 ggplot(R2plot2, aes(x = FocalAOU, y = Total.x)) + geom_violin(lwd = 2, fill = "grey", color = "grey") + xlab("Focal Species") + ylab("Total R2")+ theme_bw()+theme(axis.title.x=element_text(size=30),axis.title.y=element_text(size=30, angle=90)) + theme(axis.line=element_blank(),axis.text.x=element_blank(),axis.ticks=element_blank(), axis.text.y=element_text(size=28, angle=90))

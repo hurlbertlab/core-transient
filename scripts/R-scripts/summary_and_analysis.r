@@ -631,3 +631,31 @@ jpeg('output/plots/world.jpg')
 summ2$meanAbundance = summ2$taxa + summ2$SCALE? + NEEDTOMERGEIN$latlong ## do we want propCore even?
 
 
+##################################################################
+# Summary of % transients versus community size using regression lines
+occ_taxa=read.csv("occ_taxa.csv",header=TRUE)
+datasetIDs = filter(dataformattingtable, spatial_scale_variable == 'Y',
+                    format_flag == 1)$dataset_ID
+datasetIDs = datasetIDs[datasetIDs  != 317]
+
+pdf('output/plots/sara_scale_trans_reg.pdf', height = 6, width = 7.5)
+par(mfrow = c(1, 1), mar = c(6, 6, 1, 1), mgp = c(4, 1, 0), 
+    cex.axis = 1.5, cex.lab = 2, las = 1)
+palette(colors7)
+
+for(id in datasetIDs){
+  print(id)
+  plotsub = subset(occ_taxa,datasetID == id)
+  mod3 = lm(plotsub$pctTrans ~ log10(plotsub$meanAbundance))
+  xnew=range(log10(plotsub$meanAbundance))
+  xhat <- predict(mod3, newdata = data.frame((xnew)))
+  xhats = range(xhat)
+  print(xhats)
+  taxcolors=subset(taxcolors, taxa == as.character(plotsub$taxa)[1])
+  y=summary(mod3)$coef[1] + (xhats)*summary(mod3)$coef[2]
+  plot(NA, xlim = c(-1, 7), ylim = c(0,1),lwd=5, col = taxcolors, xlab = "Log of Mean  Abundance", ylab = "% Transients")
+  lines(log10(plotsub$meanAbundance), fitted(mod3), col=taxcolors)
+  par(new=TRUE)
+}
+legend('topright', legend = unique(occ_taxa$taxa), lty=1,lwd=3,col = col.palette, cex = 0.6)
+dev.off()
