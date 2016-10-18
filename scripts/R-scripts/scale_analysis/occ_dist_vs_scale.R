@@ -210,9 +210,16 @@ bbs_scaledup$X = NULL
 
 
 #for each unique combination of grain and lat and long across reps, what is the avg occ? 
-occ_avgs = mean(bbs_scaledup$occ) 
 
-avgs_scaledup = unique(bbs_scaledup[, c('grain', 'lat', 'lon')])
+# modify to take means of mean of each rep
+occ_avgs = bbs_scaledup %>% group_by(lat, lon, grain) %>% summarize(mean = mean(occ))
+
+# example code
+g = 6
+occ_g = occ_avgs %>% filter(grain == g)
+map('state')
+points(occ_g$lon, occ_g$lat, pch = 17, col = 'red', cex = 6*(occ_g$mean - min(occ_g$mean)+.05))
+
 
 
 
@@ -223,15 +230,25 @@ avgs_scaledup = unique(bbs_scaledup[, c('grain', 'lat', 'lon')])
 
 
 grain = 10
-temproutes$latbin = floor(temproutes$Lati/grain)*grain + grain/2
-temproutes$longbin = floor(temproutes$Longi/grain)*grain + grain/2
-temproutes$latbin = floor(temproutes$Lati/grain)*grain + grain/2
-temproutes$longbin = floor(temproutes$Longi/grain)*grain + grain/2
 
-ct = temproutes %>% count(latbin, longbin)
+map_threshold = function(grain, thresh) {
+  temproutes$latbin = floor(temproutes$Lati/grain)*grain + grain/2
+  temproutes$longbin = floor(temproutes$Longi/grain)*grain + grain/2
+  temproutes$latbin = floor(temproutes$Lati/grain)*grain + grain/2
+  temproutes$longbin = floor(temproutes$Longi/grain)*grain + grain/2
+  
+  ct = temproutes %>% count(latbin, longbin)
+  
+  map('state')
+  points(ct$longbin[ct$n >= thresh], ct$latbin[ct$n >= thresh], 
+         cex = log10(ct$n[ct$n >= thresh]), pch = 16)
+  leg_benchmarks = c(2, max(ct$n)/2, max(ct$n))
+  legend("bottomright", legend = c(2, max(ct$n)/2, max(ct$n)), pch = 16,
+         pt.cex = log10(leg_benchmarks))
+  
+}
 
-map('state')
-points(ct$longbin, ct$latbin, cex = 3*ct$n/max(ct$n), pch = 16)
+text(ct$longbin, ct$latbin, ct$n)
 
 
 
