@@ -229,7 +229,11 @@ dev.off()
 ##################################################################
 # barplot of % transients versus community size at diff thresholds
 numCT=read.csv("numCT.csv", header=TRUE)
-numCT_taxa=
+numCT_taxa=merge(numCT, dataformattingtable[,c("dataset_ID","taxa")], by.x = 'datasetID', by.y = "dataset_ID", all.x=TRUE)
+
+numCT_p = gather(numCT_taxa, label, numTrans, numTrans33:numTrans10)
+numCT_plot=merge(numCT_p, taxcolors, by="taxa")
+
 summ2$propNeither = 1 - summ2$propCore - summ2$propTrans
 
 coreCol = rgb(102/255, alpha = 1)
@@ -241,7 +245,7 @@ uniqTaxa = meanCoreByTaxa$Group.1[order(meanCoreByTaxa$x, decreasing = T)]
 
 pdf('output/plots/CT_boxplots_byTaxa.pdf', height = 6, width = 8)
 par(mfrow = c(1,1), mar = c(6, 5, 1, 1), mgp = c(3, 1, 0), oma = c(0,0,0,0))
-box1 = boxplot(numCT$datasetID, xlim = c(0, (3*length(uniqTaxa)-2)), ylim = c(0, 1), 
+box1 = boxplot(numCT_taxa$taxa, xlim = c(0, (3*length(uniqTaxa)-2)), ylim = c(0, 1), 
                border = 'white', col = 'white', ylab = "Fraction of species", cex.lab = 1, las = 1, 
                cex.axis = 1.25)
 for (i in 1:length(uniqTaxa)) {   ##### wonky labelling somewhere in here
@@ -261,8 +265,11 @@ text(c(3.4, 9, 14.5), c(0.95, 0.95, 0.95), c('Transient', 'Neither', 'Core'), ce
 dev.off()
 
 
+p <- ggplot(numCT_plot, aes(taxa, numTrans))+theme_classic()
+p+geom_boxplot(aes(x=taxa, y=numTrans, fill =label))
 
-
+cols <- numCT_plot$color
+p+geom_boxplot()+scale_fill_manual(values = cols, labels = numCT_plot$label)
 
 
 
