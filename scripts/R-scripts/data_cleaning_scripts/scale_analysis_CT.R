@@ -184,12 +184,12 @@ propOcc_w_taxa$spptally = 1
 totalspp = propOcc_w_taxa %>% group_by(datasetID, site) %>% tally(spptally)
 
 numCT= propOcc_w_taxa %>% group_by(datasetID, site) %>%  
-  dplyr::summarize(numTrans1 = sum(propOcc <= 1/3), 
-                   numTrans2 = sum(propOcc <= 1/4),
-                   numTrans3 = sum(propOcc <= 1/5),
+  dplyr::summarize(numTrans33 = sum(propOcc <= 1/3), #33%
+                   numTrans25 = sum(propOcc <= 1/4), #25%
+                   numTrans10 = sum(propOcc <= 1/10), #10%
                    numCore=sum(propOcc > 2/3), 
                    meanOcc = mean(propOcc, na.rm = T))
-
+write.csv(numCT,"numCT.csv", row.names=FALSE)
 spptotals = merge(totalspp, numCT, by= c("datasetID", "site"))
   
 # for each dset - the propocc as response and the # of grain levels, community size, and random effect of taxa would be the predictor variables
