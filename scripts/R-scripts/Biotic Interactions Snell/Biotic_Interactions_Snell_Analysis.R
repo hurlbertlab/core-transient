@@ -57,22 +57,22 @@ ggsave("C:/Git/core-transient/scripts/R-scripts/Biotic Interactions Snell/logitt
 
 ggplot(data = occumatrix, aes(x = abs(zEVI), y = FocalOcc)) + 
   stat_function(fun=inverselogit, color = "blue") + 
-  geom_point(colour="black", shape=19, alpha = 0.2)+ theme_classic()
+  geom_point(colour="black", shape=18, alpha = 0.02,position=position_jitter(width=0,height=.02))+ theme_classic()
 ggsave("C:/Git/core-transient/scripts/R-scripts/Biotic Interactions Snell/logitevi.png")
 
 ggplot(data = occumatrix, aes(x = abs(zElev), y = FocalOcc)) + 
   stat_function(fun=inverselogit, color = "blue") + 
-  geom_point(colour="black", shape=19, alpha = 0.2)+ theme_classic()
+  geom_point(colour="black", shape=18, alpha = 0.02,position=position_jitter(width=0,height=.02))+ theme_classic()
 ggsave("C:/Git/core-transient/scripts/R-scripts/Biotic Interactions Snell/logitelev.png")
 
 ggplot(data = occumatrix, aes(x = abs(zPrecip), y = FocalOcc)) + 
   stat_function(fun=inverselogit, color = "blue") + 
-  geom_point(colour="black", shape=19, alpha = 0.2)+ theme_classic()
+  geom_point(colour="black", shape=18, alpha = 0.02,position=position_jitter(width=0,height=.02))+ theme_classic()
 ggsave("C:/Git/core-transient/scripts/R-scripts/Biotic Interactions Snell/logitprecip.png")
 
 ggplot(data = occumatrix, aes(x = comp_scaled, y = FocalOcc)) + 
   stat_function(fun=inverselogit, color = "blue") + 
-  geom_point(colour="black", shape=19, alpha = 0.2)+ theme_classic()
+  geom_point(colour="black", shape=18, alpha = 0.02,position=position_jitter(width=0,height=.02))+ theme_classic()
 
 
 hist(occumatrix$zTemp)

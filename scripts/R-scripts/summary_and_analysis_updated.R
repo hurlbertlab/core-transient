@@ -268,8 +268,17 @@ dev.off()
 p <- ggplot(numCT_plot, aes(taxa, numTrans))+theme_classic()
 p+geom_boxplot(aes(x=taxa, y=numTrans, fill =label))
 
-cols <- numCT_plot$color
-p+geom_boxplot()+scale_fill_manual(values = cols, labels = numCT_plot$label)
+cols <- (numCT_plot$color)
+p+geom_boxplot(aes(x=taxa, y=numTrans, fill = label))+scale_color_manual(values="numTrans10"=as.character(taxcolors$color))
+
+
+p+geom_boxplot(aes(x=taxa, y=numTrans, fill =label))+scale_x_discrete(breaks = numCT_plot$taxa) +
+  scale_colour_manual(breaks = numCT_plot$taxa,
+                      values = taxcolors$color) +
+  scale_fill_manual(labels = numCT_plot$label,
+                    values = cols)
+
+(values = c("Bird" = "#1D6A9B", "Plankton"="red", "Plant"="springgreen2"))
 
 
 
