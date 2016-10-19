@@ -149,25 +149,6 @@ dev.off()
 l = c(col1, col2, col3, col4), pch = 16, cex = 1.5, pt.cex = 2)
 dev.off()
 
-##########################################################################
-# Explaining variation in mean occupancy within BBS
-
-env = read.csv('data/raw_datasets/dataset_1RAW/env_data.csv')
-bbsumm = merge(bbssumm, env, by.x = 'site', by.y = 'stateroute')
-
-par(mfrow = c(2,1), mar = c(6, 4, 1, 1), mgp = c(3, 1, 0), 
-    oma = c(0, 4, 0, 0), las = 1, cex.axis = 1.5, cex.lab = 2)
-plot(bbsumm$sum.NDVI.mean, bbsumm$mu, xlab = "NDVI", ylab = "", pch = 16, col = 'gray40')
-lm.ndvi = lm(mu ~ sum.NDVI.mean, data = bbsumm)
-abline(lm.ndvi, col = 'red', lty = 'dashed', lwd = 4)
-text(0.25, 0.85, bquote(R^2 ~ "=" ~ .(round(summary(lm.ndvi)$r.squared, 2))), cex = 1.5)
-plot(bbsumm$elev.mean, bbsumm$mu, xlab = "Elevation (m)", ylab = "", pch = 16, col = 'gray40')
-lm.elev = lm(mu ~ elev.mean, data = bbsumm)
-abline(lm.elev, col = 'red', lty = 'dashed', lwd = 4)
-text(2600, 0.85, bquote(R^2 ~ "=" ~ .(round(summary(lm.elev)$r.squared, 2))), cex = 1.5)
-mtext("Mean occupancy", 2, outer = T, cex = 2, las = 0)
-
-
 #####################################################
 # Summary figure(s) showing site level density estimates - potential fig 3
 
@@ -234,28 +215,23 @@ numCT_taxa=merge(numCT, dataformattingtable[,c("dataset_ID","taxa")], by.x = 'da
 numCT_p = gather(numCT_taxa, label, numTrans, numTrans33:numTrans10)
 numCT_plot=merge(numCT_p, taxcolors, by="taxa")
 
-summ2$propNeither = 1 - summ2$propCore - summ2$propTrans
-
-coreCol = rgb(102/255, alpha = 1)
-nonCol = rgb(102/255, alpha = 0.5)
-transCol = rgb(102/255, alpha = 0.3)
-
-meanCoreByTaxa = aggregate(summ2$propCore, by = list(summ2$taxa), mean)
 uniqTaxa = meanCoreByTaxa$Group.1[order(meanCoreByTaxa$x, decreasing = T)]
 
 pdf('output/plots/CT_boxplots_byTaxa.pdf', height = 6, width = 8)
 par(mfrow = c(1,1), mar = c(6, 5, 1, 1), mgp = c(3, 1, 0), oma = c(0,0,0,0))
-box1 = boxplot(numCT_taxa$taxa, xlim = c(0, (3*length(uniqTaxa)-2)), ylim = c(0, 1), 
+box1 = boxplot(as.character(uniqTaxa), xlim = c(0, (3*length(uniqTaxa)-2)), ylim = c(0, 1), 
                border = 'white', col = 'white', ylab = "Fraction of species", cex.lab = 1, las = 1, 
                cex.axis = 1.25)
 for (i in 1:length(uniqTaxa)) {   ##### wonky labelling somewhere in here
   tax = uniqTaxa[i]
-  boxplot(numCT$numTrans10, add = T, col = transCol, staplewex = 0, outline = F,
+  taxcolor=subset(taxcolors, taxa == tax)
+  boxplot(numCT$numTrans10, add = T, col = taxcolor$color, staplewex = 0, outline = F,
           at = 3*(i-1), yaxt = "n")
-  boxplot(numCT$numTrans25, add =T, col = nonCol, staplewex = 0, outline = F,
+  boxplot(numCT$numTrans25, add =T, col = taxcolor$color, staplewex = 0, outline = F,
           at = 3*(i-1)+.5, yaxt = "n")
-  boxplot(numCT$numTrans33, add =T, col = coreCol, staplewex = 0, outline = F,
+  boxplot(numCT$numTrans33, add =T, col = taxcolor$color, staplewex = 0, outline = F,
           at = 3*(i-1)+1, yaxt = "n")
+  par(new=TRUE)
 }
 text(3 *(1:9) - 2.5, par("usr")[3], uniqTaxa, srt = 45, xpd = T, cex = 1, adj = c(1.1,1.1)) 
 rect(.5, 0.9, 1.5, 1.0, col = transCol, border=F)
@@ -269,18 +245,43 @@ p <- ggplot(numCT_plot, aes(taxa, numTrans))+theme_classic()
 p+geom_boxplot(aes(x=taxa, y=numTrans, fill =label))
 
 cols <- (numCT_plot$color)
+colscale=c("black", "grey", "white")
 p+geom_boxplot(aes(x=taxa, y=numTrans, fill = label))+scale_color_manual(values="numTrans10"=as.character(taxcolors$color))
 
 
-p+geom_boxplot(aes(x=taxa, y=numTrans, fill =label))+scale_x_discrete(breaks = numCT_plot$taxa) +
+p+geom_boxplot(aes(x=taxa, y=numTrans, fill=label))+ #scale_x_discrete(breaks = numCT_plot$taxa) +
   scale_colour_manual(breaks = numCT_plot$taxa,
                       values = taxcolors$color) +
-  scale_fill_manual(labels = numCT_plot$label,
-                    values = cols)
+  scale_fill_manual(labels = c("10", "25", "33"),
+                    values = colscale)
 
 (values = c("Bird" = "#1D6A9B", "Plankton"="red", "Plant"="springgreen2"))
 
 
+##########################################################################
+# Explaining variation in mean occupancy within BBS
+# Merge taxa color and symbol codes into summary data
+summ$taxa = factor(summ$taxa)
+summ$system = factor(summ$system)
+summ2 = subset(summ, !datasetID %in% c(99, 85, 90, 91, 92, 97, 124))
+summ3 = merge(summ2, taxcolors, by = 'taxa', all.x = T)
+summ3$color = as.character(summ3$color)
+notbbs = subset(summ3, datasetID != 1)
+bbssumm = subset(summ3, datasetID == 1)
+env = read.csv('data/raw_datasets/dataset_1RAW/env_data.csv')
+bbsumm = merge(bbssumm, env, by.x = 'site', by.y = 'stateroute')
+
+par(mfrow = c(2,1), mar = c(6, 4, 1, 1), mgp = c(3, 1, 0), 
+    oma = c(0, 4, 0, 0), las = 1, cex.axis = 1.5, cex.lab = 2)
+plot(bbsumm$sum.NDVI.mean, bbsumm$mu, xlab = "NDVI", ylab = "", pch = 16, col = 'gray40')
+lm.ndvi = lm(mu ~ sum.NDVI.mean, data = bbsumm)
+abline(lm.ndvi, col = 'red', lty = 'dashed', lwd = 4)
+text(0.25, 0.85, bquote(R^2 ~ "=" ~ .(round(summary(lm.ndvi)$r.squared, 2))), cex = 1.5)
+plot(bbsumm$elev.mean, bbsumm$mu, xlab = "Elevation (m)", ylab = "", pch = 16, col = 'gray40')
+lm.elev = lm(mu ~ elev.mean, data = bbsumm)
+abline(lm.elev, col = 'red', lty = 'dashed', lwd = 4)
+text(2600, 0.85, bquote(R^2 ~ "=" ~ .(round(summary(lm.elev)$r.squared, 2))), cex = 1.5)
+mtext("Mean occupancy", 2, outer = T, cex = 2, las = 0)
 
 
 
