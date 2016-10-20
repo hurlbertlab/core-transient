@@ -421,7 +421,7 @@ for (sp in focalspecies) {
   numroutes = rbind(numroutes, c(unique(tmp$FocalAOU), nroutes))
 }
 numroutes = data.frame(numroutes)
-colnames(numroutes) = c("FocalAOU","AOU", "nroutes")
+colnames(numroutes) = c("FocalAOU","nroutes")
 # Filter count to greater than or equal to 20
 focalcompoutput1 = filter(numroutes, nroutes >= 20)
 focalcompoutput1$nroutes = as.numeric(focalcompoutput1$nroutes)
@@ -676,13 +676,13 @@ binom = bbs_binom %>%
   filter(Year >= 1996, Year <= 2010) %>% 
   dplyr::select(Aou, stateroute, Year) %>%
   group_by(Aou, Year) %>%
-  count(stateroute, Aou)
-
+  dplyr::count(Aou,stateroute)
+binom=data.frame(binom)
 #rename columns to make more clear
-colnames(binom) <- c("stateroute", "Aou","numyears")
+colnames(binom) <- c("stateroute", "Species","numyears")
 
 # merge success/failure columns w environmnetal data, missing 0 occupancies
-occumatrix = merge(occuenv, binom, by = "stateroute", all.x = TRUE)
+occumatrix = merge(occuenv, binom, by = c("stateroute"), all.x = TRUE)
 write.csv(occumatrix, "occumatrix.csv", row.names = FALSE)
 envloc = merge(envoutput, centroid[, c("FocalAOU", "Long", "Lat")], by = 'FocalAOU', all = TRUE)
 write.csv(envloc, "envloc.csv", row.names = FALSE)

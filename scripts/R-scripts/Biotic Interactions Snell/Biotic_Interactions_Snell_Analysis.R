@@ -39,8 +39,8 @@ glm_occ_rand_site = glmer(cbind(sp_success, sp_fail) ~ c_s +
 summary(glm_occ_rand_site) 
 
 ### FIX, Poisson
-glm_abun_rand_site = glmer(FocalAbundance ~ c_s + 
-        abTemp + abElev + abPrecip + abEVI + (1|stateroute:Species), family = poisson, data = occumatrix)
+glm_abun_rand_site = glmer(as.integer(FocalAbundance) ~ c_s + 
+        abTemp + abElev + abPrecip + abEVI + (1|stateroute:Species), family = "poisson", data = occumatrix)
 summary(glm_abundance_rand_site) 
 
 #### PLOTTING MODELS ####
