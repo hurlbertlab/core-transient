@@ -682,7 +682,8 @@ binom=data.frame(binom)
 colnames(binom) <- c("stateroute", "Species","numyears")
 
 # merge success/failure columns w environmnetal data, missing 0 occupancies
-occumatrix = merge(occuenv, binom, by = c("stateroute"), all.x = TRUE)
+occumatrix = merge(occuenv, binom, by = "stateroute", all.x = TRUE)
+# occumatrix = merge(occuenv, binom, by = c("stateroute", "Species"), all.x = TRUE)
 write.csv(occumatrix, "occumatrix.csv", row.names = FALSE)
 envloc = merge(envoutput, centroid[, c("FocalAOU", "Long", "Lat")], by = 'FocalAOU', all = TRUE)
 write.csv(envloc, "envloc.csv", row.names = FALSE)

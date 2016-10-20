@@ -49,7 +49,7 @@ ggsave("C:/Git/core-transient/scripts/R-scripts/Biotic Interactions Snell/glmout
 
 ggplot(data = occumatrix, aes(x = comp_scaled, y = FocalAbundance)) +stat_smooth(data=glm_abun_rand_site, lwd = 1.5) +theme_bw()
 
-####### WORKING ##########################################################################################################
+####### GLM FIT PLOTS #################################################################################################
 pTemp = predict(glm_occ_rand_site, newdata=with(occumatrix,data.frame(zTemp=0,comp_scaled,zPrecip,zElev,zEVI,stateroute,Species, FocalOcc)), allow.new.levels = TRUE) #predict values assuming zTemp=0
 
 inverselogit <- function(p) {exp(p)/(1+exp(p))} 
@@ -57,8 +57,9 @@ newintercept <- function(p) {mean(exp(p)/(1+exp(p)))}
 
 # this relationship should be negative
 ggplot(data = occumatrix, aes(x = abs(zTemp), y = FocalOcc)) + 
-  stat_function(fun=inverselogit, color = "blue", lwd=2) + 
+  #stat_function(fun=inverselogit, color = "blue", lwd=2) + 
   geom_point(colour="black", shape=18, alpha = 0.02,position=position_jitter(width=0,height=.02)) + theme_classic()
+#+geom_abline(slope=.202, intercept=.505, lwd=2)
 ggsave("C:/Git/core-transient/scripts/R-scripts/Biotic Interactions Snell/logittemp.png")
 
 ggplot(data = occumatrix, aes(x = abs(zEVI), y = FocalOcc)) + 
@@ -318,14 +319,16 @@ ggplot(envflip, aes(x = Type, y = value, color = Type)) + geom_violin()
 ggplot(envloc, aes(x = FocalAOU, y = factor(EW))) + geom_violin() + scale_x_discrete(labels=c("West", "East")) 
 
 ##################### TRAITS Model ####################################
+inverselogit <- function(p) {exp(p)/(1+exp(p))} 
+
 env_lm = subset(envflip, Type == 'ENV')
 
-env_traits = lm(value ~ Trophic.Group + migclass + EW, data = env_lm)
+env_traits = lm(inverselogit(value) ~ Trophic.Group + migclass + EW, data = env_lm)
 summary(env_traits) 
 
 comp_lm = subset(envflip, Type == 'COMP')
 
-comp_traits = lm(value ~ Trophic.Group + migclass + EW, data = comp_lm)
+comp_traits = lm(inverselogit(value) ~ Trophic.Group + migclass + EW, data = comp_lm)
 summary(comp_traits) 
 
 env_sum = subset(envflip, Type != 'NONE')
@@ -333,7 +336,7 @@ total = env_sum %>%
   group_by(FocalAOU) %>%
  summarise(sum(value))
 
-total_traits = lm(value ~ Trophic.Group + migclass + EW, data = env_sum)
+total_traits = lm(inverselogit(value) ~ Trophic.Group + migclass + EW, data = env_sum)
 summary(total_traits)
 
 # R2 plot - lm in ggplot
