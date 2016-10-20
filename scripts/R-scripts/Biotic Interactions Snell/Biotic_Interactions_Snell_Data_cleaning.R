@@ -22,7 +22,7 @@ library(ecoretriever)
 
 # read in temporal occupancy dataset 
 Hurlbert_o = read.csv('Master_RO_Correlates_20110610.csv', header = T)
-# subset species whose occupancies were between 0.3 and 0.7 over a 10 year period
+# subset species whose range occupancies were between 0.3 and 0.7 over a 10 year period
 subsetocc = Hurlbert_o[Hurlbert_o$X10yr.Prop > .3 & Hurlbert_o$X10yr.Prop < .7,]
 # write.csv(subsetocc, "focal.csv")
 
@@ -416,9 +416,9 @@ for (sp in focalspecies) {
   print(sp)
   tmp = filter(focalcompoutput, FocalAOU == sp) 
   nroutes = tmp %>%
-  group_by(FocalAOU) %>%
-  summarise(n_distinct(stateroute))
-  numroutes = rbind(numroutes, c(unique(tmp$FocalAOU), nroutes))
+    group_by(FocalAOU) %>%
+    summarise(n_distinct(stateroute))
+  numroutes = rbind(numroutes, nroutes)
 }
 numroutes = data.frame(numroutes)
 colnames(numroutes) = c("FocalAOU","nroutes")
@@ -670,21 +670,17 @@ beta_lm$sumR2 = beta_lm$BothZ_R2+beta_lm$Competition_R2+beta_lm$EnvZ_R2
 # add on success and failure columns by creating # of sites where birds were found
 # and # of sites birds were not found from original bbs data
 # create counter column to sum across years
-bbs_binom= merge(bbs[,c("Aou", "stateroute", "Year")], occuenv, by.x=c("Aou", "stateroute"),by.y=c("Species", "stateroute"))
+occumatrix = merge(coyle_o, occuenv, by.x=c("Aou", "stateroute"),by.y=c("Species", "stateroute"))
+occumatrix$numyears = occumatrix$FocalOcc*15
+occumatrix$c_s = scale(occumatrix$comp_scaled, scale = T, center = T)
+occumatrix$abTemp=abs(occumatrix$zTemp)
+occumatrix$abElev=abs(occumatrix$zElev)
+occumatrix$abPrecip=abs(occumatrix$zPrecip)
+occumatrix$abEVI=abs(occumatrix$zEVI)
+names(occumatrix)[1] = 'Species'
 
-binom = bbs_binom %>% 
-  filter(Year >= 1996, Year <= 2010) %>% 
-  dplyr::select(Aou, stateroute, Year) %>%
-  group_by(Aou, Year) %>%
-  dplyr::count(Aou,stateroute)
-binom=data.frame(binom)
-#rename columns to make more clear
-colnames(binom) <- c("stateroute", "Species","numyears")
-
-# merge success/failure columns w environmnetal data, missing 0 occupancies
-occumatrix = merge(occuenv, binom, by = "stateroute", all.x = TRUE)
-# occumatrix = merge(occuenv, binom, by = c("stateroute", "Species"), all.x = TRUE)
 write.csv(occumatrix, "occumatrix.csv", row.names = FALSE)
+
 envloc = merge(envoutput, centroid[, c("FocalAOU", "Long", "Lat")], by = 'FocalAOU', all = TRUE)
 write.csv(envloc, "envloc.csv", row.names = FALSE)
 ####### END DATA CLEANING, see analysis script ##########

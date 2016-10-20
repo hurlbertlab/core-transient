@@ -14,32 +14,13 @@ subfocalspecies = read.csv(" subfocalspecies.csv", header = TRUE)
 occumatrix$sp_success = as.factor(occumatrix$numyears * occumatrix$FocalOcc)
 occumatrix$sp_fail = as.factor(occumatrix$numyears * (1 - occumatrix$FocalOcc))
 
-# using equation species sum*Focal abun to get success and failure for binomial anlaysis
-# occumatrix$sp_success_abun = as.factor(occumatrix$numyears * occumatrix$FocalAbundance)
-# occumatrix$sp_fail_abun = as.factor(occumatrix$numyears * (1 - occumatrix$FocalAbundance))
-
-cs <- function(x) scale(x,scale=TRUE,center=TRUE)
-# source: http://permalink.gmane.org/gmane.comp.lang.r.lme4.devel/12080
-########################################################################### NLCD
-#nlcd = read.csv('Z:/GIS/birds/NLCD_buffers/BBS_NLCD_400_m_buffer.csv', header = TRUE)
-# summing dediduous forest (41), evergreen forest (42), mixed forest (43), all have >20% total vegetation cover
-#nlcd$forest = (nlcd$NLCD.41 + nlcd$NLCD.42 + nlcd$NLCD.43)/nlcd$SUM
-
-#occumatrix1 = merge(occumatrix, nlcd[, c('RT..NO.', 'forest')], by.x = "stateroute", by.y = "RT..NO.")
-
-# putting elements of model directly into occumatrix for readability
-occumatrix$c_s=cs(occumatrix$comp_scaled)
-occumatrix$abTemp=abs(occumatrix$zTemp)
-occumatrix$abElev=abs(occumatrix$zElev)
-occumatrix$abPrecip=abs(occumatrix$zPrecip)
-occumatrix$abEVI=abs(occumatrix$zEVI)
 #### GLM of all matrices not just subset #### INCLUDES LC
 glm_occ_rand_site = glmer(cbind(sp_success, sp_fail) ~ c_s + 
          abTemp + abElev + abPrecip + abEVI + (1|stateroute:Species), family = binomial(link = logit), data = occumatrix)
 summary(glm_occ_rand_site) 
 
 ### FIX, Poisson
-glm_abun_rand_site = glmer(as.integer(FocalAbundance) ~ c_s + 
+glm_abun_rand_site = glmer(FocalAbundance ~ c_s + 
         abTemp + abElev + abPrecip + abEVI + (1|stateroute:Species), family = "poisson", data = occumatrix)
 summary(glm_abundance_rand_site) 
 
