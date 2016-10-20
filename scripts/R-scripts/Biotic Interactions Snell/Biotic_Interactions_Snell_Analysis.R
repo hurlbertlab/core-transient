@@ -3,16 +3,125 @@ library(ggplot2)
 library(tidyr)
 library(dplyr)
 library(plyr)
+library(lmtest)
+
+# read in files created in data cleaning script
+tax_code = read.csv("Tax_AOU_Alpha.csv", header = TRUE)
+temp_occ = read.csv("bbs_sub1.csv", header=TRUE)
+centroid=read.csv("centroid.csv", header=TRUE)
+occuenv=read.csv("occuenv.csv", header=TRUE)
+subfocalspecies = unique(occuenv$Species)
+# rescaling all occupancy values  - odds ratio
+# need to get rid of ones in order to not have infinity values 
+edge_adjust = .005 
+occuenv$FocalOcc_scale = (occuenv$FocalOcc * (1 - 2*edge_adjust)) + edge_adjust
+# create logit transformation function, did on rescaled vals
+occuenv$occ_logit =  log(occuenv$FocalOcc_scale/(1-occuenv$FocalOcc_scale)) 
+
+##### LIN REG #######
+# create beta output data frame
+beta_lm = matrix(NA, nrow = 67, ncol = 10)
+beta_abun = matrix(NA, nrow = 67, ncol = 10)
+
+# for loop subsetting env data to expected occurrence for focal species
+envoutput = c()
+envoutputa = c()
+for (sp in 1:length(subfocalspecies)){
+  
+  temp = subset(occuenv,occuenv$Species == subfocalspecies[sp])
+  
+  competition <- lm(temp$occ_logit ~  temp$comp_scaled) 
+  # z scores separated out for env effects (as opposed to multivariate variable)
+  env_z = lm(occ_logit ~ abs(zTemp)+abs(zElev)+abs(zPrecip)+abs(zEVI), data = temp)
+  # z scores separated out for env effects
+  both_z = lm(temp$occ_logit ~  temp$comp_scaled + abs(temp$zTemp)+abs(temp$zElev)+abs(temp$zPrecip)+abs(temp$zEVI), data = temp)
+  
+  # abundance, not temp occ - same results?
+  competition_abun <- lm(temp$FocalAbundance ~  temp$comp_scaled) 
+  # z scores separated out for env effects - abundance
+  env_abun = lm(temp$FocalAbundance ~ abs(zTemp)+abs(zElev)+abs(zPrecip)+abs(zEVI), data = temp)
+  # z scores separated out for env effects - abundance
+  both_abun = lm(temp$FocalAbundance ~  comp_scaled + abs(zTemp)+abs(zElev)+abs(zPrecip)+abs(zEVI), data = temp)
+  
+  beta_lm[sp,1] = sp
+  beta_lm[sp,2] = summary(competition)$coef[2,"Estimate"]
+  beta_lm[sp,3] = summary(competition)$coef[2,"Pr(>|t|)"]
+  beta_lm[sp,4] = summary(competition)$r.squared #using multiple rsquared
+  beta_lm[sp,5] = summary(env_z)$coef[2,"Estimate"]
+  beta_lm[sp,6] = summary(env_z)$coef[2,"Pr(>|t|)"]
+  beta_lm[sp,7] = summary(env_z)$r.squared 
+  beta_lm[sp,8] = summary(both_z)$coef[2,"Estimate"]
+  beta_lm[sp,9] = summary(both_z)$coef[2,"Pr(>|t|)"]
+  beta_lm[sp,10] = summary(both_z)$r.squared 
+  
+  beta_abun[sp,1] = subfocalspecies[sp]
+  beta_abun[sp,2] = summary(competition_abun)$coef[2,"Estimate"]
+  beta_abun[sp,3] = summary(competition_abun)$coef[2,"Pr(>|t|)"]
+  beta_abun[sp,4] = summary(competition_abun)$r.squared #using multiple rsquared
+  beta_abun[sp,5] = summary(env_abun)$coef[2,"Estimate"]
+  beta_abun[sp,6] = summary(env_abun)$coef[2,"Pr(>|t|)"]
+  beta_abun[sp,7] = summary(env_abun)$r.squared 
+  beta_abun[sp,8] = summary(both_abun)$coef[2,"Estimate"]
+  beta_abun[sp,9] = summary(both_abun)$coef[2,"Pr(>|t|)"]
+  beta_abun[sp,10] = summary(both_abun)$r.squared
+  
+  #variance_partitioning 
+  ENV = summary(both_z)$r.squared - summary(competition)$r.squared
+  print(ENV) #env only
+  COMP = summary(both_z)$r.squared - summary(env_z)$r.squared
+  print(COMP) #competition only
+  SHARED = summary(competition)$r.squared - COMP
+  print(SHARED) #shared variance
+  NONE = 1 - summary(both_z)$r.squared
+  print(NONE) #neither variance
+  sp1 = unique(temp$Species)
+  envoutput = rbind(envoutput, c(sp1, ENV, COMP, SHARED, NONE))
+  
+  #variance_partitioning 
+  ENVa = summary(both_abun)$r.squared - summary(competition_abun)$r.squared
+  
+  COMPa = summary(both_abun)$r.squared - summary(env_abun)$r.squared
+  
+  SHAREDa = summary(competition_abun)$r.squared - COMP
+  
+  NONEa = 1 - summary(both_abun)$r.squared
+  
+  sp1 = unique(temp$Species)
+  envoutputa = rbind(envoutputa, c(sp1, ENVa, COMPa, SHAREDa, NONEa))
+}         
+dev.off()
+
+envoutput = data.frame(envoutput)
+envoutputa = data.frame(envoutputa)
+names(envoutput) = c("FocalAOU", "ENV", "COMP", "SHARED", "NONE")
+names(envoutputa) = c("FocalAOU", "ENV", "COMP", "SHARED", "NONE")
+
+envoutput = merge(envoutput, tax_code[,c('AOU_OUT', 'ALPHA.CODE')], by.x = 'FocalAOU', by.y = "AOU_OUT")
+write.csv(envoutput, "envoutputa.csv", row.names = FALSE)
+write.csv(envoutputa, "envoutputa.csv", row.names = FALSE)
+
+envloc = merge(envoutput, centroid[, c("FocalAOU", "Long", "Lat")], by = 'FocalAOU', all = TRUE)
+
+beta_lm = data.frame(beta_lm)
+names(beta_lm) = c("FocalAOU", "Competition_Est", "Competition_P", "Competition_R2", "EnvZ_Est", "EnvZ_P", "EnvZ_R2", "BothZ_Est", "BothZ_P", "BothZ_R2")
+beta_abun = data.frame(beta_abun)
+names(beta_abun) = c("FocalAOU", "Competition_Est", "Competition_P", "Competition_R2", "EnvZ_Est", "EnvZ_P", "EnvZ_R2", "BothZ_Est", "BothZ_P", "BothZ_R2")
+
 #### ---- GLM fitting  ---- ####
-occumatrix = read.csv('occumatrix.csv', header = TRUE)
 # add on success and failure columns by creating # of sites where birds were found
 # and # of sites birds were not found from original bbs data
-# create counter column to sum across years
-subfocalspecies = read.csv(" subfocalspecies.csv", header = TRUE)
+# occumatrix = merge(temp_occ, occuenv, by.x=c("Aou", "stateroute"),by.y=c("Species", "stateroute"))
+occumatrix=occuenv
+occumatrix$c_s = scale(occumatrix$comp_scaled, scale = T, center = T)
+occumatrix$abTemp=abs(occumatrix$zTemp)
+occumatrix$abElev=abs(occumatrix$zElev)
+occumatrix$abPrecip=abs(occumatrix$zPrecip)
+occumatrix$abEVI=abs(occumatrix$zEVI)
+names(occumatrix)[1] = 'Species'
 
 # using equation species sum*Focal occ to get success and failure for binomial anlaysis
-occumatrix$sp_success = as.factor(occumatrix$numyears * occumatrix$FocalOcc)
-occumatrix$sp_fail = as.factor(occumatrix$numyears * (1 - occumatrix$FocalOcc))
+occumatrix$sp_success = as.factor(occumatrix$nyears * occumatrix$FocalOcc)
+occumatrix$sp_fail = as.factor(occumatrix$nyears * (1 - occumatrix$FocalOcc))
 
 #### GLM of all matrices not just subset #### INCLUDES LC
 glm_occ_rand_site = glmer(cbind(sp_success, sp_fail) ~ c_s + 
@@ -21,11 +130,11 @@ summary(glm_occ_rand_site)
 
 ### FIX, Poisson
 glm_abun_rand_site = glmer(FocalAbundance ~ c_s + 
-        abTemp + abElev + abPrecip + abEVI + (1|stateroute:Species), family = "poisson", data = occumatrix)
+        abTemp + abElev + abPrecip + abEVI + (1|stateroute:Species), family = neg_binom, data = occumatrix)
 summary(glm_abundance_rand_site) 
 
 #### PLOTTING MODELS ####
-ggplot(data = occumatrix1, aes(x = comp_scaled, y = FocalOcc)) +stat_smooth(data=glm_occ_rand_site, lwd = 1.5) +xlab("Scaled Competitor Abundance")+ylab("Focal Occupancy") +theme_bw() +theme(axis.title.x=element_text(size=24),axis.title.y=element_text(size=24, angle=90), axis.text=element_text(size=12)) + theme(plot.margin = unit(c(.5,6,.5,.5),"lines")) 
+ggplot(data = occumatrix, aes(x = comp_scaled, y = FocalOcc)) +stat_smooth(data=glm_occ_rand_site, lwd = 1.5) +xlab("Scaled Competitor Abundance")+ylab("Focal Occupancy") +theme_bw() +theme(axis.title.x=element_text(size=24),axis.title.y=element_text(size=24, angle=90), axis.text=element_text(size=12)) + theme(plot.margin = unit(c(.5,6,.5,.5),"lines")) 
 ggsave("C:/Git/core-transient/scripts/R-scripts/Biotic Interactions Snell/glmoutput.png")
 
 ggplot(data = occumatrix, aes(x = comp_scaled, y = FocalAbundance)) +stat_smooth(data=glm_abun_rand_site, lwd = 1.5) +theme_bw()
@@ -40,7 +149,7 @@ newintercept <- function(p) {mean(exp(p)/(1+exp(p)))}
 ggplot(data = occumatrix, aes(x = abs(zTemp), y = FocalOcc)) + 
   #stat_function(fun=inverselogit, color = "blue", lwd=2) + 
   geom_point(colour="black", shape=18, alpha = 0.02,position=position_jitter(width=0,height=.02)) + theme_classic()
-#+geom_abline(slope=.202, intercept=.505, lwd=2)
+  +geom_abline(intercept=0.97569, slope= -0.05176, lwd=2)
 ggsave("C:/Git/core-transient/scripts/R-scripts/Biotic Interactions Snell/logittemp.png")
 
 ggplot(data = occumatrix, aes(x = abs(zEVI), y = FocalOcc)) + 
@@ -351,3 +460,66 @@ ggplot(R2plot2, aes(x = FocalAOU, y = ENV.x)) + geom_violin(lwd = 2, fill = "#2c
 
 
 #Coyle fig 1: Z:\Coyle\Projects\BBS Core\Final Analysis
+
+#### basement ### poster
+forplots = merge(Hurlbert_o[, c("AOU","Trophic.Group","Foraging","migclass")], AOUsub4[, c("AOU","Family", "CommonName")], by = "AOU")
+# midpoint long of US is -98.5795, so 1 indicates east of that line, 0 = west
+
+# Dark-eyed Junko and Winter Wren need AOUs changed
+tax_code$AOU_OUT[tax_code$AOU_OUT == 5677] = 5660
+tax_code$AOU_OUT[tax_code$AOU_OUT == 7220] = 7222
+forplots$AOU[forplots$AOU == 7220] = 7222
+
+envloc = merge(envoutput, centroid[, c("FocalAOU", "Long", "Lat")], by = 'FocalAOU', all = TRUE)
+envloc$EW <- 0
+envloc$EW[envloc$Long > -98.583333] <- 1 ## from https://tools.wmflabs.org/geohack/geohack.php?pagename=Geographic_center_of_the_contiguous_United_States&params=39_50_N_98_35_W_region:US-KS_type:landmark&title=Geographic+Center+of+the+Contiguous+United+States
+# 1 = East
+#### ---- Plotting LMs ---- ####
+# Making pdf of ranges for each focal spp
+pdf('Lin_Reg.pdf', height = 8, width = 10)
+par(mfrow = c(3, 4))
+# Plotting basic lms to understand relationships
+for(sp in subfocalspecies){ 
+  print(sp)
+  psub = occuenv[occuenv$Species == sp,]
+  #psub = filter(psub, occ_logit < 9) # eliminating 100% occ?
+  title = unique(psub$FocalSciName)
+  #ggplot(psub, aes(x = psub$occ_logit, y = psub$MainCompSum)) + geom_point(data=psub, pch = 16)+geom_smooth(method = "lm", col = "red")+ theme_classic()+ xlab("Focal Occupancy")+ylab("Competitor Abundance")+ggtitle(title)
+  
+  #+ ggtitle(title[1])
+  competition <- lm(psub$occ_logit ~  psub$comp_scaled) 
+  # z scores separated out for env effects (as opposed to multivariate variable)
+  env_z = lm(occ_logit ~ abs(zTemp)+abs(zElev)+abs(zPrecip)+abs(zEVI), data = psub)
+  # z scores separated out for env effects
+  both_z = lm(psub$occ_logit ~  psub$comp_scaled + abs(psub$zTemp)+abs(psub$zElev)+abs(psub$zPrecip)+abs(psub$zEVI), data = psub)
+  
+  plot(psub$comp_scaled, psub$occ_logit, pch = 20, xlab = "Main Competitor Abundance", ylab = "Focal Occupancy (logit link)", main = psub$FocalSciName[1], sub = "Competition", abline(competition, col = "red"))
+  plot(psub$comp_scaled,psub$occ_logit,  pch = 20, xlab = "Main Competitor Abundance", ylab = "Focal Occupancy (logit link)", main = psub$FocalSciName[1], sub = "Environment", abline(env_z, col = "red"))
+  plot(psub$comp_scaled, psub$occ_logit,  pch = 20, xlab = "Main Competitor Abundance", ylab = "Focal Occupancy (logit link)", main = psub$FocalSciName[1], sub = "Both", abline(both_z, col = "red"))
+}
+dev.off()
+
+# Plotting basic lm hists to understand relationships btwn occ and abun
+hist(beta_lm$Competition_R2, 10, main = "R Squared Distribution for Competition", xlab = "Competition R Squared")
+hist(beta_lm$EnvZ_R2, 10, main = "R Squared Distribution for Env", xlab = "Env R Squared")
+hist(beta_lm$BothZ_R2, 10, main = "R Squared Distribution for Both", xlab = "Both R Squared")
+
+hist(beta_lm$Competition_Est, 10, main = "Slope Distribution for Competition", xlab = "Competition Slope")
+abline(v = mean(beta_lm$Competition_Est), col = "red", lwd = 3)
+hist(beta_lm$EnvZ_Est, 10, main = "Slope Distribution for Environment", xlab = "Environment Slope")
+abline(v = mean(beta_lm$EnvZ_Est), col = "red", lwd = 3)
+hist(beta_lm$BothZ_Est, 10, main = "Slope Distribution for Both", xlab = "Both Slope")
+abline(v = mean(beta_lm$BothZ_Est), col = "red", lwd = 3)
+
+hist(beta_abun$Competition_R2, 10, main = "R Squared Distribution for Competition", xlab = "Competition R Squared")
+hist(beta_abun$EnvZ_R2, 10, main = "R Squared Distribution for Env", xlab = "Env R Squared")
+hist(beta_abun$BothZ_R2, 10, main = "R Squared Distribution for Both", xlab = "Both R Squared")
+
+hist(beta_abun$Competition_Est, 10, main = "Slope Distribution for Competition", xlab = "Competition Slope")
+abline(v = mean(beta_abun$Competition_Est), col = "red", lwd = 3)
+hist(beta_abun$EnvZ_Est, 10, main = "Slope Distribution for Environment", xlab = "Environment Slope")
+abline(v = mean(beta_abun$EnvZ_Est), col = "red", lwd = 3)
+hist(beta_abun$BothZ_Est, 10, main = "Slope Distribution for Both", xlab = "Both Slope")
+abline(v = mean(beta_abun$BothZ_Est), col = "red", lwd = 3)
+
+beta_lm$sumR2 = beta_lm$BothZ_R2+beta_lm$Competition_R2+beta_lm$EnvZ_R2  # tbd if we'll keep this
