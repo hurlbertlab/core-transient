@@ -123,7 +123,7 @@ names(occumatrix)[1] = 'Species'
 occumatrix$sp_success = as.factor(occumatrix$nyears * occumatrix$FocalOcc)
 occumatrix$sp_fail = as.factor(occumatrix$nyears * (1 - occumatrix$FocalOcc))
 
-#### GLM of all matrices not just subset #### INCLUDES LC
+#### GLM of all matrices not just subset ####
 glm_occ_rand_site = glmer(cbind(sp_success, sp_fail) ~ c_s + 
          abTemp + abElev + abPrecip + abEVI + (1|stateroute:Species), family = binomial(link = logit), data = occumatrix)
 summary(glm_occ_rand_site) 
@@ -147,30 +147,30 @@ newintercept <- function(p) {mean(exp(p)/(1+exp(p)))}
 
 # this relationship should be negative
 ggplot(data = occumatrix, aes(x = abs(zTemp), y = FocalOcc)) + 
-  #stat_function(fun=inverselogit, color = "blue", lwd=2) + 
+  geom_segment(aes(x = 0, y = 0.97569, xend = abs(max(occumatrix$zTemp)), yend = 0.97569 +(-0.05176*max(abs(occumatrix$zTemp)))), col = "dark green", lwd=2) +
   geom_point(colour="black", shape=18, alpha = 0.02,position=position_jitter(width=0,height=.02)) + theme_classic()
-  +geom_abline(intercept=0.97569, slope= -0.05176, lwd=2)
+  #geom_abline(intercept=0.97569, slope= -0.05176, lwd=1, col="blue")
 ggsave("C:/Git/core-transient/scripts/R-scripts/Biotic Interactions Snell/logittemp.png")
 
 ggplot(data = occumatrix, aes(x = abs(zEVI), y = FocalOcc)) + 
-  stat_function(fun=inverselogit, color = "blue") + 
+  geom_segment(aes(x = 0, y = 0.97569, xend = abs(max(occumatrix$zEVI)), yend = 0.97569 +(-0.05117*max(abs(occumatrix$zEVI)))), col = "dark green", lwd=2) +
   geom_point(colour="black", shape=18, alpha = 0.02,position=position_jitter(width=0,height=.02))+ theme_classic()
+ # geom_abline(intercept=0.97569, slope= -0.05117, lwd=1, col="blue")
 ggsave("C:/Git/core-transient/scripts/R-scripts/Biotic Interactions Snell/logitevi.png")
 
 ggplot(data = occumatrix, aes(x = abs(zElev), y = FocalOcc)) + 
-  stat_function(fun=inverselogit, color = "blue") + 
+  geom_segment(aes(x = 0, y = 0.97569, xend = abs(max(occumatrix$zElev)), yend = 0.97569 +(-0.02104*max(abs(occumatrix$zElev)))), col = "dark green", lwd=2)  + 
   geom_point(colour="black", shape=18, alpha = 0.02,position=position_jitter(width=0,height=.02))+ theme_classic()
 ggsave("C:/Git/core-transient/scripts/R-scripts/Biotic Interactions Snell/logitelev.png")
 
 ggplot(data = occumatrix, aes(x = abs(zPrecip), y = FocalOcc)) + 
-  stat_function(fun=inverselogit, color = "blue") + 
+  geom_segment(aes(x = 0, y = 0.97569, xend = abs(max(occumatrix$zPrecip)), yend = 0.97569 +(-0.0187*max(abs(occumatrix$zPrecip)))), col = "dark green", lwd=2) +
   geom_point(colour="black", shape=18, alpha = 0.02,position=position_jitter(width=0,height=.02))+ theme_classic()
 ggsave("C:/Git/core-transient/scripts/R-scripts/Biotic Interactions Snell/logitprecip.png")
 
 ggplot(data = occumatrix, aes(x = comp_scaled, y = FocalOcc)) + 
   stat_function(fun=inverselogit, color = "blue") + 
   geom_point(colour="black", shape=18, alpha = 0.02,position=position_jitter(width=0,height=.02))+ theme_classic()
-
 
 hist(occumatrix$zTemp)
 hist(p) # d/n look right
