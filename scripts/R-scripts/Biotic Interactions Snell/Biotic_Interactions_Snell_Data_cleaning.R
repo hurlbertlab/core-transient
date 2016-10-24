@@ -215,18 +215,20 @@ for (s in focalspecies) {
 focalcompoutput = c()
 for (sp in focalspecies) {
   print(sp)
-  tmp = filter(occ_abun, AOU == sp) 
-  comp_spp = shapefile_areas[shapefile_areas$focalAOU == sp, c('compAOU', 'mainCompetitor')]
+  tmp = filter(occ_abun, AOU == sp)  # using indexed species in loop
+  comp_spp = subset(shapefile_areas,focalAOU == sp) # subset to sp of interest in comp/focal table
   
-  mainComp = comp_spp$compAOU[comp_spp$mainCompetitor == 1]
-  bbs_comp = bbs_pool %>% filter(AOU %in% comp_spp$compAOU & stateroute %in% tmp$stateroute) 
-  bbs_comp2 = merge(bbs_comp, comp_spp, by.x = 'AOU', by.y = 'compAOU') # took out all.x=TRUE
-  bbs_comp2$mainCompN = bbs_comp2$abundance * bbs_comp2$mainCompetitor
+  bbs_comp = bbs_pool %>% # pull out main competitor abundance&stateroute of interest
+    filter(AOU %in% comp_spp$compAOU[comp_spp$mainCompetitor == 1] & stateroute %in% tmp$stateroute) 
+  bbs_comp2 = merge(bbs_comp, comp_spp, by.x = 'AOU', by.y = 'compAOU', all.x=TRUE)  # merge comp/focal table with abundance data
+  bbs_comp2$mainCompN = bbs_comp2$abundance # rename column
   
-  compsum = bbs_comp2 %>% group_by(stateroute) %>% 
-      dplyr::summarize(AllCompN = sum(abundance), MainCompN = sum(mainCompN))
+  compsum = bbs_pool %>%  # filter all comp abundance and state route of interest
+    filter(AOU %in% comp_spp$compAOU & stateroute %in% tmp$stateroute) %>% 
+    group_by(stateroute, AOU) %>% # group by stateroute/AOU combo
+    dplyr::summarize(AllCompN = sum(abundance), MainCompN = sum(bbs_comp2$mainCompN)) # sum all competitors vs. main competitor (only 1 main sum/AOU), should there be diff sums for diff aous?
   
-  focalout = merge(tmp, compsum, by = 'stateroute')  
+  focalout = merge(tmp, compsum, by = 'stateroute')  # merge new info with orig info by stateroute
   focalout[is.na(focalout)] = 0
   focalout$MainCompAOU = unique(comp_spp$compAOU[comp_spp$mainCompetitor == 1]) 
   

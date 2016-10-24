@@ -188,6 +188,10 @@ numCT= propOcc_w_taxa %>% group_by(datasetID, site) %>%
                    numTrans25 = sum(propOcc <= 1/4), #25%
                    numTrans10 = sum(propOcc <= 1/10), #10%
                    numCore=sum(propOcc > 2/3), 
+                   n = sum(spptally),
+                   perTrans33 = sum(propOcc <= 1/3)/n, #33%
+                   perTrans25 = sum(propOcc <= 1/4)/n, #25%
+                   perTrans10 = sum(propOcc <= 1/10)/n, #10%
                    meanOcc = mean(propOcc, na.rm = T))
 write.csv(numCT,"numCT.csv", row.names=FALSE)
 spptotals = merge(totalspp, numCT, by= c("datasetID", "site"))

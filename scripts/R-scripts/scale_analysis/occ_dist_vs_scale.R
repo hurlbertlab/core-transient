@@ -85,7 +85,10 @@ for (scale in scales) {
   
 }
 
-bbs_scalesorted2<-output
+bbs_scalesorted<-output
+
+bbs_scalesorted = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/bbs_scalesorted.csv", header = TRUE)
+
 # -----------------------------------------------------------
 
 ####Calculating occupancy at scales greater than a single route####
@@ -142,7 +145,7 @@ grain_sample = data.frame(c(seq(2, 10, by =2)), c(4, 10, 21, 25, 28)) #figure ou
 #- bc need if statement to know how to proceed? will finishing if statement help loops continue?
 names(grain_sample) = c("grain", "magic_num")
 
-reps = c(100) #100? 50?
+reps = c(10) #100? 50?
 
 #nested forloops defining grid cells (i.e. latitudinal + longitudinal "bins"), 
 #filtering routes sampled to those that fall within a given bin 
@@ -203,6 +206,7 @@ for (grain in grain_sample$grain) {
 
 bbs_scaledup = output    #wrote to file in case
 
+
 ####Product of loops with occ by grain, 100 reps per grid cell/bin####
 
 bbs_scaledup = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/bbs_scaledup.csv")
@@ -211,48 +215,43 @@ bbs_scaledup$X = NULL
 
 #for each unique combination of grain and lat and long across reps, what is the avg occ? 
 
-# modify to take means of mean of each rep
-occ_avgs = bbs_scaledup %>% group_by(lat, lon, grain) %>% summarize(mean = mean(occ))
-
-# example code
-g = 6
-occ_g = occ_avgs %>% filter(grain == g)
-map('state')
-points(occ_g$lon, occ_g$lat, pch = 17, col = 'red', cex = 6*(occ_g$mean - min(occ_g$mean)+.05))
-
-
-
+# modify to take means of mean of each rep (in order of lat, lon, grain, and rep so as not to incorrectly avg values
+occ_avgs = bbs_scaledup %>% group_by(lat, lon, grain, Aou) %>% #adding rep to grouping
+  summarize(mean = mean(occ)) %>% #summarize occ across Aou's for each rep 
+  group_by(lat, lon, grain) %>% #group again, this time just by lat, lon, and grain
+  summarize(mean = mean(mean)) # summarize mean occ across reps for each unique combo of lat, lon, and grain
 
 #-----------------------------------------------------------------------------------------
+####Combining sub and above-route scale analyses outputs for comparison####
+##Pre-combining formatting of datasets:
 
-####Determining ideal magic number "X" assigned to each grain; creating this file to draw from to use in below
-#in lieu of hardcoding grain and sample_n portions prior to loops 
-
-
-grain = 10
-
-map_threshold = function(grain, thresh) {
-  temproutes$latbin = floor(temproutes$Lati/grain)*grain + grain/2
-  temproutes$longbin = floor(temproutes$Longi/grain)*grain + grain/2
-  temproutes$latbin = floor(temproutes$Lati/grain)*grain + grain/2
-  temproutes$longbin = floor(temproutes$Longi/grain)*grain + grain/2
-  
-  ct = temproutes %>% count(latbin, longbin)
-  
-  map('state')
-  points(ct$longbin[ct$n >= thresh], ct$latbin[ct$n >= thresh], 
-         cex = log10(ct$n[ct$n >= thresh]), pch = 16)
-  leg_benchmarks = c(2, max(ct$n)/2, max(ct$n))
-  legend("bottomright", legend = c(2, max(ct$n)/2, max(ct$n)), pch = 16,
-         pt.cex = log10(leg_benchmarks))
-  
-}
-
-text(ct$longbin, ct$latbin, ct$n)
+#Pasting latlongs of bin centerpoints together from above-route scale to create character label analagous to "stateroute" label 
+bbs_scaledup$gridcenter = paste(bbs_scaledup$lat, bbs_scaledup$lon, sep = "")
 
 
+#locating and ID-ing stateroutes of routes contained within a given grid cell 
+#back in temproutes within nested forloops? rerun and pull out down here 
+#but grain size not indicated - necessary? 
 
-hist(ct$n)
-median(ct$n)
+good_rtes2 = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/good_rtes2.csv", header = TRUE)
 
-quantile(ct$n, 0.6)
+routes = read.csv('scripts/R-scripts/scale_analysis/routes.csv')
+routes$stateroute = 1000*routes$statenum + routes$Route
+
+
+require(dplyr)
+temproutes = good_rtes2 %>% 
+  left_join(routes, good_rtes2, by = "stateroute") %>%
+  dplyr::select(stateroute, Lati, Longi)
+
+temproutes$latbin = floor(temproutes$Lati/grain)*grain + grain/2
+temproutes$longbin = floor(temproutes$Longi/grain)*grain + grain/2
+
+temproutes$gridcenter = paste(temproutes$latbin, temproutes$longbin, sep = "")
+
+#merging data by $gridcenter columns to acquire stateroutes in each grid 
+
+require(dplyr) 
+bbs_routes_in_grids = bbs_scaledup %>% 
+  full_join(temproutes, bbs_scaledup, by = "gridcenter") #NA's present because columns diff lengths, 
+                                                          #need to pare away unique combos? 

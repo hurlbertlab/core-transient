@@ -212,7 +212,7 @@ dev.off()
 numCT=read.csv("numCT.csv", header=TRUE)
 numCT_taxa=merge(numCT, dataformattingtable[,c("dataset_ID","taxa")], by.x = 'datasetID', by.y = "dataset_ID", all.x=TRUE)
 
-numCT_p = gather(numCT_taxa, label, numTrans, numTrans33:numTrans10)
+numCT_p = gather(numCT_taxa, label, perTrans, perTrans33:perTrans10)
 numCT_plot=merge(numCT_p, taxcolors, by="taxa")
 
 uniqTaxa = meanCoreByTaxa$Group.1[order(meanCoreByTaxa$x, decreasing = T)]
@@ -242,20 +242,17 @@ dev.off()
 
 
 p <- ggplot(numCT_plot, aes(taxa, numTrans))+theme_classic()
-p+geom_boxplot(aes(x=taxa, y=numTrans, fill =label))
+p+geom_boxplot(aes(x=taxa, y=perTrans, fill =label))
 
 cols <- (numCT_plot$color)
-colscale=c("black", "grey", "white")
-p+geom_boxplot(aes(x=taxa, y=numTrans, fill = label))+scale_color_manual(values="numTrans10"=as.character(taxcolors$color))
+colscale=c("#565151", "grey", "white")
 
-
-p+geom_boxplot(aes(x=taxa, y=numTrans, fill=label))+ #scale_x_discrete(breaks = numCT_plot$taxa) +
+p+geom_boxplot(width=0.8,position=position_dodge(width=0.8),aes(x=taxa, y=perTrans, fill=label))+ #scale_x_discrete(breaks = numCT_plot$taxa) +
   scale_colour_manual(breaks = numCT_plot$taxa,
                       values = taxcolors$color) +
   scale_fill_manual(labels = c("10", "25", "33"),
                     values = colscale)
-
-(values = c("Bird" = "#1D6A9B", "Plankton"="red", "Plant"="springgreen2"))
+ggsave("C:/Git/core-transient/output/plots/boxCT_perc.pdf", height = 8, width = 12)
 
 
 ##########################################################################
