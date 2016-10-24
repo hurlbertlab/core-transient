@@ -145,7 +145,7 @@ grain_sample = data.frame(c(seq(2, 10, by =2)), c(4, 10, 21, 25, 28)) #figure ou
 #- bc need if statement to know how to proceed? will finishing if statement help loops continue?
 names(grain_sample) = c("grain", "magic_num")
 
-reps = c(100) #100? 50?
+reps = c(10) #100? 50?
 
 #nested forloops defining grid cells (i.e. latitudinal + longitudinal "bins"), 
 #filtering routes sampled to those that fall within a given bin 
@@ -206,6 +206,7 @@ for (grain in grain_sample$grain) {
 
 bbs_scaledup = output    #wrote to file in case
 
+
 ####Product of loops with occ by grain, 100 reps per grid cell/bin####
 
 bbs_scaledup = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/bbs_scaledup.csv")
@@ -229,7 +230,28 @@ bbs_scaledup$gridcenter = paste(bbs_scaledup$lat, bbs_scaledup$lon, sep = "")
 
 
 #locating and ID-ing stateroutes of routes contained within a given grid cell 
+#back in temproutes within nested forloops? rerun and pull out down here 
+#but grain size not indicated - necessary? 
+
+good_rtes2 = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/good_rtes2.csv", header = TRUE)
+
+routes = read.csv('scripts/R-scripts/scale_analysis/routes.csv')
+routes$stateroute = 1000*routes$statenum + routes$Route
 
 
-#merging data by stateroute 
+require(dplyr)
+temproutes = good_rtes2 %>% 
+  left_join(routes, good_rtes2, by = "stateroute") %>%
+  dplyr::select(stateroute, Lati, Longi)
 
+temproutes$latbin = floor(temproutes$Lati/grain)*grain + grain/2
+temproutes$longbin = floor(temproutes$Longi/grain)*grain + grain/2
+
+temproutes$gridcenter = paste(temproutes$latbin, temproutes$longbin, sep = "")
+
+#merging data by $gridcenter columns to acquire stateroutes in each grid 
+
+require(dplyr) 
+bbs_routes_in_grids = bbs_scaledup %>% 
+  full_join(temproutes, bbs_scaledup, by = "gridcenter") #NA's present because columns diff lengths, 
+                                                          #need to pare away unique combos? 
