@@ -56,3 +56,6 @@ hist(ct$n)
 median(ct$n)
 
 quantile(ct$n, 0.6)
+
+
+####What cells at the coarse grid scale are best for sampling across scales?####
