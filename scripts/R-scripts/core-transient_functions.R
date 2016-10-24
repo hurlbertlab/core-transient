@@ -186,9 +186,10 @@ getNestedSiteDataset = function(dataset, siteGrain, dataDescription){
     return(dataset)
   } else {
     # If sites are defined by lat-longs:
-    if(dataDescription$LatLong_sites == 'Y')
-    {dataset = datasetRoundLatLong(dataset, accuracy = siteGrain)
-     return(dataset)} else {
+    if(dataDescription$LatLong_sites == 'Y') {
+      dataset = datasetRoundLatLong(dataset, accuracy = siteGrain)
+      return(dataset)
+    } else {
        # If sites are categorical but nested ...
        # Get the definition for a site and store each level as separate columns:
       # siteLevels = strsplit(siteGrain, '_')[[1]]
@@ -201,7 +202,8 @@ getNestedSiteDataset = function(dataset, siteGrain, dataDescription){
        siteLevels = strsplit(siteGrain, '_')[[1]]
        dataset$analysisSite = do.call('paste', c(siteTable[siteLevels], sep = '_'))
        return(dataset)  
-     }}
+    }
+  }
 }
 
 #------------------------------------------------------------------------------------------------------*
