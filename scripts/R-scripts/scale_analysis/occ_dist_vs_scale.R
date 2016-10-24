@@ -85,7 +85,10 @@ for (scale in scales) {
   
 }
 
-bbs_scalesorted2<-output
+bbs_scalesorted<-output
+
+bbs_scalesorted = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/bbs_scalesorted.csv", header = TRUE)
+
 # -----------------------------------------------------------
 
 ####Calculating occupancy at scales greater than a single route####
@@ -217,45 +220,16 @@ occ_avgs = bbs_scaledup %>% group_by(lat, lon, grain, Aou) %>% #adding rep to gr
   group_by(lat, lon, grain) %>% #group again, this time just by lat, lon, and grain
   summarize(mean = mean(mean)) # summarize mean occ across reps for each unique combo of lat, lon, and grain
 
-# example code
-g = 6
-occ_g = occ_avgs %>% filter(grain == g)
-map('state')
-points(occ_g$lon, occ_g$lat, pch = 17, col = 'red', cex = 6*(occ_g$mean - min(occ_g$mean)+.05))
-
-
-
-
 #-----------------------------------------------------------------------------------------
+####Combining sub and above-route scale analyses outputs for comparison####
+##Pre-combining formatting of datasets:
 
-####Determining ideal magic number "X" assigned to each grain; creating this file to draw from to use in below
-#in lieu of hardcoding grain and sample_n portions prior to loops 
-
-
-grain = 10
-
-map_threshold = function(grain, thresh) {
-  temproutes$latbin = floor(temproutes$Lati/grain)*grain + grain/2
-  temproutes$longbin = floor(temproutes$Longi/grain)*grain + grain/2
-  temproutes$latbin = floor(temproutes$Lati/grain)*grain + grain/2
-  temproutes$longbin = floor(temproutes$Longi/grain)*grain + grain/2
-  
-  ct = temproutes %>% count(latbin, longbin)
-  
-  map('state')
-  points(ct$longbin[ct$n >= thresh], ct$latbin[ct$n >= thresh], 
-         cex = log10(ct$n[ct$n >= thresh]), pch = 16)
-  leg_benchmarks = c(2, max(ct$n)/2, max(ct$n))
-  legend("bottomright", legend = c(2, max(ct$n)/2, max(ct$n)), pch = 16,
-         pt.cex = log10(leg_benchmarks))
-  
-}
-
-text(ct$longbin, ct$latbin, ct$n)
+#Pasting latlongs of bin centerpoints together from above-route scale to create character label analagous to "stateroute" label 
+bbs_scaledup$gridcenter = paste(bbs_scaledup$lat, bbs_scaledup$lon, sep = "")
 
 
+#locating and ID-ing stateroutes of routes contained within a given grid cell 
 
-hist(ct$n)
-median(ct$n)
 
-quantile(ct$n, 0.6)
+#merging data by stateroute 
+
