@@ -230,19 +230,22 @@ bbs_scaledup$gridcenter = paste(bbs_scaledup$lat, bbs_scaledup$lon, sep = "")
 
 
 #locating and ID-ing stateroutes of routes contained within a given grid cell 
-#back in temproutes within nested forloops? rerun and pull out down here 
-#but grain size not indicated - necessary? 
 
 good_rtes2 = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/good_rtes2.csv", header = TRUE)
 
 routes = read.csv('scripts/R-scripts/scale_analysis/routes.csv')
 routes$stateroute = 1000*routes$statenum + routes$Route
-grain = 10
 
 require(dplyr)
 temproutes = good_rtes2 %>% 
   left_join(routes, good_rtes2, by = "stateroute") %>%
   dplyr::select(stateroute, Lati, Longi)
+
+
+grain = 10
+
+#everything below this line needs to be combined into a forloop for multiple grains and rerun 
+#-----------------------------------------------------------------------------------------------
 
 temproutes$latbin = floor(temproutes$Lati/grain)*grain + grain/2
 temproutes$longbin = floor(temproutes$Longi/grain)*grain + grain/2
@@ -253,3 +256,14 @@ temproutes$gridcenter = paste(temproutes$latbin, temproutes$longbin, sep = "")
 
 require(dplyr) 
 bbs_routes_in_grids = filter(temproutes, gridcenter %in% bbs_scaledup$gridcenter) 
+
+
+#for grain = 10, count # of stateroutes present in each shared gridcenter 
+grid_rte_totals = bbs_routes_in_grids %>% 
+  select(stateroute, gridcenter) %>%
+  unique() %>%    
+  group_by(gridcenter) %>%  
+  count(gridcenter) 
+
+
+#rework and automate code in a loop for multiple grains 
