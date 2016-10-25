@@ -210,6 +210,38 @@ for (s in focalspecies) {
   shapefile_areas$mainCompetitor[shapefile_areas$focalAOU == s & shapefile_areas$PropOverlap == maxOverlap] = 1 # 1 assigns main competitor
 }
 
+#------------------------------------------------
+
+foo1 = left_join(occ_abun, bbs_pool, by = c('CompAOU' = 'AOU', 'stateroute' = 'stateroute')) %>%
+  left_join(shapefile_areas[, c('focalAOU', 'compAOU', 'mainCompetitor')], 
+                by = c('AOU' = 'focalAOU', 'CompAOU' = 'compAOU')) %>%
+  group_by(AOU, stateroute, Focal, Family, occ) %>%
+  summarize(allCompN = sum(abundance.y, na.rm = T))
+
+foo2 = left_join(occ_abun, bbs_pool, by = c('CompAOU' = 'AOU', 'stateroute' = 'stateroute')) %>%
+  left_join(shapefile_areas[, c('focalAOU', 'compAOU', 'mainCompetitor')], 
+            by = c('AOU' = 'focalAOU', 'CompAOU' = 'compAOU')) %>%
+  group_by(AOU, stateroute, Focal, Family, occ) %>%
+  filter(mainCompetitor == 1) %>%
+  summarize(mainCompN = abundance.y)
+
+foo3 = left_join(foo2, foo1)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # for loop to select sp and compare to competitor(s) 
 ### select strongest competitor, sum competitor abundance by stateroute
 focalcompoutput = c()
