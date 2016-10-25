@@ -216,7 +216,7 @@ bbs_scaledup$X = NULL
 #for each unique combination of grain and lat and long across reps, what is the avg occ? 
 
 # modify to take means of mean of each rep (in order of lat, lon, grain, and rep so as not to incorrectly avg values
-occ_avgs = bbs_scaledup %>% group_by(lat, lon, grain, Aou) %>% #adding rep to grouping
+occ_avgs = bbs_scaledup %>% group_by(lat, lon, grain, Aou) %>% #adding Aou to grouping
   summarize(mean = mean(occ)) %>% #summarize occ across Aou's for each rep 
   group_by(lat, lon, grain) %>% #group again, this time just by lat, lon, and grain
   summarize(mean = mean(mean)) # summarize mean occ across reps for each unique combo of lat, lon, and grain
