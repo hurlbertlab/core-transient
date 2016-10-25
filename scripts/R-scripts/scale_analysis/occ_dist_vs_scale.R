@@ -237,7 +237,7 @@ good_rtes2 = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/good_
 
 routes = read.csv('scripts/R-scripts/scale_analysis/routes.csv')
 routes$stateroute = 1000*routes$statenum + routes$Route
-
+grain = 10
 
 require(dplyr)
 temproutes = good_rtes2 %>% 
@@ -249,9 +249,7 @@ temproutes$longbin = floor(temproutes$Longi/grain)*grain + grain/2
 
 temproutes$gridcenter = paste(temproutes$latbin, temproutes$longbin, sep = "")
 
-#merging data by $gridcenter columns to acquire stateroutes in each grid 
+#filtering data by mutual $gridcenter columns to acquire stateroutes in each grid 
 
 require(dplyr) 
-bbs_routes_in_grids = bbs_scaledup %>% 
-  full_join(temproutes, bbs_scaledup, by = "gridcenter") #NA's present because columns diff lengths, 
-                                                          #need to pare away unique combos? 
+bbs_routes_in_grids = filter(temproutes, gridcenter %in% bbs_scaledup$gridcenter) 
