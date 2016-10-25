@@ -159,25 +159,6 @@ new_occ$occ[is.na(new_occ$occ)] <- 0
 # subset to routes in the well sampled list of 'routes'
 new_occ2 = new_occ[new_occ$stateroute %in% routes, ]
 
-# Pull out summary of different levels of occupancy by species (Allen wrote loop)
-occ_dist_output = data.frame(AOU = NA, occ = NA, count = NA)
-bins = seq(0.1, 1, by = .1)
-for (s in unique(new_occ2$AOU)) {
-  tmp = subset(new_occ2, AOU == s)
-  occ_counts = sapply(bins, function(x) sum(tmp$occ <= x & tmp$occ > (x-0.1)))
-  tmp_out = data.frame(AOU = s, occ = bins, count = occ_counts/nrow(tmp))
-  occ_dist_output = rbind(occ_dist_output, tmp_out)
-}
-occ_dist_output = occ_dist_output[-1, ]
-
-# calculate average distribution for all species
-avg_occ_dist = aggregate(occ_dist_output$count, by = list(occ_dist_output$occ), mean)
-names(avg_occ_dist) = c('occupancy', 'frequency')
-avg_occ_dist$occupancy = as.numeric(as.character(avg_occ_dist$occupancy))
-
-# Exploratory plot of total avg avian occupancy distribution
-ggplot(data = avg_occ_dist, aes(x = occupancy, y = frequency)) + geom_line(data=avg_occ_dist, lwd = 2) +theme_classic() +xlab("Temporal occupancy")+ylab("Species frequency at given site")+ annotate("rect", xmin = 0.3, xmax = 0.7, ymin = 0.03, ymax = 0.06, alpha = .2, fill = "Red") + annotate("text", x = 0.5, y = 0.05, label = "Species of Interest")
-
 #### ---- Gathering Occupancy and Abundance Data for Biotic Comparisons ---- ####
 # filter BBS mean abundance by AOU/stateroute by year
 bbs_pool = bbs %>% 
@@ -212,73 +193,23 @@ for (s in focalspecies) {
 
 #------------------------------------------------
 
-foo1 = left_join(occ_abun, bbs_pool, by = c('CompAOU' = 'AOU', 'stateroute' = 'stateroute')) %>%
+all_comp_abun = left_join(occ_abun, bbs_pool, by = c('CompAOU' = 'AOU', 'stateroute' = 'stateroute')) %>%
   left_join(shapefile_areas[, c('focalAOU', 'compAOU', 'mainCompetitor')], 
                 by = c('AOU' = 'focalAOU', 'CompAOU' = 'compAOU')) %>%
-  group_by(AOU, stateroute, Focal, Family, occ) %>%
+  group_by(AOU, stateroute, Focal, Family, occ, abundance.x) %>%
   summarize(allCompN = sum(abundance.y, na.rm = T))
 
-foo2 = left_join(occ_abun, bbs_pool, by = c('CompAOU' = 'AOU', 'stateroute' = 'stateroute')) %>%
+main_comp_abun = left_join(occ_abun, bbs_pool, by = c('CompAOU' = 'AOU', 'stateroute' = 'stateroute')) %>%
   left_join(shapefile_areas[, c('focalAOU', 'compAOU', 'mainCompetitor')], 
             by = c('AOU' = 'focalAOU', 'CompAOU' = 'compAOU')) %>%
   group_by(AOU, stateroute, Focal, Family, occ) %>%
   filter(mainCompetitor == 1) %>%
   summarize(mainCompN = abundance.y)
 
-foo3 = left_join(foo2, foo1)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# for loop to select sp and compare to competitor(s) 
-### select strongest competitor, sum competitor abundance by stateroute
-focalcompoutput = c()
-for (sp in focalspecies) {
-  print(sp)
-  tmp = filter(occ_abun, AOU == sp)  # using indexed species in loop
-  comp_spp = subset(shapefile_areas,focalAOU == sp) # subset to sp of interest in comp/focal table
-  
-  bbs_comp = bbs_pool %>% # pull out main competitor abundance&stateroute of interest
-    filter(AOU %in% comp_spp$compAOU[comp_spp$mainCompetitor == 1] & stateroute %in% tmp$stateroute) 
-  bbs_comp2 = merge(bbs_comp, comp_spp, by.x = 'AOU', by.y = 'compAOU', all.x=TRUE)  # merge comp/focal table with abundance data
-  bbs_comp2$mainCompN = bbs_comp2$abundance # rename column
-  
-  compsum = bbs_pool %>%  # filter all comp abundance and state route of interest
-    filter(AOU %in% comp_spp$compAOU & stateroute %in% tmp$stateroute) %>% 
-    group_by(stateroute, AOU) %>% # group by stateroute/AOU combo
-    dplyr::summarize(AllCompN = sum(abundance), MainCompN = sum(bbs_comp2$mainCompN)) # sum all competitors vs. main competitor (only 1 main sum/AOU), should there be diff sums for diff aous?
-  
-  focalout = merge(tmp, compsum, by = 'stateroute')  # merge new info with orig info by stateroute
-  focalout[is.na(focalout)] = 0
-  focalout$MainCompAOU = unique(comp_spp$compAOU[comp_spp$mainCompetitor == 1]) 
-  
-  names(focalout)[names(focalout)=="occupancy"] <- "FocalOcc"
-  # main competitor occupancy
-  MainCompAOU =  unique(focalout$MainCompAOU)
-  
-  # subset occupancy by state route, merge in main competitor
-  match_occ_stroute = filter(new_occ2, new_occ2$stateroute %in% focalout$stateroute)
-
-  focal_comp_occ = merge(focalout, match_occ_stroute[,c('AOU', 'stateroute', 'occ')], 
-                         by.x = c('MainCompAOU', 'stateroute'), by.y = c('AOU', 'stateroute'))
-  names(focal_comp_occ)[names(focal_comp_occ)=="occupancy"] <- "MainCompOcc" 
-  focalcompoutput = rbind(focalcompoutput, focal_comp_occ)
-}
-
+focalcompoutput = left_join(main_comp_abun, all_comp_abun)
+focalcompoutput$mainCompN[is.na(focalcompoutput$mainCompN)] <- 0
 focalcompoutput = data.frame(focalcompoutput)
-colnames(focalcompoutput) = c("MainCompAOU", "stateroute","FocalAOU", "FocalAbundance", "FocalCommonName","Competitor", "CompAOU","Family","CompSciName","FocalSciName","nyears","FocalOcc","AllCompSum", "MainCompSum", "CompOcc")
+colnames(focalcompoutput) = c("FocalAOU","stateroute","FocalCommonName","Family","FocalOcc","MainCompSum","FocalAbundance","AllCompSum")
 
 # Filter number to spp present in at least 20 routes for better model results
 # Subset to get the count of routes for each spp
