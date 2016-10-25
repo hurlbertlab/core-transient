@@ -216,10 +216,17 @@ bbs_scaledup$X = NULL
 #for each unique combination of grain and lat and long across reps, what is the avg occ? 
 
 # modify to take means of mean of each rep (in order of lat, lon, grain, and rep so as not to incorrectly avg values
-occ_avgs = bbs_scaledup %>% group_by(lat, lon, grain, Aou) %>% #adding Aou to grouping
+occ_avgs = bbs_scaledup %>% group_by(lat, lon, grain, rep) %>% #adding Aou to grouping
   summarize(mean = mean(occ)) %>% #summarize occ across Aou's for each rep 
   group_by(lat, lon, grain) %>% #group again, this time just by lat, lon, and grain
   summarize(mean = mean(mean)) # summarize mean occ across reps for each unique combo of lat, lon, and grain
+
+
+# Adding grid8lat, grid8lon, grid8id column
+
+occ_avgs$grid8lat = floor(occ_avgs$lat/8)*8 + 8/2
+occ_avgs$grid8lon = floor(occ_avgs$lon/8)*8 + 8/2
+
 
 #-----------------------------------------------------------------------------------------
 ####Combining sub and above-route scale analyses outputs for comparison####
@@ -242,7 +249,7 @@ temproutes = good_rtes2 %>%
   dplyr::select(stateroute, Lati, Longi)
 
 
-grain = 10
+grain = 8
 
 #everything below this line needs to be combined into a forloop for multiple grains and rerun 
 #-----------------------------------------------------------------------------------------------
@@ -255,15 +262,7 @@ temproutes$gridcenter = paste(temproutes$latbin, temproutes$longbin, sep = "")
 #filtering data by mutual $gridcenter columns to acquire stateroutes in each grid 
 
 require(dplyr) 
-bbs_routes_in_grids = filter(temproutes, gridcenter %in% bbs_scaledup$gridcenter) 
-
-
-#for grain = 10, count # of stateroutes present in each shared gridcenter 
-grid_rte_totals = bbs_routes_in_grids %>% 
-  select(stateroute, gridcenter) %>%
-  unique() %>%    
-  group_by(gridcenter) %>%  
-  count(gridcenter) 
+grid_rte_totals = temproutes %>% count(gridcenter) %>% arrange(desc(n))
 
 
 #rework and automate code in a loop for multiple grains 
