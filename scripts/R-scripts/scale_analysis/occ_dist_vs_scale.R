@@ -141,11 +141,11 @@ points(sites$longitude, sites$latitude, col= "red", pch=16)
 #instead of count columns, just using stop totals (hard code to StopTotal?)
 
 #creating grain, "magic number" sample size for each grain, and reps vectors 
-grain_sample = data.frame(c(seq(2, 10, by =2)), c(4, 10, 21, 25, 28)) #figure out why stopping at grain 2 
+grain_sample = data.frame(c(1, 2, 4, 8), c(1, 4, 10, 25)) #figure out why stopping at grain 2 
 #- bc need if statement to know how to proceed? will finishing if statement help loops continue?
 names(grain_sample) = c("grain", "magic_num")
 
-reps = c(10) #100? 50?
+reps = c(100) #100? 50?
 
 #nested forloops defining grid cells (i.e. latitudinal + longitudinal "bins"), 
 #filtering routes sampled to those that fall within a given bin 
@@ -206,23 +206,24 @@ for (grain in grain_sample$grain) {
 
 bbs_scaledup = output    #wrote to file in case
 
+#write.csv(bbs_scaledup, "//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/bbs_scaledup.csv", row.names = FALSE)
+
 
 ####Product of loops with occ by grain, 100 reps per grid cell/bin####
 
 bbs_scaledup = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/bbs_scaledup.csv")
-bbs_scaledup$X = NULL 
 
 
 #for each unique combination of grain and lat and long across reps, what is the avg occ? 
 
 # modify to take means of mean of each rep (in order of lat, lon, grain, and rep so as not to incorrectly avg values
-occ_avgs = bbs_scaledup %>% group_by(lat, lon, grain, rep) %>% #adding Aou to grouping
+occ_avgs = bbs_scaledup %>% group_by(lat, lon, grain, rep) %>% #adding rep to grouping
   summarize(mean = mean(occ)) %>% #summarize occ across Aou's for each rep 
   group_by(lat, lon, grain) %>% #group again, this time just by lat, lon, and grain
   summarize(mean = mean(mean)) # summarize mean occ across reps for each unique combo of lat, lon, and grain
 
 
-# Adding grid8lat, grid8lon, grid8id column
+# Adding grid8lat, grid8lon, grid8id column 
 
 occ_avgs$grid8lat = floor(occ_avgs$lat/8)*8 + 8/2
 occ_avgs$grid8lon = floor(occ_avgs$lon/8)*8 + 8/2
@@ -245,8 +246,8 @@ routes$stateroute = 1000*routes$statenum + routes$Route
 
 require(dplyr)
 temproutes = good_rtes2 %>% 
-  left_join(routes, good_rtes2, by = "stateroute") %>%
-  dplyr::select(stateroute, Lati, Longi)
+  filter(routes, stateroute %in% good_rtes2$stateroute) %>% #filter, don't join bc extraneous and unnecessary info 
+  dplyr::select(stateroute, Lati, Longi) #just want stateroutes and associated lat/longs
 
 
 grain = 8
@@ -254,7 +255,7 @@ grain = 8
 #everything below this line needs to be combined into a forloop for multiple grains and rerun 
 #-----------------------------------------------------------------------------------------------
 
-temproutes$latbin = floor(temproutes$Lati/grain)*grain + grain/2
+temproutes$latbin = floor(temproutes$Lati/grain)*grain + grain/2 
 temproutes$longbin = floor(temproutes$Longi/grain)*grain + grain/2
 
 temproutes$gridcenter = paste(temproutes$latbin, temproutes$longbin, sep = "")
