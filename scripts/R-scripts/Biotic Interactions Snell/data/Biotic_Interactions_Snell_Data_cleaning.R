@@ -105,7 +105,7 @@ sp_list$match[sp_list$match =="Troglodytes hiemalis"] = "Troglodytes troglodytes
 
 # Winter Wren had AOU code change (7220 to 7222), changing in occ code to reflect that
 temp_occ$Aou[temp_occ$Aou == 7220] <- 7222
-
+expect_pres$AOU[expect_pres$AOU == 7220] <- 7222
 ###### ---- Create final focal-comp table ----######
 #merge pairwise table with taxonomy info
 comp_AOU = merge(focal_competitor_table, sp_list, by.x = "Competitor", by.y = "CommonName")
@@ -151,7 +151,7 @@ filesoutput = read.csv("shapefile_areas.csv", header = TRUE)
 # pull out stateroutes that have been continuously sampled 1996-2010
 routes = unique(temp_occ$stateroute)
 # merge expected presence data with species name information
-sub_ep = merge(expect_pres[,c('stateroute', 'AOU')], focal_AOU, by.x = 'AOU',by.y="focalAOU", all = TRUE) 
+sub_ep = merge(expect_pres[,c('stateroute', 'AOU')], focal_AOU, by.x = 'AOU', by.y="focalAOU", all = TRUE) 
 # merge expected presence with occupancy data
 new_occ = merge(sub_ep, temp_occ, by.x = c('stateroute', 'AOU'), by.y = c('stateroute', 'Aou'), all = TRUE) 
 new_occ$n[is.na(new_occ$n)] <- 0
@@ -193,11 +193,19 @@ for (s in focalspecies) {
 
 #------------------------------------------------
 
-all_comp_abun = left_join(occ_abun, bbs_pool, by = c('CompAOU' = 'AOU', 'stateroute' = 'stateroute')) %>%
-  left_join(shapefile_areas[, c('focalAOU', 'compAOU', 'mainCompetitor')], 
-                by = c('AOU' = 'focalAOU', 'CompAOU' = 'compAOU')) %>%
+#all_comp_abun = left_join(occ_abun, bbs_pool, by = c('CompAOU' = 'AOU', 'stateroute' = 'stateroute')) %>%
+#  left_join(shapefile_areas[, c('focalAOU', 'compAOU', 'mainCompetitor')], 
+ #               by = c('AOU' = 'focalAOU', 'CompAOU' = 'compAOU')) %>%
+#  group_by(AOU, stateroute, Focal, Family, occ, abundance.x) %>%
+ # summarize(allCompN = sum(abundance.y, na.rm = T))
+
+all_comp_abun = merge(occ_abun, bbs_pool, by.x = c('CompAOU','stateroute'), by.y = c('AOU', 'stateroute')) %>%
+  merge(shapefile_areas[, c('focalAOU', 'compAOU', 'mainCompetitor')], 
+            by.x = c('AOU','CompAOU'), by.y = c('focalAOU', 'compAOU')) %>%
   group_by(AOU, stateroute, Focal, Family, occ, abundance.x) %>%
   summarize(allCompN = sum(abundance.y, na.rm = T))
+
+
 
 main_comp_abun = left_join(occ_abun, bbs_pool, by = c('CompAOU' = 'AOU', 'stateroute' = 'stateroute')) %>%
   left_join(shapefile_areas[, c('focalAOU', 'compAOU', 'mainCompetitor')], 
@@ -205,6 +213,15 @@ main_comp_abun = left_join(occ_abun, bbs_pool, by = c('CompAOU' = 'AOU', 'stater
   group_by(AOU, stateroute, Focal, Family, occ) %>%
   filter(mainCompetitor == 1) %>%
   summarize(mainCompN = abundance.y)
+
+main_comp_abun = merge(occ_abun, bbs_pool, by.x = c('CompAOU','stateroute'), by.y = c('AOU', 'stateroute')) %>%
+  merge(shapefile_areas[, c('focalAOU', 'compAOU', 'mainCompetitor')], 
+            by.x = c('AOU','CompAOU'), by.y = c('focalAOU', 'compAOU')) %>%
+  group_by(AOU, stateroute, Focal, Family, occ) %>%
+  filter(mainCompetitor == 1) %>%
+  summarize(mainCompN = abundance.y)
+
+
 
 focalcompoutput = left_join(main_comp_abun, all_comp_abun)
 focalcompoutput$mainCompN[is.na(focalcompoutput$mainCompN)] <- 0
@@ -214,7 +231,7 @@ colnames(focalcompoutput) = c("FocalAOU","stateroute","FocalCommonName","Family"
 # Filter number to spp present in at least 20 routes for better model results
 # Subset to get the count of routes for each spp
 numroutes = c()
-for (sp in focalspecies) {
+for (sp in focalcompoutput$FocalAOU) {
   print(sp)
   tmp = filter(focalcompoutput, FocalAOU == sp) 
   nroutes = tmp %>%
@@ -232,6 +249,10 @@ numroutes20$nroutes = as.numeric(numroutes20$nroutes)
 focalcompsub = merge(focalcompoutput, numroutes20, by = "FocalAOU")
 # Create scaled competitor column = main comp abundance/(focal abundance + main comp abundance)
 focalcompsub$comp_scaled = focalcompsub$MainCompSum/(focalcompsub$FocalAbundance + focalcompsub$MainCompSum)
+
+FocalOccSum = focalcompsub %>%
+  group_by(FocalAOU) %>%
+  summarize(sum(FocalOcc))
 
 # Creating new focalspecies index
 subfocalspecies = unique(focalcompsub$FocalAOU)
