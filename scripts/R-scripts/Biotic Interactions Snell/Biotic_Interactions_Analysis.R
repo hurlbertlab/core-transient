@@ -10,6 +10,7 @@ tax_code = read.csv("Tax_AOU_Alpha.csv", header = TRUE)
 temp_occ = read.csv("bbs_sub1.csv", header=TRUE)
 centroid=read.csv("centroid.csv", header=TRUE)
 occuenv=read.csv("occuenv.csv", header=TRUE)
+subsetocc = Hurlbert_o[Hurlbert_o$X10yr.Prop > .3 & Hurlbert_o$X10yr.Prop < .7,]
 subfocalspecies = unique(occuenv$Species)
 # rescaling all occupancy values  - odds ratio
 # need to get rid of ones in order to not have infinity values 
@@ -21,8 +22,8 @@ occuenv$occ_logit =  log(occuenv$FocalOcc_scale/(1-occuenv$FocalOcc_scale))
 
 ##### LIN REG #######
 # create beta output data frame
-beta_lm = matrix(NA, nrow = 67, ncol = 10)
-beta_abun = matrix(NA, nrow = 67, ncol = 10)
+beta_lm = matrix(NA, nrow = 81, ncol = 10)
+beta_abun = matrix(NA, nrow = 81, ncol = 10)
 
 # for loop subsetting env data to expected occurrence for focal species
 envoutput = c()
@@ -96,13 +97,19 @@ envoutput = data.frame(envoutput)
 envoutputa = data.frame(envoutputa)
 names(envoutput) = c("FocalAOU", "ENV", "COMP", "SHARED", "NONE")
 names(envoutputa) = c("FocalAOU", "ENV", "COMP", "SHARED", "NONE")
+# relabel dark-eyed junco
+envoutput$FocalAOU[envoutput$FocalAOU == 5660] <- 5677
+tax_code$AOU_OUT[tax_code$AOU_OUT == 7220] <- 7222
+subsetocc$AOU[subsetocc$AOU == 5660] <- 5677
+subsetocc$AOU[subsetocc$AOU == 7220] <- 7222
 
-envoutput = merge(envoutput, tax_code[,c('AOU_OUT', 'ALPHA.CODE')], by.x = 'FocalAOU', by.y = "AOU_OUT")
-#write.csv(envoutput, "envoutputa.csv", row.names = FALSE)
+envoutput1 = merge(envoutput, tax_code[,c('AOU_OUT', 'ALPHA.CODE')], by.x = 'FocalAOU', by.y = "AOU_OUT")
+
+envoutput2 = merge(envoutput, subsetocc[,c("AOU", "migclass", "Trophic.Group")], by.x='FocalAOU', by.y='AOU')
+
+envloc = merge(envoutput2, centroid[, c("FocalAOU", "Long", "Lat")], by = 'FocalAOU', all = TRUE)
+#write.csv(envoutput, "envoutput.csv", row.names = FALSE)
 #write.csv(envoutputa, "envoutputa.csv", row.names = FALSE)
-
-envloc = merge(envoutput, centroid[, c("FocalAOU", "Long", "Lat")], by = 'FocalAOU', all = TRUE)
-
 beta_lm = data.frame(beta_lm)
 names(beta_lm) = c("FocalAOU", "Competition_Est", "Competition_P", "Competition_R2", "EnvZ_Est", "EnvZ_P", "EnvZ_R2", "BothZ_Est", "BothZ_P", "BothZ_R2")
 beta_abun = data.frame(beta_abun)
@@ -276,7 +283,9 @@ envloc$EW <- 0
 envloc$EW[envloc$Long > -98.583333] <- 1 ## from https://tools.wmflabs.org/geohack/geohack.php?pagename=Geographic_center_of_the_contiguous_United_States&params=39_50_N_98_35_W_region:US-KS_type:landmark&title=Geographic+Center+of+the+Contiguous+United+States
 # 1 = East
 
-nrank = envoutput %>% 
+envloc1 = merge(envloc, occuenv[,c("Species", "Family")], by.x = "FocalAOU", by.y = "Species")
+
+nrank = envloc1 %>% 
   mutate(rank = row_number(-ENV))# change here for comp
 envflip = gather(nrank, "Type", "value", 2:5)
 
@@ -410,12 +419,12 @@ inverselogit <- function(p) {exp(p)/(1+exp(p))}
 
 env_lm = subset(envflip, Type == 'ENV')
 
-env_traits = lm(inverselogit(value) ~ Trophic.Group + migclass + EW, data = env_lm)
+env_traits = lm(inverselogit(value) ~ Trophic.Group + migclass + EW.x, data = env_lm)
 summary(env_traits) 
 
 comp_lm = subset(envflip, Type == 'COMP')
 
-comp_traits = lm(inverselogit(value) ~ Trophic.Group + migclass + EW, data = comp_lm)
+comp_traits = lm(inverselogit(value) ~ Trophic.Group + migclass + EW.x, data = comp_lm)
 summary(comp_traits) 
 
 env_sum = subset(envflip, Type != 'NONE')
@@ -423,7 +432,7 @@ total = env_sum %>%
   group_by(FocalAOU) %>%
   summarise(sum(value))
 
-total_traits = lm(inverselogit(value) ~ Trophic.Group + migclass + EW, data = env_sum)
+total_traits = lm(inverselogit(value) ~ Trophic.Group + migclass + EW.x, data = env_sum)
 summary(total_traits)
 
 # R2 plot - lm in ggplot
@@ -432,7 +441,7 @@ names(envoutputa) = c("FocalAOU", "ENV", "COMP", "SHARED", "NONE")
 R2plot = merge(envoutput, envoutputa, by = "FocalAOU")
 
 tomerge = c()
-for (s in subfocalspecies$x) {
+for (s in subfocalspecies) {
   spsub = subset(R2plot,FocalAOU == s)
   print(s)
   total.x = sum(spsub$COMP.x + spsub$ENV.x + spsub$SHARED.x)
@@ -448,13 +457,16 @@ R2plot2 = merge(R2plot, tomerge, by = "FocalAOU")
 ggplot(R2plot2, aes(x = COMP.x, y = COMP.y)) +theme_bw()+ theme(axis.title.x=element_text(size=35),axis.title.y=element_text(size=35, angle=90)) + xlab("Occupancy R2") + ylab("Abundance R2") + geom_point(col = "#dd1c77", cex =4, shape=24) + geom_point(data = R2plot2, aes(x = ENV.x, y = ENV.y), shape = 16, col = "#2ca25f", cex =4, stroke = 1) + geom_point(data = R2plot2, aes(Total.x,Total.y), shape = 3, col = "#43a2ca", cex =5, stroke = 1) +geom_abline(intercept = 0, slope = 1, col = "red", lwd = 1.25)+ theme(axis.text.x=element_text(size = 20),axis.ticks=element_blank(), axis.text.y=element_text(size=2))
 ggsave("C:/Git/core-transient/scripts/R-scripts/Biotic Interactions Snell/occvabun.png")
 
+ggplot(R2plot2, aes(x = COMP.x, y = COMP.y)) +theme_bw()+ theme(axis.title.x=element_text(size=16),axis.title.y=element_text(size=16, angle=90)) + xlab("Occupancy R2") + ylab("Abundance R2") + geom_point(col = "#dd1c77", cex =4, shape=24) + geom_point(data = R2plot2, aes(x = ENV.x, y = ENV.y), shape = 16, col = "#2ca25f", cex =4, stroke = 1) + geom_point(data = R2plot2, aes(Total.x,Total.y), shape = 3, col = "#43a2ca", cex =5, stroke = 1) +geom_abline(intercept = 0, slope = 1, col = "black", lwd = 1.25)+ theme(axis.text.x=element_text(size = 20),axis.ticks=element_blank(), axis.text.y=element_text(size=20))+geom_smooth(method='lm', se=FALSE, col="#dd1c77",linetype="dotdash") + geom_abline(intercept= 0.03536,slope=0.43437, col = "#2ca25f", lwd = 1,linetype="dotdash")+ geom_smooth(method="lm", se= F, size = 1, aes(linetype = "dotdash", group = ENV.y))+geom_abline(intercept=0.1424,slope=0.4193, col = "#43a2ca", lwd = 1,linetype="dotdash")
+
+
+
 # R2 plot - glm violin plots
 ggplot(R2plot2, aes(x = FocalAOU, y = Total.x)) + geom_violin(lwd = 2, fill = "grey", color = "grey") + xlab("Focal Species") + ylab("Total R2")+ theme_bw()+theme(axis.title.x=element_text(size=30),axis.title.y=element_text(size=30, angle=90)) + theme(axis.line=element_blank(),axis.text.x=element_blank(),axis.ticks=element_blank(), axis.text.y=element_text(size=28, angle=90))
 
 ggplot(R2plot2, aes(x = FocalAOU, y = COMP.x)) + geom_violin(lwd = 2, fill = "#dd1c77", color = "#dd1c77") + xlab("Focal Species") + ylab("Competition R2")+ theme_bw()+theme(axis.title.x=element_text(size=30),axis.title.y=element_text(size=30, angle=90)) + theme(axis.line=element_blank(),axis.text.x=element_blank(),axis.ticks=element_blank(), axis.text.y=element_text(size=28, angle=90))
 
 ggplot(R2plot2, aes(x = FocalAOU, y = ENV.x)) + geom_violin(lwd = 2, fill = "#2ca25f", color = "#2ca25f") + xlab("Focal Species") + ylab("Environment R2")+ theme_bw()+theme(axis.title.x=element_text(size=30),axis.title.y=element_text(size=30, angle=90),legend.title=element_text(size=12), legend.text=element_text(size=12)) + theme(axis.line=element_blank(),axis.text.x=element_blank(),axis.ticks=element_blank(), axis.text.y=element_text(size=28, angle=90)) +scale_y_continuous(limits = c(0, 0.6))
-
 
 #Coyle fig 1: Z:\Coyle\Projects\BBS Core\Final Analysis
 
