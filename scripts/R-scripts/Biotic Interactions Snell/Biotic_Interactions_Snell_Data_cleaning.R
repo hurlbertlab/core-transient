@@ -34,17 +34,12 @@ ttable2 = merge(ttable, Hurlbert_o, by = "AOU")
 
 # read in table with pairwise comparison of each focal species to several potential competitors - created by hand
 focal_competitor_table = read.csv("focal spp.csv", header = TRUE)
-focal_competitor_table = data.frame(focal_competitor_table$AOU, focal_competitor_table$CommonName, focal_competitor_table$Competitor)
+focal_competitor_table = select(focal_competitor_table, AOU, CommonName, Competitor)
 names(focal_competitor_table)= c("FocalAOU", "Focal", "Competitor")
 
 # create data frame of unique focal species
-focal_unique = data.frame(unique(focal_competitor_table$Focal), unique(focal_competitor_table$FocalAOU))
+focal_unique = data.frame(unique(focal_competitor_table[, c("Focal", "FocalAOU")]))
 names(focal_unique) = c("Focal_Common","FocalAOU")
-
-# read in all species table to get unique list of species commmon names
-allspp = read.csv("all spp.csv", header = TRUE)
-allspp = data.frame(unique(allspp$CommonName))
-names(allspp)="CommonName"
 
 # read in taxonomy data
 AOU = read.csv("Bird_Taxonomy.csv", header = TRUE)
@@ -52,15 +47,13 @@ AOU=AOU[, (names(AOU) %in% c("SCI_NAME", "AOU_OUT", "PRIMARY_COM_NAME","FAMILY")
 names(AOU) = c("SciName","CommonName",  "AOU", "Family")
 
 # remove duplicates/subspecies from AOU data frame
-AOUsub = AOU[-grep("sp.", AOU$CommonName),] 
+AOUsub = AOU[-grep("sp\\.", AOU$CommonName),] 
 AOUsub2 = AOUsub[-grep("\\)", AOUsub$CommonName),]
 AOUsub3 = AOUsub2[-grep(" \\(", AOUsub2$CommonName),]
 AOUsub4 = unique(AOUsub3)
-AOUsub4 = na.omit(AOUsub4)
+sp_list = na.omit(AOUsub4)
 
 ############# ----  nomenclature corrections for shapefiles,correct name is "match" column ---- ######
-# merge w all sp list to get info for each sp
-sp_list = merge(AOUsub4, allspp, by = "CommonName")
 sp_list$match = as.character(sp_list$SciName)
 # renaming to get latest scientific names for mismatch spp
 sp_list$match[sp_list$match =="Oreothlypis peregrina"] = "Vermivora peregrina"
@@ -110,14 +103,11 @@ temp_occ$Aou[temp_occ$Aou == 7220] <- 7222
 #merge pairwise table with taxonomy info
 comp_AOU = merge(focal_competitor_table, sp_list, by.x = "Competitor", by.y = "CommonName")
 names(comp_AOU) = c("Competitor", "focalAOU", "Focal", "old", "CompAOU", "Family","CompSciName")
-comp_AOU$old = NULL
-comp_AOU <- na.omit(comp_AOU)
+comp_AOU = select(comp_AOU, -old)
 
 # merging in focal sci name to table
 focal_AOU = merge(comp_AOU, sp_list[,c("CommonName", "match")], by.x = "Focal", by.y = "CommonName")
-focal_AOU$AOU = NULL
-focal_AOU$SciName = NULL
-names(focal_AOU) = c("Focal", "Competitor", "focalAOU", "CompAOU", "Family","CompSciName", "FocalSciName")
+names(focal_AOU)[7] = "FocalSciName"
 
 # import body size data from Dunning 2008
 bsize = read.csv("DunningBodySize_old_2008.11.12.csv", header = TRUE)
