@@ -222,6 +222,9 @@ occ_avgs = bbs_scaledup %>% group_by(lat, lon, grain, rep) %>% #adding rep to gr
   group_by(lat, lon, grain) %>% #group again, this time just by lat, lon, and grain
   summarize(mean = mean(mean)) # summarize mean occ across reps for each unique combo of lat, lon, and grain
 
+#visualizing -> occupancy increases with grain AND variance decreases 
+plot(occ_avgs$mean, occ_avgs$grain)
+
 
 # Adding grid8lat, grid8lon, grid8id column 
 
@@ -245,10 +248,10 @@ routes = read.csv('scripts/R-scripts/scale_analysis/routes.csv')
 routes$stateroute = 1000*routes$statenum + routes$Route
 
 require(dplyr)
-temproutes = good_rtes2 %>% 
-  filter(routes, stateroute %in% good_rtes2$stateroute) %>% #filter, don't join bc extraneous and unnecessary info 
-  dplyr::select(stateroute, Lati, Longi) #just want stateroutes and associated lat/longs
-
+matching_rtes = good_rtes2 %>% 
+  filter(routes, stateroute %in% stateroute) %>% #filter, don't join bc extraneous and unnecessary info 
+  select(stateroute, Lati, Longi) #just want stateroutes and associated lat/longs
+#filtering not working, troubleshoot (why is length 63204??)
 
 grain = 8
 
