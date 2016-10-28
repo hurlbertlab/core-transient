@@ -34,7 +34,7 @@ ttable2 = merge(ttable, Hurlbert_o, by = "AOU")
 
 # read in table with pairwise comparison of each focal species to several potential competitors - created by hand
 focal_competitor_table = read.csv("focal spp.csv", header = TRUE)
-focal_competitor_table = select(focal_competitor_table, AOU, CommonName, Competitor)
+focal_competitor_table = dplyr::select(focal_competitor_table, AOU, CommonName, Competitor)
 names(focal_competitor_table)= c("FocalAOU", "Focal", "Competitor")
 
 # create data frame of unique focal species
@@ -102,12 +102,12 @@ temp_occ$Aou[temp_occ$Aou == 7220] <- 7222
 ###### ---- Create final focal-comp table ----######
 #merge pairwise table with taxonomy info
 comp_AOU = merge(focal_competitor_table, sp_list, by.x = "Competitor", by.y = "CommonName")
-names(comp_AOU) = c("Competitor", "focalAOU", "Focal", "old", "CompAOU", "Family","CompSciName")
-comp_AOU = select(comp_AOU, -old)
+names(comp_AOU) = c("Competitor", "focalAOU", "Focal", "old", "CompAOU", "CompFamily","CompSciName")
+comp_AOU = dplyr::select(comp_AOU, -c(old, CompFamily))
 
 # merging in focal sci name to table
-focal_AOU = merge(comp_AOU, sp_list[,c("CommonName", "match")], by.x = "Focal", by.y = "CommonName")
-names(focal_AOU)[7] = "FocalSciName"
+focal_AOU = merge(comp_AOU, sp_list[,c("match", "AOU", "Family")], by.x = "focalAOU", by.y = "AOU")
+names(focal_AOU)[6] = "FocalSciName"
 
 # import body size data from Dunning 2008
 bsize = read.csv("DunningBodySize_old_2008.11.12.csv", header = TRUE)
@@ -117,7 +117,8 @@ bsize$AOU[bsize$AOU == 7220] <- 7222 # Winter Wren
 spec_w_bsize = merge(focal_AOU, bsize[,c("AOU", "Mass.g.")], by.x = "focalAOU", by.y = "AOU")
 spec_w_weights = merge(spec_w_bsize, bsize[,c("AOU", "Mass.g.")], by.x = "CompAOU", by.y = "AOU")
 
-names(spec_w_weights) = c("CompetitorAOU","FocalAOU","Focal","Competitor","Family","CompSciName","FocalSciName","FocalMass","CompMass")
+names(spec_w_weights)[8] = "FocalMass"
+names(spec_w_weights)[9] = "CompMass"
 
 # want to compare body size - if competitor is double or more in size to focal, then delete
 new_spec_weights = subset(spec_w_weights, spec_w_weights$FocalMass / spec_w_weights$CompMass >= 0.5 &
