@@ -11,11 +11,11 @@ bbs_eco$counts$stateroute = bbs_eco$counts$statenum*1000 + bbs_eco$counts$Route
 
 # Get subset of stateroutes that have been surveyed every year from 1996-2010
 good_rtes = bbs_eco$counts %>% 
-  filter(Year >= 1996, Year <= 2010) %>% 
+  filter(Year >= 2001, Year <= 2015) %>% 
   dplyr::select(Year, stateroute) %>%
   unique() %>%    
   group_by(Year) %>% 
-  count(stateroute) %>% 
+  dplyr::count(stateroute) %>% 
   #tally(Year) 
   filter(n == 15) #%>% # have to stay at 15 to keep # of years consistent
 
@@ -25,7 +25,7 @@ bbs_sub1 = bbs_eco$counts %>%
   dplyr::select(Year, stateroute, Aou) %>%
   #group_by(stateroute, Aou) %>% 
   unique() %>%
-  count(Aou, stateroute) 
+  dplyr::count(Aou, stateroute) 
 
 bbs_sub1$occ = bbs_sub1$n/15 # new occupancy values calculated
 write.csv(bbs_sub1, "bbs_sub1.csv", row.names=FALSE)

@@ -113,6 +113,7 @@ focalcompsub = read.csv("focalcompsub.csv", header=TRUE)
 latlongs = read.csv('routes 1996-2010 consecutive.csv', header = T)
 plotdata_all = merge(focalcompsub, latlongs, by = "stateroute") 
 
+subfocalspecies = unique(focalcompsub$FocalAOU)
 # Making pdf of ranges for each focal spp
 pdf('Plots_RangeMaps.pdf', height = 8, width = 10)
 par(mfrow = c(3, 4))

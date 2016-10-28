@@ -111,17 +111,13 @@ names(focal_AOU)[7] = "FocalSciName"
 
 # import body size data from Dunning 2008
 bsize = read.csv("DunningBodySize_old_2008.11.12.csv", header = TRUE)
-bsize$AOU = NULL
-bsize = bsize[!duplicated(bsize),]
+bsize$AOU[bsize$AOU == 7220] <- 7222 # Winter Wren
 
 # merge in competitor and focal body size
-spec_w_bsize = merge(focal_AOU, bsize[,c("CommonName", "Mass.g.")], by.x = "Focal", by.y = "CommonName")
-spec_w_bsize2 = merge(spec_w_bsize, bsize[,c("CommonName", "Mass.g.")], by.x = "Competitor", by.y = "CommonName")
+spec_w_bsize = merge(focal_AOU, bsize[,c("AOU", "Mass.g.")], by.x = "focalAOU", by.y = "AOU")
+spec_w_weights = merge(spec_w_bsize, bsize[,c("AOU", "Mass.g.")], by.x = "CompAOU", by.y = "AOU")
 
-spec_w_weights = data.frame(spec_w_bsize2$Focal, spec_w_bsize2$FocalSciName, spec_w_bsize2$focalAOU,
-                            spec_w_bsize2$Mass.g..x, spec_w_bsize2$Competitor,
-                            spec_w_bsize2$CompSciName,spec_w_bsize2$CompAOU, spec_w_bsize2$Mass.g..y)
-names(spec_w_weights) = c("Focal", "FocalSciName","FocalAOU", "FocalMass", "Competitor","CompSciName", "CompetitorAOU", "CompMass")
+names(spec_w_weights) = c("CompetitorAOU","FocalAOU","Focal","Competitor","Family","CompSciName","FocalSciName","FocalMass","CompMass")
 
 # want to compare body size - if competitor is double or more in size to focal, then delete
 new_spec_weights = subset(spec_w_weights, spec_w_weights$FocalMass / spec_w_weights$CompMass >= 0.5 &
