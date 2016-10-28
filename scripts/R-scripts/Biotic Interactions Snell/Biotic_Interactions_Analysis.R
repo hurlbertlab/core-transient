@@ -22,14 +22,14 @@ occuenv$occ_logit =  log(occuenv$FocalOcc_scale/(1-occuenv$FocalOcc_scale))
 
 ##### LIN REG #######
 # create beta output data frame
-beta_lm = matrix(NA, nrow = 81, ncol = 10)
-beta_abun = matrix(NA, nrow = 81, ncol = 10)
+beta_lm = matrix(NA, nrow = 67, ncol = 10)
+beta_abun = matrix(NA, nrow = 67, ncol = 10)
 
 # for loop subsetting env data to expected occurrence for focal species
 envoutput = c()
 envoutputa = c()
 for (sp in 1:length(subfocalspecies)){
-  
+  print(sp)
   temp = subset(occuenv,occuenv$Species == subfocalspecies[sp])
   
   competition <- lm(temp$occ_logit ~  temp$comp_scaled) 
@@ -46,7 +46,7 @@ for (sp in 1:length(subfocalspecies)){
   both_abun = lm(temp$FocalAbundance ~  comp_scaled + abs(zTemp)+abs(zElev)+abs(zPrecip)+abs(zEVI), data = temp)
   
   beta_lm[sp,1] = sp
-  beta_lm[sp,2] = summary(competition)$coef[2,"Estimate"]
+  beta_lm[sp,2] = summary(competition)$coef[1,"Estimate"]
   beta_lm[sp,3] = summary(competition)$coef[2,"Pr(>|t|)"]
   beta_lm[sp,4] = summary(competition)$r.squared #using multiple rsquared
   beta_lm[sp,5] = summary(env_z)$coef[2,"Estimate"]

@@ -130,52 +130,40 @@ new_spec_weights$compcat = gsub(" ", "_", new_spec_weights$CompSciName)
 
 #write this data frame for GIS script
 write.csv(new_spec_weights, "new_spec_weights.csv", row.names=FALSE) 
-
-# read in area shapefile if not running GIS code 
-filesoutput = read.csv("shapefile_areas.csv", header = TRUE)
-
 ############# ---- Generate total species occupancies ---- #############
 # pull out stateroutes that have been continuously sampled 1996-2010
 routes = unique(temp_occ$stateroute)
 # merge expected presence data with species name information
 expect_pres$AOU[expect_pres$AOU == 7220] <- 7222
-sub_ep = merge(expect_pres[,c('stateroute', 'AOU')], focal_AOU, by.x = 'AOU',by.y="focalAOU", all = TRUE) 
+sub_ep = merge(expect_pres[,c('stateroute', 'AOU')], focal_AOU, by.x = 'AOU',by.y="focalAOU", all.x=TRUE) # want all = TRUE for exp pres
 # merge expected presence with occupancy data
-new_occ = merge(sub_ep, temp_occ, by.x = c('stateroute', 'AOU'), by.y = c('stateroute', 'Aou'), all = TRUE) 
+new_occ = merge(sub_ep, temp_occ, by.x = c('stateroute', 'AOU'), by.y = c('stateroute', 'Aou'), all.x=TRUE) 
 new_occ$n[is.na(new_occ$n)] <- 0
 new_occ$occ[is.na(new_occ$occ)] <- 0
 
-# temp soln to 6291 error
-new_occ$Focal[new_occ$AOU == 6291] <- "Plumbeous Vireo"
-new_occ$Competitor[new_occ$AOU == 6291] <- "Warbling Vireo"
-new_occ$CompAOU[new_occ$AOU == 6291] <- 6270
-new_occ$Family[new_occ$AOU == 6291] <-  "Vireonidae"
-new_occ$CompSciName[new_occ$AOU == 6291] <- "Vireo gilvus"
-new_occ$FocalSciName[new_occ$AOU == 6291] <-  "Vireo plumbeus"
 # subset to routes in the well sampled list of 'routes'
 new_occ2 = new_occ[new_occ$stateroute %in% routes, ]
 
 #### ---- Gathering Occupancy and Abundance Data for Biotic Comparisons ---- ####
+focalspecies = unique(new_spec_weights$focalAOU)
+# need to change winter wren AOU to 7222 from 7220 in bbs_pool
+bbs$Aou[bbs$Aou == 7220] <- 7222
 # filter BBS mean abundance by AOU/stateroute by year
 bbs_pool = bbs %>% 
   group_by(stateroute, Aou) %>% 
-  dplyr::summarize(abundance = mean(SpeciesTotal))
+  dplyr::summarize(abundance = mean(SpeciesTotal)) %>%
+  filter(Aou %in% focalspecies) 
 names(bbs_pool)[names(bbs_pool)=="Aou"] <- "AOU"
-# need to change winter wren AOU to 7222 from 7220 in bbs_pool
-bbs_pool$AOU[bbs_pool$AOU == 7220] <- 7222
-
-focalspecies = unique(new_spec_weights$FocalAOU)
-
-# filter to relevant species
-bbs_abun = filter(bbs_pool, AOU %in% focalspecies) 
 
 # merge in occupancies of focal
-occ_abun = merge(bbs_abun, new_occ2, by = c("AOU", "stateroute"))
+occ_abun = merge(bbs_pool, new_occ2, by = c("AOU", "stateroute"))
+names(occ_abun)[names(occ_abun)=="abundance"] <- "FocalAbun"
 
 # Take range overlap area to assign "main competitor" for each focal species
 # "area.df" with cols: FocalAOU, CompAOU, focalArea, compArea, intArea, intProp
-shapefile_areas = read.csv("shapefile_areas.csv", header = TRUE) # from for loop above
-shapefile_areas$X = NULL
+# read in area shapefile if not running GIS code 
+shapefile_areas = read.csv("shapefile_areas.csv", header = TRUE)
+shapefile_areas = dplyr::select(shapefile_areas, -X)
 
 # calculate proportion of overlap between focal range and overlap range
 shapefile_areas$PropOverlap = shapefile_areas$area_overlap/shapefile_areas$FocalArea
@@ -191,15 +179,15 @@ for (s in focalspecies) {
 all_comp_abun = left_join(occ_abun, bbs_pool, by = c('CompAOU' = 'AOU', 'stateroute' = 'stateroute')) %>%
   left_join(shapefile_areas[, c('focalAOU', 'compAOU', 'mainCompetitor')], 
   by = c('AOU' = 'focalAOU', 'CompAOU' = 'compAOU')) %>%
-  group_by(AOU, stateroute, Focal, Family, occ, abundance.x) %>%
-  dplyr::summarize(allCompN = sum(abundance.y, na.rm = T))
+  group_by(AOU, stateroute, Focal, Family, occ, FocalAbun) %>%
+  dplyr::summarize(allCompN = sum(abundance, na.rm = T))
 
 main_comp_abun = left_join(occ_abun, bbs_pool, by = c('CompAOU' = 'AOU', 'stateroute' = 'stateroute')) %>%
   left_join(shapefile_areas[, c('focalAOU', 'compAOU', 'mainCompetitor')], 
             by = c('AOU' = 'focalAOU', 'CompAOU' = 'compAOU')) %>%
   group_by(AOU, stateroute, Focal, Family, occ) %>%
   filter(mainCompetitor == 1) %>%
-  dplyr::summarize(mainCompN = abundance.y)
+  dplyr::summarize(mainCompN = abundance)
 
 focalcompoutput = left_join(main_comp_abun, all_comp_abun)
 focalcompoutput$mainCompN[is.na(focalcompoutput$mainCompN)] <- 0
