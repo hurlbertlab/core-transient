@@ -247,11 +247,11 @@ p+geom_boxplot(aes(x=taxa, y=perTrans, fill =label))
 cols <- (numCT_plot$color)
 colscale=c("#565151", "grey", "white")
 
-p+geom_boxplot(width=0.8,position=position_dodge(width=0.8),aes(x=taxa, y=perTrans, fill=label))+ #scale_x_discrete(breaks = numCT_plot$taxa) +
+p+geom_boxplot(width=0.8,position=position_dodge(width=0.8),aes(x=taxa, y=perTrans, fill=label))+ 
   scale_colour_manual(breaks = numCT_plot$taxa,
-                      values = taxcolors$color) +
-  scale_fill_manual(labels = c("10", "25", "33"),
-                    values = colscale)
+                      values = taxcolors$color)  + xlab("Taxa") + ylab("Percent Transient")+
+  scale_fill_manual(labels = c("Occupancy <= 10%", "Occupancy <=25%", "Occupancy <= 33%"),
+                    values = colscale)+theme(axis.ticks=element_blank(),axis.text.x=element_text(size=14, angle=90),axis.text.y=element_text(size=14),axis.title.x=element_text(size=18),axis.title.y=element_text(size=18,angle=90,vjust = 0.5))+guides(fill=guide_legend(title=""))
 ggsave("C:/Git/core-transient/output/plots/boxCT_perc.pdf", height = 8, width = 12)
 
 #### barplot of mean occ by taxa
@@ -261,8 +261,9 @@ numCT_plot$taxa <-droplevels(numCT_plot$taxa, exclude = c("","All","Amphibian", 
 w <- ggplot(numCT_plot, aes(taxa, meanOcc))+theme_classic()+
   theme(axis.text.x=element_text(angle=90,size=10,vjust=0.5)) + xlab("Taxa") + ylab("Mean Occupancy")
 w + geom_boxplot(width=1, position=position_dodge(width=0.6),aes(x=taxa, y=meanOcc), fill = unique(numCT_plot$color))+
-  scale_fill_manual(labels = taxcolors$taxa, values = taxcolors$color)+theme(axis.text.x=element_text(size=14),axis.text.y=element_text(size=14),axis.title.x=element_text(size=18),axis.title.y=element_text(size=18,angle=90)) + guides(fill=guide_legend(title=""))+ theme(plot.margin = unit(c(.5,6,.5,.5),"lines")) 
-ggsave("C:/Git/core-transient/output/plots/meanOCc.pdf", height = 8, width = 12)
+  scale_fill_manual(labels = taxcolors$taxa, values = taxcolors$color)+theme(axis.ticks=element_blank(),axis.text.x=element_text(size=14),axis.text.y=element_text(size=14),axis.title.x=element_text(size=18),axis.title.y=element_text(size=18,angle=90,vjust = 0.5)) + guides(fill=guide_legend(title=""))+ theme(plot.margin = unit(c(.5,6,.5,.5),"lines")) 
+ggsave("C:/Git/core-transient/output/plots/meanOcc.pdf", height = 8, width = 12)
+
 ##########################################################################
 # Explaining variation in mean occupancy within BBS
 # Merge taxa color and symbol codes into summary data
