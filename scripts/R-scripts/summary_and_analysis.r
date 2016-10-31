@@ -72,26 +72,27 @@ summ$taxa = factor(summ$taxa)
 summ$system = factor(summ$system)
 summ2 = subset(summ, !datasetID %in% c(99, 85, 90, 91, 92, 97, 124))
 dsets = unique(summ2[, c('datasetID', 'system','taxa')])
-
-taxorder = c('Bird', 'Plant', 'Mammal', 'Fish', 'Arthropod', 'Benthos', 'Plankton', 'Invertebrate', 'Herptile')
+summ$taxa[summ$taxa == "Arthropod"] <- "Invertebrate"
+summ$taxa[summ$taxa == "Herptile"] <- NA
+summ = na.omit(summ)
+taxorder = c('Bird', 'Plant', 'Mammal', 'Fish', 'Invertebrate', 'Benthos', 'Plankton')
 
 dsetsBySystem = table(dsets$system)
 dsetsByTaxa = table(dsets$taxa)
 sitesBySystem = table(summ2$system)
 sitesByTaxa = table(summ2$taxa)
 
-colors7 = c(rgb(29/255, 106/255, 155/255),
-            colors()[552],
-            colors()[612],
-            colors()[144],
-            rgb(0, 54/255, 117/255),
-            colors()[600],
-            colors()[551],
-            rgb(86/255, 141/255, 27/255), #added!
-            colors()[91]) #added!
+colors7 = c(rgb(29/255, 106/255, 155/255), # invert
+            colors()[552], # plankton
+            colors()[612],# plant
+            colors()[144], # arth
+            rgb(0, 54/255, 117/255), #herp
+            colors()[600], #fish
+            colors()[551])#mammal
 
-symbols7 = c(16, 18, 167, 15, 17, 1, 3, 20, 24) # added 19-20!
+symbols7 = c(16, 18, 167, 15, 17, 1, 3) 
 
+summ$taxa <-droplevels(summ$taxa, exclude = c("Arthropod","Amphibian", "Reptile"))
 taxcolors = data.frame(taxa = unique(summ$taxa), color = colors7, pch = symbols7)
 
 pdf('output/plots/data_summary_hists.pdf', height = 8, width = 10)
@@ -258,9 +259,45 @@ ggsave("C:/Git/core-transient/output/plots/boxCT_perc.pdf", height = 8, width = 
 numCT_plot$taxa = as.factor(numCT_plot$taxa)
 numCT_plot$taxa <-droplevels(numCT_plot$taxa, exclude = c("","All","Amphibian", "Reptile"))
 
-w <- ggplot(numCT_plot, aes(taxa, meanOcc))+theme_classic()+
+foo1 = table(dataformattingtable$dataset_ID, dataformattingtable$taxa)
+foo1 = data.frame(foo1)
+
+
+numCT_box=merge(numCT_taxa, taxcolors, by="taxa")
+
+nrank = numCT_box %>% 
+  group_by(taxa) %>%
+  dplyr::summarize(mean(meanOcc)) 
+nrank = data.frame(nrank)
+nrank = arrange(nrank, desc(mean.meanOcc.))
+
+numCT_plot = merge(numCT_plot, nrank, by = "taxa", all.x=TRUE)
+
+numCT_plot$taxa <- factor(numCT_plot$taxa,
+                       levels = c('Plankton','Mammal','Fish','Benthos','Plant', 'Invertebrate', 'Bird'),ordered = TRUE)
+rankedtaxorder = c('Plankton','Mammal','Fish','Benthos','Plant', 'Invertebrate', 'Bird')
+
+dsetsBySystem = table(dsets$system)
+dsetsByTaxa = table(dsets$taxa)
+sitesBySystem = table(summ2$system)
+sitesByTaxa = table(summ2$taxa)
+
+colorsrank = c(colors()[552], # plankton
+            colors()[551],#mammal
+            colors()[600], #fish
+            rgb(29/255, 106/255, 155/255), # benthos
+            colors()[612],# plant
+            colors()[144], # arth
+            rgb(0, 54/255, 117/255)) #herp)
+  mamms = subset(numCT_plot, taxa == "Mammal")          
+mean(mamms$meanOcc)       
+
+symbols7 = c(16, 18, 167, 15, 17, 1, 3) 
+taxcolorsrank = data.frame(taxa = unique(summ$taxa), color = colorsrank, pch = symbols7)
+
+w <- ggplot(numCT_plot, aes(factor(taxa), meanOcc))+theme_classic()+
   theme(axis.text.x=element_text(angle=90,size=10,vjust=0.5)) + xlab("Taxa") + ylab("Mean Occupancy")
-w + geom_boxplot(width=1, position=position_dodge(width=0.6),aes(x=taxa, y=meanOcc), fill = unique(numCT_plot$color))+
+w + geom_boxplot(width=1, position=position_dodge(width=0.6),aes(x=taxa, y=meanOcc), fill = taxcolorsrank$color)+
   scale_fill_manual(labels = taxcolors$taxa, values = taxcolors$color)+theme(axis.ticks=element_blank(),axis.text.x=element_text(size=14),axis.text.y=element_text(size=14),axis.title.x=element_text(size=18),axis.title.y=element_text(size=18,angle=90,vjust = 0.5)) + guides(fill=guide_legend(title=""))+ theme(plot.margin = unit(c(.5,6,.5,.5),"lines")) 
 ggsave("C:/Git/core-transient/output/plots/meanOcc.pdf", height = 8, width = 12)
 
