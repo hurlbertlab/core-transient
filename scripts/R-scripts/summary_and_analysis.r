@@ -240,7 +240,7 @@ rect(12.5, 0.9, 13.5, 1.0, col = coreCol, border=F)
 text(c(3.4, 9, 14.5), c(0.95, 0.95, 0.95), c('Transient', 'Neither', 'Core'), cex = 1.5)
 dev.off()
 
-
+#### barplot of percent transients by taxa
 p <- ggplot(numCT_plot, aes(taxa, numTrans))+theme_classic()
 p+geom_boxplot(aes(x=taxa, y=perTrans, fill =label))
 
@@ -254,7 +254,15 @@ p+geom_boxplot(width=0.8,position=position_dodge(width=0.8),aes(x=taxa, y=perTra
                     values = colscale)
 ggsave("C:/Git/core-transient/output/plots/boxCT_perc.pdf", height = 8, width = 12)
 
+#### barplot of mean occ by taxa
+numCT_plot$taxa = as.factor(numCT_plot$taxa)
+numCT_plot$taxa <-droplevels(numCT_plot$taxa, exclude = c("","All","Amphibian", "Reptile"))
 
+w <- ggplot(numCT_plot, aes(taxa, meanOcc))+theme_classic()+
+  theme(axis.text.x=element_text(angle=90,size=10,vjust=0.5)) + xlab("Taxa") + ylab("Mean Occupancy")
+w + geom_boxplot(width=1, position=position_dodge(width=0.6),aes(x=taxa, y=meanOcc), fill = unique(numCT_plot$color))+
+  scale_fill_manual(labels = taxcolors$taxa, values = taxcolors$color)+theme(axis.text.x=element_text(size=14),axis.text.y=element_text(size=14),axis.title.x=element_text(size=18),axis.title.y=element_text(size=18,angle=90)) + guides(fill=guide_legend(title=""))+ theme(plot.margin = unit(c(.5,6,.5,.5),"lines")) 
+ggsave("C:/Git/core-transient/output/plots/meanOCc.pdf", height = 8, width = 12)
 ##########################################################################
 # Explaining variation in mean occupancy within BBS
 # Merge taxa color and symbol codes into summary data
