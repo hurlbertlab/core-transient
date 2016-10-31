@@ -300,18 +300,15 @@ sub_occ_avgs = occ_avgs %>%
 
 ####Map occ ~ grain at each of the six sample collections#### 
 
-
+#super gross right now but it works 
 par(mfrow = c(2, 3))
 library(ggplot2)
-#plot(occ_avgs$mean[occ_avgs$grid8center == "36-84"], occ_avgs$grain[occ_avgs$grid8center == "36-84"])
-
-
-occ_avgs$mean = as.factor(occ_avgs$mean)
-occ_avgs$grain = as.factor(occ_avgs$grain)
-
-
-plot_one <- ggplot(occ_avgs, aes(x=occ_avgs$mean, y=occ_avgs$grain, group=occ_avgs$grid8center))
-plot_one + geom_point() + facet_wrap(occ_avgs$grid8center)
+plot(sub_occ_avgs$grain[sub_occ_avgs$grid8ID == "44-76"], sub_occ_avgs$mean[sub_occ_avgs$grid8ID == "44-76"], xlab = "grain", ylab = "mean occ", main = "Grid 44-76")
+plot(sub_occ_avgs$grain[sub_occ_avgs$grid8ID == "36-84"], sub_occ_avgs$mean[sub_occ_avgs$grid8ID == "36-84"], xlab = "grain", ylab = "mean occ", main = "Grid 36-84")
+plot(sub_occ_avgs$grain[sub_occ_avgs$grid8ID == "44-92"], sub_occ_avgs$mean[sub_occ_avgs$grid8ID == "44-92"], xlab = "grain", ylab = "mean occ", main = "Grid 44-92")
+plot(sub_occ_avgs$grain[sub_occ_avgs$grid8ID == "36-92"], sub_occ_avgs$mean[sub_occ_avgs$grid8ID == "36-92"], xlab = "grain", ylab = "mean occ", main = "Grid 36-92")
+plot(sub_occ_avgs$grain[sub_occ_avgs$grid8ID == "36-76"], sub_occ_avgs$mean[sub_occ_avgs$grid8ID == "36-76"], xlab = "grain", ylab = "mean occ", main = "Grid 36-76")
+plot(sub_occ_avgs$grain[sub_occ_avgs$grid8ID == "36-108"], sub_occ_avgs$mean[sub_occ_avgs$grid8ID == "36-108"], xlab = "grain", ylab = "mean occ", main = "Grid 36-108")
 
 
 ####Stitch lower scale analyses in using stateroute_latlon file to designate lower scales within their bins####
