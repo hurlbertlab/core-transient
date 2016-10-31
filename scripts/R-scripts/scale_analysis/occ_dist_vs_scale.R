@@ -363,8 +363,10 @@ bbs_bigsmall$lon = bbs_bigsmall$Longi
 bbs_bigsmall = bbs_bigsmall %>% 
   dplyr::select(siteID, sub_supr_rteID, occupancy, grid8ID, scaleID, lat, lon)
 
+#make sure variables joining by match in class type! 
 
-bbs_bigsmall2 = inner_join(bbs_bigsmall, sub_occ_avgs, by = c("grid8ID" = "grid8ID"))
+
+bbs_bigsmall2 = inner_join(bbs_bigsmall, sub_occ_avgs)
 
 
 
