@@ -21,7 +21,7 @@ good_rtes = bbs_eco$counts %>%
 
 # Calculate occupancy for all species at subset of stateroutes above
 bbs_sub1 = bbs_eco$counts %>% 
-  filter(Year > 1995, Year < 2011, stateroute %in% good_rtes$stateroute) %>% 
+  filter(Year > 2000, Year < 2016, stateroute %in% good_rtes$stateroute) %>% 
   dplyr::select(Year, stateroute, Aou) %>%
   #group_by(stateroute, Aou) %>% 
   unique() %>%

@@ -47,7 +47,7 @@ for (sp in 1:length(subfocalspecies)){
   
   beta_lm[sp,1] = sp
   beta_lm[sp,2] = summary(competition)$coef[1,"Estimate"]
-  beta_lm[sp,3] = summary(competition)$coef[2,"Pr(>|t|)"]
+  beta_lm[sp,3] = summary(competition)$coef[1,"Pr(>|t|)"]
   beta_lm[sp,4] = summary(competition)$r.squared #using multiple rsquared
   beta_lm[sp,5] = summary(env_z)$coef[2,"Estimate"]
   beta_lm[sp,6] = summary(env_z)$coef[2,"Pr(>|t|)"]
