@@ -248,25 +248,43 @@ routes = read.csv('scripts/R-scripts/scale_analysis/routes.csv')
 routes$stateroute = 1000*routes$statenum + routes$Route
 
 require(dplyr)
-matching_rtes = good_rtes2 %>% 
-  filter(routes, stateroute %in% stateroute) %>% #filter, don't join bc extraneous and unnecessary info 
-  select(stateroute, Lati, Longi) #just want stateroutes and associated lat/longs
-#filtering not working, troubleshoot (why is length 63204??)
+matching_rtes = routes %>% 
+  filter( routes$stateroute %in% good_rtes2$stateroute) %>% #filter, don't join bc extraneous and unnecessary info 
+  select(stateroute, Lati, Longi) #just getting lats and longs of stateroutes in general 
 
 grain = 8
 
 #everything below this line needs to be combined into a forloop for multiple grains and rerun 
 #-----------------------------------------------------------------------------------------------
 
-temproutes$latbin = floor(temproutes$Lati/grain)*grain + grain/2 
-temproutes$longbin = floor(temproutes$Longi/grain)*grain + grain/2
+matching_rtes$latbin = floor(matching_rtes$Lati/grain)*grain + grain/2 
+matching_rtes$longbin = floor(matching_rtes$Longi/grain)*grain + grain/2
 
-temproutes$gridcenter = paste(temproutes$latbin, temproutes$longbin, sep = "")
+matching_rtes$gridcenter = paste(matching_rtes$latbin, matching_rtes$longbin, sep = "")
 
-#filtering data by mutual $gridcenter columns to acquire stateroutes in each grid 
+#filtering data by mutual $gridcenter columns to acquire stateroutes in each grain 8 grid cell
 
 require(dplyr) 
-grid_rte_totals = temproutes %>% count(gridcenter) %>% arrange(desc(n))
+grid_rte_totals = matching_rtes %>% count(gridcenter) %>% arrange(desc(n)) 
+#a way to hang on to the stateroutes so I don't have to stitch them back in below?
 
+#take top 6 
 
-#rework and automate code in a loop for multiple grains 
+#write.csv(grid_rte_totals, "//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/grid_rte_totals.csv")
+
+grid_rtes = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/grid_rte_totals.csv")
+
+grid_rtes_best = grid_rtes %>% 
+  filter(grid_rtes$X < 7) #taking top six grids only for sample
+
+#use grid_rtes_best to filter matching_rtes only to stateroutes associated 
+#with grain 8 grid centers in the top six grids^ 
+
+require(dplyr)
+six_grid_sample = matching_rtes %>% 
+  filter(matching_rtes$gridcenter %in% grid_rtes_best$gridcenter) %>%
+  dplyr::select(stateroute, gridcenter) 
+
+six_grid_sample$gridcenter = paste(six_grid_sample$gridcenter, grain, sep = "_") 
+
+#now set as a loop for each grain again ?
