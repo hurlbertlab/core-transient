@@ -312,7 +312,7 @@ plot(sub_occ_avgs$grain[sub_occ_avgs$grid8ID == "36-108"], sub_occ_avgs$mean[sub
 
 
 ####Stitch lower scale analyses in using stateroute_latlon file to designate lower scales within their bins####
-#below a bbs route: bbs_scalesorted
+##below a bbs route: bbs_scalesorted
 
 bbs_scalesorted = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/bbs_scalesorted.csv", header = TRUE)
 
@@ -321,13 +321,50 @@ bbs_scalesorted = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/
 
 bbs_bigsmall = inner_join(bbs_scalesorted, stateroute_latlon, by = c("stateroute" = "stateroute")) 
   
-  
+#now I know how the sub-route data is nested in the grid 8 data 
+#and I can match the occ avg data for grain 8 in
+#by pulling in sub occ avgs? at the diff grains? based on grid8ID 
 
-#add lat_lon info so I know which grid centers though 
+#or do I want to not add it this way, but instead get rid of the AOU column and just use 
+#grain as scale and mean as occupancyand subroute ID as grid8ID corresponding variables 
+
+#so I actually need to rename some things first 
+#rename both "subrouteID" and "grain" to "routeID"
+#paste in a prefix on both first so I know whether above or below route -> 0 for grain, 00 for scale 
+#to ensure scales ultimately still follow correct direction and ranking in relation to each other 
+
+sub_occ_avgs$grain = paste("0", sub_occ_avgs$grain, sep = "")
+bbs_bigsmall$scale = paste("00", bbs_bigsmall$scale, sep = "")
+
+sub_occ_avgs$scaleID = sub_occ_avgs$grain
+bbs_bigsmall$scaleID = bbs_bigsmall$scale
+
+#in sub_occ for the larger scales instead of stateroute I can have the unrounded lat_lon paired and rename it siteID? 
+
+sub_occ_avgs$siteID = paste(sub_occ_avgs$lat, sub_occ_avgs$lon, sep = "")
+bbs_bigsmall$siteID = bbs_bigsmall$stateroute
+
+sub_occ_avgs$occupancy = sub_occ_avgs$mean
+
+#also keep lat lon info for bbs_bigsmall, don't select it out -> or can I get rid of lat lon in sub occ 
+#since now have unique ID
+#R won't let me, so I guess I'm keeping lat lons in bbs_bigsmall because easier 
+#just make sure columns are still "lat", "lon" 
 
 
+#and sub_supr_rteID corresponds to the grid8ID, so need it copied into a second column - one used for nesting
+#and one used purely for labeling the above route ID 
+
+sub_occ_avgs$sub_supr_rteID = sub_occ_avgs$grid8ID
+bbs_bigsmall$sub_supr_rteID = bbs_bigsmall$subrouteID
+bbs_bigsmall$lat = bbs_bigsmall$Lati
+bbs_bigsmall$lon = bbs_bigsmall$Longi
+
+bbs_bigsmall = bbs_bigsmall %>% 
+  dplyr::select(siteID, sub_supr_rteID, occupancy, grid8ID, scaleID, lat, lon)
 
 
+bbs_bigsmall2 = inner_join(bbs_bigsmall, sub_occ_avgs, by = c("grid8ID" = "grid8ID"))
 
 
 
