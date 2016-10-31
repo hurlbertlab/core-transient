@@ -271,39 +271,38 @@ n = data.frame(n)
 
 numCT_box=merge(numCT_taxa, taxcolors, by="taxa")
 
-nrank = numCT_box %>% 
+nrank = summ %>% 
   group_by(taxa) %>%
-  dplyr::summarize(mean(meanOcc)) 
+  dplyr::summarize(mean(mu)) 
 nrank = data.frame(nrank)
-nrank = arrange(nrank, desc(mean.meanOcc.))
+nrank = arrange(nrank, desc(mean.mu.))
 
-numCT_plot = merge(numCT_plot, nrank, by = "taxa", all.x=TRUE)
+summ_plot = merge(summ, nrank, by = "taxa", all.x=TRUE)
 
-numCT_plot$taxa <- factor(numCT_plot$taxa,
-                       levels = c('Plankton','Mammal','Fish','Benthos','Plant', 'Invertebrate', 'Bird'),ordered = TRUE)
-rankedtaxorder = c('Plankton','Mammal','Fish','Benthos','Plant', 'Invertebrate', 'Bird')
+summ$taxa <- factor(summ$taxa,
+                       levels = c('Bird','Mammal','Plankton','Benthos','Invertebrate','Plant','Fish'),ordered = TRUE)
+rankedtaxorder = c('Bird','Mammal','Plankton','Benthos','Invertebrate','Plant','Fish')
 
 dsetsBySystem = table(dsets$system)
 dsetsByTaxa = table(dsets$taxa)
 sitesBySystem = table(summ2$system)
 sitesByTaxa = table(summ2$taxa)
 
-colorsrank = c(colors()[552], # plankton
-            colors()[551],#mammal
-            colors()[600], #fish
-            rgb(29/255, 106/255, 155/255), # benthos
-            colors()[612],# plant
-            colors()[144], # arth
-            rgb(0, 54/255, 117/255)) #herp)
-  mamms = subset(numCT_plot, taxa == "Mammal")          
-mean(mamms$meanOcc)       
+colorsrank = c(rgb(0, 54/255, 117/255), #bird
+               colors()[551],#mammal
+               colors()[552], # plankton
+               rgb(29/255, 106/255, 155/255), # benthos
+               colors()[144], # arth
+               colors()[612],# plant
+               colors()[600]) #fish
+
 
 symbols7 = c(16, 18, 167, 15, 17, 1, 3) 
 taxcolorsrank = data.frame(taxa = unique(summ$taxa), color = colorsrank, pch = symbols7)
 
-w <- ggplot(numCT_plot, aes(factor(taxa), meanOcc))+theme_classic()+
+w <- ggplot(summ, aes(factor(taxa), mu))+theme_classic()+
   theme(axis.text.x=element_text(angle=90,size=10,vjust=0.5)) + xlab("Taxa") + ylab("Mean Occupancy")
-w + geom_boxplot(width=1, position=position_dodge(width=0.6),aes(x=taxa, y=meanOcc), fill = taxcolorsrank$color)+
+w + geom_boxplot(width=1, position=position_dodge(width=0.6),aes(x=taxa, y=mu), fill = taxcolorsrank$color)+
   scale_fill_manual(labels = taxcolors$taxa, values = taxcolors$color)+theme(axis.ticks=element_blank(),axis.text.x=element_text(size=14),axis.text.y=element_text(size=14),axis.title.x=element_text(size=18),axis.title.y=element_text(size=18,angle=90,vjust = 0.5)) + guides(fill=guide_legend(title=""))+ theme(plot.margin = unit(c(.5,6,.5,.5),"lines")) + annotate("text", x = taxcolors$taxa, y = 1.05, label = c("23","14", "37", "20", "32", "22", "34"),size=8,vjust=0.5, color = "black")
 ggsave("C:/Git/core-transient/output/plots/meanOcc.pdf", height = 8, width = 12)
 
