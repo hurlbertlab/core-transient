@@ -260,7 +260,7 @@ routes$stateroute = 1000*routes$statenum + routes$Route
 require(dplyr)
 stateroute_latlon = routes %>% 
   filter( routes$stateroute %in% good_rtes2$stateroute) %>% #filter, don't join bc extraneous and unnecessary info 
-  select(stateroute, Lati, Longi) #just getting lats and longs of stateroutes in general 
+  dplyr::select(stateroute, Lati, Longi) #just getting lats and longs of stateroutes in general 
 
 #setting grain to highest cell size 
 grain = 8
@@ -319,9 +319,12 @@ bbs_scalesorted = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/
 #I DO want to join this time because I want the stateroute lat-long info, 
 #so I know which bins the stateroutes can be paired up in 
 
-bbs_bigsmall = bbs_scalesorted %>% 
-  filter(stateroute %in% stateroute_latlon$stateroute) %>% 
-  #left_join(bbs_scalesorted, stateroute_latlon, by = "stateroute")
+bbs_bigsmall = inner_join(bbs_scalesorted, stateroute_latlon, by = c("stateroute" = "stateroute")) 
+  
+  
+
+#add lat_lon info so I know which grid centers though 
+
 
 
 
