@@ -312,11 +312,16 @@ plot(sub_occ_avgs$grain[sub_occ_avgs$grid8ID == "36-108"], sub_occ_avgs$mean[sub
 
 
 ####Stitch lower scale analyses in using stateroute_latlon file to designate lower scales within their bins####
+#below a bbs route: bbs_scalesorted
 
+bbs_scalesorted = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/bbs_scalesorted.csv", header = TRUE)
 
+#I DO want to join this time because I want the stateroute lat-long info, 
+#so I know which bins the stateroutes can be paired up in 
 
-
-
+bbs_bigsmall = bbs_scalesorted %>% 
+  filter(stateroute %in% stateroute_latlon$stateroute) %>% 
+  #left_join(bbs_scalesorted, stateroute_latlon, by = "stateroute")
 
 
 
