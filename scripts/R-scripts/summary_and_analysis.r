@@ -262,6 +262,12 @@ numCT_plot$taxa <-droplevels(numCT_plot$taxa, exclude = c("","All","Amphibian", 
 foo1 = table(dataformattingtable$dataset_ID, dataformattingtable$taxa)
 foo1 = data.frame(foo1)
 
+foo1 = subset(foo1,Freq == 1)
+names(foo1)=c("dId","taxa","freq")
+n = foo1 %>%
+  group_by(as.character(foo1$taxa)) %>%
+  dplyr::count(taxa)
+n = data.frame(n)
 
 numCT_box=merge(numCT_taxa, taxcolors, by="taxa")
 
@@ -298,7 +304,7 @@ taxcolorsrank = data.frame(taxa = unique(summ$taxa), color = colorsrank, pch = s
 w <- ggplot(numCT_plot, aes(factor(taxa), meanOcc))+theme_classic()+
   theme(axis.text.x=element_text(angle=90,size=10,vjust=0.5)) + xlab("Taxa") + ylab("Mean Occupancy")
 w + geom_boxplot(width=1, position=position_dodge(width=0.6),aes(x=taxa, y=meanOcc), fill = taxcolorsrank$color)+
-  scale_fill_manual(labels = taxcolors$taxa, values = taxcolors$color)+theme(axis.ticks=element_blank(),axis.text.x=element_text(size=14),axis.text.y=element_text(size=14),axis.title.x=element_text(size=18),axis.title.y=element_text(size=18,angle=90,vjust = 0.5)) + guides(fill=guide_legend(title=""))+ theme(plot.margin = unit(c(.5,6,.5,.5),"lines")) 
+  scale_fill_manual(labels = taxcolors$taxa, values = taxcolors$color)+theme(axis.ticks=element_blank(),axis.text.x=element_text(size=14),axis.text.y=element_text(size=14),axis.title.x=element_text(size=18),axis.title.y=element_text(size=18,angle=90,vjust = 0.5)) + guides(fill=guide_legend(title=""))+ theme(plot.margin = unit(c(.5,6,.5,.5),"lines")) + annotate("text", x = taxcolors$taxa, y = 1.05, label = c("23","14", "37", "20", "32", "22", "34"),size=8,vjust=0.5, color = "black")
 ggsave("C:/Git/core-transient/output/plots/meanOcc.pdf", height = 8, width = 12)
 
 ##########################################################################
