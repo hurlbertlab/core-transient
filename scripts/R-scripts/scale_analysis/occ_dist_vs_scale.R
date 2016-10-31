@@ -222,69 +222,114 @@ occ_avgs = bbs_scaledup %>% group_by(lat, lon, grain, rep) %>% #adding rep to gr
   group_by(lat, lon, grain) %>% #group again, this time just by lat, lon, and grain
   summarize(mean = mean(mean)) # summarize mean occ across reps for each unique combo of lat, lon, and grain
 
+#occ avgs for each grain scale across reps (FINAL)
+
+
+#subset to only stateroutes across each grain that fall into grain 8 bin as well (allowing us to compare across scale)
+
+# adding grid8id column to ID which rows have lat/lons that match bin at grain 8 
+# remember: don't need stateroutes at this point, because lumped together 
+
+occ_avgs$grid8ID = paste(floor(occ_avgs$lat/8)*8 + 8/2, floor(occ_avgs$lon/8)*8 + 8/2, sep = "")
+
+
+#can use grain size and scale 8 grid info -> each panel is based on unique grid8ID
+#do need to select top 6 categories based on count tho before plotting
+
+#-----------------------------------------------------------------------------------------
+
+####Combining sub and above-route scale analyses outputs for comparison####
+##Pre-combining formatting of datasets:
+
+
+##ocating and ID-ing stateroutes contained within a given grid cell (since disappear in process of deriving occ)##
+
+#bringing back in routes present from 2000-2014 in every year
+good_rtes2 = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/good_rtes2.csv", header = TRUE)
+
+
+#bringing in lat lon associated with each route (so can determine routes present in grid cell)
+routes = read.csv('scripts/R-scripts/scale_analysis/routes.csv')
+routes$stateroute = 1000*routes$statenum + routes$Route
+
+
+#putting these files together to get good routes AND their associated lat-lon data 
+#(so can be matched in corresponding grid cells)
+
+
+require(dplyr)
+stateroute_latlon = routes %>% 
+  filter( routes$stateroute %in% good_rtes2$stateroute) %>% #filter, don't join bc extraneous and unnecessary info 
+  select(stateroute, Lati, Longi) #just getting lats and longs of stateroutes in general 
+
+#setting grain to highest cell size 
+grain = 8
+
+#binning stateroutes according to latlon in grain 8 cells
+stateroute_latlon$latbin = floor(stateroute_latlon$Lati/grain)*grain + grain/2 
+stateroute_latlon$longbin = floor(stateroute_latlon$Longi/grain)*grain + grain/2
+
+stateroute_latlon$grid8ID = paste(stateroute_latlon$latbin, stateroute_latlon$longbin, sep = "")
+
+
+#count # of stateroutes in each cell, take top 6
+require(dplyr) 
+grid_rte_totals = stateroute_latlon %>% count(grid8ID) %>% arrange(desc(n)) 
+
+
+#write.csv(grid_rte_totals, "//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/grid_rte_totals.csv")
+
+grid_rte_totals = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/grid_rte_totals.csv")
+#intentionally allowing "X" column to be created for ease of selection of top 6 cells 
+
+
+grid_rtes_best = grid_rte_totals %>% 
+  filter(grid_rte_totals$X < 7) #taking top six grids only for state routes to dictate sample
+
+#-------------------------------------------------------------------
+#use grid8ID specified in grid_rtes_best to subset occ_avgs for only those that match grid8ID
+#then can compare across increasing grain size 
+
+sub_occ_avgs = occ_avgs %>% 
+  filter(grid8ID %in% grid_rtes_best$grid8ID)
+
+#check with unique to make sure 6 cells correct ====> it's correct 
+#checktest = unique(sub_occ_avgs$grid8ID)
+
+
+
+####Map occ ~ grain at each of the six sample collections#### 
+
+
+par(mfrow = c(2, 3))
+library(ggplot2)
+#plot(occ_avgs$mean[occ_avgs$grid8center == "36-84"], occ_avgs$grain[occ_avgs$grid8center == "36-84"])
+
+
+occ_avgs$mean = as.factor(occ_avgs$mean)
+occ_avgs$grain = as.factor(occ_avgs$grain)
+
+
+plot_one <- ggplot(occ_avgs, aes(x=occ_avgs$mean, y=occ_avgs$grain, group=occ_avgs$grid8center))
+plot_one + geom_point() + facet_wrap(occ_avgs$grid8center)
+
+
+####Stitch lower scale analyses in using stateroute_latlon file to designate lower scales within their bins####
+
+
+
+
+
+
+
+
+
+
+
 #visualizing -> occupancy increases with grain AND variance decreases 
 plot(occ_avgs$mean, occ_avgs$grain)
 
 
-# Adding grid8lat, grid8lon, grid8id column 
-
-occ_avgs$grid8lat = floor(occ_avgs$lat/8)*8 + 8/2
-occ_avgs$grid8lon = floor(occ_avgs$lon/8)*8 + 8/2
-
-
-#-----------------------------------------------------------------------------------------
-####Combining sub and above-route scale analyses outputs for comparison####
-##Pre-combining formatting of datasets:
-
 #Pasting latlongs of bin centerpoints together from above-route scale to create character label analagous to "stateroute" label 
 bbs_scaledup$gridcenter = paste(bbs_scaledup$lat, bbs_scaledup$lon, sep = "")
-
-
-#locating and ID-ing stateroutes of routes contained within a given grid cell 
-
-good_rtes2 = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/good_rtes2.csv", header = TRUE)
-
-routes = read.csv('scripts/R-scripts/scale_analysis/routes.csv')
-routes$stateroute = 1000*routes$statenum + routes$Route
-
-require(dplyr)
-matching_rtes = routes %>% 
-  filter( routes$stateroute %in% good_rtes2$stateroute) %>% #filter, don't join bc extraneous and unnecessary info 
-  select(stateroute, Lati, Longi) #just getting lats and longs of stateroutes in general 
-
-grain = 8
-
-#everything below this line needs to be combined into a forloop for multiple grains and rerun 
-#-----------------------------------------------------------------------------------------------
-
-matching_rtes$latbin = floor(matching_rtes$Lati/grain)*grain + grain/2 
-matching_rtes$longbin = floor(matching_rtes$Longi/grain)*grain + grain/2
-
-matching_rtes$gridcenter = paste(matching_rtes$latbin, matching_rtes$longbin, sep = "")
-
-#filtering data by mutual $gridcenter columns to acquire stateroutes in each grain 8 grid cell
-
-require(dplyr) 
-grid_rte_totals = matching_rtes %>% count(gridcenter) %>% arrange(desc(n)) 
-#a way to hang on to the stateroutes so I don't have to stitch them back in below?
-
-#take top 6 
-
-#write.csv(grid_rte_totals, "//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/grid_rte_totals.csv")
-
-grid_rtes = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/grid_rte_totals.csv")
-
-grid_rtes_best = grid_rtes %>% 
-  filter(grid_rtes$X < 7) #taking top six grids only for sample
-
-#use grid_rtes_best to filter matching_rtes only to stateroutes associated 
-#with grain 8 grid centers in the top six grids^ 
-
-require(dplyr)
-six_grid_sample = matching_rtes %>% 
-  filter(matching_rtes$gridcenter %in% grid_rtes_best$gridcenter) %>%
-  dplyr::select(stateroute, gridcenter) 
-
-six_grid_sample$gridcenter = paste(six_grid_sample$gridcenter, grain, sep = "_") 
-
-#now set as a loop for each grain again ?
+#^is this even necessary yet? missing stateroutes tho 
