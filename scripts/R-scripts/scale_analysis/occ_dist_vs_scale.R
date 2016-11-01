@@ -236,6 +236,9 @@ occ_avgs$grid8ID = paste(floor(occ_avgs$lat/8)*8 + 8/2, floor(occ_avgs$lon/8)*8 
 #can use grain size and scale 8 grid info -> each panel is based on unique grid8ID
 #do need to select top 6 categories based on count tho before plotting
 
+
+#write.csv(occ_avgs, "//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/occ_avgs.csv", row.names = FALSE)
+
 #-----------------------------------------------------------------------------------------
 
 ####Combining sub and above-route scale analyses outputs for comparison####
@@ -281,14 +284,14 @@ grid_rte_totals = stateroute_latlon %>% count(grid8ID) %>% arrange(desc(n))
 
 grid_rte_totals = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/grid_rte_totals.csv")
 #intentionally allowing "X" column to be created for ease of selection of top 6 cells 
-
-
 grid_rtes_best = grid_rte_totals %>% 
   filter(grid_rte_totals$X < 7) #taking top six grids only for state routes to dictate sample
+
 
 #-------------------------------------------------------------------
 #use grid8ID specified in grid_rtes_best to subset occ_avgs for only those that match grid8ID
 #then can compare across increasing grain size 
+occ_avgs = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/occ_avgs.csv")
 
 sub_occ_avgs = occ_avgs %>% 
   filter(grid8ID %in% grid_rtes_best$grid8ID)
@@ -301,14 +304,13 @@ sub_occ_avgs = occ_avgs %>%
 ####Map occ ~ grain at each of the six sample collections#### 
 
 #super gross right now but it works 
-par(mfrow = c(2, 3))
-library(ggplot2)
-plot(sub_occ_avgs$grain[sub_occ_avgs$grid8ID == "44-76"], sub_occ_avgs$mean[sub_occ_avgs$grid8ID == "44-76"], xlab = "grain", ylab = "mean occ", main = "Grid 44-76")
-plot(sub_occ_avgs$grain[sub_occ_avgs$grid8ID == "36-84"], sub_occ_avgs$mean[sub_occ_avgs$grid8ID == "36-84"], xlab = "grain", ylab = "mean occ", main = "Grid 36-84")
-plot(sub_occ_avgs$grain[sub_occ_avgs$grid8ID == "44-92"], sub_occ_avgs$mean[sub_occ_avgs$grid8ID == "44-92"], xlab = "grain", ylab = "mean occ", main = "Grid 44-92")
-plot(sub_occ_avgs$grain[sub_occ_avgs$grid8ID == "36-92"], sub_occ_avgs$mean[sub_occ_avgs$grid8ID == "36-92"], xlab = "grain", ylab = "mean occ", main = "Grid 36-92")
-plot(sub_occ_avgs$grain[sub_occ_avgs$grid8ID == "36-76"], sub_occ_avgs$mean[sub_occ_avgs$grid8ID == "36-76"], xlab = "grain", ylab = "mean occ", main = "Grid 36-76")
-plot(sub_occ_avgs$grain[sub_occ_avgs$grid8ID == "36-108"], sub_occ_avgs$mean[sub_occ_avgs$grid8ID == "36-108"], xlab = "grain", ylab = "mean occ", main = "Grid 36-108")
+#par(mfrow = c(2, 3))
+#plot(sub_occ_avgs$grain[sub_occ_avgs$grid8ID == "44-76"], sub_occ_avgs$mean[sub_occ_avgs$grid8ID == "44-76"], xlab = "grain", ylab = "mean occ", main = "Grid 44-76")
+#plot(sub_occ_avgs$grain[sub_occ_avgs$grid8ID == "36-84"], sub_occ_avgs$mean[sub_occ_avgs$grid8ID == "36-84"], xlab = "grain", ylab = "mean occ", main = "Grid 36-84")
+#plot(sub_occ_avgs$grain[sub_occ_avgs$grid8ID == "44-92"], sub_occ_avgs$mean[sub_occ_avgs$grid8ID == "44-92"], xlab = "grain", ylab = "mean occ", main = "Grid 44-92")
+#plot(sub_occ_avgs$grain[sub_occ_avgs$grid8ID == "36-92"], sub_occ_avgs$mean[sub_occ_avgs$grid8ID == "36-92"], xlab = "grain", ylab = "mean occ", main = "Grid 36-92")
+#plot(sub_occ_avgs$grain[sub_occ_avgs$grid8ID == "36-76"], sub_occ_avgs$mean[sub_occ_avgs$grid8ID == "36-76"], xlab = "grain", ylab = "mean occ", main = "Grid 36-76")
+#plot(sub_occ_avgs$grain[sub_occ_avgs$grid8ID == "36-108"], sub_occ_avgs$mean[sub_occ_avgs$grid8ID == "36-108"], xlab = "grain", ylab = "mean occ", main = "Grid 36-108")
 
 
 ####Stitch lower scale analyses in using stateroute_latlon file to designate lower scales within their bins####
@@ -333,18 +335,23 @@ bbs_bigsmall = inner_join(bbs_scalesorted, stateroute_latlon, by = c("stateroute
 #paste in a prefix on both first so I know whether above or below route -> 0 for grain, 00 for scale 
 #to ensure scales ultimately still follow correct direction and ranking in relation to each other 
 
+
+
+#preparing columns for large merge (renaming analagous columns and 
+#ensuring data still corresponds with appropriate scales and unique ID's)
+
 sub_occ_avgs$grain = paste("0", sub_occ_avgs$grain, sep = "")
 bbs_bigsmall$scale = paste("00", bbs_bigsmall$scale, sep = "")
 
 sub_occ_avgs$scaleID = sub_occ_avgs$grain
 bbs_bigsmall$scaleID = bbs_bigsmall$scale
 
-#in sub_occ for the larger scales instead of stateroute I can have the unrounded lat_lon paired and rename it siteID? 
+#in sub_occ for the larger scales, instead of stateroute I can have the unrounded lat_lon paired and rename it siteID? 
 
 sub_occ_avgs$siteID = paste(sub_occ_avgs$lat, sub_occ_avgs$lon, sep = "")
 bbs_bigsmall$siteID = bbs_bigsmall$stateroute
 
-sub_occ_avgs$occupancy = sub_occ_avgs$mean
+sub_occ_avgs$occupancy = sub_occ_avgs$mean    #renaming occ at above route scale to correspond with occ 
 
 #also keep lat lon info for bbs_bigsmall, don't select it out -> or can I get rid of lat lon in sub occ 
 #since now have unique ID
@@ -352,8 +359,10 @@ sub_occ_avgs$occupancy = sub_occ_avgs$mean
 #just make sure columns are still "lat", "lon" 
 
 
-#and sub_supr_rteID corresponds to the grid8ID, so need it copied into a second column - one used for nesting
-#and one used purely for labeling the above route ID 
+
+
+#and sub_supr_rteID corresponds to the grid8ID, so need it copied into a second column - one used for nesting**
+#and one used purely for labeling the above route ID -> confirm idea?
 
 sub_occ_avgs$sub_supr_rteID = sub_occ_avgs$grid8ID
 bbs_bigsmall$sub_supr_rteID = bbs_bigsmall$subrouteID
@@ -363,8 +372,17 @@ bbs_bigsmall$lon = bbs_bigsmall$Longi
 bbs_bigsmall = bbs_bigsmall %>% 
   dplyr::select(siteID, sub_supr_rteID, occupancy, grid8ID, scaleID, lat, lon)
 
-#make sure variables joining by match in class type! 
+sub_occ_avgs = sub_occ_avgs %>% 
+  dplyr::select(siteID, sub_supr_rteID, occupancy, grid8ID, scaleID, lat, lon)
 
+#both datasets should have 7 corresponding variables 
+
+#make sure variables joining by match in class type! so ID's should be chr vectors 
+
+bbs_bigsmall$siteID = as.character(bbs_bigsmall$siteID)
+sub_occ_avgs$grid8ID = as.character(sub_occ_avgs$grid8ID)
+
+#joining datasets
 
 bbs_bigsmall2 = inner_join(bbs_bigsmall, sub_occ_avgs)
 
