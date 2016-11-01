@@ -382,16 +382,16 @@ sub_occ_avgs = sub_occ_avgs %>%
 bbs_bigsmall$siteID = as.character(bbs_bigsmall$siteID)
 sub_occ_avgs$grid8ID = as.character(sub_occ_avgs$grid8ID)
 
-#joining datasets
+#joining datasets -> bbs_bigsmall with 866748 rows, occ_avgs with 205 rows, should add up to 866953
 
-bbs_bigsmall2 = full_join(bbs_bigsmall, sub_occ_avgs)
+bbs_cross_scales = full_join(bbs_bigsmall, sub_occ_avgs)
+
+#error message BUT adds up to 866953! Hooray! 
+
+#write.csv(bbs_cross_scales, "//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/bbs_cross_scales.csv", row.names = FALSE)
+
+
+bbs_cross_scales = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/bbs_cross_scales.csv")
 
 
 
-#visualizing -> occupancy increases with grain AND variance decreases 
-plot(occ_avgs$mean, occ_avgs$grain)
-
-
-#Pasting latlongs of bin centerpoints together from above-route scale to create character label analagous to "stateroute" label 
-bbs_scaledup$gridcenter = paste(bbs_scaledup$lat, bbs_scaledup$lon, sep = "")
-#^is this even necessary yet? missing stateroutes tho 
