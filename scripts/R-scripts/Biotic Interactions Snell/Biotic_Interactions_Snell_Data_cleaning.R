@@ -16,15 +16,19 @@ Hurlbert_o = read.csv('Master_RO_Correlates_20110610.csv', header = T)
 # subset species whose range occupancies were between 0.3 and 0.7 over a 10 year period
 subsetocc = Hurlbert_o[Hurlbert_o$X10yr.Prop > .3 & Hurlbert_o$X10yr.Prop < .7,]
 
-# read in BBS temporal occupancy data
-temp_occ = read.csv("bbs_sub1.csv", header=TRUE)
-
 # read in BBS abundance data - from Hurlbert Lab
 bbs = read.csv('dataset_1.csv', header = T)
+
 # subset bbs abundance columns
 bbs = bbs[, (names(bbs) %in% c("stateroute", "Aou", "Year","SpeciesTotal",  'routeID', 'Lati', 'Longi'))]
-# read in expected presence data based on BBS 
+
+# read in expected presence data based on BBS for 372 landbird species
 expect_pres = read.csv('expected_presence_on_BBS_routes.csv', header = T)
+
+# read in BBS temporal occupancy data (just for 372 landbird species)
+temp_occ = read.csv("bbs_sub1.csv", header=TRUE) %>%
+  filter(Aou %in% subsetocc$AOU)
+
 
 ############# ---- Set up pairwise comparison table ---- #############
 # read in species trophic assignment table
@@ -137,7 +141,7 @@ routes = unique(temp_occ$stateroute)
 expect_pres$AOU[expect_pres$AOU == 7220] <- 7222
 sub_ep = merge(expect_pres[,c('stateroute', 'AOU')], focal_AOU, by.x = 'AOU',by.y="focalAOU", all.x=TRUE) # want all = TRUE for exp pres
 # merge expected presence with occupancy data
-new_occ = merge(sub_ep, temp_occ, by.x = c('stateroute', 'AOU'), by.y = c('stateroute', 'Aou'), all.x=TRUE) 
+new_occ = merge(sub_ep, temp_occ, by.x = c('stateroute', 'AOU'), by.y = c('stateroute', 'Aou'), all=TRUE) 
 new_occ$n[is.na(new_occ$n)] <- 0
 new_occ$occ[is.na(new_occ$occ)] <- 0
 
