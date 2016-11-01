@@ -259,10 +259,18 @@ ggsave("C:/Git/core-transient/output/plots/boxCT_perc.pdf", height = 8, width = 
 numCT_plot$taxa = as.factor(numCT_plot$taxa)
 numCT_plot$taxa <-droplevels(numCT_plot$taxa, exclude = c("","All","Amphibian", "Reptile"))
 
-n = numCT_plot %>%
+# n calculates number of sites by taxa -nested sites
+n = numCT_taxa %>%
+  dplyr::count(site, taxa) %>%
   group_by(taxa) %>%
-  dplyr::tally(n)
+  tally(n)
 n = data.frame(n)
+# calculates number of sites by taxa -raw
+sitetally = summ %>%
+  dplyr::count(site, taxa) %>%
+  group_by(taxa) %>%
+  dplyr::tally()
+sitetally = data.frame(sitetally)
 
 numCT_box=merge(numCT_taxa, taxcolors, by="taxa")
 
@@ -296,9 +304,9 @@ symbols7 = c(16, 18, 167, 15, 17, 1, 3)
 taxcolorsrank = data.frame(taxa = unique(summ$taxa), color = colorsrank, pch = symbols7)
 
 w <- ggplot(summ, aes(factor(taxa), mu))+theme_classic()+
-  theme(axis.text.x=element_text(angle=90,size=10,vjust=0.5)) + xlab("Taxa") + ylab("Mean Occupancy")
+  theme(axis.text.x=element_text(angle=90,size=10,vjust=0.5)) + xlab("Taxa") + ylab("Mean Occupancy\n")
 w + geom_boxplot(width=1, position=position_dodge(width=0.6),aes(x=taxa, y=mu), fill = taxcolorsrank$color)+
-  scale_fill_manual(labels = taxcolors$taxa, values = taxcolors$color)+theme(axis.ticks=element_blank(),axis.text.x=element_text(size=14),axis.text.y=element_text(size=14),axis.title.x=element_text(size=18),axis.title.y=element_text(size=18,angle=90,vjust = 0.5)) + guides(fill=guide_legend(title=""))+ theme(plot.margin = unit(c(.5,6,.5,.5),"lines")) + annotate("text", x = nrank$taxa, y = 1.05, label = c("4848","2496", "3984", "1983", "60216", "160809", "11316"),size=5,vjust=0.8, color = "black")
+  scale_fill_manual(labels = taxcolors$taxa, values = taxcolors$color)+theme(axis.ticks=element_blank(),axis.text.x=element_text(size=14),axis.text.y=element_text(size=14),axis.title.x=element_text(size=19),axis.title.y=element_text(size=19,angle=90,vjust = 1)) + guides(fill=guide_legend(title=""))+ theme(plot.margin = unit(c(.5,.5,.5,.5),"lines")) + annotate("text", x = nrank$taxa, y = 1.05, label = sitetally$n,size=5,vjust=0.8, color = "black")
 ggsave("C:/Git/core-transient/output/plots/meanOcc.pdf", height = 8, width = 12)
 
 ##########################################################################
