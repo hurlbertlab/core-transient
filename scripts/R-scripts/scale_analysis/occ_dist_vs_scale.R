@@ -384,7 +384,7 @@ sub_occ_avgs$grid8ID = as.character(sub_occ_avgs$grid8ID)
 
 #joining datasets
 
-bbs_bigsmall2 = inner_join(bbs_bigsmall, sub_occ_avgs)
+bbs_bigsmall2 = full_join(bbs_bigsmall, sub_occ_avgs)
 
 
 
