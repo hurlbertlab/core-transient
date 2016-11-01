@@ -340,15 +340,15 @@ bbs_bigsmall = inner_join(bbs_scalesorted, stateroute_latlon, by = c("stateroute
 #preparing columns for large merge (renaming analagous columns and 
 #ensuring data still corresponds with appropriate scales and unique ID's)
 
-sub_occ_avgs$grain = paste("0", sub_occ_avgs$grain, sep = "")
-bbs_bigsmall$scale = paste("00", bbs_bigsmall$scale, sep = "")
+sub_occ_avgs$grain = paste("0.0", sub_occ_avgs$grain, sep = "")
+bbs_bigsmall$scale = paste("0.00", bbs_bigsmall$scale, sep = "")
 
 sub_occ_avgs$scaleID = sub_occ_avgs$grain
 bbs_bigsmall$scaleID = bbs_bigsmall$scale
 #scale ID NEEDS to be chr or num, not integer, otherwise 0's will be removed 
 #altho it seems to look ok 
 #hmmm says chr currently, not sure why switched during the join 
-#try designating as num to see if fixed, or putting a . in front otherwise 
+#try putting a . in front otherwise 
 
 
 #in sub_occ for the larger scales, instead of stateroute I can have the unrounded lat_lon paired and rename it siteID? 
@@ -400,7 +400,7 @@ bbs_cross_scales = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled
 
 #is 54KB small enough to fit on git? can I back it up there? 
 
-unique(bbs_cross_scales$scaleID)  #seems to look ok - ok definitely not ok for plotting though
+unique(bbs_cross_scales$scaleID)  #seems to look ok 
 #need to go back and fix the scaleID because influences the ordering by which R reads the scale 
 
 par(mfrow = c(2, 3))
