@@ -345,6 +345,11 @@ bbs_bigsmall$scale = paste("00", bbs_bigsmall$scale, sep = "")
 
 sub_occ_avgs$scaleID = sub_occ_avgs$grain
 bbs_bigsmall$scaleID = bbs_bigsmall$scale
+#scale ID NEEDS to be chr or num, not integer, otherwise 0's will be removed 
+#altho it seems to look ok 
+#hmmm says chr currently, not sure why switched during the join 
+#try designating as num to see if fixed, or putting a . in front otherwise 
+
 
 #in sub_occ for the larger scales, instead of stateroute I can have the unrounded lat_lon paired and rename it siteID? 
 
@@ -393,5 +398,15 @@ bbs_cross_scales = full_join(bbs_bigsmall, sub_occ_avgs)
 
 bbs_cross_scales = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/bbs_cross_scales.csv")
 
+#is 54KB small enough to fit on git? can I back it up there? 
 
+unique(bbs_cross_scales$scaleID)  #seems to look ok - ok definitely not ok for plotting though
+#need to go back and fix the scaleID because influences the ordering by which R reads the scale 
 
+par(mfrow = c(2, 3))
+plot(bbs_cross_scales$scaleID[bbs_cross_scales$grid8ID == "44-76"], bbs_cross_scales$occupancy[bbs_cross_scales$grid8ID == "44-76"], xlab = "grain", ylab = "mean occ", main = "Grid 44-76")
+plot(bbs_cross_scales$scaleID[bbs_cross_scales$grid8ID == "36-84"], bbs_cross_scales$occupancy[bbs_cross_scales$grid8ID == "36-84"], xlab = "grain", ylab = "mean occ", main = "Grid 36-84")
+plot(bbs_cross_scales$scaleID[bbs_cross_scales$grid8ID == "44-92"], bbs_cross_scales$occupancy[bbs_cross_scales$grid8ID == "44-92"], xlab = "grain", ylab = "mean occ", main = "Grid 44-92")
+plot(bbs_cross_scales$scaleID[bbs_cross_scales$grid8ID == "36-92"], bbs_cross_scales$occupancy[bbs_cross_scales$grid8ID == "36-92"], xlab = "grain", ylab = "mean occ", main = "Grid 36-92")
+plot(bbs_cross_scales$scaleID[bbs_cross_scales$grid8ID == "36-76"], bbs_cross_scales$occupancy[bbs_cross_scales$grid8ID == "36-76"], xlab = "grain", ylab = "mean occ", main = "Grid 36-76")
+plot(bbs_cross_scales$scaleID[bbs_cross_scales$grid8ID == "36-108"], bbs_cross_scales$occupancy[bbs_cross_scales$grid8ID == "36-108"], xlab = "grain", ylab = "mean occ", main = "Grid 36-108")
