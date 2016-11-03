@@ -400,8 +400,19 @@ bbs_cross_scales = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled
 
 #is 54KB small enough to fit on git? can I back it up there? 
 
-unique(bbs_cross_scales$scaleID)  #seems to look ok 
-#need to go back and fix the scaleID because influences the ordering by which R reads the scale 
+#need to fix or add-on area column that is based on scaleID 
+
+#bbs_cross_scales$scale_Area = c(0)
+
+#need to make a table that takes stop segment and grid cell size and matches it with scaleID and a scale area
+
+scale_table = data.frame("scaleID" = unique(bbs_cross_scales$scaleID))
+
+scale_table$area = scale_table$scaleID*400 #400 sq km per bbs route, area is just pir^2 
+#so a 10 stop segment is 10^2*pi ? check 
+#use the above to calculate out area based on size of one bbs route or one stop to the next
+
+#visualizing:
 
 par(mfrow = c(2, 3))
 plot(bbs_cross_scales$scaleID[bbs_cross_scales$grid8ID == "44-76"], bbs_cross_scales$occupancy[bbs_cross_scales$grid8ID == "44-76"], xlab = "grain", ylab = "mean occ", main = "Grid 44-76")
@@ -410,3 +421,5 @@ plot(bbs_cross_scales$scaleID[bbs_cross_scales$grid8ID == "44-92"], bbs_cross_sc
 plot(bbs_cross_scales$scaleID[bbs_cross_scales$grid8ID == "36-92"], bbs_cross_scales$occupancy[bbs_cross_scales$grid8ID == "36-92"], xlab = "grain", ylab = "mean occ", main = "Grid 36-92")
 plot(bbs_cross_scales$scaleID[bbs_cross_scales$grid8ID == "36-76"], bbs_cross_scales$occupancy[bbs_cross_scales$grid8ID == "36-76"], xlab = "grain", ylab = "mean occ", main = "Grid 36-76")
 plot(bbs_cross_scales$scaleID[bbs_cross_scales$grid8ID == "36-108"], bbs_cross_scales$occupancy[bbs_cross_scales$grid8ID == "36-108"], xlab = "grain", ylab = "mean occ", main = "Grid 36-108")
+
+
