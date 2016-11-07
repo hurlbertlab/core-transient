@@ -408,10 +408,6 @@ bbs_cross_scales = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled
 
 scale_table = data.frame("scaleID" = unique(bbs_cross_scales$scaleID))
 
-scale_table$area = scale_table$scaleID*400 #400 sq km per bbs route, area is just pir^2 
-#so a 10 stop segment is 10^2*pi ? check 
-#use the above to calculate out area based on size of one bbs route or one stop to the next
-
 
 #every bbs route is 40km long total 
 #every bbs stop is .8km apart (800 m)
@@ -430,6 +426,9 @@ fifty_stops = 50*one_stop
 twentyfive_stops = 25*one_stop
 ten_stops = 10*one_stop
 five_stops = 5*one_stop
+
+
+scale_table$area = as.numeric(c(five_stops, ten_stops, twentyfive_stops, 'NA', 'NA', 'NA', 'NA')) #400 sq km per bbs route, area is just pir^2 
 
 
 
