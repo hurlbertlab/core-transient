@@ -419,40 +419,14 @@ bbs_cross_scales = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled
 
 scale_table = data.frame("scaleID" = unique(bbs_cross_scales$scaleID))
 
-
-#every bbs route is 40km long total 
-#every bbs stop is .8km apart (800 m)
-#every bbs stop has a 400 m radius (.4km)
-#-> radius edge of last stop touches radius edge of following stop 
-#pearl necklace 
-
-#calc area at a single stop, then for each segment, then for total route 
-#then multiply by # of routes in different grid cells 
-
-#at a single stop 
-#pi*(.4)^2 = km^2 area of a single bbs stop 
-
-one_stop = pi*(0.4^2)
-fifty_stops = 50*one_stop
-twentyfive_stops = 25*one_stop
-ten_stops = 10*one_stop
-five_stops = 5*one_stop
-
-
-#400 sq km per bbs route, area is just pir^2 
-
-
-
-
-
 #visualizing:
 
 par(mfrow = c(2, 3))
-plot(bbs_cross_scales$area[bbs_cross_scales$grid8ID == "44-76"], bbs_cross_scales$occupancy[bbs_cross_scales$grid8ID == "44-76"], xlab = "grain", ylab = "mean occ", main = "Grid 44-76")
-plot(bbs_cross_scales$area[bbs_cross_scales$grid8ID == "36-84"], bbs_cross_scales$occupancy[bbs_cross_scales$grid8ID == "36-84"], xlab = "grain", ylab = "mean occ", main = "Grid 36-84")
-plot(bbs_cross_scales$area[bbs_cross_scales$grid8ID == "44-92"], bbs_cross_scales$occupancy[bbs_cross_scales$grid8ID == "44-92"], xlab = "grain", ylab = "mean occ", main = "Grid 44-92")
-plot(bbs_cross_scales$area[bbs_cross_scales$grid8ID == "36-92"], bbs_cross_scales$occupancy[bbs_cross_scales$grid8ID == "36-92"], xlab = "grain", ylab = "mean occ", main = "Grid 36-92")
-plot(bbs_cross_scales$area[bbs_cross_scales$grid8ID == "36-76"], bbs_cross_scales$occupancy[bbs_cross_scales$grid8ID == "36-76"], xlab = "grain", ylab = "mean occ", main = "Grid 36-76")
-plot(bbs_cross_scales$area[bbs_cross_scales$grid8ID == "36-108"], bbs_cross_scales$occupancy[bbs_cross_scales$grid8ID == "36-108"], xlab = "grain", ylab = "mean occ", main = "Grid 36-108")
+plot(log(bbs_cross_scales$area)[bbs_cross_scales$grid8ID == "44-76"], bbs_cross_scales$occupancy[bbs_cross_scales$grid8ID == "44-76"], xlab = "grain", ylab = "mean occ", main = "Grid 44-76")
+plot(log(bbs_cross_scales$area)[bbs_cross_scales$grid8ID == "36-84"], bbs_cross_scales$occupancy[bbs_cross_scales$grid8ID == "36-84"], xlab = "grain", ylab = "mean occ", main = "Grid 36-84")
+plot(log(bbs_cross_scales$area)[bbs_cross_scales$grid8ID == "44-92"], bbs_cross_scales$occupancy[bbs_cross_scales$grid8ID == "44-92"], xlab = "grain", ylab = "mean occ", main = "Grid 44-92")
+plot(log(bbs_cross_scales$area)[bbs_cross_scales$grid8ID == "36-92"], bbs_cross_scales$occupancy[bbs_cross_scales$grid8ID == "36-92"], xlab = "grain", ylab = "mean occ", main = "Grid 36-92")
+plot(log(bbs_cross_scales$area)[bbs_cross_scales$grid8ID == "36-76"], bbs_cross_scales$occupancy[bbs_cross_scales$grid8ID == "36-76"], xlab = "grain", ylab = "mean occ", main = "Grid 36-76")
+plot(log(bbs_cross_scales$area)[bbs_cross_scales$grid8ID == "36-108"], bbs_cross_scales$occupancy[bbs_cross_scales$grid8ID == "36-108"], xlab = "grain", ylab = "mean occ", main = "Grid 36-108")
 
-
+###still need to backtrack and correctly derive mean of means for scales underneath a bbs route
