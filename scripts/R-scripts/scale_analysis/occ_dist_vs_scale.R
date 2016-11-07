@@ -131,13 +131,13 @@ grid_rte_totals = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/
 grid_rtes_best = grid_rte_totals %>% 
   filter(grid_rte_totals$X < 7) #taking top six grids only for state routes to dictate sample
 
-grid_rtes_best$area = grid_rtes_best$n*50*(pi*(0.4^2)) #area in km
+grid_rtes_best$area = grid_rtes_best$n*50*(pi*(0.4^2)) #area in km by # of routes * 50 stops * area of a stop (for later)
 
 
 bbs_scalesorted = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/bbs_scalesorted.csv", header = TRUE)
 #scale corresponds to # of stops in a segment 
 #add area ID BEFORE merging, same with above-route dataset 
-bbs_scalesorted$area = (bbs_scalesorted$scale)*(pi*(0.4^2)) #in km
+bbs_scalesorted$area = (bbs_scalesorted$scale)*(pi*(0.4^2)) # area in km by area of a BBS segment based on # of stops in that segment (for now)
 
 
 #I DO want to join this time because I want the stateroute lat-long info, 
@@ -185,9 +185,18 @@ subrte_occ_avgs = bbs_bigsmall %>% group_by(lat, lon, scaleID, stateroute) %>% #
 #siteID<-necessary?, sub_supr_rteID <-necessary?, RENAME MEAN -> occupancy, grid8ID <- get thru lat + lon, scaleID, lat, lon, area <-get thru grid8ID 
 #for later cross-scale join
 
+#so re-merge based on bbs_bigsmall area, lat, lon, and scaleID to get areas of diff segments 
+#(will have multiple same areas for diff occs, lats, lons, and same scaleIDs)
 
+#pare bbs_bigmsall down to just important variables for next join 
 
+bbs_prejoin = bbs_bigsmall %>%
+  dplyr::select(lat, lon, scaleID, grid8ID, area)
 
+test_join = inner_join(subrte_occ_avgs, bbs_prejoin)
+#I think this worked? mean of means across stateroutes nested within those grid cells 
+#but with occ calc'd BELOW route level before lumped together by cell 
+#area = area of stop segment based on scaleID and lat lon of original stateroute
 
 
 # -----------------------------------------------------------
@@ -399,10 +408,10 @@ sub_occ_avgs$scaleID = sub_occ_avgs$grain
 
 #in sub_occ for the larger scales, instead of stateroute I can have the unrounded lat_lon paired and rename it siteID? 
 
-sub_occ_avgs$siteID = paste(sub_occ_avgs$lat, sub_occ_avgs$lon, sep = "")
+#sub_occ_avgs$siteID = paste(sub_occ_avgs$lat, sub_occ_avgs$lon, sep = "")
 
 
-sub_occ_avgs$occupancy = sub_occ_avgs$mean    #renaming occ at above route scale to correspond with occ 
+#sub_occ_avgs$occupancy = sub_occ_avgs$mean    #renaming occ at above route scale to correspond with occ 
 
 #also keep lat lon info for bbs_bigsmall, don't select it out -> or can I get rid of lat lon in sub occ 
 #since now have unique ID
@@ -415,30 +424,28 @@ sub_occ_avgs$occupancy = sub_occ_avgs$mean    #renaming occ at above route scale
 #and sub_supr_rteID corresponds to the grid8ID, so need it copied into a second column - one used for nesting**
 #and one used purely for labeling the above route ID -> confirm idea?
 
-sub_occ_avgs$sub_supr_rteID = sub_occ_avgs$grid8ID
+#sub_occ_avgs$sub_supr_rteID = sub_occ_avgs$grid8ID
 
 
 
 #paring down datasets to only relevant corresponding variables 
 
-bbs_bigsmall = bbs_bigsmall %>% 
-  dplyr::select(siteID, sub_supr_rteID, occupancy, grid8ID, scaleID, lat, lon, area)
+bbs_test_join = test_join %>% 
+  dplyr::select(mean, grid8ID, scaleID, lat, lon, area)
 
 sub_occ_avgs = sub_occ_avgs %>% 
-  dplyr::select(siteID, sub_supr_rteID, occupancy, grid8ID, scaleID, lat, lon, area)
+  dplyr::select(mean, grid8ID, scaleID, lat, lon, area)
 
 #both datasets should have 7 corresponding variables 
 
 #make sure variables joining by match in class type! so ID's should be chr vectors 
 
-bbs_bigsmall$siteID = as.character(bbs_bigsmall$siteID)
 sub_occ_avgs$grid8ID = as.character(sub_occ_avgs$grid8ID)
-
 
 
 #joining datasets -> bbs_bigsmall with 866748 rows, occ_avgs with 205 rows, should add up to 866953
 
-bbs_cross_scales = full_join(bbs_bigsmall, sub_occ_avgs)
+bbs_cross_scales = full_join(bbs_test_join, sub_occ_avgs)
 
 #error message BUT adds up to 866953! Hooray! 
 
