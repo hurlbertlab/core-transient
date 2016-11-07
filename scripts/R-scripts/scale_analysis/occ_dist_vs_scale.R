@@ -287,14 +287,21 @@ grid_rte_totals = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/
 grid_rtes_best = grid_rte_totals %>% 
   filter(grid_rte_totals$X < 7) #taking top six grids only for state routes to dictate sample
 
+grid_rtes_best$area = grid_rtes_best$n*50*(pi*(0.4^2)) #area in km
 
 #-------------------------------------------------------------------
 #use grid8ID specified in grid_rtes_best to subset occ_avgs for only those that match grid8ID
 #then can compare across increasing grain size 
 occ_avgs = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/occ_avgs.csv")
 
-sub_occ_avgs = occ_avgs %>% 
-  filter(grid8ID %in% grid_rtes_best$grid8ID)
+pre_sub_occ_avgs = occ_avgs %>% 
+  filter(grid8ID %in% grid_rtes_best$grid8ID) 
+   #want to retain area column from grid_rtes_best 
+  #based on # of stateroutes in each grid, based on grid center....so I think I want to join and select tbh 
+
+
+sub_occ_avgs = inner_join(pre_sub_occ_avgs, grid_rtes_best, by = "grid8ID") %>%
+  dplyr::select(lat, lon, grain, mean, grid8ID, area)
 
 #check with unique to make sure 6 cells correct ====> it's correct 
 #checktest = unique(sub_occ_avgs$grid8ID)
@@ -317,6 +324,10 @@ sub_occ_avgs = occ_avgs %>%
 ##below a bbs route: bbs_scalesorted
 
 bbs_scalesorted = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/bbs_scalesorted.csv", header = TRUE)
+#scale corresponds to # of stops in a segment 
+#add area ID BEFORE merging, same with above-route dataset 
+bbs_scalesorted$area = (bbs_scalesorted$scale)*(pi*(0.4^2)) #in km
+
 
 #I DO want to join this time because I want the stateroute lat-long info, 
 #so I know which bins the stateroutes can be paired up in 
