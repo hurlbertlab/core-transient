@@ -385,6 +385,19 @@ bbs_bigsmall$sub_supr_rteID = bbs_bigsmall$subrouteID
 bbs_bigsmall$lat = bbs_bigsmall$Lati
 bbs_bigsmall$lon = bbs_bigsmall$Longi
 
+#before joining datasets OR getting rid of variables -> calc mean of means for bbs_bigsmall 
+#determining the mean of means across reps and then across scales for below a bbs route 
+
+subrte_occ_avgs = bbs_bigsmall %>% group_by(lat, lon, scaleID, sub_supr_rteID) %>% #adding sub_supr_rteID as proxy for rep to grouping
+  summarize(mean = mean(occ)) %>% #summarize occ across Aou's for each rep 
+  group_by(lat, lon, scaleID) %>% #group again, this time just by lat, lon, and grain
+  summarize(mean = mean(mean))
+
+
+
+
+#paring down datasets to only relevant corresponding variables 
+
 bbs_bigsmall = bbs_bigsmall %>% 
   dplyr::select(siteID, sub_supr_rteID, occupancy, grid8ID, scaleID, lat, lon, area)
 
@@ -397,6 +410,8 @@ sub_occ_avgs = sub_occ_avgs %>%
 
 bbs_bigsmall$siteID = as.character(bbs_bigsmall$siteID)
 sub_occ_avgs$grid8ID = as.character(sub_occ_avgs$grid8ID)
+
+
 
 #joining datasets -> bbs_bigsmall with 866748 rows, occ_avgs with 205 rows, should add up to 866953
 
