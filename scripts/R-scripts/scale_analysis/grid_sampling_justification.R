@@ -28,8 +28,9 @@ temproutes = good_rtes2 %>%
   left_join(routes, good_rtes2, by = "stateroute") %>%
   dplyr::select(stateroute, Lati, Longi)
 
+ct= c()
 
-grain = 10
+grain = 8
 
 map_threshold = function(grain, thresh) {
   temproutes$latbin = floor(temproutes$Lati/grain)*grain + grain/2
@@ -37,7 +38,8 @@ map_threshold = function(grain, thresh) {
   temproutes$latbin = floor(temproutes$Lati/grain)*grain + grain/2
   temproutes$longbin = floor(temproutes$Longi/grain)*grain + grain/2
   
-  ct = temproutes %>% count(latbin, longbin)
+  ct = temproutes %>% 
+    count(latbin, longbin)
   
   map('state')
   points(ct$longbin[ct$n >= thresh], ct$latbin[ct$n >= thresh], 
@@ -48,9 +50,20 @@ map_threshold = function(grain, thresh) {
   
 }
 
+
+map_threshold(8, 2)
+
+
 text(ct$longbin, ct$latbin, ct$n)
 
-
+#mapping occ avgs across US
+map('state')
+points(bbs_cross_scales$lon, bbs_cross_scales$lat, 
+       cex = log10(bbs_cross_scales$mean), pch = 16)
+#leg_benchmarks = c(2, max(ct$n)/2, max(ct$n))
+#legend("bottomright", legend = c(2, (log10(bbs_cross_scales$mean))/2, log10(bbs_cross_scales$mean)), pch = 16)
+       #pt.cex = log10(leg_benchmarks))
+#might have to correct lat + lon within a projection? 
 
 hist(ct$n)
 median(ct$n)
