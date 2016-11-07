@@ -386,10 +386,10 @@ bbs_bigsmall$lat = bbs_bigsmall$Lati
 bbs_bigsmall$lon = bbs_bigsmall$Longi
 
 bbs_bigsmall = bbs_bigsmall %>% 
-  dplyr::select(siteID, sub_supr_rteID, occupancy, grid8ID, scaleID, lat, lon)
+  dplyr::select(siteID, sub_supr_rteID, occupancy, grid8ID, scaleID, lat, lon, area)
 
 sub_occ_avgs = sub_occ_avgs %>% 
-  dplyr::select(siteID, sub_supr_rteID, occupancy, grid8ID, scaleID, lat, lon)
+  dplyr::select(siteID, sub_supr_rteID, occupancy, grid8ID, scaleID, lat, lon, area)
 
 #both datasets should have 7 corresponding variables 
 
@@ -439,7 +439,7 @@ ten_stops = 10*one_stop
 five_stops = 5*one_stop
 
 
-scale_table$area = as.numeric(c(five_stops, ten_stops, twentyfive_stops, 'NA', 'NA', 'NA', 'NA')) #400 sq km per bbs route, area is just pir^2 
+#400 sq km per bbs route, area is just pir^2 
 
 
 
@@ -448,11 +448,11 @@ scale_table$area = as.numeric(c(five_stops, ten_stops, twentyfive_stops, 'NA', '
 #visualizing:
 
 par(mfrow = c(2, 3))
-plot(bbs_cross_scales$scaleID[bbs_cross_scales$grid8ID == "44-76"], bbs_cross_scales$occupancy[bbs_cross_scales$grid8ID == "44-76"], xlab = "grain", ylab = "mean occ", main = "Grid 44-76")
-plot(bbs_cross_scales$scaleID[bbs_cross_scales$grid8ID == "36-84"], bbs_cross_scales$occupancy[bbs_cross_scales$grid8ID == "36-84"], xlab = "grain", ylab = "mean occ", main = "Grid 36-84")
-plot(bbs_cross_scales$scaleID[bbs_cross_scales$grid8ID == "44-92"], bbs_cross_scales$occupancy[bbs_cross_scales$grid8ID == "44-92"], xlab = "grain", ylab = "mean occ", main = "Grid 44-92")
-plot(bbs_cross_scales$scaleID[bbs_cross_scales$grid8ID == "36-92"], bbs_cross_scales$occupancy[bbs_cross_scales$grid8ID == "36-92"], xlab = "grain", ylab = "mean occ", main = "Grid 36-92")
-plot(bbs_cross_scales$scaleID[bbs_cross_scales$grid8ID == "36-76"], bbs_cross_scales$occupancy[bbs_cross_scales$grid8ID == "36-76"], xlab = "grain", ylab = "mean occ", main = "Grid 36-76")
-plot(bbs_cross_scales$scaleID[bbs_cross_scales$grid8ID == "36-108"], bbs_cross_scales$occupancy[bbs_cross_scales$grid8ID == "36-108"], xlab = "grain", ylab = "mean occ", main = "Grid 36-108")
+plot(bbs_cross_scales$area[bbs_cross_scales$grid8ID == "44-76"], bbs_cross_scales$occupancy[bbs_cross_scales$grid8ID == "44-76"], xlab = "grain", ylab = "mean occ", main = "Grid 44-76")
+plot(bbs_cross_scales$area[bbs_cross_scales$grid8ID == "36-84"], bbs_cross_scales$occupancy[bbs_cross_scales$grid8ID == "36-84"], xlab = "grain", ylab = "mean occ", main = "Grid 36-84")
+plot(bbs_cross_scales$area[bbs_cross_scales$grid8ID == "44-92"], bbs_cross_scales$occupancy[bbs_cross_scales$grid8ID == "44-92"], xlab = "grain", ylab = "mean occ", main = "Grid 44-92")
+plot(bbs_cross_scales$area[bbs_cross_scales$grid8ID == "36-92"], bbs_cross_scales$occupancy[bbs_cross_scales$grid8ID == "36-92"], xlab = "grain", ylab = "mean occ", main = "Grid 36-92")
+plot(bbs_cross_scales$area[bbs_cross_scales$grid8ID == "36-76"], bbs_cross_scales$occupancy[bbs_cross_scales$grid8ID == "36-76"], xlab = "grain", ylab = "mean occ", main = "Grid 36-76")
+plot(bbs_cross_scales$area[bbs_cross_scales$grid8ID == "36-108"], bbs_cross_scales$occupancy[bbs_cross_scales$grid8ID == "36-108"], xlab = "grain", ylab = "mean occ", main = "Grid 36-108")
 
 
