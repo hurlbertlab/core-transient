@@ -87,7 +87,93 @@ for (scale in scales) {
 
 bbs_scalesorted<-output
 
+
+
+##locating and ID-ing stateroutes contained within a given grid cell (since disappear in process of deriving occ)##
+
+#bringing back in routes present from 2000-2014 in every year
+good_rtes2 = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/good_rtes2.csv", header = TRUE)
+
+
+#bringing in lat lon associated with each route (so can determine routes present in grid cell)
+routes = read.csv('scripts/R-scripts/scale_analysis/routes.csv')
+routes$stateroute = 1000*routes$statenum + routes$Route
+
+
+#putting these files together to get good routes AND their associated lat-lon data 
+#(so can be matched in corresponding grid cells)
+
+
+require(dplyr)
+stateroute_latlon = routes %>% 
+  filter( routes$stateroute %in% good_rtes2$stateroute) %>% #filter, don't join bc extraneous and unnecessary info 
+  dplyr::select(stateroute, Lati, Longi) #just getting lats and longs of stateroutes in general 
+
+#setting grain to highest cell size 
+grain = 8
+
+#binning stateroutes according to latlon in grain 8 cells
+stateroute_latlon$latbin = floor(stateroute_latlon$Lati/grain)*grain + grain/2 
+stateroute_latlon$longbin = floor(stateroute_latlon$Longi/grain)*grain + grain/2
+
+stateroute_latlon$grid8ID = paste(stateroute_latlon$latbin, stateroute_latlon$longbin, sep = "")
+
+
+#count # of stateroutes in each cell, take top 6
+require(dplyr) 
+grid_rte_totals = stateroute_latlon %>% count(grid8ID) %>% arrange(desc(n)) 
+
+
+#write.csv(grid_rte_totals, "//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/grid_rte_totals.csv")
+
+grid_rte_totals = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/grid_rte_totals.csv")
+#intentionally allowing "X" column to be created for ease of selection of top 6 cells 
+grid_rtes_best = grid_rte_totals %>% 
+  filter(grid_rte_totals$X < 7) #taking top six grids only for state routes to dictate sample
+
+grid_rtes_best$area = grid_rtes_best$n*50*(pi*(0.4^2)) #area in km
+
+
 bbs_scalesorted = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/bbs_scalesorted.csv", header = TRUE)
+#scale corresponds to # of stops in a segment 
+#add area ID BEFORE merging, same with above-route dataset 
+bbs_scalesorted$area = (bbs_scalesorted$scale)*(pi*(0.4^2)) #in km
+
+
+#I DO want to join this time because I want the stateroute lat-long info, 
+#so I know which bins the stateroutes can be paired up in 
+
+bbs_bigsmall = inner_join(bbs_scalesorted, stateroute_latlon, by = c("stateroute" = "stateroute")) 
+bbs_bigsmall$scale = paste("0.00", bbs_bigsmall$scale, sep = "")
+bbs_bigsmall$scaleID = bbs_bigsmall$scale
+bbs_bigsmall$siteID = bbs_bigsmall$stateroute 
+
+
+bbs_bigsmall$sub_supr_rteID = bbs_bigsmall$subrouteID
+bbs_bigsmall$lat = bbs_bigsmall$Lati
+bbs_bigsmall$lon = bbs_bigsmall$Longi
+
+
+
+#before joining datasets OR getting rid of variables -> calc mean of means for bbs_bigsmall 
+#determining the mean of means across reps and then across scales for below a bbs route 
+
+subrte_occ_avgs = bbs_bigsmall %>% group_by(lat, lon, scaleID, stateroute) %>% #adding stateroute as proxy for rep to grouping
+  summarize(mean = mean(occupancy)) %>% #summarize occ across Aou's for each rep 
+  group_by(lat, lon, scaleID) %>% #group again, this time just by lat, lon, and grain
+  summarize(mean = mean(mean))
+
+##### get Sara's feedback and help 
+#not sure what to do about "rep" since did not run separate reps for beneath-route calcs? 
+#should I reconstruct WITH a rep and rerun? NO!!!!
+#reps were for pulling different combinations of stateroutes within each grid cell 
+#because we weren't going to use ALL of the stateroutes in each grid cell 
+#because that # varied by cell! wanted to hold constant 
+#so sampled 
+#below route scale didn't need that 
+#so we calc mean by stateroute in lieu of rep and scaleID, I think that's reasonable 
+#pull addition of lat lon and scaleID variables earlier on in script 
+
 
 # -----------------------------------------------------------
 
@@ -240,54 +326,7 @@ occ_avgs$grid8ID = paste(floor(occ_avgs$lat/8)*8 + 8/2, floor(occ_avgs$lon/8)*8 
 #write.csv(occ_avgs, "//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/occ_avgs.csv", row.names = FALSE)
 
 #-----------------------------------------------------------------------------------------
-
 ####Combining sub and above-route scale analyses outputs for comparison####
-##Pre-combining formatting of datasets:
-
-
-##ocating and ID-ing stateroutes contained within a given grid cell (since disappear in process of deriving occ)##
-
-#bringing back in routes present from 2000-2014 in every year
-good_rtes2 = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/good_rtes2.csv", header = TRUE)
-
-
-#bringing in lat lon associated with each route (so can determine routes present in grid cell)
-routes = read.csv('scripts/R-scripts/scale_analysis/routes.csv')
-routes$stateroute = 1000*routes$statenum + routes$Route
-
-
-#putting these files together to get good routes AND their associated lat-lon data 
-#(so can be matched in corresponding grid cells)
-
-
-require(dplyr)
-stateroute_latlon = routes %>% 
-  filter( routes$stateroute %in% good_rtes2$stateroute) %>% #filter, don't join bc extraneous and unnecessary info 
-  dplyr::select(stateroute, Lati, Longi) #just getting lats and longs of stateroutes in general 
-
-#setting grain to highest cell size 
-grain = 8
-
-#binning stateroutes according to latlon in grain 8 cells
-stateroute_latlon$latbin = floor(stateroute_latlon$Lati/grain)*grain + grain/2 
-stateroute_latlon$longbin = floor(stateroute_latlon$Longi/grain)*grain + grain/2
-
-stateroute_latlon$grid8ID = paste(stateroute_latlon$latbin, stateroute_latlon$longbin, sep = "")
-
-
-#count # of stateroutes in each cell, take top 6
-require(dplyr) 
-grid_rte_totals = stateroute_latlon %>% count(grid8ID) %>% arrange(desc(n)) 
-
-
-#write.csv(grid_rte_totals, "//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/grid_rte_totals.csv")
-
-grid_rte_totals = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/grid_rte_totals.csv")
-#intentionally allowing "X" column to be created for ease of selection of top 6 cells 
-grid_rtes_best = grid_rte_totals %>% 
-  filter(grid_rte_totals$X < 7) #taking top six grids only for state routes to dictate sample
-
-grid_rtes_best$area = grid_rtes_best$n*50*(pi*(0.4^2)) #area in km
 
 #-------------------------------------------------------------------
 #use grid8ID specified in grid_rtes_best to subset occ_avgs for only those that match grid8ID
@@ -308,32 +347,14 @@ sub_occ_avgs = inner_join(pre_sub_occ_avgs, grid_rtes_best, by = "grid8ID") %>%
 
 
 
-####Map occ ~ grain at each of the six sample collections#### 
-
-#super gross right now but it works 
-#par(mfrow = c(2, 3))
-#plot(sub_occ_avgs$grain[sub_occ_avgs$grid8ID == "44-76"], sub_occ_avgs$mean[sub_occ_avgs$grid8ID == "44-76"], xlab = "grain", ylab = "mean occ", main = "Grid 44-76")
-#plot(sub_occ_avgs$grain[sub_occ_avgs$grid8ID == "36-84"], sub_occ_avgs$mean[sub_occ_avgs$grid8ID == "36-84"], xlab = "grain", ylab = "mean occ", main = "Grid 36-84")
-#plot(sub_occ_avgs$grain[sub_occ_avgs$grid8ID == "44-92"], sub_occ_avgs$mean[sub_occ_avgs$grid8ID == "44-92"], xlab = "grain", ylab = "mean occ", main = "Grid 44-92")
-#plot(sub_occ_avgs$grain[sub_occ_avgs$grid8ID == "36-92"], sub_occ_avgs$mean[sub_occ_avgs$grid8ID == "36-92"], xlab = "grain", ylab = "mean occ", main = "Grid 36-92")
-#plot(sub_occ_avgs$grain[sub_occ_avgs$grid8ID == "36-76"], sub_occ_avgs$mean[sub_occ_avgs$grid8ID == "36-76"], xlab = "grain", ylab = "mean occ", main = "Grid 36-76")
-#plot(sub_occ_avgs$grain[sub_occ_avgs$grid8ID == "36-108"], sub_occ_avgs$mean[sub_occ_avgs$grid8ID == "36-108"], xlab = "grain", ylab = "mean occ", main = "Grid 36-108")
 
 
 ####Stitch lower scale analyses in using stateroute_latlon file to designate lower scales within their bins####
 ##below a bbs route: bbs_scalesorted
 
-bbs_scalesorted = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/bbs_scalesorted.csv", header = TRUE)
-#scale corresponds to # of stops in a segment 
-#add area ID BEFORE merging, same with above-route dataset 
-bbs_scalesorted$area = (bbs_scalesorted$scale)*(pi*(0.4^2)) #in km
+ 
 
 
-#I DO want to join this time because I want the stateroute lat-long info, 
-#so I know which bins the stateroutes can be paired up in 
-
-bbs_bigsmall = inner_join(bbs_scalesorted, stateroute_latlon, by = c("stateroute" = "stateroute")) 
-  
 #now I know how the sub-route data is nested in the grid 8 data 
 #and I can match the occ avg data for grain 8 in
 #by pulling in sub occ avgs? at the diff grains? based on grid8ID 
@@ -352,10 +373,9 @@ bbs_bigsmall = inner_join(bbs_scalesorted, stateroute_latlon, by = c("stateroute
 #ensuring data still corresponds with appropriate scales and unique ID's)
 
 sub_occ_avgs$grain = paste("0.0", sub_occ_avgs$grain, sep = "")
-bbs_bigsmall$scale = paste("0.00", bbs_bigsmall$scale, sep = "")
 
 sub_occ_avgs$scaleID = sub_occ_avgs$grain
-bbs_bigsmall$scaleID = bbs_bigsmall$scale
+
 #scale ID NEEDS to be chr or num, not integer, otherwise 0's will be removed 
 #altho it seems to look ok 
 #hmmm says chr currently, not sure why switched during the join 
@@ -365,7 +385,7 @@ bbs_bigsmall$scaleID = bbs_bigsmall$scale
 #in sub_occ for the larger scales, instead of stateroute I can have the unrounded lat_lon paired and rename it siteID? 
 
 sub_occ_avgs$siteID = paste(sub_occ_avgs$lat, sub_occ_avgs$lon, sep = "")
-bbs_bigsmall$siteID = bbs_bigsmall$stateroute
+
 
 sub_occ_avgs$occupancy = sub_occ_avgs$mean    #renaming occ at above route scale to correspond with occ 
 
@@ -381,18 +401,6 @@ sub_occ_avgs$occupancy = sub_occ_avgs$mean    #renaming occ at above route scale
 #and one used purely for labeling the above route ID -> confirm idea?
 
 sub_occ_avgs$sub_supr_rteID = sub_occ_avgs$grid8ID
-bbs_bigsmall$sub_supr_rteID = bbs_bigsmall$subrouteID
-bbs_bigsmall$lat = bbs_bigsmall$Lati
-bbs_bigsmall$lon = bbs_bigsmall$Longi
-
-#before joining datasets OR getting rid of variables -> calc mean of means for bbs_bigsmall 
-#determining the mean of means across reps and then across scales for below a bbs route 
-
-subrte_occ_avgs = bbs_bigsmall %>% group_by(lat, lon, scaleID, sub_supr_rteID) %>% #adding sub_supr_rteID as proxy for rep to grouping
-  summarize(mean = mean(occ)) %>% #summarize occ across Aou's for each rep 
-  group_by(lat, lon, scaleID) %>% #group again, this time just by lat, lon, and grain
-  summarize(mean = mean(mean))
-
 
 
 
@@ -434,7 +442,7 @@ bbs_cross_scales = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled
 
 scale_table = data.frame("scaleID" = unique(bbs_cross_scales$scaleID))
 
-#visualizing:
+####Map occ ~ grain at each of the six sample collections#### 
 
 par(mfrow = c(2, 3))
 plot(log(bbs_cross_scales$area)[bbs_cross_scales$grid8ID == "44-76"], bbs_cross_scales$occupancy[bbs_cross_scales$grid8ID == "44-76"], xlab = "grain", ylab = "mean occ", main = "Grid 44-76")
@@ -444,4 +452,3 @@ plot(log(bbs_cross_scales$area)[bbs_cross_scales$grid8ID == "36-92"], bbs_cross_
 plot(log(bbs_cross_scales$area)[bbs_cross_scales$grid8ID == "36-76"], bbs_cross_scales$occupancy[bbs_cross_scales$grid8ID == "36-76"], xlab = "grain", ylab = "mean occ", main = "Grid 36-76")
 plot(log(bbs_cross_scales$area)[bbs_cross_scales$grid8ID == "36-108"], bbs_cross_scales$occupancy[bbs_cross_scales$grid8ID == "36-108"], xlab = "grain", ylab = "mean occ", main = "Grid 36-108")
 
-###still need to backtrack and correctly derive mean of means for scales underneath a bbs route
