@@ -412,6 +412,29 @@ scale_table$area = scale_table$scaleID*400 #400 sq km per bbs route, area is jus
 #so a 10 stop segment is 10^2*pi ? check 
 #use the above to calculate out area based on size of one bbs route or one stop to the next
 
+
+#every bbs route is 40km long total 
+#every bbs stop is .8km apart (800 m)
+#every bbs stop has a 400 m radius (.4km)
+#-> radius edge of last stop touches radius edge of following stop 
+#pearl necklace 
+
+#calc area at a single stop, then for each segment, then for total route 
+#then multiply by # of routes in different grid cells 
+
+#at a single stop 
+#pi*(.4)^2 = km^2 area of a single bbs stop 
+
+one_stop = pi*(0.4^2)
+fifty_stops = 50*one_stop
+twentyfive_stops = 25*one_stop
+ten_stops = 10*one_stop
+five_stops = 5*one_stop
+
+
+
+
+
 #visualizing:
 
 par(mfrow = c(2, 3))
