@@ -467,10 +467,13 @@ scale_table = data.frame("scaleID" = unique(bbs_cross_scales$scaleID))
 ####Map occ ~ grain at each of the six sample collections#### 
 
 par(mfrow = c(2, 3))
-plot(bbs_cross_scales$area[bbs_cross_scales$grid8ID == "44-76"], bbs_cross_scales$mean[bbs_cross_scales$grid8ID == "44-76"], xlab = "grain", ylab = "mean occ", main = "Grid 44-76")
-plot(bbs_cross_scales$area[bbs_cross_scales$grid8ID == "36-84"], bbs_cross_scales$mean[bbs_cross_scales$grid8ID == "36-84"], xlab = "grain", ylab = "mean occ", main = "Grid 36-84")
-plot(bbs_cross_scales$area[bbs_cross_scales$grid8ID == "44-92"], bbs_cross_scales$mean[bbs_cross_scales$grid8ID == "44-92"], xlab = "grain", ylab = "mean occ", main = "Grid 44-92")
-plot(bbs_cross_scales$area[bbs_cross_scales$grid8ID == "36-92"], bbs_cross_scales$mean[bbs_cross_scales$grid8ID == "36-92"], xlab = "grain", ylab = "mean occ", main = "Grid 36-92")
-plot(bbs_cross_scales$area[bbs_cross_scales$grid8ID == "36-76"], bbs_cross_scales$mean[bbs_cross_scales$grid8ID == "36-76"], xlab = "grain", ylab = "mean occ", main = "Grid 36-76")
-plot(bbs_cross_scales$area[bbs_cross_scales$grid8ID == "36-108"], bbs_cross_scales$mean[bbs_cross_scales$grid8ID == "36-108"], xlab = "grain", ylab = "mean occ", main = "Grid 36-108")
+plot(bbs_cross_scales$log_area[bbs_cross_scales$grid8ID == "44-76"], bbs_cross_scales$mean[bbs_cross_scales$grid8ID == "44-76"], xlab = "grain", ylab = "mean occ", main = "Grid 44-76")
+plot(bbs_cross_scales$log_area[bbs_cross_scales$grid8ID == "36-84"], bbs_cross_scales$mean[bbs_cross_scales$grid8ID == "36-84"], xlab = "grain", ylab = "mean occ", main = "Grid 36-84")
+plot(bbs_cross_scales$log_area[bbs_cross_scales$grid8ID == "44-92"], bbs_cross_scales$mean[bbs_cross_scales$grid8ID == "44-92"], xlab = "grain", ylab = "mean occ", main = "Grid 44-92")
+plot(bbs_cross_scales$log_area[bbs_cross_scales$grid8ID == "36-92"], bbs_cross_scales$mean[bbs_cross_scales$grid8ID == "36-92"], xlab = "grain", ylab = "mean occ", main = "Grid 36-92")
+plot(bbs_cross_scales$log_area[bbs_cross_scales$grid8ID == "36-76"], bbs_cross_scales$mean[bbs_cross_scales$grid8ID == "36-76"], xlab = "grain", ylab = "mean occ", main = "Grid 36-76")
+plot(bbs_cross_scales$log_area[bbs_cross_scales$grid8ID == "36-108"], bbs_cross_scales$mean[bbs_cross_scales$grid8ID == "36-108"], xlab = "grain", ylab = "mean occ", main = "Grid 36-108")
 
+#need to log transform area but SO FAR SO GOOD :~D 
+
+bbs_cross_scales$log_area = log(bbs_cross_scales$area)
