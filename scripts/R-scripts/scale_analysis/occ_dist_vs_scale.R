@@ -1,4 +1,4 @@
-#Variation in occupancy at multiple scales WITHIN BBS sites
+#Variation in occupancy at multiple scales WITHIN & ABOVE BBS sites
 #Molly F. Jenkins 
 #07/27/2016
 
@@ -159,9 +159,15 @@ bbs_bigsmall$lon = bbs_bigsmall$Longi
 #determining the mean of means across reps and then across scales for below a bbs route 
 
 subrte_occ_avgs = bbs_bigsmall %>% group_by(lat, lon, scaleID, stateroute) %>% #adding stateroute as proxy for rep to grouping
-  summarize(mean = mean(occupancy)) %>% #summarize occ across Aou's for each rep 
-  group_by(lat, lon, scaleID) %>% #group again, this time just by lat, lon, and grain
+  summarize(mean = mean(occupancy)) %>% #calc across all AOUs (leaving out Aou as grouping variable)
+  group_by(lat, lon, scaleID) %>% #calc across all stateroutes for each scale (because stateroutes ARE the reps in this case...?)
   summarize(mean = mean(mean))
+
+#do I need to take mean of means here? or do I already have one mean and just need to take one more 
+#instead of two here, and thus preserve stateroute? 
+#bc when calc occupancy in original function, derive it across years for all AOU's.... 
+#so don't I just need to take mean across AOU's and then scales for each stateroute? 
+
 
 ##### get Sara's feedback and help 
 #not sure what to do about "rep" since did not run separate reps for beneath-route calcs? 
@@ -175,8 +181,11 @@ subrte_occ_avgs = bbs_bigsmall %>% group_by(lat, lon, scaleID, stateroute) %>% #
 #pull addition of lat lon and scaleID variables earlier on in script 
 
 
-#pull back in siteID, sub_supr_rteID, occupancy, grid8ID, scaleID, lat, lon, area variables 
+#pull back in following variables:
+#siteID<-necessary?, sub_supr_rteID <-necessary?, RENAME MEAN -> occupancy, grid8ID <- get thru lat + lon, scaleID, lat, lon, area <-get thru grid8ID 
 #for later cross-scale join
+
+
 
 
 
