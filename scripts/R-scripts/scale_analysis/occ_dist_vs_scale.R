@@ -175,6 +175,12 @@ subrte_occ_avgs = bbs_bigsmall %>% group_by(lat, lon, scaleID, stateroute) %>% #
 #pull addition of lat lon and scaleID variables earlier on in script 
 
 
+#pull back in siteID, sub_supr_rteID, occupancy, grid8ID, scaleID, lat, lon, area variables 
+#for later cross-scale join
+
+
+
+
 # -----------------------------------------------------------
 
 ####Calculating occupancy at scales greater than a single route####
