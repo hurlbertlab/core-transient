@@ -466,6 +466,8 @@ scale_table = data.frame("scaleID" = unique(bbs_cross_scales$scaleID))
 
 ####Map occ ~ grain at each of the six sample collections#### 
 
+bbs_cross_scales$log_area = log(bbs_cross_scales$area)
+
 par(mfrow = c(2, 3))
 plot(bbs_cross_scales$log_area[bbs_cross_scales$grid8ID == "44-76"], bbs_cross_scales$mean[bbs_cross_scales$grid8ID == "44-76"], xlab = "log(area)", ylab = "mean occ", main = "Grid 44-76")
 plot(bbs_cross_scales$log_area[bbs_cross_scales$grid8ID == "36-84"], bbs_cross_scales$mean[bbs_cross_scales$grid8ID == "36-84"], xlab = "log(area)", ylab = "mean occ", main = "Grid 36-84")
@@ -476,7 +478,7 @@ plot(bbs_cross_scales$log_area[bbs_cross_scales$grid8ID == "36-108"], bbs_cross_
 
 #need to log transform area but SO FAR SO GOOD :~D 
 
-bbs_cross_scales$log_area = log(bbs_cross_scales$area)
+
 
 #make a map where grid centers size is dictated by avg occs (do areas further out west have lower avg occs?)
 #label with grid cell number's for comparison with graphs 
