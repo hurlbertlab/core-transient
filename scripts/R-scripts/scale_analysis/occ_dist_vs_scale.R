@@ -116,21 +116,23 @@ stateroute_latlon$longbin = floor(stateroute_latlon$Longi/grain)*grain + grain/2
 stateroute_latlon$grid8ID = paste(stateroute_latlon$latbin, stateroute_latlon$longbin, sep = "")
 
 
-#count # of stateroutes in each cell, take top 6
+#count # of stateroutes in each cell, take top 6 (for both sub and above-route occupancy)
 require(dplyr) 
 grid_rte_totals = stateroute_latlon %>% 
   count(grid8ID) %>% 
   arrange(desc(n)) 
-
-
 #intentionally allowing "X" column to be created for ease of selection of top 6 cells 
 #write.csv(grid_rte_totals, "//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/grid_rte_totals.csv")
 grid_rte_totals = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/grid_rte_totals.csv")
 grid_rtes_best = grid_rte_totals %>% 
   filter(grid_rte_totals$X < 7) #taking top six grids 
+
+
 grid_rtes_best$area = grid_rtes_best$n*50*(pi*(0.4^2)) 
 #area in km by # of routes * 50 stops * area of a stop (for above-route scale later)
-write.csv(grid_rtes_best, "//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/grid_rtes_best.csv")
+#write.csv(grid_rtes_best, "//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/grid_rtes_best.csv") 
+#wrote to file for later use in cross-scale merge
+
 
 bbs_scalesorted = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/bbs_scalesorted.csv", header = TRUE)
 #scale corresponds to # of stops in a segment 
@@ -145,8 +147,6 @@ bbs_bigsmall = inner_join(bbs_scalesorted, stateroute_latlon, by = c("stateroute
 bbs_bigsmall$scale = paste("0.00", bbs_bigsmall$scale, sep = "")
 bbs_bigsmall$scaleID = bbs_bigsmall$scale
 bbs_bigsmall$siteID = bbs_bigsmall$stateroute 
-
-
 bbs_bigsmall$sub_supr_rteID = bbs_bigsmall$subrouteID
 bbs_bigsmall$lat = bbs_bigsmall$Lati
 bbs_bigsmall$lon = bbs_bigsmall$Longi
@@ -187,7 +187,6 @@ bbs_allyears = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/bbs
 # bring in bbs routes file 
 routes = read.csv('scripts/R-scripts/scale_analysis/routes.csv')
 routes$stateroute = 1000*routes$statenum + routes$Route
-
 
 # merge lat longs from routes file to the list of "good" routes
 require(dplyr)
@@ -307,6 +306,8 @@ occ_avgs$grid8ID = paste(floor(occ_avgs$lat/8)*8 + 8/2, floor(occ_avgs$lon/8)*8 
 #use grid8ID specified in grid_rtes_best to subset occ_avgs for only those that match grid8ID
 #then can compare across increasing grain size 
 occ_avgs = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/occ_avgs.csv")
+grid_rtes_best = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/grid_rtes_best.csv")
+
 
 pre_sub_occ_avgs = occ_avgs %>% 
   filter(grid8ID %in% grid_rtes_best$grid8ID) 
@@ -380,13 +381,18 @@ unique(bbs_cross_scales$ndvi)
 mod2 = lm(log_area~mean + ndvi, data = bbs_cross_scales)
 summary(mod2) #a little better with NDVI, but not by a crazy amount  
 
-#make a map where grid centers size is dictated by avg occs (do areas further out west have lower avg occs?)
-#label with grid cell number's for comparison with graphs 
 
-#mapping occ avgs across US
+
+#####mapping occ avgs across US####
+#make a map where grid centers size is dictated by avg occs (do areas further out west have lower avg occs?)
+#label with grid cell numbers for comparison with graphs 
+
+
 map('state')
 points(bbs_cross_scales$lon, bbs_cross_scales$lat, 
        cex = 3*bbs_cross_scales$mean, pch = 16)
+
+
 #leg_benchmarks = c(2, max(ct$n)/2, max(ct$n))
 #legend("bottomright", legend = c(2, (log10(bbs_cross_scales$mean))/2, log10(bbs_cross_scales$mean)), pch = 16)
 #pt.cex = log10(leg_benchmarks))
