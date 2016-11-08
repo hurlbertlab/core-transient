@@ -114,7 +114,7 @@ grain = 8
 stateroute_latlon$latbin = floor(stateroute_latlon$Lati/grain)*grain + grain/2 
 stateroute_latlon$longbin = floor(stateroute_latlon$Longi/grain)*grain + grain/2
 stateroute_latlon$grid8ID = paste(stateroute_latlon$latbin, stateroute_latlon$longbin, sep = "")
-
+#write.csv(stateroute_latlon, "//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/stateroute_latlon.csv", row.names = FALSE)
 
 #count # of stateroutes in each cell, take top 6 (for both sub and above-route occupancy)
 require(dplyr) 
@@ -329,10 +329,12 @@ sub_occ_avgs = sub_occ_avgs %>%
   dplyr::select(mean, grid8ID, scaleID, lat, lon, area)
 
 sub_occ_avgs$grid8ID = as.character(sub_occ_avgs$grid8ID)
-####continue to fix class types####
+bbs_test_join$grid8ID = as.character(bbs_test_join$grid8ID)
+bbs_test_join$scaleID = as.character(bbs_test_join$scaleID)
 
 
-#joining datasets -> bbs_bigsmall with 866748 rows, occ_avgs with 205 rows, should add up to 866953
+
+#joining datasets -> bbs_bigsmall with 491323 rows, occ_avgs with 205 rows, should add up to 491528
 bbs_cross_scales = full_join(bbs_test_join, sub_occ_avgs)
 
 
@@ -343,7 +345,6 @@ bbs_cross_scales = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled
 
 
 bbs_cross_scales$log_area = log(bbs_cross_scales$area)
-unique(bbs_cross_scales$grid8ID)
 
 par(mfrow = c(2, 3))
 plot(bbs_cross_scales$log_area[bbs_cross_scales$grid8ID == "44-76"], bbs_cross_scales$mean[bbs_cross_scales$grid8ID == "44-76"], xlab = "log(area)", ylab = "mean occ", main = "Grid 44-76")
@@ -358,24 +359,40 @@ plot(bbs_cross_scales$log_area[bbs_cross_scales$grid8ID == "36-108"], bbs_cross_
 mod = lm(log_area~mean, data = bbs_cross_scales)
 summary(mod) #explains ~1/2 of the variation, what happens when we intro NDVI? 
 
+#where are these grid cells on a map of the US? which ones are which? 
+
+bbs_cross_scales$grid8ID = as.character(bbs_cross_scales$grid8ID)
 
 
 ####Quickly bringing in proto NDVI data to cross-scale model####
-sites<-data.frame(lon = bbs_cross_scales$lon, lat = bbs_cross_scales$lat)
-points(sites$lon, sites$lat, col= "red", pch=16)
+
+#just need stateroute_latlon file filtered to relevant 6 grids 
+
+grid_rtes_best = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/grid_rtes_best.csv", header = TRUE)
+grid_rtes_best$grid8ID = as.character(grid_rtes_best$grid8ID)
+stateroute_latlon = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/stateroute_latlon.csv", header = TRUE)
+stateroute_latlon$grid8ID = as.character(stateroute_latlon$grid8ID)
+
+raster_cropdims = stateroute_latlon %>%
+  filter(grid8ID %in% grid_rtes_best$grid8ID) %>% 
+  dplyr::select(latbin, longbin, grid8ID)
+
+#calculating edge lats and lons of grid from center -> shift 4 degrees on either side
+
+raster_cropdims$xmin = raster_cropdims$latbin - 4
+raster_cropdims$xmax = raster_cropdims$latbin + 4
+raster_cropdims$ymin = raster_cropdims$longbin - 4
+raster_cropdims$ymax = raster_cropdims$longbin + 4
+
+#bringing in ndvi and trimming using raster and crop 
+#do I HAVE to for each grid cell, one at a time? I can't just reference the x and y columns I made? 
+
+unique(raster_cropdims$grid8ID, raster_cropdims$xmin, raster_cropdims$xmax)
+
 ndvimean<-raster("//bioark.ad.unc.edu/HurlbertLab/GIS/MODIS NDVI/Vegetation_Indices_may-aug_2000-2010.gri")
-plot(ndvimean)
-points(sites$lon, sites$lat, col = 'red', pch = 16)
-test3 = extract(ndvimean, sites)
-head(test3)
-ndvimean<-ndvimean/10000
-bbs_cross_scales$ndvi<-extract(ndvimean, sites)
-unique(bbs_cross_scales$ndvi)
-
-mod2 = lm(log_area~mean + ndvi, data = bbs_cross_scales)
-summary(mod2) #a little better with NDVI, but not by a crazy amount  
-
-
+e1 = extent(32, -88, 40, -96) #x1, y1, x2, y2 based on + or - 4 degrees from grid8ID center point
+ndvi_e1 = crop(ndvimean, e1)
+#Error in validityMethod(object) : invalid extent: xmin >= xmax
 
 #####mapping occ avgs across US####
 #make a map where grid centers size is dictated by avg occs (do areas further out west have lower avg occs?)
