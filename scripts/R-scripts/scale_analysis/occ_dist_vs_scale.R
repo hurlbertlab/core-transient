@@ -146,8 +146,6 @@ bbs_scalesorted$area = (bbs_scalesorted$scale)*(pi*(0.4^2)) # area in km by area
 bbs_bigsmall = inner_join(bbs_scalesorted, stateroute_latlon, by = c("stateroute" = "stateroute")) 
 bbs_bigsmall$scale = paste("0.00", bbs_bigsmall$scale, sep = "")
 bbs_bigsmall$scaleID = bbs_bigsmall$scale
-bbs_bigsmall$siteID = bbs_bigsmall$stateroute 
-bbs_bigsmall$sub_supr_rteID = bbs_bigsmall$subrouteID
 bbs_bigsmall$lat = bbs_bigsmall$Lati
 bbs_bigsmall$lon = bbs_bigsmall$Longi
 
@@ -161,12 +159,8 @@ subrte_occ_avgs = bbs_bigsmall %>% group_by(lat, lon, scaleID, stateroute) %>% #
   summarize(mean = mean(mean))
 
 #pull back in following variables:
-#RENAME MEAN -> occupancy, grid8ID <- get thru lat + lon, scaleID, lat, lon, area <-get thru grid8ID 
+#grid8ID, scaleID, lat, lon, area <-get thru grid8ID bc linked
 #for later cross-scale join
-#so re-merge based on bbs_bigsmall area, lat, lon, and scaleID to get areas of diff segments 
-#(will have multiple same areas for diff occs, lats, lons, and same scaleIDs)
-#pare bbs_bigmsall down to just important variables for next join 
-
 bbs_prejoin = bbs_bigsmall %>%
   dplyr::select(lat, lon, scaleID, grid8ID, area)
 
@@ -174,7 +168,7 @@ test_join = inner_join(subrte_occ_avgs, bbs_prejoin)
 #I think this worked? mean of means across stateroutes nested within those grid cells 
 #but with occ calc'd BELOW route level before lumped together by cell 
 #area = area of stop segment based on scaleID and lat lon of original stateroute
-
+#even tho stateroutes no longer needed areas of segments preserved 
 
 # -----------------------------------------------------------
 
@@ -276,17 +270,14 @@ for (grain in grain_sample$grain) {
 
 
 bbs_scaledup = output    #wrote to file in case
-
 #write.csv(bbs_scaledup, "//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/bbs_scaledup.csv", row.names = FALSE)
 
 
 ####Mean of means for above-route scales####
-
 bbs_scaledup = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/bbs_scaledup.csv")
 
 
 #for each unique combination of grain and lat and long across reps, what is the avg occ? 
-
 # modify to take means of mean of each rep (in order of lat, lon, grain, and rep so as not to incorrectly avg values
 occ_avgs = bbs_scaledup %>% group_by(lat, lon, grain, rep) %>% #adding rep to grouping
   summarize(mean = mean(occ)) %>% #summarize occ across Aou's for each rep 
@@ -294,17 +285,13 @@ occ_avgs = bbs_scaledup %>% group_by(lat, lon, grain, rep) %>% #adding rep to gr
   summarize(mean = mean(mean)) # summarize mean occ across reps for each unique combo of lat, lon, and grain
 
 #occ avgs for each grain scale across reps (FINAL)
-#subset to only stateroutes across each grain that fall into grain 8 bin as well (allowing us to compare across scale)
-# adding grid8id column to ID which rows have lat/lons that match bin at grain 8 
-# remember: don't need stateroutes at this point, because lumped together 
-
 occ_avgs$grid8ID = paste(floor(occ_avgs$lat/8)*8 + 8/2, floor(occ_avgs$lon/8)*8 + 8/2, sep = "")
 
 #-----------------------------------------------------------------------------------------
 ####Combining sub and above-route scale analyses outputs for comparison####
 #write.csv(occ_avgs, "//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/occ_avgs.csv", row.names = FALSE)
 #use grid8ID specified in grid_rtes_best to subset occ_avgs for only those that match grid8ID
-#then can compare across increasing grain size 
+#then can compare across increasing grain size, across area 
 occ_avgs = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/occ_avgs.csv")
 grid_rtes_best = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/grid_rtes_best.csv")
 
@@ -318,8 +305,7 @@ pre_sub_occ_avgs = occ_avgs %>%
 sub_occ_avgs = inner_join(pre_sub_occ_avgs, grid_rtes_best, by = "grid8ID") %>%
   dplyr::select(lat, lon, grain, mean, grid8ID, area)
 
-#check with unique to make sure 6 cells correct ====> it's correct 
-#checktest = unique(sub_occ_avgs$grid8ID)
+#check with unique to make sure 6 cells correct ====> it's correct => checktest = unique(sub_occ_avgs$grid8ID)
 
 sub_occ_avgs$grain = paste("0.0", sub_occ_avgs$grain, sep = "")
 sub_occ_avgs$scaleID = sub_occ_avgs$grain
@@ -330,7 +316,6 @@ sub_occ_avgs$scaleID = sub_occ_avgs$grain
 
 bbs_test_join = test_join %>% 
   dplyr::select(mean, grid8ID, scaleID, lat, lon, area)
-
 sub_occ_avgs = sub_occ_avgs %>% 
   dplyr::select(mean, grid8ID, scaleID, lat, lon, area)
 
@@ -343,7 +328,6 @@ bbs_cross_scales = full_join(bbs_test_join, sub_occ_avgs)
 
 ####Map occ ~ grain at each of the six sample collections#### 
 #write.csv(bbs_cross_scales, "//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/bbs_cross_scales.csv", row.names = FALSE)
-
 bbs_cross_scales = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/bbs_cross_scales.csv")
 #is 54KB small enough to fit on git? can I back it up there? 
 
