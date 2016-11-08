@@ -126,7 +126,7 @@ grid_rte_totals = stateroute_latlon %>%
 grid_rte_totals = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/grid_rte_totals.csv")
 grid_rtes_best = grid_rte_totals %>% 
   filter(grid_rte_totals$X < 7) #taking top six grids 
-
+grid_rtes_best$grid8ID = as.character(grid_rtes_best$grid8ID)
 
 grid_rtes_best$area = grid_rtes_best$n*50*(pi*(0.4^2)) 
 #area in km by # of routes * 50 stops * area of a stop (for above-route scale later)
@@ -162,9 +162,13 @@ subrte_occ_avgs = bbs_bigsmall %>% group_by(lat, lon, scaleID, stateroute) %>% #
 #grid8ID, scaleID, lat, lon, area <-get thru grid8ID bc linked
 #for later cross-scale join
 bbs_prejoin = bbs_bigsmall %>%
-  dplyr::select(lat, lon, scaleID, grid8ID, area)
+  dplyr::select(lat, lon, scaleID, grid8ID, area) %>% 
+  filter(grid8ID %in% grid_rtes_best$grid8ID) #fixed, added 
 
 test_join = inner_join(subrte_occ_avgs, bbs_prejoin)
+unique(test_join$grid8ID)
+
+#write.csv(test_join, "//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/test_join.csv", row.names = FALSE)
 #I think this worked? mean of means across stateroutes nested within those grid cells 
 #but with occ calc'd BELOW route level before lumped together by cell 
 #area = area of stop segment based on scaleID and lat lon of original stateroute
@@ -286,6 +290,7 @@ occ_avgs = bbs_scaledup %>% group_by(lat, lon, grain, rep) %>% #adding rep to gr
 
 #occ avgs for each grain scale across reps (FINAL)
 occ_avgs$grid8ID = paste(floor(occ_avgs$lat/8)*8 + 8/2, floor(occ_avgs$lon/8)*8 + 8/2, sep = "")
+occ_avgs$grid8ID = as.character(occ_avgs$grid8ID)
 
 #-----------------------------------------------------------------------------------------
 ####Combining sub and above-route scale analyses outputs for comparison####
@@ -313,13 +318,18 @@ sub_occ_avgs$scaleID = sub_occ_avgs$grain
 ####Stitch lower scale analyses in using stateroute_latlon file to designate lower scales within their bins####
 ##below a bbs route: bbs_scalesorted
 #paring down datasets to only relevant 7 corresponding variables 
+test_join = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/test_join.csv", header = TRUE)
+
 
 bbs_test_join = test_join %>% 
   dplyr::select(mean, grid8ID, scaleID, lat, lon, area)
+unique(bbs_test_join$grid8ID) # this is where grid8ID is getting messed up, backtrack to formation
+
 sub_occ_avgs = sub_occ_avgs %>% 
   dplyr::select(mean, grid8ID, scaleID, lat, lon, area)
 
 sub_occ_avgs$grid8ID = as.character(sub_occ_avgs$grid8ID)
+####continue to fix class types####
 
 
 #joining datasets -> bbs_bigsmall with 866748 rows, occ_avgs with 205 rows, should add up to 866953
@@ -333,7 +343,7 @@ bbs_cross_scales = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled
 
 
 bbs_cross_scales$log_area = log(bbs_cross_scales$area)
-
+unique(bbs_cross_scales$grid8ID)
 
 par(mfrow = c(2, 3))
 plot(bbs_cross_scales$log_area[bbs_cross_scales$grid8ID == "44-76"], bbs_cross_scales$mean[bbs_cross_scales$grid8ID == "44-76"], xlab = "log(area)", ylab = "mean occ", main = "Grid 44-76")
@@ -350,7 +360,7 @@ summary(mod) #explains ~1/2 of the variation, what happens when we intro NDVI?
 
 
 
-####Bringing in NDVI data to cross-scale model####
+####Quickly bringing in proto NDVI data to cross-scale model####
 sites<-data.frame(lon = bbs_cross_scales$lon, lat = bbs_cross_scales$lat)
 points(sites$lon, sites$lat, col= "red", pch=16)
 ndvimean<-raster("//bioark.ad.unc.edu/HurlbertLab/GIS/MODIS NDVI/Vegetation_Indices_may-aug_2000-2010.gri")
@@ -383,3 +393,12 @@ points(bbs_cross_scales$lon, bbs_cross_scales$lat,
 
 #might have to correct lat + lon within a projection? 
 #how to lump across grid8 cells? 
+
+
+####Find dimensions of grids based on center points and grid sizes####
+
+unique(bbs_cross_scales$grid8ID) 
+#crop raster to dims to set extent within each grid 
+#(as opposed to extracting ndvi for center lat and lon POINTS as above)
+
+
