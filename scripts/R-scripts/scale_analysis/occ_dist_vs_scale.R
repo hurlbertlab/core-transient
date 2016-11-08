@@ -476,9 +476,24 @@ plot(bbs_cross_scales$log_area[bbs_cross_scales$grid8ID == "36-92"], bbs_cross_s
 plot(bbs_cross_scales$log_area[bbs_cross_scales$grid8ID == "36-76"], bbs_cross_scales$mean[bbs_cross_scales$grid8ID == "36-76"], xlab = "log(area)", ylab = "mean occ", main = "Grid 36-76")
 plot(bbs_cross_scales$log_area[bbs_cross_scales$grid8ID == "36-108"], bbs_cross_scales$mean[bbs_cross_scales$grid8ID == "36-108"], xlab = "log(area)", ylab = "mean occ", main = "Grid 36-108")
 
-#need to log transform area but SO FAR SO GOOD :~D 
+
+mod = lm(log_area~mean, data = bbs_cross_scales)
+summary(mod) #explains ~1/2 of the variation, what happens when we intro NDVI? 
 
 
+sites<-data.frame(lon = bbs_cross_scales$lon, lat = bbs_cross_scales$lat)
+points(sites$lon, sites$lat, col= "red", pch=16)
+ndvimean<-raster("//bioark.ad.unc.edu/HurlbertLab/GIS/MODIS NDVI/Vegetation_Indices_may-aug_2000-2010.gri")
+plot(ndvimean)
+points(sites$lon, sites$lat, col = 'red', pch = 16)
+test3 = extract(ndvimean, sites)
+head(test3)
+ndvimean<-ndvimean/10000
+bbs_cross_scales$ndvi<-extract(ndvimean, sites)
+unique(bbs_cross_scales$ndvi)
+
+mod2 = lm(log_area~mean + ndvi, data = bbs_cross_scales)
+summary(mod2) #a little better with NDVI, but not by a crazy amount  
 
 #make a map where grid centers size is dictated by avg occs (do areas further out west have lower avg occs?)
 #label with grid cell number's for comparison with graphs 
@@ -486,10 +501,10 @@ plot(bbs_cross_scales$log_area[bbs_cross_scales$grid8ID == "36-108"], bbs_cross_
 #mapping occ avgs across US
 map('state')
 points(bbs_cross_scales$lon, bbs_cross_scales$lat, 
-       cex = log10(bbs_cross_scales$mean), pch = 16)
+       cex = 3*bbs_cross_scales$mean, pch = 16)
 #leg_benchmarks = c(2, max(ct$n)/2, max(ct$n))
 #legend("bottomright", legend = c(2, (log10(bbs_cross_scales$mean))/2, log10(bbs_cross_scales$mean)), pch = 16)
 #pt.cex = log10(leg_benchmarks))
 
 #might have to correct lat + lon within a projection? 
-
+#how to lump across grid8 cells? 
