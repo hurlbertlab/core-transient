@@ -36,7 +36,7 @@ dataformattingtable = read.csv('data_formatting_table.csv', header = T)
 
 datasetIDs = dataformattingtable$dataset_ID[dataformattingtable$format_flag == 1]
 
-datasetIDs = datasetIDs[!datasetIDs %in% c(1)]
+datasetIDs = datasetIDs[!datasetIDs %in% c(317)]
 
 summaries = c()
 for (d in datasetIDs) {
@@ -150,109 +150,111 @@ dev.off()
 l = c(col1, col2, col3, col4), pch = 16, cex = 1.5, pt.cex = 2)
 dev.off()
 
-#####################################################
-# Summary figure(s) showing site level density estimates - potential fig 3
-
-load_data <- function(path) { 
-  files <- dir(path, pattern = '\\.csv', full.names = TRUE)
-  tables <- lapply(files, function(x) read.csv(x, stringsAsFactors = FALSE) )
-  do.call(rbind, tables)
-}
-
-site_data <- read.csv("output/tabular_data/core-transient_summary.csv")
-sp_data <- load_data("data/propOcc_datasets/")
-dataset_taxa_link <- site_data %>%
-  dplyr::select(datasetID, system, taxa) %>%
-  distinct()
-sp_data_full <- inner_join(sp_data, dataset_taxa_link)
-sp_data_full = subset(sp_data_full, taxa != "Herptile")
-
-ggplot(data = sp_data_full, aes(x = propOcc, group = site)) +
-  geom_line(stat="density", alpha=0.1, size = 2) +
-  facet_wrap(~taxa, scales = "free", ncol=2) +
-  scale_y_sqrt()
-ggsave("C:/Git/core-transient/output/plots/densities_by_taxa_gaus.pdf", height = 8, width = 11)
-##################################################################
-# GAM for Figure 5
-# mean occupancy as a function of taxon, scale, latitude/geography
-# need to merge in latlongs to summ2
-# waht is the scale variable here?
-summ2$meanAbundance = summ2$taxa + summ2$SCALE? + NEEDTOMERGEIN$latlong ## do we want propCore even?
-
 ##################################################################
 # Summary of % transients versus community size using regression lines
-occ_taxa=read.csv("occ_taxa.csv",header=TRUE)
-datasetIDs = filter(dataformattingtable, spatial_scale_variable == 'Y',
-                    format_flag == 1)$dataset_ID
-datasetIDs = datasetIDs[datasetIDs  != 317]
+#occ_taxa=read.csv("occ_taxa.csv",header=TRUE)
+#datasetIDs = filter(dataformattingtable, spatial_scale_variable == 'Y',
+                   # format_flag == 1)$dataset_ID
+#datasetIDs = datasetIDs[datasetIDs  != 317]
 
-pdf('output/plots/sara_scale_trans_reg.pdf', height = 6, width = 7.5)
+############################################# ADD IN BBS!!!!!!
+pdf('output/plots/sara_scale_transient_reg.pdf', height = 6, width = 7.5)
 par(mfrow = c(1, 1), mar = c(6, 6, 1, 1), mgp = c(4, 1, 0), 
     cex.axis = 1.5, cex.lab = 2, las = 1)
 palette(colors7)
 
+### Have to cut out stuff that have mean abundance NA
+datasetIDs =  datasetIDs[!datasetIDs %in% c(67,270,271,319,325)]
+
 for(id in datasetIDs){
   print(id)
-  plotsub = subset(occ_taxa,datasetID == id)
-  mod3 = lm(plotsub$pctTrans ~ log10(plotsub$meanAbundance))
+  plotsub = subset(summ2, datasetID == id)
+  mod3 = lm(plotsub$propTrans ~ log10(plotsub$meanAbundance))
+  xnew = range(log10(plotsub$meanAbundance))
+  xhat <- predict(mod3, newdata = data.frame((xnew)))
+  xhats = range(xhat)
+  print(xhats)
+  taxcolor = subset(taxcolors, taxa == as.character(plotsub$taxa)[1])
+  y=summary(mod3)$coef[1] + (xhats)*summary(mod3)$coef[2]
+  plot(NA, xlim = c(-1, 7), ylim = c(0,1), col = as.character(taxcolors$color), xlab = expression("Log"[10]*" Community Size"), ylab = "% Transients", cex = 1.5)
+  lines(log10(plotsub$meanAbundance), fitted(mod3), col=as.character(taxcolors$color),lwd=3)
+  par(new=TRUE)
+}
+legend('topright', legend = taxcolors$taxa, lty=1,lwd=3,col = as.character(taxcolors$color), cex = 1.25, border = "white")
+dev.off()
+
+pdf('output/plots/sara_scale_core_reg.pdf', height = 6, width = 7.5)
+par(mfrow = c(1, 1), mar = c(6, 6, 1, 1), mgp = c(4, 1, 0), 
+    cex.axis = 1.5, cex.lab = 2, las = 1)
+palette(colors7)
+for(id in datasetIDs){
+  print(id)
+  plotsub = subset(summ2,datasetID == id)
+  mod3 = lm((1-plotsub$propTrans) ~ log10(plotsub$meanAbundance))
   xnew=range(log10(plotsub$meanAbundance))
   xhat <- predict(mod3, newdata = data.frame((xnew)))
   xhats = range(xhat)
   print(xhats)
   taxcolor=subset(taxcolors, taxa == as.character(plotsub$taxa)[1])
   y=summary(mod3)$coef[1] + (xhats)*summary(mod3)$coef[2]
-  plot(NA, xlim = c(-1, 7), ylim = c(0,1), col = as.character(taxcolor$color), xlab = expression("Log"[10]*" Community Size"), ylab = "% Transients")
+  plot(NA, xlim = c(-1, 7), ylim = c(0,1), col = as.character(taxcolor$color), xlab = expression("Log"[10]*" Community Size"), ylab = "% Core", cex = 1.5)
   lines(log10(plotsub$meanAbundance), fitted(mod3), col=as.character(taxcolor$color),lwd=3)
   par(new=TRUE)
 }
-legend('topright', legend = taxcolors$taxa, lty=1,lwd=3,col = as.character(taxcolors$color), cex = 0.6)
+legend('bottomright', legend = taxcolors$taxa, lty=1,lwd=3,col = as.character(taxcolors$color), cex = 1.25, border = "white")
 dev.off()
-
 ##################################################################
 # barplot of % transients versus community size at diff thresholds
-numCT=read.csv("numCT.csv", header=TRUE)
-numCT_taxa=merge(numCT, dataformattingtable[,c("dataset_ID","taxa")], by.x = 'datasetID', by.y = "dataset_ID", all.x=TRUE)
-
-numCT_p = gather(numCT_taxa, label, perTrans, perTrans33:perTrans10)
-numCT_plot=merge(numCT_p, taxcolors, by="taxa")
-
-uniqTaxa = meanCoreByTaxa$Group.1[order(meanCoreByTaxa$x, decreasing = T)]
-
-pdf('output/plots/CT_boxplots_byTaxa.pdf', height = 6, width = 8)
-par(mfrow = c(1,1), mar = c(6, 5, 1, 1), mgp = c(3, 1, 0), oma = c(0,0,0,0))
-box1 = boxplot(as.character(uniqTaxa), xlim = c(0, (3*length(uniqTaxa)-2)), ylim = c(0, 1), 
-               border = 'white', col = 'white', ylab = "Fraction of species", cex.lab = 1, las = 1, 
-               cex.axis = 1.25)
-for (i in 1:length(uniqTaxa)) {   ##### wonky labelling somewhere in here
-  tax = uniqTaxa[i]
-  taxcolor=subset(taxcolors, taxa == tax)
-  boxplot(numCT$numTrans10, add = T, col = taxcolor$color, staplewex = 0, outline = F,
-          at = 3*(i-1), yaxt = "n")
-  boxplot(numCT$numTrans25, add =T, col = taxcolor$color, staplewex = 0, outline = F,
-          at = 3*(i-1)+.5, yaxt = "n")
-  boxplot(numCT$numTrans33, add =T, col = taxcolor$color, staplewex = 0, outline = F,
-          at = 3*(i-1)+1, yaxt = "n")
-  par(new=TRUE)
+summaryTransFun = function(datasetID){
+  # Get data:
+  dataList = getDataList(datasetID)
+  sites  = as.character(dataList$siteSummary$site)
+  # Get summary stats for each site:         #where is the problem coming from?!
+  outList = list(length = length(sites))
+  for(i in 1:length(sites)){
+    propOcc = subset(dataList$propOcc, site == sites[i])$propOcc
+    siteSummary = subset(dataList$siteSummary, site == sites[i])
+    nTime = siteSummary$nTime
+    spRichTotal = siteSummary$spRich
+    spRichCore33 = length(propOcc[propOcc >= 1 - .33])
+    spRichTrans33 = length(propOcc[propOcc <= .33])
+    spRichTrans25 = length(propOcc[propOcc <= .25])
+    spRichTrans10 = length(propOcc[propOcc <= .1])
+    propCore33 = spRichCore33/spRichTotal
+    propTrans33 = spRichTrans33/spRichTotal
+    propTrans25 = spRichTrans25/spRichTotal
+    propTrans10 = spRichTrans10/spRichTotal
+    outList[[i]] = data.frame(datasetID, site = sites[i],
+                              system = dataList$system, taxa = dataList$taxa,
+                              nTime, spRichTotal, spRichCore33, spRichTrans33,
+                              propCore33,  propTrans33, propTrans25, propTrans10)
+  }
+  return(rbind.fill(outList))
 }
-text(3 *(1:9) - 2.5, par("usr")[3], uniqTaxa, srt = 45, xpd = T, cex = 1, adj = c(1.1,1.1)) 
-rect(.5, 0.9, 1.5, 1.0, col = transCol, border=F)
-rect(6.5, 0.9, 7.5, 1.0, col = nonCol, border=F)  
-rect(12.5, 0.9, 13.5, 1.0, col = coreCol, border=F)  
-text(c(3.4, 9, 14.5), c(0.95, 0.95, 0.95), c('Transient', 'Neither', 'Core'), cex = 1.5)
-dev.off()
 
-#### barplot of percent transients by taxa
-p <- ggplot(numCT_plot, aes(taxa, numTrans))+theme_classic()
-p+geom_boxplot(aes(x=taxa, y=perTrans, fill =label))
+percTransSummaries = c()
+for (d in datasetIDs) {
+  percTransSumm = summaryTransFun(d)
+  percTransSummaries = rbind(percTransSummaries, percTransSumm)
+  print(d)
+}
 
-cols <- (numCT_plot$color)
+CT_plot=merge(percTransSummaries, taxcolors, by="taxa")
+CT_long = gather(CT_plot, "level_trans","pTrans", propTrans33:propTrans10)
+
+uniqTaxa = unique(CT_plot$taxa)
+#### barplot of percent transients by taxa ---FIXED
+p <- ggplot(CT_long, aes(taxa, level_trans))+theme_classic()
+p+geom_boxplot(aes(x=taxa, y=pTrans, fill = level_trans))
+
+cols <- (CT_long$color)
 colscale=c("#565151", "grey", "white")
 
-p+geom_boxplot(width=0.8,position=position_dodge(width=0.8),aes(x=taxa, y=perTrans, fill=label))+ 
-  scale_colour_manual(breaks = numCT_plot$taxa,
+p+geom_boxplot(width=0.8,position=position_dodge(width=0.8),aes(x=taxa, y=pTrans, fill=level_trans))+ 
+  scale_colour_manual(breaks = CT_long$level_trans,
                       values = taxcolors$color)  + xlab("Taxa") + ylab("Percent Transient")+
-  scale_fill_manual(labels = c("Occupancy <= 10%", "Occupancy <=25%", "Occupancy <= 33%"),
-                    values = colscale)+theme(axis.ticks=element_blank(),axis.text.x=element_text(size=14, angle=90),axis.text.y=element_text(size=14),axis.title.x=element_text(size=18),axis.title.y=element_text(size=18,angle=90,vjust = 0.5))+guides(fill=guide_legend(title=""))
+  scale_fill_manual(labels = c("Occupancy <= 10%", "Occupancy <= 25%", "Occupancy <= 33%"),
+                    values = colscale)+theme(axis.ticks=element_blank(),axis.text.x=element_text(size=18, angle=90),axis.text.y=element_text(size=18),axis.title.x=element_text(size=20),axis.title.y=element_text(size=20,angle=90,vjust = 0.5))+guides(fill=guide_legend(title="")) + theme(legend.text=element_text(size=16))
 ggsave("C:/Git/core-transient/output/plots/boxCT_perc.pdf", height = 8, width = 12)
 
 #### barplot of mean occ by taxa
