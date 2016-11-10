@@ -203,61 +203,9 @@ for(id in datasetIDs){
 }
 legend('bottomright', legend = taxcolors$taxa, lty=1,lwd=3,col = as.character(taxcolors$color), cex = 1.25, border = "white")
 dev.off()
-##################################################################
-# barplot of % transients versus community size at diff thresholds
-summaryTransFun = function(datasetID){
-  # Get data:
-  dataList = getDataList(datasetID)
-  sites  = as.character(dataList$siteSummary$site)
-  # Get summary stats for each site:         #where is the problem coming from?!
-  outList = list(length = length(sites))
-  for(i in 1:length(sites)){
-    propOcc = subset(dataList$propOcc, site == sites[i])$propOcc
-    siteSummary = subset(dataList$siteSummary, site == sites[i])
-    nTime = siteSummary$nTime
-    spRichTotal = siteSummary$spRich
-    spRichCore33 = length(propOcc[propOcc >= 1 - .33])
-    spRichTrans33 = length(propOcc[propOcc <= .33])
-    spRichTrans25 = length(propOcc[propOcc <= .25])
-    spRichTrans10 = length(propOcc[propOcc <= .1])
-    propCore33 = spRichCore33/spRichTotal
-    propTrans33 = spRichTrans33/spRichTotal
-    propTrans25 = spRichTrans25/spRichTotal
-    propTrans10 = spRichTrans10/spRichTotal
-    outList[[i]] = data.frame(datasetID, site = sites[i],
-                              system = dataList$system, taxa = dataList$taxa,
-                              nTime, spRichTotal, spRichCore33, spRichTrans33,
-                              propCore33,  propTrans33, propTrans25, propTrans10)
-  }
-  return(rbind.fill(outList))
-}
 
-percTransSummaries = c()
-for (d in datasetIDs) {
-  percTransSumm = summaryTransFun(d)
-  percTransSummaries = rbind(percTransSummaries, percTransSumm)
-  print(d)
-}
 
-CT_plot=merge(percTransSummaries, taxcolors, by="taxa")
-CT_long = gather(CT_plot, "level_trans","pTrans", propTrans33:propTrans10)
-
-uniqTaxa = unique(CT_plot$taxa)
-#### barplot of percent transients by taxa ---FIXED
-p <- ggplot(CT_long, aes(taxa, level_trans))+theme_classic()
-p+geom_boxplot(aes(x=taxa, y=pTrans, fill = level_trans))
-
-cols <- (CT_long$color)
-colscale=c("#565151", "grey", "white")
-
-p+geom_boxplot(width=0.8,position=position_dodge(width=0.8),aes(x=taxa, y=pTrans, fill=level_trans))+ 
-  scale_colour_manual(breaks = CT_long$level_trans,
-                      values = taxcolors$color)  + xlab("Taxa") + ylab("Percent Transient")+
-  scale_fill_manual(labels = c("Occupancy <= 10%", "Occupancy <= 25%", "Occupancy <= 33%"),
-                    values = colscale)+theme(axis.ticks=element_blank(),axis.text.x=element_text(size=18, angle=90),axis.text.y=element_text(size=18),axis.title.x=element_text(size=20),axis.title.y=element_text(size=20,angle=90,vjust = 0.5))+guides(fill=guide_legend(title="")) + theme(legend.text=element_text(size=16))
-ggsave("C:/Git/core-transient/output/plots/boxCT_perc.pdf", height = 8, width = 12)
-
-#### barplot of mean occ by taxa
+#### barplot of mean occ by taxa #####
 numCT_plot$taxa = as.factor(numCT_plot$taxa)
 numCT_plot$taxa <-droplevels(numCT_plot$taxa, exclude = c("","All","Amphibian", "Reptile"))
 
@@ -311,7 +259,7 @@ w + geom_boxplot(width=1, position=position_dodge(width=0.6),aes(x=taxa, y=mu), 
   scale_fill_manual(labels = taxcolors$taxa, values = taxcolors$color)+theme(axis.ticks=element_blank(),axis.text.x=element_text(size=14),axis.text.y=element_text(size=14),axis.title.x=element_text(size=19),axis.title.y=element_text(size=19,angle=90,vjust = 1)) + guides(fill=guide_legend(title=""))+ theme(plot.margin = unit(c(.5,.5,.5,.5),"lines")) + annotate("text", x = nrank$taxa, y = 1.05, label = sitetally$n,size=5,vjust=0.8, color = "black")
 ggsave("C:/Git/core-transient/output/plots/meanOcc.pdf", height = 8, width = 12)
 
-##########################################################################
+####################  ######################################################
 # Explaining variation in mean occupancy within BBS
 # Merge taxa color and symbol codes into summary data
 summ$taxa = factor(summ$taxa)
@@ -338,15 +286,82 @@ mtext("Mean occupancy", 2, outer = T, cex = 2, las = 0)
 
 
 
+# Boxplots showing distribution of core and transient species by taxon.
+core = summ2 %>%
+  dplyr::group_by(taxa) %>%
+  dplyr::summarize(mean(propCore)) 
+trans = summ2 %>%
+  dplyr::group_by(taxa) %>%
+  dplyr::summarize(mean(propTrans)) 
 
 
+propCT = merge(core, trans, by = "taxa")
+propCT = data.frame(propCT)
+propCT$mean.propNeither. = 1 - propCT$mean.propCore. - propCT$mean.propTrans.
 
 
+propCT_long = gather(propCT, "class","value", c(mean.propCore.:mean.propNeither.))
+propCT_long = arrange(propCT_long, class)
+colscale = c("red", "gold", "blue")
 
+ggplot(data=propCT_long, aes(factor(taxa), y=value, fill=factor(class))) + geom_bar(stat = "identity")  + theme_classic() + xlab("Taxa") + ylab("Proportion of Species")+
+  scale_fill_manual(labels = c("Core", "Other", "Transient"),
+                    values = colscale)+theme(axis.ticks=element_blank(),axis.text.x=element_text(size=18, angle=90),axis.text.y=element_text(size=18),axis.title.x=element_text(size=20),axis.title.y=element_text(size=20,angle=90,vjust = 0.5))+guides(fill=guide_legend(title="")) + theme(legend.text=element_text(size=16))
 
+ggsave("C:/Git/core-transient/output/plots/pctCTO.pdf", height = 8, width = 12)
+##################################################################
+# barplot of % transients versus community size at diff thresholds
+summaryTransFun = function(datasetID){
+  # Get data:
+  dataList = getDataList(datasetID)
+  sites  = as.character(dataList$siteSummary$site)
+  # Get summary stats for each site:         #where is the problem coming from?!
+  outList = list(length = length(sites))
+  for(i in 1:length(sites)){
+    propOcc = subset(dataList$propOcc, site == sites[i])$propOcc
+    siteSummary = subset(dataList$siteSummary, site == sites[i])
+    nTime = siteSummary$nTime
+    spRichTotal = siteSummary$spRich
+    spRichCore33 = length(propOcc[propOcc >= 1 - .33])
+    spRichTrans33 = length(propOcc[propOcc <= .33])
+    spRichTrans25 = length(propOcc[propOcc <= .25])
+    spRichTrans10 = length(propOcc[propOcc <= .1])
+    propCore33 = spRichCore33/spRichTotal
+    propTrans33 = spRichTrans33/spRichTotal
+    propTrans25 = spRichTrans25/spRichTotal
+    propTrans10 = spRichTrans10/spRichTotal
+    outList[[i]] = data.frame(datasetID, site = sites[i],
+                              system = dataList$system, taxa = dataList$taxa,
+                              nTime, spRichTotal, spRichCore33, spRichTrans33,
+                              propCore33,  propTrans33, propTrans25, propTrans10)
+  }
+  return(rbind.fill(outList))
+}
 
+percTransSummaries = c()
+for (d in datasetIDs) {
+  percTransSumm = summaryTransFun(d)
+  percTransSummaries = rbind(percTransSummaries, percTransSumm)
+  print(d)
+}
 
+CT_plot=merge(percTransSummaries, taxcolors, by="taxa")
+CT_long = gather(CT_plot, "level_trans","pTrans", propTrans33:propTrans10)
 
+uniqTaxa = unique(CT_plot$taxa)
+#### barplot of percent transients by taxa ---FIXED
+p <- ggplot(CT_long, aes(taxa, level_trans))+theme_classic()
+p+geom_boxplot(aes(x=taxa, y=pTrans, fill = level_trans))
+
+cols <- (CT_long$color)
+colscale=c("light blue","sky blue",  "blue")
+
+p+geom_boxplot(width=0.8,position=position_dodge(width=0.8),aes(x=taxa, y=pTrans, fill=level_trans))+ 
+  scale_colour_manual(breaks = CT_long$level_trans,
+                      values = taxcolors$color)  + xlab("Taxa") + ylab("Percent Transient")+
+  scale_fill_manual(labels = c("Occupancy <= 10%", "Occupancy <= 25%", "Occupancy <= 33%"),
+                    values = colscale)+theme(axis.ticks=element_blank(),axis.text.x=element_text(size=18, angle=90),axis.text.y=element_text(size=18),axis.title.x=element_text(size=20),axis.title.y=element_text(size=20,angle=90,vjust = 0.5))+guides(fill=guide_legend(title="")) + theme(legend.text=element_text(size=16))
+ggsave("C:/Git/core-transient/output/plots/boxCT_perc.pdf", height = 8, width = 12)
 
 
 
