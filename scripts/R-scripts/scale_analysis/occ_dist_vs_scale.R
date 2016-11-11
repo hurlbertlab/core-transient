@@ -48,7 +48,7 @@ fifty_allyears = bbs50 %>%
 #finally works because needed $ specification, 
 #can probably collapse into one line 
 
-write.csv(fifty_allyears, "//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/filteredrtes.csv")
+fifty_allyears = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/filteredrtes.csv", header = TRUE)
 #wrote to file just in case 
 
 
@@ -86,6 +86,11 @@ for (scale in scales) {
 }
 
 bbs_scalesorted<-output
+
+#write.csv(bbs_scalesorted, "//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/bbs_scalesorted.csv", row.names = FALSE)
+
+bbs_scalesorted = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/bbs_scalesorted.csv", header = TRUE)
+
 
 ##locating and ID-ing stateroutes contained within a given grid cell (since disappear in process of deriving occ)##
 
