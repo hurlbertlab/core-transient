@@ -90,6 +90,8 @@ bbs_scalesorted<-output
 #write.csv(bbs_scalesorted, "//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/bbs_scalesorted.csv", row.names = FALSE)
 
 bbs_scalesorted = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/bbs_scalesorted.csv", header = TRUE)
+
+
 ##locating and ID-ing stateroutes contained within a given grid cell (since disappear in process of deriving occ)##
 
 #bringing back in routes present from 2000-2014 in every year
