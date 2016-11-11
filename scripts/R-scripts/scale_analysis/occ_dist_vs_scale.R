@@ -219,7 +219,7 @@ grain_sample = data.frame(c(1, 2, 4, 8), c(6, 14, 31, 66)) #figure out why stopp
 #- bc need if statement to know how to proceed? will finishing if statement help loops continue?
 names(grain_sample) = c("grain", "magic_num")
 
-reps = c(1) #100? 50?
+reps = c(100) #100? 50?
 
 #nested forloops defining grid cells (i.e. latitudinal + longitudinal "bins"), 
 #filtering routes sampled to those that fall within a given bin 

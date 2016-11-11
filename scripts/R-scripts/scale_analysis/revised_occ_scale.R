@@ -152,22 +152,13 @@ unique(test_sample$grain)
       arrange(desc(n))
   
     
-#it works! now find how many cells can include when  in each grain set     
+#it works! now find how many cells can include when in each grain set     
   
 head(grid_rte_totals_1)    
     
-
-
-
 # grain of (8, 4, 2, 1) corresponds to samples of 66, 31, 14, 6 rtes in each sample 
+#fixed sample sizes in original script prior to above-rte forloop 
 
-
-
-grid_rte_totals_1_sorted = grid_rte_totals_1 %>% 
-  filter(n >= 66) #1x1grid cell is like, stupid small 
-
-grid_rte_totals_2_sorted = grid_rte_totals_2 %>% 
-  filter(n >= 66)
 
     
     
