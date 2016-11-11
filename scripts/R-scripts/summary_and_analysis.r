@@ -163,24 +163,27 @@ par(mfrow = c(1, 1), mar = c(6, 6, 1, 1), mgp = c(4, 1, 0),
     cex.axis = 1.5, cex.lab = 2, las = 1)
 palette(colors7)
 
-### Have to cut out stuff that have mean abundance NA
-datasetIDs =  datasetIDs[!datasetIDs %in% c(67,270,271,319,325)]
+occ_taxa=read.csv("occ_taxa.csv",header=TRUE)
+datasetIDs = filter(dataformattingtable, spatial_scale_variable == 'Y',
+                   format_flag == 1)$dataset_ID
+datasetIDs = datasetIDs[datasetIDs  != 317]
+
 
 for(id in datasetIDs){
   print(id)
-  plotsub = subset(summ2, datasetID == id)
-  mod3 = lm(plotsub$propTrans ~ log10(plotsub$meanAbundance))
+  plotsub = subset(occ_taxa,datasetID == id)
+  mod3 = lm(plotsub$pctTrans ~ log10(plotsub$meanAbundance))
   xnew = range(log10(plotsub$meanAbundance))
   xhat <- predict(mod3, newdata = data.frame((xnew)))
   xhats = range(xhat)
   print(xhats)
   taxcolor = subset(taxcolors, taxa == as.character(plotsub$taxa)[1])
   y=summary(mod3)$coef[1] + (xhats)*summary(mod3)$coef[2]
-  plot(NA, xlim = c(-1, 7), ylim = c(0,1), col = as.character(taxcolors$color), xlab = expression("Log"[10]*" Community Size"), ylab = "% Transients", cex = 1.5)
-  lines(log10(plotsub$meanAbundance), fitted(mod3), col=as.character(taxcolors$color),lwd=3)
+  plot(NA, xlim = c(-1, 7), ylim = c(0,1), col = as.character(taxcolor$color), xlab = expression("Log"[10]*" Community Size"), ylab = "% Transients", cex = 1.5)
+  lines(log10(plotsub$meanAbundance), fitted(mod3), col=as.character(taxcolor$color),lwd=3)
   par(new=TRUE)
 }
-legend('topright', legend = taxcolors$taxa, lty=1,lwd=3,col = as.character(taxcolors$color), cex = 1.25, border = "white")
+legend('topright', legend = taxcolors$taxa, lty=1,lwd=3,col = as.character(taxcolors$color), cex = 1.4, bty = "n")
 dev.off()
 
 pdf('output/plots/sara_scale_core_reg.pdf', height = 6, width = 7.5)
@@ -189,8 +192,8 @@ par(mfrow = c(1, 1), mar = c(6, 6, 1, 1), mgp = c(4, 1, 0),
 palette(colors7)
 for(id in datasetIDs){
   print(id)
-  plotsub = subset(summ2,datasetID == id)
-  mod3 = lm((1-plotsub$propTrans) ~ log10(plotsub$meanAbundance))
+  plotsub = subset(occ_taxa,datasetID == id)
+  mod3 = lm((1-plotsub$pctTrans) ~ log10(plotsub$meanAbundance))
   xnew=range(log10(plotsub$meanAbundance))
   xhat <- predict(mod3, newdata = data.frame((xnew)))
   xhats = range(xhat)
@@ -201,7 +204,7 @@ for(id in datasetIDs){
   lines(log10(plotsub$meanAbundance), fitted(mod3), col=as.character(taxcolor$color),lwd=3)
   par(new=TRUE)
 }
-legend('bottomright', legend = taxcolors$taxa, lty=1,lwd=3,col = as.character(taxcolors$color), cex = 1.25, border = "white")
+legend('bottomright', legend = taxcolors$taxa, lty=1,lwd=3,col = as.character(taxcolors$color), cex = 1.4, bty = "n")
 dev.off()
 
 
@@ -256,7 +259,7 @@ taxcolorsrank = data.frame(taxa = unique(summ$taxa), color = colorsrank, pch = s
 w <- ggplot(summ, aes(factor(taxa), mu))+theme_classic()+
   theme(axis.text.x=element_text(angle=90,size=10,vjust=0.5)) + xlab("Taxa") + ylab("Mean Occupancy\n")
 w + geom_boxplot(width=1, position=position_dodge(width=0.6),aes(x=taxa, y=mu), fill = taxcolorsrank$color)+
-  scale_fill_manual(labels = taxcolors$taxa, values = taxcolors$color)+theme(axis.ticks=element_blank(),axis.text.x=element_text(size=14),axis.text.y=element_text(size=14),axis.title.x=element_text(size=19),axis.title.y=element_text(size=19,angle=90,vjust = 1)) + guides(fill=guide_legend(title=""))+ theme(plot.margin = unit(c(.5,.5,.5,.5),"lines")) + annotate("text", x = nrank$taxa, y = 1.05, label = sitetally$n,size=5,vjust=0.8, color = "black")
+  scale_fill_manual(labels = taxcolors$taxa, values = taxcolors$color)+theme(axis.ticks=element_blank(),axis.text.x=element_text(size=14),axis.text.y=element_text(size=14),axis.title.x=element_text(size=22),axis.title.y=element_text(size=22,angle=90,vjust = 1)) + guides(fill=guide_legend(title=""))+ theme(plot.margin = unit(c(.5,.5,.5,.5),"lines")) + annotate("text", x = nrank$taxa, y = 1.05, label = sitetally$n,size=5,vjust=0.8, color = "black")
 ggsave("C:/Git/core-transient/output/plots/meanOcc.pdf", height = 8, width = 12)
 
 ####################  ######################################################
@@ -311,11 +314,17 @@ ggplot(data=propCT_long, aes(factor(taxa), y=value, fill=factor(class))) + geom_
 ggsave("C:/Git/core-transient/output/plots/pctCTO.pdf", height = 8, width = 12)
 ##################################################################
 # barplot of % transients versus community size at diff thresholds
+datasetIDs = dataformattingtable$dataset_ID[dataformattingtable$format_flag == 1]
+
+### Have to cut out stuff that have mean abundance NA
+datasetIDs = datasetIDs[!datasetIDs %in% c(67,270,271,319,325)]
+
+
 summaryTransFun = function(datasetID){
   # Get data:
   dataList = getDataList(datasetID)
   sites  = as.character(dataList$siteSummary$site)
-  # Get summary stats for each site:         #where is the problem coming from?!
+  # Get summary stats for each site:       
   outList = list(length = length(sites))
   for(i in 1:length(sites)){
     propOcc = subset(dataList$propOcc, site == sites[i])$propOcc
