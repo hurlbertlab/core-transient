@@ -302,11 +302,11 @@ propCT$mean.propNeither. = 1 - propCT$mean.propCore. - propCT$mean.propTrans.
 
 propCT_long = gather(propCT, "class","value", c(mean.propCore.:mean.propNeither.))
 propCT_long = arrange(propCT_long, class)
-colscale = c("red", "gold", "blue")
+colscale = c("#7fcdbb", "#1d91c0", "#225ea8")
 
 ggplot(data=propCT_long, aes(factor(taxa), y=value, fill=factor(class))) + geom_bar(stat = "identity")  + theme_classic() + xlab("Taxa") + ylab("Proportion of Species")+
   scale_fill_manual(labels = c("Core", "Other", "Transient"),
-                    values = colscale)+theme(axis.ticks=element_blank(),axis.text.x=element_text(size=18, angle=90),axis.text.y=element_text(size=18),axis.title.x=element_text(size=20),axis.title.y=element_text(size=20,angle=90,vjust = 0.5))+guides(fill=guide_legend(title="")) + theme(legend.text=element_text(size=16))
+                    values = colscale)+theme(axis.ticks=element_blank(),axis.text.x=element_text(size=18, angle=45, vjust = 0.7),axis.text.y=element_text(size=18),axis.title.x=element_text(size=20),axis.title.y=element_text(size=20,angle=90,vjust = 2.5))+guides(fill=guide_legend(title="", reverse=TRUE)) + theme(legend.text=element_text(size=20))
 
 ggsave("C:/Git/core-transient/output/plots/pctCTO.pdf", height = 8, width = 12)
 ##################################################################
@@ -354,13 +354,13 @@ p <- ggplot(CT_long, aes(taxa, level_trans))+theme_classic()
 p+geom_boxplot(aes(x=taxa, y=pTrans, fill = level_trans))
 
 cols <- (CT_long$color)
-colscale=c("light blue","sky blue",  "blue")
+colscale=c("#ece7f2","#9ecae1",  "#225ea8")
 
 p+geom_boxplot(width=0.8,position=position_dodge(width=0.8),aes(x=taxa, y=pTrans, fill=level_trans))+ 
   scale_colour_manual(breaks = CT_long$level_trans,
                       values = taxcolors$color)  + xlab("Taxa") + ylab("Percent Transient")+
   scale_fill_manual(labels = c("Occupancy <= 10%", "Occupancy <= 25%", "Occupancy <= 33%"),
-                    values = colscale)+theme(axis.ticks=element_blank(),axis.text.x=element_text(size=18, angle=90),axis.text.y=element_text(size=18),axis.title.x=element_text(size=20),axis.title.y=element_text(size=20,angle=90,vjust = 0.5))+guides(fill=guide_legend(title="")) + theme(legend.text=element_text(size=16))
+                    values = colscale)+theme(axis.ticks=element_blank(),axis.text.x=element_text(size=18, angle=45),axis.text.y=element_text(size=18),axis.title.x=element_text(size=20),axis.title.y=element_text(size=20,angle=90,vjust = 2))+guides(fill=guide_legend(title="")) + theme(legend.text=element_text(size=20))
 ggsave("C:/Git/core-transient/output/plots/boxCT_perc.pdf", height = 8, width = 12)
 
 
