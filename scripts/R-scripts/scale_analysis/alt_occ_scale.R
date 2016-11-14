@@ -22,7 +22,7 @@
 
 
 ## Please download and install the following packages:
-# maps, sp, rgdal, raster, maptools, rgeos
+# maps, sp, rgdal, raster, maptools, rgeos, dplyr, fields
 library(raster)
 library(maps)
 library(sp)
@@ -30,6 +30,7 @@ library(rgdal)
 library(maptools)
 library(rgeos)
 library(dplyr)
+library(fields)
 
 ####Bringing in BBS50 stop data and prepping it for sub-route scale partitioning####
 
@@ -77,12 +78,6 @@ good_rtes2 = good_rtes %>%
 
 #########
 
-
-#good_rtes2 = routes 2000-2014, and with lats + lons 
-#fifty_allyears = data and routes 2000-2014, no lat lons yet tho so need to combine first
-
-#actually, just need good_rtes2 info to get pairings
-
 good_rtes2 = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/good_rtes2.csv", header = TRUE)
 fifty_allyears = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/fifty_allyears.csv", header = TRUE)
 
@@ -90,26 +85,7 @@ fifty_allyears = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/f
 bbs50_goodrtes = fifty_allyears %>% 
   inner_join(stateroute %in% good_rtes2$stateroute)
 
-#modify below code to reflect BBS data and pairing routes within BBS by min dist 
 
-
-#----Read in BBC data for both counts and sites (currently not seperated by year) (see Ethan White pdf-transformation code)----
-bbc_counts<-read.csv("bbc_counts.csv", header=TRUE)
-head(bbc_counts)
-bbc_sites<-read.csv("bbc_sites.csv", header=TRUE)
-head(bbc_sites)
-
-
-#----For BBC site data: prepare for site-pairing by subsetting assigning headers "BBC Site", "Lat", "Long"----
-bbc_lat_long<-unique(subset(bbc_sites, select=c("siteID", "latitude", "longitude")))
-bbc_lat_long$longitude= -bbc_lat_long$longitude
-head(bbc_lat_long)
-length(table(bbc_lat_long$siteID)) #should be 360
-
-
-
-bbc_lat_long$longitude = good_rtes2$Longi 
-bbc_lat_long$latitude = good_rtes2$Lati
 #----Write for_loop to calculate distances between every BBS and BBC site combination to find sites and routes that correspond best----
 #store minimum value for each iteration of in output table
 require(fields)
@@ -121,10 +97,18 @@ for(focal_bbs in good_rtes2$stateroute){
   distances = rdist.earth(matrix(c(good_rtes2$Longi,good_rtes2$Lati), ncol=2),matrix(c(temp.lon,temp.lat), ncol=2),miles=FALSE, R=6371)
   minDist = min(distances)
   closest_bbs = good_rtes2$stateroute[distances==minDist]
-  output=rbind(output, c(focal_bbs, closest_bbs, minDist))
+  output=rbind(output, c("focal_bbs", "closest_bbs", "minDist"))
+
 }
-output = as.data.frame(output)
-colnames(output)<-c("bbcsiteID", "bbsrouteID", "minDist")
+
+bbs_paired_samples = as.data.frame(output)
+
 head(output)
 summary(output)
 #~median 49km
+
+
+
+
+#########
+
