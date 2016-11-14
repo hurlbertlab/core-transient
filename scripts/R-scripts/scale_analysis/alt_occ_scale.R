@@ -52,7 +52,7 @@ good_rtes = bbs50 %>%
   group_by(stateroute) %>%  
   count(stateroute) %>% 
   filter(n == 15) #now getting 1005 routes with consecutive data :^)
-write.csv(good_rtes, "//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/good_rtes.csv", row.names = FALSE) 
+#write.csv(good_rtes, "//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/good_rtes.csv", row.names = FALSE) 
 
 #compare # of routes and route numbers themselves to old version of bbs50 stored in BioArk 
 require(dplyr)
@@ -63,8 +63,8 @@ fifty_allyears = bbs50 %>%
 
 #finally works because needed $ specification, 
 #can probably collapse into one line 
-write.csv(fifty_allyears, "//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/fifty_allyears.csv", row.names = FALSE)
-fifty_allyears = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/fifty_allyears.csv", header = TRUE)
+#write.csv(fifty_allyears, "//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/fifty_allyears.csv", row.names = FALSE)
+
 #wrote to file just in case 
 
 # merge lat longs from routes file to the list of "good" routes (2000-2014 present all years)
@@ -75,6 +75,21 @@ good_rtes2 = good_rtes %>%
 #write.csv(good_rtes2, "//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/good_rtes2.csv", row.names = FALSE)
 
 
+#########
+
+
+#good_rtes2 = routes 2000-2014, and with lats + lons 
+#fifty_allyears = data and routes 2000-2014, no lat lons yet tho so need to combine first
+
+#actually, just need good_rtes2 info to get pairings
+
+good_rtes2 = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/good_rtes2.csv", header = TRUE)
+fifty_allyears = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/fifty_allyears.csv", header = TRUE)
+
+
+bbs50_goodrtes = fifty_allyears %>% 
+  inner_join(stateroute %in% good_rtes2$stateroute)
+
 #modify below code to reflect BBS data and pairing routes within BBS by min dist 
 
 
@@ -83,23 +98,30 @@ bbc_counts<-read.csv("bbc_counts.csv", header=TRUE)
 head(bbc_counts)
 bbc_sites<-read.csv("bbc_sites.csv", header=TRUE)
 head(bbc_sites)
+
+
 #----For BBC site data: prepare for site-pairing by subsetting assigning headers "BBC Site", "Lat", "Long"----
 bbc_lat_long<-unique(subset(bbc_sites, select=c("siteID", "latitude", "longitude")))
 bbc_lat_long$longitude= -bbc_lat_long$longitude
 head(bbc_lat_long)
 length(table(bbc_lat_long$siteID)) #should be 360
+
+
+
+bbc_lat_long$longitude = good_rtes2$Longi 
+bbc_lat_long$latitude = good_rtes2$Lati
 #----Write for_loop to calculate distances between every BBS and BBC site combination to find sites and routes that correspond best----
 #store minimum value for each iteration of in output table
 require(fields)
 #calculate distances using Great Circle Distance equation
 output=c()
-for(bbc in bbc_lat_long$siteID){
-  temp.lat=bbc_lat_long$latitude[bbc_lat_long$siteID==bbc]
-  temp.lon= bbc_lat_long$longitude[bbc_lat_long$siteID==bbc] 
-  distances = rdist.earth(matrix(c(BBSlatlon$Longi,BBSlatlon$Lati), ncol=2),matrix(c(temp.lon,temp.lat), ncol=2),miles=FALSE, R=6371)
-  minDist= min(distances)
-  closestBBS=BBSlatlon$stateroute[distances==minDist]
-  output=rbind(output, c(bbc, closestBBS, minDist))
+for(focal_bbs in good_rtes2$stateroute){
+  temp.lat=good_rtes2$Lati[good_rtes2$stateroute==focal_bbs]
+  temp.lon= good_rtes2$Longi[good_rtes2$stateroute==focal_bbs] 
+  distances = rdist.earth(matrix(c(good_rtes2$Longi,good_rtes2$Lati), ncol=2),matrix(c(temp.lon,temp.lat), ncol=2),miles=FALSE, R=6371)
+  minDist = min(distances)
+  closest_bbs = good_rtes2$stateroute[distances==minDist]
+  output=rbind(output, c(focal_bbs, closest_bbs, minDist))
 }
 output = as.data.frame(output)
 colnames(output)<-c("bbcsiteID", "bbsrouteID", "minDist")
