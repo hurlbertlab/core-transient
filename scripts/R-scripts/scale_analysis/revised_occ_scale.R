@@ -114,88 +114,16 @@ subrte_occ_avgs = bbs_scalesorted %>%
 
 ####grid sampling justification####
 
-#bringing in lat lon associated with each route (so can determine routes present in grid cell)
-good_rtes = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/good_rtes.csv", header = TRUE)
-routes = read.csv('scripts/R-scripts/scale_analysis/routes.csv')
-routes$stateroute = 1000*routes$statenum + routes$Route
-
-
-#putting these files together to get routes present in all years 2000-2014 
-#AND their associated lat-lon data 
-require(dplyr)
-stateroute_latlon = routes %>% 
-  filter( routes$stateroute %in% good_rtes$stateroute) %>%  
-  dplyr::select(stateroute, Lati, Longi) 
-#write.csv(stateroute_latlon, "//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/stateroute_latlon.csv", row.names = FALSE)
-
-
-#setting grain to largest grid cell size 
-sampledgrains = data.frame(c(1, 2, 4, 8))
-names(sampledgrains) = c("grain")
-output = c()
-for (grain in sampledgrains$grain) {
-  #binning stateroutes according to latlon in grid8ID cells
-  stateroute_latlon$latbin = floor(stateroute_latlon$Lati/grain)*grain + grain/2 
-  stateroute_latlon$longbin = floor(stateroute_latlon$Longi/grain)*grain + grain/2
-  stateroute_latlon$gridID = paste(stateroute_latlon$latbin, stateroute_latlon$longbin, sep = "")
-  stateroute_latlon$grain = grain
-  output = rbind(output, stateroute_latlon)
-  
-  }
-
-sample_sizes = output 
-unique(sample_sizes$grain)
-write.csv(sample_sizes, "//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/sample_sizes.csv", row.names = TRUE)
-#cool, developed forloop appropriate, now can calc grid rte totals FOR EACH GRAIN 
-#and take top 6 for each, find min of top six and use as "magic number" 
-
-  #count # of stateroutes in each cell, take top 6 cells (for both sub and above-route occupancy)
-  require(dplyr) 
-  grid_rte_totals_1 = sample_sizes %>% 
-    filter(grain == 1)  %>%
-    count(gridID) %>% 
-    arrange(desc(n))
-    
-    grid_rte_totals_2 = sample_sizes %>% 
-      filter(grain == 2)  %>%
-    count(gridID) %>% 
-      arrange(desc(n))
-    
-    grid_rte_totals_4 = sample_sizes %>% 
-      filter(grain == 4)  %>%
-    count(gridID) %>% 
-      arrange(desc(n))
-    
-    grid_rte_totals_8 = sample_sizes %>% 
-      filter(grain == 8) %>%
-    count(gridID) %>% 
-      arrange(desc(n))
-  
-    
-#it works! now find how many cells can include when in each grain set     
-  
-head(grid_rte_totals_1) #take head of EACH    
-    
 # grain of (8, 4, 2, 1) corresponds to samples of 66, 19, 10, 5 rtes in each sample 
-
 
 ####Calculating occupancy at scales greater than a single route####
 
 bbs_allyears = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/bbs_allyears.csv", header = TRUE)
-routes = read.csv('scripts/R-scripts/scale_analysis/routes.csv')
-routes$stateroute = 1000*routes$statenum + routes$Route
-good_rtes = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/good_rtes.csv", header = TRUE)
+good_rtes2 = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/good_rtes2.csv", header = TRUE)
 
-# merge lat longs from routes file to the list of "good" routes (2000-2014 present all years)
-require(dplyr)
-good_rtes2 = good_rtes %>% 
-  left_join(routes, good_rtes, by = "stateroute") %>%
-  dplyr::select(stateroute, Lati, Longi)
-#write.csv(good_rtes2, "//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/good_rtes2.csv", row.names = FALSE)
 
 #creating grain, "magic number" sample size for each grain, and reps vectors 
-grain_sample = data.frame(c(1, 2, 4, 8), c(5, 10, 19, 66)) #figure out why stopping at grain 2 
-#- bc need if statement to know how to proceed? will finishing if statement help loops continue?
+grain_sample = data.frame(c(1, 2, 4, 8), c(5, 10, 19, 66)) 
 names(grain_sample) = c("grain", "magic_num")
 
 
@@ -300,23 +228,10 @@ bbs_scalesorted = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/
 bbs_scalesorted$area = (bbs_scalesorted$scale)*(pi*(0.4^2)) # area in km by area of a BBS segment based on # of stops in that segment (for now)
 
 
-
-
-#I DO want to join this time because I want the stateroute lat-long info, 
-#so I know which bins the stateroutes can be paired up in 
-
-
-
-
-
-
-
-
-
-bbs_bigsmall$scale = paste("0.00", bbs_bigsmall$scale, sep = "")
-bbs_bigsmall$scaleID = bbs_bigsmall$scale
-bbs_bigsmall$lat = bbs_bigsmall$Lati
-bbs_bigsmall$lon = bbs_bigsmall$Longi
+bbs_scalesorted$scale = paste("seg", bbs_scalesorted$scale, sep = "")
+bbs_scalesorted$scale = as.character(bbs_scalesorted)
+bbs_scalesorted$lat = bbs_scalesorted$Lati
+bbs_scalesorted$lon = bbs_scalesorted$Longi
 
 
 #before joining datasets OR getting rid of variables -> calc mean of means for bbs_bigsmall 
@@ -343,26 +258,15 @@ unique(test_join$grid8ID)
 #area = area of stop segment based on scaleID and lat lon of original stateroute
 #even tho stateroutes no longer needed areas of segments preserved 
 
-
-
-
 ####upper scale analyses output prep####
 
 #bringing back in routes present from 2000-2014 in every year, with grains, # rtes samples, and areas
 grain_sample = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/grain_sample.csv", header = TRUE)
-
-
 occ_avgs = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/occ_avgs.csv")
-grain_sample = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/grain_sample.csv", header = TRUE)
 
-
-pre_sub_occ_avgs = occ_avgs %>% 
-  filter(grid8ID %in% grid_rtes_best$grid8ID) 
-#want to retain area column from grid_rtes_best 
-#based on # of stateroutes in each grid, based on grid center....so I think I want to join and select tbh 
-
-
-sub_occ_avgs = inner_join(pre_sub_occ_avgs, grid_rtes_best, by = "grid8ID") %>%
+#merge by grain 
+area_occ_avgs = occ_avgs %>% 
+  inner_join(grain %in% grain_sample$grain) %>%
   dplyr::select(lat, lon, grain, mean, grid8ID, area)
 
 #check with unique to make sure 6 cells correct ====> it's correct => checktest = unique(sub_occ_avgs$grid8ID)
