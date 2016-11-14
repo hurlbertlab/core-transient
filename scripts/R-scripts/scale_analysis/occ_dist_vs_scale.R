@@ -143,7 +143,7 @@ bbs_scalesorted = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/
 #scale corresponds to # of stops in a segment 
 #add area ID BEFORE merging, same with above-route dataset 
 bbs_scalesorted$area = (bbs_scalesorted$scale)*(pi*(0.4^2)) # area in km by area of a BBS segment based on # of stops in that segment (for now)
-
+####scale needs to be re-calculated based on new magic numbers####
 
 #I DO want to join this time because I want the stateroute lat-long info, 
 #so I know which bins the stateroutes can be paired up in 
@@ -215,7 +215,7 @@ points(sites$longitude, sites$latitude, col= "red", pch=16)
 ####prototype forloop for generating scaled-up samples for calculating occupancy####
 
 #creating grain, "magic number" sample size for each grain, and reps vectors 
-grain_sample = data.frame(c(1, 2, 4, 8), c(6, 14, 31, 66)) #figure out why stopping at grain 2 
+grain_sample = data.frame(c(1, 2, 4, 8), c(5, 10, 19, 66)) #figure out why stopping at grain 2 
 #- bc need if statement to know how to proceed? will finishing if statement help loops continue?
 names(grain_sample) = c("grain", "magic_num")
 
@@ -228,7 +228,7 @@ reps = c(100) #100? 50?
 output = data.frame(grain = NULL, lat = NULL, lon = NULL, rep = NULL, AOU = NULL, occ = NULL)
 for (grain in grain_sample$grain) {
   sampling_lvl = grain_sample$magic_num[grain_sample$grain == grain]
-  temproutes = good_rtes3
+  temproutes = good_rtes2
   temproutes$latbin = floor(temproutes$Lati/grain)*grain + grain/2
   temproutes$longbin = floor(temproutes$Longi/grain)*grain + grain/2
   uniqLatBins = unique(temproutes$latbin)
@@ -423,4 +423,26 @@ unique(bbs_cross_scales$grid8ID)
 #crop raster to dims to set extent within each grid 
 #(as opposed to extracting ndvi for center lat and lon POINTS as above)
 
+
+
+
+
+
+
+
+
+
+
+
+#sub in for lines 130:150 in revised_occ_scale.R
+output = c()
+for (grain in sample_sizes$grain) {
+  sample_sizes %>%
+    filter(grain == grain) %>%
+    count(gridID) %>% 
+    arrange(desc(n)) %>% 
+    filter(row.names(sample_sizes) == 1:6) 
+  output = rbind(output, sample_sizes)
+  
+}
 
