@@ -157,7 +157,7 @@ dev.off()
                    # format_flag == 1)$dataset_ID
 #datasetIDs = datasetIDs[datasetIDs  != 317]
 
-############################################# ADD IN BBS!!!!!!
+############################################# ADD IN BBS!!!!!! scaled
 pdf('output/plots/sara_scale_transient_reg.pdf', height = 6, width = 7.5)
 par(mfrow = c(1, 1), mar = c(6, 6, 1, 1), mgp = c(4, 1, 0), 
     cex.axis = 1.5, cex.lab = 2, las = 1)
@@ -289,7 +289,7 @@ mtext("Mean occupancy", 2, outer = T, cex = 2, las = 0)
 
 
 
-# Boxplots showing distribution of core and transient species by taxon.
+##### Boxplots showing distribution of core and transient species by taxon #####
 core = summ2 %>%
   dplyr::group_by(taxa) %>%
   dplyr::summarize(mean(propCore)) 
@@ -305,11 +305,12 @@ propCT$mean.propNeither. = 1 - propCT$mean.propCore. - propCT$mean.propTrans.
 
 propCT_long = gather(propCT, "class","value", c(mean.propCore.:mean.propNeither.))
 propCT_long = arrange(propCT_long, class)
-colscale = c("#7fcdbb", "#1d91c0", "#225ea8")
+propCT_long = subset(propCT_long, taxa != "Herptile")
+colscale = c("#54278f", "#74c476", "#225ea8")
 
 ggplot(data=propCT_long, aes(factor(taxa), y=value, fill=factor(class))) + geom_bar(stat = "identity")  + theme_classic() + xlab("Taxa") + ylab("Proportion of Species")+
   scale_fill_manual(labels = c("Core", "Other", "Transient"),
-                    values = colscale)+theme(axis.ticks=element_blank(),axis.text.x=element_text(size=18, angle=45, vjust = 0.7),axis.text.y=element_text(size=18),axis.title.x=element_text(size=20),axis.title.y=element_text(size=20,angle=90,vjust = 2.5))+guides(fill=guide_legend(title="", reverse=TRUE)) + theme(legend.text=element_text(size=20))
+                    values = colscale)+theme(axis.ticks=element_blank(),axis.text.x=element_text(size=24, angle=45, vjust = 0.7),axis.text.y=element_text(size=24),axis.title.x=element_text(size=28),axis.title.y=element_text(size=28,angle=90,vjust = 2.5))+guides(fill=guide_legend(title="", reverse=TRUE)) + theme(legend.text=element_text(size=28),legend.key.size = unit(2, 'lines'))
 
 ggsave("C:/Git/core-transient/output/plots/pctCTO.pdf", height = 8, width = 12)
 ##################################################################
@@ -317,7 +318,7 @@ ggsave("C:/Git/core-transient/output/plots/pctCTO.pdf", height = 8, width = 12)
 datasetIDs = dataformattingtable$dataset_ID[dataformattingtable$format_flag == 1]
 
 ### Have to cut out stuff that have mean abundance NA
-datasetIDs = datasetIDs[!datasetIDs %in% c(67,270,271,319,325)]
+datasetIDs = datasetIDs[!datasetIDs %in% c(67,270,271,317,319,325)]
 
 
 summaryTransFun = function(datasetID){
@@ -367,9 +368,9 @@ colscale=c("#ece7f2","#9ecae1",  "#225ea8")
 
 p+geom_boxplot(width=0.8,position=position_dodge(width=0.8),aes(x=taxa, y=pTrans, fill=level_trans))+ 
   scale_colour_manual(breaks = CT_long$level_trans,
-                      values = taxcolors$color)  + xlab("Taxa") + ylab("Percent Transient")+
-  scale_fill_manual(labels = c("Occupancy <= 10%", "Occupancy <= 25%", "Occupancy <= 33%"),
-                    values = colscale)+theme(axis.ticks=element_blank(),axis.text.x=element_text(size=18, angle=45),axis.text.y=element_text(size=18),axis.title.x=element_text(size=20),axis.title.y=element_text(size=20,angle=90,vjust = 2))+guides(fill=guide_legend(title="")) + theme(legend.text=element_text(size=20))
+                      values = taxcolors$color)  + xlab("Taxa") + ylab("Proportion of Species")+
+  scale_fill_manual(labels = c("10%", "25%", "33%"),
+                    values = colscale)+theme(axis.ticks=element_blank(),axis.text.x=element_text(size=24, angle=45, vjust = 0.8),axis.text.y=element_text(size=24),axis.title.x=element_text(size=28),axis.title.y=element_text(size=28,angle=90,vjust = 2))+guides(fill=guide_legend(title="Occupancy \nThreshold")) + theme(legend.text=element_text(size=28),legend.key.size = unit(2, 'lines'), legend.title=element_text(size=28))
 ggsave("C:/Git/core-transient/output/plots/boxCT_perc.pdf", height = 8, width = 12)
 
 
