@@ -81,9 +81,8 @@ good_rtes2 = good_rtes %>%
 good_rtes2 = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/good_rtes2.csv", header = TRUE)
 fifty_allyears = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/fifty_allyears.csv", header = TRUE)
 
-
-bbs50_goodrtes = fifty_allyears %>% 
-  inner_join(stateroute %in% good_rtes2$stateroute)
+require(dplyr)
+bbs50_goodrtes = inner_join(fifty_allyears, good_rtes2, by = "stateroute")
 
 
 #----Write for_loop to calculate distances between every BBS and BBC site combination to find sites and routes that correspond best----
@@ -94,9 +93,9 @@ output=c()
 for(focal_bbs in good_rtes2$stateroute){
   temp.lat=good_rtes2$Lati[good_rtes2$stateroute==focal_bbs]
   temp.lon= good_rtes2$Longi[good_rtes2$stateroute==focal_bbs] 
-  distances = rdist.earth(matrix(c(good_rtes2$Longi,good_rtes2$Lati), ncol=2),matrix(c(temp.lon,temp.lat), ncol=2),miles=FALSE, R=6371)
+  distances = rdist.earth(matrix(c(bbs50_goodrtes$Longi,bbs50_goodrtes$Lati), ncol=2),matrix(c(temp.lon,temp.lat), ncol=2),miles=FALSE, R=6371)
   minDist = min(distances)
-  closest_bbs = good_rtes2$stateroute[distances==minDist]
+  closest_bbs = bbs50_goodrtes$stateroute[distances==minDist]
   output=rbind(output, c("focal_bbs", "closest_bbs", "minDist"))
 
 }
