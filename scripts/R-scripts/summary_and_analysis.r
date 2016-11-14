@@ -180,7 +180,7 @@ for(id in datasetIDs){
   taxcolor = subset(taxcolors, taxa == as.character(plotsub$taxa)[1])
   y=summary(mod3)$coef[1] + (xhats)*summary(mod3)$coef[2]
   plot(NA, xlim = c(-1, 7), ylim = c(0,1), col = as.character(taxcolor$color), xlab = expression("Log"[10]*" Community Size"), ylab = "% Transients", cex = 1.5)
-  lines(log10(plotsub$meanAbundance), fitted(mod3), col=as.character(taxcolor$color),lwd=3)
+  lines(log10(plotsub$meanAbundance), fitted(mod3), col=as.character(taxcolor$color),lwd=5)
   par(new=TRUE)
 }
 legend('topright', legend = taxcolors$taxa, lty=1,lwd=3,col = as.character(taxcolors$color), cex = 1.4, bty = "n")
@@ -201,7 +201,7 @@ for(id in datasetIDs){
   taxcolor=subset(taxcolors, taxa == as.character(plotsub$taxa)[1])
   y=summary(mod3)$coef[1] + (xhats)*summary(mod3)$coef[2]
   plot(NA, xlim = c(-1, 7), ylim = c(0,1), col = as.character(taxcolor$color), xlab = expression("Log"[10]*" Community Size"), ylab = "% Core", cex = 1.5)
-  lines(log10(plotsub$meanAbundance), fitted(mod3), col=as.character(taxcolor$color),lwd=3)
+  lines(log10(plotsub$meanAbundance), fitted(mod3), col=as.character(taxcolor$color),lwd=5)
   par(new=TRUE)
 }
 legend('bottomright', legend = taxcolors$taxa, lty=1,lwd=3,col = as.character(taxcolors$color), cex = 1.4, bty = "n")
@@ -350,7 +350,7 @@ summaryTransFun = function(datasetID){
 colscale = c("#c51b8a", "#fdd49e", "#225ea8")
 m = ggplot(data=propCT_long, aes(factor(taxa), y=value, fill=factor(class, levels = c("mean.propCore.","mean.propNeither.","mean.propTrans.")))) + geom_bar(stat = "identity")  + theme_classic() + xlab("Taxa") + ylab("Proportion of Species")+
   scale_fill_manual(labels = c("Core", "Other", "Transient"),
-                    values = colscale)+theme(axis.ticks=element_blank(),axis.text.x=element_text(size=24, angle=45, vjust = 0.7),axis.text.y=element_text(size=24),axis.title.x=element_text(size=28),axis.title.y=element_text(size=28,angle=90,vjust = 2.5))+guides(fill=guide_legend(title="", reverse=TRUE)) + theme(legend.text=element_text(size=28),legend.key.size = unit(2, 'lines'))
+                    values = colscale)+theme(axis.ticks=element_blank(),axis.text.x=element_text(size=20, angle=45, vjust = 0.7),axis.text.y=element_text(size=20),axis.title.x=element_text(size=24),axis.title.y=element_text(size=24,angle=90,vjust = 2.5))+guides(fill=guide_legend(title="", reverse=TRUE)) + theme(legend.text=element_text(size=24),legend.key.size = unit(2, 'lines'))+ coord_fixed(ratio = 10)
 
 # ggsave("C:/Git/core-transient/output/plots/pctCTO.pdf", height = 8, width = 12)
 
@@ -370,7 +370,7 @@ p <- ggplot(CT_long, aes(taxa, level_trans))+theme_classic()
 p+geom_boxplot(aes(x=taxa, y=pTrans, fill = level_trans))
 
 cols <- (CT_long$color)
-colscale=c("#ece7f2","#9ecae1",  "#225ea8")
+cols=c("#ece7f2","#9ecae1",  "#225ea8")
 
 
 
@@ -378,19 +378,14 @@ p = p+geom_boxplot(width=0.8,position=position_dodge(width=0.8),aes(x=taxa, y=pT
   scale_colour_manual(breaks = CT_long$level_trans,
                       values = taxcolors$color)  + xlab("Taxa") + ylab("Proportion of Species")+
   scale_fill_manual(labels = c("10%", "25%", "33%"),
-                    values = colscale)+theme(axis.ticks=element_blank(),axis.text.x=element_text(size=24, angle=45, vjust = 0.8),axis.text.y=element_text(size=24),axis.title.x=element_text(size=28),axis.title.y=element_text(size=28,angle=90,vjust = 2))+guides(fill=guide_legend(title="Occupancy \nThreshold")) + theme(legend.text=element_text(size=28),legend.key.size = unit(2, 'lines'), legend.title=element_text(size=28))
+                    values = cols)+theme(axis.ticks=element_blank(),axis.text.x=element_text(size=20, angle=45, vjust = 0.8),axis.text.y=element_text(size=20),axis.title.x=element_text(size=24),axis.title.y=element_text(size=24,angle=90,vjust = 2))+guides(fill=guide_legend(title="Occupancy \nThreshold")) + theme(legend.text=element_text(size=24),legend.key.size = unit(2, 'lines'), legend.title=element_text(size=24))+ coord_fixed(ratio = 10)
 
 colscale = c("#c51b8a", "#fdd49e", "#225ea8")
 plot1 <- m
-colscale=c("#ece7f2","#9ecae1",  "#225ea8")
+cols=c("#ece7f2","#9ecae1",  "#225ea8")
 plot2 <- p
-grid.arrange(plot1, plot2, ncol=2)
-ggsave("C:/Git/core-transient/output/plots/comboplot.pdf", height = 8, width = 12)
+grid = grid.arrange(plot1, plot2, ncol=2)
 
-
-
-ggsave("C:/Git/core-transient/output/plots/boxCT_perc.pdf", height = 8, width = 12)
-
-
+ggsave(file="C:/Git/core-transient/output/plots/comboplot.pdf", height = 10, width = 15,grid)
 
 
