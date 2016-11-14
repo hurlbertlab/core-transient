@@ -83,21 +83,35 @@ fifty_allyears = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/f
 
 require(dplyr)
 bbs50_goodrtes = inner_join(fifty_allyears, good_rtes2, by = "stateroute")
+#ID and subset to routes within top six regions id'd in grid_sampling_justification 
+#assing "reg" label 
+bbs50_goodrtes$grid8ID = paste(floor(bbs50_goodrtes$Lati/8)*8 + 8/2, floor(bbs50_goodrtes$Longi/8)*8 + 8/2, sep = "")
+bbs50_goodrtes$grid8ID = as.character(bbs50_goodrtes$grid8ID)
 
+top6_grid8 = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/top6_grid8.csv", header = TRUE)
 
-#----Write for_loop to calculate distances between every BBS and BBC site combination to find sites and routes that correspond best----
+fifty_top6 = bbs50_goodrtes %>% 
+  filter(grid8ID %in% top6_grid8) #about halves the bbs50_goodrtes set of usable routes
+
+#----Write for_loop to calculate distances between every BBS site combination to find sites and routes that correspond best----
 #store minimum value for each iteration of in output table
 require(fields)
-#calculate distances using Great Circle Distance equation
-output=c()
-for(focal_bbs in good_rtes2$stateroute){
-  temp.lat=good_rtes2$Lati[good_rtes2$stateroute==focal_bbs]
-  temp.lon= good_rtes2$Longi[good_rtes2$stateroute==focal_bbs] 
-  distances = rdist.earth(matrix(c(bbs50_goodrtes$Longi,bbs50_goodrtes$Lati), ncol=2),matrix(c(temp.lon,temp.lat), ncol=2),miles=FALSE, R=6371)
-  minDist = min(distances)
-  closest_bbs = bbs50_goodrtes$stateroute[distances==minDist]
-  output=rbind(output, c("focal_bbs", "closest_bbs", "minDist"))
 
+output=c()
+
+
+for(grid in fifty_top6$grid8ID){
+  for (scale in 2:66){ # num of nearest routes taken/paired 
+    for(focal_bbs in good_rtes2$stateroute){
+      temp.lat=good_rtes2$Lati[good_rtes2$stateroute==focal_bbs]
+      temp.lon= good_rtes2$Longi[good_rtes2$stateroute==focal_bbs] 
+      distances = rdist.earth(matrix(c(fifty_top6$Longi, fifty_top6$Lati), ncol=2),matrix(c(temp.lon,temp.lat), ncol=2),miles=FALSE, R=6371)
+      minDist = min(distances)
+      closest_bbs = fifty_top6$stateroute[distances==minDist]
+      output=rbind(output, c("focal_bbs", "closest_bbs", "minDist"))
+
+    }
+}
 }
 
 bbs_paired_samples = as.data.frame(output)

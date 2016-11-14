@@ -49,6 +49,7 @@ write.csv(sample_sizes, "//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/sam
 #and take top 6 for each, find min of top six and use as "magic number"
 
 
+sample_sizes = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/sample_sizes.csv", header = TRUE)
 #count # of stateroutes in each cell, take top 6 cells (for both sub and above-route occupancy)
 require(dplyr) 
 grid_rte_totals_1 = sample_sizes %>% 
@@ -74,7 +75,9 @@ grid_rte_totals_8 = sample_sizes %>%
 
 #it works! now find how many cells can include when in each grain set     
 
-top6_grid8 = head(grid_rte_totals_8$gridID) #take head of EACH    
+top6_grid8 = as.character(unique(head(grid_rte_totals_8$gridID)))
+write.csv(top6_grid8, "//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/top6_grid8.csv", row.names = FALSE)
+#take head of EACH    
 #top 6 cells to cut off sample at 
 
 # grain of (8, 4, 2, 1) corresponds to suggested samples of 66, 31, 14, 6 rtes in each sample
