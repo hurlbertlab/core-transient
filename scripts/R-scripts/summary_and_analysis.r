@@ -350,7 +350,7 @@ summaryTransFun = function(datasetID){
 colscale = c("#c51b8a", "#fdd49e", "#225ea8")
 m = ggplot(data=propCT_long, aes(factor(taxa), y=value, fill=factor(class, levels = c("mean.propCore.","mean.propNeither.","mean.propTrans.")))) + geom_bar(stat = "identity")  + theme_classic() + xlab("Taxa") + ylab("Proportion of Species")+
   scale_fill_manual(labels = c("Core", "Other", "Transient"),
-                    values = colscale)+theme(axis.ticks=element_blank(),axis.text.x=element_text(size=20, angle=45, vjust = 0.7),axis.text.y=element_text(size=20),axis.title.x=element_text(size=24),axis.title.y=element_text(size=24,angle=90,vjust = 2.5))+guides(fill=guide_legend(title="", reverse=TRUE)) + theme(legend.text=element_text(size=24),legend.key.size = unit(2, 'lines'))+ coord_fixed(ratio = 10)
+                    values = colscale)+theme(axis.ticks=element_blank(),axis.text.x=element_text(size=20, angle=45, vjust = 0.7),axis.text.y=element_text(size=20),axis.title.x=element_text(size=24),axis.title.y=element_text(size=24,angle=90,vjust = 2.5))+ theme(legend.text=element_text(size=24),legend.key.size = unit(2, 'lines'))+theme(legend.position="top", legend.justification=c(0, 1), legend.key.width=unit(1, "lines"))+ guides(fill = guide_legend(keywidth = 3, keyheight = 1,title="", reverse=TRUE))+ coord_fixed(ratio = 10)
 
 # ggsave("C:/Git/core-transient/output/plots/pctCTO.pdf", height = 8, width = 12)
 
@@ -366,6 +366,8 @@ CT_long = gather(CT_plot, "level_trans","pTrans", propTrans33:propTrans10)
 
 uniqTaxa = unique(CT_plot$taxa)
 #### barplot of percent transients by taxa ---FIXED
+CT_long$taxa = as.factor(CT_long$taxa)
+CT_long$taxa = factor(CT_long$taxa,levels = c('Plant','Plankton','Invertebrate','Mammal','Fish','Benthos','Bird'),ordered = TRUE)
 p <- ggplot(CT_long, aes(taxa, level_trans))+theme_classic()
 p+geom_boxplot(aes(x=taxa, y=pTrans, fill = level_trans))
 
@@ -373,12 +375,11 @@ cols <- (CT_long$color)
 cols=c("#ece7f2","#9ecae1",  "#225ea8")
 
 
-
 p = p+geom_boxplot(width=0.8,position=position_dodge(width=0.8),aes(x=taxa, y=pTrans, fill=level_trans))+ 
   scale_colour_manual(breaks = CT_long$level_trans,
                       values = taxcolors$color)  + xlab("Taxa") + ylab("Proportion of Species")+
   scale_fill_manual(labels = c("10%", "25%", "33%"),
-                    values = cols)+theme(axis.ticks=element_blank(),axis.text.x=element_text(size=20, angle=45, vjust = 0.8),axis.text.y=element_text(size=20),axis.title.x=element_text(size=24),axis.title.y=element_text(size=24,angle=90,vjust = 2))+guides(fill=guide_legend(title="Occupancy \nThreshold")) + theme(legend.text=element_text(size=24),legend.key.size = unit(2, 'lines'), legend.title=element_text(size=24))+ coord_fixed(ratio = 10)
+                    values = cols)+theme(axis.ticks=element_blank(),axis.text.x=element_text(size=20, angle=45, vjust = 0.8),axis.text.y=element_text(size=20),axis.title.x=element_text(size=24),axis.title.y=element_text(size=24,angle=90,vjust = 2))+guides(fill=guide_legend(title="",keywidth = 2, keyheight = 1)) + theme(legend.text=element_text(size=24),legend.key.size = unit(2, 'lines'), legend.title=element_text(size=24))+theme(legend.position="top", legend.justification=c(0, 1), legend.key.width=unit(1, "lines"))+ coord_fixed(ratio = 10)
 
 colscale = c("#c51b8a", "#fdd49e", "#225ea8")
 plot1 <- m
