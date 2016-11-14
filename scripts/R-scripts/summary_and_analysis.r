@@ -11,7 +11,7 @@ library(dplyr)
 library(ggplot2)
 library(tidyr)
 library(maps)
-library(viridis)
+library(gridExtra)
 library(RColorBrewer)
 
 source('scripts/R-scripts/core-transient_functions.R')
@@ -306,13 +306,12 @@ propCT$mean.propNeither. = 1 - propCT$mean.propCore. - propCT$mean.propTrans.
 propCT_long = gather(propCT, "class","value", c(mean.propCore.:mean.propNeither.))
 propCT_long = arrange(propCT_long, class)
 propCT_long = subset(propCT_long, taxa != "Herptile")
-colscale = c("#54278f", "#74c476", "#225ea8")
+propCT_long$taxa = as.factor(propCT_long$taxa)
+propCT_long$taxa = factor(propCT_long$taxa,
+                    levels = c('Plant','Plankton','Invertebrate','Mammal','Fish','Benthos','Bird'),ordered = TRUE)
+colscale = c("#c51b8a", "#fdd49e", "#225ea8")
 
-ggplot(data=propCT_long, aes(factor(taxa), y=value, fill=factor(class))) + geom_bar(stat = "identity")  + theme_classic() + xlab("Taxa") + ylab("Proportion of Species")+
-  scale_fill_manual(labels = c("Core", "Other", "Transient"),
-                    values = colscale)+theme(axis.ticks=element_blank(),axis.text.x=element_text(size=24, angle=45, vjust = 0.7),axis.text.y=element_text(size=24),axis.title.x=element_text(size=28),axis.title.y=element_text(size=28,angle=90,vjust = 2.5))+guides(fill=guide_legend(title="", reverse=TRUE)) + theme(legend.text=element_text(size=28),legend.key.size = unit(2, 'lines'))
 
-ggsave("C:/Git/core-transient/output/plots/pctCTO.pdf", height = 8, width = 12)
 ##################################################################
 # barplot of % transients versus community size at diff thresholds
 datasetIDs = dataformattingtable$dataset_ID[dataformattingtable$format_flag == 1]
@@ -348,6 +347,13 @@ summaryTransFun = function(datasetID){
   return(rbind.fill(outList))
 }
 
+colscale = c("#c51b8a", "#fdd49e", "#225ea8")
+m = ggplot(data=propCT_long, aes(factor(taxa), y=value, fill=factor(class, levels = c("mean.propCore.","mean.propNeither.","mean.propTrans.")))) + geom_bar(stat = "identity")  + theme_classic() + xlab("Taxa") + ylab("Proportion of Species")+
+  scale_fill_manual(labels = c("Core", "Other", "Transient"),
+                    values = colscale)+theme(axis.ticks=element_blank(),axis.text.x=element_text(size=24, angle=45, vjust = 0.7),axis.text.y=element_text(size=24),axis.title.x=element_text(size=28),axis.title.y=element_text(size=28,angle=90,vjust = 2.5))+guides(fill=guide_legend(title="", reverse=TRUE)) + theme(legend.text=element_text(size=28),legend.key.size = unit(2, 'lines'))
+
+# ggsave("C:/Git/core-transient/output/plots/pctCTO.pdf", height = 8, width = 12)
+
 percTransSummaries = c()
 for (d in datasetIDs) {
   percTransSumm = summaryTransFun(d)
@@ -366,11 +372,23 @@ p+geom_boxplot(aes(x=taxa, y=pTrans, fill = level_trans))
 cols <- (CT_long$color)
 colscale=c("#ece7f2","#9ecae1",  "#225ea8")
 
-p+geom_boxplot(width=0.8,position=position_dodge(width=0.8),aes(x=taxa, y=pTrans, fill=level_trans))+ 
+
+
+p = p+geom_boxplot(width=0.8,position=position_dodge(width=0.8),aes(x=taxa, y=pTrans, fill=level_trans))+ 
   scale_colour_manual(breaks = CT_long$level_trans,
                       values = taxcolors$color)  + xlab("Taxa") + ylab("Proportion of Species")+
   scale_fill_manual(labels = c("10%", "25%", "33%"),
                     values = colscale)+theme(axis.ticks=element_blank(),axis.text.x=element_text(size=24, angle=45, vjust = 0.8),axis.text.y=element_text(size=24),axis.title.x=element_text(size=28),axis.title.y=element_text(size=28,angle=90,vjust = 2))+guides(fill=guide_legend(title="Occupancy \nThreshold")) + theme(legend.text=element_text(size=28),legend.key.size = unit(2, 'lines'), legend.title=element_text(size=28))
+
+colscale = c("#c51b8a", "#fdd49e", "#225ea8")
+plot1 <- m
+colscale=c("#ece7f2","#9ecae1",  "#225ea8")
+plot2 <- p
+grid.arrange(plot1, plot2, ncol=2)
+ggsave("C:/Git/core-transient/output/plots/comboplot.pdf", height = 8, width = 12)
+
+
+
 ggsave("C:/Git/core-transient/output/plots/boxCT_perc.pdf", height = 8, width = 12)
 
 
