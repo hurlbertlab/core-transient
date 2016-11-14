@@ -3,6 +3,7 @@
 #Molly F. Jenkins 
 #11/11/2016
 
+#skip to line 236 for current revision stopping point
 
 
 #Set working directory to core-transient folder on github i.e. setwd("C:/git/core-transient/")
@@ -221,23 +222,32 @@ write.csv(occ_avgs, "//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/occ_avg
 #then can compare across increasing grain size, across area 
 
 ####lower scale analyses output prep####
-
+good_rtes2 = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/good_rtes2.csv", header = TRUE)
 bbs_scalesorted = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/bbs_scalesorted.csv", header = TRUE)
 #scale corresponds to # of stops in a segment 
 #add area ID BEFORE merging, same with above-route dataset 
 bbs_scalesorted$area = (bbs_scalesorted$scale)*(pi*(0.4^2)) # area in km by area of a BBS segment based on # of stops in that segment (for now)
-
-
 bbs_scalesorted$scale = paste("seg", bbs_scalesorted$scale, sep = "")
-bbs_scalesorted$scale = as.character(bbs_scalesorted)
+bbs_scalesorted$scale = as.character(bbs_scalesorted$scale)
 bbs_scalesorted$lat = bbs_scalesorted$Lati
 bbs_scalesorted$lon = bbs_scalesorted$Longi
+bbs_scalesorted$grid8ID = paste(floor(bbs_scalesorted$lat/8)*8 + 8/2, floor(bbs_scalesorted$lon/8)*8 + 8/2, sep = "")
+bbs_scalesorted$grid8ID = as.character(bbs_scalesorted$grid8ID)
 
+#subset to six grid cells creates by grain_sample aka those existing in occ_avgs already
+#totally unnecessary if areas and scales standardized, don't need to nest within "top" grids, 
+#right? readdress in morning
+
+
+
+bbs_scalesorted = bbs_scalesorted %>% 
+  filter(grid8ID %in% occ_avgs$grid8ID)
 
 #before joining datasets OR getting rid of variables -> calc mean of means for bbs_bigsmall 
 #determining the mean of means across reps and then across scales for below a bbs route 
 
-subrte_occ_avgs = bbs_bigsmall %>% group_by(lat, lon, scale, stateroute) %>% #adding stateroute as proxy for rep to grouping
+subrte_occ_avgs = bbs_scalesorted %>% 
+  group_by(lat, lon, scale, stateroute) %>% #adding stateroute as proxy for rep to grouping
   summarize(mean = mean(occupancy)) %>% #calc across all AOUs for each stateroute (bc stateroutes ARE reps)
   group_by(lat, lon, scale) %>% #calc across all stateroutes for each scale 
   summarize(mean = mean(mean))
@@ -245,9 +255,9 @@ subrte_occ_avgs = bbs_bigsmall %>% group_by(lat, lon, scale, stateroute) %>% #ad
 #pull back in following variables:
 #grid8ID, scaleID, lat, lon, area <-get thru grid8ID bc linked
 #for later cross-scale join
-bbs_prejoin = bbs_bigsmall %>%
-  dplyr::select(lat, lon, scaleID, grid8ID, area) %>% 
-  filter(grid8ID %in% grid_rtes_best$grid8ID) #fixed, added 
+bbs_prejoin = bbs_scalesorted %>%
+  dplyr::select(lat, lon, scale, grid8ID, area) %>% 
+  filter(grid8ID %in% sample_sizes$gridID) #fixed, subsetted to top 6 grid cells only 
 
 test_join = inner_join(subrte_occ_avgs, bbs_prejoin)
 unique(test_join$grid8ID)
@@ -306,47 +316,7 @@ bbs_cross_scales = full_join(bbs_test_join, sub_occ_avgs)
 
     
     
-    
-  #intentionally allowing "X" column to be created for ease of selection of top 6 cells 
-  write.csv(grid_rte_totals, "//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/grid_rte_totals.csv")
-grid_rte_totals = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/grid_rte_totals.csv")
-grid_rtes_best = grid_rte_totals %>% 
-  filter(grid_rte_totals$X < 7) #taking top six grids in grid 8 ID 
-grid_rtes_best$gridID = as.character(grid_rtes_best$gridID)
-grid_rtes_best #min n value = 66 
-#this is our sample number. 
-
-
-#how select other cell numbers?
-
-#rerun for ALL grain sizes, use this to inform and re-form "grain_sample" table. 
-#rerun lines 109:130 for grains: 8, 4, 2, 1. Connect outputs into new table!
-
-
-
-
-
-
-
-
-
-
-
-#grain_sample = data.frame(c(1, 2, 4, 8), c(1, 4, 10, 25)) <- old sample sizes for comparison
-
-####NOW subset grid8ID cells to contain same # of routes per cell (aka # of routes in 6th cell aka LCD)####
-
-
-
-
-
-
-#adding area data for each scale of each stateroute
-grid_rtes_best$area = grid_rtes_best$n*50*(pi*(0.4^2)) 
-#area in km by # of routes * 50 stops * area of a stop (for above-route scale later)
-#write.csv(grid_rtes_best, "//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/grid_rtes_best.csv") 
-#wrote to file for later use in cross-scale merge
-
+ #grain_sample = data.frame(c(1, 2, 4, 8), c(1, 4, 10, 25)) <- old sample sizes for comparison
 
 
 
