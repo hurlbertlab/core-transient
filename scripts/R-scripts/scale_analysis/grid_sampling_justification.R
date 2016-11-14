@@ -74,7 +74,8 @@ grid_rte_totals_8 = sample_sizes %>%
 
 #it works! now find how many cells can include when in each grain set     
 
-head(grid_rte_totals_4) #take head of EACH    
+top6_grid8 = head(grid_rte_totals_8$gridID) #take head of EACH    
+#top 6 cells to cut off sample at 
 
 # grain of (8, 4, 2, 1) corresponds to suggested samples of 66, 31, 14, 6 rtes in each sample
 
