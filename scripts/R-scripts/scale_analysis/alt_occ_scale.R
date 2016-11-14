@@ -73,3 +73,36 @@ good_rtes2 = good_rtes %>%
   left_join(routes, good_rtes, by = "stateroute") %>%
   dplyr::select(stateroute, Lati, Longi)
 #write.csv(good_rtes2, "//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/good_rtes2.csv", row.names = FALSE)
+
+
+#modify below code to reflect BBS data and pairing routes within BBS by min dist 
+
+
+#----Read in BBC data for both counts and sites (currently not seperated by year) (see Ethan White pdf-transformation code)----
+bbc_counts<-read.csv("bbc_counts.csv", header=TRUE)
+head(bbc_counts)
+bbc_sites<-read.csv("bbc_sites.csv", header=TRUE)
+head(bbc_sites)
+#----For BBC site data: prepare for site-pairing by subsetting assigning headers "BBC Site", "Lat", "Long"----
+bbc_lat_long<-unique(subset(bbc_sites, select=c("siteID", "latitude", "longitude")))
+bbc_lat_long$longitude= -bbc_lat_long$longitude
+head(bbc_lat_long)
+length(table(bbc_lat_long$siteID)) #should be 360
+#----Write for_loop to calculate distances between every BBS and BBC site combination to find sites and routes that correspond best----
+#store minimum value for each iteration of in output table
+require(fields)
+#calculate distances using Great Circle Distance equation
+output=c()
+for(bbc in bbc_lat_long$siteID){
+  temp.lat=bbc_lat_long$latitude[bbc_lat_long$siteID==bbc]
+  temp.lon= bbc_lat_long$longitude[bbc_lat_long$siteID==bbc] 
+  distances = rdist.earth(matrix(c(BBSlatlon$Longi,BBSlatlon$Lati), ncol=2),matrix(c(temp.lon,temp.lat), ncol=2),miles=FALSE, R=6371)
+  minDist= min(distances)
+  closestBBS=BBSlatlon$stateroute[distances==minDist]
+  output=rbind(output, c(bbc, closestBBS, minDist))
+}
+output = as.data.frame(output)
+colnames(output)<-c("bbcsiteID", "bbsrouteID", "minDist")
+head(output)
+summary(output)
+#~median 49km
