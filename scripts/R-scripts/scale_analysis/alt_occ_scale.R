@@ -93,7 +93,7 @@ bbs50_goodrtes$grid8ID = as.character(bbs50_goodrtes$grid8ID)
 top6_grid8 = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/top6_grid8.csv", header = TRUE)
 
 
-#filter the data to just those routes present within those 6 grid cell regions of interest 
+#filter the 50 stop data to just those routes present within those 6 grid cell regions of interest 
 fifty_top6 = bbs50_goodrtes %>% 
   filter(grid8ID %in% top6_grid8) #about halves the bbs50_goodrtes set of usable routes
 
@@ -105,10 +105,11 @@ output=c()
 
 
 for(grid in fifty_top6$grid8ID){
-  for (scale in 2:66){ # num of nearest routes taken/paired 
+  for (sample_range in 2:66){ # num of nearest routes taken/paired 
     for(focal_bbs in good_rtes2$stateroute){
-      temp.lat=good_rtes2$Lati[good_rtes2$stateroute==focal_bbs]
-      temp.lon= good_rtes2$Longi[good_rtes2$stateroute==focal_bbs] 
+      sampled_rtes = sample_n(good_rtes2, sample_range, replace = TRUE) 
+      temp.lat=sampled_rtes$Lati[sampled_rtes$stateroute==focal_bbs]
+      temp.lon= sampled_rtes$Longi[sampled_rtes$stateroute==focal_bbs] 
       distances = rdist.earth(matrix(c(fifty_top6$Longi, fifty_top6$Lati), ncol=2),matrix(c(temp.lon,temp.lat), ncol=2),miles=FALSE, R=6371)
       minDist = min(distances)
       closest_bbs = fifty_top6$stateroute[distances==minDist]
@@ -122,10 +123,20 @@ bbs_paired_samples = as.data.frame(output)
 
 head(output)
 summary(output)
-#~median 49km
-
-
-
 
 #########
+#Alt looping structure: 
+#Following distance matrix creation, subset distance matrix by analyzing paired routes for distance 
+#and ranking them by minimum great circle distance
+#where i is the focal route in the cycle of routes 
+#and j is its nearest paired route 
+#and the array cited in "length" is the array that contains the routes in all possible combos 
+output = c()
+for (i in 1:length(fifty_top6)) {
+  for (j in i:length(fifty_top6)) {
+    dist = i - j
+    output = rbind(output, dist)
+    }
+}
+
 
