@@ -105,9 +105,9 @@ output=c()
 
 
 for(grid in fifty_top6$grid8ID){
-  for (sample_range in 2:66){ # num of nearest routes taken/paired 
+  for (sample_range in 2:66){ # num of nearest routes taken/paired -> will inform our gradient of areas
     for(focal_bbs in good_rtes2$stateroute){
-      sampled_rtes = sample_n(good_rtes2, sample_range, replace = TRUE) 
+      sampled_rtes = sample_n(good_rtes2, sample_range, replace = TRUE) #pulling out # of stateroutes
       temp.lat=sampled_rtes$Lati[sampled_rtes$stateroute==focal_bbs]
       temp.lon= sampled_rtes$Longi[sampled_rtes$stateroute==focal_bbs] 
       distances = rdist.earth(matrix(c(fifty_top6$Longi, fifty_top6$Lati), ncol=2),matrix(c(temp.lon,temp.lat), ncol=2),miles=FALSE, R=6371)
