@@ -87,7 +87,7 @@ colors7 = c(rgb(29/255, 106/255, 155/255), # invert
             colors()[612],# plant
             colors()[144], # arth
             rgb(0, 54/255, 117/255), #herp
-            colors()[600], #fish
+            colors()[70], #fish
             colors()[551])#mammal
 
 symbols7 = c(16, 18, 167, 15, 17, 1, 3) 
@@ -105,7 +105,6 @@ taxcolors$abbrev = gsub("Plankton", 'Pn', taxcolors$abbrev)
 taxcolors$abbrev = gsub("Plant", 'Pt', taxcolors$abbrev)
 
 
-
 pdf('output/plots/data_summary_hists.pdf', height = 8, width = 10)
 par(mfrow = c(2, 2), mar = c(6,6,1,1), cex = 1.25, oma = c(0,0,0,0), las = 1,
     cex.lab = 1)
@@ -117,16 +116,14 @@ axis(2, 0:3)
 mtext(expression(log[10] ~ " # Assemblages"), 2, cex = 1.5, las = 0, line = 2.5)
 bar1 = barplot(dsetsByTaxa[taxorder], xaxt = "n", axisnames = F,
                col = as.character(taxcolors$color[match(taxorder, taxcolors$taxa)]))
-text(bar1, par("usr")[3], taxcolors$abbrev, adj = c(1, 1), xpd = TRUE, cex = 1) # srt controls angle of text
+#text(bar1, par("usr")[3], taxcolors$taxa[match(taxorder, taxcolors$taxa)], adj = c(1, 1), xpd = TRUE, cex = 1, srt=45) 
 
 mtext("# Datasets", 2, cex = 1.5, las = 0, line = 2.5)
-bar2 = barplot(log10(sitesByTaxa[taxorder]), axes = F, axisnames = F, ylim = c(0,3),
+bar2 = barplot(log10(sitesByTaxa[taxorder_plot]), axes = F, axisnames = F, ylim = c(0,3),
                col = as.character(taxcolors$color[match(taxorder, taxcolors$taxa)]))
-text(bar2, par("usr")[3], taxcolors$abbrev, adj = c(1, 1), xpd = TRUE, cex = 1)
 axis(2, 0:3)
 mtext(expression(log[10] ~ " # Assemblages"), 2, cex = 1.5, las = 0, line = 2.5)
 dev.off()
-
 
 ############################################# ADD IN BBS!!!!!! scaled
 pdf('output/plots/sara_scale_transient_reg.pdf', height = 6, width = 7.5)
@@ -274,7 +271,7 @@ propCT$mean.propNeither. = 1 - propCT$mean.propCore. - propCT$mean.propTrans.
 
 
 propCT_long = gather(propCT, "class","value", c(mean.propCore.:mean.propNeither.))
-propCT_long = arrange(propCT_long, class)
+propCT_long = arrange(propCT_long, desc(class))
 propCT_long = subset(propCT_long, taxa != "Herptile")
 propCT_long$taxa = as.factor(propCT_long$taxa)
 propCT_long$taxa = factor(propCT_long$taxa,
@@ -304,11 +301,14 @@ summaryTransFun = function(datasetID){
     spRichCore33 = length(propOcc[propOcc >= 1 - .33])
     spRichTrans33 = length(propOcc[propOcc <= .33])
     spRichTrans25 = length(propOcc[propOcc <= .25])
+    if(nTime > 9){
     spRichTrans10 = length(propOcc[propOcc <= .1])
+    propTrans10 = spRichTrans10/spRichTotal
+    }
     propCore33 = spRichCore33/spRichTotal
     propTrans33 = spRichTrans33/spRichTotal
     propTrans25 = spRichTrans25/spRichTotal
-    propTrans10 = spRichTrans10/spRichTotal
+    
     outList[[i]] = data.frame(datasetID, site = sites[i],
                               system = dataList$system, taxa = dataList$taxa,
                               nTime, spRichTotal, spRichCore33, spRichTrans33,
@@ -316,6 +316,22 @@ summaryTransFun = function(datasetID){
   }
   return(rbind.fill(outList))
 }
+
+
+ 
+total = summ2 %>% group_by(datasetID, site, taxa) %>%  
+  dplyr::summarize(numCore=sum(propOcc > 2/3), 
+                   n = sum(spRichTotal),
+                   perTrans33 = sum(propOcc <= 1/3)/n, #33%
+                   perTrans25 = sum(propOcc <= 1/4)/n, #25%
+                   perTrans10 = sum(propOcc <= 1/10)/n, #10%
+                   perCore = sum(propOcc >= 1/3)/n)
+
+trans = total %>%
+  dplyr::group_by(taxa) %>%
+  dplyr::summarize(mean(perTrans33)) 
+
+
 
 propCT_long$abbrev = propCT_long$taxa
 propCT_long$abbrev = gsub("Benthos", 'Be', propCT_long$abbrev)
@@ -326,13 +342,12 @@ propCT_long$abbrev = gsub("Mammal", 'M', propCT_long$abbrev)
 propCT_long$abbrev = gsub("Plankton", 'Pn', propCT_long$abbrev)
 propCT_long$abbrev = gsub("Plant", 'Pt', propCT_long$abbrev)
 propCT_long$abbrev = factor(propCT_long$abbrev,
-                          levels = c('Pt','Pn','I','M','F','Be','Bi'),ordered = TRUE)
+                          levels = c('Pn','Pt','I','F','M','Be','Bi'),ordered = TRUE)
 
 
 colscale = c("#c51b8a", "#fdd49e", "#225ea8")
-m = ggplot(data=propCT_long, aes(factor(abbrev), y=value, fill=factor(class, levels = c("mean.propCore.","mean.propNeither.","mean.propTrans.")))) + geom_bar(stat = "identity")  + theme_classic() + xlab("Taxa") + ylab("Proportion of Species")+
-  scale_fill_manual(labels = c("Core", "Other", "Transient"),
-                    values = colscale)+theme(axis.ticks=element_blank(),axis.text.x=element_text(size=20),axis.text.y=element_text(size=20),axis.title.x=element_text(size=24),axis.title.y=element_text(size=24,angle=90,vjust = 2.5))+ theme(legend.text=element_text(size=24),legend.key.size = unit(2, 'lines'))+theme(legend.position="top", legend.justification=c(0, 1), legend.key.width=unit(1, "lines"))+ guides(fill = guide_legend(keywidth = 3, keyheight = 1,title="", reverse=TRUE))+ coord_fixed(ratio = 10)
+m = ggplot(data=propCT_long, aes(factor(abbrev), y=value, fill=factor(class))) + geom_bar(stat = "identity")  + theme_classic() + xlab("Taxa") + ylab("Proportion of Species")+ scale_fill_manual(labels = c("Core", "Other", "Transient"),
+                    values = colscale)+theme(axis.ticks=element_blank(),axis.text.x=element_text(size=20),axis.text.y=element_text(size=20),axis.title.x=element_text(size=24),axis.title.y=element_text(size=24,angle=90,vjust = 2.5))+ theme(legend.text=element_text(size=24),legend.key.size = unit(2, 'lines'))+theme(legend.position="top", legend.justification=c(0, 1), legend.key.width=unit(1, "lines"))+ guides(fill = guide_legend(keywidth = 3, keyheight = 1,title="", reverse=TRUE))+ coord_fixed(ratio = 4)
 
 # ggsave("C:/Git/core-transient/output/plots/pctCTO.pdf", height = 8, width = 12)
 
@@ -346,6 +361,19 @@ for (d in datasetIDs) {
 CT_plot=merge(percTransSummaries, taxcolors, by="taxa")
 CT_long = gather(CT_plot, "level_trans","pTrans", propTrans33:propTrans10)
 
+1       Benthos   mean.propTrans. 0.3237069     Be
+2          Bird   mean.propTrans. 0.2741489     Bi
+3          Fish   mean.propTrans. 0.4112190      F
+4  Invertebrate   mean.propTrans. 0.4785510      I
+5        Mammal   mean.propTrans. 0.4160594      M
+6      Plankton   mean.propTrans. 0.4851435     Pn
+7         Plant   mean.propTrans. 0.4927478     Pt
+
+trans = CT_plot %>%
+  dplyr::group_by(taxa) %>%
+  dplyr::summarize(mean(propTrans33)) 
+
+
 uniqTaxa = unique(CT_plot$taxa)
 #### barplot of percent transients by taxa ---FIXED
 CT_long$taxa = as.factor(CT_long$taxa)
@@ -358,9 +386,9 @@ CT_long$abbrev = gsub("Mammal", 'M', CT_long$abbrev)
 CT_long$abbrev = gsub("Plankton", 'Pn', CT_long$abbrev)
 CT_long$abbrev = gsub("Plant", 'Pt', CT_long$abbrev)
 CT_long$abbrev = factor(CT_long$abbrev,
-                            levels = c('Pt','Pn','I','M','F','Be','Bi'),ordered = TRUE)
+                            levels = c('Pn','Pt','I','F','M','Be','Bi'),ordered = TRUE)
 
-p <- ggplot(CT_long, aes(abbrev, level_trans))+theme_classic()
+p <- ggplot(CT_long, aes(abbrev, pTrans))+theme_classic()
 
 cols <- (CT_long$color)
 cols=c("#ece7f2","#9ecae1",  "#225ea8")
@@ -370,7 +398,7 @@ p = p+geom_boxplot(width=0.8,position=position_dodge(width=0.8),aes(x=abbrev, y=
   scale_colour_manual(breaks = CT_long$level_trans,
                       values = taxcolors$color)  + xlab("Taxa") + ylab("Proportion of Species")+
   scale_fill_manual(labels = c("10%", "25%", "33%"),
-                    values = cols)+theme(axis.ticks=element_blank(),axis.text.x=element_text(size=20),axis.text.y=element_text(size=20),axis.title.x=element_text(size=24),axis.title.y=element_text(size=24,angle=90,vjust = 2))+guides(fill=guide_legend(title="",keywidth = 2, keyheight = 1)) + theme(legend.text=element_text(size=24),legend.key.size = unit(2, 'lines'), legend.title=element_text(size=24))+theme(legend.position="top", legend.justification=c(0, 1), legend.key.width=unit(1, "lines"))+ coord_fixed(ratio = 10)
+                    values = cols)+theme(axis.ticks=element_blank(),axis.text.x=element_text(size=20),axis.text.y=element_text(size=20),axis.title.x=element_text(size=24),axis.title.y=element_text(size=24,angle=90,vjust = 2))+guides(fill=guide_legend(title="",keywidth = 2, keyheight = 1)) + theme(legend.text=element_text(size=24),legend.key.size = unit(2, 'lines'), legend.title=element_text(size=24))+theme(legend.position="top", legend.justification=c(0, 1), legend.key.width=unit(1, "lines"))+ coord_fixed(ratio = 4)
 
 colscale = c("#c51b8a", "#fdd49e", "#225ea8")
 plot1 <- m
