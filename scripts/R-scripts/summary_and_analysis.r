@@ -95,11 +95,21 @@ symbols7 = c(16, 18, 167, 15, 17, 1, 3)
 summ$taxa <-droplevels(summ$taxa, exclude = c("Arthropod","Amphibian", "Reptile"))
 taxcolors = data.frame(taxa = unique(summ$taxa), color = colors7, pch = symbols7)
 
+taxcolors$abbrev = taxcolors$taxa
+taxcolors$abbrev = gsub("Benthos", 'Be', taxcolors$abbrev)
+taxcolors$abbrev = gsub("Bird", 'Bi', taxcolors$abbrev)
+taxcolors$abbrev = gsub("Fish", 'F', taxcolors$abbrev)
+taxcolors$abbrev = gsub("Invertebrate", 'I', taxcolors$abbrev)
+taxcolors$abbrev = gsub("Mammal", 'M', taxcolors$abbrev)
+taxcolors$abbrev = gsub("Plankton", 'Pn', taxcolors$abbrev)
+taxcolors$abbrev = gsub("Plant", 'Pt', taxcolors$abbrev)
+
+
+
 pdf('output/plots/data_summary_hists.pdf', height = 8, width = 10)
 par(mfrow = c(2, 2), mar = c(6,6,1,1), cex = 1.25, oma = c(0,0,0,0), las = 1,
     cex.lab = 1)
 b1=barplot(dsetsBySystem, col = c('skyblue', 'navy', 'burlywood')) 
-#text(b1, par("usr")[3], dsetsBySystem, srt = 60, adj = c(1, 1), xpd = TRUE, cex = 1)
 mtext("# Datasets", 2, cex = 1, las = 0, line = 2.5)
 barplot(log10(sitesBySystem), col = c('skyblue', 'navy', 'burlywood'), cex.names = 1, 
         yaxt = "n", ylim = c(0,3)) 
@@ -107,55 +117,16 @@ axis(2, 0:3)
 mtext(expression(log[10] ~ " # Assemblages"), 2, cex = 1.5, las = 0, line = 2.5)
 bar1 = barplot(dsetsByTaxa[taxorder], xaxt = "n", axisnames = F,
                col = as.character(taxcolors$color[match(taxorder, taxcolors$taxa)]))
-text(bar1, par("usr")[3], taxorder, srt = 60, adj = c(1, 1), xpd = TRUE, cex = 1) # srt controls angle of text
+text(bar1, par("usr")[3], taxcolors$abbrev, adj = c(1, 1), xpd = TRUE, cex = 1) # srt controls angle of text
 
 mtext("# Datasets", 2, cex = 1.5, las = 0, line = 2.5)
 bar2 = barplot(log10(sitesByTaxa[taxorder]), axes = F, axisnames = F, ylim = c(0,3),
                col = as.character(taxcolors$color[match(taxorder, taxcolors$taxa)]))
-text(bar2, par("usr")[3], taxorder, srt = 60, adj = c(1, 1), xpd = TRUE, cex = 1)
+text(bar2, par("usr")[3], taxcolors$abbrev, adj = c(1, 1), xpd = TRUE, cex = 1)
 axis(2, 0:3)
 mtext(expression(log[10] ~ " # Assemblages"), 2, cex = 1.5, las = 0, line = 2.5)
 dev.off()
 
-######################################################################################### legend not right
-# Summarizing datasets based on beta distribution parameters
-pdf('output/plots/alpha_vs_beta.pdf', height = 6, width = 8)
-par(mfrow = c(1,1), mar = c(5,5,1,1), mgp = c(3,1, 0), cex.axis = 1, cex.lab = 1, las = 1)
-plot(summ3$alpha, summ3$beta, type = "n", xlim = c(-0.25,3.5), xlab = "alpha", ylab = "beta",
-     ylim = c(0,4), yaxt = "n")
-axis(2, 0:4, cex = 1)
-points(summ3$alpha, summ3$beta, pch = summ3$pch, col = summ3$color, font = 5, cex = 1)
-abline(a=0, b=1, lty = 'dotted', lwd = 4)
-rect(-1, -1, 1, 1, lty = 'dashed', lwd = 2)
-legend('topleft', legend = unique(summ$taxa), pch = symbols7, 
-       col = c(colors7, 'white', colors7), pt.cex = 1.5, cex = 1.25)
-points(-.28, 2.65, pch = symbols7[6], font = 5, col = colors7[6], cex = 1.7)
-text(3,3.2, substitute(paste(alpha, " = ", beta)), srt = 40, cex = 2)
-dev.off()
-
-# Summarizing datasets based on beta distribution parameters
-pdf('output/plots/alpha_vs_beta_log.pdf', height = 6, width = 8)
-par(mfrow = c(1,1), mar = c(5,5,1,1), mgp = c(3,1, 0), cex.axis = 1, cex.lab = 1, las = 1)
-plot(summ3$alpha, summ3$beta, type = "n", xlim = c(-0.25,3.5), xlab = "alpha", ylab = "beta",
-     ylim = c(0,4), yaxt = "n")
-axis(2, 0:4, cex = 1)
-points(log(summ3$alpha), log(summ3$beta), pch = summ3$pch, col = summ3$color, font = 5, cex = 1)
-abline(a=0, b=1, lty = 'dotted', lwd = 4)
-rect(-1, -1, 1, 1, lty = 'dashed', lwd = 2)
-legend('topleft', legend = unique(summ$taxa), pch = symbols7, 
-       col = c(colors7, 'white', colors7), pt.cex = 1.5, cex = 1.25)
-points(-.28, 2.65, pch = symbols7[6], font = 5, col = colors7[6], cex = 1.7)
-text(3,3.2, substitute(paste(alpha, " = ", beta)), srt = 40, cex = 2)
-dev.off()
-l = c(col1, col2, col3, col4), pch = 16, cex = 1.5, pt.cex = 2)
-dev.off()
-
-##################################################################
-# Summary of % transients versus community size using regression lines
-#occ_taxa=read.csv("occ_taxa.csv",header=TRUE)
-#datasetIDs = filter(dataformattingtable, spatial_scale_variable == 'Y',
-                   # format_flag == 1)$dataset_ID
-#datasetIDs = datasetIDs[datasetIDs  != 317]
 
 ############################################# ADD IN BBS!!!!!! scaled
 pdf('output/plots/sara_scale_transient_reg.pdf', height = 6, width = 7.5)
@@ -183,7 +154,7 @@ for(id in datasetIDs){
   lines(log10(plotsub$meanAbundance), fitted(mod3), col=as.character(taxcolor$color),lwd=5)
   par(new=TRUE)
 }
-legend('topright', legend = taxcolors$taxa, lty=1,lwd=3,col = as.character(taxcolors$color), cex = 1.4, bty = "n")
+legend('topright', legend = taxcolors$taxa, lty=1,lwd=3,col = as.character(taxcolors$color), cex = 1.35)
 dev.off()
 
 pdf('output/plots/sara_scale_core_reg.pdf', height = 6, width = 7.5)
@@ -204,7 +175,6 @@ for(id in datasetIDs){
   lines(log10(plotsub$meanAbundance), fitted(mod3), col=as.character(taxcolor$color),lwd=5)
   par(new=TRUE)
 }
-legend('bottomright', legend = taxcolors$taxa, lty=1,lwd=3,col = as.character(taxcolors$color), cex = 1.4, bty = "n")
 dev.off()
 
 
@@ -347,10 +317,22 @@ summaryTransFun = function(datasetID){
   return(rbind.fill(outList))
 }
 
+propCT_long$abbrev = propCT_long$taxa
+propCT_long$abbrev = gsub("Benthos", 'Be', propCT_long$abbrev)
+propCT_long$abbrev = gsub("Bird", 'Bi', propCT_long$abbrev)
+propCT_long$abbrev = gsub("Fish", 'F', propCT_long$abbrev)
+propCT_long$abbrev = gsub("Invertebrate", 'I', propCT_long$abbrev)
+propCT_long$abbrev = gsub("Mammal", 'M', propCT_long$abbrev)
+propCT_long$abbrev = gsub("Plankton", 'Pn', propCT_long$abbrev)
+propCT_long$abbrev = gsub("Plant", 'Pt', propCT_long$abbrev)
+propCT_long$abbrev = factor(propCT_long$abbrev,
+                          levels = c('Pt','Pn','I','M','F','Be','Bi'),ordered = TRUE)
+
+
 colscale = c("#c51b8a", "#fdd49e", "#225ea8")
-m = ggplot(data=propCT_long, aes(factor(taxa), y=value, fill=factor(class, levels = c("mean.propCore.","mean.propNeither.","mean.propTrans.")))) + geom_bar(stat = "identity")  + theme_classic() + xlab("Taxa") + ylab("Proportion of Species")+
+m = ggplot(data=propCT_long, aes(factor(abbrev), y=value, fill=factor(class, levels = c("mean.propCore.","mean.propNeither.","mean.propTrans.")))) + geom_bar(stat = "identity")  + theme_classic() + xlab("Taxa") + ylab("Proportion of Species")+
   scale_fill_manual(labels = c("Core", "Other", "Transient"),
-                    values = colscale)+theme(axis.ticks=element_blank(),axis.text.x=element_text(size=20, angle=45, vjust = 0.7),axis.text.y=element_text(size=20),axis.title.x=element_text(size=24),axis.title.y=element_text(size=24,angle=90,vjust = 2.5))+ theme(legend.text=element_text(size=24),legend.key.size = unit(2, 'lines'))+theme(legend.position="top", legend.justification=c(0, 1), legend.key.width=unit(1, "lines"))+ guides(fill = guide_legend(keywidth = 3, keyheight = 1,title="", reverse=TRUE))+ coord_fixed(ratio = 10)
+                    values = colscale)+theme(axis.ticks=element_blank(),axis.text.x=element_text(size=20),axis.text.y=element_text(size=20),axis.title.x=element_text(size=24),axis.title.y=element_text(size=24,angle=90,vjust = 2.5))+ theme(legend.text=element_text(size=24),legend.key.size = unit(2, 'lines'))+theme(legend.position="top", legend.justification=c(0, 1), legend.key.width=unit(1, "lines"))+ guides(fill = guide_legend(keywidth = 3, keyheight = 1,title="", reverse=TRUE))+ coord_fixed(ratio = 10)
 
 # ggsave("C:/Git/core-transient/output/plots/pctCTO.pdf", height = 8, width = 12)
 
@@ -367,19 +349,28 @@ CT_long = gather(CT_plot, "level_trans","pTrans", propTrans33:propTrans10)
 uniqTaxa = unique(CT_plot$taxa)
 #### barplot of percent transients by taxa ---FIXED
 CT_long$taxa = as.factor(CT_long$taxa)
-CT_long$taxa = factor(CT_long$taxa,levels = c('Plant','Plankton','Invertebrate','Mammal','Fish','Benthos','Bird'),ordered = TRUE)
-p <- ggplot(CT_long, aes(taxa, level_trans))+theme_classic()
-p+geom_boxplot(aes(x=taxa, y=pTrans, fill = level_trans))
+CT_long$abbrev = CT_long$taxa
+CT_long$abbrev = gsub("Benthos", 'Be', CT_long$abbrev)
+CT_long$abbrev = gsub("Bird", 'Bi', CT_long$abbrev)
+CT_long$abbrev = gsub("Fish", 'F', CT_long$abbrev)
+CT_long$abbrev = gsub("Invertebrate", 'I', CT_long$abbrev)
+CT_long$abbrev = gsub("Mammal", 'M', CT_long$abbrev)
+CT_long$abbrev = gsub("Plankton", 'Pn', CT_long$abbrev)
+CT_long$abbrev = gsub("Plant", 'Pt', CT_long$abbrev)
+CT_long$abbrev = factor(CT_long$abbrev,
+                            levels = c('Pt','Pn','I','M','F','Be','Bi'),ordered = TRUE)
+
+p <- ggplot(CT_long, aes(abbrev, level_trans))+theme_classic()
 
 cols <- (CT_long$color)
 cols=c("#ece7f2","#9ecae1",  "#225ea8")
 
 
-p = p+geom_boxplot(width=0.8,position=position_dodge(width=0.8),aes(x=taxa, y=pTrans, fill=level_trans))+ 
+p = p+geom_boxplot(width=0.8,position=position_dodge(width=0.8),aes(x=abbrev, y=pTrans, fill=level_trans))+ 
   scale_colour_manual(breaks = CT_long$level_trans,
                       values = taxcolors$color)  + xlab("Taxa") + ylab("Proportion of Species")+
   scale_fill_manual(labels = c("10%", "25%", "33%"),
-                    values = cols)+theme(axis.ticks=element_blank(),axis.text.x=element_text(size=20, angle=45, vjust = 0.8),axis.text.y=element_text(size=20),axis.title.x=element_text(size=24),axis.title.y=element_text(size=24,angle=90,vjust = 2))+guides(fill=guide_legend(title="",keywidth = 2, keyheight = 1)) + theme(legend.text=element_text(size=24),legend.key.size = unit(2, 'lines'), legend.title=element_text(size=24))+theme(legend.position="top", legend.justification=c(0, 1), legend.key.width=unit(1, "lines"))+ coord_fixed(ratio = 10)
+                    values = cols)+theme(axis.ticks=element_blank(),axis.text.x=element_text(size=20),axis.text.y=element_text(size=20),axis.title.x=element_text(size=24),axis.title.y=element_text(size=24,angle=90,vjust = 2))+guides(fill=guide_legend(title="",keywidth = 2, keyheight = 1)) + theme(legend.text=element_text(size=24),legend.key.size = unit(2, 'lines'), legend.title=element_text(size=24))+theme(legend.position="top", legend.justification=c(0, 1), legend.key.width=unit(1, "lines"))+ coord_fixed(ratio = 10)
 
 colscale = c("#c51b8a", "#fdd49e", "#225ea8")
 plot1 <- m
