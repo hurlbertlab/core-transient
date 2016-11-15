@@ -95,19 +95,34 @@ top6_grid8 = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/top6_
 
 #filter the 50 stop data to just those routes present within those 6 grid cell regions of interest 
 fifty_top6 = bbs50_goodrtes %>% 
-  filter(grid8ID %in% top6_grid8) #about halves the bbs50_goodrtes set of usable routes
+  filter(grid8ID %in% top6_grid8$x) #about halves the bbs50_goodrtes set of usable routes
 
+good_rtes3 = good_rtes2[1:10,]
 
 #----Write for_loop to calculate distances between every BBS site combination to find focal and associated routes that correspond best----
 #store minimum value for each iteration of combos in output table
+
+# Distance calculation between all combination of 
+distances = rdist.earth(matrix(c(good_rtes3$Longi, good_rtes3$Lati), ncol=2),
+                        matrix(c(good_rtes3$Longi, good_rtes3$Lati), ncol=2),
+                        miles=FALSE, R=6371)
+
+dist.df = data.frame(rte1 = rep(good_rtes3$stateroute, each = nrow(good_rtes3)),
+                     rte2 = rep(good_rtes3$stateroute, times = nrow(good_rtes3)),
+                     dist = as.vector(distances))
+
+# inside loop, e.g., filter(dist.df, rte1 == 2001, rte2 != 2001)
+
 require(fields)
 output=c()
+
+
+
 
 
 for(grid in fifty_top6$grid8ID){
   for (sample_range in 2:66){ # num of nearest routes taken/paired -> will inform our gradient of areas
     for(focal_bbs in good_rtes2$stateroute){
-      sampled_rtes = sample_n(good_rtes2, sample_range, replace = TRUE) #pulling out # of stateroutes
       temp.lat=sampled_rtes$Lati[sampled_rtes$stateroute==focal_bbs]
       temp.lon= sampled_rtes$Longi[sampled_rtes$stateroute==focal_bbs] 
       distances = rdist.earth(matrix(c(fifty_top6$Longi, fifty_top6$Lati), ncol=2),matrix(c(temp.lon,temp.lat), ncol=2),miles=FALSE, R=6371)
