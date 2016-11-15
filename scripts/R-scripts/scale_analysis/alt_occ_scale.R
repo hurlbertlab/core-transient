@@ -88,15 +88,19 @@ bbs50_goodrtes = inner_join(fifty_allyears, good_rtes2, by = "stateroute")
 bbs50_goodrtes$grid8ID = paste(floor(bbs50_goodrtes$Lati/8)*8 + 8/2, floor(bbs50_goodrtes$Longi/8)*8 + 8/2, sep = "")
 bbs50_goodrtes$grid8ID = as.character(bbs50_goodrtes$grid8ID)
 
+
+#bring in top 6 grids for max scale (8 degree) from grid_sampling_justification.R script, 66 rte cutoff 
 top6_grid8 = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/top6_grid8.csv", header = TRUE)
 
+
+#filter the data to just those routes present within those 6 grid cell regions of interest 
 fifty_top6 = bbs50_goodrtes %>% 
   filter(grid8ID %in% top6_grid8) #about halves the bbs50_goodrtes set of usable routes
 
-#----Write for_loop to calculate distances between every BBS site combination to find sites and routes that correspond best----
-#store minimum value for each iteration of in output table
-require(fields)
 
+#----Write for_loop to calculate distances between every BBS site combination to find focal and associated routes that correspond best----
+#store minimum value for each iteration of combos in output table
+require(fields)
 output=c()
 
 
