@@ -36,7 +36,7 @@ dataformattingtable = read.csv('data_formatting_table.csv', header = T)
 
 datasetIDs = dataformattingtable$dataset_ID[dataformattingtable$format_flag == 1]
 
-datasetIDs = datasetIDs[!datasetIDs %in% c(222, 317)] # 222 i
+datasetIDs = datasetIDs[!datasetIDs %in% c(222, 317)] # 222 is % cover, 317 d/n have neough years
 
 summaries = c()
 for (d in datasetIDs) {
@@ -116,10 +116,10 @@ axis(2, 0:3)
 mtext(expression(log[10] ~ " # Assemblages"), 2, cex = 1.5, las = 0, line = 2.5)
 bar1 = barplot(dsetsByTaxa[taxorder], xaxt = "n", axisnames = F,
                col = as.character(taxcolors$color[match(taxorder, taxcolors$taxa)]))
-#text(bar1, par("usr")[3], taxcolors$taxa[match(taxorder, taxcolors$taxa)], adj = c(1, 1), xpd = TRUE, cex = 1, srt=45) 
+# text(bar1, par("usr")[3], taxcolors$abbrev, adj = c(1, 1), xpd = TRUE, cex = 1) 
 
 mtext("# Datasets", 2, cex = 1.5, las = 0, line = 2.5)
-bar2 = barplot(log10(sitesByTaxa[taxorder_plot]), axes = F, axisnames = F, ylim = c(0,3),
+bar2 = barplot(log10(sitesByTaxa[taxorder]), axes = F, axisnames = F, ylim = c(0,3),
                col = as.character(taxcolors$color[match(taxorder, taxcolors$taxa)]))
 axis(2, 0:3)
 mtext(expression(log[10] ~ " # Assemblages"), 2, cex = 1.5, las = 0, line = 2.5)
@@ -132,13 +132,11 @@ par(mfrow = c(1, 1), mar = c(6, 6, 1, 1), mgp = c(4, 1, 0),
 palette(colors7)
 
 occ_taxa=read.csv("occ_taxa.csv",header=TRUE)
-datasetIDs = filter(dataformattingtable, spatial_scale_variable == 'Y',
+scaleIDs = filter(dataformattingtable, spatial_scale_variable == 'Y',
                    format_flag == 1)$dataset_ID
-datasetIDs = datasetIDs[datasetIDs  != 317]
+scaleIDs = scaleIDs[scaleIDs  != c(222,317)]
 
-datasetIDs = filter(dataformattingtable, taxa == 'Plant',format_flag == 1)$dataset_ID
-222
-for(id in datasetIDs){
+for(id in scaleIDs){
   print(id)
   plotsub = subset(occ_taxa,datasetID == id)
   mod3 = lm(plotsub$pctTrans ~ log10(plotsub$meanAbundance))
@@ -159,7 +157,7 @@ pdf('output/plots/sara_scale_core_reg.pdf', height = 6, width = 7.5)
 par(mfrow = c(1, 1), mar = c(6, 6, 1, 1), mgp = c(4, 1, 0), 
     cex.axis = 1.5, cex.lab = 2, las = 1)
 palette(colors7)
-for(id in datasetIDs){
+for(id in scaleIDs){
   print(id)
   plotsub = subset(occ_taxa,datasetID == id)
   mod3 = lm((1-plotsub$pctTrans) ~ log10(plotsub$meanAbundance))
