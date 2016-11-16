@@ -125,54 +125,6 @@ axis(2, 0:3)
 mtext(expression(log[10] ~ " # Assemblages"), 2, cex = 1.5, las = 0, line = 2.5)
 dev.off()
 
-############################################# ADD IN BBS!!!!!! scaled
-pdf('output/plots/sara_scale_transient_reg.pdf', height = 6, width = 7.5)
-par(mfrow = c(1, 1), mar = c(6, 6, 1, 1), mgp = c(4, 1, 0), 
-    cex.axis = 1.5, cex.lab = 2, las = 1)
-palette(colors7)
-
-occ_taxa=read.csv("occ_taxa.csv",header=TRUE)
-scaleIDs = filter(dataformattingtable, spatial_scale_variable == 'Y',
-                   format_flag == 1)$dataset_ID
-scaleIDs = scaleIDs[scaleIDs  != c(222,317)]
-
-for(id in scaleIDs){
-  print(id)
-  plotsub = subset(occ_taxa,datasetID == id)
-  mod3 = lm(plotsub$pctTrans ~ log10(plotsub$meanAbundance))
-  xnew = range(log10(plotsub$meanAbundance))
-  xhat <- predict(mod3, newdata = data.frame((xnew)))
-  xhats = range(xhat)
-  print(xhats)
-  taxcolor = subset(taxcolors, taxa == as.character(plotsub$taxa)[1])
-  y=summary(mod3)$coef[1] + (xhats)*summary(mod3)$coef[2]
-  plot(NA, xlim = c(-1, 7), ylim = c(0,1), col = as.character(taxcolor$color), xlab = expression("Log"[10]*" Community Size"), ylab = "% Transients", cex = 1.5)
-  lines(log10(plotsub$meanAbundance), fitted(mod3), col=as.character(taxcolor$color),lwd=5)
-  par(new=TRUE)
-}
-legend('topright', legend = taxcolors$taxa, lty=1,lwd=3,col = as.character(taxcolors$color), cex = 1.35)
-dev.off()
-
-pdf('output/plots/sara_scale_core_reg.pdf', height = 6, width = 7.5)
-par(mfrow = c(1, 1), mar = c(6, 6, 1, 1), mgp = c(4, 1, 0), 
-    cex.axis = 1.5, cex.lab = 2, las = 1)
-palette(colors7)
-for(id in scaleIDs){
-  print(id)
-  plotsub = subset(occ_taxa,datasetID == id)
-  mod3 = lm((1-plotsub$pctTrans) ~ log10(plotsub$meanAbundance))
-  xnew=range(log10(plotsub$meanAbundance))
-  xhat <- predict(mod3, newdata = data.frame((xnew)))
-  xhats = range(xhat)
-  print(xhats)
-  taxcolor=subset(taxcolors, taxa == as.character(plotsub$taxa)[1])
-  y=summary(mod3)$coef[1] + (xhats)*summary(mod3)$coef[2]
-  plot(NA, xlim = c(-1, 7), ylim = c(0,1), col = as.character(taxcolor$color), xlab = expression("Log"[10]*" Community Size"), ylab = "% Core", cex = 1.5)
-  lines(log10(plotsub$meanAbundance), fitted(mod3), col=as.character(taxcolor$color),lwd=5)
-  par(new=TRUE)
-}
-dev.off()
-
 
 #### barplot of mean occ by taxa #####
 numCT_plot$taxa = as.factor(numCT_plot$taxa)
@@ -228,7 +180,7 @@ w + geom_boxplot(width=1, position=position_dodge(width=0.6),aes(x=taxa, y=mu), 
   scale_fill_manual(labels = taxcolors$taxa, values = taxcolors$color)+theme(axis.ticks=element_blank(),axis.text.x=element_text(size=14),axis.text.y=element_text(size=14),axis.title.x=element_text(size=22),axis.title.y=element_text(size=22,angle=90,vjust = 1)) + guides(fill=guide_legend(title=""))+ theme(plot.margin = unit(c(.5,.5,.5,.5),"lines")) + annotate("text", x = nrank$taxa, y = 1.05, label = sitetally$n,size=5,vjust=0.8, color = "black")
 ggsave("C:/Git/core-transient/output/plots/meanOcc.pdf", height = 8, width = 12)
 
-####################  ######################################################
+###########   ######################################################
 # Explaining variation in mean occupancy within BBS
 # Merge taxa color and symbol codes into summary data
 summ$taxa = factor(summ$taxa)
@@ -252,7 +204,6 @@ lm.elev = lm(mu ~ elev.mean, data = bbsumm)
 abline(lm.elev, col = 'red', lty = 'dashed', lwd = 4)
 text(2600, 0.85, bquote(R^2 ~ "=" ~ .(round(summary(lm.elev)$r.squared, 2))), cex = 1.5)
 mtext("Mean occupancy", 2, outer = T, cex = 2, las = 0)
-
 
 
 ##### Boxplots showing distribution of core and transient species by taxon #####
@@ -407,4 +358,51 @@ grid = grid.arrange(plot1, plot2, ncol=2)
 
 ggsave(file="C:/Git/core-transient/output/plots/comboplot.pdf", height = 10, width = 15,grid)
 
+#################### FIG 3 ######################### 
+pdf('output/plots/sara_scale_transient_reg.pdf', height = 6, width = 7.5)
+par(mfrow = c(1, 1), mar = c(6, 6, 1, 1), mgp = c(4, 1, 0), 
+    cex.axis = 1.5, cex.lab = 2, las = 1)
+palette(colors7)
+
+occ_taxa=read.csv("occ_taxa.csv",header=TRUE)
+scaleIDs = filter(dataformattingtable, spatial_scale_variable == 'Y',
+                  format_flag == 1)$dataset_ID
+scaleIDs = scaleIDs[scaleIDs  != c(222,317)]
+
+for(id in scaleIDs){
+  print(id)
+  plotsub = subset(occ_taxa,datasetID == id)
+  mod3 = lm(plotsub$pctTrans ~ log10(plotsub$meanAbundance))
+  xnew = range(log10(plotsub$meanAbundance))
+  xhat <- predict(mod3, newdata = data.frame((xnew)))
+  xhats = range(xhat)
+  print(xhats)
+  taxcolor = subset(taxcolors, taxa == as.character(plotsub$taxa)[1])
+  y=summary(mod3)$coef[1] + (xhats)*summary(mod3)$coef[2]
+  plot(NA, xlim = c(-1, 7), ylim = c(0,1), col = as.character(taxcolor$color), xlab = expression("Log"[10]*" Community Size"), ylab = "% Transients", cex = 1.5)
+  lines(log10(plotsub$meanAbundance), fitted(mod3), col=as.character(taxcolor$color),lwd=5)
+  par(new=TRUE)
+}
+legend('topright', legend = taxcolors$taxa, lty=1,lwd=3,col = as.character(taxcolors$color), cex = 1.35)
+dev.off()
+
+pdf('output/plots/sara_scale_core_reg.pdf', height = 6, width = 7.5)
+par(mfrow = c(1, 1), mar = c(6, 6, 1, 1), mgp = c(4, 1, 0), 
+    cex.axis = 1.5, cex.lab = 2, las = 1)
+palette(colors7)
+for(id in scaleIDs){
+  print(id)
+  plotsub = subset(occ_taxa,datasetID == id)
+  mod3 = lm((1-plotsub$pctTrans) ~ log10(plotsub$meanAbundance))
+  xnew=range(log10(plotsub$meanAbundance))
+  xhat <- predict(mod3, newdata = data.frame((xnew)))
+  xhats = range(xhat)
+  print(xhats)
+  taxcolor=subset(taxcolors, taxa == as.character(plotsub$taxa)[1])
+  y=summary(mod3)$coef[1] + (xhats)*summary(mod3)$coef[2]
+  plot(NA, xlim = c(-1, 7), ylim = c(0,1), col = as.character(taxcolor$color), xlab = expression("Log"[10]*" Community Size"), ylab = "% Core", cex = 1.5)
+  lines(log10(plotsub$meanAbundance), fitted(mod3), col=as.character(taxcolor$color),lwd=5)
+  par(new=TRUE)
+}
+dev.off()
 
