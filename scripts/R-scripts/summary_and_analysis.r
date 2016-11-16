@@ -36,7 +36,7 @@ dataformattingtable = read.csv('data_formatting_table.csv', header = T)
 
 datasetIDs = dataformattingtable$dataset_ID[dataformattingtable$format_flag == 1]
 
-datasetIDs = datasetIDs[!datasetIDs %in% c(317)]
+datasetIDs = datasetIDs[!datasetIDs %in% c(222, 317)] # 222 i
 
 summaries = c()
 for (d in datasetIDs) {
@@ -136,7 +136,8 @@ datasetIDs = filter(dataformattingtable, spatial_scale_variable == 'Y',
                    format_flag == 1)$dataset_ID
 datasetIDs = datasetIDs[datasetIDs  != 317]
 
-
+datasetIDs = filter(dataformattingtable, taxa == 'Plant',format_flag == 1)$dataset_ID
+222
 for(id in datasetIDs){
   print(id)
   plotsub = subset(occ_taxa,datasetID == id)
