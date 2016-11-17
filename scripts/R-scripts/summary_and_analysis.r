@@ -248,8 +248,8 @@ summaryTransFun = function(datasetID){
     siteSummary = subset(dataList$siteSummary, site == sites[i])
     nTime = siteSummary$nTime
     spRichTotal = siteSummary$spRich
-    spRichCore33 = length(propOcc[propOcc >= 1 - .33])
-    spRichTrans33 = length(propOcc[propOcc <= .33])
+    spRichCore33 = length(propOcc[propOcc >= 1 - 1/3])
+    spRichTrans33 = length(propOcc[propOcc <= 1/3])
     spRichTrans25 = length(propOcc[propOcc <= .25])
     if(nTime > 9){
     spRichTrans10 = length(propOcc[propOcc <= .1])
