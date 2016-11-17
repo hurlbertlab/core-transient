@@ -134,6 +134,24 @@ map_threshold(8, 66)
 
 text(ct$longbin, ct$latbin, ct$n)
 
+####Adding grid dimensions to map for explaining grid cell binning visually in methods####
+#library
+library(leaflet)
+
+# Create 20 markers (Random points)
+data=data.frame(long=sample(seq(-150,150),20) ,  lat=sample(seq(-50,50),20) , val=round(rnorm(20),2) , name=paste("point",letters[1:20],sep="_")  ) 
+
+# Show a rectangle
+m=leaflet() %>% addTiles() %>%  
+  addRectangles(
+    lng1=-72, lat1=48,
+    lng2=-80, lat2=40,
+    fillColor = "transparent"
+  )
+m
+
+
+
 hist(ct$n)
 median(ct$n)
 
