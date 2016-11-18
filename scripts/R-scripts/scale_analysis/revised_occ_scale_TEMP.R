@@ -40,7 +40,7 @@ good_rtes = bbs50 %>%
   group_by(stateroute) %>%  
   count(stateroute) %>% 
   filter(n == 15) #now getting 1005 routes with consecutive data :^)
-write.csv(good_rtes, "//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/good_rtes.csv", row.names = FALSE) 
+#write.csv(good_rtes, "//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/good_rtes.csv", row.names = FALSE) 
 
 #compare # of routes and route numbers themselves to old version of bbs50 stored in BioArk 
 require(dplyr)
@@ -51,7 +51,7 @@ fifty_allyears = bbs50 %>%
 
 #finally works because needed $ specification, 
 #can probably collapse into one line 
-write.csv(fifty_allyears, "//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/fifty_allyears.csv", row.names = FALSE)
+#write.csv(fifty_allyears, "//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/fifty_allyears.csv", row.names = FALSE)
 fifty_allyears = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/fifty_allyears.csv", header = TRUE)
 #wrote to file just in case 
 
@@ -99,8 +99,12 @@ output = data.frame(output)
 output$stateroute = as.numeric(output$stateroute)
 output$AOU = as.numeric(output$AOU)
 output$subrouteID = as.numeric(output$subrouteID)
-write.csv(output, "output.csv", row.names = F)
+#write.csv(output, "output.csv", row.names = F)
 
+
+
+###### SARA EDITS
+fifty_allyears = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/fifty_allyears.csv", header = TRUE)
 groupedCols = paste("Stop", ((g-1)*scale + 1):(g*scale), sep = "")
 bbs_abun = fifty_allyears[, c("stateroute", "year", "AOU", groupedCols)]
 bbs_abun$groupCount = rowSums(bbs_abun[, groupedCols])
@@ -110,16 +114,17 @@ bbs_abun = bbs_summ %>%
   dplyr::summarize(sum(groupCount))
 bbs_abun = data.frame(bbs_abun)  
 
-bbs_scalesorted = inner_join(output, bbs_abun, by = c("stateroute"= "stateroute", "AOU"="AOU"))
-
-####do I want to keep lat-lons? yes 
-bbs_scalesorted = inner_join(bbs_scalesorted, good_rtes2, by = c("stateroute" = "stateroute")) 
-
-write.csv(bbs_scalesorted, "//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/bbs_scalesorted.csv", row.names = FALSE)
-
 bbs_scalesorted = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/bbs_scalesorted.csv", header = TRUE)
 
+abun = merge(bbs_abun, bbs_scalesorted, by=c("AOU", "stateroute"))
 
+mod3 = lm(abun$occupancy ~ log10(abun$sum.groupCount.))
+xnew = range(log10(abun$sum.groupCount.))
+xhat <- predict(mod3, newdata = data.frame((xnew)))
+xhats = range(xhat)
+print(xhats)
+
+############
 
 subrte_occ_avgs = bbs_scalesorted %>% 
   group_by(scale, stateroute, Lati, Longi) %>% #adding stateroute as proxy for rep to grouping
