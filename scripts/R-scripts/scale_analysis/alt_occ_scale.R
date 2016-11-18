@@ -109,6 +109,8 @@ fifty_top6 = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/fifty
 #----Write for_loop to calculate distances between every BBS site combination to find focal and associated routes that correspond best----
 #store minimum value for each iteration of combos in output table
 
+
+require(fields)
 # Distance calculation between all combination of 
 distances = rdist.earth(matrix(c(good_rtes3$Longi, good_rtes3$Lati), ncol=2),
                         matrix(c(good_rtes3$Longi, good_rtes3$Lati), ncol=2),
@@ -120,19 +122,27 @@ dist.df = data.frame(rte1 = rep(good_rtes3$stateroute, each = nrow(good_rtes3)),
 
 # inside loop, e.g., filter(dist.df, rte1 == 2001, rte2 != 2001)
 
-require(fields)
+
 output=c()
 
 for (i in 1:length(distances)) {
-  for (rte in dist.df){
-    rt1 = dplyr::filter(rte == rte[dist.df$rte1 == rte]) 
-    rt2 = dplyr::filter(rte != rte[dist.df$rte2 != rte])
-    dist = dist.df$dist[dist.df$rte1 == rte]
-    output = rbind(output, rt1, rt2, dist)
+  for (rte in dist.df$rte1){
+    test_dist = filter(dist.df, rte1 == rte, rte2 != rte)
+    output = rbind(output, test_dist)
   }
-  
-  
+ output = arrange(desc(output$dist)) 
+ 
 }
+
+  
+
+
+#still need to sort by distances in ascending order -> where in loop does this go? 
+#and how to take the top 10~? 
+
+output = arrange(asc(output$dist))
+
+
 
 
 
