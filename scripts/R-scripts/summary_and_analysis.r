@@ -74,6 +74,7 @@ summ2 = subset(summ, !datasetID %in% c(99, 85, 90, 91, 92, 97, 124))
 dsets = unique(summ2[, c('datasetID', 'system','taxa')])
 summ$taxa[summ$taxa == "Arthropod"] <- "Invertebrate"
 summ$taxa[summ$taxa == "Reptile"] <- NA
+summ$system[summ$system == "Aquatic"] <- "Freshwater"
 summ = na.omit(summ)
 taxorder = c('Bird', 'Plant', 'Mammal', 'Fish', 'Invertebrate', 'Benthos', 'Plankton')
 
