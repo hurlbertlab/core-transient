@@ -47,7 +47,7 @@ bbs50 = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/bbs50.csv"
 require(dplyr)
 #from Sara's code
 good_rtes = bbs50 %>% 
-  filter(year >= 2000, year <= 2014) %>% #shifted 15 year window up because missing 1996 data, and 2015 data available
+  filter(year >= 2001, year <= 2015) %>% #shifted 15 year window up because missing 1996 data, and 2015 data available
   select(year, stateroute) %>%
   unique() %>%    
   group_by(stateroute) %>%  
@@ -100,7 +100,7 @@ fifty_top6 = bbs50_goodrtes %>%
 #write.csv(fifty_top6, "//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/fifty_top6.csv", row.names = FALSE)
 
 
-#good_rtes3 = good_rtes2[1:10,] <- for testing loops in less computionally expensive manner, remove when finished
+good_rtes3 = good_rtes2[1:10,] #<- for testing loops in less computionally expensive manner, remove when finished
 
 #######
 
@@ -123,7 +123,16 @@ dist.df = data.frame(rte1 = rep(good_rtes3$stateroute, each = nrow(good_rtes3)),
 require(fields)
 output=c()
 
-
+for (i in 1:length(distances)) {
+  for (rte in dist.df){
+    rt1 = dplyr::filter(rte == rte[dist.df$rte1 == rte]) 
+    rt2 = dplyr::filter(rte != rte[dist.df$rte2 != rte])
+    dist = dist.df$dist[dist.df$rte1 == rte]
+    output = rbind(output, rt1, rt2, dist)
+  }
+  
+  
+}
 
 
 
