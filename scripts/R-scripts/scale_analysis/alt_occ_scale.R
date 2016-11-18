@@ -34,10 +34,10 @@ library(fields)
 
 ####Bringing in BBS50 stop data and prepping it for sub-route scale partitioning####
 
-#bbs50 = ecoretriever::fetch('BBS50')
-#bbs50 = bbs50$counts
-#bbs50$stateroute = bbs50$statenum*1000 + bbs50$Route
-#bbs50$stateroute = as.integer(bbs50$stateroute)
+bbs50 = ecoretriever::fetch('BBS50')
+bbs50 = bbs50$counts
+bbs50$stateroute = bbs50$statenum*1000 + bbs50$Route
+bbs50$stateroute = as.integer(bbs50$stateroute)
 #^derivation of data from ecoretriever; still too large to host on github so save and pull from BioArk
 
 bbs50 = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/bbs50.csv", header = TRUE)
@@ -95,9 +95,16 @@ top6_grid8 = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/top6_
 
 #filter the 50 stop data to just those routes present within those 6 grid cell regions of interest 
 fifty_top6 = bbs50_goodrtes %>% 
-  filter(grid8ID %in% top6_grid8$x) #about halves the bbs50_goodrtes set of usable routes
+  filter(grid8ID %in% top6_grid8$x) %>%
+  dplyr::select(7:62)#about halves the bbs50_goodrtes set of usable routes, and no redundant columns
+#write.csv(fifty_top6, "//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/fifty_top6.csv", row.names = FALSE)
 
-good_rtes3 = good_rtes2[1:10,]
+
+#good_rtes3 = good_rtes2[1:10,] <- for testing loops in less computionally expensive manner, remove when finished
+
+#######
+
+fifty_top6 = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/fifty_top6.csv", header = TRUE)
 
 #----Write for_loop to calculate distances between every BBS site combination to find focal and associated routes that correspond best----
 #store minimum value for each iteration of combos in output table
