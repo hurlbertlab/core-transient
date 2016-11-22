@@ -117,7 +117,7 @@ write.csv(grainlevels, "output/grainlevels.csv", row.names=FALSE)
   bigfile = c()
 #scale = c()
   for(file in files){
-    nfile= read.csv(paste("data/spatialGrainAnalysis/propOcc_datasets/", file, sep = ""))
+    nfile= read.csv(paste("data/spatialGrainAnalysis/propOcc_datasets/", file, sep = ""), header=TRUE)
     scale = substring(file, 18,last = 18)
     bigfile = rbind(bigfile, nfile)
   #scale=rbind(scale, unique(bigfile$datasetID))
@@ -137,7 +137,7 @@ propOcc_w_taxa = read.csv("output/propOcc_w_taxa.csv", header = TRUE) # read in 
 summfiles = list.files("data/spatialGrainAnalysis/siteSummaries")
 allsummaries = c()
 for(file in summfiles){
-  nfile= read.csv(paste("data/spatialGrainAnalysis/siteSummaries/", file, sep = ""))
+  nfile= read.csv(paste("data/spatialGrainAnalysis/siteSummaries/", file, sep = ""), header= TRUE)
   nfile$scale = as.numeric(substring(file, 22,last = 22))
   nfile$site = as.factor(nfile$site)
   allsummaries = rbind(allsummaries, nfile)
@@ -148,7 +148,7 @@ allsummaries = data.frame(allsummaries)
 propOccfiles = list.files("data/spatialGrainAnalysis/propOcc_datasets")
 allpropOcc = c()
 for(file in propOccfiles){
-  nfile= read.csv(paste("data/spatialGrainAnalysis/propOcc_datasets/", file, sep = ""))
+  nfile= read.csv(paste("data/spatialGrainAnalysis/propOcc_datasets/", file, sep = ""), header= TRUE)
   nfile$scale = as.numeric(substring(file, 22,last = 22))
   nfile$site = as.factor(nfile$site)
   allpropOcc = rbind(allpropOcc, nfile)
@@ -174,7 +174,7 @@ mean_occ_by_site = propOcc_w_taxa %>%
 occ_taxa = merge(mean_occ_by_site, summaries_grains_w_taxa, by = c("datasetID", "site"))
 
 occ_taxa = occ_taxa[order(occ_taxa$datasetID, occ_taxa$scale, occ_taxa$site, decreasing = F), ]
-write.csv(occ_taxa,"occ_taxa.csv")
+write.csv(occ_taxa,"occ_taxa.csv", row.names=FALSE)
 
 # Calculating number of core, trans, and total spp for each dataset/site combo
 propOcc_demog = merge(propOcc_w_taxa, occ_taxa, by =  c("datasetID", "site"))
@@ -283,7 +283,5 @@ for(id in datasetIDs){
 legend('topright', legend = unique(occ_taxa$taxa), lty=1,lwd=3,col = col.palette, cex = 0.6)
 dev.off()
 
-
-
 # our model
-mod1 = lmer(meanOcc ~ meanAbundance * (1|taxa), data=occ_taxa)
+mod1 = lmer(pctTrans ~ (1|taxa) * scale, data=occ_taxa)

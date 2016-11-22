@@ -36,7 +36,7 @@ dataformattingtable = read.csv('data_formatting_table.csv', header = T)
 
 datasetIDs = dataformattingtable$dataset_ID[dataformattingtable$format_flag == 1]
 
-datasetIDs = datasetIDs[!datasetIDs %in% c(222, 317)] # 222 is % cover, 317 d/n have neough years
+datasetIDs = datasetIDs[!datasetIDs %in% c(222, 317,67,270,271,319,325)] # 222 is % cover, 317 d/n have neough years
 
 summaries = c()
 for (d in datasetIDs) {
@@ -69,30 +69,32 @@ summ = addNewSummariesFun(threshold, reps, write = TRUE)
 
 summ = read.csv('output/tabular_data/core-transient_summary.csv', header=T)
 summ$taxa = factor(summ$taxa)
+summ$taxa[summ$taxa == "Arthropod"] <- "Invertebrate"
+summ$taxa[summ$taxa == "Reptile"] <- NA
+summ$system[summ$system == "Aquatic"] <- "Freshwater"
 summ$system = factor(summ$system)
+summ = na.omit(summ)
 summ2 = subset(summ, !datasetID %in% c(99, 85, 90, 91, 92, 97, 124))
 dsets = unique(summ2[, c('datasetID', 'system','taxa')])
-summ$taxa[summ$taxa == "Arthropod"] <- "Invertebrate"
-summ$taxa[summ$taxa == "Herptile"] <- NA
-summ = na.omit(summ)
-taxorder = c('Bird', 'Plant', 'Mammal', 'Fish', 'Invertebrate', 'Benthos', 'Plankton')
+
+taxorder = factor(summ$taxa, levels = c('Bird', 'Plant', 'Mammal', 'Fish', 'Invertebrate', 'Benthos', 'Plankton'),ordered = TRUE)
 
 dsetsBySystem = table(dsets$system)
 dsetsByTaxa = table(dsets$taxa)
 sitesBySystem = table(summ2$system)
 sitesByTaxa = table(summ2$taxa)
 
-colors7 = c(rgb(29/255, 106/255, 155/255), # invert
-            colors()[552], # plankton
-            colors()[612],# plant
-            colors()[144], # arth
-            rgb(0, 54/255, 117/255), #herp
+colors7 = c(rgb(29/255, 106/255, 155/255), # benthos
+            rgb(0, 54/255, 117/255), #bird
             colors()[70], #fish
-            colors()[551])#mammal
+            colors()[144], # invert
+            colors()[551], #mammal
+            colors()[552], # plankton
+            colors()[612])# plant
+            
 
 symbols7 = c(16, 18, 167, 15, 17, 1, 3) 
 
-summ$taxa <-droplevels(summ$taxa, exclude = c("Arthropod","Amphibian", "Reptile"))
 taxcolors = data.frame(taxa = unique(summ$taxa), color = colors7, pch = symbols7)
 
 taxcolors$abbrev = taxcolors$taxa
@@ -127,6 +129,7 @@ dev.off()
 
 
 #### barplot of mean occ by taxa #####
+numCT = read.csv("output/tabular_data/numCT.csv", header=TRUE)
 numCT_plot$taxa = as.factor(numCT_plot$taxa)
 numCT_plot$taxa <-droplevels(numCT_plot$taxa, exclude = c("","All","Amphibian", "Reptile"))
 
@@ -214,7 +217,6 @@ trans = summ2 %>%
   dplyr::group_by(taxa) %>%
   dplyr::summarize(mean(propTrans)) 
 
-
 propCT = merge(core, trans, by = "taxa")
 propCT = data.frame(propCT)
 propCT$mean.propNeither. = 1 - propCT$mean.propCore. - propCT$mean.propTrans.
@@ -222,7 +224,6 @@ propCT$mean.propNeither. = 1 - propCT$mean.propCore. - propCT$mean.propTrans.
 
 propCT_long = gather(propCT, "class","value", c(mean.propCore.:mean.propNeither.))
 propCT_long = arrange(propCT_long, desc(class))
-propCT_long = subset(propCT_long, taxa != "Herptile")
 propCT_long$taxa = as.factor(propCT_long$taxa)
 propCT_long$taxa = factor(propCT_long$taxa,
                     levels = c('Plant','Plankton','Invertebrate','Mammal','Fish','Benthos','Bird'),ordered = TRUE)
@@ -248,12 +249,15 @@ summaryTransFun = function(datasetID){
     siteSummary = subset(dataList$siteSummary, site == sites[i])
     nTime = siteSummary$nTime
     spRichTotal = siteSummary$spRich
-    spRichCore33 = length(propOcc[propOcc >= 1 - 1/3])
+    spRichCore33 = length(propOcc[propOcc > 1 - 1/3])
     spRichTrans33 = length(propOcc[propOcc <= 1/3])
-    spRichTrans25 = length(propOcc[propOcc <= .25])
+    spRichTrans25 = length(propOcc[propOcc <= 1/4])
     if(nTime > 9){
     spRichTrans10 = length(propOcc[propOcc <= .1])
     propTrans10 = spRichTrans10/spRichTotal
+    }
+    else{
+      propTrans10 = NA
     }
     propCore33 = spRichCore33/spRichTotal
     propTrans33 = spRichTrans33/spRichTotal
@@ -267,21 +271,20 @@ summaryTransFun = function(datasetID){
   return(rbind.fill(outList))
 }
 
+percTransSummaries = c()
+for (d in datasetIDs) {
+  percTransSumm = summaryTransFun(d)
+  
+  percTransSummaries = rbind(percTransSummaries, percTransSumm)
+  print(d)
+}
 
- 
-total = summ2 %>% group_by(datasetID, site, taxa) %>%  
-  dplyr::summarize(numCore=sum(propOcc > 2/3), 
-                   n = sum(spRichTotal),
-                   perTrans33 = sum(propOcc <= 1/3)/n, #33%
-                   perTrans25 = sum(propOcc <= 1/4)/n, #25%
-                   perTrans10 = sum(propOcc <= 1/10)/n, #10%
-                   perCore = sum(propOcc >= 1/3)/n)
+CT_plot=merge(percTransSummaries, taxcolors, by="taxa")
+CT_long = gather(CT_plot, "level_trans","pTrans", propTrans33:propTrans10)
 
-trans = total %>%
+trans = CT_plot %>%
   dplyr::group_by(taxa) %>%
-  dplyr::summarize(mean(perTrans33)) 
-
-
+  dplyr::summarize(mean(propTrans33)) 
 
 propCT_long$abbrev = propCT_long$taxa
 propCT_long$abbrev = gsub("Benthos", 'Be', propCT_long$abbrev)
@@ -292,37 +295,12 @@ propCT_long$abbrev = gsub("Mammal", 'M', propCT_long$abbrev)
 propCT_long$abbrev = gsub("Plankton", 'Pn', propCT_long$abbrev)
 propCT_long$abbrev = gsub("Plant", 'Pt', propCT_long$abbrev)
 propCT_long$abbrev = factor(propCT_long$abbrev,
-                          levels = c('Pn','Pt','I','F','M','Be','Bi'),ordered = TRUE)
+                            levels = c('Pn','Pt','I','F','M','Be','Bi'),ordered = TRUE)
 
 
 colscale = c("#c51b8a", "#fdd49e", "#225ea8")
 m = ggplot(data=propCT_long, aes(factor(abbrev), y=value, fill=factor(class))) + geom_bar(stat = "identity")  + theme_classic() + xlab("Taxa") + ylab("Proportion of Species")+ scale_fill_manual(labels = c("Core", "Other", "Transient"),
-                    values = colscale)+theme(axis.ticks=element_blank(),axis.text.x=element_text(size=20),axis.text.y=element_text(size=20),axis.title.x=element_text(size=24),axis.title.y=element_text(size=24,angle=90,vjust = 2.5))+ theme(legend.text=element_text(size=24),legend.key.size = unit(2, 'lines'))+theme(legend.position="top", legend.justification=c(0, 1), legend.key.width=unit(1, "lines"))+ guides(fill = guide_legend(keywidth = 3, keyheight = 1,title="", reverse=TRUE))+ coord_fixed(ratio = 4)
-
-# ggsave("C:/Git/core-transient/output/plots/pctCTO.pdf", height = 8, width = 12)
-
-percTransSummaries = c()
-for (d in datasetIDs) {
-  percTransSumm = summaryTransFun(d)
-  percTransSummaries = rbind(percTransSummaries, percTransSumm)
-  print(d)
-}
-
-CT_plot=merge(percTransSummaries, taxcolors, by="taxa")
-CT_long = gather(CT_plot, "level_trans","pTrans", propTrans33:propTrans10)
-
-1       Benthos   mean.propTrans. 0.3237069     Be
-2          Bird   mean.propTrans. 0.2741489     Bi
-3          Fish   mean.propTrans. 0.4112190      F
-4  Invertebrate   mean.propTrans. 0.4785510      I
-5        Mammal   mean.propTrans. 0.4160594      M
-6      Plankton   mean.propTrans. 0.4851435     Pn
-7         Plant   mean.propTrans. 0.4927478     Pt
-
-trans = CT_plot %>%
-  dplyr::group_by(taxa) %>%
-  dplyr::summarize(mean(propTrans33)) 
-
+                                                                                                                                                                                                  values = colscale)+theme(axis.ticks.x=element_blank(),axis.text.x=element_text(size=20),axis.text.y=element_text(size=20),axis.title.x=element_text(size=24),axis.title.y=element_text(size=24,angle=90,vjust = 2.5))+ theme(legend.text=element_text(size=24),legend.key.size = unit(2, 'lines'))+theme(legend.position="top", legend.justification=c(0, 1), legend.key.width=unit(1, "lines"))+ guides(fill = guide_legend(keywidth = 3, keyheight = 1,title="", reverse=TRUE))+ coord_fixed(ratio = 4)
 
 uniqTaxa = unique(CT_plot$taxa)
 #### barplot of percent transients by taxa ---FIXED
@@ -348,7 +326,7 @@ p = p+geom_boxplot(width=0.8,position=position_dodge(width=0.8),aes(x=abbrev, y=
   scale_colour_manual(breaks = CT_long$level_trans,
                       values = taxcolors$color)  + xlab("Taxa") + ylab("Proportion of Species")+
   scale_fill_manual(labels = c("10%", "25%", "33%"),
-                    values = cols)+theme(axis.ticks=element_blank(),axis.text.x=element_text(size=20),axis.text.y=element_text(size=20),axis.title.x=element_text(size=24),axis.title.y=element_text(size=24,angle=90,vjust = 2))+guides(fill=guide_legend(title="",keywidth = 2, keyheight = 1)) + theme(legend.text=element_text(size=24),legend.key.size = unit(2, 'lines'), legend.title=element_text(size=24))+theme(legend.position="top", legend.justification=c(0, 1), legend.key.width=unit(1, "lines"))+ coord_fixed(ratio = 4)
+                    values = cols)+theme(axis.ticks.x=element_blank(),axis.text.x=element_text(size=20),axis.text.y=element_text(size=20),axis.title.x=element_text(size=24),axis.title.y=element_text(size=24,angle=90,vjust = 2))+guides(fill=guide_legend(title="",keywidth = 2, keyheight = 1)) + theme(legend.text=element_text(size=24),legend.key.size = unit(2, 'lines'), legend.title=element_text(size=24))+theme(legend.position="top", legend.justification=c(0, 1), legend.key.width=unit(1, "lines"))+ coord_fixed(ratio = 4)
 
 colscale = c("#c51b8a", "#fdd49e", "#225ea8")
 plot1 <- m
@@ -364,10 +342,11 @@ par(mfrow = c(1, 1), mar = c(6, 6, 1, 1), mgp = c(4, 1, 0),
     cex.axis = 1.5, cex.lab = 2, las = 1)
 palette(colors7)
 
-occ_taxa=read.csv("occ_taxa.csv",header=TRUE)
+occ_taxa=read.csv("output/tabular_data/occ_taxa.csv",header=TRUE)
 scaleIDs = filter(dataformattingtable, spatial_scale_variable == 'Y',
                   format_flag == 1)$dataset_ID
-scaleIDs = scaleIDs[scaleIDs  != c(222,317)]
+scaleIDs = scaleIDs[scaleIDs != 222]
+scaleIDs = scaleIDs[scaleIDs != 317]
 
 for(id in scaleIDs){
   print(id)
