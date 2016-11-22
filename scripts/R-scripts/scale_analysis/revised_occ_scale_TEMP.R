@@ -28,13 +28,13 @@ library(dplyr)
 #^derivation of data from ecoretriever; still too large to host on github so save and pull from BioArk
 
 bbs50 = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/bbs50.csv", header = TRUE)
-
+fifty_top6 = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/fifty_top6.csv", header = TRUE)
 # Get subset of BBS routes (just routes) btw 1996-2010 surveyed in EVERY year
 
 require(dplyr)
 #from Sara's code
 good_rtes = bbs50 %>% 
-  filter(year >= 2000, year <= 2014) %>% #shifted 15 year window up because missing 1996 data, and 2015 data available
+  filter(year >= 2000, year <= 2014) %>% #shifted 15 year window up because missing 1996 data, and 2014 data available
   select(year, stateroute) %>%
   unique() %>%    
   group_by(stateroute) %>%  

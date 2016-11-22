@@ -69,27 +69,29 @@ summ = addNewSummariesFun(threshold, reps, write = TRUE)
 
 summ = read.csv('output/tabular_data/core-transient_summary.csv', header=T)
 summ$taxa = factor(summ$taxa)
-summ$system = factor(summ$system)
-summ2 = subset(summ, !datasetID %in% c(99, 85, 90, 91, 92, 97, 124))
-dsets = unique(summ2[, c('datasetID', 'system','taxa')])
 summ$taxa[summ$taxa == "Arthropod"] <- "Invertebrate"
 summ$taxa[summ$taxa == "Reptile"] <- NA
 summ$system[summ$system == "Aquatic"] <- "Freshwater"
+summ$system = factor(summ$system)
 summ = na.omit(summ)
-taxorder = c('Bird', 'Plant', 'Mammal', 'Fish', 'Invertebrate', 'Benthos', 'Plankton')
+summ2 = subset(summ, !datasetID %in% c(99, 85, 90, 91, 92, 97, 124))
+dsets = unique(summ2[, c('datasetID', 'system','taxa')])
+
+taxorder = factor(summ$taxa, levels = c('Bird', 'Plant', 'Mammal', 'Fish', 'Invertebrate', 'Benthos', 'Plankton'),ordered = TRUE)
 
 dsetsBySystem = table(dsets$system)
 dsetsByTaxa = table(dsets$taxa)
 sitesBySystem = table(summ2$system)
 sitesByTaxa = table(summ2$taxa)
 
-colors7 = c(rgb(29/255, 106/255, 155/255), # invert
-            colors()[552], # plankton
-            colors()[612],# plant
-            colors()[144], # arth
-            rgb(0, 54/255, 117/255), #herp
+colors7 = c(rgb(29/255, 106/255, 155/255), # benthos
+            rgb(0, 54/255, 117/255), #bird
             colors()[70], #fish
-            colors()[551])#mammal
+            colors()[144], # invert
+            colors()[551], #mammal
+            colors()[552], # plankton
+            colors()[612])# plant
+            
 
 symbols7 = c(16, 18, 167, 15, 17, 1, 3) 
 
