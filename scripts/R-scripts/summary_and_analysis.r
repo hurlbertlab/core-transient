@@ -77,17 +77,17 @@ summ = na.omit(summ)
 summ2 = subset(summ, !datasetID %in% c(99, 85, 90, 91, 92, 97, 124))
 dsets = unique(summ2[, c('datasetID', 'system','taxa')])
 
-taxorder = factor(summ$taxa, levels = c('Bird', 'Plant', 'Mammal', 'Fish', 'Invertebrate', 'Benthos', 'Plankton'),ordered = TRUE)
+taxorder = c('Bird', 'Plant', 'Mammal', 'Fish', 'Invertebrate', 'Benthos', 'Plankton')
 
 dsetsBySystem = table(dsets$system)
 dsetsByTaxa = table(dsets$taxa)
 sitesBySystem = table(summ2$system)
 sitesByTaxa = table(summ2$taxa)
 
-colors7 = c(rgb(29/255, 106/255, 155/255), # benthos
-            rgb(0, 54/255, 117/255), #bird
+colors7 = c(colors()[144], # invert
+            rgb(0, 54/255, 117/255), #benthos
+            rgb(29/255, 106/255, 155/255), #bird
             colors()[70], #fish
-            colors()[144], # invert
             colors()[551], #mammal
             colors()[552], # plankton
             colors()[612])# plant
@@ -226,7 +226,7 @@ propCT_long = gather(propCT, "class","value", c(mean.propCore.:mean.propNeither.
 propCT_long = arrange(propCT_long, desc(class))
 propCT_long$taxa = as.factor(propCT_long$taxa)
 propCT_long$taxa = factor(propCT_long$taxa,
-                    levels = c('Plant','Plankton','Invertebrate','Mammal','Fish','Benthos','Bird'),ordered = TRUE)
+                    levels = c('Invertebrate','Plankton','Fish','Mammal','Plant','Bird','Benthos'),ordered = TRUE)
 colscale = c("#c51b8a", "#fdd49e", "#225ea8")
 
 
@@ -282,7 +282,7 @@ for (d in datasetIDs) {
 CT_plot=merge(percTransSummaries, taxcolors, by="taxa")
 CT_long = gather(CT_plot, "level_trans","pTrans", propTrans33:propTrans10)
 
-trans = CT_plot %>%
+ttrans = CT_plot %>%
   dplyr::group_by(taxa) %>%
   dplyr::summarize(mean(propTrans33)) 
 
@@ -295,14 +295,12 @@ propCT_long$abbrev = gsub("Mammal", 'M', propCT_long$abbrev)
 propCT_long$abbrev = gsub("Plankton", 'Pn', propCT_long$abbrev)
 propCT_long$abbrev = gsub("Plant", 'Pt', propCT_long$abbrev)
 propCT_long$abbrev = factor(propCT_long$abbrev,
-                            levels = c('Pn','Pt','I','F','M','Be','Bi'),ordered = TRUE)
-
+                            levels = c('I','Pn','F','M','Pt','Bi','Be'),ordered = TRUE)
 
 colscale = c("#c51b8a", "#fdd49e", "#225ea8")
 m = ggplot(data=propCT_long, aes(factor(abbrev), y=value, fill=factor(class))) + geom_bar(stat = "identity")  + theme_classic() + xlab("Taxa") + ylab("Proportion of Species")+ scale_fill_manual(labels = c("Core", "Other", "Transient"),
                                                                                                                                                                                                   values = colscale)+theme(axis.ticks.x=element_blank(),axis.text.x=element_text(size=20),axis.text.y=element_text(size=20),axis.title.x=element_text(size=24),axis.title.y=element_text(size=24,angle=90,vjust = 2.5))+ theme(legend.text=element_text(size=24),legend.key.size = unit(2, 'lines'))+theme(legend.position="top", legend.justification=c(0, 1), legend.key.width=unit(1, "lines"))+ guides(fill = guide_legend(keywidth = 3, keyheight = 1,title="", reverse=TRUE))+ coord_fixed(ratio = 4)
 
-uniqTaxa = unique(CT_plot$taxa)
 #### barplot of percent transients by taxa ---FIXED
 CT_long$taxa = as.factor(CT_long$taxa)
 CT_long$abbrev = CT_long$taxa
@@ -314,15 +312,16 @@ CT_long$abbrev = gsub("Mammal", 'M', CT_long$abbrev)
 CT_long$abbrev = gsub("Plankton", 'Pn', CT_long$abbrev)
 CT_long$abbrev = gsub("Plant", 'Pt', CT_long$abbrev)
 CT_long$abbrev = factor(CT_long$abbrev,
-                            levels = c('Pn','Pt','I','F','M','Be','Bi'),ordered = TRUE)
+                            levels = c('I','Pn','F','M','Pt','Bi','Be'),ordered = TRUE)
 
-p <- ggplot(CT_long, aes(abbrev, pTrans))+theme_classic()
+
+p <- ggplot(CT_long, aes(x = reorder(abbrev, -pTrans), y = pTrans))+theme_classic()
 
 cols <- (CT_long$color)
 cols=c("#ece7f2","#9ecae1",  "#225ea8")
 
 
-p = p+geom_boxplot(width=0.8,position=position_dodge(width=0.8),aes(x=abbrev, y=pTrans, fill=level_trans))+ 
+p = p+geom_boxplot(width=0.8,position=position_dodge(width=0.8),aes(x=factor(abbrev), y=pTrans, fill=level_trans))+ 
   scale_colour_manual(breaks = CT_long$level_trans,
                       values = taxcolors$color)  + xlab("Taxa") + ylab("Proportion of Species")+
   scale_fill_manual(labels = c("10%", "25%", "33%"),
