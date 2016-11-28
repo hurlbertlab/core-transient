@@ -346,6 +346,21 @@ scaleIDs = filter(dataformattingtable, spatial_scale_variable == 'Y',
                   format_flag == 1)$dataset_ID
 scaleIDs = scaleIDs[scaleIDs != 222]
 scaleIDs = scaleIDs[scaleIDs != 317]
+bbs_abun = read.csv("bbs_abun_occ.csv", header=TRUE)
+
+totalspp = bbs_abun %>% 
+  group_by(AOU, stateroute) %>%
+  tally(sum.groupCount.)
+for(i in bbs_abun$AOU){
+  sum(bbs_abun$occupancy <= 1/3)/totalspp$n)
+}
+
+mod3 = lm(abun$occupancy ~ log10(abun$sum.groupCount.))
+xnew = range(log10(abun$sum.groupCount.))
+xhat <- predict(mod3, newdata = data.frame((xnew)))
+xhats = range(xhat)
+print(xhats)
+
 
 for(id in scaleIDs){
   print(id)

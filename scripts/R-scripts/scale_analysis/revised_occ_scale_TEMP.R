@@ -33,12 +33,12 @@ fifty_top6 = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/fifty
 
 require(dplyr)
 #from Sara's code
-good_rtes = bbs50 %>% 
+good_rtes = fifty_top6 %>% 
   filter(year >= 2000, year <= 2014) %>% #shifted 15 year window up because missing 1996 data, and 2014 data available
-  select(year, stateroute) %>%
+  dplyr::select(year, stateroute) %>%
   unique() %>%    
   group_by(stateroute) %>%  
-  count(stateroute) %>% 
+  dplyr::count(stateroute) %>% 
   filter(n == 15) #now getting 1005 routes with consecutive data :^)
 #write.csv(good_rtes, "//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/good_rtes.csv", row.names = FALSE) 
 
@@ -106,7 +106,7 @@ output$subrouteID = as.numeric(output$subrouteID)
 ###### SARA EDITS
 fifty_allyears = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/fifty_allyears.csv", header = TRUE)
 groupedCols = paste("Stop", ((g-1)*scale + 1):(g*scale), sep = "")
-bbs_abun = fifty_allyears[, c("stateroute", "year", "AOU", groupedCols)]
+bbs_abun = fifty_top6[, c("stateroute", "year", "AOU", groupedCols)]
 bbs_abun$groupCount = rowSums(bbs_abun[, groupedCols])
 bbs_summ = unique(bbs_abun[bbs_abun[, "groupCount"]!= 0, c("stateroute", "year", "AOU", "groupCount")]) 
 bbs_abun = bbs_summ %>%
@@ -117,6 +117,7 @@ bbs_abun = data.frame(bbs_abun)
 bbs_scalesorted = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/bbs_scalesorted.csv", header = TRUE)
 
 abun = merge(bbs_abun, bbs_scalesorted, by=c("AOU", "stateroute"))
+write.csv(abun, "bbs_abun_occ.csv", row.names=FALSE)
 
 mod3 = lm(abun$occupancy ~ log10(abun$sum.groupCount.))
 xnew = range(log10(abun$sum.groupCount.))
