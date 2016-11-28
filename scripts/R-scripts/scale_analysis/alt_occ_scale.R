@@ -135,29 +135,16 @@ for (i in 1:length(distances)) {
  
 }
 
-output2 = distinct(output) %>% #need to remove reduncancies succesfully!
-  filter(output, rte1 != rte2[output$rte2 == rte1])
+output2 = distinct(output)  #need to remove reduncancies succesfully!
 
 
+dupes_rm = as.data.frame(unique(t(apply(output2, 1, sort))))
+colnames(dupes_rm) = c("dist", "rte1", "rte2")
+
+#take top x rows where x is a # from 1:45 paired routes? 
 
 
-
-#still need to remove every other bc redundancies 
-
-
-#and how to take the top 10~? 
-
-#output = arrange(asc(output$dist))
-
-
-
-
-
-
-
-
-
-
+##########
 for(grid in fifty_top6$grid8ID){
   for (sample_range in 2:66){ # num of nearest routes taken/paired -> will inform our gradient of areas
     for(focal_bbs in good_rtes2$stateroute){
@@ -178,18 +165,4 @@ head(output)
 summary(output)
 
 #########
-#Alt looping structure: 
-#Following distance matrix creation, subset distance matrix by analyzing paired routes for distance 
-#and ranking them by minimum great circle distance
-#where i is the focal route in the cycle of routes 
-#and j is its nearest paired route 
-#and the array cited in "length" is the array that contains the routes in all possible combos 
-output = c()
-for (i in 1:length(fifty_top6)) {
-  for (j in i:length(fifty_top6)) {
-    dist = i - j
-    output = rbind(output, dist)
-    }
-}
-
 
