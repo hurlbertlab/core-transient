@@ -130,17 +130,29 @@ for (i in 1:length(distances)) {
     test_dist = filter(dist.df, rte1 == rte, rte2 != rte)
     output = rbind(output, test_dist)
   }
- output = arrange(desc(output$dist)) 
+  
+  output = arrange(output, dist) 
  
 }
 
-  
+output2 = distinct(output) %>% #need to remove reduncancies succesfully!
+  filter(output, rte1 != rte2[output$rte2 == rte1])
 
 
-#still need to sort by distances in ascending order -> where in loop does this go? 
+
+
+
+#still need to remove every other bc redundancies 
+
+
 #and how to take the top 10~? 
 
-output = arrange(asc(output$dist))
+#output = arrange(asc(output$dist))
+
+
+
+
+
 
 
 
