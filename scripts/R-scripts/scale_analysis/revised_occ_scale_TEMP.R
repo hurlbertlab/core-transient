@@ -73,8 +73,19 @@ occ_counts = function(countData, countColumns, scale) {
   names(bbsu.rt.occ2)[3] = "occupancy"
   bbsu.rt.occ2$subrouteID = countColumns[1] #subrouteID refers to first stop in a grouped sequence, occ refers to the occ for the # of combined stops
   bbsu.rt.occ2$scale = scale 
-  bbsu.rt.occ2 = bbsu.rt.occ2[, c("stateroute", "scale", "subrouteID", "AOU", "occupancy")]
-  return(bbsu.rt.occ2)
+  bbsu.rt.occ2$stateroute = as.numeric(as.character(bbsu.rt.occ2$stateroute))
+  
+  # Calculate community size by stateroute
+  bbs_abun = bbssub %>%
+    group_by(stateroute, year) %>%
+    dplyr::summarize(comN = sum(groupCount)) %>%
+    group_by(stateroute) %>%
+    summarize(communityN = mean(comN)) %>%
+    right_join(bbsu.rt.occ2, by = c('stateroute' = 'stateroute')) %>%
+    arrange(stateroute, AOU) %>%
+    select(stateroute, scale, subrouteID, AOU, occupancy, communityN)
+  
+  return(bbs_abun)
 }
 
 comm_size = function(countData, occ){
@@ -90,15 +101,12 @@ for (scale in scales) {
   for (g in 1:numGroups) {
     groupedCols = paste("Stop", ((g-1)*scale + 1):(g*scale), sep = "")
     temp = occ_counts(fifty_allyears, groupedCols, scale)
-    abun = bbssub$groupCount
-    output = rbind(output, temp, abun)
+    output = rbind(output, temp)
   }
   
 }
 output = data.frame(output)
-output$stateroute = as.numeric(output$stateroute)
-output$AOU = as.numeric(output$AOU)
-output$subrouteID = as.numeric(output$subrouteID)
+output$AOU = as.numeric(as.character(output$AOU))
 #write.csv(output, "output.csv", row.names = F)
 
 
@@ -191,6 +199,9 @@ for (grain in grain_sample$grain) {
           #currently when I hardcode grain =4, it pulls out correct corresponding sample size (10)
           #but when I don't, and the loop runs through the first grain in the set, it fails to execute
           bbssub = filter(bbs_allyears, stateroute %in% sampled_rtes$stateroute)
+          
+          # Calc community size from bbssub, then join to occs below
+          
           bbsuniq = unique(bbssub[, c('Aou', 'Year')])
           occs = bbsuniq %>% count(Aou) %>% mutate(occ = n/15)
           
