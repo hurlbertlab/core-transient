@@ -399,3 +399,26 @@ for(id in scaleIDs){
 }
 dev.off()
 
+####### MODELS ######
+latlongs_mult = read.csv("data/latlongs/latlongs.csv", header =TRUE)
+
+dft = subset(dataformattingtable, format_flag == 1)
+dft = subset(dft, dataset_ID != c(1,247,248,269,289,308,309,315))
+dft = dft[,c("CentralLatitude", "CentralLongitude","dataset_ID", "taxa", "location")]
+names(dft) <- c("Lat","Lon", "datasetID", "taxa", "site")
+
+all_latlongs = rbind(dft, latlongs_mult)
+
+model_input = merge(all_latlongs, summ2, by = c("datasetID", "site"),all=TRUE) # not right - need to get everything to merge in
+
+
+
+
+mod1 = lmer(pctTrans ~ (1|taxa) * scale, data=occ_taxa) # Add lat/long?
+
+mod2 = lmer(pctTrans ~ (1|taxa) * scale, data=occ_taxa)
+
+
+
+
+
