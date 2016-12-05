@@ -246,7 +246,14 @@ for (grain in grain_sample$grain) {
 bbs_scaledup = output    #wrote to file in case
 write.csv(bbs_scaledup, "//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/bbs_scaledup.csv", row.names = FALSE)
 
-
+mod = merge(bbs_scaledup, bbs_abun, by.x = "Aou", by.y = "AOU")
+write.csv(mod, "mod.csv",row.names = FALSE)
+mod$pct_Trans = mod$occ[mod$occ <= 1/3]
+mod3 = lm(mod$occ ~ log10(mod$sum.groupCount.))
+xnew = range(log10(mod$sum.groupCount.))
+xhat <- predict(mod3, newdata = data.frame((xnew)))
+xhats = range(xhat)
+print(xhats)
 ####Mean of means for above-route scales####
 bbs_scaledup = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/bbs_scaledup.csv")
 

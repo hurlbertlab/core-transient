@@ -336,6 +336,8 @@ grid = grid.arrange(plot1, plot2, ncol=2)
 ggsave(file="C:/Git/core-transient/output/plots/comboplot.pdf", height = 10, width = 15,grid)
 
 #################### FIG 3 ######################### 
+mod = read.csv("mod.csv", header=TRUE)
+
 pdf('output/plots/sara_scale_transient_reg.pdf', height = 6, width = 7.5)
 par(mfrow = c(1, 1), mar = c(6, 6, 1, 1), mgp = c(4, 1, 0), 
     cex.axis = 1.5, cex.lab = 2, las = 1)
@@ -376,6 +378,8 @@ for(id in scaleIDs){
   lines(log10(plotsub$meanAbundance), fitted(mod3), col=as.character(taxcolor$color),lwd=5)
   par(new=TRUE)
 }
+segments(0,  1, x1 = 5.607, y1 = 0, col = rgb(29/255, 106/255, 155/255), lwd=5)
+par(new=TRUE)
 legend('topright', legend = taxcolors$taxa, lty=1,lwd=3,col = as.character(taxcolors$color), cex = 1.35)
 dev.off()
 
@@ -397,6 +401,8 @@ for(id in scaleIDs){
   lines(log10(plotsub$meanAbundance), fitted(mod3), col=as.character(taxcolor$color),lwd=5)
   par(new=TRUE)
 }
+segments(0,  0, x1 = 5.607, y1 = 1, col = rgb(29/255, 106/255, 155/255), lwd=5)
+par(new=TRUE)
 dev.off()
 
 ####### MODELS ######
