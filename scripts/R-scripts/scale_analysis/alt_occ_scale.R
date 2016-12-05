@@ -121,25 +121,24 @@ dist.df = data.frame(rte1 = rep(good_rtes3$stateroute, each = nrow(good_rtes3)),
                      dist = as.vector(distances))
 
 # inside loop, e.g., filter(dist.df, rte1 == 2001, rte2 != 2001)
+dist.df2 = filter(dist.df, rte1 != rte2)
 
+uniqrtes = unique(dist.df2$rte1)
 
-output=c()
-
-for (i in 1:length(distances)) {
-  for (rte in dist.df$rte1){
-    test_dist = filter(dist.df, rte1 == rte, rte2 != rte)
-    output = rbind(output, test_dist)
+numrtes = 1:66
+output = c()
+for (r in uniqrtes) {
+  for (n in numrtes) {
+  tmp = filter(dist.df2, rte1 == r) %>%
+    arrange(dist)
+  tmprtes = tmp$rte2[1:n]
+  # Aggregate those routes together, calc occupancy, etc
+    
+  # Store output
   }
-  
-  output = arrange(output, dist) 
- 
 }
 
-output2 = distinct(output)  #need to remove reduncancies succesfully!
 
-
-dupes_rm = as.data.frame(unique(t(apply(output2, 1, sort))))
-colnames(dupes_rm) = c("dist", "rte1", "rte2")
 
 #take top x rows where x is a # from 1:45 paired routes? 
 
