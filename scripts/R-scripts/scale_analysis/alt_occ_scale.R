@@ -128,7 +128,7 @@ uniqrtes = unique(dist.df2$rte1)
 
 bbs_allyears = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/bbs_allyears.csv", header = TRUE)
 numrtes = 1:66
-output = data.frame(grain = NULL, lat = NULL, lon = NULL, rep = NULL, AOU = NULL, occ = NULL)
+output = data.frame(r = NULL, n = NULL, rep = NULL, AOU = NULL, occ = NULL)
 for (r in uniqrtes) {
   for (nu in numrtes) {
   tmp = filter(dist.df2, rte1 == r) %>%
@@ -139,21 +139,18 @@ for (r in uniqrtes) {
   reps = c(3) #100? 50?
   
   for (i in 1:reps) {
-            bbssub = filter(bbs_allyears, tmprtes %in% tmprtes)
-            bbsuniq = unique(bbssub[, c('AOU', 'year')])
-            occs = bbsuniq %>% count(AOU) %>% mutate(occ = n/15)
+            bbssub = filter(bbs_allyears, stateroute %in% tmprtes)
+            bbsuniq = unique(bbssub[, c('Aou', 'Year')])
+            occs = bbsuniq %>% count(Aou) %>% mutate(occ = n/15)
             
             temp = data.frame(r = r,
-                              n = n,
-                              lat = Lati, 
-                              lon = Longi, 
-                              grid8ID = grid8ID,
+                              n = nu,
                               rep = i,
                               Aou = occs$Aou,
-                              occ = occs$occ)
+                              occ = occs$occ)   #can add lat/lons in later, and grids based on the r right? 
             
             output = rbind(output, temp)
-            print(paste("Focal rte", r, "# rtes sampled", n, ", Lat:", lat, ", Lon:", lon))
+            print(paste("Focal rte", r, "# rtes sampled", n))
           } #end of the rep loop
         } #n loop
         
