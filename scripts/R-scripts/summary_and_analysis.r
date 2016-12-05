@@ -7,6 +7,7 @@
 
 setwd("C:/git/core-transient")
 
+library(lme4)
 library(dplyr)
 library(ggplot2)
 library(tidyr)
@@ -408,21 +409,65 @@ dev.off()
 ####### MODELS ######
 latlongs_mult = read.csv("data/latlongs/latlongs.csv", header =TRUE)
 
-dft = subset(dataformattingtable, format_flag == 1)
+dft = subset(dataformattingtable, countFormat == "count" & format_flag == 1) # only want count data for model
 dft = subset(dft, dataset_ID != c(1,247,248,269,289,308,309,315))
 dft = dft[,c("CentralLatitude", "CentralLongitude","dataset_ID", "taxa", "location")]
 names(dft) <- c("Lat","Lon", "datasetID", "taxa", "site")
 
 all_latlongs = rbind(dft, latlongs_mult)
+all_latlongs = na.omit(all_latlongs)
 
-model_input = merge(all_latlongs, summ2, by = c("datasetID", "site"),all=TRUE) # not right - need to get everything to merge in
+#model_input = merge(all_latlongs, summ2[,c("datasetID", "site", "propTrans", "meanAbundance")], by = c("datasetID", "site"), all.x = TRUE) 
+lat_scale = merge(occ_taxa, all_latlongs, by = c("datasetID"))
 
+library('sp')
+library('rgdal')
+library("raster")
 
+# Makes routes into a spatialPointsDataframe
+coordinates(all_latlongs)=c('Lon','Lat')
+projection(all_latlongs) = CRS("+proj=longlat +ellps=WGS84")
+prj.string <- "+proj=laea +lat_0=45.235 +lon_0=-106.675 +units=km"
+# Transforms routes to an equal-area projection - see previously defined prj.string
+routes.laea = spTransform(all_latlongs, CRS(prj.string))
 
+# A function that draws a circle of radius r around a point: p (x,y)
+RADIUS = 40
 
-mod1 = lmer(pctTrans ~ (1|taxa) * scale, data=occ_taxa) # Add lat/long?
+make.cir = function(p,r){
+  points=c()
+  for(i in 1:360){
+    theta = i*2*pi/360
+    y = p[2] + r*cos(theta)
+    x = p[1] + r*sin(theta)
+    points = rbind(points,c(x,y))
+  }
+  points=rbind(points,points[1,])
+  circle=Polygon(points,hole=F)
+  circle
+}
 
-mod2 = lmer(pctTrans ~ (1|taxa) * scale, data=occ_taxa)
+#Draw circles around all routes ---- erroring in here
+circs = sapply(1:nrow(routes.laea), function(x){
+  circ =  make.cir(routes.laea@coords[x,],RADIUS)
+  circ = Polygons(list(circ),ID=routes.laea@data$stateroute[x])
+}
+)
+circs.sp = SpatialPolygons(circs, proj4string=CRS(prj.string))
+
+# Check that circle loactions look right
+plot(circs.sp)
+
+elev <- getData("worldclim", var = "alt", res = 10)
+alt_files<-paste('alt_10m_bil', sep='')
+
+elev.point = raster::extract(elev, routes)
+elev.mean = raster::extract(elev, circs.sp, fun = mean, na.rm=T)
+elev.var = raster::extract(elev, circs.sp, fun = var, na.rm=T)
+
+env_elev = data.frame(stateroute = names(circs.sp), elev.point = elev.point, elev.mean = elev.mean, elev.var = elev.var)
+
+mod1 = lmer(pctTrans ~ (1|taxa.x) * spRich * Lat, data=lat_scale) # need to add in env heterogeneity AKA Elev
 
 
 
