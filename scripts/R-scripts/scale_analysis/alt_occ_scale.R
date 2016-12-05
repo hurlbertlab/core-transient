@@ -124,11 +124,11 @@ dist.df = data.frame(rte1 = rep(good_rtes3$stateroute, each = nrow(good_rtes3)),
 dist.df2 = filter(dist.df, rte1 != rte2)
 
 uniqrtes = unique(dist.df2$rte1)
-####Aggregating loop####
+####Aggregating loop#### #don't need a rep loop right?
 
 bbs_allyears = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/bbs_allyears.csv", header = TRUE)
 numrtes = 1:66
-output = data.frame(r = NULL, n = NULL, rep = NULL, AOU = NULL, occ = NULL)
+output = data.frame(r = NULL, nu = NULL, AOU = NULL, occ = NULL)
 for (r in uniqrtes) {
   for (nu in numrtes) {
   tmp = filter(dist.df2, rte1 == r) %>%
@@ -136,22 +136,17 @@ for (r in uniqrtes) {
   tmprtes = tmp$rte2[1:nu]   #selects rtes to aggregate under focal route 
   # Aggregate those routes together, calc occupancy, etc
   
-  reps = c(3) #100? 50?
-  
-  for (i in 1:reps) {
-            bbssub = filter(bbs_allyears, stateroute %in% tmprtes)
-            bbsuniq = unique(bbssub[, c('Aou', 'Year')])
-            occs = bbsuniq %>% count(Aou) %>% mutate(occ = n/15)
+  bbssub = filter(bbs_allyears, stateroute %in% tmprtes)
+  bbsuniq = unique(bbssub[, c('Aou', 'Year')])
+  occs = bbsuniq %>% count(Aou) %>% mutate(occ = n/15)
             
             temp = data.frame(r = r,
-                              n = nu,
-                              rep = i,
+                              nu = nu,
                               Aou = occs$Aou,
                               occ = occs$occ)   #can add lat/lons in later, and grids based on the r right? 
             
             output = rbind(output, temp)
-            print(paste("Focal rte", r, "# rtes sampled", n))
-          } #end of the rep loop
+            print(paste("Focal rte", r, "# rtes sampled", nu))
         } #n loop
         
        } #r loop
