@@ -200,10 +200,23 @@ for (grain in grain_sample$grain) {
           #but when I don't, and the loop runs through the first grain in the set, it fails to execute
           bbssub = filter(bbs_allyears, stateroute %in% sampled_rtes$stateroute)
           
+          bbsuniq = unique(bbssub[, c('Aou', 'Year')])
+          occs = bbsuniq %>% dplyr::count(Aou) %>% mutate(occ = n/15)
+          
+          bbs_abun = bbs_summ %>%
+            group_by(AOU) %>%
+            dplyr::summarize(sum(groupCount))
+          bbs_abun = data.frame(bbs_abun)  
+          
+          mod = merge(occs, bbs_abun, by.x = "Aou", by.y = "AOU")
           # Calc community size from bbssub, then join to occs below
           
-          bbsuniq = unique(bbssub[, c('Aou', 'Year')])
-          occs = bbsuniq %>% count(Aou) %>% mutate(occ = n/15)
+          mod3 = lm(mod$occ ~ log10(mod$sum.groupCount.))
+          xnew = range(log10(mod$sum.groupCount.))
+          xhat <- predict(mod3, newdata = data.frame((xnew)))
+          xhats = range(xhat)
+          print(xhats)
+          
           
           temp = data.frame(grain = grain, 
                             lat = lat, 
@@ -241,9 +254,9 @@ bbs_scaledup = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/bbs
 #for each unique combination of grain and lat and long across reps, what is the avg occ? 
 # modify to take means of mean of each rep (in order of lat, lon, grain, and rep so as not to incorrectly avg values
 occ_avgs = bbs_scaledup %>% group_by(lat, lon, grain, rep) %>% #adding rep to grouping
-  summarize(mean = mean(occ)) %>% #summarize occ across Aou's for each rep 
-  group_by(lat, lon, grain) %>% #group again, this time just by lat, lon, and grain
-  summarize(mean = mean(mean)) # summarize mean occ across reps for each unique combo of lat, lon, and grain
+  dplyr::summarize(mean = mean(occ)) %>% #summarize occ across Aou's for each rep 
+  dplyr::group_by(lat, lon, grain) %>% #group again, this time just by lat, lon, and grain
+  dplyr::summarize(mean = mean(mean)) # summarize mean occ across reps for each unique combo of lat, lon, and grain
 
 #occ avgs for each grain scale across reps (FINAL)
 occ_avgs$grid8ID = paste(floor(occ_avgs$lat/8)*8 + 8/2, floor(occ_avgs$lon/8)*8 + 8/2, sep = "")
