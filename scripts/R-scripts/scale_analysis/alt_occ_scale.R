@@ -126,14 +126,54 @@ dist.df2 = filter(dist.df, rte1 != rte2)
 uniqrtes = unique(dist.df2$rte1)
 
 numrtes = 1:66
-output = c()
+output = data.frame(grain = NULL, lat = NULL, lon = NULL, rep = NULL, AOU = NULL, occ = NULL)
 for (r in uniqrtes) {
   for (n in numrtes) {
   tmp = filter(dist.df2, rte1 == r) %>%
     arrange(dist)
-  tmprtes = tmp$rte2[1:n]
+  tmprtes = tmp$rte2[1:n]   #selects rtes to aggregate under focal route 
   # Aggregate those routes together, calc occupancy, etc
+  
+  reps = c(100) #100? 50?
+  
+  for (i in 1:reps) {
+            # sample X routes at random from bin of tmprtes
+            # where X = our magic number of routes that can adequately 
+            #  estimate occupancy for each grain; CHANGES with grain
+            # so need to make table first containing both grains and X's, and change "grain in grains" to "grain in 'table'"
+            sampled_rtes = sample_n(bin_rtes, sampling_lvl, replace = TRUE) 
+            #pull "sample" from grain_sample row where grain in outer loop corresponds to grain in table
+            #-> how do I make the row correspond to the current grain in the outermost loop? 
+            #currently when I hardcode grain =4, it pulls out correct corresponding sample size (10)
+            #but when I don't, and the loop runs through the first grain in the set, it fails to execute
+            bbssub = filter(bbs_allyears, stateroute %in% sampled_rtes$stateroute)
+            bbsuniq = unique(bbssub[, c('Aou', 'Year')])
+            occs = bbsuniq %>% count(Aou) %>% mutate(occ = n/15)
+            
+            temp = data.frame(grain = grain, 
+                              lat = lat, 
+                              lon = lon, 
+                              rep = i,
+                              Aou = occs$Aou,
+                              occ = occs$occ)
+            
+            output = rbind(output, temp)
+            print(paste("Grain", grain, ", Lat:", lat, ", Lon:", lon))
+          } #end of the rep loop
+        } 
+        
+        #need to  specify that magic number X of sites sampled can't be larger than 
+        # of routes available to pool from in a given bin
+        
+        
+        
+      } #end of the lon loop
+      
+    } #end of the lat loop
     
+  #} #end of the grain loop
+  
+  
   # Store output
   }
 }
