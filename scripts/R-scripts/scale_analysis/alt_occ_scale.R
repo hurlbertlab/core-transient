@@ -100,8 +100,6 @@ fifty_top6 = bbs50_goodrtes %>%
 #write.csv(fifty_top6, "//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/fifty_top6.csv", row.names = FALSE)
 
 
-good_rtes3 = good_rtes2[1:10,] #<- for testing loops in less computionally expensive manner, remove when finished
-
 #######
 
 fifty_top6 = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/fifty_top6.csv", header = TRUE)
@@ -112,12 +110,12 @@ fifty_top6 = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/fifty
 
 require(fields)
 # Distance calculation between all combination of 
-distances = rdist.earth(matrix(c(good_rtes3$Longi, good_rtes3$Lati), ncol=2),
-                        matrix(c(good_rtes3$Longi, good_rtes3$Lati), ncol=2),
+distances = rdist.earth(matrix(c(good_rtes2$Longi, good_rtes2$Lati), ncol=2),
+                        matrix(c(good_rtes2$Longi, good_rtes2$Lati), ncol=2),
                         miles=FALSE, R=6371)
 
-dist.df = data.frame(rte1 = rep(good_rtes3$stateroute, each = nrow(good_rtes3)),
-                     rte2 = rep(good_rtes3$stateroute, times = nrow(good_rtes3)),
+dist.df = data.frame(rte1 = rep(good_rtes2$stateroute, each = nrow(good_rtes2)),
+                     rte2 = rep(good_rtes2$stateroute, times = nrow(good_rtes2)),
                      dist = as.vector(distances))
 
 # inside loop, e.g., filter(dist.df, rte1 == 2001, rte2 != 2001)
@@ -150,7 +148,12 @@ for (r in uniqrtes) {
         } #n loop
         
        } #r loop
-      
+    
+
+
+bbs_focal_occs = as.data.frame(output)
+write.csv(bbs_focal_occs, "//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/bbs_focal_occs.csv", row.names = FALSE)
+head(output)  
   
 
 
@@ -172,9 +175,6 @@ for(grid in fifty_top6$grid8ID){
 }
 }
 
-bbs_paired_samples = as.data.frame(output)
-
-head(output)
 summary(output)
 
 #########
