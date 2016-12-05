@@ -124,27 +124,30 @@ dist.df = data.frame(rte1 = rep(good_rtes3$stateroute, each = nrow(good_rtes3)),
 dist.df2 = filter(dist.df, rte1 != rte2)
 
 uniqrtes = unique(dist.df2$rte1)
+####Aggregating loop####
 
+bbs_allyears = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/bbs_allyears.csv", header = TRUE)
 numrtes = 1:66
 output = data.frame(grain = NULL, lat = NULL, lon = NULL, rep = NULL, AOU = NULL, occ = NULL)
 for (r in uniqrtes) {
-  for (n in numrtes) {
+  for (nu in numrtes) {
   tmp = filter(dist.df2, rte1 == r) %>%
     arrange(dist)
-  tmprtes = tmp$rte2[1:n]   #selects rtes to aggregate under focal route 
+  tmprtes = tmp$rte2[1:nu]   #selects rtes to aggregate under focal route 
   # Aggregate those routes together, calc occupancy, etc
   
-  reps = c(10) #100? 50?
+  reps = c(3) #100? 50?
   
   for (i in 1:reps) {
             bbssub = filter(bbs_allyears, tmprtes %in% tmprtes)
-            bbsuniq = unique(bbssub[, c('Aou', 'Year')])
-            occs = bbsuniq %>% count(Aou) %>% mutate(occ = n/15)
+            bbsuniq = unique(bbssub[, c('AOU', 'year')])
+            occs = bbsuniq %>% count(AOU) %>% mutate(occ = n/15)
             
             temp = data.frame(r = r,
                               n = n,
-                              lat = lat, 
-                              lon = lon, 
+                              lat = Lati, 
+                              lon = Longi, 
+                              grid8ID = grid8ID,
                               rep = i,
                               Aou = occs$Aou,
                               occ = occs$occ)
@@ -152,24 +155,11 @@ for (r in uniqrtes) {
             output = rbind(output, temp)
             print(paste("Focal rte", r, "# rtes sampled", n, ", Lat:", lat, ", Lon:", lon))
           } #end of the rep loop
-        } 
+        } #n loop
         
-        #need to  specify that magic number X of sites sampled can't be larger than 
-        # of routes available to pool from in a given bin
-        
-        
-        
-      } #end of the lon loop
+       } #r loop
       
-    } #end of the lat loop
-    
-  #} #end of the grain loop
   
-  
-  # Store output
-  }
-}
-
 
 
 #take top x rows where x is a # from 1:45 paired routes? 
