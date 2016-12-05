@@ -124,20 +124,34 @@ dist.df = data.frame(rte1 = rep(good_rtes3$stateroute, each = nrow(good_rtes3)),
 dist.df2 = filter(dist.df, rte1 != rte2)
 
 uniqrtes = unique(dist.df2$rte1)
+####Aggregating loop#### #don't need a rep loop right?
 
+bbs_allyears = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/bbs_allyears.csv", header = TRUE)
 numrtes = 1:66
-output = c()
+output = data.frame(r = NULL, nu = NULL, AOU = NULL, occ = NULL)
 for (r in uniqrtes) {
-  for (n in numrtes) {
+  for (nu in numrtes) {
   tmp = filter(dist.df2, rte1 == r) %>%
     arrange(dist)
-  tmprtes = tmp$rte2[1:n]
+  tmprtes = tmp$rte2[1:nu]   #selects rtes to aggregate under focal route 
   # Aggregate those routes together, calc occupancy, etc
-    
-  # Store output
-  }
-}
-
+  
+  bbssub = filter(bbs_allyears, stateroute %in% tmprtes)
+  bbsuniq = unique(bbssub[, c('Aou', 'Year')])
+  occs = bbsuniq %>% count(Aou) %>% mutate(occ = n/15)
+            
+            temp = data.frame(r = r,
+                              nu = nu,
+                              Aou = occs$Aou,
+                              occ = occs$occ)   #can add lat/lons in later, and grids based on the r right? 
+            
+            output = rbind(output, temp)
+            print(paste("Focal rte", r, "# rtes sampled", nu))
+        } #n loop
+        
+       } #r loop
+      
+  
 
 
 #take top x rows where x is a # from 1:45 paired routes? 
