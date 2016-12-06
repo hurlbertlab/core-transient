@@ -156,26 +156,10 @@ write.csv(bbs_focal_occs, "//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/b
 head(output)  
   
 
-
-#take top x rows where x is a # from 1:45 paired routes? 
-
-
-##########
-for(grid in fifty_top6$grid8ID){
-  for (sample_range in 2:66){ # num of nearest routes taken/paired -> will inform our gradient of areas
-    for(focal_bbs in good_rtes2$stateroute){
-      temp.lat=sampled_rtes$Lati[sampled_rtes$stateroute==focal_bbs]
-      temp.lon= sampled_rtes$Longi[sampled_rtes$stateroute==focal_bbs] 
-      distances = rdist.earth(matrix(c(fifty_top6$Longi, fifty_top6$Lati), ncol=2),matrix(c(temp.lon,temp.lat), ncol=2),miles=FALSE, R=6371)
-      minDist = min(distances)
-      closest_bbs = fifty_top6$stateroute[distances==minDist]
-      output=rbind(output, c("focal_bbs", "closest_bbs", "minDist"))
-
-    }
-}
-}
-
-summary(output)
-
 #########
+####Calc mean of means####
+
+####Calc area####
+
+####Occupancy vs area####
 
