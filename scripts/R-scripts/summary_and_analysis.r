@@ -410,15 +410,16 @@ dev.off()
 latlongs_mult = read.csv("data/latlongs/latlongs.csv", header =TRUE)
 
 dft = subset(dataformattingtable, countFormat == "count" & format_flag == 1) # only want count data for model
-dft = subset(dft, dataset_ID != c(1,247,248,269,289,308,309,315))
-dft = dft[,c("CentralLatitude", "CentralLongitude","dataset_ID", "taxa", "location")]
-names(dft) <- c("Lat","Lon", "datasetID", "taxa", "site")
+dft = subset(dft, !dataset_ID %in% c(1,247,248,269,289,309,315))
+dft = dft[,c("CentralLatitude", "CentralLongitude","dataset_ID", "taxa")]
+names(dft) <- c("Lat","Lon", "datasetID", "taxa")
+
+latlongs_mult = latlongs_mult[,c(1:4)]
 
 all_latlongs = rbind(dft, latlongs_mult)
 all_latlongs = na.omit(all_latlongs)
 
-#model_input = merge(all_latlongs, summ2[,c("datasetID", "site", "propTrans", "meanAbundance")], by = c("datasetID", "site"), all.x = TRUE) 
-lat_scale = merge(occ_taxa, all_latlongs, by = c("datasetID"))
+lat_scale = merge(occ_taxa, all_latlongs, by = "datasetID")
 
 library('sp')
 library('rgdal')
