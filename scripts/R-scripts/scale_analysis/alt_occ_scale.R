@@ -131,7 +131,7 @@ for (r in uniqrtes) {
   for (nu in numrtes) {
   tmp = filter(dist.df2, rte1 == r) %>%
     arrange(dist)
-  tmprtes = tmp$rte2[1:nu]   #selects rtes to aggregate under focal route 
+  tmprtes = tmp$rte2[1:nu]   #selects rtes to aggregate under focal route by dist from focal route, based on nu in numrtes range
   # Aggregate those routes together, calc occupancy, etc
   
   bbssub = filter(bbs_allyears, stateroute %in% tmprtes)
@@ -149,6 +149,8 @@ for (r in uniqrtes) {
         
        } #r loop
     
+##Problem: right now r is each focal route, 
+#but that focal route is NOT included in occ calcs, just the secondary routes associated with it are
 
 
 bbs_focal_occs = as.data.frame(output)
@@ -159,7 +161,24 @@ head(output)
 #########
 ####Calc mean of means####
 
+#for each unique combination of focal route and number of routes and Aou, what is the avg occ? -> already calc'd
+# what is the avg across Aou's for each unique combo of focal route and number of aggregated routes? 
+
+occ_avgs = bbs_focal_occs %>% group_by(r, nu) %>% 
+  summarize(mean = mean(occ))  #summarize occ across Aou's for each rep 
+
 ####Calc area####
 
+occ_avgs$log_area = log(occ_avgs$nu*50*(pi*(0.4^2))) #in km 
+# number of routes * fifty stops * area in sq km of a stop 
+
 ####Occupancy vs area####
+
+plot(occ_avgs$log_area, occ_avgs$mean, xlab = "log(area)", ylab = "mean occupancy")
+
+
+#still just at above route scale tho - now need to stitch above and below together again 
+
+####Find lat/lons of focal routes and subsequently their grid8IDs####
+
 
