@@ -125,7 +125,7 @@ uniqrtes = unique(dist.df2$rte1)
 ####Aggregating loop#### #don't need a rep loop right?
 
 bbs_allyears = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/bbs_allyears.csv", header = TRUE)
-numrtes = 1:66
+numrtes = 1:65 #
 output = data.frame(r = NULL, nu = NULL, AOU = NULL, occ = NULL)
 for (r in uniqrtes) {
   for (nu in numrtes) {
@@ -134,21 +134,24 @@ for (r in uniqrtes) {
   tmprtes = tmp$rte2[1:nu]   #selects rtes to aggregate under focal route by dist from focal route, based on nu in numrtes range
   # Aggregate those routes together, calc occupancy, etc
   
-  bbssub = filter(bbs_allyears, stateroute %in% tmprtes)
+  bbssub = filter(bbs_allyears, stateroute %in% c(r, tmprtes))
   bbsuniq = unique(bbssub[, c('Aou', 'Year')])
-  occs = bbsuniq %>% count(Aou) %>% mutate(occ = n/15)
-            
-            temp = data.frame(r = r,
-                              nu = nu,
-                              Aou = occs$Aou,
-                              occ = occs$occ)   #can add lat/lons in later, and grids based on the r right? 
-            
-            output = rbind(output, temp)
-            print(paste("Focal rte", r, "# rtes sampled", nu))
-        } #n loop
-        
-       } #r loop
-    
+  occs = bbsuniq %>% dplyr::count(Aou) %>% dplyr::mutate(occ = n/15)
+  
+  temp = data.frame(focalrte = r,
+                    numrtes = nu+1,                           #total # routes being aggregated
+                    meanOcc = mean(occs$occ, na.rm =T),       #mean occupancy
+                    pctCore = sum(occs$occ > 2/3)/nrow(occs), #fraction of species that are core
+                    pctTran = sum(occs$occ <= 1/3)/nrow(occs),#fraction of species that are transient
+                    totalAbun = sum(bbssub$SpeciesTotal)/15,  #total community size (per year)
+                    maxRadius = tmp$dist[nu])                 #radius including rtes aggregated
+  output = rbind(output, temp)
+  print(paste("Focal rte", r, "# rtes sampled", nu))
+  
+  } #n loop
+  
+} #r loop
+
 ##Problem: right now r is each focal route, 
 #but that focal route is NOT included in occ calcs, just the secondary routes associated with it are
 
