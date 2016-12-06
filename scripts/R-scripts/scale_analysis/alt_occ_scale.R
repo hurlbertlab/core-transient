@@ -125,6 +125,14 @@ uniqrtes = unique(dist.df2$rte1)
 ####Aggregating loop#### #don't need a rep loop right?
 
 bbs_allyears = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/bbs_allyears.csv", header = TRUE)
+#exclude AOU species codes <=2880 [waterbirds, shorebirds, etc], (>=3650 & <=3810) [owls],
+#(>=3900 &  <=3910) [kingfishers], (>=4160 & <=4210) [nightjars], 7010 [dipper]
+#^best practices 
+bbs_bestAous = bbs_allyears %>% 
+  filter(Aou > 2880 | Aou < 3650 | Aou > 3810 | Aou < 3900 | Aou > 3910 | Aou < 4160 | Aou > 4210 | Aou != 7010) 
+
+#I think this may have already been done on the bbs data in the ecoretriever cache? 
+
 numrtes = 1:65 #
 output = data.frame(r = NULL, nu = NULL, AOU = NULL, occ = NULL)
 for (r in uniqrtes) {
