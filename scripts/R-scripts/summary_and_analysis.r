@@ -355,7 +355,7 @@ totalspp = bbs_abun %>%
   group_by(AOU, stateroute) %>%
   tally(sum.groupCount.)
 for(i in bbs_abun$AOU){
-  sum(bbs_abun$occupancy <= 1/3)/totalspp$n)
+  sum(bbs_abun$occupancy <= 1/3)/(totalspp$n)
 }
 
 mod3 = lm(abun$occupancy ~ log10(abun$sum.groupCount.))

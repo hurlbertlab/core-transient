@@ -114,7 +114,12 @@ for (grain in grain_sample$grain) {
 
 bbs_scaledup = output    #wrote to file in case
 # write.csv(bbs_scaledup, "//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/bbs_scaledup.csv", row.names = FALSE)
-
+totalspp = bbs_scaledup %>% 
+  group_by(Aou, grain) %>%
+  tally(abun)
+for(i in bbs_abun$AOU){
+  sum(bbs_abun$occupancy <= 1/3)/(totalspp$n)
+}
 bbs_scaledup$spptally = 1 
 pctTrans = sum(bbs_scaledup$occ <= 1/3)/sum(bbs_scaledup$spptally)
 
