@@ -19,136 +19,14 @@ library(maptools)
 library(rgeos)
 library(dplyr)
 
-####Bringing in BBS50 stop data and prepping it for sub-route scale partitioning####
-
-#bbs50 = ecoretriever::fetch('BBS50')
-#bbs50 = bbs50$counts
-#bbs50$stateroute = bbs50$statenum*1000 + bbs50$Route
-#bbs50$stateroute = as.integer(bbs50$stateroute)
-#^derivation of data from ecoretriever; still too large to host on github so save and pull from BioArk
 
 bbs50 = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/bbs50.csv", header = TRUE)
-fifty_top6 = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/fifty_top6.csv", header = TRUE)
-# Get subset of BBS routes (just routes) btw 1996-2010 surveyed in EVERY year
-
-require(dplyr)
-#from Sara's code
-good_rtes = fifty_top6 %>% 
-  filter(year >= 2000, year <= 2014) %>% #shifted 15 year window up because missing 1996 data, and 2014 data available
-  dplyr::select(year, stateroute) %>%
-  unique() %>%    
-  group_by(stateroute) %>%  
-  dplyr::count(stateroute) %>% 
-  filter(n == 15) #now getting 1005 routes with consecutive data :^)
-#write.csv(good_rtes, "//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/good_rtes.csv", row.names = FALSE) 
-
-#compare # of routes and route numbers themselves to old version of bbs50 stored in BioArk 
-require(dplyr)
-# Subset the full BBS dataset to the routes above but including associated data
-fifty_allyears = bbs50 %>% 
-  filter(year >= 2000, year <= 2014) %>% 
-  filter(stateroute %in% good_rtes$stateroute)
-
-#finally works because needed $ specification, 
-#can probably collapse into one line 
-#write.csv(fifty_allyears, "//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/fifty_allyears.csv", row.names = FALSE)
-fifty_allyears = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/fifty_allyears.csv", header = TRUE)
-#wrote to file just in case 
-
 # merge lat longs from routes file to the list of "good" routes (2000-2014 present all years)
 require(dplyr)
 good_rtes2 = good_rtes %>% 
   left_join(routes, good_rtes, by = "stateroute") %>%
   dplyr::select(stateroute, Lati, Longi)
 #write.csv(good_rtes2, "//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/good_rtes2.csv", row.names = FALSE)
-
-####occ_counts function for below-route scale####
-
-occ_counts = function(countData, countColumns, scale) {
-  bbssub = countData[, c("stateroute", "year", "AOU", countColumns)]
-  bbssub$groupCount = rowSums(bbssub[, countColumns])
-  bbsu = unique(bbssub[bbssub[, "groupCount"]!= 0, c("stateroute", "year", "AOU")]) #because this gets rid of 0's...
-  bbsu.rt.occ = data.frame(table(bbsu[,c("stateroute", "AOU")])/15)
-  bbsu.rt.occ2 = bbsu.rt.occ[bbsu.rt.occ$Freq!=0,] #and this also gets rid of occupancy values of 0 total 
-  names(bbsu.rt.occ2)[3] = "occupancy"
-  bbsu.rt.occ2$subrouteID = countColumns[1] #subrouteID refers to first stop in a grouped sequence, occ refers to the occ for the # of combined stops
-  bbsu.rt.occ2$scale = scale 
-  bbsu.rt.occ2$stateroute = as.numeric(as.character(bbsu.rt.occ2$stateroute))
-  
-  # Calculate community size by stateroute
-  bbs_abun = bbssub %>%
-    group_by(stateroute, year) %>%
-    dplyr::summarize(comN = sum(groupCount)) %>%
-    group_by(stateroute) %>%
-    summarize(communityN = mean(comN)) %>%
-    right_join(bbsu.rt.occ2, by = c('stateroute' = 'stateroute')) %>%
-    arrange(stateroute, AOU) %>%
-    select(stateroute, scale, subrouteID, AOU, occupancy, communityN)
-  
-  return(bbs_abun)
-}
-
-comm_size = function(countData, occ){
-  
-}
-
-
-scales = c(5, 10, 25, 50)
-
-output = c()
-for (scale in scales) {
-  numGroups = floor(50/scale)
-  for (g in 1:numGroups) {
-    groupedCols = paste("Stop", ((g-1)*scale + 1):(g*scale), sep = "")
-    temp = occ_counts(fifty_allyears, groupedCols, scale)
-    output = rbind(output, temp)
-  }
-  
-}
-output = data.frame(output)
-output$AOU = as.numeric(as.character(output$AOU))
-#write.csv(output, "output.csv", row.names = F)
-
-
-
-###### SARA EDITS
-fifty_allyears = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/fifty_allyears.csv", header = TRUE)
-groupedCols = paste("Stop", ((g-1)*scale + 1):(g*scale), sep = "")
-bbs_abun = fifty_top6[, c("stateroute", "year", "AOU", groupedCols)]
-bbs_abun$groupCount = rowSums(bbs_abun[, groupedCols])
-bbs_summ = unique(bbs_abun[bbs_abun[, "groupCount"]!= 0, c("stateroute", "year", "AOU", "groupCount")]) 
-bbs_abun = bbs_summ %>%
-  group_by(stateroute, AOU) %>%
-  dplyr::summarize(sum(groupCount))
-bbs_abun = data.frame(bbs_abun)  
-
-bbs_scalesorted = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/bbs_scalesorted.csv", header = TRUE)
-
-abun = merge(bbs_abun, bbs_scalesorted, by=c("AOU", "stateroute"))
-write.csv(abun, "bbs_abun_occ.csv", row.names=FALSE)
-
-mod3 = lm(abun$occupancy ~ log10(abun$sum.groupCount.))
-xnew = range(log10(abun$sum.groupCount.))
-xhat <- predict(mod3, newdata = data.frame((xnew)))
-xhats = range(xhat)
-print(xhats)
-
-############
-
-subrte_occ_avgs = bbs_scalesorted %>% 
-  group_by(scale, stateroute, Lati, Longi) %>% #adding stateroute as proxy for rep to grouping
-  summarize(mean = mean(occupancy)) %>% #calc across all AOUs for each stateroute (bc stateroutes ARE reps)
-  group_by(scale, Lati, Longi) %>% #calc across all stateroutes for each scale 
-  summarize(mean = mean(mean))
-
-
-
-
-#####################################################################
-
-####grid sampling justification####
-
-# grain of (8, 4, 2, 1) corresponds to samples of 66, 19, 10, 5 rtes in each sample 
 
 ####Calculating occupancy at scales greater than a single route####
 
@@ -202,39 +80,30 @@ for (grain in grain_sample$grain) {
           
           bbsuniq = unique(bbssub[, c('Aou', 'Year')])
           occs = bbsuniq %>% dplyr::count(Aou) %>% mutate(occ = n/15)
+          occs = data.frame(occs)
           
-          bbs_abun = bbs_summ %>%
-            group_by(AOU) %>%
-            dplyr::summarize(sum(groupCount))
+          bbs_abun = bbssub %>%
+            group_by(Aou, Year) %>%
+            dplyr::summarize(sum(SpeciesTotal))
           bbs_abun = data.frame(bbs_abun)  
           
-          mod = merge(occs, bbs_abun, by.x = "Aou", by.y = "AOU")
+          # to get unique list of stateroutes and aous for bbs abundance
+          bbs_abun = bbs_abun[row.names(unique(bbs_abun[,c('Aou', 'Year')])),]
+        
+          all_info = merge(bbs_abun, occs, by = "Aou")
           # Calc community size from bbssub, then join to occs below
-          
-          mod3 = lm(mod$occ ~ log10(mod$sum.groupCount.))
-          xnew = range(log10(mod$sum.groupCount.))
-          xhat <- predict(mod3, newdata = data.frame((xnew)))
-          xhats = range(xhat)
-          print(xhats)
-          
-          
           temp = data.frame(grain = grain, 
                             lat = lat, 
                             lon = lon, 
                             rep = i,
-                            Aou = occs$Aou,
-                            occ = occs$occ)
+                            Aou = all_info$Aou,
+                            occ = all_info$occ,
+                            abun = all_info$sum.SpeciesTotal.)
           
           output = rbind(output, temp)
           print(paste("Grain", grain, ", Lat:", lat, ", Lon:", lon))
         } #end of the rep loop
       } 
-      
-      #need to  specify that magic number X of sites sampled can't be larger than 
-      # of routes available to pool from in a given bin
-      
-      
-      
     } #end of the lon loop
     
   } #end of the lat loop
@@ -244,32 +113,20 @@ for (grain in grain_sample$grain) {
 
 
 bbs_scaledup = output    #wrote to file in case
-write.csv(bbs_scaledup, "//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/bbs_scaledup.csv", row.names = FALSE)
+# write.csv(bbs_scaledup, "//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/bbs_scaledup.csv", row.names = FALSE)
 
-mod = merge(bbs_scaledup, bbs_abun, by.x = "Aou", by.y = "AOU")
-write.csv(mod, "mod.csv",row.names = FALSE)
-mod$pct_Trans = mod$occ[mod$occ <= 1/3]
-mod3 = lm(mod$occ ~ log10(mod$sum.groupCount.))
-xnew = range(log10(mod$sum.groupCount.))
+bbs_scaledup$spptally = 1 
+pctTrans = sum(bbs_scaledup$occ <= 1/3)/sum(bbs_scaledup$spptally)
+
+mod3 = lm(bbs_scaledup$occ ~ log10(bbs_scaledup$abun))
+xnew = range(log10(bbs_scaledup$abun))
 xhat <- predict(mod3, newdata = data.frame((xnew)))
 xhats = range(xhat)
 print(xhats)
+
+
 ####Mean of means for above-route scales####
 bbs_scaledup = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/bbs_scaledup.csv")
-
-
-#for each unique combination of grain and lat and long across reps, what is the avg occ? 
-# modify to take means of mean of each rep (in order of lat, lon, grain, and rep so as not to incorrectly avg values
-occ_avgs = bbs_scaledup %>% group_by(lat, lon, grain, rep) %>% #adding rep to grouping
-  dplyr::summarize(mean = mean(occ)) %>% #summarize occ across Aou's for each rep 
-  dplyr::group_by(lat, lon, grain) %>% #group again, this time just by lat, lon, and grain
-  dplyr::summarize(mean = mean(mean)) # summarize mean occ across reps for each unique combo of lat, lon, and grain
-
-#occ avgs for each grain scale across reps (FINAL)
-occ_avgs$grid8ID = paste(floor(occ_avgs$lat/8)*8 + 8/2, floor(occ_avgs$lon/8)*8 + 8/2, sep = "")
-occ_avgs$grid8ID = as.character(occ_avgs$grid8ID)
-
-write.csv(occ_avgs, "//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/occ_avgs.csv", row.names = FALSE)
 
 #-----------------------------------------------------------------------------------------
 ####Combining sub and above-route scale analyses outputs for comparison####
@@ -277,9 +134,6 @@ write.csv(occ_avgs, "//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/occ_avg
 #use grid8ID specified in grid_rtes_best to subset occ_avgs for only those that match grid8ID
 #then can compare across increasing grain size, across area 
 
-####lower scale analyses output prep####
-good_rtes2 = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/good_rtes2.csv", header = TRUE)
-bbs_scalesorted = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/bbs_scalesorted.csv", header = TRUE)
 #scale corresponds to # of stops in a segment 
 #add area ID BEFORE merging, same with above-route dataset 
 bbs_scalesorted$area = (bbs_scalesorted$scale)*(pi*(0.4^2)) # area in km by area of a BBS segment based on # of stops in that segment (for now)
@@ -292,9 +146,7 @@ bbs_scalesorted$grid8ID = as.character(bbs_scalesorted$grid8ID)
 
 #subset to six grid cells creates by grain_sample aka those existing in occ_avgs already
 #totally unnecessary if areas and scales standardized, don't need to nest within "top" grids, 
-#right? readdress in morning
-
-
+#right? 
 
 bbs_scalesorted = bbs_scalesorted %>% 
   filter(grid8ID %in% occ_avgs$grid8ID)
