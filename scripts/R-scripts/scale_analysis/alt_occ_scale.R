@@ -170,26 +170,70 @@ head(output)
   
 
 #########
-####Calc mean of means####
-
-#for each unique combination of focal route and number of routes and Aou, what is the avg occ? -> already calc'd
-# what is the avg across Aou's for each unique combo of focal route and number of aggregated routes? 
-
-occ_avgs = bbs_focal_occs %>% group_by(r, nu) %>% 
-  summarize(mean = mean(occ))  #summarize occ across Aou's for each rep 
-
 ####Calc area####
 
-occ_avgs$log_area = log(occ_avgs$nu*50*(pi*(0.4^2))) #in km 
+bbs_focal_occs$area = bbs_focal_occs$numrtes*50*(pi*(0.4^2)) #in km 
 # number of routes * fifty stops * area in sq km of a stop 
 
-####Occupancy vs area####
+####Occupancy vs area/# rtes####
 
-plot(occ_avgs$log_area, occ_avgs$mean, xlab = "log(area)", ylab = "mean occupancy")
-
+plot(bbs_focal_occs$numrtes, bbs_focal_occs$meanOcc, xlab = "# routes", ylab = "mean occupancy")
+par(mfrow = c(2, 1))
+plot(bbs_focal_occs$numrtes, bbs_focal_occs$pctTran, xlab = "# routes", ylab = "% Trans")
+plot(bbs_focal_occs$numrtes, bbs_focal_occs$pctCore, xlab = "# routes", ylab = "% Core")
 
 #still just at above route scale tho - now need to stitch above and below together again 
 
-####Find lat/lons of focal routes and subsequently their grid8IDs####
+
+####rerun sub-route occ analysis####
+###So for the whole dataset, 10 pt count stops: #we are only getting one out of five chunks along 
+#want to estimate occupancy across each one, as of now only estimating for count 10 column 
+#fifty pt count data and then taking pts 1-5 and collapsing them all together 
+#########
+occ_counts = function(countData, countColumns, scale) {
+  bbssub = countData[, c("stateroute", "year", "AOU", countColumns)]
+  bbssub$groupCount = rowSums(bbssub[, countColumns])
+  bbsu = unique(bbssub[bbssub[, "groupCount"]!= 0, c("stateroute", "year", "AOU")]) #because this gets rid of 0's...
+  
+  
+  temp = data.frame(focalrte = r,
+                    numrtes = nu+1,                           #total # routes being aggregated
+                    meanOcc = mean(occs$occ, na.rm =T),       #mean occupancy
+                    pctCore = sum(occs$occ > 2/3)/nrow(occs), #fraction of species that are core
+                    pctTran = sum(occs$occ <= 1/3)/nrow(occs),#fraction of species that are transient
+                    totalAbun = sum(bbssub$SpeciesTotal)/15,  #total community size (per year)
+                    maxRadius = tmp$dist[nu])   
+  
+  bbsu.rt.occ = data.frame(table(bbsu[,c("stateroute", "AOU")])/15)
+  bbsu.rt.occ2 = bbsu.rt.occ[bbsu.rt.occ$Freq!=0,] #and this also gets rid of occupancy values of 0 total 
+  names(bbsu.rt.occ2)[3] = "occupancy"
+  bbsu.rt.occ2$subrouteID = countColumns[1] #subrouteID refers to first stop in a grouped sequence, occ refers to the occ for the # of combined stops
+  bbsu.rt.occ2$scale = scale 
+  bbsu.rt.occ2 = bbsu.rt.occ2[, c("stateroute", "scale", "subrouteID", "AOU", "occupancy")]
+  return(bbsu.rt.occ2)
+}
+
+# Generic calculation of occupancy for a specified scale
+
+scales = c(5, 10, 25, 50)
+
+
+output = c()
+for (scale in scales) {
+  numGroups = floor(50/scale)
+  for (g in 1:numGroups) {
+    groupedCols = paste("Stop", ((g-1)*scale + 1):(g*scale), sep = "")
+    temp = occ_counts(fifty_allyears, groupedCols, scale)
+    output = rbind(output, temp)
+  }
+  
+}
+
+bbs_scalesorted<-output
+
+#write.csv(bbs_scalesorted, "//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/bbs_scalesorted.csv", row.names = FALSE)
+
+
+####Find lat/lons of focal routes, add env data, color code points####
 
 
