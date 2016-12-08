@@ -185,6 +185,13 @@ plot(bbs_focal_occs$numrtes, bbs_focal_occs$pctCore, xlab = "# routes", ylab = "
 #still just at above route scale tho - now need to stitch above and below together again 
 
 
+####Find lat/lons of focal routes, add env data, color code points####
+routes = read.csv('scripts/R-scripts/scale_analysis/routes.csv')
+routes$stateroute = 1000*routes$statenum + routes$Route
+
+
+
+
 ####rerun sub-route occ analysis####
 
 fifty_allyears = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/filteredrtes.csv", header = TRUE)
@@ -233,7 +240,5 @@ bbs_scalesorted<-output
 
 #fix abundance variable calc, 
 #make sure mean occ is calced across AOU's for each unique combo of stateroute, scale (and subroute ID?)
-
-####Find lat/lons of focal routes, add env data, color code points####
 
 
