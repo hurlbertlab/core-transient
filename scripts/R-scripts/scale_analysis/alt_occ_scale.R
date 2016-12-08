@@ -198,21 +198,21 @@ occ_counts = function(countData, countColumns, scale) {
   bbsu = unique(bbssub[bbssub[, "groupCount"]!= 0, c("stateroute", "year", "AOU")]) #because this gets rid of 0's...
   bbsu.rt.occ = data.frame(table(bbsu[,c("stateroute", "AOU")])/15)
   bbsu.rt.occ2 = bbsu.rt.occ[bbsu.rt.occ$Freq!=0,] #and this also gets rid of occupancy values of 0 total 
-  meanOcc = mean((bbsu.rt.occ2)[3], na.rm =T)       #mean occupancy
-  pctCore = sum((bbsu.rt.occ2)[3] > 2/3)/nrow(bbsu.rt.occ2) #fraction of species that are core
-  pctTran = sum((bbsu.rt.occ2)[3] <= 1/3)/nrow(bbsu.rt.occ2) #fraction of species that are transient
-  totalAbun = sum(bbssub$groupCount)/15  #total community size (per year) <- NEED TO MODIFY FOR SUBROUTE # species observed each year in a cluster -> COUNT AOU present in a year for each stop cluster?
-  maxRadius = tmp$dist[nu]   #<- still relevant below rte scale?
   names(bbsu.rt.occ2)[3] = "occupancy"
+  bbsu.rt.occ2$meanOcc = mean(bbsu.rt.occ2$occupancy, na.rm =T)       #mean occupancy
+  bbsu.rt.occ2$pctCore = sum(bbsu.rt.occ2$occupancy > 2/3)/nrow(bbsu.rt.occ2) #fraction of species that are core
+  bbsu.rt.occ2$pctTran = sum(bbsu.rt.occ2$occupancy <= 1/3)/nrow(bbsu.rt.occ2) #fraction of species that are transient
+  #bbsu.rt.occ2$totalAbun = count(bbssub$AOU)/15  #total community size (per year) COUNT AOU present in a year for each stop cluster?
+  bbsu.rt.occ2$maxRadius = NaN  #<- still relevant below rte scale?
   bbsu.rt.occ2$subrouteID = countColumns[1] #subrouteID refers to first stop in a grouped sequence, occ refers to the occ for the # of combined stops
   bbsu.rt.occ2$scale = scale 
-  bbsu.rt.occ2 = bbsu.rt.occ2[, c("stateroute", "scale", "subrouteID", "AOU", "occupancy")]
+  bbsu.rt.occ2 = bbsu.rt.occ2[, c("stateroute", "scale", "subrouteID", "maxRadius", "meanOcc", "pctCore", "pctTran")]
   return(bbsu.rt.occ2)
 }
 
 # Generic calculation of occupancy for a specified scale
 
-scales = c(5, 10, 25, 50)
+scales = c(5, 10, 25)
 
 
 output = c()
@@ -230,6 +230,9 @@ bbs_scalesorted<-output
 
 #write.csv(bbs_scalesorted, "//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/bbs_scalesorted.csv", row.names = FALSE)
 
+
+#fix abundance variable calc, 
+#make sure mean occ is calced across AOU's for each unique combo of stateroute, scale (and subroute ID?)
 
 ####Find lat/lons of focal routes, add env data, color code points####
 
