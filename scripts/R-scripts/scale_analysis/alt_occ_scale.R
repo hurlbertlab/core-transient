@@ -186,6 +186,8 @@ plot(bbs_focal_occs$numrtes, bbs_focal_occs$pctCore, xlab = "# routes", ylab = "
 
 
 ####rerun sub-route occ analysis####
+
+fifty_allyears = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/filteredrtes.csv", header = TRUE)
 ###So for the whole dataset, 10 pt count stops: #we are only getting one out of five chunks along 
 #want to estimate occupancy across each one, as of now only estimating for count 10 column 
 #fifty pt count data and then taking pts 1-5 and collapsing them all together 
@@ -194,18 +196,13 @@ occ_counts = function(countData, countColumns, scale) {
   bbssub = countData[, c("stateroute", "year", "AOU", countColumns)]
   bbssub$groupCount = rowSums(bbssub[, countColumns])
   bbsu = unique(bbssub[bbssub[, "groupCount"]!= 0, c("stateroute", "year", "AOU")]) #because this gets rid of 0's...
-  
-  
-  temp = data.frame(focalrte = r,
-                    numrtes = nu+1,                           #total # routes being aggregated
-                    meanOcc = mean(occs$occ, na.rm =T),       #mean occupancy
-                    pctCore = sum(occs$occ > 2/3)/nrow(occs), #fraction of species that are core
-                    pctTran = sum(occs$occ <= 1/3)/nrow(occs),#fraction of species that are transient
-                    totalAbun = sum(bbssub$SpeciesTotal)/15,  #total community size (per year)
-                    maxRadius = tmp$dist[nu])   
-  
   bbsu.rt.occ = data.frame(table(bbsu[,c("stateroute", "AOU")])/15)
   bbsu.rt.occ2 = bbsu.rt.occ[bbsu.rt.occ$Freq!=0,] #and this also gets rid of occupancy values of 0 total 
+  meanOcc = mean((bbsu.rt.occ2)[3], na.rm =T)       #mean occupancy
+  pctCore = sum((bbsu.rt.occ2)[3] > 2/3)/nrow(bbsu.rt.occ2) #fraction of species that are core
+  pctTran = sum((bbsu.rt.occ2)[3] <= 1/3)/nrow(bbsu.rt.occ2) #fraction of species that are transient
+  totalAbun = sum(bbssub$groupCount)/15  #total community size (per year) <- NEED TO MODIFY FOR SUBROUTE # species observed each year in a cluster -> COUNT AOU present in a year for each stop cluster?
+  maxRadius = tmp$dist[nu]   #<- still relevant below rte scale?
   names(bbsu.rt.occ2)[3] = "occupancy"
   bbsu.rt.occ2$subrouteID = countColumns[1] #subrouteID refers to first stop in a grouped sequence, occ refers to the occ for the # of combined stops
   bbsu.rt.occ2$scale = scale 
