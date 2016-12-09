@@ -124,7 +124,8 @@ bbs_scaledup$spptally = 1
 pctTrans = sum(bbs_scaledup$occ <= 1/3)/sum(bbs_scaledup$spptally)
 
 mod3 = lm(bbs_scaledup$occ ~ log10(bbs_scaledup$abun))
-xnew = range(log10(bbs_scaledup$abun))
+xnew = range(log10(bbs_scaledup$abun)) # 0-4, in the right range
+
 xhat <- predict(mod3, newdata = data.frame((xnew)))
 xhats = range(xhat)
 print(xhats)
