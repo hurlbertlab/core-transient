@@ -428,9 +428,10 @@ library("raster")
 # Makes routes into a spatialPointsDataframe
 coordinates(all_latlongs)=c('Lon','Lat')
 projection(all_latlongs) = CRS("+proj=longlat +ellps=WGS84")
-prj.string <- "+proj=laea +lat_0=45.235 +lon_0=-106.675 +units=km"
+prj.string <- "+proj=longlat +ellps=WGS84"
 # Transforms routes to an equal-area projection - see previously defined prj.string
 routes.laea = spTransform(all_latlongs, CRS(prj.string))
+routes.laea@data$no = 1:660
 
 # A function that draws a circle of radius r around a point: p (x,y)
 RADIUS = 40
@@ -451,7 +452,7 @@ make.cir = function(p,r){
 #Draw circles around all routes ---- erroring in here
 circs = sapply(1:nrow(routes.laea), function(x){
   circ =  make.cir(routes.laea@coords[x,],RADIUS)
-  circ = Polygons(list(circ),ID=routes.laea@data$stateroute[x])
+  circ = Polygons(list(circ),ID=routes.laea@data$no[x])
 }
 )
 circs.sp = SpatialPolygons(circs, proj4string=CRS(prj.string))
