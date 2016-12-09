@@ -113,7 +113,7 @@ for (grain in grain_sample$grain) {
 
 
 bbs_scaledup = output    #wrote to file in case
-# write.csv(bbs_scaledup, "//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/bbs_scaledup.csv", row.names = FALSE)
+# write.csv(bbs_scaledup, "//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/bbs_scaledup_abun.csv", row.names = FALSE)
 totalspp = bbs_scaledup %>% 
   group_by(Aou, grain) %>%
   tally(abun)
