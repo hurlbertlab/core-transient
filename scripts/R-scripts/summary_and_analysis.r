@@ -431,7 +431,6 @@ projection(all_latlongs) = CRS("+proj=longlat +ellps=WGS84")
 prj.string <- "+proj=longlat +ellps=WGS84"
 # Transforms routes to an equal-area projection - see previously defined prj.string
 routes.laea = spTransform(all_latlongs, CRS(prj.string))
-routes.laea@data$no = 1:660
 
 # A function that draws a circle of radius r around a point: p (x,y)
 RADIUS = 40
@@ -452,9 +451,10 @@ make.cir = function(p,r){
 #Draw circles around all routes ---- erroring in here
 circs = sapply(1:nrow(routes.laea), function(x){
   circ =  make.cir(routes.laea@coords[x,],RADIUS)
-  circ = Polygons(list(circ),ID=routes.laea@data$no[x])
+  circ = Polygons(list(circ),ID=routes.laea@data$datasetID[x]) 
 }
 )
+routes.laea@data$datasetIDs = unique(routes.laea@data$datasetIDs) # need to get unique vals here
 circs.sp = SpatialPolygons(circs, proj4string=CRS(prj.string))
 
 # Check that circle loactions look right
@@ -463,11 +463,14 @@ plot(circs.sp)
 elev <- getData("worldclim", var = "alt", res = 10)
 alt_files<-paste('alt_10m_bil', sep='')
 
-elev.point = raster::extract(elev, routes)
+elev.point = raster::extract(elev, routes.laea)
 elev.mean = raster::extract(elev, circs.sp, fun = mean, na.rm=T)
 elev.var = raster::extract(elev, circs.sp, fun = var, na.rm=T)
 
 env_elev = data.frame(stateroute = names(circs.sp), elev.point = elev.point, elev.mean = elev.mean, elev.var = elev.var)
+
+
+lat_scale_elev = merge(lat_scale, env_elev, by = "stateroute")
 
 mod1 = lmer(pctTrans ~ (1|taxa.x) * spRich * Lat, data=lat_scale) # need to add in env heterogeneity AKA Elev
 
