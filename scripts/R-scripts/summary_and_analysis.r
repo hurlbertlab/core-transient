@@ -426,11 +426,11 @@ library('rgdal')
 library("raster")
 
 # Makes routes into a spatialPointsDataframe
-coordinates(all_latlongs)=c('Lon','Lat')
-projection(all_latlongs) = CRS("+proj=longlat +ellps=WGS84")
+coordinates(lat_scale)=c('Lon','Lat')
+projection(lat_scale) = CRS("+proj=longlat +ellps=WGS84")
 prj.string <- "+proj=longlat +ellps=WGS84"
 # Transforms routes to an equal-area projection - see previously defined prj.string
-routes.laea = spTransform(all_latlongs, CRS(prj.string))
+routes.laea = spTransform(lat_scale, CRS(prj.string))
 
 # A function that draws a circle of radius r around a point: p (x,y)
 RADIUS = 40
@@ -448,13 +448,17 @@ make.cir = function(p,r){
   circle
 }
 
-#Draw circles around all routes ---- erroring in here
+# something going wrong in here
+routes.laea@data$dId_site = paste(routes.laea@data$datasetID, routes.laea@data$site, sep = "_")
+routes.unique = unique(routes.laea@data$dId_site)
+
+#Draw circles around all routes 
 circs = sapply(1:nrow(routes.laea), function(x){
   circ =  make.cir(routes.laea@coords[x,],RADIUS)
-  circ = Polygons(list(circ),ID=routes.laea@data$datasetID[x]) 
+  circ = Polygons(list(circ),ID=routes.unique[x]) 
 }
 )
-routes.laea@data$datasetIDs = unique(routes.laea@data$datasetIDs) # need to get unique vals here
+
 circs.sp = SpatialPolygons(circs, proj4string=CRS(prj.string))
 
 # Check that circle loactions look right
@@ -467,7 +471,7 @@ elev.point = raster::extract(elev, routes.laea)
 elev.mean = raster::extract(elev, circs.sp, fun = mean, na.rm=T)
 elev.var = raster::extract(elev, circs.sp, fun = var, na.rm=T)
 
-env_elev = data.frame(stateroute = names(circs.sp), elev.point = elev.point, elev.mean = elev.mean, elev.var = elev.var)
+env_elev = data.frame(dID = names(circs.sp), elev.point = elev.point, elev.mean = elev.mean, elev.var = elev.var)
 
 
 lat_scale_elev = merge(lat_scale, env_elev, by = "stateroute")
