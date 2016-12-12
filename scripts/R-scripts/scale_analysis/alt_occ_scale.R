@@ -142,7 +142,7 @@ for (r in uniqrtes) {
   tmprtes = tmp$rte2[1:nu]   #selects rtes to aggregate under focal route by dist from focal route, based on nu in numrtes range
   # Aggregate those routes together, calc occupancy, etc
   
-  bbssub = filter(bbs_allyears, stateroute %in% c(r, tmprtes))
+  bbssub = filter(bbs_bestAous, stateroute %in% c(r, tmprtes))
   bbsuniq = unique(bbssub[, c('Aou', 'Year')])
   occs = bbsuniq %>% dplyr::count(Aou) %>% dplyr::mutate(occ = n/15)
   
@@ -195,6 +195,9 @@ routes$stateroute = 1000*routes$statenum + routes$Route
 ####rerun sub-route occ analysis####
 
 fifty_allyears = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/filteredrtes.csv", header = TRUE)
+
+fifty_allyears2 = fifty_allyears %>% 
+  filter(AOU > 2880 | AOU < 3650 | AOU > 3810 | AOU < 3900 | AOU > 3910 | AOU < 4160 | AOU > 4210 | AOU != 7010) 
 ###So for the whole dataset, 10 pt count stops: #we are only getting one out of five chunks along 
 #want to estimate occupancy across each one, as of now only estimating for count 10 column 
 #fifty pt count data and then taking pts 1-5 and collapsing them all together 
@@ -222,7 +225,7 @@ for (scale in scales) {
   numGroups = floor(50/scale)
   for (g in 1:numGroups) {
     groupedCols = paste("Stop", ((g-1)*scale + 1):(g*scale), sep = "")
-    temp = occ_counts(fifty_allyears, groupedCols, scale)
+    temp = occ_counts(fifty_allyears2, groupedCols, scale)
     output = rbind(output, temp)
   }
   
@@ -233,16 +236,26 @@ bbs_scalesorted<-output
 #calc mean occ, abundance, % core and % trans across stateroute, AOU, and subroute ID cluster for each scale 
 
 test_meanocc = bbs_scalesorted %>% 
-  group_by(scale, stateroute, subrouteID) %>% 
-  summarize(mean = mean(occupancy)) %>% 
-  group_by(scale, subrouteID) %>% 
+  group_by(scale, stateroute, subrouteID) %>% #occ across all AOU's, for each unique combo of rte, scale(segment length), and starting segment
+  summarize(mean = mean(occupancy)) %>% #scale corresponds to numrtes 
+  group_by(scale, stateroute) %>% #summing across subrouteIDs 
   summarize(mean = mean(mean))
+
+pctCore = sum(test_meanocc$mean > .67)/nrow(test_meanocc) #fraction of species that are core
+pctTran = sum(test_meanocc$mean <= .33)/nrow(test_meanocc)
+#should do for each scale
+#should determine focal route pairings then for pieces of segments and summing across 
+
+test_abun = bbs_scalesorted %>% 
+  group_by(scale, stateroute, subrouteID) %>% 
+  summarize(abun = count(AOU))
 
 #follow as model for calc abundance, % core and % trans as well 
 #should probably add in lat-lons associated with stateroutes BEFORE getting rid of stateroutes ? potentially? 
 #or calc area 
 #because routes inform how they can be paired
 
+#how to accumulate "reps" or "numrtes" equiv in below-rte scale accordingly? 
 
 
 
@@ -256,5 +269,8 @@ bbs_focal_occs = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/b
 
 #fix abundance variable calc, 
 #make sure mean occ is calced across AOU's for each unique combo of stateroute, scale (and subroute ID?)
+
+#####bringing datasets together####
+#use rbind rather than merge to simplify 
 
 
