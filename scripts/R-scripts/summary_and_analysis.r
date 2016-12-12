@@ -420,6 +420,7 @@ all_latlongs = rbind(dft, latlongs_mult)
 all_latlongs = na.omit(all_latlongs)
 
 lat_scale = merge(occ_taxa, all_latlongs, by = "datasetID")
+lat_scale$uniqueID = paste(lat_scale$datasetID, lat_scale$site, sep = "_")
 
 library('sp')
 library('rgdal')
@@ -449,11 +450,11 @@ make.cir = function(p,r){
 }
 
 # something going wrong in here
-routes.laea@data$dId_site = paste(routes.laea@data$datasetID, routes.laea@data$site, sep = "_")
 routes.unique = unique(routes.laea@data$dId_site)
+routes.laea@data$dId_site = paste(routes.laea@data$datasetID, routes.laea@data$site, sep = "_")
 
 #Draw circles around all routes 
-circs = sapply(1:nrow(routes.laea), function(x){
+circs = sapply(1:nrow(routes.laea@data), function(x){
   circ =  make.cir(routes.laea@coords[x,],RADIUS)
   circ = Polygons(list(circ),ID=routes.unique[x]) 
 }
