@@ -206,20 +206,15 @@ occ_counts = function(countData, countColumns, scale) {
   bbsu.rt.occ = data.frame(table(bbsu[,c("stateroute", "AOU")])/15)
   bbsu.rt.occ2 = bbsu.rt.occ[bbsu.rt.occ$Freq!=0,] #and this also gets rid of occupancy values of 0 total 
   names(bbsu.rt.occ2)[3] = "occupancy"
-  bbsu.rt.occ2$meanOcc = mean(bbsu.rt.occ2$occupancy, na.rm =T)       #mean occupancy
-  bbsu.rt.occ2$pctCore = sum(bbsu.rt.occ2$occupancy > 2/3)/nrow(bbsu.rt.occ2) #fraction of species that are core
-  bbsu.rt.occ2$pctTran = sum(bbsu.rt.occ2$occupancy <= 1/3)/nrow(bbsu.rt.occ2) #fraction of species that are transient
-  #bbsu.rt.occ2$totalAbun = count(bbssub$AOU)/15  #total community size (per year) COUNT AOU present in a year for each stop cluster?
-  bbsu.rt.occ2$maxRadius = NaN  #<- still relevant below rte scale?
   bbsu.rt.occ2$subrouteID = countColumns[1] #subrouteID refers to first stop in a grouped sequence, occ refers to the occ for the # of combined stops
   bbsu.rt.occ2$scale = scale 
-  bbsu.rt.occ2 = bbsu.rt.occ2[, c("stateroute", "scale", "subrouteID", "maxRadius", "meanOcc", "pctCore", "pctTran")]
+  bbsu.rt.occ2 = bbsu.rt.occ2[, c("stateroute", "scale", "subrouteID", "AOU", "occupancy")]
   return(bbsu.rt.occ2)
 }
 
 # Generic calculation of occupancy for a specified scale
 
-scales = c(5, 10, 25)
+scales = c(5, 10, 25, 50)
 
 
 output = c()
@@ -235,8 +230,29 @@ for (scale in scales) {
 
 bbs_scalesorted<-output
 
-#write.csv(bbs_scalesorted, "//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/bbs_scalesorted.csv", row.names = FALSE)
+#calc mean occ, abundance, % core and % trans across stateroute, AOU, and subroute ID cluster for each scale 
 
+test_meanocc = bbs_scalesorted %>% 
+  group_by(scale, stateroute, subrouteID) %>% 
+  summarize(mean = mean(occupancy)) %>% 
+  group_by(scale, subrouteID) %>% 
+  summarize(mean = mean(mean))
+
+#follow as model for calc abundance, % core and % trans as well 
+#should probably add in lat-lons associated with stateroutes BEFORE getting rid of stateroutes ? potentially? 
+#or calc area 
+#because routes inform how they can be paired
+
+
+
+
+
+
+
+##############################
+
+bbs_scalesorted = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/bbs_scalesorted.csv", header = TRUE)
+bbs_focal_occs = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/bbs_focal_occs.csv", header = TRUE)
 
 #fix abundance variable calc, 
 #make sure mean occ is calced across AOU's for each unique combo of stateroute, scale (and subroute ID?)
