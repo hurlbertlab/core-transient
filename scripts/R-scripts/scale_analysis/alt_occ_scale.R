@@ -202,13 +202,30 @@ fifty_allyears2 = fifty_allyears %>%
 #want to estimate occupancy across each one, as of now only estimating for count 10 column 
 #fifty pt count data and then taking pts 1-5 and collapsing them all together 
 #########
-occ_counts = function(countData, countColumns, scale) {
+occ_counts = function(countData, countColumns, scale, calcAbund=FALSE) {
   bbssub = countData[, c("stateroute", "year", "AOU", countColumns)]
   bbssub$groupCount = rowSums(bbssub[, countColumns])
   bbsu = unique(bbssub[bbssub[, "groupCount"]!= 0, c("stateroute", "year", "AOU")]) #because this gets rid of 0's...
+  
+  if(calcAbund) {
+    abun = bbsu %>% 
+      group_by(stateroute) %>% #for each stateroute and year, how many diff spp were there? 
+      count(bbsu$AOU)/15 
+    bbsu.rt.occ = data.frame(table(bbsu[,c("stateroute", "AOU")])/15)
+    bbsu.rt.occ2 = bbsu.rt.occ[bbsu.rt.occ$Freq!=0,] #and this also gets rid of occupancy values of 0 total 
+    names(bbsu.rt.occ2)[3] = "occupancy"
+    # avg abun for each AOU for each year @ each stateroute (diff than presence absence!)
+    bbsu.rt.occ2$subrouteID = countColumns[1] #subrouteID refers to first stop in a grouped sequence, occ refers to the occ for the # of combined stops
+    bbsu.rt.occ2$scale = scale 
+    bbsu.rt.occ2$abun = abun$n
+    bbsu.rt.occ2 = bbsu.rt.occ2[, c("stateroute", "scale", "subrouteID", "AOU", "occupancy", "abun")]
+    return(bbsu.rt.occ2)
+  }
+  
   bbsu.rt.occ = data.frame(table(bbsu[,c("stateroute", "AOU")])/15)
   bbsu.rt.occ2 = bbsu.rt.occ[bbsu.rt.occ$Freq!=0,] #and this also gets rid of occupancy values of 0 total 
   names(bbsu.rt.occ2)[3] = "occupancy"
+  
   bbsu.rt.occ2$subrouteID = countColumns[1] #subrouteID refers to first stop in a grouped sequence, occ refers to the occ for the # of combined stops
   bbsu.rt.occ2$scale = scale 
   bbsu.rt.occ2 = bbsu.rt.occ2[, c("stateroute", "scale", "subrouteID", "AOU", "occupancy")]
@@ -237,23 +254,19 @@ bbs_scalesorted<-output
 
 test_meanocc = bbs_scalesorted %>% 
   group_by(scale, stateroute, subrouteID) %>% #occ across all AOU's, for each unique combo of rte, scale(segment length), and starting segment
-  summarize(mean = mean(occupancy)) %>% #scale corresponds to numrtes 
-  group_by(scale, stateroute) %>% #summing across subrouteIDs 
-  summarize(mean = mean(mean))
+  summarize(mean = mean(occupancy)) %>% 
+  summarize(abun = mean(abun))
+
+test_abun = bbs_scalesorted %>%
+  group_by(scale, stateroute, subrouteID) %>%
+  dplyr::count(bbs_scalesorted$AOU) #should group by other relevant variables auto, right?
+
+
 
 pctCore = sum(test_meanocc$mean > .67)/nrow(test_meanocc) #fraction of species that are core
 pctTran = sum(test_meanocc$mean <= .33)/nrow(test_meanocc)
-#should do for each scale
-#should determine focal route pairings then for pieces of segments and summing across 
 
-test_abun = bbs_scalesorted %>% 
-  group_by(scale, stateroute, subrouteID) %>% 
-  summarize(abun = count(AOU))
-
-#follow as model for calc abundance, % core and % trans as well 
-#should probably add in lat-lons associated with stateroutes BEFORE getting rid of stateroutes ? potentially? 
-#or calc area 
-#because routes inform how they can be paired
+#should do ^ for each scale
 
 #how to accumulate "reps" or "numrtes" equiv in below-rte scale accordingly? 
 
