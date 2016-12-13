@@ -177,10 +177,57 @@ test_join = inner_join(subrte_occ_avgs, bbs_prejoin)
 unique(test_join$grid8ID)
 
 #write.csv(test_join, "//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/test_join.csv", row.names = FALSE)
-#I think this worked? mean of means across stateroutes nested within those grid cells 
-#but with occ calc'd BELOW route level before lumped together by cell 
-#area = area of stop segment based on scaleID and lat lon of original stateroute
-#even tho stateroutes no longer needed areas of segments preserved 
+
+# below routes
+allyears2 = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/fifty_allyears.csv", header = TRUE)
+occ_counts = function(countData, countColumns, scale, calcAbund=TRUE) {
+  bbssub = countData[, c("stateroute", "year", "AOU", countColumns)]
+  bbssub$groupCount = rowSums(bbssub[, countColumns])
+  bbsu = unique(bbssub[bbssub[, "groupCount"]!= 0, c("stateroute", "year", "AOU")]) #because this gets rid of 0's...
+  
+  if(calcAbund) {
+    abun = bbsu %>% 
+      # unique() %>%    
+      group_by(stateroute) %>%  
+      count(AOU) 
+    bbsu.rt.occ = data.frame(table(bbsu[,c("stateroute", "AOU")]))
+    bbsu.rt.occ2 = bbsu.rt.occ[bbsu.rt.occ$Freq!=0,] #and this also gets rid of occupancy values of 0 total 
+    names(bbsu.rt.occ2)[3] = "occupancy"
+    # avg abun for each AOU for each year @ each stateroute (diff than presence absence!)
+    bbsu.rt.occ2$subrouteID = countColumns[1] #subrouteID refers to first stop in a grouped sequence, occ refers to the occ for the # of combined stops
+    bbsu.rt.occ2$scale = scale 
+    bbsu.rt.occ2$abun = (abun$n)
+    #bbsu.rt.occ2$AOU = AOU #is it going to know to match up the AOU values from both occ and abun?
+    bbsu.rt.occ2 = bbsu.rt.occ2[, c("stateroute", "scale", "subrouteID", "AOU", "occupancy", "abun")]
+    return(bbsu.rt.occ2)
+  }
+  
+  bbsu.rt.occ = data.frame(table(bbsu[,c("stateroute", "AOU")]))
+  bbsu.rt.occ2 = bbsu.rt.occ[bbsu.rt.occ$Freq!=0,] #and this also gets rid of occupancy values of 0 total 
+  names(bbsu.rt.occ2)[3] = "occupancy"
+  
+  bbsu.rt.occ2$subrouteID = countColumns[1] #subrouteID refers to first stop in a grouped sequence, occ refers to the occ for the # of combined stops
+  bbsu.rt.occ2$scale = scale 
+  bbsu.rt.occ2 = bbsu.rt.occ2[, c("stateroute", "scale", "subrouteID", "AOU", "occupancy")]
+  return(bbsu.rt.occ2)
+}
+
+# Generic calculation of occupancy for a specified scale
+
+scales = c(5, 10, 25, 50)
+
+
+output = c()
+for (scale in scales) {
+  numGroups = floor(50/scale)
+  for (g in 1:numGroups) {
+    groupedCols = paste("Stop", ((g-1)*scale + 1):(g*scale), sep = "")
+    temp = occ_counts(allyears2, groupedCols, scale, calcAbund = TRUE)
+    output = rbind(output, temp)
+  }
+  
+}
+
 
 ####upper scale analyses output prep####
 
