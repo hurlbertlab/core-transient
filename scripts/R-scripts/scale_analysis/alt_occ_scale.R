@@ -208,10 +208,10 @@ occ_counts = function(countData, countColumns, scale, calcAbund=FALSE) {
   bbsu = unique(bbssub[bbssub[, "groupCount"]!= 0, c("stateroute", "year", "AOU")]) #because this gets rid of 0's...
   
   if(calcAbund) {
-    abun = output %>% 
-      unique() %>%    
-      group_by(AOU) %>%  
-      count(AOU) 
+    abun = bbsu %>% 
+        # unique() %>%    
+        group_by(stateroute) %>%  
+        count(AOU) 
     bbsu.rt.occ = data.frame(table(bbsu[,c("stateroute", "AOU")])/15)
     bbsu.rt.occ2 = bbsu.rt.occ[bbsu.rt.occ$Freq!=0,] #and this also gets rid of occupancy values of 0 total 
     names(bbsu.rt.occ2)[3] = "occupancy"
@@ -219,7 +219,7 @@ occ_counts = function(countData, countColumns, scale, calcAbund=FALSE) {
     bbsu.rt.occ2$subrouteID = countColumns[1] #subrouteID refers to first stop in a grouped sequence, occ refers to the occ for the # of combined stops
     bbsu.rt.occ2$scale = scale 
     bbsu.rt.occ2$abun = (abun$n/15)
-    bbsu.rt.occ2$AOU = AOU #is it going to know to match up the AOU values from both occ and abun?
+    #bbsu.rt.occ2$AOU = AOU #is it going to know to match up the AOU values from both occ and abun?
     bbsu.rt.occ2 = bbsu.rt.occ2[, c("stateroute", "scale", "subrouteID", "AOU", "occupancy", "abun")]
     return(bbsu.rt.occ2)
   }
@@ -244,7 +244,7 @@ for (scale in scales) {
   numGroups = floor(50/scale)
   for (g in 1:numGroups) {
     groupedCols = paste("Stop", ((g-1)*scale + 1):(g*scale), sep = "")
-    temp = occ_counts(fifty_allyears2, groupedCols, scale) #, calcAbund = TRUE)
+    temp = occ_counts(fifty_allyears2, groupedCols, scale, calcAbund = TRUE)
     output = rbind(output, temp)
   }
   
@@ -275,21 +275,7 @@ pctTran = sum(test_meanocc$mean <= .33)/nrow(test_meanocc)
 
 
 
-
-
 ##############################
-
-bbs_scalesorted = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/bbs_scalesorted.csv", header = TRUE)
-bbs_focal_occs = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/bbs_focal_occs.csv", header = TRUE)
-
-#fix abundance variable calc, 
-#make sure mean occ is calced across AOU's for each unique combo of stateroute, scale (and subroute ID?)
-
-#####bringing datasets together####
-#use rbind rather than merge to simplify 
-
-
-##########
 ####Debugging abundance calc outside of function####
 
 occ_counts = function(countData, countColumns, scale, calcAbund=FALSE) {
@@ -311,8 +297,9 @@ for (scale in scales) {
   
 }
 
-abun = output %>% 
-  unique() %>%    
-  group_by(AOU) %>%  
+abun = output %>% #change to bbsu inside function
+ # unique() %>%    
+  group_by(stateroute) %>%  
   count(AOU) #don't need group by because it will know that it needs to count for each unique combo of year and stateroute 
 
+#it works! so why doesn't it work inside the function....?
