@@ -180,7 +180,7 @@ unique(test_join$grid8ID)
 
 # below routes
 allyears2 = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/fifty_allyears.csv", header = TRUE)
-occ_counts = function(countData, countColumns, scale, calcAbund=TRUE) {
+occ_counts = function(countData, countColumns, scale, calcAbund) {
   bbssub = countData[, c("stateroute", "year", "AOU", countColumns)]
   bbssub$groupCount = rowSums(bbssub[, countColumns])
   bbsu = unique(bbssub[bbssub[, "groupCount"]!= 0, c("stateroute", "year", "AOU")]) #because this gets rid of 0's...

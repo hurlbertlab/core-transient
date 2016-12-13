@@ -354,12 +354,12 @@ bbs_abun = read.csv("bbs_abun_occ.csv", header=TRUE)
 totalspp = bbs_abun %>% 
   group_by(AOU, stateroute) %>%
   tally(sum.groupCount.)
-for(i in bbs_abun$AOU){
+for(i in unique(bbs_abun$AOU)){
   sum(bbs_abun$occupancy <= 1/3)/(totalspp$n)
 }
 
-mod3 = lm(abun$occupancy ~ log10(abun$sum.groupCount.))
-xnew = range(log10(abun$sum.groupCount.))
+mod3 = lm(bbs_abun$occupancy ~ log10(bbs_abun$sum.groupCount.))
+xnew = range(log10(bbs_abun$sum.groupCount.))
 xhat <- predict(mod3, newdata = data.frame((xnew)))
 xhats = range(xhat)
 print(xhats)
@@ -450,8 +450,8 @@ make.cir = function(p,r){
 }
 
 # something going wrong in here
-routes.unique = unique(routes.laea@data$dId_site)
 routes.laea@data$dId_site = paste(routes.laea@data$datasetID, routes.laea@data$site, sep = "_")
+routes.laea$uniqueID = 1:1568
 
 #Draw circles around all routes 
 circs = sapply(1:nrow(routes.laea@data), function(x){
