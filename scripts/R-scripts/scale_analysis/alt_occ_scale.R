@@ -194,7 +194,7 @@ routes$stateroute = 1000*routes$statenum + routes$Route
 
 ####rerun sub-route occ analysis####
 
-fifty_allyears = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/filteredrtes.csv", header = TRUE)
+fifty_allyears = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/fifty_allyears.csv", header = TRUE)
 
 fifty_allyears2 = fifty_allyears %>% 
   filter(AOU > 2880 | AOU < 3650 | AOU > 3810 | AOU < 3900 | AOU > 3910 | AOU < 4160 | AOU > 4210 | AOU != 7010) 
@@ -257,12 +257,15 @@ bbs_scalesorted<-output
 test_meanocc = bbs_scalesorted %>% 
   group_by(scale, stateroute, subrouteID) %>% #occ across all AOU's, for each unique combo of rte, scale(segment length), and starting segment
   summarize(mean = mean(occupancy)) %>% 
-  summarize(abun = mean(abun))
+  group_by(scale, stateroute) %>%
+  summarize(mean_occ = mean(mean)) 
 
-test_abun = bbs_scalesorted %>%
+
+test_meanabun = bbs_scalesorted %>% 
   group_by(scale, stateroute, subrouteID) %>%
-  dplyr::count(bbs_scalesorted$AOU) #should group by other relevant variables auto, right?
-
+  summarize(abun = mean(abun)) %>%
+  group_by(scale, stateroute) %>%
+  summarize(mean_ab = mean(abun)) 
 
 
 pctCore = sum(test_meanocc$mean > .67)/nrow(test_meanocc) #fraction of species that are core
@@ -272,34 +275,4 @@ pctTran = sum(test_meanocc$mean <= .33)/nrow(test_meanocc)
 
 #how to accumulate "reps" or "numrtes" equiv in below-rte scale accordingly? 
 
-
-
-
-##############################
-####Debugging abundance calc outside of function####
-
-occ_counts = function(countData, countColumns, scale, calcAbund=FALSE) {
-  bbssub = countData[, c("stateroute", "year", "AOU", countColumns)]
-  bbssub$groupCount = rowSums(bbssub[, countColumns])
-  bbsu = unique(bbssub[bbssub[, "groupCount"]!= 0, c("stateroute", "year", "AOU")])
-  return(bbsu) }
-
-scales = c(5)
-
-output = c()
-for (scale in scales) {
-  numGroups = floor(50/scale)
-  for (g in 1:numGroups) {
-    groupedCols = paste("Stop", ((g-1)*scale + 1):(g*scale), sep = "")
-    temp = occ_counts(fifty_allyears2, groupedCols, scale) #, calcAbund = TRUE)
-    output = rbind(output, temp)
-  }
-  
-}
-
-abun = output %>% #change to bbsu inside function
- # unique() %>%    
-  group_by(stateroute) %>%  
-  count(AOU) #don't need group by because it will know that it needs to count for each unique combo of year and stateroute 
-
-#it works! so why doesn't it work inside the function....?
+bbs_focal_occs = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/bbs_focal_occs.csv", header = TRUE)
