@@ -208,16 +208,18 @@ occ_counts = function(countData, countColumns, scale, calcAbund=FALSE) {
   bbsu = unique(bbssub[bbssub[, "groupCount"]!= 0, c("stateroute", "year", "AOU")]) #because this gets rid of 0's...
   
   if(calcAbund) {
-    abun = bbsu %>% 
-      group_by(stateroute) %>% #for each stateroute and year, how many diff spp were there? 
-      count(bbsu$AOU)/15 
+    abun = output %>% 
+      unique() %>%    
+      group_by(AOU) %>%  
+      count(AOU) 
     bbsu.rt.occ = data.frame(table(bbsu[,c("stateroute", "AOU")])/15)
     bbsu.rt.occ2 = bbsu.rt.occ[bbsu.rt.occ$Freq!=0,] #and this also gets rid of occupancy values of 0 total 
     names(bbsu.rt.occ2)[3] = "occupancy"
     # avg abun for each AOU for each year @ each stateroute (diff than presence absence!)
     bbsu.rt.occ2$subrouteID = countColumns[1] #subrouteID refers to first stop in a grouped sequence, occ refers to the occ for the # of combined stops
     bbsu.rt.occ2$scale = scale 
-    bbsu.rt.occ2$abun = abun$n
+    bbsu.rt.occ2$abun = (abun$n/15)
+    bbsu.rt.occ2$AOU = AOU #is it going to know to match up the AOU values from both occ and abun?
     bbsu.rt.occ2 = bbsu.rt.occ2[, c("stateroute", "scale", "subrouteID", "AOU", "occupancy", "abun")]
     return(bbsu.rt.occ2)
   }
@@ -242,7 +244,7 @@ for (scale in scales) {
   numGroups = floor(50/scale)
   for (g in 1:numGroups) {
     groupedCols = paste("Stop", ((g-1)*scale + 1):(g*scale), sep = "")
-    temp = occ_counts(fifty_allyears2, groupedCols, scale)
+    temp = occ_counts(fifty_allyears2, groupedCols, scale) #, calcAbund = TRUE)
     output = rbind(output, temp)
   }
   
@@ -286,4 +288,31 @@ bbs_focal_occs = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/b
 #####bringing datasets together####
 #use rbind rather than merge to simplify 
 
+
+##########
+####Debugging abundance calc outside of function####
+
+occ_counts = function(countData, countColumns, scale, calcAbund=FALSE) {
+  bbssub = countData[, c("stateroute", "year", "AOU", countColumns)]
+  bbssub$groupCount = rowSums(bbssub[, countColumns])
+  bbsu = unique(bbssub[bbssub[, "groupCount"]!= 0, c("stateroute", "year", "AOU")])
+  return(bbsu) }
+
+scales = c(5)
+
+output = c()
+for (scale in scales) {
+  numGroups = floor(50/scale)
+  for (g in 1:numGroups) {
+    groupedCols = paste("Stop", ((g-1)*scale + 1):(g*scale), sep = "")
+    temp = occ_counts(fifty_allyears2, groupedCols, scale) #, calcAbund = TRUE)
+    output = rbind(output, temp)
+  }
+  
+}
+
+abun = output %>% 
+  unique() %>%    
+  group_by(AOU) %>%  
+  count(AOU) #don't need group by because it will know that it needs to count for each unique combo of year and stateroute 
 
