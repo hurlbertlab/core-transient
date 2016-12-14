@@ -689,7 +689,7 @@ tGrain = 'year'
 site_grain_names
 
 #--! PROVIDE INFO !--#
-sGrain = 'transect'
+sGrain = "msite_site_transect"
 
 # This is a reasonable choice of spatial grain because ...
 #--! PROVIDE INFO !--#
