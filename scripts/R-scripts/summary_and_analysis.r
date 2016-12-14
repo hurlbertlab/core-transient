@@ -37,7 +37,7 @@ dataformattingtable = read.csv('data_formatting_table.csv', header = T)
 
 datasetIDs = dataformattingtable$dataset_ID[dataformattingtable$format_flag == 1]
 
-datasetIDs = datasetIDs[!datasetIDs %in% c(222, 317,67,270,271,319,325)] # 222 is % cover, 317 d/n have neough years
+datasetIDs = datasetIDs[!datasetIDs %in% c(1,222, 317,67,270,271,319,325)] # 222 is % cover, 317 d/n have neough years
 
 summaries = c()
 for (d in datasetIDs) {
@@ -410,17 +410,25 @@ dev.off()
 latlongs_mult = read.csv("data/latlongs/latlongs.csv", header =TRUE)
 
 dft = subset(dataformattingtable, countFormat == "count" & format_flag == 1) # only want count data for model
-dft = subset(dft, !dataset_ID %in% c(1,247,248,269,289,309,315))
+dft = subset(dft, !dataset_ID %in% c(1,247,248,269,289,315))
 dft = dft[,c("CentralLatitude", "CentralLongitude","dataset_ID", "taxa")]
 names(dft) <- c("Lat","Lon", "datasetID", "taxa")
+dft$site = paste(dft$datasetID,"maxgrain",  sep = "_")
 
-latlongs_mult = latlongs_mult[,c(1:4)]
+# latlongs_mult = latlongs_mult[,c(1:4)]
 
 all_latlongs = rbind(dft, latlongs_mult)
 all_latlongs = na.omit(all_latlongs)
 
 lat_scale = merge(occ_taxa, all_latlongs, by = "datasetID")
-lat_scale$uniqueID = paste(lat_scale$datasetID, lat_scale$site, sep = "_")
+
+
+
+
+
+
+
+
 
 library('sp')
 library('rgdal')
@@ -433,8 +441,13 @@ prj.string <- "+proj=longlat +ellps=WGS84"
 # Transforms routes to an equal-area projection - see previously defined prj.string
 routes.laea = spTransform(lat_scale, CRS(prj.string))
 
+
+
+
+
+##### extracting elevation data ####
 # A function that draws a circle of radius r around a point: p (x,y)
-RADIUS = 40
+RADIUS = 5
 
 make.cir = function(p,r){
   points=c()
@@ -462,7 +475,7 @@ circs = sapply(1:nrow(routes.laea@data), function(x){
 
 circs.sp = SpatialPolygons(circs, proj4string=CRS(prj.string))
 
-# Check that circle loactions look right
+# Check that circle locations look right
 plot(circs.sp)
 
 elev <- getData("worldclim", var = "alt", res = 10)
