@@ -14,6 +14,9 @@ library(tidyr)
 library(maps)
 library(gridExtra)
 library(RColorBrewer)
+library(sp)
+library(rgdal)
+library(raster)
 
 source('scripts/R-scripts/core-transient_functions.R')
 
@@ -410,6 +413,14 @@ dev.off()
 ####### MODELS ######
 latlongs_mult = read.csv("data/latlongs/latlongs.csv", header =TRUE)
 
+all_max = latlongs_mult %>%
+  dplyr::group_by(site) %>%
+  latlongs_mult[grep("^maxgrain", latlongs_mult$site), ] # need to group by max grain
+# aggregate to single lat long avg value
+
+
+
+
 dft = subset(dataformattingtable, countFormat == "count" & format_flag == 1) # only want count data for model
 dft = subset(dft, !dataset_ID %in% c(1,247,248,269,289,315))
 dft = dft[,c("CentralLatitude", "CentralLongitude","dataset_ID", "taxa")]
@@ -421,19 +432,9 @@ dft$site = paste(dft$datasetID,"maxgrain",  sep = "_")
 all_latlongs = rbind(dft, latlongs_mult)
 all_latlongs = na.omit(all_latlongs)
 
-lat_scale = merge(occ_taxa, all_latlongs, by = "datasetID")
+# lat_scale = merge(occ_taxa, all_latlongs, by = "datasetID")
 
 
-
-
-
-
-
-
-
-library('sp')
-library('rgdal')
-library("raster")
 
 # Makes routes into a spatialPointsDataframe
 coordinates(lat_scale)=c('Lon','Lat')
