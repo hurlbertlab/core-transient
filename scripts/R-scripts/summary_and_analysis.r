@@ -348,6 +348,7 @@ occ_taxa=read.csv("output/tabular_data/occ_taxa.csv",header=TRUE)
 scaleIDs = filter(dataformattingtable, spatial_scale_variable == 'Y',
                   format_flag == 1)$dataset_ID
 scaleIDs = scaleIDs[scaleIDs != 222]
+scaleIDs = scaleIDs[scaleIDs != 236]
 scaleIDs = scaleIDs[scaleIDs != 317]
 bbs_abun = read.csv("bbs_abun_occ.csv", header=TRUE)
 
