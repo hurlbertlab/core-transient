@@ -197,21 +197,38 @@ routes$stateroute = 1000*routes$statenum + routes$Route
 fifty_allyears = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/fifty_allyears.csv", header = TRUE)
 
 fifty_allyears2 = fifty_allyears %>% 
-  filter(AOU > 2880 | AOU < 3650 | AOU > 3810 | AOU < 3900 | AOU > 3910 | AOU < 4160 | AOU > 4210 | AOU != 7010) 
+  filter(AOU > 2880 & !(AOU >= 3650 & AOU <= 3810) & !(AOU >= 3900 & AOU <= 3910) & 
+           !(AOU >= 4160 & AOU <= 4210) & AOU != 7010) 
 ###So for the whole dataset, 10 pt count stops: #we are only getting one out of five chunks along 
 #want to estimate occupancy across each one, as of now only estimating for count 10 column 
 #fifty pt count data and then taking pts 1-5 and collapsing them all together 
 #########
-occ_counts = function(countData, countColumns, scale, calcAbund=FALSE) {
+occ_counts = function(countData, countColumns, scale) {
   bbssub = countData[, c("stateroute", "year", "AOU", countColumns)]
   bbssub$groupCount = rowSums(bbssub[, countColumns])
   bbsu = unique(bbssub[bbssub[, "groupCount"]!= 0, c("stateroute", "year", "AOU")]) #because this gets rid of 0's...
   
-  if(calcAbund) {
-    abun = bbsu %>% 
-        # unique() %>%    
-        group_by(stateroute) %>%  
-        count(AOU) 
+  occ.df = bbsu %>%
+    count(stateroute, AOU) %>%
+    mutate(occ = n/15, scale = scale, subrouteID = countColumns[1])
+    
+  occ.summ = occ.df %>%
+    group_by(stateroute) %>%
+    summarize(meanOcc = mean(occ), 
+              pctCore = sum(occ > 2/3)/length(occ),
+              pctTran = sum(occ <= 1/3)/length(occ))
+  
+  abun = bbssub %>% 
+    group_by(stateroute, year) %>%  
+    summarize(totalN = sum(groupCount)) %>%
+    group_by(stateroute) %>%
+    summarize(aveN = mean(totalN))
+  
+    
+      
+    
+  return(list(occ = occ.summ, abun = abun))
+}
     bbsu.rt.occ = data.frame(table(bbsu[,c("stateroute", "AOU")])/15)
     bbsu.rt.occ2 = bbsu.rt.occ[bbsu.rt.occ$Freq!=0,] #and this also gets rid of occupancy values of 0 total 
     names(bbsu.rt.occ2)[3] = "occupancy"
