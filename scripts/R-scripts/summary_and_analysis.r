@@ -88,13 +88,14 @@ dsetsByTaxa = table(dsets$taxa)
 sitesBySystem = table(summ2$system)
 sitesByTaxa = table(summ2$taxa)
 
-colors7 = c(colors()[144], # invert
-            rgb(0, 54/255, 117/255), #benthos
-            rgb(29/255, 106/255, 155/255), #bird
-            colors()[70], #fish
-            colors()[551], #mammal
+colors7 = c(rgb(29/255, 106/255, 155/255), #bird
             colors()[552], # plankton
-            colors()[612])# plant
+            colors()[144], # invert
+            colors()[612], # plant
+            colors()[551], #mammal
+            rgb(0, 54/255, 117/255), #benthos
+            colors()[70]) #fish
+
             
 
 symbols7 = c(16, 18, 167, 15, 17, 1, 3) 
@@ -413,14 +414,6 @@ dev.off()
 ####### MODELS ######
 latlongs_mult = read.csv("data/latlongs/latlongs.csv", header =TRUE)
 
-all_max = latlongs_mult %>%
-  dplyr::group_by(site) %>%
-  latlongs_mult[grep("^maxgrain", latlongs_mult$site), ] # need to group by max grain
-# aggregate to single lat long avg value
-
-
-
-
 dft = subset(dataformattingtable, countFormat == "count" & format_flag == 1) # only want count data for model
 dft = subset(dft, !dataset_ID %in% c(1,247,248,269,289,315))
 dft = dft[,c("CentralLatitude", "CentralLongitude","dataset_ID", "taxa")]
@@ -434,6 +427,10 @@ all_latlongs = na.omit(all_latlongs)
 
 # lat_scale = merge(occ_taxa, all_latlongs, by = "datasetID")
 
+all_max = latlongs_mult %>%
+  dplyr::group_by(site) %>%
+  latlongs_mult[grep("^maxgrain", latlongs_mult$site), ] # need to group by max grain
+# aggregate to single lat long avg value
 
 
 # Makes routes into a spatialPointsDataframe
