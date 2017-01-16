@@ -415,11 +415,10 @@ dev.off()
 latlongs_mult = read.csv("data/latlongs/latlongs.csv", header =TRUE)
 
 # merge multiple lat long file to propOcc to get naming convention correct
-correct_sitenames =  247 248 
+correct_sitenames =  248 
 
 
-latlong_w_sites = merge(summ2, latlongs_mult, by = c("datasetID", "site")) #works only for 248
-
+latlong_w_sites = merge(summ2, latlongs_mult, by = c("datasetID", "site")) 
 
 
 
