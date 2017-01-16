@@ -414,11 +414,23 @@ dev.off()
 ####### MODELS ######
 latlongs_mult = read.csv("data/latlongs/latlongs.csv", header =TRUE)
 
+# merge multiple lat long file to propOcc to get naming convention correct
+correct_sitenames =  247 248 
+
+
+latlong_w_sites = merge(summ2, latlongs_mult, by = c("datasetID", "site")) #works only for 248
+
+
+
+
 dft = subset(dataformattingtable, countFormat == "count" & format_flag == 1) # only want count data for model
 dft = subset(dft, !dataset_ID %in% c(1,247,248,269,289,315))
 dft = dft[,c("CentralLatitude", "CentralLongitude","dataset_ID", "taxa")]
 names(dft) <- c("Lat","Lon", "datasetID", "taxa")
 dft$site = paste(dft$datasetID,"maxgrain",  sep = "_")
+
+
+
 
 # latlongs_mult = latlongs_mult[,c(1:4)]
 
