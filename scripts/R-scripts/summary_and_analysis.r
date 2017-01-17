@@ -414,13 +414,12 @@ dev.off()
 ####### MODELS ######
 latlongs = read.csv("data/latlongs/latlongs.csv", header =TRUE)
 # merge multiple lat long file to propOcc to get naming convention correct
-latlong_w_sites = merge(summ2, latlongs, by = c("datasetID", "site")) 
-latlong_w_sites$site = paste("maxgrain", latlong_w_sites$site, sep = "_")
+latlong_w_sites = merge(latlongs, summ2[,c("datasetID", "site", "propTrans")], by = c("datasetID", "site"), all.x = TRUE) 
+
 
 # preformatting for rbind
 latlong_w_sites = latlong_w_sites %>% 
-  dplyr::select(Lat, Lon, datasetID,taxa.x, site) 
-names(latlong_w_sites)[4] = "taxa" 
+  dplyr::select(Lat, Lon, datasetID,taxa, site, propTrans) 
 
 # aggregate to single lat long avg value  
 multi_grain_lats = latlong_w_sites %>%
@@ -434,9 +433,9 @@ multi_grain_longs = latlong_w_sites %>%
 multi_grain_latlongs = cbind(multi_grain_lats, multi_grain_longs)
 multi_grain_latlongs[3] <- NULL 
 names(multi_grain_latlongs) = c("datasetID", "Lat", "Lon")
-multi_grain_latlongs$taxa = c("Bird", "Invertebrate", "Bird", "Plant", "Invertebrate")
+multi_grain_latlongs$taxa = c("Bird", "Invertebrate", "Fish","Bird", "Plant", "Invertebrate")
 multi_grain_latlongs$site = "maxgrain"
-multi_grain_latlongs = multi_grain_latlongs[,c(2,3,1,4,5)]
+multi_grain_latlongs$propTrans = NA
 
 # rbind multiple grain lat longs
 latlongs_mult = rbind(latlong_w_sites, multi_grain_latlongs)
@@ -446,24 +445,20 @@ dft = subset(dataformattingtable, countFormat == "count" & format_flag == 1) # o
 dft = subset(dft, !dataset_ID %in% c(1,247,248,269,289,315))
 dft = dft[,c("CentralLatitude", "CentralLongitude","dataset_ID", "taxa")]
 names(dft) <- c("Lat","Lon", "datasetID", "taxa")
-dft$site = "maxgrain"
+dft2 = merge(dft, summ2[, c("datasetID","site","propTrans")], by = "datasetID")
+
   
 # combining all lat longs, including scaled up data
-all_latlongs = rbind(dft, latlongs_mult)
-all_latlongs = na.omit(all_latlongs)
-
+all_latlongs = rbind(dft2, latlongs_mult)
+# all_latlongs = na.omit(all_latlongs)
 
 
 # Makes routes into a spatialPointsDataframe
-coordinates(lat_scale)=c('Lon','Lat')
-projection(lat_scale) = CRS("+proj=longlat +ellps=WGS84")
+coordinates(all_latlongs)=c('Lon','Lat')
+projection(all_latlongs) = CRS("+proj=longlat +ellps=WGS84")
 prj.string <- "+proj=longlat +ellps=WGS84"
 # Transforms routes to an equal-area projection - see previously defined prj.string
-routes.laea = spTransform(lat_scale, CRS(prj.string))
-
-
-
-
+routes.laea = spTransform(all_latlongs, CRS(prj.string))
 
 ##### extracting elevation data ####
 # A function that draws a circle of radius r around a point: p (x,y)
@@ -482,14 +477,13 @@ make.cir = function(p,r){
   circle
 }
 
-# something going wrong in here
 routes.laea@data$dId_site = paste(routes.laea@data$datasetID, routes.laea@data$site, sep = "_")
-routes.laea$uniqueID = 1:1568
+routes.laea$unique = 1:942
 
 #Draw circles around all routes 
 circs = sapply(1:nrow(routes.laea@data), function(x){
   circ =  make.cir(routes.laea@coords[x,],RADIUS)
-  circ = Polygons(list(circ),ID=routes.unique[x]) 
+  circ = Polygons(list(circ),ID=routes.laea$unique[x]) 
 }
 )
 
@@ -508,9 +502,13 @@ elev.var = raster::extract(elev, circs.sp, fun = var, na.rm=T)
 env_elev = data.frame(dID = names(circs.sp), elev.point = elev.point, elev.mean = elev.mean, elev.var = elev.var)
 
 
-lat_scale_elev = merge(lat_scale, env_elev, by = "stateroute")
+lat_scale_elev = merge(routes.laea, env_elev, by.x = "unique", by.y = "dID")
+lat_scale_elev = data.frame(lat_scale_elev)
 
-mod1 = lmer(pctTrans ~ (1|taxa.x) * spRich * Lat, data=lat_scale) # need to add in env heterogeneity AKA Elev
+lat_scale_rich = merge(lat_scale_elev, summ2[,c("datasetID", "site", "spRichTrans")], by = c("datasetID", "site"))
+
+# Model
+mod1 = lmer(propTrans ~ (1|taxa) * spRichTrans * elev.mean, data=lat_scale_rich) 
 
 
 
