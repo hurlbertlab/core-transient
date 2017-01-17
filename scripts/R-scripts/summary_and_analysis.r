@@ -413,11 +413,8 @@ dev.off()
 
 ####### MODELS ######
 latlongs_mult = read.csv("data/latlongs/latlongs.csv", header =TRUE)
-
+latlongs_mult$site = paste("maxgrain", latlongs_mult$site, sep = "_")
 # merge multiple lat long file to propOcc to get naming convention correct
-correct_sitenames =  248 
-
-
 latlong_w_sites = merge(summ2, latlongs_mult, by = c("datasetID", "site")) 
 
 
@@ -426,7 +423,7 @@ dft = subset(dataformattingtable, countFormat == "count" & format_flag == 1) # o
 dft = subset(dft, !dataset_ID %in% c(1,247,248,269,289,315))
 dft = dft[,c("CentralLatitude", "CentralLongitude","dataset_ID", "taxa")]
 names(dft) <- c("Lat","Lon", "datasetID", "taxa")
-dft$site = paste(dft$datasetID,"maxgrain",  sep = "_")
+dft$site = "maxgrain"
 
 
 
@@ -438,9 +435,15 @@ all_latlongs = na.omit(all_latlongs)
 
 # lat_scale = merge(occ_taxa, all_latlongs, by = "datasetID")
 
-all_max = latlongs_mult %>%
-  dplyr::group_by(site) %>%
-  latlongs_mult[grep("^maxgrain", latlongs_mult$site), ] # need to group by max grain
+all_max = all_latlongs %>%
+  dplyr::group_by(datasetID) %>%
+  summarise(mean_site = mean(site))
+  aggregate(all_latlongs$site, by=list(all_latlongs$datasetID), FUN=mean)
+  aggregate(all_latlongs, by=list(site, datasetID), 
+                     FUN=sum, na.rm=TRUE)
+  
+  
+  latlongs_mult[grep("^maxgrain", latlongs_mult$site)] # need to group by max grain
 # aggregate to single lat long avg value
 
 
