@@ -412,39 +412,46 @@ par(new=TRUE)
 dev.off()
 
 ####### MODELS ######
-latlongs_mult = read.csv("data/latlongs/latlongs.csv", header =TRUE)
-latlongs_mult$site = paste("maxgrain", latlongs_mult$site, sep = "_")
+latlongs = read.csv("data/latlongs/latlongs.csv", header =TRUE)
 # merge multiple lat long file to propOcc to get naming convention correct
-latlong_w_sites = merge(summ2, latlongs_mult, by = c("datasetID", "site")) 
+latlong_w_sites = merge(summ2, latlongs, by = c("datasetID", "site")) 
+latlong_w_sites$site = paste("maxgrain", latlong_w_sites$site, sep = "_")
 
+# preformatting for rbind
+latlong_w_sites = latlong_w_sites %>% 
+  dplyr::select(Lat, Lon, datasetID,taxa.x, site) 
+names(latlong_w_sites)[4] = "taxa" 
 
+# aggregate to single lat long avg value  
+multi_grain_lats = latlong_w_sites %>%
+  dplyr::group_by(datasetID) %>% 
+  dplyr::summarise(avg = mean(Lat))
 
+multi_grain_longs = latlong_w_sites %>%
+  dplyr::group_by(datasetID) %>%
+  dplyr::summarise(avg = mean(Lon))
+    
+multi_grain_latlongs = cbind(multi_grain_lats, multi_grain_longs)
+multi_grain_latlongs[3] <- NULL 
+names(multi_grain_latlongs) = c("datasetID", "Lat", "Lon")
+multi_grain_latlongs$taxa = c("Bird", "Invertebrate", "Bird", "Plant", "Invertebrate")
+multi_grain_latlongs$site = "maxgrain"
+multi_grain_latlongs = multi_grain_latlongs[,c(2,3,1,4,5)]
+
+# rbind multiple grain lat longs
+latlongs_mult = rbind(latlong_w_sites, multi_grain_latlongs)
+
+# reformat non multi grain lat longs
 dft = subset(dataformattingtable, countFormat == "count" & format_flag == 1) # only want count data for model
 dft = subset(dft, !dataset_ID %in% c(1,247,248,269,289,315))
 dft = dft[,c("CentralLatitude", "CentralLongitude","dataset_ID", "taxa")]
 names(dft) <- c("Lat","Lon", "datasetID", "taxa")
 dft$site = "maxgrain"
-
-
-
-
-# latlongs_mult = latlongs_mult[,c(1:4)]
-
+  
+# combining all lat longs, including scaled up data
 all_latlongs = rbind(dft, latlongs_mult)
 all_latlongs = na.omit(all_latlongs)
 
-# lat_scale = merge(occ_taxa, all_latlongs, by = "datasetID")
-
-all_max = all_latlongs %>%
-  dplyr::group_by(datasetID) %>%
-  summarise(mean_site = mean(site))
-  aggregate(all_latlongs$site, by=list(all_latlongs$datasetID), FUN=mean)
-  aggregate(all_latlongs, by=list(site, datasetID), 
-                     FUN=sum, na.rm=TRUE)
-  
-  
-  latlongs_mult[grep("^maxgrain", latlongs_mult$site)] # need to group by max grain
-# aggregate to single lat long avg value
 
 
 # Makes routes into a spatialPointsDataframe
