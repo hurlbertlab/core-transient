@@ -34,10 +34,10 @@ library(fields)
 
 ####Bringing in BBS50 stop data and prepping it for sub-route scale partitioning####
 
-#bbs50 = ecoretriever::fetch('BBS50')
-#bbs50 = bbs50$counts
-#bbs50$stateroute = bbs50$statenum*1000 + bbs50$Route
-#bbs50$stateroute = as.integer(bbs50$stateroute)
+bbs50 = ecoretriever::fetch('BBS50')
+bbs50 = bbs50$counts
+bbs50$stateroute = bbs50$statenum*1000 + bbs50$Route
+bbs50$stateroute = as.integer(bbs50$stateroute)
 #^derivation of data from ecoretriever; still too large to host on github so save and pull from BioArk
 
 bbs50 = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/bbs50.csv", header = TRUE)
@@ -47,7 +47,7 @@ bbs50 = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/bbs50.csv"
 require(dplyr)
 #from Sara's code
 good_rtes = bbs50 %>% 
-  filter(year >= 2000, year <= 2014) %>% #shifted 15 year window up because missing 1996 data, and 2015 data available
+  filter(year >= 2001, year <= 2015) %>% #shifted 15 year window up because missing 1996 data, and 2015 data available
   select(year, stateroute) %>%
   unique() %>%    
   group_by(stateroute) %>%  
@@ -95,63 +95,210 @@ top6_grid8 = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/top6_
 
 #filter the 50 stop data to just those routes present within those 6 grid cell regions of interest 
 fifty_top6 = bbs50_goodrtes %>% 
-  filter(grid8ID %in% top6_grid8$x) #about halves the bbs50_goodrtes set of usable routes
+  filter(grid8ID %in% top6_grid8$x) %>%
+  dplyr::select(7:62)#about halves the bbs50_goodrtes set of usable routes, and no redundant columns
+#write.csv(fifty_top6, "//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/fifty_top6.csv", row.names = FALSE)
 
-good_rtes3 = good_rtes2[1:10,]
+
+#######
+
+fifty_top6 = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/fifty_top6.csv", header = TRUE)
 
 #----Write for_loop to calculate distances between every BBS site combination to find focal and associated routes that correspond best----
 #store minimum value for each iteration of combos in output table
 
+
+require(fields)
 # Distance calculation between all combination of 
-distances = rdist.earth(matrix(c(good_rtes3$Longi, good_rtes3$Lati), ncol=2),
-                        matrix(c(good_rtes3$Longi, good_rtes3$Lati), ncol=2),
+distances = rdist.earth(matrix(c(good_rtes2$Longi, good_rtes2$Lati), ncol=2),
+                        matrix(c(good_rtes2$Longi, good_rtes2$Lati), ncol=2),
                         miles=FALSE, R=6371)
 
-dist.df = data.frame(rte1 = rep(good_rtes3$stateroute, each = nrow(good_rtes3)),
-                     rte2 = rep(good_rtes3$stateroute, times = nrow(good_rtes3)),
+dist.df = data.frame(rte1 = rep(good_rtes2$stateroute, each = nrow(good_rtes2)),
+                     rte2 = rep(good_rtes2$stateroute, times = nrow(good_rtes2)),
                      dist = as.vector(distances))
 
 # inside loop, e.g., filter(dist.df, rte1 == 2001, rte2 != 2001)
+dist.df2 = filter(dist.df, rte1 != rte2)
 
-require(fields)
-output=c()
+uniqrtes = unique(dist.df2$rte1)
+####Aggregating loop#### #don't need a rep loop right?
+
+bbs_allyears = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/bbs_allyears.csv", header = TRUE)
+#exclude AOU species codes <=2880 [waterbirds, shorebirds, etc], (>=3650 & <=3810) [owls],
+#(>=3900 &  <=3910) [kingfishers], (>=4160 & <=4210) [nightjars], 7010 [dipper]
+#^best practices 
+bbs_bestAous = bbs_allyears %>% 
+  filter(Aou > 2880 | Aou < 3650 | Aou > 3810 | Aou < 3900 | Aou > 3910 | Aou < 4160 | Aou > 4210 | Aou != 7010) 
+
+#I think this may have already been done on the bbs data in the ecoretriever cache? 
+
+numrtes = 1:65 #
+output = data.frame(r = NULL, nu = NULL, AOU = NULL, occ = NULL)
+for (r in uniqrtes) {
+  for (nu in numrtes) {
+  tmp = filter(dist.df2, rte1 == r) %>%
+    arrange(dist)
+  tmprtes = tmp$rte2[1:nu]   #selects rtes to aggregate under focal route by dist from focal route, based on nu in numrtes range
+  # Aggregate those routes together, calc occupancy, etc
+  
+  bbssub = filter(bbs_bestAous, stateroute %in% c(r, tmprtes))
+  bbsuniq = unique(bbssub[, c('Aou', 'Year')])
+  occs = bbsuniq %>% dplyr::count(Aou) %>% dplyr::mutate(occ = n/15)
+  
+  temp = data.frame(focalrte = r,
+                    numrtes = nu+1,                           #total # routes being aggregated
+                    meanOcc = mean(occs$occ, na.rm =T),       #mean occupancy
+                    pctCore = sum(occs$occ > 2/3)/nrow(occs), #fraction of species that are core
+                    pctTran = sum(occs$occ <= 1/3)/nrow(occs),#fraction of species that are transient
+                    totalAbun = sum(bbssub$SpeciesTotal)/15,  #total community size (per year)
+                    maxRadius = tmp$dist[nu])                 #radius including rtes aggregated
+  output = rbind(output, temp)
+  print(paste("Focal rte", r, "# rtes sampled", nu))
+  
+  } #n loop
+  
+} #r loop
+
+##Problem: right now r is each focal route, 
+#but that focal route is NOT included in occ calcs, just the secondary routes associated with it are
 
 
-
-
-
-for(grid in fifty_top6$grid8ID){
-  for (sample_range in 2:66){ # num of nearest routes taken/paired -> will inform our gradient of areas
-    for(focal_bbs in good_rtes2$stateroute){
-      temp.lat=sampled_rtes$Lati[sampled_rtes$stateroute==focal_bbs]
-      temp.lon= sampled_rtes$Longi[sampled_rtes$stateroute==focal_bbs] 
-      distances = rdist.earth(matrix(c(fifty_top6$Longi, fifty_top6$Lati), ncol=2),matrix(c(temp.lon,temp.lat), ncol=2),miles=FALSE, R=6371)
-      minDist = min(distances)
-      closest_bbs = fifty_top6$stateroute[distances==minDist]
-      output=rbind(output, c("focal_bbs", "closest_bbs", "minDist"))
-
-    }
-}
-}
-
-bbs_paired_samples = as.data.frame(output)
-
-head(output)
-summary(output)
+bbs_focal_occs = as.data.frame(output)
+write.csv(bbs_focal_occs, "//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/bbs_focal_occs.csv", row.names = FALSE)
+head(output)  
+  
 
 #########
-#Alt looping structure: 
-#Following distance matrix creation, subset distance matrix by analyzing paired routes for distance 
-#and ranking them by minimum great circle distance
-#where i is the focal route in the cycle of routes 
-#and j is its nearest paired route 
-#and the array cited in "length" is the array that contains the routes in all possible combos 
-output = c()
-for (i in 1:length(fifty_top6)) {
-  for (j in i:length(fifty_top6)) {
-    dist = i - j
-    output = rbind(output, dist)
-    }
+####Calc area####
+
+bbs_focal_occs$area = bbs_focal_occs$numrtes*50*(pi*(0.4^2)) #in km 
+# number of routes * fifty stops * area in sq km of a stop 
+
+####Occupancy vs area/# rtes####
+
+plot(bbs_focal_occs$numrtes, bbs_focal_occs$meanOcc, xlab = "# routes", ylab = "mean occupancy")
+par(mfrow = c(2, 1))
+plot(bbs_focal_occs$numrtes, bbs_focal_occs$pctTran, xlab = "# routes", ylab = "% Trans")
+plot(bbs_focal_occs$numrtes, bbs_focal_occs$pctCore, xlab = "# routes", ylab = "% Core")
+
+#still just at above route scale tho - now need to stitch above and below together again 
+
+
+####Find lat/lons of focal routes, add env data, color code points####
+routes = read.csv('scripts/R-scripts/scale_analysis/routes.csv')
+routes$stateroute = 1000*routes$statenum + routes$Route
+
+
+
+
+####rerun sub-route occ analysis####
+
+fifty_allyears = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/fifty_allyears.csv", header = TRUE)
+
+fifty_allyears2 = fifty_allyears %>% 
+  filter(AOU > 2880 & !(AOU >= 3650 & AOU <= 3810) & !(AOU >= 3900 & AOU <= 3910) & 
+           !(AOU >= 4160 & AOU <= 4210) & AOU != 7010) 
+###So for the whole dataset, 10 pt count stops: #we are only getting one out of five chunks along 
+#want to estimate occupancy across each one, as of now only estimating for count 10 column 
+#fifty pt count data and then taking pts 1-5 and collapsing them all together 
+#########
+occ_counts = function(countData, countColumns, scale) {
+  bbssub = countData[, c("stateroute", "year", "AOU", countColumns)]
+  bbssub$groupCount = rowSums(bbssub[, countColumns])
+  bbsu = unique(bbssub[bbssub[, "groupCount"]!= 0, c("stateroute", "year", "AOU")]) #because this gets rid of 0's...
+  
+  occ.df = bbsu %>%
+    count(stateroute, AOU) %>%
+    mutate(occ = n/15, scale = scale, subrouteID = countColumns[1])
+    
+  occ.summ = occ.df %>%
+    group_by(stateroute) %>%
+    summarize(meanOcc = mean(occ), 
+              pctCore = sum(occ > 2/3)/length(occ),
+              pctTran = sum(occ <= 1/3)/length(occ))
+  
+  abun = bbssub %>% 
+    group_by(stateroute, year) %>%  
+    summarize(totalN = sum(groupCount)) %>%
+    group_by(stateroute) %>%
+    summarize(aveN = mean(totalN))
+#need to fix abundance calc  
+    
+      
+    
+  return(list(occ = occ.summ, abun = abun))
 }
 
 
+# Generic calculation of occupancy for a specified scale
+
+scales = c(5, 10, 25, 50)
+
+
+output = c()
+for (scale in scales) {
+  numGroups = floor(50/scale)
+  for (g in 1:numGroups) {
+    groupedCols = paste("Stop", ((g-1)*scale + 1):(g*scale), sep = "")
+    temp = occ_counts(fifty_allyears2, groupedCols, scale)
+    output = rbind(output, temp)
+  }
+  
+}
+
+bbs_scalesorted<-output
+
+#calc mean occ, abundance, % core and % trans across stateroute, AOU, and subroute ID cluster for each scale 
+
+test_meanocc = bbs_scalesorted %>% 
+  group_by(scale, stateroute, subrouteID) %>% #occ across all AOU's, for each unique combo of rte, scale(segment length), and starting segment
+  summarize(mean = mean(occupancy)) %>% 
+  group_by(scale, stateroute) %>%
+  summarize(mean_occ = mean(mean)) 
+
+
+test_meanabun = bbs_scalesorted %>% 
+  group_by(scale, stateroute, subrouteID) %>%
+  summarize(abun = mean(abun)) %>%
+  group_by(scale, stateroute) %>%
+  summarize(mean_ab = mean(abun)) 
+
+
+pctCore = sum(test_meanocc$mean > .67)/nrow(test_meanocc) #fraction of species that are core
+pctTran = sum(test_meanocc$mean <= .33)/nrow(test_meanocc)
+
+#should do ^ for each scale
+
+#how to accumulate "reps" or "numrtes" equiv in below-rte scale accordingly? 
+
+bbs_focal_occs = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/bbs_focal_occs.csv", header = TRUE)
+
+
+
+
+##########################
+#from occ_counts: 
+
+
+bbsu.rt.occ = data.frame(table(bbsu[,c("stateroute", "AOU")])/15)
+bbsu.rt.occ2 = bbsu.rt.occ[bbsu.rt.occ$Freq!=0,] #and this also gets rid of occupancy values of 0 total 
+names(bbsu.rt.occ2)[3] = "occupancy"
+# avg abun for each AOU for each year @ each stateroute (diff than presence absence!)
+bbsu.rt.occ2$subrouteID = countColumns[1] #subrouteID refers to first stop in a grouped sequence, occ refers to the occ for the # of combined stops
+bbsu.rt.occ2$scale = scale 
+bbsu.rt.occ2$abun = (abun$n/15)
+#bbsu.rt.occ2$AOU = AOU #is it going to know to match up the AOU values from both occ and abun?
+bbsu.rt.occ2 = bbsu.rt.occ2[, c("stateroute", "scale", "subrouteID", "AOU", "occupancy", "abun")]
+return(bbsu.rt.occ2)
+}
+
+bbsu.rt.occ = data.frame(table(bbsu[,c("stateroute", "AOU")])/15)
+bbsu.rt.occ2 = bbsu.rt.occ[bbsu.rt.occ$Freq!=0,] #and this also gets rid of occupancy values of 0 total 
+names(bbsu.rt.occ2)[3] = "occupancy"
+
+bbsu.rt.occ2$subrouteID = countColumns[1] #subrouteID refers to first stop in a grouped sequence, occ refers to the occ for the # of combined stops
+bbsu.rt.occ2$scale = scale 
+bbsu.rt.occ2 = bbsu.rt.occ2[, c("stateroute", "scale", "subrouteID", "AOU", "occupancy")]
+return(bbsu.rt.occ2)
+}
