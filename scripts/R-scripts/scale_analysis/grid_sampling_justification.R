@@ -119,13 +119,13 @@ map_threshold = function(grain, thresh) {
   points(ct$longbin[ct$n >= thresh], ct$latbin[ct$n >= thresh], 
          cex = log10(ct$n[ct$n >= thresh]), pch = 16)
   leg_benchmarks = c(2, max(ct$n)/2, max(ct$n))
-  legend("bottomright", legend = c(2, max(ct$n)/2, max(ct$n)), pch = 16,
-         pt.cex = log10(leg_benchmarks))
+  #legend("bottomright", legend = c(2, max(ct$n)/2, max(ct$n)), pch = 16,
+   #      pt.cex = log10(leg_benchmarks))
  
 }
 
 
-map_threshold(8, 66) 
+map_threshold(4, 19) 
 
 #scale 1, sample 5 
 #scale 2, sample 10 
