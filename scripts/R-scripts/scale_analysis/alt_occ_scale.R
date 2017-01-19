@@ -77,6 +77,7 @@ good_rtes2 = good_rtes %>%
 
 
 #########
+####Start here####
 
 good_rtes2 = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/good_rtes2.csv", header = TRUE)
 fifty_allyears = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/fifty_allyears.csv", header = TRUE)
@@ -84,7 +85,6 @@ fifty_allyears = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/f
 require(dplyr)
 bbs50_goodrtes = inner_join(fifty_allyears, good_rtes2, by = "stateroute")
 #ID and subset to routes within top six regions id'd in grid_sampling_justification 
-#assing "reg" label 
 bbs50_goodrtes$grid8ID = paste(floor(bbs50_goodrtes$Lati/8)*8 + 8/2, floor(bbs50_goodrtes$Longi/8)*8 + 8/2, sep = "")
 bbs50_goodrtes$grid8ID = as.character(bbs50_goodrtes$grid8ID)
 
@@ -129,9 +129,8 @@ bbs_allyears = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/bbs
 #(>=3900 &  <=3910) [kingfishers], (>=4160 & <=4210) [nightjars], 7010 [dipper]
 #^best practices 
 bbs_bestAous = bbs_allyears %>% 
-  filter(Aou > 2880 | Aou < 3650 | Aou > 3810 | Aou < 3900 | Aou > 3910 | Aou < 4160 | Aou > 4210 | Aou != 7010) 
-
-#I think this may have already been done on the bbs data in the ecoretriever cache? 
+  filter(Aou > 2880 & !(Aou >= 3650 & Aou <= 3810) & !(Aou >= 3900 & Aou <= 3910) & 
+                 !(Aou >= 4160 & Aou <= 4210) & Aou != 7010)  
 
 numrtes = 1:65 #
 output = data.frame(r = NULL, nu = NULL, AOU = NULL, occ = NULL)
