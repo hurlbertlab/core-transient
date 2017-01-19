@@ -32,80 +32,13 @@ library(rgeos)
 library(dplyr)
 library(fields)
 
-####Bringing in BBS50 stop data and prepping it for sub-route scale partitioning####
-
-bbs50 = ecoretriever::fetch('BBS50')
-bbs50 = bbs50$counts
-bbs50$stateroute = bbs50$statenum*1000 + bbs50$Route
-bbs50$stateroute = as.integer(bbs50$stateroute)
-#^derivation of data from ecoretriever; still too large to host on github so save and pull from BioArk
-
-bbs50 = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/bbs50.csv", header = TRUE)
-
-# Get subset of BBS routes (just routes) btw 1996-2010 surveyed in EVERY year
-
-require(dplyr)
-#from Sara's code
-good_rtes = bbs50 %>% 
-  filter(year >= 2001, year <= 2015) %>% #shifted 15 year window up because missing 1996 data, and 2015 data available
-  select(year, stateroute) %>%
-  unique() %>%    
-  group_by(stateroute) %>%  
-  count(stateroute) %>% 
-  filter(n == 15) #now getting 1005 routes with consecutive data :^)
-#write.csv(good_rtes, "//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/good_rtes.csv", row.names = FALSE) 
-
-#compare # of routes and route numbers themselves to old version of bbs50 stored in BioArk 
-require(dplyr)
-# Subset the full BBS dataset to the routes above but including associated data
-fifty_allyears = bbs50 %>% 
-  filter(year >= 2000, year <= 2014) %>% 
-  filter(stateroute %in% good_rtes$stateroute)
-
-#finally works because needed $ specification, 
-#can probably collapse into one line 
-#write.csv(fifty_allyears, "//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/fifty_allyears.csv", row.names = FALSE)
-
-#wrote to file just in case 
-
-# merge lat longs from routes file to the list of "good" routes (2000-2014 present all years)
-require(dplyr)
-good_rtes2 = good_rtes %>% 
-  left_join(routes, good_rtes, by = "stateroute") %>%
-  dplyr::select(stateroute, Lati, Longi)
-#write.csv(good_rtes2, "//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/good_rtes2.csv", row.names = FALSE)
-
-
 #########
-####Start here####
-
-good_rtes2 = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/good_rtes2.csv", header = TRUE)
-fifty_allyears = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/fifty_allyears.csv", header = TRUE)
-
-require(dplyr)
-bbs50_goodrtes = inner_join(fifty_allyears, good_rtes2, by = "stateroute")
-#ID and subset to routes within top six regions id'd in grid_sampling_justification 
-bbs50_goodrtes$grid8ID = paste(floor(bbs50_goodrtes$Lati/8)*8 + 8/2, floor(bbs50_goodrtes$Longi/8)*8 + 8/2, sep = "")
-bbs50_goodrtes$grid8ID = as.character(bbs50_goodrtes$grid8ID)
-
-
-#bring in top 6 grids for max scale (8 degree) from grid_sampling_justification.R script, 66 rte cutoff 
-top6_grid8 = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/top6_grid8.csv", header = TRUE)
-
-
-#filter the 50 stop data to just those routes present within those 6 grid cell regions of interest 
-fifty_top6 = bbs50_goodrtes %>% 
-  filter(grid8ID %in% top6_grid8$x) %>%
-  dplyr::select(7:62)#about halves the bbs50_goodrtes set of usable routes, and no redundant columns
-#write.csv(fifty_top6, "//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/fifty_top6.csv", row.names = FALSE)
-
-
-#######
-
-fifty_top6 = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/fifty_top6.csv", header = TRUE)
-
 #----Write for_loop to calculate distances between every BBS site combination to find focal and associated routes that correspond best----
 #store minimum value for each iteration of combos in output table
+#does any of this use any of the fifty_top6 data? Have we moved on from that?
+
+
+good_rtes2 = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/good_rtes2.csv", header = TRUE) 
 
 
 require(fields)
@@ -122,8 +55,9 @@ dist.df = data.frame(rte1 = rep(good_rtes2$stateroute, each = nrow(good_rtes2)),
 dist.df2 = filter(dist.df, rte1 != rte2)
 
 uniqrtes = unique(dist.df2$rte1)
-####Aggregating loop#### #don't need a rep loop right?
+####Aggregating loop for above-route scales#### 
 
+#bring in NON-50 stop data 
 bbs_allyears = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/bbs_allyears.csv", header = TRUE)
 #exclude AOU species codes <=2880 [waterbirds, shorebirds, etc], (>=3650 & <=3810) [owls],
 #(>=3900 &  <=3910) [kingfishers], (>=4160 & <=4210) [nightjars], 7010 [dipper]
