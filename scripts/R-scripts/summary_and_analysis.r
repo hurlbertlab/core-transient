@@ -8,7 +8,6 @@
 setwd("C:/git/core-transient")
 
 library(lme4)
-library(dplyr)
 library(ggplot2)
 library(tidyr)
 library(maps)
@@ -17,6 +16,8 @@ library(RColorBrewer)
 library(sp)
 library(rgdal)
 library(raster)
+library(dplyr)
+
 
 source('scripts/R-scripts/core-transient_functions.R')
 
