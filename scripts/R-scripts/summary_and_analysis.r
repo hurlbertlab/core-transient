@@ -414,8 +414,11 @@ dev.off()
 
 ####### MODELS ######
 latlongs = read.csv("data/latlongs/latlongs.csv", header =TRUE)
+
+occ_taxa = read.csv("output/tabular_data/occ_taxa.csv",header=TRUE)
+
 # merge multiple lat long file to propOcc to get naming convention correct
-latlong_w_sites = merge(latlongs, summ2[,c("datasetID", "site", "propTrans")], by = c("datasetID", "site"), all.x = TRUE) 
+latlong_w_sites = merge(latlongs, occ_taxa[,c("datasetID", "site", "pctTrans", "meanAbundance")], by = c("datasetID", "site"), all.x = TRUE) 
 
 
 # preformatting for rbind
@@ -506,7 +509,7 @@ lat_scale_elev = data.frame(lat_scale_elev)
 lat_scale_rich = merge(lat_scale_elev, summ2[,c("datasetID", "site", "spRichTrans")], by = c("datasetID", "site"))
 
 # Model
-mod1 = lmer(propTrans ~ (1|taxa) * #CommunitySize * elev.var, data=lat_scale_rich) 
+mod1 = lmer(propTrans ~ (1|taxa) * log10(meanAbundance) * elev.var, data=lat_scale_rich) 
 
 
 

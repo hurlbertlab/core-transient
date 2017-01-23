@@ -158,9 +158,9 @@ allpropOcc = data.frame(allpropOcc)
 # Summary statistics by datasetID/site, i.e. mean occupancy, % transient species (<=1/3)
 summaries_taxa = merge(allsummaries, dataformattingtable[,c("dataset_ID","taxa","Raw_spatial_grain", "Raw_spatial_grain_unit")], by.x = 'datasetID', by.y = "dataset_ID", all.x=TRUE)
 
-write.csv(summaries_taxa, "output/summaries_grains_w_taxa.csv", row.names=FALSE)
+#write.csv(summaries_taxa, "output/summaries_grains_w_taxa.csv", row.names=FALSE)
 
-summaries_taxa = read.csv("output/summaries_grains_w_taxa.csv", header = TRUE) # read in file if not running whole code
+#summaries_taxa = read.csv("output/summaries_grains_w_taxa.csv", header = TRUE) # read in file if not running whole code
 
 # merge in conversion table 
 conversion_table = read.csv("output/conversion_table.csv", header =TRUE)
