@@ -65,7 +65,7 @@ write.csv(summaries, 'output/tabular_data/core-transient_summary.csv',
 # create the 'core-transient_summary.csv' file from scratch for all
 # datasets with formatted data.
 
-summ = addNewSummariesFun(threshold, reps, write = TRUE)
+# summ = addNewSummariesFun(threshold, reps, write = TRUE)
 
 
 #####################lump reptile and ampibian into herptile, get rid of invert if possible - other category?, do a table of communities
@@ -423,20 +423,16 @@ latlong_w_sites = latlong_w_sites %>%
   dplyr::select(Lat, Lon, datasetID,taxa, site, propTrans) 
 
 # aggregate to single lat long avg value  
-multi_grain_lats = latlong_w_sites %>%
+multi_grain_latlongs = latlong_w_sites %>%
   dplyr::group_by(datasetID) %>% 
-  dplyr::summarise(avg = mean(Lat))
+  dplyr::summarise(Lat = mean(Lat), Lon = mean(Lon))
 
-multi_grain_longs = latlong_w_sites %>%
-  dplyr::group_by(datasetID) %>%
-  dplyr::summarise(avg = mean(Lon))
-    
-multi_grain_latlongs = cbind(multi_grain_lats, multi_grain_longs)
-multi_grain_latlongs[3] <- NULL 
-names(multi_grain_latlongs) = c("datasetID", "Lat", "Lon")
-multi_grain_latlongs$taxa = c("Bird", "Invertebrate", "Fish","Bird", "Plant", "Invertebrate")
+# Merge in from dataset table
+#multi_grain_latlongs$taxa = c("Bird", "Invertebrate", "Fish","Bird", "Plant", "Invertebrate")
 multi_grain_latlongs$site = "maxgrain"
-multi_grain_latlongs$propTrans = NA
+
+# Merge in from summary output
+#multi_grain_latlongs$propTrans = NA
 
 # rbind multiple grain lat longs
 latlongs_mult = rbind(latlong_w_sites, multi_grain_latlongs)
@@ -510,7 +506,7 @@ lat_scale_elev = data.frame(lat_scale_elev)
 lat_scale_rich = merge(lat_scale_elev, summ2[,c("datasetID", "site", "spRichTrans")], by = c("datasetID", "site"))
 
 # Model
-mod1 = lmer(propTrans ~ (1|taxa) * spRichTrans * elev.mean, data=lat_scale_rich) 
+mod1 = lmer(propTrans ~ (1|taxa) * #CommunitySize * elev.var, data=lat_scale_rich) 
 
 
 

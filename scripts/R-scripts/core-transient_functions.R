@@ -758,7 +758,7 @@ summaryStatsFun = function(datasetID, threshold, reps){
 # ---- MAKE SUMMARY STATS OF ANY NEW PROPOCC FILES ----
 #======================================================================================================*
 require(MASS)
-require(plyr)
+#require(plyr)
 
 addNewSummariesFun = function(threshold, reps, write = FALSE, allNew = FALSE){
   if (allNew == FALSE & 
