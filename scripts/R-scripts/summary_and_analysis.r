@@ -500,7 +500,8 @@ elev.mean = raster::extract(elev, circs.sp, fun = mean, na.rm=T)
 elev.var = raster::extract(elev, circs.sp, fun = var, na.rm=T)
 
 env_elev = data.frame(dID = names(circs.sp), elev.point = elev.point, elev.mean = elev.mean, elev.var = elev.var)
-
+# write.csv(env_elev, "env_elev.csv")
+# read.csv("env_elev.csv", header = TRUE)
 
 lat_scale_elev = merge(routes.laea, env_elev, by.x = "unique", by.y = "dID")
 lat_scale_elev = data.frame(lat_scale_elev)
