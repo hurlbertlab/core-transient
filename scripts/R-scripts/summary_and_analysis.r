@@ -415,7 +415,7 @@ dev.off()
 ####### MODELS ######
 latlongs = read.csv("data/latlongs/latlongs.csv", header =TRUE)
 
-occ_taxa = read.csv("output/tabular_data/occ_taxa.csv",header=TRUE)
+occ_taxa = read.csv("occ_taxa.csv",header=TRUE)
 
 # merge multiple lat long file to propOcc to get naming convention correct
 latlong_w_sites = merge(latlongs, occ_taxa[,c("datasetID", "site", "pctTrans", "meanAbundance")], by = c("datasetID", "site"), all.x = TRUE) 
