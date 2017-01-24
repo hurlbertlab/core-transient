@@ -418,13 +418,11 @@ latlongs = read.csv("data/latlongs/latlongs.csv", header =TRUE)
 occ_taxa = read.csv("occ_taxa.csv",header=TRUE)
 
 # merge multiple lat long file to propOcc to get naming convention correct
-latlong_w_sites = merge(latlongs, occ_taxa[,c("datasetID", "site", "pctTrans", "meanAbundance")], by = c("datasetID", "site"), all.x = TRUE) 
+latlong_w_sites = merge(latlongs, summ2[,c("datasetID", "site", "propTrans")], by = c("datasetID", "site"), all.x = TRUE) 
 
 
-# preformatting for rbind
-latlong_w_sites = latlong_w_sites %>% 
-  dplyr::select(Lat, Lon, datasetID,taxa, site, propTrans) 
 
+### DO WE NEED THIS?
 # aggregate to single lat long avg value  
 multi_grain_latlongs = latlong_w_sites %>%
   dplyr::group_by(datasetID) %>% 
@@ -440,6 +438,11 @@ multi_grain_latlongs$site = "maxgrain"
 # rbind multiple grain lat longs
 latlongs_mult = rbind(latlong_w_sites, multi_grain_latlongs)
 
+
+
+
+
+
 # reformat non multi grain lat longs
 dft = subset(dataformattingtable, countFormat == "count" & format_flag == 1) # only want count data for model
 dft = subset(dft, !dataset_ID %in% c(1,247,248,269,289,315))
@@ -447,6 +450,7 @@ dft = dft[,c("CentralLatitude", "CentralLongitude","dataset_ID", "taxa")]
 names(dft) <- c("Lat","Lon", "datasetID", "taxa")
 dft2 = merge(dft, summ2[, c("datasetID","site","propTrans")], by = "datasetID")
 
+dft3 = merge(dft2, occ_taxa[, c("datasetID","site","meanAbundance")], by = "datasetID")
   
 # combining all lat longs, including scaled up data
 all_latlongs = rbind(dft2, latlongs_mult)
