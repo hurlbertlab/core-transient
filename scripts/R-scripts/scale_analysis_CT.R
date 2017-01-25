@@ -51,7 +51,7 @@ for(datasetID in datasetIDs){
   spatialgrains = dataDescription$Raw_siteUnit
   spatialgrains = as.character(spatialgrains)
   spatialgrains = unlist(strsplit(spatialgrains, '_'))
- # spatialgrains = spatialgrains[length(spatialgrains):1] #reversing order to be from small to large not working
+  spatialgrains = spatialgrains[length(spatialgrains):1] #reversing order to be from small to large not working
   #spatialgrains = c(spatialgrains, maxGrain)
   spatialgrain = c()
   grainLevel = 1

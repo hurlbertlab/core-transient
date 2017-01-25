@@ -420,41 +420,16 @@ occ_taxa = read.csv("occ_taxa.csv",header=TRUE)
 # merge multiple lat long file to propOcc to get naming convention correct
 latlong_w_sites = merge(latlongs, summ2[,c("datasetID", "site", "propTrans")], by = c("datasetID", "site"), all.x = TRUE) 
 
-
-
-### DO WE NEED THIS?
-# aggregate to single lat long avg value  
-multi_grain_latlongs = latlong_w_sites %>%
-  dplyr::group_by(datasetID) %>% 
-  dplyr::summarise(Lat = mean(Lat), Lon = mean(Lon))
-
-# Merge in from dataset table
-#multi_grain_latlongs$taxa = c("Bird", "Invertebrate", "Fish","Bird", "Plant", "Invertebrate")
-multi_grain_latlongs$site = "maxgrain"
-
-# Merge in from summary output
-#multi_grain_latlongs$propTrans = NA
-
-# rbind multiple grain lat longs
-latlongs_mult = rbind(latlong_w_sites, multi_grain_latlongs)
-
-
-
-
-
-
 # reformat non multi grain lat longs
 dft = subset(dataformattingtable, countFormat == "count" & format_flag == 1) # only want count data for model
 dft = subset(dft, !dataset_ID %in% c(1,247,248,269,289,315))
 dft = dft[,c("CentralLatitude", "CentralLongitude","dataset_ID", "taxa")]
 names(dft) <- c("Lat","Lon", "datasetID", "taxa")
 dft2 = merge(dft, summ2[, c("datasetID","site","propTrans")], by = "datasetID")
-
-dft3 = merge(dft2, occ_taxa[, c("datasetID","site","meanAbundance")], by = "datasetID")
   
 # combining all lat longs, including scaled up data
-all_latlongs = rbind(dft2, latlongs_mult)
-# all_latlongs = na.omit(all_latlongs)
+all_latlongs = rbind(dft2, latlong_w_sites)
+all_latlongs = na.omit(all_latlongs)
 
 
 # Makes routes into a spatialPointsDataframe
@@ -505,15 +480,15 @@ elev.var = raster::extract(elev, circs.sp, fun = var, na.rm=T)
 
 env_elev = data.frame(dID = names(circs.sp), elev.point = elev.point, elev.mean = elev.mean, elev.var = elev.var)
 # write.csv(env_elev, "env_elev.csv")
-# read.csv("env_elev.csv", header = TRUE)
+# env_elev = read.csv("env_elev.csv", header = TRUE)
 
 lat_scale_elev = merge(routes.laea, env_elev, by.x = "unique", by.y = "dID")
 lat_scale_elev = data.frame(lat_scale_elev)
 
-lat_scale_rich = merge(lat_scale_elev, summ2[,c("datasetID", "site", "spRichTrans")], by = c("datasetID", "site"))
+lat_scale_rich = merge(lat_scale_elev, summ2[,c("datasetID", "site", "spRichTrans", "meanAbundance")], by = c("datasetID", "site"))
 
 # Model
-mod1 = lmer(propTrans ~ (1|taxa) * log10(meanAbundance) * elev.var, data=lat_scale_rich) 
+mod1 = lmer(propTrans ~ (1|taxa) * log10(meanAbundance) * log10(elev.var), data=lat_scale_rich) 
 
 
 
