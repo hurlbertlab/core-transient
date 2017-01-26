@@ -156,7 +156,7 @@ occ_counts = function(countData, countColumns, scale) {
  
     
       
-#'need to fix nested dataframe output     
+#'need to fix nested dataframe output, why gen as list?     
   return(list(occ = occ.summ, abun = abun))
 }
 
@@ -179,37 +179,21 @@ for (scale in scales) {
 
 bbs_scalesorted<-output
 
+#currently output is two dataframes, abun and occ, saved as sep lists within the overall output 
+#breaking apart: 
+occ_df = data.frame(matrix(unlist(bbs_scalesorted)))   #doesn't fix problem 
+#but that messes up the structure even more 
+
+#need to unwind in tidyr and get Sara's feedback 
 
 
 
 
 
-#'#'#'#'Workspace/junk#'#'#'#'
-
-#'calc mean occ, abundance, % core and % trans across stateroute, AOU, and subroute ID cluster for each scale 
-
-test_meanocc = bbs_scalesorted %>% 
-  group_by(scale, stateroute, subrouteID) %>% #'occ across all AOU's, for each unique combo of rte, scale(segment length), and starting segment
-  summarize(mean = mean(occupancy)) %>% 
-  group_by(scale, stateroute) %>%
-  summarize(mean_occ = mean(mean)) 
-
-
-test_meanabun = bbs_scalesorted %>% 
-  group_by(scale, stateroute, subrouteID) %>%
-  summarize(abun = mean(abun)) %>%
-  group_by(scale, stateroute) %>%
-  summarize(mean_ab = mean(abun)) 
-
-
-pctCore = sum(test_meanocc$mean > .67)/nrow(test_meanocc) #'fraction of species that are core
-pctTran = sum(test_meanocc$mean <= .33)/nrow(test_meanocc)
-
-#'should do ^ for each scale
 
 
 
-#'how to accumulate "reps" or "numrtes" equiv in below-rte scale accordingly? 
+
 
 #'#'#'#'finished above route aggregation of routes#'#'#'#'
 bbs_focal_occs = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/bbs_focal_occs.csv", header = TRUE)
