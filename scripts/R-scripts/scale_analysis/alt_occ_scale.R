@@ -148,7 +148,7 @@ occ_counts = function(countData, countColumns, scale) {
               pctCore = sum(occ > 2/3)/length(occ),
               pctTran = sum(occ <= 1/3)/length(occ))
   
-  abun = bbssub %>% 
+  abun.summ = bbssub %>% 
     group_by(stateroute, year) %>%  
     summarize(totalN = sum(groupCount)) %>%
     group_by(stateroute) %>%
@@ -157,7 +157,7 @@ occ_counts = function(countData, countColumns, scale) {
     
       
 #'need to fix nested dataframe output, why gen as list?     
-  return(list(occ = occ.summ, abun = abun))
+  return(list(occ = occ.summ, abun = abun.summ))
 }
 
 
@@ -172,22 +172,16 @@ for (scale in scales) {
   for (g in 1:numGroups) {
     groupedCols = paste("Stop", ((g-1)*scale + 1):(g*scale), sep = "")
     temp = occ_counts(fifty_bestAous, groupedCols, scale)
-    output = rbind(output, temp) #'again, need to fix nested dataframe output structure
+    output = data.frame(rbind(output, temp)) #'rbind error: variables don't have same length?
   }
   
 }
 
 bbs_scalesorted<-output
-
+bbs_occ = data.frame(bbs_scalesorted$occ)
+bbs_abun = data.frame(bbs_scalesorted$abun) 
 #currently output is two dataframes, abun and occ, saved as sep lists within the overall output 
 #breaking apart: 
-occ_df = data.frame(matrix(unlist(bbs_scalesorted)))   #doesn't fix problem 
-#but that messes up the structure even more 
-
-#need to unwind in tidyr and get Sara's feedback 
-
-
-
 
 
 
