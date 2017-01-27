@@ -146,13 +146,16 @@ occ_counts = function(countData, countColumns, scale) {
     group_by(stateroute) %>%
     summarize(meanOcc = mean(occ), 
               pctCore = sum(occ > 2/3)/length(occ),
-              pctTran = sum(occ <= 1/3)/length(occ))
+              pctTran = sum(occ <= 1/3)/length(occ)) %>%
+    mutate(scale = paste(scale, g, sep = "-"))
   
   abun.summ = bbssub %>% 
     group_by(stateroute, year) %>%  
     summarize(totalN = sum(groupCount)) %>%
     group_by(stateroute) %>%
-    summarize(aveN = mean(totalN))
+    summarize(aveN = mean(totalN)) %>%
+    mutate(scale = paste(scale, g, sep = "-"))
+              
  
     
       
@@ -172,19 +175,12 @@ for (scale in scales) {
   for (g in 1:numGroups) {
     groupedCols = paste("Stop", ((g-1)*scale + 1):(g*scale), sep = "")
     temp = occ_counts(fifty_bestAous, groupedCols, scale)
-    output = data.frame(rbind(output, temp)) #'rbind error: variables don't have same length?
+    output = rbind(output, temp) #'rbind error: variables don't have same length? 
   }
-  
 }
 
-bbs_scalesorted<-output
-bbs_occ = data.frame(bbs_scalesorted$occ)
-bbs_abun = data.frame(bbs_scalesorted$abun) 
-#currently output is two dataframes, abun and occ, saved as sep lists within the overall output 
-#breaking apart: 
-
-
-
+bbs_scalesorted<-data.frame(output)
+#temps all named the same but can tidy and sep out based on scales
 
 
 
