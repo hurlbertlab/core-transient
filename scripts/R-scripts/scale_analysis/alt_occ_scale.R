@@ -181,7 +181,19 @@ for (scale in scales) {
 
 bbs_scalesorted<-data.frame(output)
 #temps all named the same but can tidy and sep out based on scales
+#have correct abun and occ values but str is strange!! 
 
+bbs_occ = as.data.frame(bbs_scalesorted$occ) #replace empty row spaces with NA's? 
+bbs_abun = as.data.frame(bbs_scalesorted$abun) # works great
+#need to gather across temps still using tidyr 
+
+
+
+
+
+
+
+#so do want to combine all of the lists together and THEN pull back apart 
 
 
 
