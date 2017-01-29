@@ -31,6 +31,7 @@ library(maptools)
 library(rgeos)
 library(dplyr)
 library(fields)
+library(tidyr)
 
 #'#'#'#'#'#'#'#'#'
 #'----Write for_loop to calculate distances between every BBS site combination to find focal and associated routes that correspond best----
@@ -183,13 +184,39 @@ bbs_scalesorted<-data.frame(output)
 #temps all named the same but can tidy and sep out based on scales
 #have correct abun and occ values but str is strange!! 
 
-bbs_occ = as.data.frame(bbs_scalesorted$occ) #replace empty row spaces with NA's? 
-bbs_abun = as.data.frame(bbs_scalesorted$abun) # works great
-#need to gather across temps still using tidyr 
+abun  = as.matrix(bbs_scalesorted$abun)
+occ = as.matrix(bbs_scalesorted$occ) #successful 
+
+#taking out "temp" subdivisions/rows and bringing data together across rows, returning to matrix form 
+test = flatten(occ)
+test2 = as.matrix(test)
+
+
+#need to recode empty row pieces in matrix to NA before converting to df  
+test2[1:953 == " "] <- NA  
+#will exporting as csv and importing back in as df auto complete rows with missing info to "NA"?
+
+#coverting to df 
+
+
+#running dplyr to gather columns neatly 
+  
+  
+
+test2 = test %>%
+  gather(stateroute, meanOcc) 
 
 
 
 
+
+
+str(test)
+
+
+
+
+#First gather all question columns, use extract() to separate into question and loop_number, then spread() question back into the columns.
 
 
 
