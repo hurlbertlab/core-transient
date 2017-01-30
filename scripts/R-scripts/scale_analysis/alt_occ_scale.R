@@ -178,19 +178,23 @@ for (scale in scales) {
 
 bbs_below<-data.frame(output)
 
-#output correct; checked vals and stepped thru function at rtes between 50000 & 60000 @ multi scales
 
-#scale = numrtes in above-scale df 
-#write.csv(bbs_below, "//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/bbs_below.csv", row.names = FALSE)
-
-
-#should I avg occ and abun across segments at the same scale? Good question! See notes. 
-
-
-
-
-
-#'#'#'#'finished above route aggregation of routes#'#'#'#'
+#'#'#'#'joining above and below route scales, calc area#'#'#'#'
 bbs_focal_occs = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/bbs_focal_occs.csv", header = TRUE)
-#'^^correct, up-to-date version of ABOVE ROUTE aggregated pairings as of 01/19/2017
+bbs_below = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/bbs_below.csv", header = T)
+
+#adding maxRadius column to bbs_below w/NA's + renaming and rearranging columns accordingly
+bbs_below= bbs_below %>% 
+  mutate(maxRadius = c("NA")) %>%
+  dplyr::rename(focalrte = stateroute) %>%
+  select(focalrte, scale, everything())
+
+bbs_focal_occs = bbs_focal_occs %>% 
+  dplyr::rename(scale = numrtes, aveN = totalAbun)
+bbs_focal_occs$scale = as.factor(bbs_focal_occs$scale)
+
+#creating area columns
+
+
+bbs_allscales = rbind(bbs_below, bbs_focal_occs)
 
