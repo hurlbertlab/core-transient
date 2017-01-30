@@ -180,52 +180,64 @@ for (scale in scales) {
   }
 }
 
-bbs_scalesorted<-data.frame(output)
-
-
+bbs_output<-data.frame(output)
 
 ####output of occ and abun values tidying####
 #temps all named the same but can tidy and sep out based on scales
 #have correct abun and occ values but str is strange!! 
 
-abun  = as.matrix(bbs_scalesorted$abun)
-occ = as.matrix(bbs_scalesorted$occ) #successful 
+abun  = as.matrix(bbs_output$abun)
+occ = as.matrix(bbs_output$occ) #successful 
 
 #taking out "temp" subdivisions/rows and bringing data together across rows, returning to matrix form 
-test = flatten(occ)
-test2 = as.matrix(test) #list of 90, repeats every 5 columns 
-test2 = t(test2)
-
+occ2 = t(as.matrix(flatten(occ)))
 output = c()
-seq_end = c(seq(from = 5, to = 90, by = 5))
+seq_end = c(seq(from = 5, to = 90, by = 5)) 
+m = 4
+#fix hardcoding to softcoding tomorrow, 
+#make forloop generalizeable 
+
 
 for(s in seq_end) {
-  temp = as.data.frame(test2[,(s-4):s])
+  temp = as.data.frame(occ2[,(s-m):s])
   output = rbind(output, temp)
 }
+occ_df = output 
 #occ done 
 
-test_a = flatten(abun)
-test_a2 = as.matrix(test_a) #list of 54, repeats every 3 columns
-test_a2 = t(test_a2)
 
+abun2 = t(as.matrix(flatten(abun)))
 output = c()
 seq_end = c(seq(from = 3, to = 54, by = 3))
+m = 2
 
 for(s in seq_end) {
-  temp = as.data.frame(test_a2[,(s-2):s])
+  temp = as.data.frame(abun2[,(s-m):s])
   output = rbind(output, temp)
 }
 
-#abun done 
+abun_df = output
+#abun done, longer rows than occ_df tho?  
 
-
+####merging abun and occ back together####
 #combine abun and occ back together (even tho calc'd differently, still associated w/spec stateroutes)
 #using unique combo of scale and stateroute 
+bbs_below = full_join(abun_df, occ_df, by = c("stateroute", "scale"))
+
+#scale = numrtes in above-scale df 
+#write.csv(bbs_below, "//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/bbs_below.csv", row.names = FALSE)
+
+
+#should I avg occ and abun across segments at the same scale? 
 
 
 
 
+
+
+#not sure why row # gets bumped up, suspect because residual buffered NA's 
+sub = which(is.na(bbs_below))
+sub2 = bbs_below[sub,]
 
 
 #'#'#'#'finished above route aggregation of routes#'#'#'#'
