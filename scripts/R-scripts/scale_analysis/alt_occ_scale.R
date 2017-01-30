@@ -181,6 +181,10 @@ for (scale in scales) {
 }
 
 bbs_scalesorted<-data.frame(output)
+
+
+
+####output of occ and abun values tidying####
 #temps all named the same but can tidy and sep out based on scales
 #have correct abun and occ values but str is strange!! 
 
@@ -189,38 +193,38 @@ occ = as.matrix(bbs_scalesorted$occ) #successful
 
 #taking out "temp" subdivisions/rows and bringing data together across rows, returning to matrix form 
 test = flatten(occ)
-test2 = as.matrix(test)
+test2 = as.matrix(test) #list of 90, repeats every 5 columns 
+test2 = t(test2)
+
+output = c()
+seq_end = c(seq(from = 5, to = 90, by = 5))
+
+for(s in seq_end) {
+  temp = as.data.frame(test2[,(s-4):s])
+  output = rbind(output, temp)
+}
+#occ done 
+
+test_a = flatten(abun)
+test_a2 = as.matrix(test_a) #list of 54, repeats every 3 columns
+test_a2 = t(test_a2)
+
+output = c()
+seq_end = c(seq(from = 3, to = 54, by = 3))
+
+for(s in seq_end) {
+  temp = as.data.frame(test_a2[,(s-2):s])
+  output = rbind(output, temp)
+}
+
+#abun done 
 
 
-#need to recode empty row pieces in matrix to NA before converting to df  
-test2[1:953 == " "] <- NA  
-#will exporting as csv and importing back in as df auto complete rows with missing info to "NA"?
-
-#coverting to df 
-
-
-#running dplyr to gather columns neatly 
-  
-  
-
-test2 = test %>%
-  gather(stateroute, meanOcc) 
+#combine abun and occ back together (even tho calc'd differently, still associated w/spec stateroutes)
+#using unique combo of scale and stateroute 
 
 
 
-
-
-
-str(test)
-
-
-
-
-#First gather all question columns, use extract() to separate into question and loop_number, then spread() question back into the columns.
-
-
-
-#so do want to combine all of the lists together and THEN pull back apart 
 
 
 
