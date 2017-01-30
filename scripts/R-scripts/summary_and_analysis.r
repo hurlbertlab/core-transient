@@ -89,17 +89,13 @@ dsetsByTaxa = table(dsets$taxa)
 sitesBySystem = table(summ2$system)
 sitesByTaxa = table(summ2$taxa)
 
-### not working - need summary fig of all time/richness by taxa
-dataformattingtable %>% dplyr::select(format_flag = 1) %>% group_by(dataformattingtable$taxa) %>%
-  summarize(m = sum(as.numeric(dataformattingtable$Formatted_nSpecies)))
-
 colors7 = c(rgb(29/255, 106/255, 155/255), #bird
             colors()[552], # plankton
             colors()[144], # invert
-            colors()[612], # plant
+            colors()[139], # plant
             colors()[551], #mammal
-            rgb(0, 54/255, 117/255), #benthos
-            colors()[70]) #fish
+            colors()[595], #benthos
+            colors()[637]) #fish
 
             
 
@@ -202,13 +198,13 @@ dsetsByTaxa = table(dsets$taxa)
 sitesBySystem = table(summ2$system)
 sitesByTaxa = table(summ2$taxa)
 
-colorsrank = c(rgb(0, 54/255, 117/255), #bird
+colorsrank = c(rgb(29/255, 106/255, 155/255), #bird
                colors()[551],#mammal
                colors()[552], # plankton
-               rgb(29/255, 106/255, 155/255), # benthos
+               colors()[595], # benthos
                colors()[144], # arth
-               colors()[612],# plant
-               colors()[600]) #fish
+               colors()[139],# plant
+               colors()[637]) #fish
 
 
 symbols7 = c(16, 18, 167, 15, 17, 1, 3) 
