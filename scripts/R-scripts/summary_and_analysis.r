@@ -90,9 +90,8 @@ sitesBySystem = table(summ2$system)
 sitesByTaxa = table(summ2$taxa)
 
 ### not working - need summary fig of all time/richness by taxa
-dataformattingtable = data.frame(dataformattingtable)
 dataformattingtable %>% dplyr::select(format_flag = 1) %>% group_by(dataformattingtable$taxa) %>%
-  summarize(m = sum(dataformattingtable$Formatted_nSpecies))
+  summarize(m = sum(as.numeric(dataformattingtable$Formatted_nSpecies)))
 
 colors7 = c(rgb(29/255, 106/255, 155/255), #bird
             colors()[552], # plankton
