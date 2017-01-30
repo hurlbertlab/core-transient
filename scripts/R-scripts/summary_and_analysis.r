@@ -505,11 +505,11 @@ elev.point = raster::extract(elev, routes.laea)
 elev.mean = raster::extract(elev, circs.sp, fun = mean, na.rm=T)
 elev.var = raster::extract(elev, circs.sp, fun = var, na.rm=T)
 
-env_elev = data.frame(dID = names(circs.sp), elev.point = elev.point, elev.mean = elev.mean, elev.var = elev.var)
-# write.csv(env_elev, "env_elev.csv")
+env_elev = data.frame(datasetID = names(circs.sp), site = all_latlongs$site, elev.point = elev.point, elev.mean = elev.mean, elev.var = elev.var)
+# write.csv(env_elev, "env_elev.csv", row.names = F)
 # env_elev = read.csv("env_elev.csv", header = TRUE)
 
-lat_scale_elev = merge(routes.laea, env_elev, by.x = "unique", by.y = "dID")
+lat_scale_elev = merge(routes.laea, env_elev, by = c("datasetID", "site"))
 lat_scale_elev = data.frame(lat_scale_elev)
 
 lat_scale_rich = merge(lat_scale_elev, summ2[,c("datasetID", "site", "spRichTrans", "meanAbundance")], by = c("datasetID", "site"))
