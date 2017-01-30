@@ -140,26 +140,24 @@ occ_counts = function(countData, countColumns, scale) {
   bbssub$groupCount = rowSums(bbssub[, countColumns])
   bbsu = unique(bbssub[bbssub[, "groupCount"]!= 0, c("stateroute", "year", "AOU")]) #'because this gets rid of 0's...
   
-  occ.df = bbsu %>%
-    count(stateroute, AOU) %>%
-    mutate(occ = n/15, scale = scale, subrouteID = countColumns[1])
-    
-  occ.summ = occ.df %>%
-    group_by(stateroute) %>%
-    summarize(meanOcc = mean(occ), 
-              pctCore = sum(occ > 2/3)/length(occ),
-              pctTran = sum(occ <= 1/3)/length(occ)) %>%
-    mutate(scale = paste(scale, g, sep = "-"))
-  
   abun.summ = bbssub %>% 
     group_by(stateroute, year) %>%  
     summarize(totalN = sum(groupCount)) %>%
     group_by(stateroute) %>%
-    summarize(aveN = mean(totalN)) %>%
-    mutate(scale = paste(scale, g, sep = "-"))
-      
+    summarize(aveN = mean(totalN))
+    
+  occ.summ = bbsu %>%
+    count(stateroute, AOU) %>%
+    mutate(occ = n/15, scale = scale, subrouteID = countColumns[1]) %>%
+    group_by(stateroute) %>%
+    summarize(meanOcc = mean(occ), 
+              pctCore = sum(occ > 2/3)/length(occ),
+              pctTran = sum(occ <= 1/3)/length(occ)) %>%
+    mutate(scale = paste(scale, g, sep = "-")) %>%
+    left_join(abun.summ, by = 'stateroute')
+  
 #'need to fix nested dataframe output, why gen as list?     
-  return(list(occ = occ.summ, abun = abun.summ))
+  return(occ.summ)
 }
 
 
@@ -174,7 +172,7 @@ for (scale in scales) {
   for (g in 1:numGroups) {
     groupedCols = paste("Stop", ((g-1)*scale + 1):(g*scale), sep = "")
     temp = occ_counts(fifty_bestAous, groupedCols, scale)
-    output = rbind(output, temp) #'rbind error: variables don't have same length? 
+    output = rbind(output, temp) 
   }
 }
 
