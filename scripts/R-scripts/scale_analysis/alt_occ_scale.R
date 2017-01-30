@@ -178,6 +178,11 @@ for (scale in scales) {
 
 bbs_below<-data.frame(output)
 
+#testing "by hand" to make sure occs line up appropriately thru entirety of df
+test = bbs_below %>%
+  filter(stateroute > 50000 & stateroute < 60000) %>%
+  filter(scale == "5-6")
+#checking in intervals in middle 
 
 
 #scale = numrtes in above-scale df 
