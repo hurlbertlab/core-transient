@@ -461,7 +461,7 @@ bbs_be_lat$propTrans = bbs_be_lat$pctTran
 bbs_be_lat = bbs_be_lat[,c("datasetID", "Lat","Lon", "taxa","site", "propTrans")]
 
 # rbind new bbs data to lat longs
-all_latlongs =  rbind(bbs_be_lat, all_latlongs)
+all_latlongs =  rbind(bbs_be_lat, all_latlongs.5)
 all_latlongs = na.omit(all_latlongs)
 
 # Makes routes into a spatialPointsDataframe
@@ -489,7 +489,8 @@ make.cir = function(p,r){
 }
 
 routes.laea@data$dId_site = paste(routes.laea@data$datasetID, routes.laea@data$site, sep = "_")
-routes.laea$unique = 1:32591
+routes.laea$unique = 1:16549
+
 
 #Draw circles around all routes 
 circs = sapply(1:nrow(routes.laea@data), function(x){
