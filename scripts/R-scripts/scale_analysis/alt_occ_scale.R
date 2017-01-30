@@ -183,18 +183,25 @@ bbs_below<-data.frame(output)
 bbs_focal_occs = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/bbs_focal_occs.csv", header = TRUE)
 bbs_below = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/bbs_below.csv", header = T)
 
-#adding maxRadius column to bbs_below w/NA's + renaming and rearranging columns accordingly
+
+
+#adding maxRadius column to bbs_below w/NA's + renaming and rearranging columns accordingly, creating area cols
 bbs_below= bbs_below %>% 
   mutate(maxRadius = c("NA")) %>%
   dplyr::rename(focalrte = stateroute) %>%
-  select(focalrte, scale, everything())
+  select(focalrte, scale, everything()) %>%
+  mutate(area = (as.integer(lapply(strsplit(as.character(bbs_below$scale), 
+                                           split="-"), "[", 1)))*(pi*(0.4^2))) 
+#modify and split scale so that it's just the # of stops in each seg; not the seg order # preceded by a "-"
+
 
 bbs_focal_occs = bbs_focal_occs %>% 
-  dplyr::rename(scale = numrtes, aveN = totalAbun)
+  dplyr::rename(scale = numrtes, aveN = totalAbun) %>%
+  mutate(area = scale*50*(pi*(0.4^2)))
 bbs_focal_occs$scale = as.factor(bbs_focal_occs$scale)
-
-#creating area columns
+#area in km by # of routes * 50 stops in each rte * area of a stop (for above-route scale later)
 
 
 bbs_allscales = rbind(bbs_below, bbs_focal_occs)
-
+#write.csv(bbs_allscales, "C:/git/core-transient/data/bbs_allscales.csv", row.names = FALSE)
+#can redirect later ^
