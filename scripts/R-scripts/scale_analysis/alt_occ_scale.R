@@ -32,6 +32,7 @@ library(rgeos)
 library(dplyr)
 library(fields)
 library(tidyr)
+library(purrr)
 
 #'#'#'#'#'#'#'#'#'
 #'----Write for_loop to calculate distances between every BBS site combination to find focal and associated routes that correspond best----
@@ -156,9 +157,6 @@ occ_counts = function(countData, countColumns, scale) {
     group_by(stateroute) %>%
     summarize(aveN = mean(totalN)) %>%
     mutate(scale = paste(scale, g, sep = "-"))
-              
- 
-    
       
 #'need to fix nested dataframe output, why gen as list?     
   return(list(occ = occ.summ, abun = abun.summ))
@@ -181,6 +179,7 @@ for (scale in scales) {
 }
 
 bbs_output<-data.frame(output)
+
 
 ####output of occ and abun values tidying####
 #temps all named the same but can tidy and sep out based on scales
@@ -229,6 +228,8 @@ bbs_below = full_join(abun_df, occ_df, by = c("stateroute", "scale"))
 
 
 #should I avg occ and abun across segments at the same scale? 
+
+
 
 
 
