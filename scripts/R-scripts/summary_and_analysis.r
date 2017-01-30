@@ -89,6 +89,11 @@ dsetsByTaxa = table(dsets$taxa)
 sitesBySystem = table(summ2$system)
 sitesByTaxa = table(summ2$taxa)
 
+### not working - need summary fig of all time/richness by taxa
+dataformattingtable = data.frame(dataformattingtable)
+dataformattingtable %>% dplyr::select(format_flag = 1) %>% group_by(dataformattingtable$taxa) %>%
+  summarize(m = sum(dataformattingtable$Formatted_nSpecies))
+
 colors7 = c(rgb(29/255, 106/255, 155/255), #bird
             colors()[552], # plankton
             colors()[144], # invert
@@ -133,6 +138,33 @@ axis(2, 0:3)
 mtext(expression(log[10] ~ " # Assemblages"), 2, cex = 1.5, las = 0, line = 2.5)
 dev.off()
 
+
+
+
+
+### not working - need summary fig of all time/richness by taxa
+pdf('output/plots/data_summary_hists2.pdf', height = 8, width = 10)
+par(mfrow = c(2, 2), mar = c(6,6,1,1), cex = 1.25, oma = c(0,0,0,0), las = 1,
+    cex.lab = 1)
+
+
+b1= barplot(dsetsByTaxa[taxorder], xaxt = "n", axisnames = F,
+            col = as.character(taxcolors$color[match(taxorder, taxcolors$taxa)])) 
+mtext("# Datasets", 2, cex = 1, las = 0, line = 2.5)
+barplot(log10(sitesBySystem), col = c('skyblue', 'navy', 'burlywood'), cex.names = 1, 
+        yaxt = "n", ylim = c(0,3)) 
+axis(2, 0:3)
+mtext(expression(log[10] ~ " # Assemblages"), 2, cex = 1.5, las = 0, line = 2.5)
+bar1 = barplot(dsetsByTaxa[taxorder], xaxt = "n", axisnames = F,
+               col = as.character(taxcolors$color[match(taxorder, taxcolors$taxa)]))
+# text(bar1, par("usr")[3], taxcolors$abbrev, adj = c(1, 1), xpd = TRUE, cex = 1) 
+
+mtext("# Datasets", 2, cex = 1.5, las = 0, line = 2.5)
+bar2 = barplot(log10(sitesByTaxa[taxorder]), axes = F, axisnames = F, ylim = c(0,3),
+               col = as.character(taxcolors$color[match(taxorder, taxcolors$taxa)]))
+axis(2, 0:3)
+mtext(expression(log[10] ~ " # Assemblages"), 2, cex = 1.5, las = 0, line = 2.5)
+dev.off()
 
 #### barplot of mean occ by taxa #####
 numCT = read.csv("output/tabular_data/numCT.csv", header=TRUE)
@@ -490,7 +522,7 @@ lat_scale_rich = merge(lat_scale_elev, summ2[,c("datasetID", "site", "spRichTran
 # Model
 mod1 = lmer(propTrans ~ (1|taxa) * log10(meanAbundance) * log10(elev.var), data=lat_scale_rich) 
 
-
-
-
+# simple linear model based on data in Fig 2b of % transient ~ taxonomic group, just to have a p-value associated with the statement "The proportion of an assemblage made up of transient species varied strongly across taxonomic group."
+transmod = lm(pTrans~taxa, data = CT_long)
+summary(transmod)
 
