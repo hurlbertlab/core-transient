@@ -79,7 +79,22 @@ summ$taxa[summ$taxa == "Reptile"] <- NA
 summ$system[summ$system == "Aquatic"] <- "Freshwater"
 summ$system = factor(summ$system)
 summ = na.omit(summ)
-summ2 = subset(summ, !datasetID %in% c(99, 85, 90, 91, 92, 97, 124))
+summ1 =  subset(summ, !datasetID %in% c(1, 99, 85, 90, 91, 92, 97, 124)) # excluding BBS to include below-scale route info
+summ1.5 = summ1[, c("datasetID","site","system","taxa","propCore", "propTrans", "meanAbundance")]
+# insert below-scale bbs dataset (Gartland Z drive)
+bbs_below = read.csv("Z:/Gartland/BBS scaled/bbs_below.csv", header = TRUE)
+bbs_below$site = paste(bbs_below$stateroute, bbs_below$scale, sep = "-")
+bbs_below$datasetID = 1
+bbs_below$system = "Terrestrial"
+bbs_below$taxa = "Bird"
+bbs_below$propCore = bbs_below$pctCore
+bbs_below$propTrans = bbs_below$pctTran
+bbs_below$meanAbundance = bbs_below$aveN
+bbs_below = bbs_below[, c("datasetID","site","system","taxa","propCore","propTrans","meanAbundance")]
+
+summ2 = rbind(bbs_below,summ1.5)
+
+
 dsets = unique(summ2[, c('datasetID', 'system','taxa')])
 
 taxorder = c('Bird', 'Plant', 'Mammal', 'Fish', 'Invertebrate', 'Benthos', 'Plankton')
@@ -94,7 +109,7 @@ colors7 = c(rgb(29/255, 106/255, 155/255), #bird
             colors()[144], # invert
             colors()[139], # plant
             colors()[551], #mammal
-            colors()[595], #benthos
+            colors()[17], #benthos
             colors()[637]) #fish
 
             
@@ -119,8 +134,8 @@ par(mfrow = c(2, 2), mar = c(6,6,1,1), cex = 1.25, oma = c(0,0,0,0), las = 1,
 b1=barplot(dsetsBySystem, col = c('skyblue', 'navy', 'burlywood')) 
 mtext("# Datasets", 2, cex = 1, las = 0, line = 2.5)
 barplot(log10(sitesBySystem), col = c('skyblue', 'navy', 'burlywood'), cex.names = 1, 
-        yaxt = "n", ylim = c(0,3)) 
-axis(2, 0:3)
+        yaxt = "n", ylim = c(0,4)) 
+axis(2, 0:4)
 mtext(expression(log[10] ~ " # Assemblages"), 2, cex = 1.5, las = 0, line = 2.5)
 bar1 = barplot(dsetsByTaxa[taxorder], xaxt = "n", axisnames = F,
                col = as.character(taxcolors$color[match(taxorder, taxcolors$taxa)]))
@@ -129,42 +144,41 @@ bar1 = barplot(dsetsByTaxa[taxorder], xaxt = "n", axisnames = F,
 mtext("# Datasets", 2, cex = 1.5, las = 0, line = 2.5)
 bar2 = barplot(log10(sitesByTaxa[taxorder]), axes = F, axisnames = F, ylim = c(0,3),
                col = as.character(taxcolors$color[match(taxorder, taxcolors$taxa)]))
-axis(2, 0:3)
+axis(2, 0:4)
 mtext(expression(log[10] ~ " # Assemblages"), 2, cex = 1.5, las = 0, line = 2.5)
 dev.off()
 
 
+### boxplot summary fig of all time/richness by taxa
+pdf('output/plots/numspp_comm.pdf', height = 8, width = 10)
+summ1$taxa <-droplevels(summ1$taxa, exclude = c("","All","Amphibian", "Reptile"))
+summ1.col = merge(summ1, taxcolors, by = "taxa")
+summ1.col$taxa <- factor(summ1.col$taxa,
+                    levels = c('Plankton','Bird','Fish','Plant','Mammal','Benthos','Invertebrate'),ordered = TRUE)
+rankedtaxorder = c('Bird','Mammal','Plankton','Benthos','Invertebrate','Plant','Fish')
 
+bar1 = boxplot(summ1.col$spRichTotal~summ1.col$taxa, xaxt = "n",  col = unique(summ1.col$color))
 
+mtext(expression(" # Species"), 2, cex = 1.5, las = 0, line = 2.5)
+dev.off()
 
-### not working - need summary fig of all time/richness by taxa
-pdf('output/plots/data_summary_hists2.pdf', height = 8, width = 10)
-par(mfrow = c(2, 2), mar = c(6,6,1,1), cex = 1.25, oma = c(0,0,0,0), las = 1,
-    cex.lab = 1)
+pdf('output/plots/numcomm.pdf', height = 8, width = 10)
+summ1$taxa <-droplevels(summ1$taxa, exclude = c("","All","Amphibian", "Reptile"))
+summ1.col = merge(summ1, taxcolors, by = "taxa")
+summ1.col$taxa <- factor(summ1.col$taxa,
+                         levels = c('Plankton','Bird','Fish','Plant','Mammal','Benthos','Invertebrate'),ordered = TRUE)
+rankedtaxorder = c('Bird','Mammal','Plankton','Benthos','Invertebrate','Plant','Fish')
 
+bar2 = boxplot(log10(summ1.col$meanAbundance)~summ1.col$taxa, col = unique(summ1.col$color))
 
-b1= barplot(dsetsByTaxa[taxorder], xaxt = "n", axisnames = F,
-            col = as.character(taxcolors$color[match(taxorder, taxcolors$taxa)])) 
-mtext("# Datasets", 2, cex = 1, las = 0, line = 2.5)
-barplot(log10(sitesBySystem), col = c('skyblue', 'navy', 'burlywood'), cex.names = 1, 
-        yaxt = "n", ylim = c(0,3)) 
-axis(2, 0:3)
-mtext(expression(log[10] ~ " # Assemblages"), 2, cex = 1.5, las = 0, line = 2.5)
-bar1 = barplot(dsetsByTaxa[taxorder], xaxt = "n", axisnames = F,
-               col = as.character(taxcolors$color[match(taxorder, taxcolors$taxa)]))
-# text(bar1, par("usr")[3], taxcolors$abbrev, adj = c(1, 1), xpd = TRUE, cex = 1) 
-
-mtext("# Datasets", 2, cex = 1.5, las = 0, line = 2.5)
-bar2 = barplot(log10(sitesByTaxa[taxorder]), axes = F, axisnames = F, ylim = c(0,3),
-               col = as.character(taxcolors$color[match(taxorder, taxcolors$taxa)]))
-axis(2, 0:3)
 mtext(expression(log[10] ~ " # Assemblages"), 2, cex = 1.5, las = 0, line = 2.5)
 dev.off()
+
 
 #### barplot of mean occ by taxa #####
 numCT = read.csv("output/tabular_data/numCT.csv", header=TRUE)
-numCT_plot$taxa = as.factor(numCT_plot$taxa)
-numCT_plot$taxa <-droplevels(numCT_plot$taxa, exclude = c("","All","Amphibian", "Reptile"))
+#numCT_plot$taxa = as.factor(numCT_plot$taxa)
+#numCT_plot$taxa <-droplevels(numCT_plot$taxa, exclude = c("","All","Amphibian", "Reptile"))
 
 # n calculates number of sites by taxa -nested sites
 n = numCT_taxa %>%
@@ -201,7 +215,7 @@ sitesByTaxa = table(summ2$taxa)
 colorsrank = c(rgb(29/255, 106/255, 155/255), #bird
                colors()[551],#mammal
                colors()[552], # plankton
-               colors()[595], # benthos
+               colors()[17], # benthos
                colors()[144], # arth
                colors()[139],# plant
                colors()[637]) #fish
@@ -215,32 +229,6 @@ w <- ggplot(summ, aes(factor(taxa), mu))+theme_classic()+
 w + geom_boxplot(width=1, position=position_dodge(width=0.6),aes(x=taxa, y=mu), fill = taxcolorsrank$color)+
   scale_fill_manual(labels = taxcolors$taxa, values = taxcolors$color)+theme(axis.ticks=element_blank(),axis.text.x=element_text(size=14),axis.text.y=element_text(size=14),axis.title.x=element_text(size=22),axis.title.y=element_text(size=22,angle=90,vjust = 1)) + guides(fill=guide_legend(title=""))+ theme(plot.margin = unit(c(.5,.5,.5,.5),"lines")) + annotate("text", x = nrank$taxa, y = 1.05, label = sitetally$n,size=5,vjust=0.8, color = "black")
 ggsave("C:/Git/core-transient/output/plots/meanOcc.pdf", height = 8, width = 12)
-
-###########   ######################################################
-# Explaining variation in mean occupancy within BBS
-# Merge taxa color and symbol codes into summary data
-summ$taxa = factor(summ$taxa)
-summ$system = factor(summ$system)
-summ2 = subset(summ, !datasetID %in% c(99, 85, 90, 91, 92, 97, 124))
-summ3 = merge(summ2, taxcolors, by = 'taxa', all.x = T)
-summ3$color = as.character(summ3$color)
-notbbs = subset(summ3, datasetID != 1)
-bbssumm = subset(summ3, datasetID == 1)
-env = read.csv('data/raw_datasets/dataset_1RAW/env_data.csv')
-bbsumm = merge(bbssumm, env, by.x = 'site', by.y = 'stateroute')
-
-par(mfrow = c(2,1), mar = c(6, 4, 1, 1), mgp = c(3, 1, 0), 
-    oma = c(0, 4, 0, 0), las = 1, cex.axis = 1.5, cex.lab = 2)
-plot(bbsumm$sum.NDVI.mean, bbsumm$mu, xlab = "NDVI", ylab = "", pch = 16, col = 'gray40')
-lm.ndvi = lm(mu ~ sum.NDVI.mean, data = bbsumm)
-abline(lm.ndvi, col = 'red', lty = 'dashed', lwd = 4)
-text(0.25, 0.85, bquote(R^2 ~ "=" ~ .(round(summary(lm.ndvi)$r.squared, 2))), cex = 1.5)
-plot(bbsumm$elev.mean, bbsumm$mu, xlab = "Elevation (m)", ylab = "", pch = 16, col = 'gray40')
-lm.elev = lm(mu ~ elev.mean, data = bbsumm)
-abline(lm.elev, col = 'red', lty = 'dashed', lwd = 4)
-text(2600, 0.85, bquote(R^2 ~ "=" ~ .(round(summary(lm.elev)$r.squared, 2))), cex = 1.5)
-mtext("Mean occupancy", 2, outer = T, cex = 2, las = 0)
-
 
 ##### Boxplots showing distribution of core and transient species by taxon #####
 core = summ2 %>%
@@ -268,7 +256,7 @@ colscale = c("#c51b8a", "#fdd49e", "#225ea8")
 datasetIDs = dataformattingtable$dataset_ID[dataformattingtable$format_flag == 1]
 
 ### Have to cut out stuff that have mean abundance NA
-datasetIDs = datasetIDs[!datasetIDs %in% c(67,270,271,317,319,325)]
+datasetIDs = datasetIDs[!datasetIDs %in% c(1, 67,270,271,317,319,325)]
 
 
 summaryTransFun = function(datasetID){
@@ -447,6 +435,9 @@ occ_taxa = read.csv("occ_taxa.csv",header=TRUE)
 # merge multiple lat long file to propOcc to get naming convention correct
 latlong_w_sites = merge(latlongs, summ2[,c("datasetID", "site", "propTrans")], by = c("datasetID", "site"), all.x = TRUE) 
 
+#drop BBS and add in below scale
+latlong_w_sites = subset(latlong_w_sites, !datasetID == 1)
+
 # reformat non multi grain lat longs
 dft = subset(dataformattingtable, countFormat == "count" & format_flag == 1) # only want count data for model
 dft = subset(dft, !dataset_ID %in% c(1,247,248,269,289,315))
@@ -455,9 +446,23 @@ names(dft) <- c("Lat","Lon", "datasetID", "taxa")
 dft2 = merge(dft, summ2[, c("datasetID","site","propTrans")], by = "datasetID")
   
 # combining all lat longs, including scaled up data
-all_latlongs = rbind(dft2, latlong_w_sites)
-all_latlongs = na.omit(all_latlongs)
+all_latlongs.5 = rbind(dft2, latlong_w_sites)
 
+# rbind in new BBS data
+bbs_below = read.csv("Z:/Gartland/BBS scaled/bbs_below.csv", header = TRUE)
+bbs_latlong = read.csv("data/latlongs/bbs_2000_2014_latlongs.csv", header = TRUE)
+bbs_be_lat = merge(bbs_below, bbs_latlong, by = "stateroute")
+bbs_be_lat$datasetID = 1
+bbs_be_lat$taxa = "Bird"
+bbs_be_lat$site = bbs_be_lat$stateroute
+bbs_be_lat$Lat = bbs_be_lat$Lati
+bbs_be_lat$Lon = bbs_be_lat$Longi
+bbs_be_lat$propTrans = bbs_be_lat$pctTran
+bbs_be_lat = bbs_be_lat[,c("datasetID", "Lat","Lon", "taxa","site", "propTrans")]
+
+# rbind new bbs data to lat longs
+all_latlongs =  rbind(bbs_be_lat, all_latlongs)
+all_latlongs = na.omit(all_latlongs)
 
 # Makes routes into a spatialPointsDataframe
 coordinates(all_latlongs)=c('Lon','Lat')
@@ -484,7 +489,7 @@ make.cir = function(p,r){
 }
 
 routes.laea@data$dId_site = paste(routes.laea@data$datasetID, routes.laea@data$site, sep = "_")
-routes.laea$unique = 1:942
+routes.laea$unique = 1:32591
 
 #Draw circles around all routes 
 circs = sapply(1:nrow(routes.laea@data), function(x){
