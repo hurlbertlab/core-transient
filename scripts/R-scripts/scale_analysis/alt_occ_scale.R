@@ -31,6 +31,8 @@ library(maptools)
 library(rgeos)
 library(dplyr)
 library(fields)
+library(tidyr)
+library(purrr)
 
 #'#'#'#'#'#'#'#'#'
 #'----Write for_loop to calculate distances between every BBS site combination to find focal and associated routes that correspond best----
@@ -155,9 +157,6 @@ occ_counts = function(countData, countColumns, scale) {
     group_by(stateroute) %>%
     summarize(aveN = mean(totalN)) %>%
     mutate(scale = paste(scale, g, sep = "-"))
-              
- 
-    
       
 #'need to fix nested dataframe output, why gen as list?     
   return(list(occ = occ.summ, abun = abun.summ))
@@ -179,13 +178,56 @@ for (scale in scales) {
   }
 }
 
-bbs_scalesorted<-data.frame(output)
+bbs_output<-data.frame(output)
+
+
+####output of occ and abun values tidying####
 #temps all named the same but can tidy and sep out based on scales
 #have correct abun and occ values but str is strange!! 
 
-bbs_occ = as.data.frame(bbs_scalesorted$occ) #replace empty row spaces with NA's? 
-bbs_abun = as.data.frame(bbs_scalesorted$abun) # works great
-#need to gather across temps still using tidyr 
+abun  = as.matrix(bbs_output$abun)
+occ = as.matrix(bbs_output$occ) #successful 
+
+#taking out "temp" subdivisions/rows and bringing data together across rows, returning to matrix form 
+occ2 = t(as.matrix(flatten(occ)))
+output = c()
+seq_end = c(seq(from = 5, to = 90, by = 5)) 
+m = 4
+#fix hardcoding to softcoding tomorrow, 
+#make forloop generalizeable 
+
+
+for(s in seq_end) {
+  temp = as.data.frame(occ2[,(s-m):s])
+  output = rbind(output, temp)
+}
+occ_df = output 
+#occ done 
+
+
+abun2 = t(as.matrix(flatten(abun)))
+output = c()
+seq_end = c(seq(from = 3, to = 54, by = 3))
+m = 2
+
+for(s in seq_end) {
+  temp = as.data.frame(abun2[,(s-m):s])
+  output = rbind(output, temp)
+}
+
+abun_df = output
+#abun done, longer rows than occ_df tho?  
+
+####merging abun and occ back together####
+#combine abun and occ back together (even tho calc'd differently, still associated w/spec stateroutes)
+#using unique combo of scale and stateroute 
+bbs_below = full_join(abun_df, occ_df, by = c("stateroute", "scale"))
+
+#scale = numrtes in above-scale df 
+#write.csv(bbs_below, "//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/bbs_below.csv", row.names = FALSE)
+
+
+#should I avg occ and abun across segments at the same scale? 
 
 
 
@@ -193,8 +235,10 @@ bbs_abun = as.data.frame(bbs_scalesorted$abun) # works great
 
 
 
-#so do want to combine all of the lists together and THEN pull back apart 
 
+#not sure why row # gets bumped up, suspect because residual buffered NA's 
+sub = which(is.na(bbs_below))
+sub2 = bbs_below[sub,]
 
 
 #'#'#'#'finished above route aggregation of routes#'#'#'#'
