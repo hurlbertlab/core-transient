@@ -178,12 +178,7 @@ for (scale in scales) {
 
 bbs_below<-data.frame(output)
 
-#testing "by hand" to make sure occs line up appropriately thru entirety of df
-test = bbs_below %>%
-  filter(stateroute > 50000 & stateroute < 60000) %>%
-  filter(scale == "5-6")
-#checking in intervals in middle 
-
+#output correct; checked vals and stepped thru function at rtes between 50000 & 60000 @ multi scales
 
 #scale = numrtes in above-scale df 
 #write.csv(bbs_below, "//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/bbs_below.csv", row.names = FALSE)
