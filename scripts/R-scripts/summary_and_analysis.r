@@ -231,10 +231,25 @@ w + geom_boxplot(width=1, position=position_dodge(width=0.6),aes(x=taxa, y=mu), 
 ggsave("C:/Git/core-transient/output/plots/meanOcc.pdf", height = 8, width = 12)
 
 ##### Boxplots showing distribution of core and transient species by taxon #####
-core = summ2 %>%
+# already includes new bbs data - need to subset to stop 50
+bbs_below_st = read.csv("Z:/Gartland/BBS scaled/bbs_below.csv", header = TRUE)
+bbs_below_st$datasetID = 1
+bbs_below_st$system = "Terrestrial"
+bbs_below_st$taxa = "Bird"
+bbs_below_st$site = bbs_below_st$stateroute 
+bbs_below_st$propCore = bbs_below_st$pctCore
+bbs_below_st$propTrans = bbs_below_st$pctTran
+bbs_below_st$meanAbundance = bbs_below_st$aveN
+bbs_below_st = subset(bbs_below_st, bbs_below_st$scale == '50-1')
+bbs_below_st = bbs_below_st[, c("datasetID","site","system","taxa","propCore","propTrans","meanAbundance")]
+
+# summ2.5 includes only stateroute level new bbs data
+summ2.5 = rbind(bbs_below_st,summ1.5)
+
+core = summ2.5 %>%
   dplyr::group_by(taxa) %>%
   dplyr::summarize(mean(propCore)) 
-trans = summ2 %>%
+trans = summ2.5 %>%
   dplyr::group_by(taxa) %>%
   dplyr::summarize(mean(propTrans)) 
 
@@ -242,21 +257,18 @@ propCT = merge(core, trans, by = "taxa")
 propCT = data.frame(propCT)
 propCT$mean.propNeither. = 1 - propCT$mean.propCore. - propCT$mean.propTrans.
 
-
 propCT_long = gather(propCT, "class","value", c(mean.propCore.:mean.propNeither.))
 propCT_long = arrange(propCT_long, desc(class))
 propCT_long$taxa = as.factor(propCT_long$taxa)
 propCT_long$taxa = factor(propCT_long$taxa,
                     levels = c('Invertebrate','Plankton','Fish','Mammal','Plant','Bird','Benthos'),ordered = TRUE)
 colscale = c("#c51b8a", "#fdd49e", "#225ea8")
-
-
 ##################################################################
 # barplot of % transients versus community size at diff thresholds
 datasetIDs = dataformattingtable$dataset_ID[dataformattingtable$format_flag == 1]
 
 ### Have to cut out stuff that have mean abundance NA
-datasetIDs = datasetIDs[!datasetIDs %in% c(1, 67,270,271,317,319,325)]
+datasetIDs = datasetIDs[!datasetIDs %in% c(67,270,271,317,319,325)]
 
 
 summaryTransFun = function(datasetID){
@@ -289,7 +301,7 @@ summaryTransFun = function(datasetID){
                               nTime, spRichTotal, spRichCore33, spRichTrans33,
                               propCore33,  propTrans33, propTrans25, propTrans10)
   }
-  return(rbind.fill(outList))
+  return(plyr::rbind.fill(outList))
 }
 
 percTransSummaries = c()
@@ -299,9 +311,19 @@ for (d in datasetIDs) {
   percTransSummaries = rbind(percTransSummaries, percTransSumm)
   print(d)
 }
+percTransSummaries = percTransSummaries[, c("datasetID","site","system","taxa","propCore33", "propTrans33", "propTrans25", "propTrans10")]
+#### want to rbind bbs here
+# bbs_below_st
+# propCore33 propTrans33 propTrans25
 
 CT_plot=merge(percTransSummaries, taxcolors, by="taxa")
 CT_long = gather(CT_plot, "level_trans","pTrans", propTrans33:propTrans10)
+
+
+
+
+
+
 
 ttrans = CT_plot %>%
   dplyr::group_by(taxa) %>%
@@ -489,7 +511,7 @@ make.cir = function(p,r){
 }
 
 routes.laea@data$dId_site = paste(routes.laea@data$datasetID, routes.laea@data$site, sep = "_")
-routes.laea$unique = 1:16549
+routes.laea@data$unique = 1:16549
 
 
 #Draw circles around all routes 
@@ -511,14 +533,15 @@ elev.point = raster::extract(elev, routes.laea)
 elev.mean = raster::extract(elev, circs.sp, fun = mean, na.rm=T)
 elev.var = raster::extract(elev, circs.sp, fun = var, na.rm=T)
 
-env_elev = data.frame(datasetID = names(circs.sp), site = all_latlongs$site, elev.point = elev.point, elev.mean = elev.mean, elev.var = elev.var)
+env_elev = data.frame(unique = routes.laea@data$unique, elev.point = elev.point, elev.mean = elev.mean, elev.var = elev.var)
 # write.csv(env_elev, "env_elev.csv", row.names = F)
 # env_elev = read.csv("env_elev.csv", header = TRUE)
 
-lat_scale_elev = merge(routes.laea, env_elev, by = c("datasetID", "site"))
+lat_scale_elev = merge(routes.laea, env_elev, by = "unique") # checked to make sure order lined up, d/n seem to be another way to merge since DID keeps getting lost
 lat_scale_elev = data.frame(lat_scale_elev)
 
-lat_scale_rich = merge(lat_scale_elev, summ2[,c("datasetID", "site", "spRichTrans", "meanAbundance")], by = c("datasetID", "site"))
+lat_scale_rich = merge(lat_scale_elev, summ2[,c("datasetID","site", "meanAbundance")], by = c("datasetID", "site"))
+#  "spRichTrans", 
 
 # Model
 mod1 = lmer(propTrans ~ (1|taxa) * log10(meanAbundance) * log10(elev.var), data=lat_scale_rich) 
