@@ -32,7 +32,7 @@ library(rgeos)
 library(dplyr)
 library(fields)
 library(tidyr)
-library(purrr)
+
 
 #'#'#'#'#'#'#'#'#'
 #'----Write for_loop to calculate distances between every BBS site combination to find focal and associated routes that correspond best----
@@ -208,3 +208,46 @@ bbs_focal_occs$scale = as.factor(bbs_focal_occs$scale)
 bbs_allscales = rbind(bbs_below, bbs_focal_occs)
 #write.csv(bbs_allscales, "C:/git/core-transient/data/bbs_allscales.csv", row.names = FALSE)
 #can redirect later ^
+##############################################################
+
+####Cross-scale analysis and visualization####
+bbs_allscales = read.csv("C:/git/core-transient/data/bbs_allscales.csv", header = TRUE)
+
+mod1 = lm(area~meanOcc, data = bbs_allscales)
+mod2 = lm(aveN~meanOcc, data = bbs_allscales)
+summary(mod2)
+
+plot(area~meanOcc, data = bbs_allscales)
+plot(aveN~meanOcc, data = bbs_allscales)
+#^^same pattern 
+
+
+####Env data add-in####
+
+#bring in lat-lons for each focal route and creating sites
+
+bbs_latlon = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/good_rtes2.csv", header = TRUE)
+bbs_allscales = rename(bbs_latlon, focalrte = stateroute) %>%
+  right_join(bbs_allscales, by = "focalrte")
+
+
+sites = data.frame(longitude = bbs_allscales$Longi, latitude = bbs_allscales$Lati)
+#points(sites$longitude, sites$latitude, col= "red", pch=16)
+
+
+#bringing in temp data 
+files = paste('//bioark.ad.unc.edu/HurlbertLab/GIS/ClimateData/BIOCLIM_meanTemp/tmean',1:12,'.bil', sep='')
+tmean = stack(files) 
+meanT = calc(tmean, mean)
+# Convert to actual temp
+meanT = meanT/10 
+bbs_allscales$temp = raster::extract(meanT, sites)
+
+
+#precip
+
+###fix sourcing of env data raster files, make sure aligned with correct years (2000-2014)
+files2 = paste('//bioark/HurlbertLab/GIS/ClimateData/2-25-2011/prec/prec_',1:12,'.bil', sep='')
+pmean = raster::stack(files2) 
+meanP = calc(pmean, mean)
+bbs_allscales$precip = raster::extract(precip, sites)
