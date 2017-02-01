@@ -232,8 +232,9 @@ ggsave("C:/Git/core-transient/output/plots/meanOcc.pdf", height = 8, width = 12)
 
 ##### Boxplots showing distribution of core and transient species by taxon #####
 # read in BBS route level data for fig 2
-bbs_focal_occs_pctTrans = read.csv("data/bbs_focal_occs_pctTrans.csv", header = TRUE)
-bbs_focal_occs_pctTrans$site = bbs_focal_occs_pctTrans$focalrte
+bbs_focal_occs_pctTrans = read.csv("data/bbs_below_pctTrans.csv", header = TRUE)
+bbs_focal_occs_pctTrans = subset(bbs_focal_occs_pctTrans, bbs_focal_occs_pctTrans$scale == '50-1')
+bbs_focal_occs_pctTrans$site = bbs_focal_occs_pctTrans$stateroute
 bbs_focal_occs_pctTrans$datasetID = 1
 bbs_focal_occs_pctTrans$system = "Terrestrial"
 bbs_focal_occs_pctTrans$taxa = "Bird"
@@ -359,7 +360,7 @@ CT_long$abbrev = gsub("Mammal", 'M', CT_long$abbrev)
 CT_long$abbrev = gsub("Plankton", 'Pn', CT_long$abbrev)
 CT_long$abbrev = gsub("Plant", 'Pt', CT_long$abbrev)
 CT_long$abbrev = factor(CT_long$abbrev,
-                            levels = c('I','Pn','F','M','Pt','Bi','Be'),ordered = TRUE)
+                            levels = c('I','F','Pn','M','Pt','Bi','Be'),ordered = TRUE)
 
 
 p <- ggplot(CT_long, aes(x = reorder(abbrev, -pTrans), y = pTrans))+theme_classic()
