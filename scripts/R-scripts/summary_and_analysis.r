@@ -154,10 +154,10 @@ pdf('output/plots/numspp_comm.pdf', height = 8, width = 10)
 summ1$taxa <-droplevels(summ1$taxa, exclude = c("","All","Amphibian", "Reptile"))
 summ1.col = merge(summ1, taxcolors, by = "taxa")
 summ1.col$taxa <- factor(summ1.col$taxa,
-                    levels = c('Plankton','Bird','Fish','Plant','Mammal','Benthos','Invertebrate'),ordered = TRUE)
+                    levels = c('Bird','Plant','Mammal','Fish','Invertebrate','Benthos','Plankton'),ordered = TRUE)
 rankedtaxorder = c('Bird','Mammal','Plankton','Benthos','Invertebrate','Plant','Fish')
 
-bar1 = boxplot(summ1.col$spRichTotal~summ1.col$taxa, xaxt = "n",  col = unique(summ1.col$color))
+bar1 = boxplot(summ1.col$spRichTotal~summ1.col$taxa, xaxt = "n",  col = as.character(summ1.col$color[match(taxorder, summ1.col$taxa)]))
 
 mtext(expression(" # Species"), 2, cex = 1.5, las = 0, line = 2.5)
 dev.off()
@@ -166,10 +166,10 @@ pdf('output/plots/numcomm.pdf', height = 8, width = 10)
 summ1$taxa <-droplevels(summ1$taxa, exclude = c("","All","Amphibian", "Reptile"))
 summ1.col = merge(summ1, taxcolors, by = "taxa")
 summ1.col$taxa <- factor(summ1.col$taxa,
-                         levels = c('Plankton','Bird','Fish','Plant','Mammal','Benthos','Invertebrate'),ordered = TRUE)
-rankedtaxorder = c('Bird','Mammal','Plankton','Benthos','Invertebrate','Plant','Fish')
+                         levels = c('Bird','Plant','Mammal','Fish','Invertebrate','Benthos','Plankton'),ordered = TRUE)
+rankedtaxorder = c('Bird','Plant','Mammal','Fish','Invertebrate','Benthos','Plankton')
 
-bar2 = boxplot(log10(summ1.col$meanAbundance)~summ1.col$taxa, col = unique(summ1.col$color))
+bar2 = boxplot(log10(summ1.col$meanAbundance)~summ1.col$taxa, xaxt = "n",col = as.character(summ1.col$color[match(taxorder, summ1.col$taxa)]))
 
 mtext(expression(log[10] ~ " # Assemblages"), 2, cex = 1.5, las = 0, line = 2.5)
 dev.off()
@@ -278,7 +278,7 @@ colscale = c("#c51b8a", "#fdd49e", "#225ea8")
 datasetIDs = dataformattingtable$dataset_ID[dataformattingtable$format_flag == 1]
 
 ### Have to cut out stuff that have mean abundance NA
-datasetIDs = datasetIDs[!datasetIDs %in% c(67,270,271,317,319,325)]
+datasetIDs = datasetIDs[!datasetIDs %in% c(1, 67,270,271,317,319,325)]
 
 
 summaryTransFun = function(datasetID){
@@ -292,7 +292,7 @@ summaryTransFun = function(datasetID){
     siteSummary = subset(dataList$siteSummary, site == sites[i])
     nTime = siteSummary$nTime
     spRichTotal = siteSummary$spRich
-    spRichCore33 = length(propOcc[propOcc > 1 - 1/3])
+    spRichCore33 = length(propOcc[propOcc > 2/3])
     spRichTrans33 = length(propOcc[propOcc <= 1/3])
     spRichTrans25 = length(propOcc[propOcc <= 1/4])
     if(nTime > 9){
@@ -454,6 +454,7 @@ segments(0,  0, x1 = 5.607, y1 = 1, col = rgb(29/255, 106/255, 155/255), lwd=5)
 par(new=TRUE)
 dev.off()
 
+
 ####### MODELS ######
 latlongs = read.csv("data/latlongs/latlongs.csv", header =TRUE)
 
@@ -552,9 +553,11 @@ lat_scale_rich = merge(lat_scale_elev, summ2[,c("datasetID","site", "meanAbundan
 mod1 = lmer(propTrans ~ (1|taxa) * log10(meanAbundance) * log10(elev.var), data=lat_scale_rich) 
 summary(mod1)
 
+ggplot(data=lat_scale_rich, aes(elev.var,propTrans)) +geom_point(aes(color = as.factor(lat_scale_rich$taxa)), size = 3) + theme_classic()
+
 # visualizing model results
-mod1test = subset(lat_scale_rich, lat_scale_rich$datasetID = 1)
-hist(mod1test)
+mod1test = subset(lat_scale_rich, lat_scale_rich$datasetID == 1)
+hist(mod1test$propTrans)
 
 # simple linear model based on data in Fig 2b of % transient ~ taxonomic group, just to have a p-value associated with the statement "The proportion of an assemblage made up of transient species varied strongly across taxonomic group."
 transmod = lm(pTrans~taxa, data = CT_long)
