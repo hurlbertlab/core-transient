@@ -218,7 +218,7 @@ mod1 = lm(area~meanOcc, data = bbs_allscales)
 mod2 = lm(aveN~meanOcc, data = bbs_allscales)
 summary(mod2)
 
-plot(area~meanOcc, data = bbs_allscales)
+plot(area~meanOcc, data = bbs_allscales, xlab = "Mean Temporal Occupancy", ylab = "Area in sq. km")
 plot(aveN~meanOcc, data = bbs_allscales)
 #^^same pattern 
 
