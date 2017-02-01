@@ -261,7 +261,7 @@ propCT_long = gather(propCT, "class","value", c(mean.propCore.:mean.propNeither.
 propCT_long = arrange(propCT_long, desc(class))
 propCT_long$taxa = as.factor(propCT_long$taxa)
 propCT_long$taxa = factor(propCT_long$taxa,
-                    levels = c('Invertebrate','Plankton','Fish','Mammal','Plant','Bird','Benthos'),ordered = TRUE)
+                    levels = c('Invertebrate','Fish','Plankton','Mammal','Plant','Bird','Benthos'),ordered = TRUE)
 colscale = c("#c51b8a", "#fdd49e", "#225ea8")
 ##################################################################
 # barplot of % transients versus community size at diff thresholds
@@ -338,7 +338,7 @@ propCT_long$abbrev = gsub("Mammal", 'M', propCT_long$abbrev)
 propCT_long$abbrev = gsub("Plankton", 'Pn', propCT_long$abbrev)
 propCT_long$abbrev = gsub("Plant", 'Pt', propCT_long$abbrev)
 propCT_long$abbrev = factor(propCT_long$abbrev,
-                            levels = c('I','Pn','F','M','Pt','Bi','Be'),ordered = TRUE)
+                            levels = c('I','F','Pn','M','Pt','Bi','Be'),ordered = TRUE)
 
 colscale = c("#c51b8a", "#fdd49e", "#225ea8")
 m = ggplot(data=propCT_long, aes(factor(abbrev), y=value, fill=factor(class))) + geom_bar(stat = "identity")  + theme_classic() + xlab("Taxa") + ylab("Proportion of Species")+ scale_fill_manual(labels = c("Core", "Other", "Transient"),
@@ -473,10 +473,10 @@ all_latlongs.5 = rbind(dft2, latlong_w_sites)
 # rbind in new BBS data
 bbs_below = read.csv("Z:/Gartland/BBS scaled/bbs_below.csv", header = TRUE)
 bbs_latlong = read.csv("data/latlongs/bbs_2000_2014_latlongs.csv", header = TRUE)
-bbs_be_lat = merge(bbs_below, bbs_latlong, by = "stateroute")
+bbs_be_lat = merge(bbs_below, bbs_latlong, by = "stateroute", all.x = TRUE)
+bbs_be_lat$site = paste(bbs_below$stateroute, bbs_below$scale, sep = "-")
 bbs_be_lat$datasetID = 1
 bbs_be_lat$taxa = "Bird"
-bbs_be_lat$site = bbs_be_lat$stateroute
 bbs_be_lat$Lat = bbs_be_lat$Lati
 bbs_be_lat$Lon = bbs_be_lat$Longi
 bbs_be_lat$propTrans = bbs_be_lat$pctTran
@@ -537,7 +537,7 @@ env_elev = data.frame(unique = routes.laea@data$unique, elev.point = elev.point,
 # write.csv(env_elev, "env_elev.csv", row.names = F)
 # env_elev = read.csv("env_elev.csv", header = TRUE)
 
-lat_scale_elev = merge(routes.laea, env_elev, by = "unique") # checked to make sure order lined up, d/n seem to be another way to merge since DID keeps getting lost
+lat_scale_elev = merge(routes.laea, env_elev, by.x = c("unique","site"), by.y = c("datasetID", "site")) # checked to make sure order lined up, d/n seem to be another way to merge since DID keeps getting lost
 lat_scale_elev = data.frame(lat_scale_elev)
 
 lat_scale_rich = merge(lat_scale_elev, summ2[,c("datasetID","site", "meanAbundance")], by = c("datasetID", "site"))
@@ -545,6 +545,11 @@ lat_scale_rich = merge(lat_scale_elev, summ2[,c("datasetID","site", "meanAbundan
 
 # Model
 mod1 = lmer(propTrans ~ (1|taxa) * log10(meanAbundance) * log10(elev.var), data=lat_scale_rich) 
+summary(mod1)
+
+# visualizing model results
+mod1test = subset(lat_scale_rich, lat_scale_rich$datasetID = 1)
+hist(mod1test)
 
 # simple linear model based on data in Fig 2b of % transient ~ taxonomic group, just to have a p-value associated with the statement "The proportion of an assemblage made up of transient species varied strongly across taxonomic group."
 transmod = lm(pTrans~taxa, data = CT_long)

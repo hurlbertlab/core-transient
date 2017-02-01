@@ -84,8 +84,12 @@ for (r in uniqrtes) {
   temp = data.frame(focalrte = r,
                     numrtes = nu+1,                           #'total #' routes being aggregated
                     meanOcc = mean(occs$occ, na.rm =T),       #'mean occupancy
-                    pctCore = sum(occs$occ > 2/3)/nrow(occs), #'fraction of species that are core
-                    pctTran = sum(occs$occ <= 1/3)/nrow(occs),#'fraction of species that are transient
+                    pctCore = sum(occs$occ > 2/3)/nrow(occs),
+                    pctTrans = sum(occs$occ <= 1/3)/nrow(occs),#'fraction of species that are transient
+                    #spRichTrans33 
+                    # spRichTrans25 = sum(occs$occ <= 1/4)/nrow(occs),
+                    # spRichTrans10 = sum(occs$occ <= 0.1)/nrow(occs),
+                         
                     totalAbun = sum(bbssub$SpeciesTotal)/15,  #'total community size (per year)
                     maxRadius = tmp$dist[nu])                 #'radius including rtes aggregated
   output = rbind(output, temp)
@@ -97,7 +101,7 @@ for (r in uniqrtes) {
 
 
 bbs_focal_occs = as.data.frame(output)
-write.csv(bbs_focal_occs, "//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/bbs_focal_occs.csv", row.names = FALSE)
+# write.csv(bbs_focal_occs, "//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/bbs_focal_occs.csv", row.names = FALSE)
 head(output)  
   
 
