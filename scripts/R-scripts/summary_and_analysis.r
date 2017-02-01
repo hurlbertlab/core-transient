@@ -231,18 +231,27 @@ w + geom_boxplot(width=1, position=position_dodge(width=0.6),aes(x=taxa, y=mu), 
 ggsave("C:/Git/core-transient/output/plots/meanOcc.pdf", height = 8, width = 12)
 
 ##### Boxplots showing distribution of core and transient species by taxon #####
-# already includes new bbs data - need to subset to stop 50
-bbs_below_st = read.csv("Z:/Gartland/BBS scaled/bbs_below.csv", header = TRUE)
-bbs_below_st$datasetID = 1
-bbs_below_st$system = "Terrestrial"
-bbs_below_st$taxa = "Bird"
-bbs_below_st$site = bbs_below_st$stateroute 
-bbs_below_st$propCore = bbs_below_st$pctCore
-bbs_below_st$propTrans = bbs_below_st$pctTran
-bbs_below_st$meanAbundance = bbs_below_st$aveN
-bbs_below_st = subset(bbs_below_st, bbs_below_st$scale == '50-1')
-bbs_below_st = bbs_below_st[, c("datasetID","site","system","taxa","propCore","propTrans","meanAbundance")]
+# read in BBS route level data for fig 2
+bbs_focal_occs_pctTrans = read.csv("data/bbs_focal_occs_pctTrans.csv", header = TRUE)
+bbs_focal_occs_pctTrans$site = bbs_focal_occs_pctTrans$focalrte
+bbs_focal_occs_pctTrans$datasetID = 1
+bbs_focal_occs_pctTrans$system = "Terrestrial"
+bbs_focal_occs_pctTrans$taxa = "Bird"
+bbs_focal_occs_pctTrans$propCore33 = bbs_focal_occs_pctTrans$pctCore
+bbs_focal_occs_pctTrans$propTrans33 = bbs_focal_occs_pctTrans$spRichTrans33
+bbs_focal_occs_pctTrans$propTrans25 = bbs_focal_occs_pctTrans$spRichTrans25
+bbs_focal_occs_pctTrans$propTrans10 = bbs_focal_occs_pctTrans$spRichTrans10
 
+# 2b
+bbs_focal_occs_pctTrans = bbs_focal_occs_pctTrans[, c("datasetID","site","system","taxa","propCore33", "propTrans33", "propTrans25", "propTrans10")]
+
+# 2a
+bbs_below_st = bbs_focal_occs_pctTrans
+bbs_below_st$propCore = bbs_below_st$propCore33
+bbs_below_st$propTrans = bbs_below_st$propTrans33
+bbs_below_st = bbs_below_st [, c("datasetID","site","system","taxa","propCore","propTrans")]
+
+summ1.5$meanAbundance = NULL
 # summ2.5 includes only stateroute level new bbs data
 summ2.5 = rbind(bbs_below_st,summ1.5)
 
@@ -313,17 +322,12 @@ for (d in datasetIDs) {
 }
 percTransSummaries = percTransSummaries[, c("datasetID","site","system","taxa","propCore33", "propTrans33", "propTrans25", "propTrans10")]
 #### want to rbind bbs here
-# bbs_below_st
-# propCore33 propTrans33 propTrans25
 
-CT_plot=merge(percTransSummaries, taxcolors, by="taxa")
+percTransSummaries_w_bbs = rbind(percTransSummaries, bbs_focal_occs_pctTrans)
+
+
+CT_plot=merge(percTransSummaries_w_bbs, taxcolors, by="taxa")
 CT_long = gather(CT_plot, "level_trans","pTrans", propTrans33:propTrans10)
-
-
-
-
-
-
 
 ttrans = CT_plot %>%
   dplyr::group_by(taxa) %>%
