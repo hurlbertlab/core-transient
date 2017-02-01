@@ -86,10 +86,6 @@ for (r in uniqrtes) {
                     meanOcc = mean(occs$occ, na.rm =T),       #'mean occupancy
                     pctCore = sum(occs$occ > 2/3)/nrow(occs),
                     pctTrans = sum(occs$occ <= 1/3)/nrow(occs),#'fraction of species that are transient
-                    #spRichTrans33 
-                    # spRichTrans25 = sum(occs$occ <= 1/4)/nrow(occs),
-                    # spRichTrans10 = sum(occs$occ <= 0.1)/nrow(occs),
-                         
                     totalAbun = sum(bbssub$SpeciesTotal)/15,  #'total community size (per year)
                     maxRadius = tmp$dist[nu])                 #'radius including rtes aggregated
   output = rbind(output, temp)
@@ -157,6 +153,9 @@ occ_counts = function(countData, countColumns, scale) {
     summarize(meanOcc = mean(occ), 
               pctCore = sum(occ > 2/3)/length(occ),
               pctTran = sum(occ <= 1/3)/length(occ)) %>%
+              #spRichTrans33  
+               # spRichTrans25 = sum(occ <= 1/4)/length(occ),
+              # spRichTrans10 = sum(occ <= 0.1)/length(occ)) %>%
     mutate(scale = paste(scale, g, sep = "-")) %>%
     left_join(abun.summ, by = 'stateroute')
   
