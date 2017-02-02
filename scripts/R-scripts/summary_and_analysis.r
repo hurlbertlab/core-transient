@@ -169,9 +169,9 @@ summ1.col$taxa <- factor(summ1.col$taxa,
                          levels = c('Bird','Plant','Mammal','Fish','Invertebrate','Benthos','Plankton'),ordered = TRUE)
 rankedtaxorder = c('Bird','Plant','Mammal','Fish','Invertebrate','Benthos','Plankton')
 
-bar2 = boxplot(log10(summ1.col$meanAbundance)~summ1.col$taxa, xaxt = "n",col = as.character(summ1.col$color[match(taxorder, summ1.col$taxa)]))
+bar2 = boxplot(summ1.col$nTime~summ1.col$taxa, xaxt = "n",col = as.character(summ1.col$color[match(taxorder, summ1.col$taxa)]))
 
-mtext(expression(log[10] ~ " # Assemblages"), 2, cex = 1.5, las = 0, line = 2.5)
+mtext(expression(" Years of Study"), 2, cex = 1.5, las = 0, line = 2.5)
 dev.off()
 
 
@@ -273,6 +273,27 @@ propCT_long$taxa = as.factor(propCT_long$taxa)
 propCT_long$taxa = factor(propCT_long$taxa,
                     levels = c('Invertebrate','Fish','Plankton','Mammal','Plant','Bird','Benthos'),ordered = TRUE)
 colscale = c("#c51b8a", "#fdd49e", "#225ea8")
+
+
+
+### Fig 2b
+core_e = summ2.5 %>%
+  dplyr::group_by(system) %>%
+  dplyr::summarize(mean(propCore)) 
+trans_e = summ2.5 %>%
+  dplyr::group_by(system) %>%
+  dplyr::summarize(mean(propTrans)) 
+
+prope = merge(core_e, trans_e, by = "system")
+prope = data.frame(prope)
+prope$mean.propNeither. = 1 - prope$mean.propCore. - prope$mean.propTrans.
+
+prope_long = gather(prope, "class","value", c(mean.propCore.:mean.propNeither.))
+prope_long = arrange(prope_long, desc(class))
+prope_long$system = as.factor(propCT_long$system)
+
+colscale = c("light blue","blue","dark blue")
+
 ##################################################################
 # barplot of % transients versus community size at diff thresholds
 datasetIDs = dataformattingtable$dataset_ID[dataformattingtable$format_flag == 1]
@@ -348,6 +369,9 @@ propCT_long$abbrev = factor(propCT_long$abbrev,
 colscale = c("#c51b8a", "#fdd49e", "#225ea8")
 m = ggplot(data=propCT_long, aes(factor(abbrev), y=value, fill=factor(class))) + geom_bar(stat = "identity")  + theme_classic() + xlab("Taxa") + ylab("Proportion of Species")+ scale_fill_manual(labels = c("Core", "Intermediate", "Transient"),
                                                                                                                                                                                                   values = colscale)+theme(axis.ticks.x=element_blank(),axis.text.x=element_text(size=20),axis.text.y=element_text(size=20),axis.title.x=element_text(size=24),axis.title.y=element_text(size=24,angle=90,vjust = 2.5))+ theme(legend.text=element_text(size=18),legend.key.size = unit(2, 'lines'))+theme(legend.position="top", legend.justification=c(0, 1), legend.key.width=unit(1, "lines"))+ guides(fill = guide_legend(keywidth = 3, keyheight = 1,title="", reverse=TRUE))+ coord_fixed(ratio = 4)
+
+e = ggplot(data=prope_long, aes(factor(system), y=value, fill=factor(class))) + geom_bar(stat = "identity")  + theme_classic() + xlab("Ecosystem") + ylab("")+ scale_fill_manual(labels = c("Core", "Intermediate", "Transient"),
+ values = colscale)+theme(axis.ticks.x=element_blank(),axis.text.x=element_text(size=14, angle = 90),axis.text.y=element_text(size=20),axis.title.x=element_text(size=24),axis.title.y=element_text(size=24,angle=90,vjust = 2.5))+ theme(legend.text=element_text(size=18),legend.key.size = unit(2, 'lines'))+theme(legend.position="top", legend.justification=c(0, 1), legend.key.width=unit(1, "lines"))+ guides(fill = guide_legend(keywidth = 3, keyheight = 1,title="", reverse=TRUE))+ coord_fixed(ratio = 4)
 
 #### barplot of percent transients by taxa ---FIXED
 CT_long$taxa = as.factor(CT_long$taxa)
@@ -453,6 +477,19 @@ for(id in scaleIDs){
 segments(0,  0, x1 = 5.607, y1 = 1, col = rgb(29/255, 106/255, 155/255), lwd=5)
 par(new=TRUE)
 dev.off()
+
+#### Fig 3c ####
+mod3c = lmer(pctTrans~(1|datasetID) * taxa * log10(meanAbundance), data=occ_taxa)
+summary(mod3c)
+
+
+
+
+
+
+
+
+
 
 
 ####### MODELS ######
