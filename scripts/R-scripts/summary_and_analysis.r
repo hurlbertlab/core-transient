@@ -543,7 +543,7 @@ env_elev = data.frame(unique = routes.laea@data$unique, elev.point = elev.point,
 # write.csv(env_elev, "env_elev.csv", row.names = F)
 # env_elev = read.csv("env_elev.csv", header = TRUE)
 
-lat_scale_elev = merge(routes.laea, env_elev, by.x = c("unique","site"), by.y = c("datasetID", "site")) # checked to make sure order lined up, d/n seem to be another way to merge since DID keeps getting lost
+lat_scale_elev = merge(routes.laea, env_elev, by = c("unique")) # checked to make sure order lined up, d/n seem to be another way to merge since DID keeps getting lost
 lat_scale_elev = data.frame(lat_scale_elev)
 
 lat_scale_rich = merge(lat_scale_elev, summ2[,c("datasetID","site", "meanAbundance")], by = c("datasetID", "site"))
@@ -553,10 +553,13 @@ lat_scale_rich = merge(lat_scale_elev, summ2[,c("datasetID","site", "meanAbundan
 mod1 = lmer(propTrans ~ (1|taxa) * log10(meanAbundance) * log10(elev.var), data=lat_scale_rich) 
 summary(mod1)
 
-ggplot(data=lat_scale_rich, aes(elev.var,propTrans)) +geom_point(aes(color = as.factor(lat_scale_rich$taxa)), size = 3) + theme_classic()
+ggplot(data=lat_scale_rich, aes(elev.var,propTrans)) +geom_point(aes(color = as.factor(lat_scale_rich$taxa)), size = 3) + xlab("Elevation Variance")+ ylab("% Transient")+ theme_classic()
 
 # visualizing model results
 mod1test = subset(lat_scale_rich, lat_scale_rich$datasetID == 1)
+mod1test$scale =  strsplit(mod1test$site,"-")
+mod1test$scaled = sapply(mod1test$scale, "[[", 2) # selects the second element in a list
+ggplot(data=mod1test, aes(elev.var,propTrans)) + geom_point(aes(color = as.factor(as.numeric(mod1test$scaled))), size = 3)+ xlab("Elevation Variance")+ ylab("BBS Scaled % Transient")  + theme_classic() 
 hist(mod1test$propTrans)
 
 # simple linear model based on data in Fig 2b of % transient ~ taxonomic group, just to have a p-value associated with the statement "The proportion of an assemblage made up of transient species varied strongly across taxonomic group."
