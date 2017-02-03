@@ -347,7 +347,7 @@ dataZSubFun  = function(inData, minNTime = 10, proportionalThreshold = .5){
       }
   # Subset data to sampled events:
     dataZSub = rbind.fill(events)
-    return(dataZSub)
+    return(list(data = dataZSub, z = z))
   }
 
 #------------------------------------------------------------------------------------------------------*
@@ -361,7 +361,7 @@ wFinder = function(inData, minNTime = 10, proportionalThreshold = .5){
   # Get data subset by Z-value:
     dataZSub = dataZSubFun(inData, minNTime, proportionalThreshold)
   # Summarize number of spatial subsamples per siteTime :
-    spaceTime = ddply(dataZSub, .(siteTimeDate), summarize, 
+    spaceTime = ddply(dataZSub$data, .(siteTimeDate), summarize, 
                       spatialSubsamples = length(unique(site)))
   # Determine the number of siteTimes present:
     nSiteTimeDates = nrow(spaceTime)
@@ -391,8 +391,10 @@ wFinder = function(inData, minNTime = 10, proportionalThreshold = .5){
   # Get the names of the siteYearDates that satisfy W:
     wSiteTimeDates = factor(wSiteTimeDateList[[as.character(w)]])
   # Return list of necessary items for the subset:
-    outList = list(dataZSub, wSiteTimeDates, w)
-      names(outList) = c('dataZSub', 'wSiteTimeDates', 'w')
+    outList = list(dataZSub = dataZSub$data, 
+                   wSiteTimeDates = wSiteTimeDates, 
+                   w = w,
+                   z = dataZSub$z)
     return(outList)
 }
 
@@ -418,7 +420,7 @@ wzSubsetFun = function(inData, minNTime = 10, proportionalThreshold = .5){
     outData = dplyr::select(outSampledData, one_of(c('analysisSite', 'analysisDate','species', 'count')))
       names(outData)[1:2] = c('site', 'year') 
   # Return the subsetted data frame:
-    return(outData)
+    return(list(outData = outData, w = wOut$w, z = wOut$z))
 }
 
 #------------------------------------------------------------------------------------------------------*
@@ -433,9 +435,10 @@ subsetDataFun = function(dataset, datasetID, spatialGrain, temporalGrain,
                          dataDescription){
   inData = richnessYearSubsetFun(dataset, spatialGrain, temporalGrain, minNTime, minSpRich, dataDescription)
   subsettedData = wzSubsetFun(inData, minNTime, proportionalThreshold)
-  outData = data.frame(datasetID = datasetID, site = subsettedData$site, year = subsettedData$year,
-                       species = subsettedData$species, count = subsettedData$count)
-  return(outData)
+  outData = data.frame(datasetID = datasetID, site = subsettedData$outData$site, year = subsettedData$outData$year,
+                       species = subsettedData$outData$species, count = subsettedData$outData$count)
+                       
+  return(list(data = outData, w = subsettedData$w, z = subsettedData$z)
 }
 
 #------------------------------------------------------------------------------------------------------*
