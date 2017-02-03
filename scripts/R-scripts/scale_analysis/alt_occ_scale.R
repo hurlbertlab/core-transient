@@ -258,7 +258,17 @@ output = rbind(output, final) #obvs not using rbind, how do I stitch plots toget
 final = output 
 ggsave("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/final.pdf")
 
+#Sara's ref code for pdf output 
 
+pdf('output/plots/indiv_scale_plots.pdf', height = 10, width = 7.5)
+par(mfrow = c(5, 4), mar = c(4, 4, 1, 1), mgp = c(3, 1, 0), 
+    cex.axis = 1, cex.lab = 1, las = 1)
+for(id in datasetIDs){
+  plotsub = subset(occ_taxa, occ_taxa$datasetID == id)
+  plot(log10(plotsub$meanAbundance), plotsub$pctTrans, pch = 16, xlim = c(0, 7), ylim = c(0,1.2), col = plotsub$taxa, main = id)
+  
+}
+dev.off()
 
 
 
