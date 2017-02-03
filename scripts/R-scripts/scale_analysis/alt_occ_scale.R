@@ -32,7 +32,7 @@ library(rgeos)
 library(dplyr)
 library(fields)
 library(tidyr)
-
+library(ggplot2)
 
 #'#'#'#'#'#'#'#'#'
 #'----Write for_loop to calculate distances between every BBS site combination to find focal and associated routes that correspond best----
@@ -255,7 +255,7 @@ ggsave("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/final.pdf")
 #how can I make sure not overwritten? #defaults to last plot 
 #works perfectly 
 }
-dev.new() 
+
 
 
 
