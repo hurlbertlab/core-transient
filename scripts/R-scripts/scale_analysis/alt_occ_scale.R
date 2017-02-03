@@ -213,12 +213,12 @@ bbs_allscales = rbind(bbs_below, bbs_focal_occs)
 ####Cross-scale analysis and visualization####
 bbs_allscales = read.csv("C:/git/core-transient/data/bbs_allscales.csv", header = TRUE)
 
-mod1 = lm(area~meanOcc, data = bbs_allscales)
-mod2 = lm(aveN~meanOcc, data = bbs_allscales)
-summary(mod2)
+mod1 = lm(meanOcc~area, data = bbs_allscales) #explains ~50% of the variation in occ
+mod2 = lm(meanOcc~aveN, data = bbs_allscales)
+summary(mod1)
 
-plot(area~meanOcc, data = bbs_allscales, xlab = "Mean Temporal Occupancy", ylab = "Area in sq. km")
-plot(aveN~meanOcc, data = bbs_allscales)
+plot(meanOcc~log(area), data = bbs_allscales, xlab = "Log Area" , ylab = "Mean Temporal Occupancy")
+plot(meanOcc~aveN, data = bbs_allscales, xlab = "Average Abundance" , ylab = "Mean Temporal Occupancy")
 #^^same pattern 
 
 
