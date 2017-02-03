@@ -230,33 +230,36 @@ plot(meanOcc~aveN, data = bbs_allscales, xlab = "Average Abundance" , ylab = "Me
 #dictated by stateroute 
 #and I want R to bring them all together and export/save as pdf at end
 stateroutes = unique(bbs_allscales$focalrte)
-output = c()
+pdf("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/final.pdf")
 for (s in stateroutes) { 
 #log(area)
 theme_set(theme_bw()+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()))
-plot1 = ggplot(s, aes(x = log(area), y = meanOcc))+geom_point(color = "firebrick")
-plot1_2= ggplot(s, aes(x = log(area), y = pctCore))+geom_point(color = "turquoise")
-plot1_3 = ggplot(s, aes(x = log(area), y = pctTran))+geom_point(color = "olivedrab")
+plotsub = subset(bbs_allscales, bbs_allscales$focalrte == s)
+plot1 = ggplot(plotsub, aes(x = log(area), y = meanOcc))+geom_point(color = "firebrick")
+plot1_2= ggplot(plotsub, aes(x = log(area), y = pctCore))+geom_point(color = "turquoise")
+plot1_3 = ggplot(plotsub, aes(x = log(area), y = pctTran))+geom_point(color = "olivedrab")
 
 
 #aveN
-plot2 = ggplot(s, aes(x=aveN, y =meanOcc))+geom_point(color = "firebrick")
-plot2_2 = ggplot(s, aes(x=aveN, y =pctCore))+geom_point(color = "turquoise")
-plot2_3 =ggplot(s, aes(x=aveN, y =pctTran))+geom_point(color = "olivedrab")
+plot2 = ggplot(plotsub, aes(x=aveN, y =meanOcc))+geom_point(color = "firebrick")
+plot2_2 = ggplot(plotsub, aes(x=aveN, y =pctCore))+geom_point(color = "turquoise")
+plot2_3 =ggplot(plotsub, aes(x=aveN, y =pctTran))+geom_point(color = "olivedrab")
 
 
 #setting up aveN and log(area) cols side by side 
 source("//bioark/HurlbertLab/Gartland/Intermediate scripts/multiplot_function.R")
-final = multiplot(plot1, plot1_2, plot1_3, plot2, plot2_2, plot2_3, cols=2)
-final = final+labs(title = "s") #how can I make the plot title change for every stateroute?
-#works perfectly 
+multiplot(plot1, plot1_2, plot1_3, plot2, plot2_2, plot2_3, cols=2)
 
-
-output = rbind(output, final) #obvs not using rbind, how do I stitch plots together for a page?
-}
-
-final = output 
 ggsave("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/final.pdf")
+#how can I make the plot title change for every stateroute? 
+#how can I make sure not overwritten? #defaults to last plot 
+#works perfectly 
+}
+dev.new() 
+
+
+
+
 
 #Sara's ref code for pdf output 
 
