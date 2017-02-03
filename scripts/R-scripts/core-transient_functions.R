@@ -321,7 +321,7 @@ zFinder = function(inData, minNTime = 10, proportionalThreshold = .5){
 # ---- Subset data based on z-threshold ----
 #------------------------------------------------------------------------------------------------------*
 
-dataZSubFun  = function(inData, minNTime = 10, proportionalThreshold = .5){
+dataZSubFun  = function(inData, minNTime = 10, proportionalThreshold = .5, seed = 1){
   # Get z-values
     zOutput = zFinder(inData, minNTime, proportionalThreshold)
     z = zOutput[[1]]
@@ -342,6 +342,7 @@ dataZSubFun  = function(inData, minNTime = 10, proportionalThreshold = .5){
       # Get unique frame of siteYearDates
         siteDates = unique(siteDateSub$siteTimeDate)
       # Sample the events by the Z-value:
+        set.seed(seed)
         siteTimeDateSample = sample(unique(siteDateSub$siteTimeDate), size = z)
         events[[i]] = subset(siteDateSub, siteTimeDate %in% siteTimeDateSample )
       }
@@ -402,7 +403,7 @@ wFinder = function(inData, minNTime = 10, proportionalThreshold = .5){
 # ---- Subset the data based on w and z values ----
 #------------------------------------------------------------------------------------------------------*
 
-wzSubsetFun = function(inData, minNTime = 10, proportionalThreshold = .5){
+wzSubsetFun = function(inData, minNTime = 10, proportionalThreshold = .5, seed = 1){
   wOut = wFinder(inData, minNTime, proportionalThreshold)
   # Subset data
     dataW = subset(wOut$dataZSub, siteTimeDate %in% wOut$wSiteTimeDates) 
@@ -412,6 +413,7 @@ wzSubsetFun = function(inData, minNTime = 10, proportionalThreshold = .5){
     for(i in 1:length(siteTimeDateNames)){
       siteTimeDateSub = subset(dataW, siteTimeDate == siteTimeDateNames[i])
       UniqueSubsites = unique(siteTimeDateSub$site) 
+      set.seed(seed)
       sampledSubsites = sample(UniqueSubsites, wOut$w, replace = F)
       events[[i]] = subset(siteTimeDateSub, site %in% sampledSubsites)
     }
