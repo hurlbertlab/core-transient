@@ -32,7 +32,7 @@ library(rgeos)
 library(dplyr)
 library(fields)
 library(tidyr)
-
+library(ggplot2)
 
 #'#'#'#'#'#'#'#'#'
 #'----Write for_loop to calculate distances between every BBS site combination to find focal and associated routes that correspond best----
@@ -219,8 +219,63 @@ summary(mod1)
 
 plot(meanOcc~log(area), data = bbs_allscales, xlab = "Log Area" , ylab = "Mean Temporal Occupancy")
 plot(meanOcc~aveN, data = bbs_allscales, xlab = "Average Abundance" , ylab = "Mean Temporal Occupancy")
-#^^same pattern 
+#^^same pattern
 
+
+
+####Characterizing changes at the level of a single focal rte, above and below#### 
+#six panel plot for each rte, output as pdfs for 02/05
+#set up as forloop that exports each plot before moving on to the next stateroute?
+#just need to replace bbs_allscales with a subset that changes every loop, 
+#dictated by stateroute 
+#and I want R to bring them all together and export/save as pdf at end
+stateroutes = unique(bbs_allscales$focalrte)
+pdf("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/final.pdf")
+for (s in stateroutes) { 
+#log(area)
+theme_set(theme_bw()+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()))
+plotsub = subset(bbs_allscales, bbs_allscales$focalrte == s)
+plot1 = ggplot(plotsub, aes(x = log(area), y = meanOcc))+geom_point(color = "firebrick")
+plot1_2= ggplot(plotsub, aes(x = log(area), y = pctCore))+geom_point(color = "turquoise")
+plot1_3 = ggplot(plotsub, aes(x = log(area), y = pctTran))+geom_point(color = "olivedrab")
+
+
+#aveN
+plot2 = ggplot(plotsub, aes(x=aveN, y =meanOcc))+geom_point(color = "firebrick")
+plot2_2 = ggplot(plotsub, aes(x=aveN, y =pctCore))+geom_point(color = "turquoise")
+plot2_3 =ggplot(plotsub, aes(x=aveN, y =pctTran))+geom_point(color = "olivedrab")
+
+
+#setting up aveN and log(area) cols side by side 
+source("//bioark/HurlbertLab/Gartland/Intermediate scripts/multiplot_function.R")
+multiplot(plot1, plot1_2, plot1_3, plot2, plot2_2, plot2_3, cols=2)
+
+ggsave("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/final.pdf")
+#how can I make the plot title change for every stateroute? 
+#how can I make sure not overwritten? #defaults to last plot 
+#works perfectly 
+}
+
+
+
+
+
+
+#Sara's ref code for pdf output 
+
+pdf('output/plots/indiv_scale_plots.pdf', height = 10, width = 7.5)
+par(mfrow = c(5, 4), mar = c(4, 4, 1, 1), mgp = c(3, 1, 0), 
+    cex.axis = 1, cex.lab = 1, las = 1)
+for(id in datasetIDs){
+  plotsub = subset(occ_taxa, occ_taxa$datasetID == id)
+  plot(log10(plotsub$meanAbundance), plotsub$pctTrans, pch = 16, xlim = c(0, 7), ylim = c(0,1.2), col = plotsub$taxa, main = id)
+  
+}
+dev.off()
+
+
+
+#want to fit a logistic regression line to each as well 
 
 ####Env data add-in####
 
