@@ -736,13 +736,16 @@ dataset8 = subset(dataset7, site %in% fullGoodSites)
 # and bases the characterization of the community in that site-year based on
 # the aggregate of those standardized subsamples.
 
-subsettedData = subsetDataFun(dataset8, 
-                              datasetID, 
-                              spatialGrain = sGrain, 
-                              temporalGrain = tGrain,
-                              minNTime = minNTime, minSpRich = minSpRich,
-                              proportionalThreshold = topFractionSites,
-                              dataDescription)
+dataSubset = subsetDataFun(dataset8, 
+                           datasetID, 
+                           spatialGrain = sGrain, 
+                           temporalGrain = tGrain,
+                           minNTime = minNTime, minSpRich = minSpRich,
+                           proportionalThreshold = topFractionSites,
+                           dataDescription)
+
+subsettedData = dataSubset$data
+
 # Take a look at the propOcc:
 
 head(propOccFun(subsettedData))
@@ -756,6 +759,14 @@ siteSummaryFun(subsettedData)
 # If everything looks good, write the files:
 
 writePropOccSiteSummary(subsettedData)
+
+# Save the spatial and temporal subsampling values to the data formatting table:
+dataFormattingTable[,'Spatial_subsamples'] = 
+  dataFormattingTableFieldUpdate(datasetID, 'Spatial_subsamples', dataSubset$w)
+
+dataFormattingTable[,'Temporal_subsamples'] = 
+  dataFormattingTableFieldUpdate(datasetID, 'Temporal_subsamples', dataSubset$z)
+
 
 # Update Data Formatting Table with summary stats of the formatted,
 # properly subsetted dataset
