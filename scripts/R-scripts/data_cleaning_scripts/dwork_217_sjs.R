@@ -4,6 +4,7 @@
 #
 # Dataset name: Konza LTER vegetation species
 # Dataset source (link): http://www.konza.ksu.edu/knz/pages/data/KnzEntity.aspx?id=PVC021
+# http://www.konza.ksu.edu/KNZ/docs/DC.pdf pp.198
 # Formatted by: Sara Snell
 #
 # Start by opening the data formatting table (data_formatting_table.csv). 
