@@ -219,7 +219,33 @@ summary(mod1)
 
 plot(meanOcc~log(area), data = bbs_allscales, xlab = "Log Area" , ylab = "Mean Temporal Occupancy")
 plot(meanOcc~aveN, data = bbs_allscales, xlab = "Average Abundance" , ylab = "Mean Temporal Occupancy")
-#^^same pattern 
+#^^same pattern
+
+
+
+####Characterizing changes at the level of a single focal rte, above and below#### 
+#six panel plot for each rte, output as pdfs for 02/05
+#set up as forloop that exports each plot before moving on to the next stateroute?
+
+#log(area)
+theme_set(theme_bw()+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()))
+plot1 = ggplot(bbs_allscales, aes(x = log(area), y = meanOcc))+geom_point(color = "firebrick")
+plot1_2= ggplot(bbs_allscales, aes(x = log(area), y = pctCore))+geom_point(color = "firebrick")
+plot1_3 = ggplot(bbs_allscales, aes(x = log(area), y = pctTran))+geom_point(color = "firebrick")
+
+
+#aveN
+plot2 = ggplot(bbs_allscales, aes(x=aveN, y =meanOcc))+geom_point(color = "turquoise")
+plot2_2 = ggplot(bbs_allscales, aes(x=aveN, y =pctCore))+geom_point(color = "turquoise")
+plot2_3 =ggplot(bbs_allscales, aes(x=aveN, y =pctTran))+geom_point(color = "turquoise")
+
+
+
+#setting up aveN and log(area) cols side by side 
+source("//bioark/HurlbertLab/Gartland/Intermediate scripts/multiplot_function.R")
+multiplot(plot1, plot1_2, plot1_3, plot2, plot2_2, plot2_3, cols=2)
+#works perfectly 
+
 
 
 ####Env data add-in####
