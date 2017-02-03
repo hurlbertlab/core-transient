@@ -438,7 +438,7 @@ subsetDataFun = function(dataset, datasetID, spatialGrain, temporalGrain,
   outData = data.frame(datasetID = datasetID, site = subsettedData$outData$site, year = subsettedData$outData$year,
                        species = subsettedData$outData$species, count = subsettedData$outData$count)
                        
-  return(list(data = outData, w = subsettedData$w, z = subsettedData$z)
+  return(list(data = outData, w = subsettedData$w, z = subsettedData$z))
 }
 
 #------------------------------------------------------------------------------------------------------*
