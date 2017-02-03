@@ -226,27 +226,43 @@ plot(meanOcc~aveN, data = bbs_allscales, xlab = "Average Abundance" , ylab = "Me
 ####Characterizing changes at the level of a single focal rte, above and below#### 
 #six panel plot for each rte, output as pdfs for 02/05
 #set up as forloop that exports each plot before moving on to the next stateroute?
-
+#just need to replace bbs_allscales with a subset that changes every loop, 
+#dictated by stateroute 
+#and I want R to bring them all together and export/save as pdf at end
+stateroutes = unique(bbs_allscales$focalrte)
+output = c()
+for (s in stateroutes) { 
 #log(area)
 theme_set(theme_bw()+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()))
-plot1 = ggplot(bbs_allscales, aes(x = log(area), y = meanOcc))+geom_point(color = "firebrick")
-plot1_2= ggplot(bbs_allscales, aes(x = log(area), y = pctCore))+geom_point(color = "firebrick")
-plot1_3 = ggplot(bbs_allscales, aes(x = log(area), y = pctTran))+geom_point(color = "firebrick")
+plot1 = ggplot(s, aes(x = log(area), y = meanOcc))+geom_point(color = "firebrick")
+plot1_2= ggplot(s, aes(x = log(area), y = pctCore))+geom_point(color = "turquoise")
+plot1_3 = ggplot(s, aes(x = log(area), y = pctTran))+geom_point(color = "olivedrab")
 
 
 #aveN
-plot2 = ggplot(bbs_allscales, aes(x=aveN, y =meanOcc))+geom_point(color = "turquoise")
-plot2_2 = ggplot(bbs_allscales, aes(x=aveN, y =pctCore))+geom_point(color = "turquoise")
-plot2_3 =ggplot(bbs_allscales, aes(x=aveN, y =pctTran))+geom_point(color = "turquoise")
-
+plot2 = ggplot(s, aes(x=aveN, y =meanOcc))+geom_point(color = "firebrick")
+plot2_2 = ggplot(s, aes(x=aveN, y =pctCore))+geom_point(color = "turquoise")
+plot2_3 =ggplot(s, aes(x=aveN, y =pctTran))+geom_point(color = "olivedrab")
 
 
 #setting up aveN and log(area) cols side by side 
 source("//bioark/HurlbertLab/Gartland/Intermediate scripts/multiplot_function.R")
-multiplot(plot1, plot1_2, plot1_3, plot2, plot2_2, plot2_3, cols=2)
+final = multiplot(plot1, plot1_2, plot1_3, plot2, plot2_2, plot2_3, cols=2)
+final = final+labs(title = "s") #how can I make the plot title change for every stateroute?
 #works perfectly 
 
 
+output = rbind(output, final) #obvs not using rbind, how do I stitch plots together for a page?
+}
+
+final = output 
+ggsave("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/final.pdf")
+
+
+
+
+
+#want to fit a logistic regression line to each as well 
 
 ####Env data add-in####
 
