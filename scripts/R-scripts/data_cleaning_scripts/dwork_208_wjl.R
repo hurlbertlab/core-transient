@@ -241,7 +241,7 @@ dataFormattingTable[,'spatial_scale_variable'] =
 dataFormattingTable[,'Notes_siteFormat'] = 
   dataFormattingTableFieldUpdate(datasetID, 'Notes_siteFormat',  # Fill value below in quotes
                                  
-                                 'site fields concatenated. the metadata suggests that there are 6 replicates with 7 treatments each. 5 stations are within each treatment. ')
+                                 'site fields concatenated. the metadata suggests that there are 6 replicates with 10 treatments each. 5 stations are within each treatment. ')
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT COUNT DATA ----
