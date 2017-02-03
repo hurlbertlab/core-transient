@@ -201,6 +201,13 @@ taxorder = c('Bird', 'Plant', 'Mammal', 'Fish', 'Arthropod', 'Benthos', 'Plankto
 col.palette=c("blue","green", "purple", "light blue","gold", "dark blue", "red",  "dark green")
 taxcolors = data.frame(taxa = taxorder, color = col.palette)
 
+# calc area at ALL scales
+# summaries_grains_w_taxa
+
+
+
+
+
 
 # Datasets plotted individually versus community size
 pdf('output/plots/indiv_scale_plots.pdf', height = 10, width = 7.5)
