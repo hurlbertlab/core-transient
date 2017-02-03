@@ -193,7 +193,6 @@ dataset6$date = date
 # Check the results
 
 head(dataset6)
-str(dataset6)
 
 # All good
 

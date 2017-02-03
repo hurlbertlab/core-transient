@@ -112,7 +112,6 @@ dim(dataset)
 
 # View the structure of the dataset:
 
-str(dataset)
 
 # View first 6 rows of the dataset:
 
@@ -168,7 +167,6 @@ dataFormattingTable[,'LatLong_sites'] =
 # E.g., c('year', 'month', 'day')
 
 # notes - had to separate out year
-#dataset1$year = substr(dataset1$MO, 1, 4)
 
 #rename DATE 
 names(dataset1)[names(dataset1)=="DATE"] <- "jday"
@@ -230,7 +228,6 @@ dataset2$date = date
 # Check the results:
 
 head(dataset2)
-str(dataset2)
 
 # !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE DATE DATA WERE MODIFIED!
 

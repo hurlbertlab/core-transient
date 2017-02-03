@@ -34,7 +34,6 @@ dataFormattingTable = read.csv('Reference/data_formatting_table.csv')
 names(dataset)
 head(dataset)
 tail(dataset)
-str(dataset)
 summary(dataset)
 
 # Remove column 'X'
@@ -144,7 +143,6 @@ head(dataset3)
 # Check for NAs or zeros
 
 summary(dataset3)
-str(dataset3)
 
 # No zeros, remove NAs if there are any
 
@@ -213,7 +211,6 @@ dataset6$date = date
 # Check the results
 
 head(dataset6)
-str(dataset6)
 
 # All good
 

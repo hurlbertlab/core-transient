@@ -112,7 +112,6 @@ dim(dataset)
 
 # View the structure of the dataset:
 
-str(dataset)
 
 # View first 6 rows of the dataset:
 
@@ -227,7 +226,6 @@ dataset2$date = date
 # Check the results:
 
 head(dataset2)
-str(dataset2)
 
 # !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE DATE DATA WERE MODIFIED!
 

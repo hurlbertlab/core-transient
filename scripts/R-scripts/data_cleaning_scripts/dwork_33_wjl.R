@@ -59,7 +59,6 @@ topFractionSites = 0.5
 
 names(dataset)
 dim(dataset)
-str(dataset)
 head(dataset)
 
 # Here, we can see that there are some fields that we won't use. Let's remove them, note that I've given a new name here "dataset1", this is to ensure that we don't have to go back to square 1 if we've miscoded anything.
@@ -142,7 +141,6 @@ dataset2$date = date
 # Check the results:
 
 head(dataset2)
-str(dataset2)
 
 # !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE DATE DATA WERE MODIFIED!
 

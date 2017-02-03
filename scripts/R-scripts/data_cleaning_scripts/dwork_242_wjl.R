@@ -73,7 +73,6 @@ topFractionSites = 0.5
 
 names(dataset)
 dim(dataset)
-str(dataset)
 head(dataset)
 
 # Remove unneeded fields
@@ -150,7 +149,6 @@ dataset2$date = date
 # Check the results:
 
 head(dataset2)
-str(dataset2)
 
 #!DATA FORMATTING TABLE UPDATE!
 

@@ -71,7 +71,6 @@ dim(dataset)
 
 # View the structure of the dataset:
 
-str(dataset)
 
 # View first 6 rows of the dataset:
 
@@ -88,8 +87,6 @@ dataset1 = dataset[,-unusedFields]
 
 # Separate out plot and year from the plotyear field
 dataset1$plotyear = as.character(dataset1$plotyear)
-dataset1$site = substr(dataset1$plotyear, 1, (nchar(dataset1$plotyear) - 2))
-dataset1$date = as.numeric(substr(dataset1$plotyear, (nchar(dataset1$plotyear) - 1), 
                        nchar(dataset1$plotyear))) + 1900
 dataset1 = dataset1[, -1]
 
@@ -159,7 +156,6 @@ dataset2$date = date
 # Check the results:
 
 head(dataset2)
-str(dataset2)
 
 # !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE DATE DATA WERE MODIFIED!
 

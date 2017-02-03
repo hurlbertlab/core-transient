@@ -117,7 +117,6 @@ dim(dataset)
 
 # View the structure of the dataset:
 
-str(dataset)
 
 # View first 6 rows of the dataset:
 
@@ -223,7 +222,6 @@ dataset2$date = date
 # Check the results:
 
 head(dataset2)
-str(dataset2)
 
 # !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE DATE DATA WERE MODIFIED!
 
@@ -392,7 +390,6 @@ dataFormattingTable[,'Notes_siteFormat'] =
 
 names(dataset3)
 summary(dataset3)
-str(dataset3)
 
 # Noticed there are some values with commas in the gcount field; convert to decimal:
 dataset3$gcover = gsub(",", ".", dataset3$gcover)
