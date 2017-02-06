@@ -250,7 +250,10 @@ plot2_3 =ggplot(plotsub, aes(x=aveN, y =pctTran))+geom_point(color = "olivedrab"
 source("//bioark/HurlbertLab/Gartland/Intermediate scripts/multiplot_function.R")
 multiplot(plot1, plot1_2, plot1_3, plot2, plot2_2, plot2_3, cols=2)
 
-ggsave("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/final.pdf")
+mypath <- file.path("/bioark.ad.unc.edu","HurlbertLab","Gartland", "BBS scaled", "scale_plots", 
+                    paste("scaleplot_", stateroutes[s], ".pdf", sep = ""))
+
+ggsave(file=mypath)
 #how can I make the plot title change for every stateroute? 
 #how can I make sure not overwritten? #defaults to last plot 
 #works perfectly 
