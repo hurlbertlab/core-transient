@@ -211,7 +211,7 @@ bbs_allscales = rbind(bbs_below, bbs_focal_occs)
 ##############################################################
 
 ####Cross-scale analysis and visualization####
-bbs_allscales = read.csv("C:/git/core-transient/data/bbs_allscales.csv", header = TRUE)
+bbs_allscales = read.csv("data/bbs_allscales.csv", header = TRUE)
 
 mod1 = lm(meanOcc~area, data = bbs_allscales) #explains ~50% of the variation in occ
 mod2 = lm(meanOcc~aveN, data = bbs_allscales)
@@ -231,7 +231,7 @@ plot(meanOcc~aveN, data = bbs_allscales, xlab = "Average Abundance" , ylab = "Me
 #and I want R to bring them all together and export/save as pdf at end
 stateroutes = unique(bbs_allscales$focalrte)
 pdf("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/final.pdf")
-for (s in stateroutes) { 
+for (s in stateroutes[1:2]) { 
 #log(area)
 theme_set(theme_bw()+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()))
 plotsub = subset(bbs_allscales, bbs_allscales$focalrte == s)
@@ -241,23 +241,23 @@ plot1_3 = ggplot(plotsub, aes(x = log(area), y = pctTran))+geom_point(color = "o
 
 
 #aveN
-plot2 = ggplot(plotsub, aes(x=aveN, y =meanOcc))+geom_point(color = "firebrick")
-plot2_2 = ggplot(plotsub, aes(x=aveN, y =pctCore))+geom_point(color = "turquoise")
-plot2_3 =ggplot(plotsub, aes(x=aveN, y =pctTran))+geom_point(color = "olivedrab")
+plot2 = ggplot(plotsub, aes(x=log(aveN), y =meanOcc))+geom_point(color = "firebrick")
+plot2_2 = ggplot(plotsub, aes(x=log(aveN), y =pctCore))+geom_point(color = "turquoise")
+plot2_3 =ggplot(plotsub, aes(x=log(aveN), y =pctTran))+geom_point(color = "olivedrab")
 
 
 #setting up aveN and log(area) cols side by side 
 source("//bioark/HurlbertLab/Gartland/Intermediate scripts/multiplot_function.R")
 scaleplot = multiplot(plot1, plot1_2, plot1_3, plot2, plot2_2, plot2_3, cols=2)
 
-mypath <- file.path("//bioark.ad.unc.edu","HurlbertLab","Gartland", "BBS scaled", "scale_plots")
+#mypath <- file.path("//bioark.ad.unc.edu","HurlbertLab","Gartland", "BBS scaled", "scale_plots")
 
-ggsave(paste("scaleplot", s, ".pdf", sep = ""), path=mypath)
+#ggsave(paste("output/plots/BBS_scaleplot_", s, ".pdf", sep = ""))
 #how can I make the plot title change for every stateroute? 
 #how can I make sure not overwritten? #defaults to last plot 
 #works perfectly 
 }
-
+dev.off()
 
 paste("scaleplot_", s, ".pdf", sep = "")
 
