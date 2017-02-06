@@ -230,8 +230,8 @@ plot(meanOcc~aveN, data = bbs_allscales, xlab = "Average Abundance" , ylab = "Me
 #dictated by stateroute 
 #and I want R to bring them all together and export/save as pdf at end
 stateroutes = unique(bbs_allscales$focalrte)
-pdf("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/final.pdf")
-for (s in stateroutes[1:2]) { 
+pdf("output/plots/BBS_scaleplots.pdf", onefile = TRUE)
+for (s in stateroutes) { 
 #log(area)
 theme_set(theme_bw()+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()))
 plotsub = subset(bbs_allscales, bbs_allscales$focalrte == s)
@@ -250,7 +250,7 @@ plot2_3 =ggplot(plotsub, aes(x=log(aveN), y =pctTran))+geom_point(color = "olive
 
 scaleplot = grid.arrange(plot1, plot2, plot1_2, plot2_2, plot1_3, plot2_3, ncol=2, 
                          top = paste("scaleplot_", s, sep = ""))
-ggsave(paste("output/plots/BBS_scaleplot_", s, ".pdf", sep = ""), plot = scaleplot)
+#ggsave(paste("output/plots/BBS_scaleplot_", s, ".pdf", sep = ""), plot = scaleplot)
 #how can I make the plot title change for every stateroute? 
 #how can I make sure not overwritten? #defaults to last plot 
 #works perfectly 
