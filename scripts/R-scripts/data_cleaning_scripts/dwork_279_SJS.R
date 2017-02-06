@@ -269,7 +269,8 @@ dataFormattingTable[,'subannualTgrain'] =
 
 #--! PROVIDE INFO !--#
 dataset2$site="maxgrain"
-site_grain_names = c("site","lakeid", "station", "towdepth")
+# station only has value of 1 so was dropped, towdepth  recorded as variate in DB but no scale differences
+site_grain_names = c("site","lakeid")
 
 # We will now create the site field with these codes concatenated if there
 # are multiple grain fields. Otherwise, site will just be the single grain field.
@@ -377,7 +378,7 @@ dataFormattingTable[,'Notes_siteFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_siteFormat', 
                                  
                                  #--! PROVIDE INFO !--#
-                                 'The site field is a concatenation of station number, lake id, and tow-depth.')
+                                 'The site field is a concatenation of site (maxgrain) & lake id. Station and tow-depth d/n have to do with scale in this dataset.')
 
 
 #-------------------------------------------------------------------------------*
@@ -689,7 +690,7 @@ tGrain = 'year'
 site_grain_names
 
 #--! PROVIDE INFO !--#
-sGrain = 'station'
+sGrain = 'lakeid'
 
 # This is a reasonable choice of spatial grain because ...
 #--! PROVIDE INFO !--#
@@ -758,6 +759,8 @@ dataSubset = subsetDataFun(dataset8,
                            dataDescription)
 
 subsettedData = dataSubset$data
+
+write.csv(subsettedData, paste("data/standardized_datasets/dataset_", datasetID, ".csv", sep = ""), row.names = F)
 
 # Take a look at the propOcc:
 

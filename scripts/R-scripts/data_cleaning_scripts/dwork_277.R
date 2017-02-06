@@ -267,6 +267,8 @@ dataFormattingTable[,'subannualTgrain'] =
 table(dataset2$lakeid)
 dataset2$lakeid[dataset2$lakeid == "Tr"] = "TR"
 dataset2$lakeid = factor(dataset2$lakeid)
+# concatenate lakeid and station bc all combinations of lake id and station are unique
+dataset2$lake_stat = paste(dataset2$lakeid, dataset2$station, sep = "_")
 
 # Here, we will concatenate all of the potential fields that describe the site 
 # in hierarchical order from largest to smallest grain. Based on the dataset,
@@ -274,7 +276,7 @@ dataset2$lakeid = factor(dataset2$lakeid)
 
 #--! PROVIDE INFO !--#
 dataset2$site="maxgrain"
-site_grain_names = c("site","lakeid", "station")
+site_grain_names = c("site","lake_stat")
 
 # We will now create the site field with these codes concatenated if there
 # are multiple grain fields. Otherwise, site will just be the single grain field.
@@ -741,7 +743,7 @@ tGrain = 'year'
 site_grain_names
 
 #--! PROVIDE INFO !--#
-sGrain = 'lakeid'
+sGrain = 'lake_stat'
 
 # This is a reasonable choice of spatial grain because ...
 #--! PROVIDE INFO !--#
@@ -808,6 +810,8 @@ dataSubset = subsetDataFun(dataset8,
                            dataDescription)
 
 subsettedData = dataSubset$data
+
+write.csv(subsettedData, paste("data/standardized_datasets/dataset_", datasetID, ".csv", sep = ""), row.names = F)
 
 # Take a look at the propOcc:
 

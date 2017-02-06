@@ -2216,27 +2216,16 @@ datasetID,site,scale,taxa,area,Raw_spatial_grain,Raw_spatial_grain_unit
 276,6_EL VERDE,2,Bird,2827,2827,m2
 276,9_EL VERDE,2,Bird,2827,2827,m2
 277,maxgrain,1,Plankton,315,45,L
-277,AL_maxgrain,2,Plankton,45,45,L
-277,BM_maxgrain,2,Plankton,45,45,L
-277,CB_maxgrain,2,Plankton,45,45,L
-277,CR_maxgrain,2,Plankton,45,45,L
-277,SP_maxgrain,2,Plankton,45,45,L
-277,TB_maxgrain,2,Plankton,45,45,L
-277,TR_maxgrain,2,Plankton,45,45,L
-277,1_AL_maxgrain,3,Plankton,45,45,L
-277,1_BM_maxgrain,3,Plankton,45,45,L
-277,1_CB_maxgrain,3,Plankton,45,45,L
-277,1_CR_maxgrain,3,Plankton,45,45,L
-277,1_SP_maxgrain,3,Plankton,45,45,L
-277,1_TB_maxgrain,3,Plankton,45,45,L
-277,2_TR_maxgrain,3,Plankton,45,45,L
-279,maxgrain,1,Plankton,400,50,m
-279,ME_maxgrain,2,Plankton,200,50,m
-279,MO_maxgrain,2,Plankton,200,50,m
-279,1_ME_maxgrain,3,Plankton,100,50,m
-279,1_MO_maxgrain,3,Plankton,100,50,m
-279,20_1_ME_maxgrain,4,Plankton,50,50,m
-279,20_1_MO_maxgrain,4,Plankton,50,50,m
+277,1_AL_maxgrain,2,Plankton,45,45,L
+277,1_BM_maxgrain,2,Plankton,45,45,L
+277,1_CB_maxgrain,2,Plankton,45,45,L
+277,1_CR_maxgrain,2,Plankton,45,45,L
+277,1_SP_maxgrain,2,Plankton,45,45,L
+277,1_TB_maxgrain,2,Plankton,45,45,L
+277,2_TR_maxgrain,2,Plankton,45,45,L
+279,maxgrain,1,Plankton,100,50,m
+279,ME_maxgrain,2,Plankton,50,50,m
+279,MO_maxgrain,2,Plankton,50,50,m
 281,TR,1,Plant,79.4,39.7,m2
 281,50_TR,2,Plant,39.7,39.7,m2
 281,56_TR,2,Plant,39.7,39.7,m2

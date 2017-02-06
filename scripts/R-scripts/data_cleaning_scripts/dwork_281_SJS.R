@@ -262,6 +262,7 @@ dataFormattingTable[,'subannualTgrain'] =
 # This plot reveals that transects were much more variable prior to 1993
 
 #--! PROVIDE INFO !--#
+# lakeid = maxgrain
 site_grain_names = c('lakeid', 'site')
 
 # We will now create the site field with these codes concatenated if there
