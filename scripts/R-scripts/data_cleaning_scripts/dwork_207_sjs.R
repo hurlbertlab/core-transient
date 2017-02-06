@@ -725,6 +725,11 @@ site_grain_names
 #--! PROVIDE INFO !--#
 sGrain = 'site_final'
 
+# Save the spatial grain chosen for analysis
+dataFormattingTable[,'Formatted_siteUnit'] = 
+  dataFormattingTableFieldUpdate(datasetID, 'Formatted_siteUnit', sGrain)
+
+
 # This is a reasonable choice of spatial grain because ...
 #--! PROVIDE INFO !--#
 # quadrats are only 0.25 m2 and record presence absence, whereas sites encompass
@@ -791,7 +796,9 @@ dataSubset = subsetDataFun(dataset8,
                            proportionalThreshold = topFractionSites,
                            dataDescription)
 
-subsettedData = dataSubset$data
+subsettedData = dataSubset$data 
+
+write.csv(subsettedData, paste("data/standardized_datasets/dataset_", datasetID, ".csv", sep = ""), row.names = F)
 
 # Take a look at the propOcc:
 
