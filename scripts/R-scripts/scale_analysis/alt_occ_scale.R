@@ -247,19 +247,17 @@ plot2_3 =ggplot(plotsub, aes(x=log(aveN), y =pctTran))+geom_point(color = "olive
 
 
 #setting up aveN and log(area) cols side by side 
-source("//bioark/HurlbertLab/Gartland/Intermediate scripts/multiplot_function.R")
-scaleplot = multiplot(plot1, plot1_2, plot1_3, plot2, plot2_2, plot2_3, cols=2)
 
-#mypath <- file.path("//bioark.ad.unc.edu","HurlbertLab","Gartland", "BBS scaled", "scale_plots")
-
-#ggsave(paste("output/plots/BBS_scaleplot_", s, ".pdf", sep = ""))
+scaleplot = grid.arrange(plot1, plot2, plot1_2, plot2_2, plot1_3, plot2_3, ncol=2, 
+                         top = paste("scaleplot_", s, sep = ""))
+ggsave(paste("output/plots/BBS_scaleplot_", s, ".pdf", sep = ""), plot = scaleplot)
 #how can I make the plot title change for every stateroute? 
 #how can I make sure not overwritten? #defaults to last plot 
 #works perfectly 
 }
 dev.off()
 
-paste("scaleplot_", s, ".pdf", sep = "")
+
 
 
 
