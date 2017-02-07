@@ -2747,35 +2747,35 @@ datasetID,site,scale,taxa,area,Raw_spatial_grain,Raw_spatial_grain_unit
 323,Wicomico River_Lower Potomac River_maxgrain,3,Fish,,450,m2
 323,Youghiogheny River_Youghiogheny River_maxgrain,3,Fish,,450,m2
 323,Zekiah Swamp_Lower Potomac River_maxgrain,3,Fish,,450,m2
-323,BASIN RUN_Octoraro Creek_Susquehanna River_maxgrain,4,Fish,,450,m2
-323,BEAR CREEK_Youghiogheny River_Youghiogheny River_maxgrain,4,Fish,,450,m2
-323,BEAVER RUN_Liberty Reservoir_Patapsco River_maxgrain,4,Fish,,450,m2
-323,CRABTREE CREEK_Savage River_North Branch Potomac River_maxgrain,4,Fish,,450,m2
-323,CYPRESS BRANCH_Upper Chester River_Chester River_maxgrain,4,Fish,,450,m2
-323,DEEP RUN_Patapsco River L N Br_Patapsco River_maxgrain,4,Fish,,450,m2
-323,FIFTEENMILE CREEK_Fifteen Mile Creek_Upper Potomac River_maxgrain,4,Fish,,450,m2
-323,GILLIS FALLS_S Branch Patapsco_Patapsco River_maxgrain,4,Fish,,450,m2
-323,HIGH RUN_Upper Monocacy River_Middle Potomac River_maxgrain,4,Fish,,450,m2
-323,HOGHOLE RUN_Port Tobacco River_Lower Potomac River_maxgrain,4,Fish,,450,m2
-323,LEONARD POND RUN_Wicomico River Head_Nanticoke River_maxgrain,4,Fish,,450,m2
-323,MATTAWOMAN CREEK_Mattawoman Creek_Lower Potomac River_maxgrain,4,Fish,,450,m2
-323,MIDDLE RUN_Liberty Reservoir_Patapsco River_maxgrain,4,Fish,,450,m2
-323,MILL RUN_Nanjemoy Creek_Lower Potomac River_maxgrain,4,Fish,,450,m2
-323,NANJEMOY CREEK_Nanjemoy Creek_Lower Potomac River_maxgrain,4,Fish,,450,m2
-323,NASSAWANGO CREEK_Nassawango Creek_Pocomoke River_maxgrain,4,Fish,,450,m2
-323,NORTH BRANCH JONES FALLS_Jones Falls_Patapsco River_maxgrain,4,Fish,,450,m2
-323,PATUXENT RIVER UT_Rocky Gorge Dam_Patuxent River_maxgrain,4,Fish,,450,m2
-323,PATUXENT RIVER UT5_Rocky Gorge Dam_Patuxent River_maxgrain,4,Fish,,450,m2
-323,PRINCIPIO CREEK UT_Furnace Bay_Elk River_maxgrain,4,Fish,,450,m2
-323,PRINCIPIO CREEK UT1_Furnace Bay_Elk River_maxgrain,4,Fish,,450,m2
-323,SAVAGE RIVER_Savage River_North Branch Potomac River_maxgrain,4,Fish,,450,m2
-323,SKELETON CREEK UT1_Upper Choptank_Choptank River_maxgrain,4,Fish,,450,m2
-323,SOUTH BRANCH CASSELMAN RIVER_Casselman River_Youghiogheny River_maxgrain,4,Fish,,450,m2
-323,ST CLEMENTS CREEK UT1_St. Clements Bay_Lower Potomac River_maxgrain,4,Fish,,450,m2
-323,SWAN CREEK_Lower Chester River_Chester River_maxgrain,4,Fish,,450,m2
-323,SWANSON CREEK_Patuxent River lower_Patuxent River_maxgrain,4,Fish,,450,m2
-323,THREE BRIDGES BRANCH_Corsica River_Chester River_maxgrain,4,Fish,,450,m2
-323,TIBER RUN_Patapsco River L N Br_Patapsco River_maxgrain,4,Fish,,450,m2
+323,BASIN RUN_Octoraro Creek_Susquehanna River_maxgrain,4,Fish,450,450,m2
+323,BEAR CREEK_Youghiogheny River_Youghiogheny River_maxgrain,4,Fish,450,450,m2
+323,BEAVER RUN_Liberty Reservoir_Patapsco River_maxgrain,4,Fish,450,450,m2
+323,CRABTREE CREEK_Savage River_North Branch Potomac River_maxgrain,4,Fish,450,450,m2
+323,CYPRESS BRANCH_Upper Chester River_Chester River_maxgrain,4,Fish,450,450,m2
+323,DEEP RUN_Patapsco River L N Br_Patapsco River_maxgrain,4,Fish,450,450,m2
+323,FIFTEENMILE CREEK_Fifteen Mile Creek_Upper Potomac River_maxgrain,4,Fish,450,450,m2
+323,GILLIS FALLS_S Branch Patapsco_Patapsco River_maxgrain,4,Fish,450,450,m2
+323,HIGH RUN_Upper Monocacy River_Middle Potomac River_maxgrain,4,Fish,450,450,m2
+323,HOGHOLE RUN_Port Tobacco River_Lower Potomac River_maxgrain,4,Fish,450,450,m2
+323,LEONARD POND RUN_Wicomico River Head_Nanticoke River_maxgrain,4,Fish,450,450,m2
+323,MATTAWOMAN CREEK_Mattawoman Creek_Lower Potomac River_maxgrain,4,Fish,450,450,m2
+323,MIDDLE RUN_Liberty Reservoir_Patapsco River_maxgrain,4,Fish,450,450,m2
+323,MILL RUN_Nanjemoy Creek_Lower Potomac River_maxgrain,4,Fish,450,450,m2
+323,NANJEMOY CREEK_Nanjemoy Creek_Lower Potomac River_maxgrain,4,Fish,450,450,m2
+323,NASSAWANGO CREEK_Nassawango Creek_Pocomoke River_maxgrain,4,Fish,450,450,m2
+323,NORTH BRANCH JONES FALLS_Jones Falls_Patapsco River_maxgrain,4,Fish,450,450,m2
+323,PATUXENT RIVER UT_Rocky Gorge Dam_Patuxent River_maxgrain,4,Fish,450,450,m2
+323,PATUXENT RIVER UT5_Rocky Gorge Dam_Patuxent River_maxgrain,4,Fish,450,450,m2
+323,PRINCIPIO CREEK UT_Furnace Bay_Elk River_maxgrain,4,Fish,450,450,m2
+323,PRINCIPIO CREEK UT1_Furnace Bay_Elk River_maxgrain,4,Fish,450,450,m2
+323,SAVAGE RIVER_Savage River_North Branch Potomac River_maxgrain,4,Fish,450,450,m2
+323,SKELETON CREEK UT1_Upper Choptank_Choptank River_maxgrain,4,Fish,450,450,m2
+323,SOUTH BRANCH CASSELMAN RIVER_Casselman River_Youghiogheny River_maxgrain,4,Fish,450,450,m2
+323,ST CLEMENTS CREEK UT1_St. Clements Bay_Lower Potomac River_maxgrain,4,Fish,450,450,m2
+323,SWAN CREEK_Lower Chester River_Chester River_maxgrain,4,Fish,450,450,m2
+323,SWANSON CREEK_Patuxent River lower_Patuxent River_maxgrain,4,Fish,450,450,m2
+323,THREE BRIDGES BRANCH_Corsica River_Chester River_maxgrain,4,Fish,450,450,m2
+323,TIBER RUN_Patapsco River L N Br_Patapsco River_maxgrain,4,Fish,450,450,m2
 324,maxgrain,1,Invertebrate,,20,ft2
 324,Bush River_maxgrain,2,Invertebrate,,20,ft2
 324,Chester River_maxgrain,2,Invertebrate,,20,ft2
