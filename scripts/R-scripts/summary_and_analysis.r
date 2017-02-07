@@ -485,6 +485,7 @@ occ_sub_pred = occ_taxa[,c("datasetID", "taxa", "meanAbundance")]
 predmod3c = merTools::predictInterval(mod3c, occ_sub_pred, n.sims=1000)
 write.csv(predmod3c, "predmod3c.csv", row.names = FALSE)
 
+plot(mod3c)
 
 
 

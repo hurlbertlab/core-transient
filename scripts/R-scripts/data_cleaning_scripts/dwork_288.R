@@ -282,8 +282,9 @@ dataset2$watershed = trim.trailing(as.character(dataset2$watershed))
 dataset2$habitat = trim.trailing(as.character(dataset2$habitat))
 
 dataset2$site="maxgrain"
+dataset2$habrep=paste(dataset2$habitat, dataset2$replicate, sep = "_")
 #--! PROVIDE INFO !--#
-site_grain_names = c("watershed", "habitat", "replicate")
+site_grain_names = c("watershed", "habrep")
 
 # We will now create the site field with these codes concatenated if there
 # are multiple grain fields. Otherwise, site will just be the single grain field.
@@ -301,6 +302,7 @@ if (num_grains > 1) {
 # and mean pool length was 34.8 m, leading to mean pool area of 120 m2,
 # but pool area ranged from 23.3 - 391.8 m2.
 
+# watershed = aggregate pool+riffle
 dataFormattingTable[,'Raw_spatial_grain'] = 
   dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain',  
                                  
