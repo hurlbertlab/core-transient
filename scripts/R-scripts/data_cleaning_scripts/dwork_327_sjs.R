@@ -755,6 +755,7 @@ dataSubset = subsetDataFun(dataset8,
 
 subsettedData = dataSubset$data
 
+write.csv(subsettedData, paste("data/standardized_datasets/dataset_", datasetID, ".csv", sep = ""), row.names = F)
 # Take a look at the propOcc:
 
 head(propOccFun(subsettedData))
