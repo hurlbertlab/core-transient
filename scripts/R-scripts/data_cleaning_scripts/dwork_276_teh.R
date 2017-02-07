@@ -797,6 +797,7 @@ dataSubset = subsetDataFun(dataset8,
 
 subsettedData = dataSubset$data
 
+write.csv(subsettedData, paste("data/standardized_datasets/dataset_", datasetID, ".csv", sep = ""), row.names = F)
 # See what years are in the subsetted data. Expected years were dropped (i.e., 
 # 1989 and 1996), but so were some unexpected years: 1999, 2000, and 2002.
 # Still not sure why.
