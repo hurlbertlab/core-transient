@@ -265,12 +265,15 @@ if (num_grains > 1) {
 
 # Each trapping web includes 12 equally spaced transect lines radiating from 
 # the center, with a radius of 100 m.
+#Each of the four study sites are approximately 1 km by 0.5 km in area. Three rodent trapping webs and four replicate experimental blocks of plots were randomly located at each of the four study sites to measure vegetation responses to the exclusion of small mammals (Figure 2). Treatments within each block include one unfenced control plot, one fenced plot to exclude rodents and rabbits, and one fenced plot to exclude rabbits only. The three treatments were randomly assigned to each of the four possible plots in each block independently. The Jornada grassland site is grazed by cattle, so an additional treatment plot of cattle fencing was randomly assigned to one plot in each of the four blocks. Each of the three or four plots in a replicate block are separated by 20 meters. Each block of plots is situated near a rodent trapping web. Distances between the four replicate blocks of plots at each study site varies among sites from 30 meters to 800 meters, depending upon the random coordinates.
+
+# Each block of experimental measurement plots consists of one unfenced control plot, and two (or three if cattle are present) fenced animal exclosure plots (Figure 2). Each experimental measurement plot measures 36 meters by 36 meters. A grid of 36 sampling points are positioned at 5.8-meter intervals on a systematically located 6 by 6 point grid within each plot. A 3- meter wide buffer area is situated between the grid of 36 points and the perimeter of each plot. A permanent one-meter by one- meter vegetation measurement quadrat is located at each of the 36 points (Figure 3). The control plots are not fenced.
 
 dataFormattingTable[,'Raw_spatial_grain'] = 
   dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain',  
                                  
 #--! PROVIDE INFO !--#
-                                 31416) 
+                                 1296) 
 
 dataFormattingTable[,'Raw_spatial_grain_unit'] = 
   dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain_unit',  
