@@ -259,7 +259,21 @@ dev.off()
 library(stats)
 test = nls(meanOcc~SSlogis(log(area), Asym, xmid, scal), data = bbs_allscales)
 summary(test) #estimates are the coefs, but can get specifically by calling "coef"
-coef(test)
+coefs = coef(test)
+asym = coefs[1]
+xmid = coefs[2]
+scal = coefs[3]
+#1 is asym, 2 is xmid, 3 is scale 
+#is self starting log model ok? 
+
+#replace x variable with log aveN or log area
+
+curvemod = nls(meanOcc ~ asym/(1+exp(xmid - log(area))/scal), 
+               data = bbs_allscales) 
+summary(curvemod)
+
+
+
 
 
 
