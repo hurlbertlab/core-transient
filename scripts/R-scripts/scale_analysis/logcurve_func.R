@@ -1,27 +1,24 @@
 # FUNCTION FOR DRAWING A LOGISTIC CURVE GIVEN LOGISTIC FIT COEFFICIENTS
-exp.mod<-function(coes,jd){
-  Asym<-plogis(coes[1])
-  xmid<-coes[2]
-  scal<-coes[3]
-  Asym/(1 + exp((xmid - jd)/scal))
+exp.mod<-function(coefs, x){
+  Asym<-plogis(coefs[1])
+  xmid<-coefs[2]
+  scal<-coefs[3]
+  Asym/(1 + exp((xmid - x)/scal))
 }
+
+#find out what num.uniq.locs corresponds to in my own data
 
 #mle fitting : BEGIN FITTING AND MAXIMUM LIKELIHOOD ESTIMATION OF LOGISTIC CURVE
 ll.exp.con<-function(Asym,xmid,scal){
-  if(xmid>max(temp.data2$JulianDay)){
-    nll<- -sum( dbinom(temp.data2$Num.uniq.locs,size=temp.data1$Num.Unique.locs,prob=sapply(temp.data2$JulianDay,function(jd) plogis(Asym)/(1 + exp((xmid - jd)/(scal)))),log=TRUE)) +
-      1000 *(abs(max(temp.data2$JulianDay)-xmid))^2        #<-make it huge if it veers outside of constraints of jd
+  if(xmid>max(log(bbs_allscales$area)) | xmid<min(log(bbs_allscales$area))){
+    nll<- -sum( dbinom(bbs_allscales$Num.uniq.locs,size=temp.data1$Num.Unique.locs,prob=sapply(bbs_allscales$area,function(x) plogis(Asym)/(1 + exp((xmid - x)/(scal)))),log=TRUE)) +
+      1000 *(abs(max(bbs_allscales$area)-xmid))^2        #<-make it huge if it veers outside of constraints of x
   }
   else{
-    if(xmid<min(temp.data2$JulianDay)){
-      nll<- -sum( dbinom(temp.data2$Num.uniq.locs,size=temp.data1$Num.Unique.locs,prob=sapply(temp.data2$JulianDay,function(jd) plogis(Asym)/(1 + exp((xmid - jd)/(scal)))),log=TRUE)) +
-        1000 *(abs(min(temp.data2$JulianDay)-xmid))^2
-    }
-    else{
-      nll<- -sum( dbinom(temp.data2$Num.uniq.locs,size=temp.data1$Num.Unique.locs,prob=sapply(temp.data2$JulianDay,function(jd) plogis(Asym)/(1 + exp((xmid - jd)/(scal)))),log=TRUE))
+      nll<- -sum( dbinom(bbs_allscales$Num.uniq.locs,size=temp.data1$Num.Unique.locs,prob=sapply(bbs_allscales$area,function(x) plogis(Asym)/(1 + exp((xmid - x)/(scal)))),log=TRUE))
     }}
   nll
-}
+
 nll<-numeric()
 coef.mat<-matrix(NA,ncol=3,nrow=length(xmids))
 xmids<-seq(80,180,20)
@@ -32,20 +29,20 @@ for(xm in 1:length(xmids)){
   Asym<-coef(fit.exp.con)[1]
   xmid<-coef(fit.exp.con)[2]
   scal<-coef(fit.exp.con)[3]
-  nll[xm]<- -sum( dbinom(temp.data2$Num.uniq.locs,size=temp.data1$Num.Unique.locs,prob=sapply(temp.data2$JulianDay,function(jd) plogis(Asym)/(1 + exp((xmid - jd)/(scal)))),log=TRUE))
+  nll[xm]<- -sum( dbinom(bbs_allscales$Num.uniq.locs,size=temp.data1$Num.Unique.locs,prob=sapply(bbs_allscales$area,function(x) plogis(Asym)/(1 + exp((xmid - x)/(scal)))),log=TRUE))
 }
 best.coef<-coef.mat[order(nll)[1],] ##only takes coef from the model with the smallest neg.log.likelihood
 #ADD BEST FIT LOGISTIC CURVE TO PLOT
-lines(temp.data2$JulianDay,exp.mod(best.coef,temp.data2$JulianDay),col='blue') ##model result
+lines(bbs_allscales$area,exp.mod(best.coef,bbs_allscales$area),col='blue') ##model result
 abline(v=best.coef[2], col='red')
 
-temp.data2$prop[is.nan(temp.data2$prop)==T] = 0                                                     
-temp.jd = temp.data2$JulianDay#[is.nan(temp.data2$prop)==F]
-temp.prop = temp.data2$prop     #[is.nan(temp.data2$prop)==F]
-temp.yr = rep(temp.data2$Year, length(temp.prop))
+bbs_allscales$prop[is.nan(bbs_allscales$prop)==T] = 0                                                     
+temp.x = bbs_allscales$area#[is.nan(bbs_allscales$prop)==F]
+temp.prop = bbs_allscales$prop     #[is.nan(bbs_allscales$prop)==F]
+temp.yr = rep(bbs_allscales$Year, length(temp.prop))
 
-x=lm(exp.mod(best.coef, temp.data2$JulianDay)~temp.prop)
-inflection.pt.output = rbind(inflection.pt.output, cbind(as.character(splist[sp]), yr, best.coef[1], best.coef[2], best.coef[3], temp.jd, temp.prop, exp.mod(best.coef, temp.data2$JulianDay), summary(x)$r.squared, long[i,], lat[j,], long[i+1,], lat[j+1,]))
+x=lm(exp.mod(best.coef, bbs_allscales$area)~temp.prop)
+inflection.pt.output = rbind(inflection.pt.output, cbind(as.character(splist[sp]), yr, best.coef[1], best.coef[2], best.coef[3], temp.x, temp.prop, exp.mod(best.coef, bbs_allscales$area), summary(x)$r.squared, long[i,], lat[j,], long[i+1,], lat[j+1,]))
 
-#inflection.pt.output = rbind(inflection.pt.output, cbind(as.character(splist[sp]), yr, best.coef[1], best.coef[2], best.coef[3], temp.jd, temp.prop, long[i,], lat[j,]))
-}
+#inflection.pt.output = rbind(inflection.pt.output, cbind(as.character(splist[sp]), yr, best.coef[1], best.coef[2], best.coef[3], temp.x, temp.prop, long[i,], lat[j,]))
+
