@@ -483,9 +483,16 @@ mod3c = lmer(pctTrans~(1|datasetID) * taxa * log10(meanAbundance), data=occ_taxa
 summary(mod3c)
 occ_sub_pred = occ_taxa[,c("datasetID", "taxa", "meanAbundance")]
 predmod3c = merTools::predictInterval(mod3c, occ_sub_pred, n.sims=1000)
+
 write.csv(predmod3c, "predmod3c.csv", row.names = FALSE)
 
-plot(mod3c)
+predmod3c$row = 1:2823
+occ_taxa$row = 1:2823
+predmod = merge(predmod3c, occ_taxa[,c("datasetID", "taxa", "row")], by = "row")
+
+p <- ggplot(predmod, aes(x = datasetID, y = fit))
+p + geom_point(aes(color = as.factor(predmod$taxa))) + geom_errorbar(ymin = predmod3c$lwr, ymax= predmod3c$upr, width=0.2) + theme_classic()
+ggsave(file="C:/Git/core-transient/output/plots/predmod3c.pdf", height = 10, width = 15)
 
 
 
