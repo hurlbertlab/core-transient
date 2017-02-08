@@ -250,10 +250,7 @@ plot2_3 =ggplot(plotsub, aes(x=log(aveN), y =pctTran))+geom_point(color = "olive
 
 scaleplot = grid.arrange(plot1, plot2, plot1_2, plot2_2, plot1_3, plot2_3, ncol=2, 
                          top = paste("scaleplot_", s, sep = ""))
-#ggsave(paste("output/plots/BBS_scaleplot_", s, ".pdf", sep = ""), plot = scaleplot)
-#how can I make the plot title change for every stateroute? 
-#how can I make sure not overwritten? #defaults to last plot 
-#works perfectly 
+#saved to core-transient/output/plots  
 }
 dev.off()
 
