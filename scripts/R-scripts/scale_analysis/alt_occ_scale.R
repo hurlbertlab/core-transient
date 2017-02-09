@@ -254,12 +254,30 @@ scaleplot = grid.arrange(plot1, plot2, plot1_2, plot2_2, plot1_3, plot2_3, ncol=
 }
 dev.off()
 
+####Logistic curve fitting####
 #want to fit a logistic curve (not a regression!) to each as well 
 #use nls: 
 library(stats)
 test = nls(meanOcc~SSlogis(log(area), Asym, xmid, scal), data = bbs_allscales)
 summary(test) #estimates are the coefs, but can get specifically by calling "coef"
-coef(test)
+coefs = coef(test)
+asym = coefs[1]
+xmid = coefs[2]
+scal = coefs[3]
+#1 is asym, 2 is xmid, 3 is scale 
+#is self starting log model ok? 
+
+#replace x variable with log aveN or log area
+
+curvemod = nls(meanOcc ~ asym/(1+exp(xmid - log(area))/scal), 
+               data = bbs_allscales) 
+summary(curvemod)
+
+
+
+
+
+
 
 
 
@@ -274,21 +292,3 @@ bbs_allscales = rename(bbs_latlon, focalrte = stateroute) %>%
 
 sites = data.frame(longitude = bbs_allscales$Longi, latitude = bbs_allscales$Lati)
 #points(sites$longitude, sites$latitude, col= "red", pch=16)
-
-
-#bringing in temp data 
-files = paste('//bioark.ad.unc.edu/HurlbertLab/GIS/ClimateData/BIOCLIM_meanTemp/tmean',1:12,'.bil', sep='')
-tmean = stack(files) 
-meanT = calc(tmean, mean)
-# Convert to actual temp
-meanT = meanT/10 
-bbs_allscales$temp = raster::extract(meanT, sites)
-
-
-#precip
-
-###fix sourcing of env data raster files, make sure aligned with correct years (2000-2014)
-files2 = paste('//bioark/HurlbertLab/GIS/ClimateData/2-25-2011/prec/prec_',1:12,'.bil', sep='')
-pmean = raster::stack(files2) 
-meanP = calc(pmean, mean)
-bbs_allscales$precip = raster::extract(precip, sites)
