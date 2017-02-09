@@ -217,6 +217,8 @@ dataset2 = dataset2[, -which(names(dataset2) %in% dateFieldName)]
 # Assign the new date values in a field called 'date'
 dataset2$date = date
 
+# change class to integer
+dataset2$date = as.integer(dataset2$date)
 # Check the results:
 
 head(dataset2)
