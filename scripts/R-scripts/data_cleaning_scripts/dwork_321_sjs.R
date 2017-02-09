@@ -507,6 +507,8 @@ data.frame(table(dataset5$species))
 #--! PROVIDE INFO !--#
 bad_sp = c('')
 
+dataset5$species = dataset5$SPECIES
+
 dataset6 = dataset5[!dataset5$species %in% bad_sp,]
 
 # It may be useful to count the number of times each name occurs, as misspellings 

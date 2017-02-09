@@ -231,7 +231,11 @@ getNestedTimeDataset = function(dataset,  temporalGrain, dataDescription){
   } else if (class(dataset$date)[1] == 'integer') { # if analysis will be performed at annual resolution
     dataset$analysisDate = dataset$date
     dataset$year = dataset$date
-  } else { 
+  } else if (class(dataset$date)[1] == 'numeric') {
+    dataset$analysisDate = as.integer(dataset$date)
+    dataset$year = as.integer(dataset$date)
+  }
+    else{ 
     dataset$analysisDate = as.numeric(format(dataset$date, "%Y"))
     dataset$year = as.numeric(format(dataset$date, "%Y"))
   }
