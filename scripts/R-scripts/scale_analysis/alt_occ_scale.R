@@ -257,8 +257,7 @@ dev.off()
 #use nls: 
 library(stats)
 
-samp.dataframe = data.frame(s= numeric(), meanOcc= numeric(), pctCore= numeric(), area= numeric(), aveN= numeric(),
-                            mOAinflec.half= numeric(), pCAinflec.half= numeric(), #pTAinflec.half= numeric(), 
+samp.dataframe = data.frame(mOAinflec.half= numeric(), pCAinflec.half= numeric(), #pTAinflec.half= numeric(), 
                             mONinflec.half= numeric(), pCNinflec.half= numeric(), #pTNinflec.half= numeric(),
                             mOAinflec.log= numeric(), pCAinflec.log= numeric(), #pTAinflec.log= numeric(), 
                             mONinflec.log= numeric(), pCNinflec.log= numeric()) #pTNinflec.log= numeric())
@@ -271,12 +270,12 @@ for(s in stateroutes){
 #fitting the log curve for area (for each route)
 mOAlog = nls(meanOcc ~ SSlogis(log(area), Asym, xmid, scal), data = logsub)
 pCAlog = nls(pctCore ~ SSlogis(log(area), Asym, xmid, scal), data = logsub)
-pTAlog = nls(pctTran ~ SSlogis(log(area), Asym, xmid, scal), data = logsub)
+#pTAlog = nls(pctTran ~ SSlogis(log(area), Asym, xmid, scal), data = logsub)
 
 #fitting the log curve for aveN (for each route)
 mONlog = nls(meanOcc ~ SSlogis(log(aveN), Asym, xmid, scal), data = logsub)
 pCNlog = nls(pctCore ~ SSlogis(log(aveN), Asym, xmid, scal), data = logsub)
-pTNlog = nls(pctTran ~ SSlogis(log(aveN), Asym, xmid, scal), data = logsub)
+#pTNlog = nls(pctTran ~ SSlogis(log(aveN), Asym, xmid, scal), data = logsub)
 
 #getting the inflection points:
 mOAinflec.log <- summary(mOAlog)$coefficients["xmid","Estimate"]
@@ -339,8 +338,7 @@ pCNinflec.half = x1 + ((yhat-y1)/(y2-y1))*(x2-x1)
 # x2 = (log(logsub$aveN)[logsub$inflectdiff == tail(logsub$inflectdiff[logsub$inflectdiff >= 0], 1)])
 # pTNinflec.half = x1 + ((yhat-y1)/(y2-y1))*(x2-x1)
 
-temp.dataframe = data.frame(s, logsub$meanOcc, logsub$pctCore, logsub$area, logsub$aveN, 
-                            mOAinflec.half, pCAinflec.half, #pTAinflec.half, 
+temp.dataframe = data.frame(mOAinflec.half, pCAinflec.half, #pTAinflec.half, 
                             mONinflec.half, pCNinflec.half, #pTNinflec.half,
                             mOAinflec.log, pCAinflec.log, #pTAinflec.log, 
                             mONinflec.log, pCNinflec.log) #pTNinflec.log) #each row is for a single stateroute
