@@ -227,7 +227,7 @@ datasetID,site,scale,taxa,area,Raw_spatial_grain,Raw_spatial_grain_unit
 210,9_A_1,3,Plant,16,16,m2
 210,9_B_1,3,Plant,16,16,m2
 210,9_C_1,3,Plant,16,16,m2
-213,213,1,Plant,51,1,m2
+213,maxgrain,1,Plant,51,1,m2
 213,e1q1-1_213,2,Plant,1,1,m2
 213,e1q1-2_213,2,Plant,1,1,m2
 213,e1q1-3_213,2,Plant,1,1,m2
