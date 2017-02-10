@@ -1,206 +1,110 @@
 ####Tracie ref code####
-#----GAUSSIAN FITS FOR TABLE 1 PHENOLOGY----
+# Fitting a logistic curve to EVI data (first 200 days of each year) and 
+# using this to estimate greenup date:
 
-fitG = function(x, y, mu, sig, scale, ...){
-  f = function(p){
-    d = p[3] * dnorm(x, mean = p[1], sd = p[2])
-    sum((d - y) ^ 2)
-  }
-  optim(c(mu, sig, scale), f)
-}
+for (r in focalrtes){
 
-par(mfrow = c(1,1))
+# Prairie Ridge  
+subprmean = prmean[prmean$julianday %in% 1:200,]
+subprmean$EVIdis = subprmean$EVImean - min(subprmean$EVImean)+.01 #possibly here to prevent error I'm now seeing where things are off by 0.01?
+prlog = nls(EVIdis ~ SSlogis(julianday, Asym, xmid, scal), data = subprmean)
+#par(mar=c(5, 4, 4, 4) + 0.1)
+#plot(prmean$julianday, prmean$EVImean, xlab = "Julian Day", ylab = "Mean EVI",
+#     col = 'red', type = 'l', lwd = 3)
+subprmean$prEVIlog = predict(prlog)+min(subprmean$EVImean)-.01
+#points(prmean$julianday, prmean$prEVIlog, col = 'red', lwd = 3, 
+#       lty = 'dashed', type = 'l')
 
-# First panel 1
-PR.LEPL15.sci = meanDensityByDay(amsurvey.pr[amsurvey.pr$surveyType == 'Visual' & amsurvey.pr$julianday %in% c(134:204),], 
-                                 ordersToInclude = "LEPL", inputYear = 2015, inputSite = 117, plot = T, 
-                                 plotVar = 'meanDensity', new = T, minLength = 5, lwd = 2,
-                                 xlim = c(130,207), ylim = c(0,.36), ylab = "Mean density of caterpillars", main = '2015 Visual')
+# Botanical Garden
+subbgmean = bgmean[bgmean$julianday %in% 1:200,]
+subbgmean$EVIdis = subbgmean$EVImean - min(subbgmean$EVImean)+.01
+bglog = nls(EVIdis ~ SSlogis(julianday, Asym, xmid, scal), data = subbgmean)
+#par(mar=c(5, 4, 4, 4) + 0.1)
+#plot(bgmean$julianday, bgmean$EVImean, xlab = "Julian Day", ylab = "Mean EVI",
+#     col = 'blue', type = 'l', lwd = 3)
+subbgmean$bgEVIlog = predict(bglog)+min(subbgmean$EVImean)-.01
+#points(bgmean$julianday, bgmean$bgEVIlog, col = 'blue', lwd = 3, 
+#       lty = 'dashed', type = 'l')
 
-# Fit a normal curve using least squares
-gfit1 = fitG(PR.LEPL15.sci$julianday, PR.LEPL15.sci$meanDensity, weighted.mean(PR.LEPL15.sci$julianday, PR.LEPL15.sci$meanDensity),
-             2, 3.5, control = list(maxit = 10000), method="L-BFGS-B", lower=c(0,0,0,0,0,0))
-
-# Curve parameters
-p = gfit1$par
-r2 = cor(PR.LEPL15.sci$julianday, p[3]*dnorm(PR.LEPL15.sci$julianday, p[1], p[2]))^2
-totalDensity = sum(PR.LEPL15.sci$meanDensity)
-lines(130:207, p[3]*dnorm(130:207, p[1], p[2]), col = 'blue') # make sure it appears on the right plot
-
-# First panel 2
-PR.LEPL15.cs = meanDensityByDay(volunteer.pr[volunteer.pr$julianday %in% c(134:204),],  
-                                ordersToInclude = "LEPL", inputYear = 2015, inputSite = 117, plot = T, 
-                                plotVar = 'meanDensity', new = T, minLength = 5, lwd = 2, lty = 2)
-legend("topleft", c('trained scientists', 'citizen scientists'), lwd = 2, lty = c(1, 2))
-
-# Fit a normal curve using least squares
-gfit2 = fitG(PR.LEPL15.cs$julianday, PR.LEPL15.cs$meanDensity, weighted.mean(PR.LEPL15.cs$julianday, PR.LEPL15.cs$meanDensity),
-             2, 3.5, control = list(maxit = 10000), method="L-BFGS-B", lower=c(0,0,0,0,0,0))
-
-# Curve parameters
-p = gfit2$par
-r2 = cor(PR.LEPL15.cs$julianday, p[3]*dnorm(PR.LEPL15.cs$julianday, p[1], p[2]))^2
-totalDensity = sum(PR.LEPL15.cs$meanDensity)
-lines(130:207, p[3]*dnorm(130:207, p[1], p[2]), col = 'blue') # make sure it appears on the right plot
+# Hubbard Brook
+subhbmean = hbmean[hbmean$julianday %in% 1:200,]
+subhbmean$EVIdis = subhbmean$EVImean - min(subhbmean$EVImean)+.01
+hblog = nls(EVIdis ~ SSlogis(julianday, Asym, xmid, scal), data = subhbmean)
+#par(mar=c(5, 4, 4, 4) + 0.1)
+#plot(hbmean$julianday, hbmean$EVImean, xlab = "Julian Day", ylab = "Mean EVI",
+#     col = 'blue', type = 'l', lwd = 3)
+subhbmean$hbEVIlog = predict(hblog)+min(subhbmean$EVImean)-.01
+#points(hbmean$julianday, hbmean$hbEVIlog, col = 'blue', lwd = 3, 
+#       lty = 'dashed', type = 'l') 
 
 
-# Second panel 1
-PR.LEPL16.sci = meanDensityByDay(beatsheet.pr[beatsheet.pr$surveyType == 'Beat_Sheet' & beatsheet.pr$julianday %in% c(134:204),], 
-                                 ordersToInclude = "LEPL", inputYear = 2016, inputSite = 117, plot = T, 
-                                 plotVar = 'meanDensity', new = T, minLength = 5, lwd = 2,
-                                 xlim = c(130,207), ylim = c(0,.2), ylab = "", main = '2016 Beat Sheet')
+# Extract greenup from logistic fit
 
-# Fit a normal curve using least squares
-gfit3 = fitG(PR.LEPL16.sci$julianday, PR.LEPL16.sci$meanDensity, weighted.mean(PR.LEPL16.sci$julianday, PR.LEPL16.sci$meanDensity),
-             2, 3.5, control = list(maxit = 10000), method="L-BFGS-B", lower=c(0,0,0,0,0,0))
+#summary(prlog)
+prgreenup.log <- summary(prlog)$coefficients["xmid","Estimate"]
 
-# Curve parameters
-p = gfit3$par
-r2 = cor(PR.LEPL16.sci$julianday, p[3]*dnorm(PR.LEPL16.sci$julianday, p[1], p[2]))^2
-totalDensity = sum(PR.LEPL16.sci$meanDensity)
-lines(130:207, p[3]*dnorm(130:207, p[1], p[2]), col = 'blue') # make sure it appears on the right plot
+#summary(bglog)
+bggreenup.log <- summary(bglog)$coefficients["xmid","Estimate"]
 
-# Second panel 2
-PR.LEPL16.cs = meanDensityByDay(volunteer.pr[volunteer.pr$julianday %in% c(134:204),],  
-                                ordersToInclude = "LEPL", inputYear = 2016, inputSite = 117, plot = T, 
-                                plotVar = 'meanDensity', new = T, minLength = 5, lwd = 2, lty = 2)
+#summary(hblog)
+hbgreenup.log <- summary(hblog)$coefficients["xmid","Estimate"]  
 
-# Fit a normal curve using least squares
-gfit4 = fitG(PR.LEPL16.cs$julianday, PR.LEPL16.cs$meanDensity, weighted.mean(PR.LEPL16.cs$julianday, PR.LEPL16.cs$meanDensity),
-             2, 3.5, control = list(maxit = 10000), method="L-BFGS-B", lower=c(0,0,0,0,0,0))
+# Extract inflection point by finding the area/aveN the meanOcc/pctCore/pctTran is half its maximum:
 
-# Curve parameters
-p = gfit4$par
-r2 = cor(PR.LEPL16.cs$julianday, p[3]*dnorm(PR.LEPL16.cs$julianday, p[1], p[2]))^2
-totalDensity = sum(PR.LEPL16.cs$meanDensity)
-lines(130:207, p[3]*dnorm(130:207, p[1], p[2]), col = 'blue') # make sure it appears on the right plot
+# Bot garden
+subbgmean$inflectdiff = subbgmean$EVImean - (0.5*(max(subbgmean$EVImean)-min(subbgmean$EVImean)) + min(subbgmean$EVImean))
+yhat = 0.5*(max(subbgmean$EVImean)-min(subbgmean$EVImean)) + min(subbgmean$EVImean)
+y1 = subbgmean$EVImean[subbgmean$inflectdiff == tail(subbgmean$inflectdiff[subbgmean$inflectdiff <= 0], 1)]
+y2 = subbgmean$EVImean[subbgmean$inflectdiff == head(subbgmean$inflectdiff[subbgmean$inflectdiff >= 0], 1)]
+jd1 = subbgmean$julianday[subbgmean$inflectdiff == tail(subbgmean$inflectdiff[subbgmean$inflectdiff <= 0], 1)]
+jd2 = subbgmean$julianday[subbgmean$inflectdiff == head(subbgmean$inflectdiff[subbgmean$inflectdiff >= 0], 1)]
+bggreenup.half = jd1 + ((yhat-y1)/(y2-y1))*(jd2-jd1)
+#figure out how to do this with regular bgmean? (got a really messed up number)
 
+# Prairie Ridge
+subprmean$inflectdiff = subprmean$EVImean - (0.5*(max(subprmean$EVImean)-min(subprmean$EVImean)) + min(subprmean$EVImean))
+yhat = 0.5*(max(subprmean$EVImean)-min(subprmean$EVImean)) + min(subprmean$EVImean)
+y1 = subprmean$EVImean[subprmean$inflectdiff == tail(subprmean$inflectdiff[subprmean$inflectdiff <= 0], 1)]
+y2 = subprmean$EVImean[subprmean$inflectdiff == head(subprmean$inflectdiff[subprmean$inflectdiff >= 0], 1)]
+jd1 = subprmean$julianday[subprmean$inflectdiff == tail(subprmean$inflectdiff[subprmean$inflectdiff <= 0], 1)]
+jd2 = subprmean$julianday[subprmean$inflectdiff == head(subprmean$inflectdiff[subprmean$inflectdiff >= 0], 1)]
+prgreenup.half = jd1 + ((yhat-y1)/(y2-y1))*(jd2-jd1)
+#figure out how to do this with regular prmean?
 
-# Third panel 1
-PR.ORTH15.sci = meanDensityByDay(amsurvey.pr[amsurvey.pr$surveyType == 'Visual' & amsurvey.pr$julianday %in% c(134:204),], 
-                                 ordersToInclude = "ORTH", inputYear = 2015, inputSite = 117, plot = T, 
-                                 plotVar = 'meanDensity', new = T, minLength = 5, lwd = 2,
-                                 xlim = c(130,207), ylim = c(0,.25), ylab = "Mean density of orthopterans", main = '')
+# Hubbard Brook
+subhbmean$inflectdiff = subhbmean$EVImean - (0.5*(max(subhbmean$EVImean)-min(subhbmean$EVImean)) + min(subhbmean$EVImean))
+yhat = 0.5*(max(subhbmean$EVImean)-min(subhbmean$EVImean)) + min(subhbmean$EVImean)
+y1 = subhbmean$EVImean[subhbmean$inflectdiff == tail(subhbmean$inflectdiff[subhbmean$inflectdiff <= 0], 1)]
+y2 = subhbmean$EVImean[subhbmean$inflectdiff == head(subhbmean$inflectdiff[subhbmean$inflectdiff >= 0], 1)]
+jd1 = subhbmean$julianday[subhbmean$inflectdiff == tail(subhbmean$inflectdiff[subhbmean$inflectdiff <= 0], 1)]
+jd2 = subhbmean$julianday[subhbmean$inflectdiff == head(subhbmean$inflectdiff[subhbmean$inflectdiff >= 0], 1)]
+hbgreenup.half = jd1 + ((yhat-y1)/(y2-y1))*(jd2-jd1)
+#figure out how to do this with regular hbmean?
 
-# Fit a normal curve using least squares
-gfit5 = fitG(PR.ORTH15.sci$julianday, PR.ORTH15.sci$meanDensity, weighted.mean(PR.ORTH15.sci$julianday, PR.ORTH15.sci$meanDensity),
-             2, 3.5, control = list(maxit = 10000), method="L-BFGS-B", lower=c(0,0,0,0,0,0))
+temp.dataframe = data.frame(prgreenup.half, bggreenup.half, hbgreenup.half, 
+                            prgreenup.log, bggreenup.log, hbgreenup.log)
 
-# Curve parameters
-p = gfit5$par
-r2 = cor(PR.ORTH15.sci$julianday, p[3]*dnorm(PR.ORTH15.sci$julianday, p[1], p[2]))^2
-totalDensity = sum(PR.ORTH15.sci$meanDensity)
-lines(130:207, p[3]*dnorm(130:207, p[1], p[2]), col = 'blue') # make sure it appears on the right plot
+samp.dataframe = rbind(samp.dataframe, temp.dataframe)
+ }# end for loop
 
-# Third panel 2
-PR.ORTH15.cs = meanDensityByDay(volunteer.pr[volunteer.pr$julianday %in% c(134:204),],  
-                                ordersToInclude = "ORTH", inputYear = 2015, inputSite = 117, plot = T, 
-                                plotVar = 'meanDensity', new = T, minLength = 5, lwd = 2, lty = 2)
+greenup <- samp.dataframe
+greenup$year <- c(2000:2016)
 
-# Fit a normal curve using least squares
-gfit6 = fitG(PR.ORTH15.cs$julianday, PR.ORTH15.cs$meanDensity, weighted.mean(PR.ORTH15.cs$julianday, PR.ORTH15.cs$meanDensity),
-             2, 3.5, control = list(maxit = 10000), method="L-BFGS-B", lower=c(0,0,0,0,0,0))
-
-# Curve parameters
-p = gfit6$par
-r2 = cor(PR.ORTH15.cs$julianday, p[3]*dnorm(PR.ORTH15.cs$julianday, p[1], p[2]))^2
-totalDensity = sum(PR.ORTH15.cs$meanDensity)
-lines(130:207, p[3]*dnorm(130:207, p[1], p[2]), col = 'blue') # make sure it appears on the right plot
-
-
-# Fourth panel 1
-PR.ORTH16.sci = meanDensityByDay(beatsheet.pr[beatsheet.pr$surveyType == 'Beat_Sheet' & beatsheet.pr$julianday %in% c(134:204),], 
-                                 ordersToInclude = "ORTH", inputYear = 2016, inputSite = 117, plot = T, 
-                                 plotVar = 'meanDensity', new = T, minLength = 5, lwd = 2,
-                                 xlim = c(130,207), ylim = c(0,.7), ylab = "", main = '')
-
-# Fit a normal curve using least squares
-gfit7 = fitG(PR.ORTH16.sci$julianday, PR.ORTH16.sci$meanDensity, weighted.mean(PR.ORTH16.sci$julianday, PR.ORTH16.sci$meanDensity),
-             2, 3.5, control = list(maxit = 10000), method="L-BFGS-B", lower=c(0,0,0,0,0,0))
-
-# Curve parameters
-p = gfit7$par
-r2 = cor(PR.ORTH16.sci$julianday, p[3]*dnorm(PR.ORTH16.sci$julianday, p[1], p[2]))^2
-totalDensity = sum(PR.ORTH16.sci$meanDensity)
-lines(130:207, p[3]*dnorm(130:207, p[1], p[2]), col = 'blue') # make sure it appears on the right plot
-
-# Fourth panel 2
-PR.ORTH16.cs = meanDensityByDay(volunteer.pr[volunteer.pr$julianday %in% c(134:204),],  
-                                ordersToInclude = "ORTH", inputYear = 2016, inputSite = 117, plot = T, 
-                                plotVar = 'meanDensity', new = T, minLength = 5, lwd = 2, lty = 2)
-
-# Fit a normal curve using least squares
-gfit8 = fitG(PR.ORTH16.cs$julianday, PR.ORTH16.cs$meanDensity, weighted.mean(PR.ORTH16.cs$julianday, PR.ORTH16.cs$meanDensity),
-             2, 2, control = list(maxit = 10000), method="L-BFGS-B", lower=c(0,0,0,0,0,0))
-
-# Curve parameters
-p = gfit8$par
-r2 = cor(PR.ORTH16.cs$julianday, p[3]*dnorm(PR.ORTH16.cs$julianday, p[1], p[2]))^2
-totalDensity = sum(PR.ORTH16.cs$meanDensity)
-lines(130:207, p[3]*dnorm(130:207, p[1], p[2]), col = 'blue') # make sure it appears on the right plot
+# Plotting
+par(mar = c(2,2,3,2), mfrow = c(1,1), oma = c(2,2,2,2))
+plot(greenup$year, greenup$prgreenup.log, col = 'red', type = 'l', ylim = c(70,180),
+     xlab = 'Year', ylab = "Julian day of greenup", lwd = 2)
+points(greenup$year, greenup$bggreenup.log, col = 'blue', type = 'l', lwd = 2)
+points(greenup$year, greenup$hbgreenup.log, col = 'green3', type = 'l', lwd = 2)
+points(greenup$year, greenup$prgreenup.half, col = 'red', type = 'l', lwd = 2, lty = 2)
+points(greenup$year, greenup$bggreenup.half, col = 'blue', type = 'l', lwd = 2, lty = 2)
+points(greenup$year, greenup$hbgreenup.half, col = 'green3', type = 'l', lwd = 2, lty = 2)
+legend("topleft", c('PR logistic', 'BG logistic', 'HB logistic', 'PR half max', 'BG half max', 'HB half max'), lwd = 2, 
+       lty = c(1,1,1,2,2,2), col = c('red', 'blue', 'green3', 'red', 'blue', 'green3')) 
+title('Greenup 2000-2016', line = 1)
 
 
-# Fifth panel 1
-PR.BIRD15.sci = meanDensityByDay(amsurvey.pr[amsurvey.pr$surveyType == 'Visual' & amsurvey.pr$julianday %in% c(134:204),], 
-                                 ordersToInclude = multorders, inputYear = 2015, inputSite = 117, plot = T, 
-                                 plotVar = 'meanDensity', new = T, minLength = 5, lwd = 2,
-                                 xlim = c(130,207), ylim = c(0,1.5), ylab = "Mean density of bird food", main = '')
 
-# Fit a normal curve using least squares
-gfit9 = fitG(PR.BIRD15.sci$julianday, PR.BIRD15.sci$meanDensity, weighted.mean(PR.BIRD15.sci$julianday, PR.BIRD15.sci$meanDensity),
-             2, 2, control = list(maxit = 10000), method="L-BFGS-B", lower=c(0,0,0,0,0,0))
-
-# Curve parameters
-p = gfit9$par
-r2 = cor(PR.BIRD15.sci$julianday, p[3]*dnorm(PR.BIRD15.sci$julianday, p[1], p[2]))^2
-totalDensity = sum(PR.BIRD15.sci$meanDensity)
-lines(130:207, p[3]*dnorm(130:207, p[1], p[2]), col = 'blue') # make sure it appears on the right plot
-
-# Fifth panel 2
-PR.BIRD15.cs = meanDensityByDay(volunteer.pr[volunteer.pr$julianday %in% c(134:204),],  
-                                ordersToInclude = multorders, inputYear = 2015, inputSite = 117, plot = T, 
-                                plotVar = 'meanDensity', new = T, minLength = 5, lwd = 2, lty = 2)
-
-# Fit a normal curve using least squares
-gfit10 = fitG(PR.BIRD15.cs$julianday, PR.BIRD15.cs$meanDensity, weighted.mean(PR.BIRD15.cs$julianday, PR.BIRD15.cs$meanDensity),
-              2, 2, control = list(maxit = 10000), method="L-BFGS-B", lower=c(0,0,0,0,0,0))
-
-# Curve parameters
-p = gfit10$par
-r2 = cor(PR.BIRD15.cs$julianday, p[3]*dnorm(PR.BIRD15.cs$julianday, p[1], p[2]))^2
-totalDensity = sum(PR.BIRD15.cs$meanDensity)
-lines(130:207, p[3]*dnorm(130:207, p[1], p[2]), col = 'blue') # make sure it appears on the right plot
-
-# Sixth panel 1
-PR.BIRD16.sci = meanDensityByDay(beatsheet.pr[beatsheet.pr$surveyType == 'Beat_Sheet' & beatsheet.pr$julianday %in% c(134:204),], 
-                                 ordersToInclude = multorders, inputYear = 2016, inputSite = 117, plot = T, 
-                                 plotVar = 'meanDensity', new = T, minLength = 5, lwd = 2,
-                                 xlim = c(130,207), ylim = c(0,1.2), ylab = "", main = '')
-
-# Fit a normal curve using least squares
-gfit11 = fitG(PR.BIRD16.sci$julianday, PR.BIRD16.sci$meanDensity, weighted.mean(PR.BIRD16.sci$julianday, PR.BIRD16.sci$meanDensity),
-              2, 2, control = list(maxit = 10000), method="L-BFGS-B", lower=c(0,0,0,0,0,0))
-
-# Curve parameters
-p = gfit11$par
-r2 = cor(PR.BIRD16.sci$julianday, p[3]*dnorm(PR.BIRD16.sci$julianday, p[1], p[2]))^2
-totalDensity = sum(PR.BIRD16.sci$meanDensity)
-lines(130:207, p[3]*dnorm(130:207, p[1], p[2]), col = 'blue') # make sure it appears on the right plot
-
-# Sixth panel 2
-PR.BIRD16.cs = meanDensityByDay(volunteer.pr[volunteer.pr$julianday %in% c(134:204),],  
-                                ordersToInclude = multorders, inputYear = 2016, inputSite = 117, plot = T, 
-                                plotVar = 'meanDensity', new = T, minLength = 5, lwd = 2, lty = 2)
-
-# Fit a normal curve using least squares
-gfit12 = fitG(PR.BIRD16.cs$julianday, PR.BIRD16.cs$meanDensity, weighted.mean(PR.BIRD16.cs$julianday, PR.BIRD16.cs$meanDensity),
-              2, 2, control = list(maxit = 10000), method="L-BFGS-B", lower=c(0,0,0,0,0,0))
-
-# Curve parameters
-p = gfit12$par
-r2 = cor(PR.BIRD16.cs$julianday, p[3]*dnorm(PR.BIRD16.cs$julianday, p[1], p[2]))^2
-totalDensity = sum(PR.BIRD16.cs$meanDensity)
-lines(130:207, p[3]*dnorm(130:207, p[1], p[2]), col = 'blue') # make sure it appears on the right plot
 
 
 ####Liang ref code####
