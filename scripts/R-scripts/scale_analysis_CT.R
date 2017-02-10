@@ -100,7 +100,7 @@ for(datasetID in datasetIDs){
                                   proportionalThreshold = topFractionSites,
                                   dataDescription)
 
-    writePropOccSiteSummary(subsettedData, spatialGrainAnalysis = TRUE, grainLevel = grainLevel)}
+    writePropOccSiteSummary(subsettedData$data, spatialGrainAnalysis = TRUE, grainLevel = grainLevel)}
     print(grainLevel)
     grainLevel = grainLevel + 1
     } # end of spatial grain loop
