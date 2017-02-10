@@ -239,11 +239,44 @@ plot1 = ggplot(plotsub, aes(x = log(area), y = meanOcc))+geom_point(color = "fir
 plot1_2= ggplot(plotsub, aes(x = log(area), y = pctCore))+geom_point(color = "turquoise")
 plot1_3 = ggplot(plotsub, aes(x = log(area), y = pctTran))+geom_point(color = "olivedrab")
 
+#fitting the log curve for area (for each route)
+mOAlog = nls(meanOcc ~ SSlogis(log(area), Asym, xmid, scal), data = plotsub)
+pCAlog = nls(pctCore ~ SSlogis(log(area), Asym, xmid, scal), data = plotsub)
+pTAlog = nls(pctTran ~ SSlogis(log(area), Asym, xmid, scal), data = plotsub)
+
 
 #aveN
 plot2 = ggplot(plotsub, aes(x=log(aveN), y =meanOcc))+geom_point(color = "firebrick")
 plot2_2 = ggplot(plotsub, aes(x=log(aveN), y =pctCore))+geom_point(color = "turquoise")
 plot2_3 =ggplot(plotsub, aes(x=log(aveN), y =pctTran))+geom_point(color = "olivedrab")
+
+#fitting the log curve for aveN (for each route)
+mONlog = nls(meanOcc ~ SSlogis(log(aveN), Asym, xmid, scal), data = plotsub)
+pCNlog = nls(pctCore ~ SSlogis(log(aveN), Asym, xmid, scal), data = plotsub)
+pTNlog = nls(pctTran ~ SSlogis(log(aveN), Asym, xmid, scal), data = plotsub)
+
+#getting the inflection points:
+mOAinflec.log <- summary(mOAlog)$coefficients["xmid","Estimate"]
+pCAinflec.log <- summary(pCAlog)$coefficients["xmid","Estimate"]
+pTAinflec.log <- summary(pTAlog)$coefficients["xmid","Estimate"]
+mONinflec.log <- summary(mONlog)$coefficients["xmid","Estimate"]
+pCNinflec.log <- summary(pTAlog)$coefficients["xmid","Estimate"]
+pTNinflec.log <- summary(pTNlog)$coefficients["xmid","Estimate"]
+
+
+
+# Plotting
+par(mar = c(2,2,3,2), mfrow = c(1,1), oma = c(2,2,2,2))
+plot(greenup$year, greenup$prgreenup.log, col = 'red', type = 'l', ylim = c(70,180),
+     xlab = 'Year', ylab = "Julian day of greenup", lwd = 2)
+points(greenup$year, greenup$bggreenup.log, col = 'blue', type = 'l', lwd = 2)
+points(greenup$year, greenup$hbgreenup.log, col = 'green3', type = 'l', lwd = 2)
+points(greenup$year, greenup$prgreenup.half, col = 'red', type = 'l', lwd = 2, lty = 2)
+points(greenup$year, greenup$bggreenup.half, col = 'blue', type = 'l', lwd = 2, lty = 2)
+points(greenup$year, greenup$hbgreenup.half, col = 'green3', type = 'l', lwd = 2, lty = 2)
+legend("topleft", c('PR logistic', 'BG logistic', 'HB logistic', 'PR half max', 'BG half max', 'HB half max'), lwd = 2, 
+       lty = c(1,1,1,2,2,2), col = c('red', 'blue', 'green3', 'red', 'blue', 'green3')) 
+title('Greenup 2000-2016', line = 1)
 
 
 #setting up aveN and log(area) cols side by side 
