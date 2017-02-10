@@ -124,7 +124,8 @@ head(dataset)
 # If all fields will be used, then set unusedFieldNames = ""
 
 names(dataset)
-
+dataset$site = paste(dataset$PLOT, dataset$REBAR, sep = "_")
+dataset$site = paste(dataset$SITE, dataset$site, sep = "_")
 #--! PROVIDE INFO !--#
 unusedFieldNames = c('YEAR', 'MONTH', 'CAPTURE', 'SEX', 'CONDITION', 'AGE', 'LEFT_HIND_FOOT', 
                      'LEFT_TAG', 'ORIGINAL_TAG', 'ID', 'MARKS', 'WEIGHT', 'notes')
@@ -270,7 +271,7 @@ dataFormattingTable[,'subannualTgrain'] =
 
 #--! PROVIDE INFO !--#
 dataset2 = subset(dataset2, dataset2$TREATMENT == 'OPEN') # using the open control plots bc total exclusion at a different scale
-site_grain_names = c("PLOT", "REBAR")
+site_grain_names = c("SITE", "PLOT", "REBAR")
 
 # We will now create the site field with these codes concatenated if there
 # are multiple grain fields. Otherwise, site will just be the single grain field.
@@ -615,7 +616,7 @@ dataFormattingTable[,'format_flag'] =
   dataFormattingTableFieldUpdate(datasetID, 'format_flag', 
      
 #--! PROVIDE INFO !--#                                 
-                                 1)
+                                 5)
 
 # Flag codes are as follows:
 # 0 = not currently worked on
@@ -692,7 +693,7 @@ tGrain = 'year'
 site_grain_names
 
 #--! PROVIDE INFO !--#
-sGrain = 'site'
+sGrain = "PLOT"
 
 # This is a reasonable choice of spatial grain because ...
 #--! PROVIDE INFO !--#
