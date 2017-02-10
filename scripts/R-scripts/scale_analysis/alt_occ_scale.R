@@ -239,30 +239,117 @@ plot1 = ggplot(plotsub, aes(x = log(area), y = meanOcc))+geom_point(color = "fir
 plot1_2= ggplot(plotsub, aes(x = log(area), y = pctCore))+geom_point(color = "turquoise")
 plot1_3 = ggplot(plotsub, aes(x = log(area), y = pctTran))+geom_point(color = "olivedrab")
 
-#fitting the log curve for area (for each route)
-mOAlog = nls(meanOcc ~ SSlogis(log(area), Asym, xmid, scal), data = plotsub)
-pCAlog = nls(pctCore ~ SSlogis(log(area), Asym, xmid, scal), data = plotsub)
-pTAlog = nls(pctTran ~ SSlogis(log(area), Asym, xmid, scal), data = plotsub)
-
-
 #aveN
 plot2 = ggplot(plotsub, aes(x=log(aveN), y =meanOcc))+geom_point(color = "firebrick")
 plot2_2 = ggplot(plotsub, aes(x=log(aveN), y =pctCore))+geom_point(color = "turquoise")
 plot2_3 =ggplot(plotsub, aes(x=log(aveN), y =pctTran))+geom_point(color = "olivedrab")
 
+#setting up aveN and log(area) cols side by side 
+
+scaleplot = grid.arrange(plot1, plot2, plot1_2, plot2_2, plot1_3, plot2_3, ncol=2, 
+                         top = paste("scaleplot_", s, sep = ""))
+#saved to core-transient/output/plots  
+}
+dev.off()
+
+####Logistic curve fitting; sep loop for now####
+#want to fit a logistic curve (not a regression!) to each as well 
+#use nls: 
+library(stats)
+
+samp.dataframe = data.frame(s= numeric(), meanOcc= numeric(), pctCore= numeric(), area= numeric(), aveN= numeric(),
+                            mOAinflec.half= numeric(), pCAinflec.half= numeric(), #pTAinflec.half= numeric(), 
+                            mONinflec.half= numeric(), pCNinflec.half= numeric(), #pTNinflec.half= numeric(),
+                            mOAinflec.log= numeric(), pCAinflec.log= numeric(), #pTAinflec.log= numeric(), 
+                            mONinflec.log= numeric(), pCNinflec.log= numeric()) #pTNinflec.log= numeric())
+
+#subspecify to only pull bbs data at year s 
+stateroutes = unique(bbs_allscales$focalrte)
+for(s in stateroutes){
+  
+  logsub = subset(bbs_allscales, bbs_allscales$focalrte == s)  
+#fitting the log curve for area (for each route)
+mOAlog = nls(meanOcc ~ SSlogis(log(area), Asym, xmid, scal), data = logsub)
+pCAlog = nls(pctCore ~ SSlogis(log(area), Asym, xmid, scal), data = logsub)
+pTAlog = nls(pctTran ~ SSlogis(log(area), Asym, xmid, scal), data = logsub)
+
 #fitting the log curve for aveN (for each route)
-mONlog = nls(meanOcc ~ SSlogis(log(aveN), Asym, xmid, scal), data = plotsub)
-pCNlog = nls(pctCore ~ SSlogis(log(aveN), Asym, xmid, scal), data = plotsub)
-pTNlog = nls(pctTran ~ SSlogis(log(aveN), Asym, xmid, scal), data = plotsub)
+mONlog = nls(meanOcc ~ SSlogis(log(aveN), Asym, xmid, scal), data = logsub)
+pCNlog = nls(pctCore ~ SSlogis(log(aveN), Asym, xmid, scal), data = logsub)
+pTNlog = nls(pctTran ~ SSlogis(log(aveN), Asym, xmid, scal), data = logsub)
 
 #getting the inflection points:
 mOAinflec.log <- summary(mOAlog)$coefficients["xmid","Estimate"]
 pCAinflec.log <- summary(pCAlog)$coefficients["xmid","Estimate"]
-pTAinflec.log <- summary(pTAlog)$coefficients["xmid","Estimate"]
+#pTAinflec.log <- summary(pTAlog)$coefficients["xmid","Estimate"] #Error: step factor 0.000488281 reduced below 'minFactor' of 0.000976562
 mONinflec.log <- summary(mONlog)$coefficients["xmid","Estimate"]
-pCNinflec.log <- summary(pTAlog)$coefficients["xmid","Estimate"]
-pTNinflec.log <- summary(pTNlog)$coefficients["xmid","Estimate"]
+pCNinflec.log <- summary(pCNlog)$coefficients["xmid","Estimate"]
+#pTNinflec.log <- summary(pTNlog)$coefficients["xmid","Estimate"] #Error: step factor  0.000488281 reduced below 'minFactor' of 0.000976562
+#done with that half
 
+
+#repeat for pCA, pTA, mON, pCN, pTN (nested loop?)
+yhat = 0.5*(max(logsub$meanOcc)-min(logsub$meanOcc)) + min(logsub$meanOcc)
+logsub$inflectdiff = logsub$meanOcc - yhat #might need to write to diff source?
+y1 = logsub$meanOcc[logsub$inflectdiff == tail(logsub$inflectdiff[logsub$inflectdiff <= 0], 1)]
+y2 = logsub$meanOcc[logsub$inflectdiff == head(logsub$inflectdiff[logsub$inflectdiff >= 0], 1)]
+x1 = (log(logsub$area)[logsub$inflectdiff == tail(logsub$inflectdiff[logsub$inflectdiff <= 0], 1)])
+x2 = (log(logsub$area)[logsub$inflectdiff == tail(logsub$inflectdiff[logsub$inflectdiff >= 0], 1)])
+mOAinflec.half = x1 + ((yhat-y1)/(y2-y1))*(x2-x1)
+
+yhat = 0.5*(max(logsub$pctCore)-min(logsub$pctCore)) + min(logsub$pctCore)
+logsub$inflectdiff = logsub$pctCore - yhat
+y1 = logsub$pctCore[logsub$inflectdiff == tail(logsub$inflectdiff[logsub$inflectdiff <= 0], 1)]
+y2 = logsub$pctCore[logsub$inflectdiff == head(logsub$inflectdiff[logsub$inflectdiff >= 0], 1)]
+x1 = (log(logsub$area)[logsub$inflectdiff == tail(logsub$inflectdiff[logsub$inflectdiff <= 0], 1)])
+x2 = (log(logsub$area)[logsub$inflectdiff == tail(logsub$inflectdiff[logsub$inflectdiff >= 0], 1)])
+pCAinflec.half = x1 + ((yhat-y1)/(y2-y1))*(x2-x1)
+# 
+# yhat = 0.5*(max(logsub$pctTran)-min(logsub$pctTran)) + min(logsub$pctTran)
+# logsub$inflectdiff = logsub$pctTran - yhat
+# y1 = logsub$pctTran[logsub$inflectdiff == tail(logsub$inflectdiff[logsub$inflectdiff <= 0], 1)]
+# y2 = logsub$pctTran[logsub$inflectdiff == head(logsub$inflectdiff[logsub$inflectdiff >= 0], 1)]
+# x1 = (log(logsub$area)[logsub$inflectdiff == tail(logsub$inflectdiff[logsub$inflectdiff <= 0], 1)])
+# x2 = (log(logsub$area)[logsub$inflectdiff == tail(logsub$inflectdiff[logsub$inflectdiff >= 0], 1)])
+# pTAinflec.half = x1 + ((yhat-y1)/(y2-y1))*(x2-x1)
+
+
+#aveN
+yhat = 0.5*(max(logsub$meanOcc)-min(logsub$meanOcc)) + min(logsub$meanOcc)
+logsub$inflectdiff = logsub$meanOcc - yhat
+y1 = logsub$meanOcc[logsub$inflectdiff == tail(logsub$inflectdiff[logsub$inflectdiff <= 0], 1)]
+y2 = logsub$meanOcc[logsub$inflectdiff == head(logsub$inflectdiff[logsub$inflectdiff >= 0], 1)]
+x1 = (log(logsub$aveN)[logsub$inflectdiff == tail(logsub$inflectdiff[logsub$inflectdiff <= 0], 1)])
+x2 = (log(logsub$aveN)[logsub$inflectdiff == tail(logsub$inflectdiff[logsub$inflectdiff >= 0], 1)])
+mONinflec.half = x1 + ((yhat-y1)/(y2-y1))*(x2-x1)
+
+yhat = 0.5*(max(logsub$pctCore)-min(logsub$pctCore)) + min(logsub$pctCore)
+logsub$inflectdiff = logsub$pctCore - yhat
+y1 = logsub$pctCore[logsub$inflectdiff == tail(logsub$inflectdiff[logsub$inflectdiff <= 0], 1)]
+y2 = logsub$pctCore[logsub$inflectdiff == head(logsub$inflectdiff[logsub$inflectdiff >= 0], 1)]
+x1 = (log(logsub$aveN)[logsub$inflectdiff == tail(logsub$inflectdiff[logsub$inflectdiff <= 0], 1)])
+x2 = (log(logsub$aveN)[logsub$inflectdiff == tail(logsub$inflectdiff[logsub$inflectdiff >= 0], 1)])
+pCNinflec.half = x1 + ((yhat-y1)/(y2-y1))*(x2-x1)
+# 
+# yhat = 0.5*(max(logsub$pctTran)-min(logsub$pctTran)) + min(logsub$pctTran)
+# logsub$inflectdiff = logsub$pctTran - yhat
+# y1 = logsub$pctTran[logsub$inflectdiff == tail(logsub$inflectdiff[logsub$inflectdiff <= 0], 1)]
+# y2 = logsub$pctTran[logsub$inflectdiff == head(logsub$inflectdiff[logsub$inflectdiff >= 0], 1)]
+# x1 = (log(logsub$aveN)[logsub$inflectdiff == tail(logsub$inflectdiff[logsub$inflectdiff <= 0], 1)])
+# x2 = (log(logsub$aveN)[logsub$inflectdiff == tail(logsub$inflectdiff[logsub$inflectdiff >= 0], 1)])
+# pTNinflec.half = x1 + ((yhat-y1)/(y2-y1))*(x2-x1)
+
+temp.dataframe = data.frame(s, logsub$meanOcc, logsub$pctCore, logsub$area, logsub$aveN, 
+                            mOAinflec.half, pCAinflec.half, #pTAinflec.half, 
+                            mONinflec.half, pCNinflec.half, #pTNinflec.half,
+                            mOAinflec.log, pCAinflec.log, #pTAinflec.log, 
+                            mONinflec.log, pCNinflec.log) #pTNinflec.log) #each row is for a single stateroute
+
+samp.dataframe = rbind(samp.dataframe, temp.dataframe)
+}# end for loop
+
+inflection_pts <- samp.dataframe
+#inflection_pts$stateroute <- c(2000:2016)
 
 
 # Plotting
@@ -279,18 +366,7 @@ legend("topleft", c('PR logistic', 'BG logistic', 'HB logistic', 'PR half max', 
 title('Greenup 2000-2016', line = 1)
 
 
-#setting up aveN and log(area) cols side by side 
 
-scaleplot = grid.arrange(plot1, plot2, plot1_2, plot2_2, plot1_3, plot2_3, ncol=2, 
-                         top = paste("scaleplot_", s, sep = ""))
-#saved to core-transient/output/plots  
-}
-dev.off()
-
-####Logistic curve fitting####
-#want to fit a logistic curve (not a regression!) to each as well 
-#use nls: 
-library(stats)
 test = nls(meanOcc~SSlogis(log(area), Asym, xmid, scal), data = bbs_allscales)
 summary(test) #estimates are the coefs, but can get specifically by calling "coef"
 coefs = coef(test)
