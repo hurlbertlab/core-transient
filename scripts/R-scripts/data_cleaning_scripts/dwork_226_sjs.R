@@ -117,7 +117,7 @@ dim(dataset)
 
 head(dataset)
 
-library(reshape)
+library(reshape2)
 # Melt from wide to long format:
 dClean = melt(dataset, id.vars = 'Species')
 
