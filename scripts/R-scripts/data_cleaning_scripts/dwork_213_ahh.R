@@ -87,8 +87,12 @@ dataset1 = dataset[,-unusedFields]
 
 # Separate out plot and year from the plotyear field
 dataset1$plotyear = as.character(dataset1$plotyear)
-                       nchar(dataset1$plotyear))) + 1900
-dataset1 = dataset1[, -1]
+
+dataset1$site = substr(dataset1$plotyear, 1, (nchar(dataset1$plotyear) - 2))
+
+dataset1$date = as.numeric(substr(dataset1$plotyear, (nchar(dataset1$plotyear) - 1), 
+      nchar(dataset1$plotyear))) + 1900
+# dataset1 = dataset1[, -1]
 
 # You also might want to change the names of the identified species field [to 'species'] and/or the identified site field [to 'site']. Just make sure you make specific comments on what the field name was before you made the change, as seen above.
 
@@ -189,7 +193,7 @@ dataFormattingTable[,'subannualTgrain'] =
 # -- If the dataset is for just a single site, and there is no site column, then add one.
 
 # Add a field for constant siteID
-dataset2$siteID = 213
+dataset2$siteID = "maxgrain"
 
 # Here, we will concatenate all of the potential fields that describe the site 
 # in hierarchical order from largest to smallest grain. Based on the dataset,
@@ -536,7 +540,7 @@ tGrain = 'year'
 
 site_grain_names
 
-sGrain = 'siteID'
+sGrain = 'site'
 
 # This is a reasonable choice of spatial grain because ...
 # ...1m2 quadrats are far too small. All 51 quadrats in this study are all within the same small area.
