@@ -174,7 +174,7 @@ mean_occ_by_site = propOcc_w_taxa %>%
 occ_taxa = merge(mean_occ_by_site, summaries_grains_w_taxa, by = c("datasetID", "site"))
 
 occ_taxa = occ_taxa[order(occ_taxa$datasetID, occ_taxa$scale, occ_taxa$site, decreasing = F), ]
-write.csv(occ_taxa,"occ_taxa.csv", row.names=FALSE)
+write.csv(occ_taxa,"output/tabular_data/occ_taxa.csv", row.names=FALSE)
 
 # Calculating number of core, trans, and total spp for each dataset/site combo
 propOcc_demog = merge(propOcc_w_taxa, occ_taxa, by =  c("datasetID", "site"))
