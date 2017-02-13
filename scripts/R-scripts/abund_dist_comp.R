@@ -11,7 +11,7 @@ get_valid_datasetIDs = function(){
   datasetIDs = dataformattingtable %>%
     filter(format_flag == 1, countFormat %in% c('count', 'abundance')) %>% 
     # Remove datasets with no abundance data
-    filter(!dataset_ID %in% c(255, 257, 260, 270, 271, 319)) %>%
+    filter(!dataset_ID %in% c(236, 255, 257, 260, 270, 271, 319)) %>%
     # Remove non-count datasets
     filter(!dataset_ID %in% c(207, 210, 222, 223, 226, 228, 238, 244, 247, 248, 258, 264, 277, 278,
                               280, 298, 299, 300, 301, 326, 328, 329)) %>%
@@ -23,7 +23,7 @@ get_valid_datasetIDs = function(){
 #' 
 get_abund_data  = function(datasetIDs){
   datasetIDs = datasetIDs$dataset_ID
-  dataset_path = 'data/formatted_datasets/'
+  dataset_path = 'data/standardized_datasets/'
   abund_data = data.frame()
   for (dataset in datasetIDs){
     filename = paste('dataset_', dataset, '.csv', sep = '')
@@ -95,11 +95,6 @@ datasetIDs = get_valid_datasetIDs()
 abund_data = get_abund_data(datasetIDs)
 propocc_data = get_propocc_data(datasetIDs)
 summed_abunds = sum_abunds(abund_data)
-
-# There are some issues with some datasets not matching between propocc and summed_ab
-# This grabs a sample of those that match to get things working
-summed_abunds = filter(summed_abunds, datasetID %in% c(33, 41, 46, 47, 70))
-propocc_data = filter(propocc_data, datasetID %in% c(33, 41, 46, 47, 70))
 sad_data = left_join(summed_abunds, propocc_data, by = c('datasetID', 'site', 'species'))
 
 logseries_weights_incl = sad_data %>%
