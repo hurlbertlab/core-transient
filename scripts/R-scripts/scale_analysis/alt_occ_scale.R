@@ -244,6 +244,9 @@ plot2 = ggplot(plotsub, aes(x=log(aveN), y =meanOcc))+geom_point(color = "firebr
 plot2_2 = ggplot(plotsub, aes(x=log(aveN), y =pctCore))+geom_point(color = "turquoise")
 plot2_3 =ggplot(plotsub, aes(x=log(aveN), y =pctTran))+geom_point(color = "olivedrab")
 
+
+####change to log_10^^^^####
+
 #setting up aveN and log(area) cols side by side 
 
 scaleplot = grid.arrange(plot1, plot2, plot1_2, plot2_2, plot1_3, plot2_3, ncol=2, 
@@ -257,11 +260,12 @@ dev.off()
 #use nls: 
 library(stats)
 
-samp.dataframe = data.frame(stateroute = numeric(), OA.A= numeric(), OA.i = numeric(), OA.k = numeric(),
-                            ON.A= numeric(), ON.i = numeric(), ON.k = numeric(),
-                            CA.A= numeric(), CA.i = numeric(), CA.k = numeric(),
-                            CN.A= numeric(), CN.i = numeric(), CN.k = numeric())
-                            
+OA.df = data.frame(stateroute = numeric(), OA.A= numeric(), OA.i = numeric(), OA.k = numeric())
+ON.df = data.frame(stateroute = numeric(), ON.A= numeric(), ON.i = numeric(), ON.k = numeric())
+CA.df = data.frame(stateroute = numeric(), CA.A= numeric(), CA.i = numeric(), CA.k = numeric())
+CN.df = data.frame(stateroute = numeric(), CN.A= numeric(), CN.i = numeric(), CN.k = numeric())
+TA.df = data.frame(stateroute = numeric(), TA.A= numeric(), TA.i = numeric(), TA.k = numeric())
+TN.df = data.frame(stateroute = numeric(), TN.A= numeric(), TN.i = numeric(), TN.k = numeric())
 
 #Use tryCatch to run through all routes but store routes with errors
 warnings = data.frame(stateroute = numeric(), warning = character())
@@ -274,7 +278,7 @@ for(s in stateroutes){
   
   
   OAmodel = tryCatch({
-    mOAlog = nls(meanOcc ~ SSlogis(log(area), Asym, xmid, scal), data = logsub)
+    OAlog = nls(meanOcc ~ SSlogis(log(area), Asym, xmid, scal), data = logsub)
     return(data.frame(stateroute = s, OA.A, OA.i, OA.k))
   }, warning = function(w) {
     warnings = rbind(warnings, data.frame(stateroute = s, warning = w))
@@ -283,15 +287,38 @@ for(s in stateroutes){
     OA.A <- NA
     OA.k <- NA
   }, finally = {
-    OA.i <- summary(mOAlog)$coefficients["xmid","Estimate"]
-    OA.A <- summary(mOAlog)$coefficients["Asym","Estimate"]
-    OA.k <- summary(mOAlog)$coefficients["scal","Estimate"]
-    tmp = data.frame(stateroute = s, OA.A, OA.i, OA.k)
+    OA.i <- summary(OAlog)$coefficients["xmid","Estimate"]
+    OA.A <- summary(OAlog)$coefficients["Asym","Estimate"]
+    OA.k <- summary(OAlog)$coefficients["scal","Estimate"]
+    OA.tmp = data.frame(stateroute = s, OA.A, OA.i, OA.k)
   })
   
+  temp.dataframe = data.frame(stateroute = s, OA.A, OA.i, OA.k, NA, NA, NA) #fix
+    samp.dataframe = rbind(samp.dataframe, temp.dataframe)
+}
+
+for(s in stateroutes){
+  logsub = subset(bbs_allscales, bbs_allscales$focalrte == s)  
+  
+  ONmodel = tryCatch({
+    ONlog = nls(meanOcc ~ SSlogis(log(aveN), Asym, xmid, scal), data = logsub)
+    return(data.frame(stateroute = s, ON.A, ON.i, ON.k))
+  }, warning = function(w) {
+    warnings = rbind(warnings, data.frame(stateroute = s, warning = w))
+  }, error = function(e) {
+    ON.i <- NA
+    ON.A <- NA
+    ON.k <- NA
+  }, finally = {
+    ON.i <- summary(ONlog)$coefficients["xmid","Estimate"]
+    ON.A <- summary(ONlog)$coefficients["Asym","Estimate"]
+    ON.k <- summary(ONlog)$coefficients["scal","Estimate"]
+    tmp = data.frame(stateroute = s, ON.A, ON.i, ON.k)
+  })
+}  
   
   
-  mOAlog = nls(meanOcc ~ SSlogis(log(area), Asym, xmid, scal), data = logsub)
+  OAlog = nls(meanOcc ~ SSlogis(log(area), Asym, xmid, scal), data = logsub)
   
   #getting the inflection points:
    
