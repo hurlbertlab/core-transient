@@ -257,93 +257,67 @@ dev.off()
 #use nls: 
 library(stats)
 
-samp.dataframe = data.frame(mOAinflec.half= numeric(), pCAinflec.half= numeric(), #pTAinflec.half= numeric(), 
-                            mONinflec.half= numeric(), pCNinflec.half= numeric(), #pTNinflec.half= numeric(),
-                            mOAinflec.log= numeric(), pCAinflec.log= numeric(), #pTAinflec.log= numeric(), 
-                            mONinflec.log= numeric(), pCNinflec.log= numeric()) #pTNinflec.log= numeric())
+samp.dataframe = data.frame(stateroute = numeric(), OA.A= numeric(), OA.i = numeric(), OA.k = numeric(),
+                            ON.A= numeric(), ON.i = numeric(), ON.k = numeric(),
+                            CA.A= numeric(), CA.i = numeric(), CA.k = numeric(),
+                            CN.A= numeric(), CN.i = numeric(), CN.k = numeric())
+                            
+
+#Use tryCatch to run through all routes but store routes with errors
+warnings = data.frame(stateroute = numeric(), warning = character())
 
 #subspecify to only pull bbs data at year s 
 stateroutes = unique(bbs_allscales$focalrte)
 for(s in stateroutes){
-  
   logsub = subset(bbs_allscales, bbs_allscales$focalrte == s)  
-#fitting the log curve for area (for each route)
-mOAlog = nls(meanOcc ~ SSlogis(log(area), Asym, xmid, scal), data = logsub)
-pCAlog = nls(pctCore ~ SSlogis(log(area), Asym, xmid, scal), data = logsub)
-#pTAlog = nls(pctTran ~ SSlogis(log(area), Asym, xmid, scal), data = logsub)
+  #fitting the log curve for area (for each route)
+  
+  
+  OAmodel = tryCatch({
+    mOAlog = nls(meanOcc ~ SSlogis(log(area), Asym, xmid, scal), data = logsub)
+    return(data.frame(stateroute = s, OA.A, OA.i, OA.k))
+  }, warning = function(w) {
+    warnings = rbind(warnings, data.frame(stateroute = s, warning = w))
+  }, error = function(e) {
+    OA.i <- NA
+    OA.A <- NA
+    OA.k <- NA
+  }, finally = {
+    OA.i <- summary(mOAlog)$coefficients["xmid","Estimate"]
+    OA.A <- summary(mOAlog)$coefficients["Asym","Estimate"]
+    OA.k <- summary(mOAlog)$coefficients["scal","Estimate"]
+    tmp = data.frame(stateroute = s, OA.A, OA.i, OA.k)
+  })
+  
+  
+  
+  mOAlog = nls(meanOcc ~ SSlogis(log(area), Asym, xmid, scal), data = logsub)
+  
+  #getting the inflection points:
+   
+  
+  
+  
+  pCAlog = nls(pctCore ~ SSlogis(log(area), Asym, xmid, scal), data = logsub)
+  #pTAlog = nls(pctTran ~ SSlogis(log(area), Asym, xmid, scal), data = logsub)
+  
+  #fitting the log curve for aveN (for each route)
+  mONlog = nls(meanOcc ~ SSlogis(log(aveN), Asym, xmid, scal), data = logsub)
+  pCNlog = nls(pctCore ~ SSlogis(log(aveN), Asym, xmid, scal), data = logsub)
+  #pTNlog = nls(pctTran ~ SSlogis(log(aveN), Asym, xmid, scal), data = logsub)
+  
+    pCAinflec.log <- summary(pCAlog)$coefficients["xmid","Estimate"]
+  #pTAinflec.log <- summary(pTAlog)$coefficients["xmid","Estimate"] #Error: step factor 0.000488281 reduced below 'minFactor' of 0.000976562
+  mONinflec.log <- summary(mONlog)$coefficients["xmid","Estimate"]
+  pCNinflec.log <- summary(pCNlog)$coefficients["xmid","Estimate"]
+  #pTNinflec.log <- summary(pTNlog)$coefficients["xmid","Estimate"] #Error: step factor  0.000488281 reduced below 'minFactor' of 0.000976562
+  #done with that half
+  
+  
+  temp.dataframe = data.frame(stateroute = s, OA.A, OA.i, OA.k, NA, NA, NA)
 
-#fitting the log curve for aveN (for each route)
-mONlog = nls(meanOcc ~ SSlogis(log(aveN), Asym, xmid, scal), data = logsub)
-pCNlog = nls(pctCore ~ SSlogis(log(aveN), Asym, xmid, scal), data = logsub)
-#pTNlog = nls(pctTran ~ SSlogis(log(aveN), Asym, xmid, scal), data = logsub)
-
-#getting the inflection points:
-mOAinflec.log <- summary(mOAlog)$coefficients["xmid","Estimate"]
-pCAinflec.log <- summary(pCAlog)$coefficients["xmid","Estimate"]
-#pTAinflec.log <- summary(pTAlog)$coefficients["xmid","Estimate"] #Error: step factor 0.000488281 reduced below 'minFactor' of 0.000976562
-mONinflec.log <- summary(mONlog)$coefficients["xmid","Estimate"]
-pCNinflec.log <- summary(pCNlog)$coefficients["xmid","Estimate"]
-#pTNinflec.log <- summary(pTNlog)$coefficients["xmid","Estimate"] #Error: step factor  0.000488281 reduced below 'minFactor' of 0.000976562
-#done with that half
-
-
-#repeat for pCA, pTA, mON, pCN, pTN (nested loop?)
-yhat = 0.5*(max(logsub$meanOcc)-min(logsub$meanOcc)) + min(logsub$meanOcc)
-logsub$inflectdiff = logsub$meanOcc - yhat #might need to write to diff source?
-y1 = logsub$meanOcc[logsub$inflectdiff == tail(logsub$inflectdiff[logsub$inflectdiff <= 0], 1)]
-y2 = logsub$meanOcc[logsub$inflectdiff == head(logsub$inflectdiff[logsub$inflectdiff >= 0], 1)]
-x1 = (log(logsub$area)[logsub$inflectdiff == tail(logsub$inflectdiff[logsub$inflectdiff <= 0], 1)])
-x2 = (log(logsub$area)[logsub$inflectdiff == tail(logsub$inflectdiff[logsub$inflectdiff >= 0], 1)])
-mOAinflec.half = x1 + ((yhat-y1)/(y2-y1))*(x2-x1)
-
-yhat = 0.5*(max(logsub$pctCore)-min(logsub$pctCore)) + min(logsub$pctCore)
-logsub$inflectdiff = logsub$pctCore - yhat
-y1 = logsub$pctCore[logsub$inflectdiff == tail(logsub$inflectdiff[logsub$inflectdiff <= 0], 1)]
-y2 = logsub$pctCore[logsub$inflectdiff == head(logsub$inflectdiff[logsub$inflectdiff >= 0], 1)]
-x1 = (log(logsub$area)[logsub$inflectdiff == tail(logsub$inflectdiff[logsub$inflectdiff <= 0], 1)])
-x2 = (log(logsub$area)[logsub$inflectdiff == tail(logsub$inflectdiff[logsub$inflectdiff >= 0], 1)])
-pCAinflec.half = x1 + ((yhat-y1)/(y2-y1))*(x2-x1)
-# 
-# yhat = 0.5*(max(logsub$pctTran)-min(logsub$pctTran)) + min(logsub$pctTran)
-# logsub$inflectdiff = logsub$pctTran - yhat
-# y1 = logsub$pctTran[logsub$inflectdiff == tail(logsub$inflectdiff[logsub$inflectdiff <= 0], 1)]
-# y2 = logsub$pctTran[logsub$inflectdiff == head(logsub$inflectdiff[logsub$inflectdiff >= 0], 1)]
-# x1 = (log(logsub$area)[logsub$inflectdiff == tail(logsub$inflectdiff[logsub$inflectdiff <= 0], 1)])
-# x2 = (log(logsub$area)[logsub$inflectdiff == tail(logsub$inflectdiff[logsub$inflectdiff >= 0], 1)])
-# pTAinflec.half = x1 + ((yhat-y1)/(y2-y1))*(x2-x1)
-
-
-#aveN
-yhat = 0.5*(max(logsub$meanOcc)-min(logsub$meanOcc)) + min(logsub$meanOcc)
-logsub$inflectdiff = logsub$meanOcc - yhat
-y1 = logsub$meanOcc[logsub$inflectdiff == tail(logsub$inflectdiff[logsub$inflectdiff <= 0], 1)]
-y2 = logsub$meanOcc[logsub$inflectdiff == head(logsub$inflectdiff[logsub$inflectdiff >= 0], 1)]
-x1 = (log(logsub$aveN)[logsub$inflectdiff == tail(logsub$inflectdiff[logsub$inflectdiff <= 0], 1)])
-x2 = (log(logsub$aveN)[logsub$inflectdiff == tail(logsub$inflectdiff[logsub$inflectdiff >= 0], 1)])
-mONinflec.half = x1 + ((yhat-y1)/(y2-y1))*(x2-x1)
-
-yhat = 0.5*(max(logsub$pctCore)-min(logsub$pctCore)) + min(logsub$pctCore)
-logsub$inflectdiff = logsub$pctCore - yhat
-y1 = logsub$pctCore[logsub$inflectdiff == tail(logsub$inflectdiff[logsub$inflectdiff <= 0], 1)]
-y2 = logsub$pctCore[logsub$inflectdiff == head(logsub$inflectdiff[logsub$inflectdiff >= 0], 1)]
-x1 = (log(logsub$aveN)[logsub$inflectdiff == tail(logsub$inflectdiff[logsub$inflectdiff <= 0], 1)])
-x2 = (log(logsub$aveN)[logsub$inflectdiff == tail(logsub$inflectdiff[logsub$inflectdiff >= 0], 1)])
-pCNinflec.half = x1 + ((yhat-y1)/(y2-y1))*(x2-x1)
-# 
-# yhat = 0.5*(max(logsub$pctTran)-min(logsub$pctTran)) + min(logsub$pctTran)
-# logsub$inflectdiff = logsub$pctTran - yhat
-# y1 = logsub$pctTran[logsub$inflectdiff == tail(logsub$inflectdiff[logsub$inflectdiff <= 0], 1)]
-# y2 = logsub$pctTran[logsub$inflectdiff == head(logsub$inflectdiff[logsub$inflectdiff >= 0], 1)]
-# x1 = (log(logsub$aveN)[logsub$inflectdiff == tail(logsub$inflectdiff[logsub$inflectdiff <= 0], 1)])
-# x2 = (log(logsub$aveN)[logsub$inflectdiff == tail(logsub$inflectdiff[logsub$inflectdiff >= 0], 1)])
-# pTNinflec.half = x1 + ((yhat-y1)/(y2-y1))*(x2-x1)
-
-temp.dataframe = data.frame(mOAinflec.half, pCAinflec.half, #pTAinflec.half, 
-                            mONinflec.half, pCNinflec.half, #pTNinflec.half,
-                            mOAinflec.log, pCAinflec.log, #pTAinflec.log, 
-                            mONinflec.log, pCNinflec.log) #pTNinflec.log) #each row is for a single stateroute
-
-samp.dataframe = rbind(samp.dataframe, temp.dataframe)
+  samp.dataframe = rbind(samp.dataframe, temp.dataframe)
+  
 }# end for loop
 
 inflection_pts <- samp.dataframe
