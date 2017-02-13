@@ -266,21 +266,15 @@ CA.df = data.frame(stateroute = numeric(), CA.A= numeric(), CA.i = numeric(), CA
 CN.df = data.frame(stateroute = numeric(), CN.A= numeric(), CN.i = numeric(), CN.k = numeric())
 #TA.df = data.frame(stateroute = numeric(), TA.A= numeric(), TA.i = numeric(), TA.k = numeric())
 #TN.df = data.frame(stateroute = numeric(), TN.A= numeric(), TN.i = numeric(), TN.k = numeric())
-#could theoretically do nested loop of stateroutes -> O, C, or T -> aveN or area 
 
 
 #Use tryCatch to run through all routes but store routes with errors
 warnings = data.frame(stateroute = numeric(), warning = character())
-
 #subspecify to only pull bbs data at year s 
 stateroutes = unique(bbs_allscales$focalrte)
-independents = c("meanOcc", "pctCore") #, "pctTran")
-dependents = c("area", "aveN")
 
 #OA mod 
 for(s in stateroutes){
-  for (v in independents){ #need to close
-    for (d in dependents){ #nned to close
   logsub = subset(bbs_allscales, bbs_allscales$focalrte == s)  
   #fitting the log curve for area (for each route)
     OAmodel = tryCatch({
