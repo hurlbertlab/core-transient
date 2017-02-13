@@ -447,7 +447,7 @@ if(numEventsd3 > numEventsd4) {
 # Remove NA's:
 
 dataset5 = na.omit(dataset4)
-
+dataset5 = subset(dataset4, count != -888)
 
 # How does it look?
 
@@ -511,7 +511,7 @@ data.frame(table(dataset5$species))
 # Because of this, you should really stop here and post an issue on GitHub. 
 
 #--! PROVIDE INFO !--#
-bad_sp = c('-888', '1', '2', '20', '28', '3', '30', '4', '46', '51', '56',
+bad_sp = c('-888 -888','-888', '1', '2', '20', '28', '3', '30', '4', '46', '51', '56',
            '57', '60', '88', 'NS')
 
 dataset6 = dataset5[!dataset5$species %in% bad_sp,]

@@ -638,7 +638,7 @@ tGrain = 'year'
 site_grain_names
 
 #####
-sGrain = 'Station'
+sGrain = 'Quadrat'
 
 # This is a reasonable choice of spatial grain because ...
 # ...a 1m2 quadrat is probably too small given the size of some of these
