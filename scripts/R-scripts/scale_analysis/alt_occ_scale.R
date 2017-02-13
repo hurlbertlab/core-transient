@@ -266,15 +266,21 @@ CA.df = data.frame(stateroute = numeric(), CA.A= numeric(), CA.i = numeric(), CA
 CN.df = data.frame(stateroute = numeric(), CN.A= numeric(), CN.i = numeric(), CN.k = numeric())
 #TA.df = data.frame(stateroute = numeric(), TA.A= numeric(), TA.i = numeric(), TA.k = numeric())
 #TN.df = data.frame(stateroute = numeric(), TN.A= numeric(), TN.i = numeric(), TN.k = numeric())
+#could theoretically do nested loop of stateroutes -> O, C, or T -> aveN or area 
+
 
 #Use tryCatch to run through all routes but store routes with errors
 warnings = data.frame(stateroute = numeric(), warning = character())
 
 #subspecify to only pull bbs data at year s 
 stateroutes = unique(bbs_allscales$focalrte)
+independents = c("meanOcc", "pctCore") #, "pctTran")
+dependents = c("area", "aveN")
 
 #OA mod 
 for(s in stateroutes){
+  for (v in independents){ #need to close
+    for (d in dependents){ #nned to close
   logsub = subset(bbs_allscales, bbs_allscales$focalrte == s)  
   #fitting the log curve for area (for each route)
     OAmodel = tryCatch({
@@ -369,10 +375,6 @@ for(s in stateroutes){
   CN.df = rbind(CN.df, CN.temp)
 }
 
-logcurve_coefs = data.frame(OA.df, ON.df, CA.df, CN.df)
-write.csv(logcurve_coefs, "//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/logcurve_coefs.csv", row.names = FALSE)
-#saving as intermediate in case
-
 
 #commented out pctTran models because need to use a diff formula to fit (fault neg slope)
 
@@ -423,56 +425,16 @@ write.csv(logcurve_coefs, "//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/l
 #   TN.temp = data.frame(stateroute = s, TN.A, TN.i, TN.k) #fix
 #   TN.df = rbind(TN.df, TN.temp)
 # }
-# 
-# 
 
 
 
+logcurve_coefs = data.frame(OA.df, ON.df, CA.df, CN.df)
+write.csv(logcurve_coefs, "//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/logcurve_coefs.csv", row.names = FALSE)
+#saving as intermediate in case
+#it appears no NA's! 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  #getting the inflection points:
-   
-  
-  
-  
-  pCAlog = nls(pctCore ~ SSlogis(log(area), Asym, xmid, scal), data = logsub)
-  #pTAlog = nls(pctTran ~ SSlogis(log(area), Asym, xmid, scal), data = logsub)
-  
-  #fitting the log curve for aveN (for each route)
-  mONlog = nls(meanOcc ~ SSlogis(log(aveN), Asym, xmid, scal), data = logsub)
-  pCNlog = nls(pctCore ~ SSlogis(log(aveN), Asym, xmid, scal), data = logsub)
-  #pTNlog = nls(pctTran ~ SSlogis(log(aveN), Asym, xmid, scal), data = logsub)
-  
-    pCAinflec.log <- summary(pCAlog)$coefficients["xmid","Estimate"]
-  #pTAinflec.log <- summary(pTAlog)$coefficients["xmid","Estimate"] #Error: step factor 0.000488281 reduced below 'minFactor' of 0.000976562
-  mONinflec.log <- summary(mONlog)$coefficients["xmid","Estimate"]
-  pCNinflec.log <- summary(pCNlog)$coefficients["xmid","Estimate"]
-  #pTNinflec.log <- summary(pTNlog)$coefficients["xmid","Estimate"] #Error: step factor  0.000488281 reduced below 'minFactor' of 0.000976562
-  #done with that half
-  
-  
-  temp.dataframe = data.frame(stateroute = s, OA.A, OA.i, OA.k, NA, NA, NA)
-
-  samp.dataframe = rbind(samp.dataframe, temp.dataframe)
-  
-
+####Tracie ref code remnants####
 
 inflection_pts <- samp.dataframe
 #inflection_pts$stateroute <- c(2000:2016)
@@ -507,12 +469,6 @@ scal = coefs[3]
 curvemod = nls(meanOcc ~ asym/(1+exp(xmid - log(area))/scal), 
                data = bbs_allscales) 
 summary(curvemod)
-
-
-
-
-
-
 
 
 
