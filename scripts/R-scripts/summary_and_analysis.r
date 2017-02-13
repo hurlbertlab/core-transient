@@ -104,8 +104,8 @@ dsetsByTaxa = table(dsets$taxa)
 sitesBySystem = table(summ2$system)
 sitesByTaxa = table(summ2$taxa)
 
-colors7 = c(rgb(29/255, 106/255, 155/255), #bird
-            colors()[552], # plankton
+colors7 = c(colors()[552], # plankton
+            rgb(29/255, 106/255, 155/255), #bird
             colors()[144], # invert
             colors()[139], # plant
             colors()[551], #mammal
@@ -181,11 +181,11 @@ numCT = read.csv("output/tabular_data/numCT.csv", header=TRUE)
 #numCT_plot$taxa <-droplevels(numCT_plot$taxa, exclude = c("","All","Amphibian", "Reptile"))
 
 # n calculates number of sites by taxa -nested sites
-n = numCT_taxa %>%
+numCT_taxa = numCT %>%
   dplyr::count(site, taxa) %>%
   group_by(taxa) %>%
   tally(n)
-n = data.frame(n)
+numCT_taxa = data.frame(n)
 # calculates number of sites by taxa -raw
 sitetally = summ %>%
   dplyr::count(site, taxa) %>%
@@ -418,9 +418,7 @@ palette(colors7)
 occ_taxa=read.csv("output/tabular_data/occ_taxa.csv",header=TRUE)
 scaleIDs = filter(dataformattingtable, spatial_scale_variable == 'Y',
                   format_flag == 1)$dataset_ID
-scaleIDs = scaleIDs[scaleIDs != 222]
-scaleIDs = scaleIDs[scaleIDs != 236]
-scaleIDs = scaleIDs[scaleIDs != 317]
+scaleIDs = scaleIDs[! scaleIDs %in% c(222,280,317)]
 bbs_abun = read.csv("bbs_abun_occ.csv", header=TRUE)
 
 totalspp = bbs_abun %>% 
@@ -453,7 +451,7 @@ for(id in scaleIDs){
 }
 segments(0,  1, x1 = 5.607, y1 = 0, col = rgb(29/255, 106/255, 155/255), lwd=5)
 par(new=TRUE)
-legend('topright', legend = taxcolors$taxa, lty=1,lwd=3,col = as.character(taxcolors$color), cex = 1.35)
+legend('topright', legend = as.character(taxcolors$taxa), lty=1,lwd=3,col = as.character(taxcolors$color), cex = 1.35)
 dev.off()
 
 pdf('output/plots/sara_scale_core_reg.pdf', height = 6, width = 7.5)
@@ -478,6 +476,19 @@ segments(0,  0, x1 = 5.607, y1 = 1, col = rgb(29/255, 106/255, 155/255), lwd=5)
 par(new=TRUE)
 dev.off()
 
+
+#### Fig 3b Area #####
+area = read.csv("output/scaled_areas.csv", header = TRUE)
+
+areamerge = merge(occ_taxa, area, by = )
+
+
+
+p <- ggplot(predmod, aes(x = datasetID, y = fit))
+p + geom_point(aes(color = as.factor(predmod$taxa))) + geom_errorbar(ymin = predmod3c$lwr, ymax= predmod3c$upr, width=0.2) + theme_classic()
+ggsave(file="C:/Git/core-transient/output/plots/area3b.pdf", height = 10, width = 15)
+
+
 #### Fig 3c ####
 mod3c = lmer(pctTrans~(1|datasetID) * taxa * log10(meanAbundance), data=occ_taxa)
 summary(mod3c)
@@ -486,8 +497,8 @@ predmod3c = merTools::predictInterval(mod3c, occ_sub_pred, n.sims=1000)
 
 write.csv(predmod3c, "predmod3c.csv", row.names = FALSE)
 
-predmod3c$row = 1:2823
-occ_taxa$row = 1:2823
+predmod3c$row = 1:5859
+occ_taxa$row = 1:5859
 predmod = merge(predmod3c, occ_taxa[,c("datasetID", "taxa", "row")], by = "row")
 
 p <- ggplot(predmod, aes(x = datasetID, y = fit))

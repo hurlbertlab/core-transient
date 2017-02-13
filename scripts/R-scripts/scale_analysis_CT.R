@@ -193,7 +193,8 @@ numCT= propOcc_w_taxa %>% group_by(datasetID, site) %>%
                    perTrans25 = sum(propOcc <= 1/4)/n, #25%
                    perTrans10 = sum(propOcc <= 1/10)/n, #10%
                    meanOcc = mean(propOcc, na.rm = T))
-write.csv(numCT,"numCT.csv", row.names=FALSE)
+numCT = merge(propOcc_w_taxa[,c("datasetID", "site", "taxa")], numCT, by= c("datasetID", "site"))
+write.csv(numCT,"output/tabular_data/numCT.csv", row.names=FALSE)
 spptotals = merge(totalspp, numCT, by= c("datasetID", "site"))
   
 # for each dset - the propocc as response and the # of grain levels, community size, and random effect of taxa would be the predictor variables
