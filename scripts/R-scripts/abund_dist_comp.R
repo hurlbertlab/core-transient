@@ -110,3 +110,5 @@ logseries_weights = rbind(logseries_weights_incl, logseries_weights_excl)
 
 ggplot(logseries_weights, aes(x = treatment, y = weights)) +
   geom_violin()
+
+ggsave('output/plots/sad_fit_comparison.png')
