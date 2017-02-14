@@ -460,7 +460,7 @@ tGrain = 'year'
 
 site_grain_names
 
-sGrain = 'Replicate_Treatment'
+sGrain = 'Station'
 
 # This is a reasonable choice of spatial grain because ...
 #  There are 6 replicates with 7 treatments. Within each treatment (87 x 105 m), there are 5 stations with one sticky trap each. The captured insects from one sticky trap is probably not a good indicator of the community composition, so treatment, the next coarsest grain, will be used.   
