@@ -41,7 +41,7 @@ dataformattingtable = read.csv('data_formatting_table.csv', header = T)
 
 datasetIDs = dataformattingtable$dataset_ID[dataformattingtable$format_flag == 1]
 
-datasetIDs = datasetIDs[!datasetIDs %in% c(1,222, 317,67,270,271,319,325)] # 222 is % cover, 317 d/n have neough years
+datasetIDs = datasetIDs[!datasetIDs %in% c(1,222, 317,67,270,271,319,325)] # 222 is % cover, 317 d/n have enough years
 
 summaries = c()
 for (d in datasetIDs) {
@@ -480,29 +480,40 @@ dev.off()
 #### Fig 3b Area #####
 area = read.csv("output/scaled_areas.csv", header = TRUE)
 
-areamerge = merge(occ_taxa, area, by = )
+# areamerge = merge(occ_taxa, area, by = )
 
 
 
 p <- ggplot(predmod, aes(x = datasetID, y = fit))
 p + geom_point(aes(color = as.factor(predmod$taxa))) + geom_errorbar(ymin = predmod3c$lwr, ymax= predmod3c$upr, width=0.2) + theme_classic()
-ggsave(file="C:/Git/core-transient/output/plots/area3b.pdf", height = 10, width = 15)
+ggsave(file="C:/Git/core-transient/output/plots/area3a.pdf", height = 10, width = 15)
 
 
 #### Fig 3c ####
-mod3c = lmer(pctTrans~(1|datasetID) * taxa * log10(meanAbundance), data=occ_taxa)
+bbs_occ_taxa = occ_taxa[,c("datasetID", "site", "taxa", "pctTrans", "meanAbundance")]
+bbs_below$pctTrans = bbs_below$propTrans
+bbs_below_occ = bbs_below[,c("datasetID", "site", "taxa", "pctTrans", "meanAbundance")]
+
+bbs_below_occ_taxa = rbind(bbs_occ_taxa, bbs_below_occ)
+
+mod3c = lmer(pctTrans~(1|datasetID) * taxa * log10(meanAbundance), data=bbs_below_occ_taxa)
 summary(mod3c)
-occ_sub_pred = occ_taxa[,c("datasetID", "taxa", "meanAbundance")]
+occ_sub_pred = data.frame(datasetID = 999, taxa = unique(bbs_below_occ_taxa$taxa), meanAbundance = 80.333)
 predmod3c = merTools::predictInterval(mod3c, occ_sub_pred, n.sims=1000)
 
 write.csv(predmod3c, "predmod3c.csv", row.names = FALSE)
 
-predmod3c$row = 1:5859
-occ_taxa$row = 1:5859
-predmod = merge(predmod3c, occ_taxa[,c("datasetID", "taxa", "row")], by = "row")
+predmod3c$row = 1:7
+taxcolors$row = 1:7
+predmod = merge(predmod3c, taxcolors, by = "row")
 
-p <- ggplot(predmod, aes(x = datasetID, y = fit))
-p + geom_point(aes(color = as.factor(predmod$taxa))) + geom_errorbar(ymin = predmod3c$lwr, ymax= predmod3c$upr, width=0.2) + theme_classic()
+predmod$abbrev = factor(predmod$abbrev,
+                          levels = c('I','F','Pn','M','Pt','Bi','Be'),ordered = TRUE)
+predmod$color = factor(predmod$color,
+                        levels = c("gold2","turquoise2","red","purple4","forestgreen", "#1D6A9B", "azure4"),ordered = TRUE)
+
+p <- ggplot(predmod, aes(x = abbrev, y = fit))
+p + geom_point(aes(x=abbrev, y=fit, color = taxa), size = 5)+ geom_errorbar(ymin = predmod$lwr, ymax= predmod$upr, width=0.2) + xlab("Taxa") + ylab("Proportion of Species") + theme_classic()
 ggsave(file="C:/Git/core-transient/output/plots/predmod3c.pdf", height = 10, width = 15)
 
 
