@@ -264,20 +264,20 @@ OA.df = data.frame(stateroute = numeric(), OA.A= numeric(), OA.i = numeric(), OA
 ON.df = data.frame(stateroute = numeric(), ON.A= numeric(), ON.i = numeric(), ON.k = numeric())
 CA.df = data.frame(stateroute = numeric(), CA.A= numeric(), CA.i = numeric(), CA.k = numeric())
 CN.df = data.frame(stateroute = numeric(), CN.A= numeric(), CN.i = numeric(), CN.k = numeric())
-TA.df = data.frame(stateroute = numeric(), TA.A= numeric(), TA.i = numeric(), TA.k = numeric())
-TN.df = data.frame(stateroute = numeric(), TN.A= numeric(), TN.i = numeric(), TN.k = numeric())
+#TA.df = data.frame(stateroute = numeric(), TA.A= numeric(), TA.i = numeric(), TA.k = numeric())
+#TN.df = data.frame(stateroute = numeric(), TN.A= numeric(), TN.i = numeric(), TN.k = numeric())
+
 
 #Use tryCatch to run through all routes but store routes with errors
 warnings = data.frame(stateroute = numeric(), warning = character())
-
 #subspecify to only pull bbs data at year s 
 stateroutes = unique(bbs_allscales$focalrte)
+
+#OA mod 
 for(s in stateroutes){
   logsub = subset(bbs_allscales, bbs_allscales$focalrte == s)  
   #fitting the log curve for area (for each route)
-  
-  
-  OAmodel = tryCatch({
+    OAmodel = tryCatch({
     OAlog = nls(meanOcc ~ SSlogis(log(area), Asym, xmid, scal), data = logsub)
     return(data.frame(stateroute = s, OA.A, OA.i, OA.k))
   }, warning = function(w) {
@@ -290,16 +290,17 @@ for(s in stateroutes){
     OA.i <- summary(OAlog)$coefficients["xmid","Estimate"]
     OA.A <- summary(OAlog)$coefficients["Asym","Estimate"]
     OA.k <- summary(OAlog)$coefficients["scal","Estimate"]
-    OA.tmp = data.frame(stateroute = s, OA.A, OA.i, OA.k)
+    #OA.tmp = data.frame(stateroute = s, OA.A, OA.i, OA.k)
   })
   
-  temp.dataframe = data.frame(stateroute = s, OA.A, OA.i, OA.k, NA, NA, NA) #fix
-    samp.dataframe = rbind(samp.dataframe, temp.dataframe)
+  OA.temp = data.frame(stateroute = s, OA.A, OA.i, OA.k) #fix
+  OA.df = rbind(OA.df, OA.temp)
 }
 
+#ON model
 for(s in stateroutes){
   logsub = subset(bbs_allscales, bbs_allscales$focalrte == s)  
-  
+  #fitting the log curve for aveN (for each route)
   ONmodel = tryCatch({
     ONlog = nls(meanOcc ~ SSlogis(log(aveN), Asym, xmid, scal), data = logsub)
     return(data.frame(stateroute = s, ON.A, ON.i, ON.k))
@@ -313,39 +314,121 @@ for(s in stateroutes){
     ON.i <- summary(ONlog)$coefficients["xmid","Estimate"]
     ON.A <- summary(ONlog)$coefficients["Asym","Estimate"]
     ON.k <- summary(ONlog)$coefficients["scal","Estimate"]
-    tmp = data.frame(stateroute = s, ON.A, ON.i, ON.k)
+    #ON.tmp = data.frame(stateroute = s, ON.A, ON.i, ON.k)
   })
-}  
   
+  ON.temp = data.frame(stateroute = s, ON.A, ON.i, ON.k) #fix
+  ON.df = rbind(ON.df, ON.temp)
+}
   
-  OAlog = nls(meanOcc ~ SSlogis(log(area), Asym, xmid, scal), data = logsub)
+#CA model
+for(s in stateroutes){
+  logsub = subset(bbs_allscales, bbs_allscales$focalrte == s)  
+  #fitting the log curve for area (for each route)
+  CAmodel = tryCatch({
+    CAlog = nls(pctCore ~ SSlogis(log(area), Asym, xmid, scal), data = logsub)
+    return(data.frame(stateroute = s, CA.A, CA.i, CA.k))
+  }, warning = function(w) {
+    warnings = rbind(warnings, data.frame(stateroute = s, warning = w))
+  }, error = function(e) {
+    CA.i <- NA
+    CA.A <- NA
+    CA.k <- NA
+  }, finally = {
+    CA.i <- summary(CAlog)$coefficients["xmid","Estimate"]
+    CA.A <- summary(CAlog)$coefficients["Asym","Estimate"]
+    CA.k <- summary(CAlog)$coefficients["scal","Estimate"]
+    #CA.tmp = data.frame(stateroute = s, CA.A, CA.i, CA.k)
+  })
   
-  #getting the inflection points:
-   
-  
-  
-  
-  pCAlog = nls(pctCore ~ SSlogis(log(area), Asym, xmid, scal), data = logsub)
-  #pTAlog = nls(pctTran ~ SSlogis(log(area), Asym, xmid, scal), data = logsub)
-  
-  #fitting the log curve for aveN (for each route)
-  mONlog = nls(meanOcc ~ SSlogis(log(aveN), Asym, xmid, scal), data = logsub)
-  pCNlog = nls(pctCore ~ SSlogis(log(aveN), Asym, xmid, scal), data = logsub)
-  #pTNlog = nls(pctTran ~ SSlogis(log(aveN), Asym, xmid, scal), data = logsub)
-  
-    pCAinflec.log <- summary(pCAlog)$coefficients["xmid","Estimate"]
-  #pTAinflec.log <- summary(pTAlog)$coefficients["xmid","Estimate"] #Error: step factor 0.000488281 reduced below 'minFactor' of 0.000976562
-  mONinflec.log <- summary(mONlog)$coefficients["xmid","Estimate"]
-  pCNinflec.log <- summary(pCNlog)$coefficients["xmid","Estimate"]
-  #pTNinflec.log <- summary(pTNlog)$coefficients["xmid","Estimate"] #Error: step factor  0.000488281 reduced below 'minFactor' of 0.000976562
-  #done with that half
-  
-  
-  temp.dataframe = data.frame(stateroute = s, OA.A, OA.i, OA.k, NA, NA, NA)
+  CA.temp = data.frame(stateroute = s, CA.A, CA.i, CA.k) #fix
+  CA.df = rbind(CA.df, CA.temp)
+}
 
-  samp.dataframe = rbind(samp.dataframe, temp.dataframe)
+#CN model
+for(s in stateroutes){
+  logsub = subset(bbs_allscales, bbs_allscales$focalrte == s)  
+  #fitting the log curve for aveN (for each route)
+  CNmodel = tryCatch({
+    CNlog = nls(pctCore ~ SSlogis(log(aveN), Asym, xmid, scal), data = logsub)
+    return(data.frame(stateroute = s, CN.A, CN.i, CN.k))
+  }, warning = function(w) {
+    warnings = rbind(warnings, data.frame(stateroute = s, warning = w))
+  }, error = function(e) {
+    CN.i <- NA
+    CN.A <- NA
+    CN.k <- NA
+  }, finally = {
+    CN.i <- summary(CNlog)$coefficients["xmid","Estimate"]
+    CN.A <- summary(CNlog)$coefficients["Asym","Estimate"]
+    CN.k <- summary(CNlog)$coefficients["scal","Estimate"]
+    #CN.tmp = data.frame(stateroute = s, CN.A, CN.i, CN.k)
+  })
   
-}# end for loop
+  CN.temp = data.frame(stateroute = s, CN.A, CN.i, CN.k) #fix
+  CN.df = rbind(CN.df, CN.temp)
+}
+
+
+#commented out pctTran models because need to use a diff formula to fit (fault neg slope)
+
+# #TA model
+# for(s in stateroutes){
+#   logsub = subset(bbs_allscales, bbs_allscales$focalrte == s)  
+#   #fitting the log curve for area (for each route)
+#   TAmodel = tryCatch({
+#     TAlog = nls(pctTran ~ SSlogis(log(area), Asym, xmid, scal), data = logsub)
+#     return(data.frame(stateroute = s, TA.A, TA.i, TA.k))
+#   }, warning = function(w) {
+#     warnings = rbind(warnings, data.frame(stateroute = s, warning = w))
+#   }, error = function(e) {
+#     TA.i <- NA
+#     TA.A <- NA
+#     TA.k <- NA
+#   }, finally = {
+#     TA.i <- summary(TAlog)$coefficients["xmid","Estimate"]
+#     TA.A <- summary(TAlog)$coefficients["Asym","Estimate"]
+#     TA.k <- summary(TAlog)$coefficients["scal","Estimate"]
+#     #TA.tmp = data.frame(stateroute = s, TA.A, TA.i, TA.k)
+#   })
+#   
+#   TA.temp = data.frame(stateroute = s, TA.A, TA.i, TA.k) #fix
+#   TA.df = rbind(TA.df, TA.temp)
+# }
+# 
+# #TN model
+# for(s in stateroutes){
+#   logsub = subset(bbs_allscales, bbs_allscales$focalrte == s)  
+#   #fitting the log curve for aveN (for each route)
+#   TNmodel = tryCatch({
+#     TNlog = nls(pctTran ~ SSlogis(log(aveN), Asym, xmid, scal), data = logsub)
+#     return(data.frame(stateroute = s, TN.A, TN.i, TN.k))
+#   }, warning = function(w) {
+#     warnings = rbind(warnings, data.frame(stateroute = s, warning = w))
+#   }, error = function(e) {
+#     TN.i <- NA
+#     TN.A <- NA
+#     TN.k <- NA
+#   }, finally = {
+#     TN.i <- summary(TNlog)$coefficients["xmid","Estimate"]
+#     TN.A <- summary(TNlog)$coefficients["Asym","Estimate"]
+#     TN.k <- summary(TNlog)$coefficients["scal","Estimate"]
+#     #TN.tmp = data.frame(stateroute = s, TN.A, TN.i, TN.k)
+#   })
+#   
+#   TN.temp = data.frame(stateroute = s, TN.A, TN.i, TN.k) #fix
+#   TN.df = rbind(TN.df, TN.temp)
+# }
+
+
+
+logcurve_coefs = data.frame(OA.df, ON.df, CA.df, CN.df)
+write.csv(logcurve_coefs, "//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/logcurve_coefs.csv", row.names = FALSE)
+#saving as intermediate in case
+#it appears no NA's! 
+
+
+####Tracie ref code remnants####
 
 inflection_pts <- samp.dataframe
 #inflection_pts$stateroute <- c(2000:2016)
@@ -380,12 +463,6 @@ scal = coefs[3]
 curvemod = nls(meanOcc ~ asym/(1+exp(xmid - log(area))/scal), 
                data = bbs_allscales) 
 summary(curvemod)
-
-
-
-
-
-
 
 
 
