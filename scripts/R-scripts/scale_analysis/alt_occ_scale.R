@@ -248,7 +248,7 @@ plot2_3 =ggplot(plotsub, aes(x=log(aveN), y =pctTran))+geom_point(color = "olive
 ####change to log_10^^^^####
 
 #setting up aveN and log(area) cols side by side 
-
+library(gridExtra)
 scaleplot = grid.arrange(plot1, plot2, plot1_2, plot2_2, plot1_3, plot2_3, ncol=2, 
                          top = paste("scaleplot_", s, sep = ""))
 #saved to core-transient/output/plots  
