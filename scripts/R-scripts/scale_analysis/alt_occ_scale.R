@@ -235,14 +235,14 @@ for (s in stateroutes) {
 #log(area)
 theme_set(theme_bw()+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()))
 plotsub = subset(bbs_allscales, bbs_allscales$focalrte == s)
-plot1 = ggplot(plotsub, aes(x = log(area), y = meanOcc))+geom_point(color = "firebrick")
-plot1_2= ggplot(plotsub, aes(x = log(area), y = pctCore))+geom_point(color = "turquoise")
-plot1_3 = ggplot(plotsub, aes(x = log(area), y = pctTran))+geom_point(color = "olivedrab")
+plot1 = ggplot(plotsub, aes(x = log(area), y = meanOcc))+geom_point(color = "firebrick")+geom_point()+geom_smooth(se=FALSE)
+plot1_2= ggplot(plotsub, aes(x = log(area), y = pctCore))+geom_point(color = "turquoise")+geom_point()+geom_smooth(se=FALSE)
+plot1_3 = ggplot(plotsub, aes(x = log(area), y = pctTran))+geom_point(color = "olivedrab")+geom_point()+geom_smooth(se=FALSE)
 
 #aveN
-plot2 = ggplot(plotsub, aes(x=log(aveN), y =meanOcc))+geom_point(color = "firebrick")
-plot2_2 = ggplot(plotsub, aes(x=log(aveN), y =pctCore))+geom_point(color = "turquoise")
-plot2_3 =ggplot(plotsub, aes(x=log(aveN), y =pctTran))+geom_point(color = "olivedrab")
+plot2 = ggplot(plotsub, aes(x=log(aveN), y =meanOcc))+geom_point(color = "firebrick")+geom_point()+geom_smooth(se=FALSE)
+plot2_2 = ggplot(plotsub, aes(x=log(aveN), y =pctCore))+geom_point(color = "turquoise")+geom_point()+geom_smooth(se=FALSE)
+plot2_3 =ggplot(plotsub, aes(x=log(aveN), y =pctTran))+geom_point(color = "olivedrab")+geom_point()+geom_smooth(se=FALSE)
 
 
 ####change to log_10^^^^####
@@ -427,41 +427,15 @@ write.csv(logcurve_coefs, "//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/l
 #saving as intermediate in case
 #it appears no NA's! 
 
+theme_set(theme_bw())
+plot1 + geom_point() +    # Use hollow circles
+  geom_smooth(se=FALSE)
 
-####Tracie ref code remnants####
+#extracted coefs for analysis; but plotting is auto 
+#is loess ok?
 
-inflection_pts <- samp.dataframe
-#inflection_pts$stateroute <- c(2000:2016)
-
-
-# Plotting
-par(mar = c(2,2,3,2), mfrow = c(1,1), oma = c(2,2,2,2))
-plot(greenup$year, greenup$prgreenup.log, col = 'red', type = 'l', ylim = c(70,180),
-     xlab = 'Year', ylab = "Julian day of greenup", lwd = 2)
-points(greenup$year, greenup$bggreenup.log, col = 'blue', type = 'l', lwd = 2)
-points(greenup$year, greenup$hbgreenup.log, col = 'green3', type = 'l', lwd = 2)
-points(greenup$year, greenup$prgreenup.half, col = 'red', type = 'l', lwd = 2, lty = 2)
-points(greenup$year, greenup$bggreenup.half, col = 'blue', type = 'l', lwd = 2, lty = 2)
-points(greenup$year, greenup$hbgreenup.half, col = 'green3', type = 'l', lwd = 2, lty = 2)
-legend("topleft", c('PR logistic', 'BG logistic', 'HB logistic', 'PR half max', 'BG half max', 'HB half max'), lwd = 2, 
-       lty = c(1,1,1,2,2,2), col = c('red', 'blue', 'green3', 'red', 'blue', 'green3')) 
-title('Greenup 2000-2016', line = 1)
-
-
-
-test = nls(meanOcc~SSlogis(log(area), Asym, xmid, scal), data = bbs_allscales)
-summary(test) #estimates are the coefs, but can get specifically by calling "coef"
-coefs = coef(test)
-asym = coefs[1]
-xmid = coefs[2]
-scal = coefs[3]
-#1 is asym, 2 is xmid, 3 is scale 
-#is self starting log model ok? 
-
-#replace x variable with log aveN or log area
-
-curvemod = nls(meanOcc ~ asym/(1+exp(xmid - log(area))/scal), 
-               data = bbs_allscales) 
+curvemod = nls(meanOcc ~ A/(1+exp(i - log(area))/k), 
+               data = plotsub) 
 summary(curvemod)
 
 
