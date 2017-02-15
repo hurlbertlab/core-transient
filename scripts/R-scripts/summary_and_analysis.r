@@ -418,7 +418,7 @@ palette(colors7)
 occ_taxa=read.csv("output/tabular_data/occ_taxa.csv",header=TRUE)
 scaleIDs = filter(dataformattingtable, spatial_scale_variable == 'Y',
                   format_flag == 1)$dataset_ID
-scaleIDs = scaleIDs[! scaleIDs %in% c(222,280,317)]
+scaleIDs = scaleIDs[! scaleIDs %in% c(207, 210, 217, 218, 222, 223, 225, 238, 258, 282, 322, 280,317)]
 bbs_abun = read.csv("bbs_abun_occ.csv", header=TRUE)
 
 totalspp = bbs_abun %>% 
@@ -495,25 +495,31 @@ bbs_below$pctTrans = bbs_below$propTrans
 bbs_below_occ = bbs_below[,c("datasetID", "site", "taxa", "pctTrans", "meanAbundance")]
 
 bbs_below_occ_taxa = rbind(bbs_occ_taxa, bbs_below_occ)
+bbs_below_occ_taxa = bbs_below_occ_taxa[!bbs_below_occ_taxa$datasetID %in% c(207, 210, 217, 218, 222, 223, 225, 238, 258, 282, 322, 280,317),]
+
 
 mod3c = lmer(pctTrans~(1|datasetID) * taxa * log10(meanAbundance), data=bbs_below_occ_taxa)
 summary(mod3c)
-occ_sub_pred = data.frame(datasetID = 999, taxa = unique(bbs_below_occ_taxa$taxa), meanAbundance = 80.333)
+occ_sub_pred = data.frame(datasetID = 999, taxa = unique(bbs_below_occ_taxa$taxa), meanAbundance =  87.86667) # 87 is median abun for data frame
 predmod3c = merTools::predictInterval(mod3c, occ_sub_pred, n.sims=1000)
 
+# matching by predicted output vals
+predmod3c$taxa = c("Invertebrate", "Plant", "Mammal","Benthos", "Fish", "Bird", "Plankton")
 write.csv(predmod3c, "predmod3c.csv", row.names = FALSE)
 
-predmod3c$row = 1:7
-taxcolors$row = 1:7
-predmod = merge(predmod3c, taxcolors, by = "row")
+
+predmod = merge(predmod3c, taxcolors, by = "taxa")
 
 predmod$abbrev = factor(predmod$abbrev,
                           levels = c('I','F','Pn','M','Pt','Bi','Be'),ordered = TRUE)
-predmod$color = factor(predmod$color,
-                        levels = c("gold2","turquoise2","red","purple4","forestgreen", "#1D6A9B", "azure4"),ordered = TRUE)
 
-p <- ggplot(predmod, aes(x = abbrev, y = fit))
-p + geom_point(aes(x=abbrev, y=fit, color = taxa), size = 5)+ geom_errorbar(ymin = predmod$lwr, ymax= predmod$upr, width=0.2) + xlab("Taxa") + ylab("Proportion of Species") + theme_classic()
+colscale = factor(predmod$color,
+                        levels = c("gold2","turquoise2","red","purple4","forestgreen", "#1D6A9B", "azure4"),ordered = TRUE)
+colscale = c("gold2","turquoise2","red","purple4","forestgreen", "#1D6A9B", "azure4")
+
+
+p <- ggplot(predmod, aes(x = factor(abbrev), y = fit, fill=factor(taxa)))
+p +geom_bar(stat = "identity", fill = levels(predmod$color)) + geom_errorbar(ymin = predmod$lwr, ymax= predmod$upr, width=0.2) + xlab("Taxa") + ylab("Proportion of Species") + ylim(-1, 0.75) + theme(axis.ticks.x=element_blank(),axis.text.x=element_text(size=20),axis.text.y=element_text(size=20),axis.title.x=element_text(size=24),axis.title.y=element_text(size=24,angle=90,vjust = 2))+guides(fill=guide_legend(title="",keywidth = 2, keyheight = 1)) + theme_classic()
 ggsave(file="C:/Git/core-transient/output/plots/predmod3c.pdf", height = 10, width = 15)
 
 
