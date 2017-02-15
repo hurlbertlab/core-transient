@@ -418,7 +418,7 @@ palette(colors7)
 occ_taxa=read.csv("output/tabular_data/occ_taxa.csv",header=TRUE)
 scaleIDs = filter(dataformattingtable, spatial_scale_variable == 'Y',
                   format_flag == 1)$dataset_ID
-scaleIDs = scaleIDs[! scaleIDs %in% c(207, 210, 217, 218, 222, 223, 225, 238, 258, 282, 322, 280,317)]
+scaleIDs = scaleIDs[! scaleIDs %in% c(207, 210, 217, 218, 222, 223, 225, 238, 241,258, 282, 322, 280,317)]
 bbs_abun = read.csv("bbs_abun_occ.csv", header=TRUE)
 
 totalspp = bbs_abun %>% 
