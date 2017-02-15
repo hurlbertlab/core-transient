@@ -371,31 +371,67 @@ for(s in stateroutes){
 
 
 #commented out pctTran models because need to use a diff formula to fit (fault neg slope)
+# fcn = function(x, xmid, Asym, scal) {Asym/1 - exp((xmid-x)/scal)}
+# st <- coef(nls(log(pctTran) ~ log(fcn(log(area), xmid, Asym, scal)), data = logsub, 
+#                start = c(xmid = 1, Asym = 1, scal = 1)))
 
-# #TA model
-# for(s in stateroutes){
-#   logsub = subset(bbs_allscales, bbs_allscales$focalrte == s)  
-#   #fitting the log curve for area (for each route)
-#   TAmodel = tryCatch({
-#     TAlog = nls(pctTran ~ SSlogis(log(area), Asym, xmid, scal), data = logsub)
-#     return(data.frame(stateroute = s, TA.A, TA.i, TA.k))
-#   }, warning = function(w) {
-#     warnings = rbind(warnings, data.frame(stateroute = s, warning = w))
-#   }, error = function(e) {
-#     TA.i <- NA
-#     TA.A <- NA
-#     TA.k <- NA
-#   }, finally = {
-#     TA.i <- summary(TAlog)$coefficients["xmid","Estimate"]
-#     TA.A <- summary(TAlog)$coefficients["Asym","Estimate"]
-#     TA.k <- summary(TAlog)$coefficients["scal","Estimate"]
-#     #TA.tmp = data.frame(stateroute = s, TA.A, TA.i, TA.k)
-#   })
-#   
-#   TA.temp = data.frame(stateroute = s, TA.A, TA.i, TA.k) #fix
-#   TA.df = rbind(TA.df, TA.temp)
-# }
-# 
+#^^^above code produces NaN's and infinite loop 
+
+
+model <- nls(cost.per.car ~ a * exp(b * reductions) + c, 
+             data = q24, 
+             start = list(a=1, b=1, c=0))
+#revised ref:
+c.0 <- min(q24$cost.per.car) * 0.5
+model.0 <- lm(log(cost.per.car - c.0) ~ reductions, data=q24)
+start <- list(a=exp(coef(model.0)[1]), b=coef(model.0)[2], c=c.0)
+model <- nls(cost.per.car ~ a * exp(b * reductions) + c, data = q24, start = start)
+
+
+TAlog = nls(pctTran ~ Asym/(1+ exp((xmid- log(area))/scal)), #Asym is a, xmid is b, and scal is c with pctTran as cost and area as redux
+             data = logsub, 
+             start = list(a=1, b=1, c=0))
+
+c.0 <- min(q24$cost.per.car) * 0.5
+model.0 <- lm(log(cost.per.car - c.0) ~ reductions, data=q24)
+start <- list(a=exp(coef(model.0)[1]), b=coef(model.0)[2], c=c.0)
+model <- nls(cost.per.car ~ a * exp(b * reductions) + c, data = q24, start = start)
+
+
+
+
+
+TAlog = nls(pctTran ~ Asym/(1 + exp((xmid - log(area))/scal)),  
+            start = list(xmid = 1, scal = 1, Asym = 0.1), data = logsub)
+
+
+
+
+#TA model
+for(s in stateroutes){
+  logsub = subset(bbs_allscales, bbs_allscales$focalrte == s)
+  #fitting the log curve for area (for each route)
+  TAmodel = tryCatch({
+    TAlog = nls(pctTran ~ Asym/(1 + exp((xmid - log(area))/scal)),  
+              start = list(xmid = 1, scal = 1, Asym = 0.1), data = logsub) #this code produces singular gradient matrix error 
+    return(data.frame(stateroute = s, TA.A, TA.i, TA.k))
+  }, warning = function(w) {
+    warnings = rbind(warnings, data.frame(stateroute = s, warning = w))
+  }, error = function(e) {
+    TA.i <- NA
+    TA.A <- NA
+    TA.k <- NA
+  }, finally = {
+    TA.i <- summary(TAlog)$coefficients["xmid","Estimate"]
+    TA.A <- summary(TAlog)$coefficients["Asym","Estimate"]
+    TA.k <- summary(TAlog)$coefficients["scal","Estimate"]
+    #TA.tmp = data.frame(stateroute = s, TA.A, TA.i, TA.k)
+  })
+
+  TA.temp = data.frame(stateroute = s, TA.A, TA.i, TA.k) #fix
+  TA.df = rbind(TA.df, TA.temp)
+}
+
 # #TN model
 # for(s in stateroutes){
 #   logsub = subset(bbs_allscales, bbs_allscales$focalrte == s)  
