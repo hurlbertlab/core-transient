@@ -371,14 +371,19 @@ for(s in stateroutes){
 
 
 #commented out pctTran models because need to use a diff formula to fit (fault neg slope)
+# fcn = function(x, xmid, Asym, scal) {Asym/1 - exp((xmid-x)/scal)}
+# st <- coef(nls(log(pctTran) ~ log(fcn(log(area), xmid, Asym, scal)), data = logsub, 
+#                start = c(xmid = 1, Asym = 1, scal = 1)))
+
+#^^^above code produces NaN's and infinite loop 
 
 #TA model
 for(s in stateroutes){
   logsub = subset(bbs_allscales, bbs_allscales$focalrte == s)
   #fitting the log curve for area (for each route)
   TAmodel = tryCatch({
-    TAlog = nls(pctTran ~ Asym/(1 - exp((xmid - log(area))/scal)),  
-              start = list(xmid = 2, scal = -1, Asym = 0.05), data = logsub)
+    TAlog = nls(pctTran ~ Asym/(1 - exp((xmid + log(area))/scal)),  
+              start = list(xmid = 1.7, scal = -0.1, Asym = 0.1), data = logsub) #this code produces singular gradient matrix error 
     return(data.frame(stateroute = s, TA.A, TA.i, TA.k))
   }, warning = function(w) {
     warnings = rbind(warnings, data.frame(stateroute = s, warning = w))
