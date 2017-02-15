@@ -377,8 +377,8 @@ for(s in stateroutes){
   logsub = subset(bbs_allscales, bbs_allscales$focalrte == s)
   #fitting the log curve for area (for each route)
   TAmodel = tryCatch({
-    TAlog = nls(pctTran ~ -SSlogis(log(area), Asym, xmid, scal), 
-                start = list(xmid = 2, scal = -1, Asym = 0.05), data = logsub)
+    TAlog = nls(pctTran ~ Asym/(1 - exp((xmid - log(area))/scal)),  
+              start = list(xmid = 2, scal = -1, Asym = 0.05), data = logsub)
     return(data.frame(stateroute = s, TA.A, TA.i, TA.k))
   }, warning = function(w) {
     warnings = rbind(warnings, data.frame(stateroute = s, warning = w))
