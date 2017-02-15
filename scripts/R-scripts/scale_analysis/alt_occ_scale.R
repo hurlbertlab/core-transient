@@ -372,30 +372,31 @@ for(s in stateroutes){
 
 #commented out pctTran models because need to use a diff formula to fit (fault neg slope)
 
-# #TA model
-# for(s in stateroutes){
-#   logsub = subset(bbs_allscales, bbs_allscales$focalrte == s)  
-#   #fitting the log curve for area (for each route)
-#   TAmodel = tryCatch({
-#     TAlog = nls(pctTran ~ SSlogis(log(area), Asym, xmid, scal), data = logsub)
-#     return(data.frame(stateroute = s, TA.A, TA.i, TA.k))
-#   }, warning = function(w) {
-#     warnings = rbind(warnings, data.frame(stateroute = s, warning = w))
-#   }, error = function(e) {
-#     TA.i <- NA
-#     TA.A <- NA
-#     TA.k <- NA
-#   }, finally = {
-#     TA.i <- summary(TAlog)$coefficients["xmid","Estimate"]
-#     TA.A <- summary(TAlog)$coefficients["Asym","Estimate"]
-#     TA.k <- summary(TAlog)$coefficients["scal","Estimate"]
-#     #TA.tmp = data.frame(stateroute = s, TA.A, TA.i, TA.k)
-#   })
-#   
-#   TA.temp = data.frame(stateroute = s, TA.A, TA.i, TA.k) #fix
-#   TA.df = rbind(TA.df, TA.temp)
-# }
-# 
+#TA model
+for(s in stateroutes){
+  logsub = subset(bbs_allscales, bbs_allscales$focalrte == s)
+  #fitting the log curve for area (for each route)
+  TAmodel = tryCatch({
+    TAlog = nls(pctTran ~ -SSlogis(log(area), Asym, xmid, scal), 
+                start = list(xmid = 2, scal = -1, Asym = 0.05), data = logsub)
+    return(data.frame(stateroute = s, TA.A, TA.i, TA.k))
+  }, warning = function(w) {
+    warnings = rbind(warnings, data.frame(stateroute = s, warning = w))
+  }, error = function(e) {
+    TA.i <- NA
+    TA.A <- NA
+    TA.k <- NA
+  }, finally = {
+    TA.i <- summary(TAlog)$coefficients["xmid","Estimate"]
+    TA.A <- summary(TAlog)$coefficients["Asym","Estimate"]
+    TA.k <- summary(TAlog)$coefficients["scal","Estimate"]
+    #TA.tmp = data.frame(stateroute = s, TA.A, TA.i, TA.k)
+  })
+
+  TA.temp = data.frame(stateroute = s, TA.A, TA.i, TA.k) #fix
+  TA.df = rbind(TA.df, TA.temp)
+}
+
 # #TN model
 # for(s in stateroutes){
 #   logsub = subset(bbs_allscales, bbs_allscales$focalrte == s)  
