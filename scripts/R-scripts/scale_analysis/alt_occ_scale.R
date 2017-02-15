@@ -377,13 +377,43 @@ for(s in stateroutes){
 
 #^^^above code produces NaN's and infinite loop 
 
+
+model <- nls(cost.per.car ~ a * exp(b * reductions) + c, 
+             data = q24, 
+             start = list(a=1, b=1, c=0))
+#revised ref:
+c.0 <- min(q24$cost.per.car) * 0.5
+model.0 <- lm(log(cost.per.car - c.0) ~ reductions, data=q24)
+start <- list(a=exp(coef(model.0)[1]), b=coef(model.0)[2], c=c.0)
+model <- nls(cost.per.car ~ a * exp(b * reductions) + c, data = q24, start = start)
+
+
+TAlog = nls(pctTran ~ Asym/(1+ exp((xmid- log(area))/scal)), #Asym is a, xmid is b, and scal is c with pctTran as cost and area as redux
+             data = logsub, 
+             start = list(a=1, b=1, c=0))
+
+c.0 <- min(q24$cost.per.car) * 0.5
+model.0 <- lm(log(cost.per.car - c.0) ~ reductions, data=q24)
+start <- list(a=exp(coef(model.0)[1]), b=coef(model.0)[2], c=c.0)
+model <- nls(cost.per.car ~ a * exp(b * reductions) + c, data = q24, start = start)
+
+
+
+
+
+TAlog = nls(pctTran ~ Asym/(1 + exp((xmid - log(area))/scal)),  
+            start = list(xmid = 1, scal = 1, Asym = 0.1), data = logsub)
+
+
+
+
 #TA model
 for(s in stateroutes){
   logsub = subset(bbs_allscales, bbs_allscales$focalrte == s)
   #fitting the log curve for area (for each route)
   TAmodel = tryCatch({
-    TAlog = nls(pctTran ~ Asym/(1 - exp((xmid + log(area))/scal)),  
-              start = list(xmid = 1.7, scal = -0.1, Asym = 0.1), data = logsub) #this code produces singular gradient matrix error 
+    TAlog = nls(pctTran ~ Asym/(1 + exp((xmid - log(area))/scal)),  
+              start = list(xmid = 1, scal = 1, Asym = 0.1), data = logsub) #this code produces singular gradient matrix error 
     return(data.frame(stateroute = s, TA.A, TA.i, TA.k))
   }, warning = function(w) {
     warnings = rbind(warnings, data.frame(stateroute = s, warning = w))
