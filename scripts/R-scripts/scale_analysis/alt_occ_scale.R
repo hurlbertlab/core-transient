@@ -391,16 +391,19 @@ TAlog = nls(pctTran ~ Asym/(1 + exp((xmid - logA)/scal)),   #Asym is a, xmid is 
 #^^^above code still produces singular gradient matrix even though it's supposed to solve that exact problem
 
 
-TAlog = nls(pctTran ~ Asym/(1 + exp((xmid - logA)/scal)),  
-            start = list(xmid = 0.4, scal = -0.5, Asym = 0.08), data = logsub)
-#model written out
+TAlog = lm(log(pctTran) ~ logA, data = logsub)
+#good starting point 
 
-TAlog = nls(pctTran ~ SSlogis(logA, Asym, xmid, scal), 
-            data = logsub, start = list(xmid = -0.4, scal = 0.5, Asym = 0.08))
+#try fitting a negative exponential 
+#compare fit with logA vs reg A mods and test agains
 #self starting 
 
 #^trying to use graphs to eyeball start vals still not working, still get singular error method; 
 #making xmid negative just repeats step fator redux error
+#as x increases y decreases in sigmoidal fashion -> find function and try defining it 
+
+#do model between predicted and observed vals -> can get r squared out of that 
+#
 
 
 # 
@@ -474,6 +477,8 @@ summary(curvemod)
 
 
 ####Env data add-in####
+
+#for now just use what we have, that's fine 
 
 #bring in lat-lons for each focal route and creating sites
 
