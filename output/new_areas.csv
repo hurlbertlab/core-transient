@@ -2259,14 +2259,14 @@ datasetID,site,scale,taxa,area,Raw_spatial_grain,Raw_spatial_grain_unit
 276,EL VERDE_3,2,Bird,14135,2827,m2
 276,EL VERDE_6,2,Bird,14135,2827,m2
 276,EL VERDE_9,2,Bird,14135,2827,m2
-277,1,1,Plankton,45,45,m2
-277,AL_1,2,Plankton,,45,m2
-277,BM_1,2,Plankton,,45,m2
-277,CB_1,2,Plankton,,45,m2
-277,CR_1,2,Plankton,,45,m2
-277,SP_1,2,Plankton,,45,m2
-277,TB_1,2,Plankton,,45,m2
-277,TR_2,2,Plankton,,45,m2
+277,1,1,Plankton,,45,m2
+277,AL_1,2,Plankton,45,45,m2
+277,BM_1,2,Plankton,45,45,m2
+277,CB_1,2,Plankton,45,45,m2
+277,CR_1,2,Plankton,45,45,m2
+277,SP_1,2,Plankton,45,45,m2
+277,TB_1,2,Plankton,45,45,m2
+277,TR_2,2,Plankton,45,45,m2
 277,maxgrain_AL_1,3,Plankton,315,45,m2
 277,maxgrain_BM_1,3,Plankton,315,45,m2
 277,maxgrain_CB_1,3,Plankton,315,45,m2
@@ -2286,371 +2286,371 @@ datasetID,site,scale,taxa,area,Raw_spatial_grain,Raw_spatial_grain_unit
 281,56,1,Plant,39.7,39.7,m2
 281,TR_50,2,Plant,79.4,39.7,m2
 281,TR_56,2,Plant,79.4,39.7,m2
-287,1,1,Bird,,296800,m2
-287,10,1,Bird,,296800,m2
-287,12,1,Bird,,296800,m2
-287,13,1,Bird,,296800,m2
-287,14,1,Bird,,296800,m2
-287,15,1,Bird,,296800,m2
-287,16,1,Bird,,296800,m2
-287,17,1,Bird,,296800,m2
-287,18,1,Bird,,296800,m2
-287,2,1,Bird,,296800,m2
-287,3,1,Bird,,296800,m2
-287,4,1,Bird,,296800,m2
-287,5,1,Bird,,296800,m2
-287,6,1,Bird,,296800,m2
-287,8,1,Bird,,296800,m2
-287,9,1,Bird,,296800,m2
-287,Konza_1,2,Bird,,296800,m2
-287,Konza_10,2,Bird,,296800,m2
-287,Konza_12,2,Bird,,296800,m2
-287,Konza_13,2,Bird,,296800,m2
-287,Konza_14,2,Bird,,296800,m2
-287,Konza_15,2,Bird,,296800,m2
-287,Konza_16,2,Bird,,296800,m2
-287,Konza_17,2,Bird,,296800,m2
-287,Konza_18,2,Bird,,296800,m2
-287,Konza_2,2,Bird,,296800,m2
-287,Konza_3,2,Bird,,296800,m2
-287,Konza_4,2,Bird,,296800,m2
-287,Konza_5,2,Bird,,296800,m2
-287,Konza_6,2,Bird,,296800,m2
-287,Konza_8,2,Bird,,296800,m2
-287,Konza_9,2,Bird,,296800,m2
-288,1,1,Fish,,120,m2
-288,2,1,Fish,,120,m2
-288,3,1,Fish,,120,m2
+287,1,1,Bird,296800,296800,m2
+287,10,1,Bird,296800,296800,m2
+287,12,1,Bird,296800,296800,m2
+287,13,1,Bird,296800,296800,m2
+287,14,1,Bird,296800,296800,m2
+287,15,1,Bird,296800,296800,m2
+287,16,1,Bird,296800,296800,m2
+287,17,1,Bird,296800,296800,m2
+287,18,1,Bird,296800,296800,m2
+287,2,1,Bird,296800,296800,m2
+287,3,1,Bird,296800,296800,m2
+287,4,1,Bird,296800,296800,m2
+287,5,1,Bird,296800,296800,m2
+287,6,1,Bird,296800,296800,m2
+287,8,1,Bird,296800,296800,m2
+287,9,1,Bird,296800,296800,m2
+287,Konza_1,2,Bird,5045600,296800,m2
+287,Konza_10,2,Bird,5045600,296800,m2
+287,Konza_12,2,Bird,5045600,296800,m2
+287,Konza_13,2,Bird,5045600,296800,m2
+287,Konza_14,2,Bird,5045600,296800,m2
+287,Konza_15,2,Bird,5045600,296800,m2
+287,Konza_16,2,Bird,5045600,296800,m2
+287,Konza_17,2,Bird,5045600,296800,m2
+287,Konza_18,2,Bird,5045600,296800,m2
+287,Konza_2,2,Bird,5045600,296800,m2
+287,Konza_3,2,Bird,5045600,296800,m2
+287,Konza_4,2,Bird,5045600,296800,m2
+287,Konza_5,2,Bird,5045600,296800,m2
+287,Konza_6,2,Bird,5045600,296800,m2
+287,Konza_8,2,Bird,5045600,296800,m2
+287,Konza_9,2,Bird,5045600,296800,m2
+288,1,1,Fish,120,120,m2
+288,2,1,Fish,120,120,m2
+288,3,1,Fish,120,120,m2
 288,POOL_1,2,Fish,,120,m2
 288,POOL_2,2,Fish,,120,m2
 288,POOL_3,2,Fish,,120,m2
-288,NT_POOL_1,3,Fish,,120,m2
-288,NT_POOL_2,3,Fish,,120,m2
-289,maxgrain,1,Plant,,0.5,m2
-291,A1,1,Plant,,1,m2
-291,A10,1,Plant,,1,m2
-291,A11,1,Plant,,1,m2
-291,A12,1,Plant,,1,m2
-291,A2,1,Plant,,1,m2
-291,A3,1,Plant,,1,m2
-291,A4,1,Plant,,1,m2
-291,A5,1,Plant,,1,m2
-291,A7,1,Plant,,1,m2
-291,A8,1,Plant,,1,m2
-291,A9,1,Plant,,1,m2
-291,B1,1,Plant,,1,m2
-291,B2,1,Plant,,1,m2
-291,B3,1,Plant,,1,m2
-291,B4,1,Plant,,1,m2
-291,B5,1,Plant,,1,m2
-291,B6,1,Plant,,1,m2
-291,C1,1,Plant,,1,m2
-291,C2,1,Plant,,1,m2
-291,C3,1,Plant,,1,m2
-291,C4,1,Plant,,1,m2
-291,C5,1,Plant,,1,m2
-291,C6,1,Plant,,1,m2
-291,D1,1,Plant,,1,m2
-291,D2,1,Plant,,1,m2
-291,D3,1,Plant,,1,m2
-291,D4,1,Plant,,1,m2
-291,D5,1,Plant,,1,m2
-291,E1,1,Plant,,1,m2
-291,E2,1,Plant,,1,m2
-291,E3,1,Plant,,1,m2
-291,E4,1,Plant,,1,m2
-291,E5,1,Plant,,1,m2
-291,E6,1,Plant,,1,m2
-291,E7,1,Plant,,1,m2
-291,F1,1,Plant,,1,m2
-291,F2,1,Plant,,1,m2
-291,F3,1,Plant,,1,m2
-291,F4,1,Plant,,1,m2
-291,F5,1,Plant,,1,m2
-291,F7,1,Plant,,1,m2
-291,F8,1,Plant,,1,m2
-291,1_A1,2,Plant,,1,m2
-291,1_A10,2,Plant,,1,m2
-291,1_A11,2,Plant,,1,m2
-291,1_A12,2,Plant,,1,m2
-291,1_A2,2,Plant,,1,m2
-291,1_A3,2,Plant,,1,m2
-291,1_A4,2,Plant,,1,m2
-291,1_A5,2,Plant,,1,m2
-291,1_A7,2,Plant,,1,m2
-291,1_A8,2,Plant,,1,m2
-291,1_A9,2,Plant,,1,m2
-291,1_B1,2,Plant,,1,m2
-291,1_B2,2,Plant,,1,m2
-291,1_B3,2,Plant,,1,m2
-291,1_B4,2,Plant,,1,m2
-291,1_B5,2,Plant,,1,m2
-291,1_B6,2,Plant,,1,m2
-291,1_C1,2,Plant,,1,m2
-291,1_C2,2,Plant,,1,m2
-291,1_C3,2,Plant,,1,m2
-291,1_C4,2,Plant,,1,m2
-291,1_C5,2,Plant,,1,m2
-291,1_C6,2,Plant,,1,m2
-291,1_D1,2,Plant,,1,m2
-291,1_D2,2,Plant,,1,m2
-291,1_D3,2,Plant,,1,m2
-291,1_D4,2,Plant,,1,m2
-291,1_D5,2,Plant,,1,m2
-291,1_E1,2,Plant,,1,m2
-291,1_E2,2,Plant,,1,m2
-291,1_E3,2,Plant,,1,m2
-291,1_E4,2,Plant,,1,m2
-291,1_E5,2,Plant,,1,m2
-291,1_E6,2,Plant,,1,m2
-291,1_E7,2,Plant,,1,m2
-291,1_F1,2,Plant,,1,m2
-291,1_F2,2,Plant,,1,m2
-291,1_F3,2,Plant,,1,m2
-291,1_F4,2,Plant,,1,m2
-291,1_F5,2,Plant,,1,m2
-291,1_F7,2,Plant,,1,m2
-291,1_F8,2,Plant,,1,m2
-313,1,1,Invertebrate,,62.8,m2
-313,2,1,Invertebrate,,62.8,m2
-313,3,1,Invertebrate,,62.8,m2
-313,4,1,Invertebrate,,62.8,m2
-313,5,1,Invertebrate,,62.8,m2
-313,BASN_1,2,Invertebrate,,62.8,m2
-313,BASN_2,2,Invertebrate,,62.8,m2
-313,BASN_4,2,Invertebrate,,62.8,m2
-313,BASN_5,2,Invertebrate,,62.8,m2
-313,CALI_1,2,Invertebrate,,62.8,m2
-313,CALI_2,2,Invertebrate,,62.8,m2
-313,CALI_4,2,Invertebrate,,62.8,m2
-313,CALI_5,2,Invertebrate,,62.8,m2
-313,EAST_1,2,Invertebrate,,62.8,m2
-313,EAST_2,2,Invertebrate,,62.8,m2
-313,EAST_3,2,Invertebrate,,62.8,m2
-313,EAST_4,2,Invertebrate,,62.8,m2
-313,EAST_5,2,Invertebrate,,62.8,m2
-313,GRAV_1,2,Invertebrate,,62.8,m2
-313,GRAV_3,2,Invertebrate,,62.8,m2
-313,GRAV_4,2,Invertebrate,,62.8,m2
-313,GRAV_5,2,Invertebrate,,62.8,m2
-313,IBPE_1,2,Invertebrate,,62.8,m2
-313,IBPE_2,2,Invertebrate,,62.8,m2
-313,IBPE_3,2,Invertebrate,,62.8,m2
-313,IBPE_4,2,Invertebrate,,62.8,m2
-313,IBPE_5,2,Invertebrate,,62.8,m2
-313,SAND_1,2,Invertebrate,,62.8,m2
-313,SAND_3,2,Invertebrate,,62.8,m2
-313,SAND_4,2,Invertebrate,,62.8,m2
-313,SAND_5,2,Invertebrate,,62.8,m2
-313,SUMM_1,2,Invertebrate,,62.8,m2
-313,SUMM_2,2,Invertebrate,,62.8,m2
-313,SUMM_3,2,Invertebrate,,62.8,m2
-313,SUMM_4,2,Invertebrate,,62.8,m2
-313,SUMM_5,2,Invertebrate,,62.8,m2
-313,TAYL_1,2,Invertebrate,,62.8,m2
-313,TAYL_2,2,Invertebrate,,62.8,m2
-313,TAYL_3,2,Invertebrate,,62.8,m2
-313,TAYL_4,2,Invertebrate,,62.8,m2
-313,WELL_2,2,Invertebrate,,62.8,m2
-313,WELL_3,2,Invertebrate,,62.8,m2
-313,WELL_5,2,Invertebrate,,62.8,m2
-313,WEST_1,2,Invertebrate,,62.8,m2
-313,WEST_2,2,Invertebrate,,62.8,m2
-313,WEST_3,2,Invertebrate,,62.8,m2
-313,WEST_4,2,Invertebrate,,62.8,m2
-313,Jornada_BASN_1,3,Invertebrate,,62.8,m2
-313,Jornada_BASN_2,3,Invertebrate,,62.8,m2
-313,Jornada_BASN_4,3,Invertebrate,,62.8,m2
-313,Jornada_BASN_5,3,Invertebrate,,62.8,m2
-313,Jornada_CALI_1,3,Invertebrate,,62.8,m2
-313,Jornada_CALI_2,3,Invertebrate,,62.8,m2
-313,Jornada_CALI_4,3,Invertebrate,,62.8,m2
-313,Jornada_CALI_5,3,Invertebrate,,62.8,m2
-313,Jornada_EAST_1,3,Invertebrate,,62.8,m2
-313,Jornada_EAST_2,3,Invertebrate,,62.8,m2
-313,Jornada_EAST_3,3,Invertebrate,,62.8,m2
-313,Jornada_EAST_4,3,Invertebrate,,62.8,m2
-313,Jornada_EAST_5,3,Invertebrate,,62.8,m2
-313,Jornada_GRAV_1,3,Invertebrate,,62.8,m2
-313,Jornada_GRAV_3,3,Invertebrate,,62.8,m2
-313,Jornada_GRAV_4,3,Invertebrate,,62.8,m2
-313,Jornada_GRAV_5,3,Invertebrate,,62.8,m2
-313,Jornada_IBPE_1,3,Invertebrate,,62.8,m2
-313,Jornada_IBPE_2,3,Invertebrate,,62.8,m2
-313,Jornada_IBPE_3,3,Invertebrate,,62.8,m2
-313,Jornada_IBPE_4,3,Invertebrate,,62.8,m2
-313,Jornada_IBPE_5,3,Invertebrate,,62.8,m2
-313,Jornada_SAND_1,3,Invertebrate,,62.8,m2
-313,Jornada_SAND_3,3,Invertebrate,,62.8,m2
-313,Jornada_SAND_4,3,Invertebrate,,62.8,m2
-313,Jornada_SAND_5,3,Invertebrate,,62.8,m2
-313,Jornada_SUMM_1,3,Invertebrate,,62.8,m2
-313,Jornada_SUMM_2,3,Invertebrate,,62.8,m2
-313,Jornada_SUMM_3,3,Invertebrate,,62.8,m2
-313,Jornada_SUMM_4,3,Invertebrate,,62.8,m2
-313,Jornada_SUMM_5,3,Invertebrate,,62.8,m2
-313,Jornada_TAYL_1,3,Invertebrate,,62.8,m2
-313,Jornada_TAYL_2,3,Invertebrate,,62.8,m2
-313,Jornada_TAYL_3,3,Invertebrate,,62.8,m2
-313,Jornada_TAYL_4,3,Invertebrate,,62.8,m2
-313,Jornada_WELL_2,3,Invertebrate,,62.8,m2
-313,Jornada_WELL_3,3,Invertebrate,,62.8,m2
-313,Jornada_WELL_5,3,Invertebrate,,62.8,m2
-313,Jornada_WEST_1,3,Invertebrate,,62.8,m2
-313,Jornada_WEST_2,3,Invertebrate,,62.8,m2
-313,Jornada_WEST_3,3,Invertebrate,,62.8,m2
-313,Jornada_WEST_4,3,Invertebrate,,62.8,m2
-314,Buoy 109,1,Plankton,,1,m2
-314,Buoy 117,1,Plankton,,1,m2
-314,Buoy 125,1,Plankton,,1,m2
-314,Shackelton Point,1,Plankton,,1,m2
-314,Three Mile Bay,1,Plankton,,1,m2
-314,OneidaLake_Buoy 109,2,Plankton,,1,m2
-314,OneidaLake_Buoy 117,2,Plankton,,1,m2
-314,OneidaLake_Buoy 125,2,Plankton,,1,m2
-314,OneidaLake_Shackelton Point,2,Plankton,,1,m2
-314,OneidaLake_Three Mile Bay,2,Plankton,,1,m2
-316,1,1,Mammal,,1296,m2
-316,2,1,Mammal,,1296,m2
-316,3,1,Mammal,,1296,m2
-316,JC_1,2,Mammal,,1296,m2
-316,JC_2,2,Mammal,,1296,m2
-316,JC_3,2,Mammal,,1296,m2
-316,JG_1,2,Mammal,,1296,m2
-316,JG_2,2,Mammal,,1296,m2
-316,JG_3,2,Mammal,,1296,m2
-316,Jornada_JC_1,3,Mammal,,1296,m2
-316,Jornada_JC_2,3,Mammal,,1296,m2
-316,Jornada_JC_3,3,Mammal,,1296,m2
-316,Jornada_JG_1,3,Mammal,,1296,m2
-316,Jornada_JG_2,3,Mammal,,1296,m2
-316,Jornada_JG_3,3,Mammal,,1296,m2
-318,Central,1,Mammal,,4870,m2
-318,FarNorth,1,Mammal,,4870,m2
-318,North,1,Mammal,,4870,m2
-318,South,1,Mammal,,4870,m2
-318,KrugerNP_Central,2,Mammal,,4870,m2
-318,KrugerNP_FarNorth,2,Mammal,,4870,m2
-318,KrugerNP_North,2,Mammal,,4870,m2
-318,KrugerNP_South,2,Mammal,,4870,m2
-323,ATKI-101-X,1,Fish,,450,m2
-323,CORS-102-S,1,Fish,,450,m2
-323,FIMI-207-S,1,Fish,,450,m2
-323,FURN-101-S,1,Fish,,450,m2
-323,JONE-315-S,1,Fish,,450,m2
-323,LOCR-102-S,1,Fish,,450,m2
-323,MATT-033-S,1,Fish,,450,m2
-323,NANJ-331-S,1,Fish,,450,m2
-323,NASS-302-S,1,Fish,,450,m2
-323,PAXL-294-S,1,Fish,,450,m2
-323,PTOB-002-S,1,Fish,,450,m2
-323,RKGR-119-S,1,Fish,,450,m2
-323,SAVA-204-S,1,Fish,,450,m2
-323,SAVA-225-S,1,Fish,,450,m2
-323,UPCK-113-S,1,Fish,,450,m2
-323,UPCR-208-S,1,Fish,,450,m2
-323,WIRH-220-S,1,Fish,,450,m2
-323,CRABTREE CREEK_SAVA-204-S,2,Fish,,450,m2
-323,CYPRESS BRANCH_UPCR-208-S,2,Fish,,450,m2
-323,FIFTEENMILE CREEK_FIMI-207-S,2,Fish,,450,m2
-323,HOGHOLE RUN_PTOB-002-S,2,Fish,,450,m2
-323,LEONARD POND RUN_WIRH-220-S,2,Fish,,450,m2
-323,MATTAWOMAN CREEK_MATT-033-S,2,Fish,,450,m2
-323,MILL RUN_NANJ-331-S,2,Fish,,450,m2
-323,NASSAWANGO CREEK_NASS-302-S,2,Fish,,450,m2
-323,NORTH BRANCH JONES FALLS_JONE-315-S,2,Fish,,450,m2
-323,PATUXENT RIVER UT_RKGR-119-S,2,Fish,,450,m2
-323,PATUXENT RIVER UT5_RKGR-119-S,2,Fish,,450,m2
-323,PRINCIPIO CREEK UT_FURN-101-S,2,Fish,,450,m2
-323,PRINCIPIO CREEK UT1_FURN-101-S,2,Fish,,450,m2
-323,SAVAGE RIVER_SAVA-225-S,2,Fish,,450,m2
-323,SKELETON CREEK UT1_UPCK-113-S,2,Fish,,450,m2
-323,SWAN CREEK_LOCR-102-S,2,Fish,,450,m2
-323,SWANSON CREEK_PAXL-294-S,2,Fish,,450,m2
-323,Fifteen Mile Creek_FIFTEENMILE CREEK_FIMI-207-S,3,Fish,,450,m2
-323,Furnace Bay_PRINCIPIO CREEK UT_FURN-101-S,3,Fish,,450,m2
-323,Furnace Bay_PRINCIPIO CREEK UT1_FURN-101-S,3,Fish,,450,m2
-323,Jones Falls_NORTH BRANCH JONES FALLS_JONE-315-S,3,Fish,,450,m2
-323,Lower Chester River_SWAN CREEK_LOCR-102-S,3,Fish,,450,m2
-323,Mattawoman Creek_MATTAWOMAN CREEK_MATT-033-S,3,Fish,,450,m2
-323,Nanjemoy Creek_MILL RUN_NANJ-331-S,3,Fish,,450,m2
-323,Nassawango Creek_NASSAWANGO CREEK_NASS-302-S,3,Fish,,450,m2
-323,Patuxent River lower_SWANSON CREEK_PAXL-294-S,3,Fish,,450,m2
-323,Port Tobacco River_HOGHOLE RUN_PTOB-002-S,3,Fish,,450,m2
-323,Rocky Gorge Dam_PATUXENT RIVER UT_RKGR-119-S,3,Fish,,450,m2
-323,Rocky Gorge Dam_PATUXENT RIVER UT5_RKGR-119-S,3,Fish,,450,m2
-323,Savage River_CRABTREE CREEK_SAVA-204-S,3,Fish,,450,m2
-323,Savage River_SAVAGE RIVER_SAVA-225-S,3,Fish,,450,m2
-323,Upper Chester River_CYPRESS BRANCH_UPCR-208-S,3,Fish,,450,m2
-323,Upper Choptank_SKELETON CREEK UT1_UPCK-113-S,3,Fish,,450,m2
-323,Wicomico River Head_LEONARD POND RUN_WIRH-220-S,3,Fish,,450,m2
-323,Chester River_Lower Chester River_SWAN CREEK_LOCR-102-S,4,Fish,,450,m2
-323,Chester River_Upper Chester River_CYPRESS BRANCH_UPCR-208-S,4,Fish,,450,m2
-323,Choptank River_Upper Choptank_SKELETON CREEK UT1_UPCK-113-S,4,Fish,,450,m2
-323,Elk River_Furnace Bay_PRINCIPIO CREEK UT_FURN-101-S,4,Fish,,450,m2
-323,Elk River_Furnace Bay_PRINCIPIO CREEK UT1_FURN-101-S,4,Fish,,450,m2
-323,Lower Potomac River_Mattawoman Creek_MATTAWOMAN CREEK_MATT-033-S,4,Fish,,450,m2
-323,Lower Potomac River_Nanjemoy Creek_MILL RUN_NANJ-331-S,4,Fish,,450,m2
-323,Lower Potomac River_Port Tobacco River_HOGHOLE RUN_PTOB-002-S,4,Fish,,450,m2
-323,Nanticoke River_Wicomico River Head_LEONARD POND RUN_WIRH-220-S,4,Fish,,450,m2
-323,North Branch Potomac River_Savage River_CRABTREE CREEK_SAVA-204-S,4,Fish,,450,m2
-323,North Branch Potomac River_Savage River_SAVAGE RIVER_SAVA-225-S,4,Fish,,450,m2
-323,Patapsco River_Jones Falls_NORTH BRANCH JONES FALLS_JONE-315-S,4,Fish,,450,m2
-323,Patuxent River_Patuxent River lower_SWANSON CREEK_PAXL-294-S,4,Fish,,450,m2
-323,Patuxent River_Rocky Gorge Dam_PATUXENT RIVER UT_RKGR-119-S,4,Fish,,450,m2
-323,Patuxent River_Rocky Gorge Dam_PATUXENT RIVER UT5_RKGR-119-S,4,Fish,,450,m2
-323,Pocomoke River_Nassawango Creek_NASSAWANGO CREEK_NASS-302-S,4,Fish,,450,m2
-323,Upper Potomac River_Fifteen Mile Creek_FIFTEENMILE CREEK_FIMI-207-S,4,Fish,,450,m2
-323,maxgrain_Chester River_Lower Chester River_SWAN CREEK_LOCR-102-S,5,Fish,,450,m2
-323,maxgrain_Chester River_Upper Chester River_CYPRESS BRANCH_UPCR-208-S,5,Fish,,450,m2
-323,maxgrain_Choptank River_Upper Choptank_SKELETON CREEK UT1_UPCK-113-S,5,Fish,,450,m2
-323,maxgrain_Elk River_Furnace Bay_PRINCIPIO CREEK UT_FURN-101-S,5,Fish,,450,m2
-323,maxgrain_Elk River_Furnace Bay_PRINCIPIO CREEK UT1_FURN-101-S,5,Fish,,450,m2
-323,maxgrain_Lower Potomac River_Mattawoman Creek_MATTAWOMAN CREEK_MATT-033-S,5,Fish,,450,m2
-323,maxgrain_Lower Potomac River_Nanjemoy Creek_MILL RUN_NANJ-331-S,5,Fish,,450,m2
-323,maxgrain_Lower Potomac River_Port Tobacco River_HOGHOLE RUN_PTOB-002-S,5,Fish,,450,m2
-323,maxgrain_Nanticoke River_Wicomico River Head_LEONARD POND RUN_WIRH-220-S,5,Fish,,450,m2
-323,maxgrain_North Branch Potomac River_Savage River_CRABTREE CREEK_SAVA-204-S,5,Fish,,450,m2
-323,maxgrain_North Branch Potomac River_Savage River_SAVAGE RIVER_SAVA-225-S,5,Fish,,450,m2
-323,maxgrain_Patapsco River_Jones Falls_NORTH BRANCH JONES FALLS_JONE-315-S,5,Fish,,450,m2
-323,maxgrain_Patuxent River_Patuxent River lower_SWANSON CREEK_PAXL-294-S,5,Fish,,450,m2
-323,maxgrain_Patuxent River_Rocky Gorge Dam_PATUXENT RIVER UT_RKGR-119-S,5,Fish,,450,m2
-323,maxgrain_Patuxent River_Rocky Gorge Dam_PATUXENT RIVER UT5_RKGR-119-S,5,Fish,,450,m2
-323,maxgrain_Pocomoke River_Nassawango Creek_NASSAWANGO CREEK_NASS-302-S,5,Fish,,450,m2
-323,maxgrain_Upper Potomac River_Fifteen Mile Creek_FIFTEENMILE CREEK_FIMI-207-S,5,Fish,,450,m2
-324,ATKI-101-X,1,Invertebrate,,20,m2
-324,BRET-450-H,1,Invertebrate,,20,m2
-324,CORS-102-S,1,Invertebrate,,20,m2
-324,CORS-250-H,1,Invertebrate,,20,m2
-324,FIMI-207-S,1,Invertebrate,,20,m2
-324,FURN-101-S,1,Invertebrate,,20,m2
-324,JONE-109-S,1,Invertebrate,,20,m2
-324,JONE-315-S,1,Invertebrate,,20,m2
-324,LIBE-102-S,1,Invertebrate,,20,m2
-324,LOCH-120-S,1,Invertebrate,,20,m2
-324,LOCR-102-S,1,Invertebrate,,20,m2
-324,MATT-033-S,1,Invertebrate,,20,m2
-324,NANJ-301-H,1,Invertebrate,,20,m2
-324,NANJ-331-S,1,Invertebrate,,20,m2
-324,NASS-108-S,1,Invertebrate,,20,m2
-324,NASS-302-S,1,Invertebrate,,20,m2
-324,PAXL-294-S,1,Invertebrate,,20,m2
-324,PRLN-626-S,1,Invertebrate,,20,m2
-324,PTOB-002-S,1,Invertebrate,,20,m2
-324,RKGR-119-S,1,Invertebrate,,20,m2
-324,SAVA-204-S,1,Invertebrate,,20,m2
-324,SAVA-225-S,1,Invertebrate,,20,m2
-324,SAVA-276-S,1,Invertebrate,,20,m2
-324,SEAS-250-H,1,Invertebrate,,20,m2
-324,STCL-051-S,1,Invertebrate,,20,m2
-324,TUCK-450-H,1,Invertebrate,,20,m2
-324,UMON-119-S,1,Invertebrate,,20,m2
-324,UMON-288-S,1,Invertebrate,,20,m2
-324,UPCK-113-S,1,Invertebrate,,20,m2
-324,UPCR-208-S,1,Invertebrate,,20,m2
-324,WIRH-220-S,1,Invertebrate,,20,m2
-324,YOUG-432-S,1,Invertebrate,,20,m2
-324,ZEKI-012-S,1,Invertebrate,,20,m2
+288,NT_POOL_1,3,Fish,960,120,m2
+288,NT_POOL_2,3,Fish,960,120,m2
+289,maxgrain,1,Plant,0.5,0.5,m2
+291,A1,1,Plant,1,1,m2
+291,A10,1,Plant,1,1,m2
+291,A11,1,Plant,1,1,m2
+291,A12,1,Plant,1,1,m2
+291,A2,1,Plant,1,1,m2
+291,A3,1,Plant,1,1,m2
+291,A4,1,Plant,1,1,m2
+291,A5,1,Plant,1,1,m2
+291,A7,1,Plant,1,1,m2
+291,A8,1,Plant,1,1,m2
+291,A9,1,Plant,1,1,m2
+291,B1,1,Plant,1,1,m2
+291,B2,1,Plant,1,1,m2
+291,B3,1,Plant,1,1,m2
+291,B4,1,Plant,1,1,m2
+291,B5,1,Plant,1,1,m2
+291,B6,1,Plant,1,1,m2
+291,C1,1,Plant,1,1,m2
+291,C2,1,Plant,1,1,m2
+291,C3,1,Plant,1,1,m2
+291,C4,1,Plant,1,1,m2
+291,C5,1,Plant,1,1,m2
+291,C6,1,Plant,1,1,m2
+291,D1,1,Plant,1,1,m2
+291,D2,1,Plant,1,1,m2
+291,D3,1,Plant,1,1,m2
+291,D4,1,Plant,1,1,m2
+291,D5,1,Plant,1,1,m2
+291,E1,1,Plant,1,1,m2
+291,E2,1,Plant,1,1,m2
+291,E3,1,Plant,1,1,m2
+291,E4,1,Plant,1,1,m2
+291,E5,1,Plant,1,1,m2
+291,E6,1,Plant,1,1,m2
+291,E7,1,Plant,1,1,m2
+291,F1,1,Plant,1,1,m2
+291,F2,1,Plant,1,1,m2
+291,F3,1,Plant,1,1,m2
+291,F4,1,Plant,1,1,m2
+291,F5,1,Plant,1,1,m2
+291,F7,1,Plant,1,1,m2
+291,F8,1,Plant,1,1,m2
+291,1_A1,2,Plant,44,1,m2
+291,1_A10,2,Plant,44,1,m2
+291,1_A11,2,Plant,44,1,m2
+291,1_A12,2,Plant,44,1,m2
+291,1_A2,2,Plant,44,1,m2
+291,1_A3,2,Plant,44,1,m2
+291,1_A4,2,Plant,44,1,m2
+291,1_A5,2,Plant,44,1,m2
+291,1_A7,2,Plant,44,1,m2
+291,1_A8,2,Plant,44,1,m2
+291,1_A9,2,Plant,44,1,m2
+291,1_B1,2,Plant,44,1,m2
+291,1_B2,2,Plant,44,1,m2
+291,1_B3,2,Plant,44,1,m2
+291,1_B4,2,Plant,44,1,m2
+291,1_B5,2,Plant,44,1,m2
+291,1_B6,2,Plant,44,1,m2
+291,1_C1,2,Plant,44,1,m2
+291,1_C2,2,Plant,44,1,m2
+291,1_C3,2,Plant,44,1,m2
+291,1_C4,2,Plant,44,1,m2
+291,1_C5,2,Plant,44,1,m2
+291,1_C6,2,Plant,44,1,m2
+291,1_D1,2,Plant,44,1,m2
+291,1_D2,2,Plant,44,1,m2
+291,1_D3,2,Plant,44,1,m2
+291,1_D4,2,Plant,44,1,m2
+291,1_D5,2,Plant,44,1,m2
+291,1_E1,2,Plant,44,1,m2
+291,1_E2,2,Plant,44,1,m2
+291,1_E3,2,Plant,44,1,m2
+291,1_E4,2,Plant,44,1,m2
+291,1_E5,2,Plant,44,1,m2
+291,1_E6,2,Plant,44,1,m2
+291,1_E7,2,Plant,44,1,m2
+291,1_F1,2,Plant,44,1,m2
+291,1_F2,2,Plant,44,1,m2
+291,1_F3,2,Plant,44,1,m2
+291,1_F4,2,Plant,44,1,m2
+291,1_F5,2,Plant,44,1,m2
+291,1_F7,2,Plant,44,1,m2
+291,1_F8,2,Plant,44,1,m2
+313,1,1,Invertebrate,62.8,62.8,m2
+313,2,1,Invertebrate,62.8,62.8,m2
+313,3,1,Invertebrate,62.8,62.8,m2
+313,4,1,Invertebrate,62.8,62.8,m2
+313,5,1,Invertebrate,62.8,62.8,m2
+313,BASN_1,2,Invertebrate,314,62.8,m2
+313,BASN_2,2,Invertebrate,314,62.8,m2
+313,BASN_4,2,Invertebrate,314,62.8,m2
+313,BASN_5,2,Invertebrate,314,62.8,m2
+313,CALI_1,2,Invertebrate,314,62.8,m2
+313,CALI_2,2,Invertebrate,314,62.8,m2
+313,CALI_4,2,Invertebrate,314,62.8,m2
+313,CALI_5,2,Invertebrate,314,62.8,m2
+313,EAST_1,2,Invertebrate,314,62.8,m2
+313,EAST_2,2,Invertebrate,314,62.8,m2
+313,EAST_3,2,Invertebrate,314,62.8,m2
+313,EAST_4,2,Invertebrate,314,62.8,m2
+313,EAST_5,2,Invertebrate,314,62.8,m2
+313,GRAV_1,2,Invertebrate,314,62.8,m2
+313,GRAV_3,2,Invertebrate,314,62.8,m2
+313,GRAV_4,2,Invertebrate,314,62.8,m2
+313,GRAV_5,2,Invertebrate,314,62.8,m2
+313,IBPE_1,2,Invertebrate,314,62.8,m2
+313,IBPE_2,2,Invertebrate,314,62.8,m2
+313,IBPE_3,2,Invertebrate,314,62.8,m2
+313,IBPE_4,2,Invertebrate,314,62.8,m2
+313,IBPE_5,2,Invertebrate,314,62.8,m2
+313,SAND_1,2,Invertebrate,314,62.8,m2
+313,SAND_3,2,Invertebrate,314,62.8,m2
+313,SAND_4,2,Invertebrate,314,62.8,m2
+313,SAND_5,2,Invertebrate,314,62.8,m2
+313,SUMM_1,2,Invertebrate,314,62.8,m2
+313,SUMM_2,2,Invertebrate,314,62.8,m2
+313,SUMM_3,2,Invertebrate,314,62.8,m2
+313,SUMM_4,2,Invertebrate,314,62.8,m2
+313,SUMM_5,2,Invertebrate,314,62.8,m2
+313,TAYL_1,2,Invertebrate,314,62.8,m2
+313,TAYL_2,2,Invertebrate,314,62.8,m2
+313,TAYL_3,2,Invertebrate,314,62.8,m2
+313,TAYL_4,2,Invertebrate,314,62.8,m2
+313,WELL_2,2,Invertebrate,314,62.8,m2
+313,WELL_3,2,Invertebrate,314,62.8,m2
+313,WELL_5,2,Invertebrate,314,62.8,m2
+313,WEST_1,2,Invertebrate,314,62.8,m2
+313,WEST_2,2,Invertebrate,314,62.8,m2
+313,WEST_3,2,Invertebrate,314,62.8,m2
+313,WEST_4,2,Invertebrate,314,62.8,m2
+313,Jornada_BASN_1,3,Invertebrate,3140,62.8,m2
+313,Jornada_BASN_2,3,Invertebrate,3140,62.8,m2
+313,Jornada_BASN_4,3,Invertebrate,3140,62.8,m2
+313,Jornada_BASN_5,3,Invertebrate,3140,62.8,m2
+313,Jornada_CALI_1,3,Invertebrate,3140,62.8,m2
+313,Jornada_CALI_2,3,Invertebrate,3140,62.8,m2
+313,Jornada_CALI_4,3,Invertebrate,3140,62.8,m2
+313,Jornada_CALI_5,3,Invertebrate,3140,62.8,m2
+313,Jornada_EAST_1,3,Invertebrate,3140,62.8,m2
+313,Jornada_EAST_2,3,Invertebrate,3140,62.8,m2
+313,Jornada_EAST_3,3,Invertebrate,3140,62.8,m2
+313,Jornada_EAST_4,3,Invertebrate,3140,62.8,m2
+313,Jornada_EAST_5,3,Invertebrate,3140,62.8,m2
+313,Jornada_GRAV_1,3,Invertebrate,3140,62.8,m2
+313,Jornada_GRAV_3,3,Invertebrate,3140,62.8,m2
+313,Jornada_GRAV_4,3,Invertebrate,3140,62.8,m2
+313,Jornada_GRAV_5,3,Invertebrate,3140,62.8,m2
+313,Jornada_IBPE_1,3,Invertebrate,3140,62.8,m2
+313,Jornada_IBPE_2,3,Invertebrate,3140,62.8,m2
+313,Jornada_IBPE_3,3,Invertebrate,3140,62.8,m2
+313,Jornada_IBPE_4,3,Invertebrate,3140,62.8,m2
+313,Jornada_IBPE_5,3,Invertebrate,3140,62.8,m2
+313,Jornada_SAND_1,3,Invertebrate,3140,62.8,m2
+313,Jornada_SAND_3,3,Invertebrate,3140,62.8,m2
+313,Jornada_SAND_4,3,Invertebrate,3140,62.8,m2
+313,Jornada_SAND_5,3,Invertebrate,3140,62.8,m2
+313,Jornada_SUMM_1,3,Invertebrate,3140,62.8,m2
+313,Jornada_SUMM_2,3,Invertebrate,3140,62.8,m2
+313,Jornada_SUMM_3,3,Invertebrate,3140,62.8,m2
+313,Jornada_SUMM_4,3,Invertebrate,3140,62.8,m2
+313,Jornada_SUMM_5,3,Invertebrate,3140,62.8,m2
+313,Jornada_TAYL_1,3,Invertebrate,3140,62.8,m2
+313,Jornada_TAYL_2,3,Invertebrate,3140,62.8,m2
+313,Jornada_TAYL_3,3,Invertebrate,3140,62.8,m2
+313,Jornada_TAYL_4,3,Invertebrate,3140,62.8,m2
+313,Jornada_WELL_2,3,Invertebrate,3140,62.8,m2
+313,Jornada_WELL_3,3,Invertebrate,3140,62.8,m2
+313,Jornada_WELL_5,3,Invertebrate,3140,62.8,m2
+313,Jornada_WEST_1,3,Invertebrate,3140,62.8,m2
+313,Jornada_WEST_2,3,Invertebrate,3140,62.8,m2
+313,Jornada_WEST_3,3,Invertebrate,3140,62.8,m2
+313,Jornada_WEST_4,3,Invertebrate,3140,62.8,m2
+314,Buoy 109,1,Plankton,1,1,m2
+314,Buoy 117,1,Plankton,1,1,m2
+314,Buoy 125,1,Plankton,1,1,m2
+314,Shackelton Point,1,Plankton,1,1,m2
+314,Three Mile Bay,1,Plankton,1,1,m2
+314,OneidaLake_Buoy 109,2,Plankton,5,1,m2
+314,OneidaLake_Buoy 117,2,Plankton,5,1,m2
+314,OneidaLake_Buoy 125,2,Plankton,5,1,m2
+314,OneidaLake_Shackelton Point,2,Plankton,5,1,m2
+314,OneidaLake_Three Mile Bay,2,Plankton,5,1,m2
+316,1,1,Mammal,1296,1296,m2
+316,2,1,Mammal,1296,1296,m2
+316,3,1,Mammal,1296,1296,m2
+316,JC_1,2,Mammal,3888,1296,m2
+316,JC_2,2,Mammal,3888,1296,m2
+316,JC_3,2,Mammal,3888,1296,m2
+316,JG_1,2,Mammal,3888,1296,m2
+316,JG_2,2,Mammal,3888,1296,m2
+316,JG_3,2,Mammal,3888,1296,m2
+316,Jornada_JC_1,3,Mammal,23328,1296,m2
+316,Jornada_JC_2,3,Mammal,23328,1296,m2
+316,Jornada_JC_3,3,Mammal,23328,1296,m2
+316,Jornada_JG_1,3,Mammal,23328,1296,m2
+316,Jornada_JG_2,3,Mammal,23328,1296,m2
+316,Jornada_JG_3,3,Mammal,23328,1296,m2
+318,Central,1,Mammal,4870,4870,m2
+318,FarNorth,1,Mammal,4870,4870,m2
+318,North,1,Mammal,4870,4870,m2
+318,South,1,Mammal,4870,4870,m2
+318,KrugerNP_Central,2,Mammal,19480,4870,m2
+318,KrugerNP_FarNorth,2,Mammal,19480,4870,m2
+318,KrugerNP_North,2,Mammal,19480,4870,m2
+318,KrugerNP_South,2,Mammal,19480,4870,m2
+323,ATKI-101-X,1,Fish,450,450,m2
+323,CORS-102-S,1,Fish,450,450,m2
+323,FIMI-207-S,1,Fish,450,450,m2
+323,FURN-101-S,1,Fish,450,450,m2
+323,JONE-315-S,1,Fish,450,450,m2
+323,LOCR-102-S,1,Fish,450,450,m2
+323,MATT-033-S,1,Fish,450,450,m2
+323,NANJ-331-S,1,Fish,450,450,m2
+323,NASS-302-S,1,Fish,450,450,m2
+323,PAXL-294-S,1,Fish,450,450,m2
+323,PTOB-002-S,1,Fish,450,450,m2
+323,RKGR-119-S,1,Fish,450,450,m2
+323,SAVA-204-S,1,Fish,450,450,m2
+323,SAVA-225-S,1,Fish,450,450,m2
+323,UPCK-113-S,1,Fish,450,450,m2
+323,UPCR-208-S,1,Fish,450,450,m2
+323,WIRH-220-S,1,Fish,450,450,m2
+323,CRABTREE CREEK_SAVA-204-S,2,Fish,900,450,m2
+323,CYPRESS BRANCH_UPCR-208-S,2,Fish,900,450,m2
+323,FIFTEENMILE CREEK_FIMI-207-S,2,Fish,900,450,m2
+323,HOGHOLE RUN_PTOB-002-S,2,Fish,900,450,m2
+323,LEONARD POND RUN_WIRH-220-S,2,Fish,900,450,m2
+323,MATTAWOMAN CREEK_MATT-033-S,2,Fish,900,450,m2
+323,MILL RUN_NANJ-331-S,2,Fish,900,450,m2
+323,NASSAWANGO CREEK_NASS-302-S,2,Fish,900,450,m2
+323,NORTH BRANCH JONES FALLS_JONE-315-S,2,Fish,900,450,m2
+323,PATUXENT RIVER UT_RKGR-119-S,2,Fish,900,450,m2
+323,PATUXENT RIVER UT5_RKGR-119-S,2,Fish,900,450,m2
+323,PRINCIPIO CREEK UT_FURN-101-S,2,Fish,900,450,m2
+323,PRINCIPIO CREEK UT1_FURN-101-S,2,Fish,900,450,m2
+323,SAVAGE RIVER_SAVA-225-S,2,Fish,900,450,m2
+323,SKELETON CREEK UT1_UPCK-113-S,2,Fish,900,450,m2
+323,SWAN CREEK_LOCR-102-S,2,Fish,900,450,m2
+323,SWANSON CREEK_PAXL-294-S,2,Fish,900,450,m2
+323,Fifteen Mile Creek_FIFTEENMILE CREEK_FIMI-207-S,3,Fish,15300,450,m2
+323,Furnace Bay_PRINCIPIO CREEK UT_FURN-101-S,3,Fish,15300,450,m2
+323,Furnace Bay_PRINCIPIO CREEK UT1_FURN-101-S,3,Fish,15300,450,m2
+323,Jones Falls_NORTH BRANCH JONES FALLS_JONE-315-S,3,Fish,15300,450,m2
+323,Lower Chester River_SWAN CREEK_LOCR-102-S,3,Fish,15300,450,m2
+323,Mattawoman Creek_MATTAWOMAN CREEK_MATT-033-S,3,Fish,15300,450,m2
+323,Nanjemoy Creek_MILL RUN_NANJ-331-S,3,Fish,15300,450,m2
+323,Nassawango Creek_NASSAWANGO CREEK_NASS-302-S,3,Fish,15300,450,m2
+323,Patuxent River lower_SWANSON CREEK_PAXL-294-S,3,Fish,15300,450,m2
+323,Port Tobacco River_HOGHOLE RUN_PTOB-002-S,3,Fish,15300,450,m2
+323,Rocky Gorge Dam_PATUXENT RIVER UT_RKGR-119-S,3,Fish,15300,450,m2
+323,Rocky Gorge Dam_PATUXENT RIVER UT5_RKGR-119-S,3,Fish,15300,450,m2
+323,Savage River_CRABTREE CREEK_SAVA-204-S,3,Fish,15300,450,m2
+323,Savage River_SAVAGE RIVER_SAVA-225-S,3,Fish,15300,450,m2
+323,Upper Chester River_CYPRESS BRANCH_UPCR-208-S,3,Fish,15300,450,m2
+323,Upper Choptank_SKELETON CREEK UT1_UPCK-113-S,3,Fish,15300,450,m2
+323,Wicomico River Head_LEONARD POND RUN_WIRH-220-S,3,Fish,15300,450,m2
+323,Chester River_Lower Chester River_SWAN CREEK_LOCR-102-S,4,Fish,15300,450,m2
+323,Chester River_Upper Chester River_CYPRESS BRANCH_UPCR-208-S,4,Fish,15300,450,m2
+323,Choptank River_Upper Choptank_SKELETON CREEK UT1_UPCK-113-S,4,Fish,15300,450,m2
+323,Elk River_Furnace Bay_PRINCIPIO CREEK UT_FURN-101-S,4,Fish,15300,450,m2
+323,Elk River_Furnace Bay_PRINCIPIO CREEK UT1_FURN-101-S,4,Fish,15300,450,m2
+323,Lower Potomac River_Mattawoman Creek_MATTAWOMAN CREEK_MATT-033-S,4,Fish,15300,450,m2
+323,Lower Potomac River_Nanjemoy Creek_MILL RUN_NANJ-331-S,4,Fish,15300,450,m2
+323,Lower Potomac River_Port Tobacco River_HOGHOLE RUN_PTOB-002-S,4,Fish,15300,450,m2
+323,Nanticoke River_Wicomico River Head_LEONARD POND RUN_WIRH-220-S,4,Fish,15300,450,m2
+323,North Branch Potomac River_Savage River_CRABTREE CREEK_SAVA-204-S,4,Fish,15300,450,m2
+323,North Branch Potomac River_Savage River_SAVAGE RIVER_SAVA-225-S,4,Fish,15300,450,m2
+323,Patapsco River_Jones Falls_NORTH BRANCH JONES FALLS_JONE-315-S,4,Fish,15300,450,m2
+323,Patuxent River_Patuxent River lower_SWANSON CREEK_PAXL-294-S,4,Fish,15300,450,m2
+323,Patuxent River_Rocky Gorge Dam_PATUXENT RIVER UT_RKGR-119-S,4,Fish,15300,450,m2
+323,Patuxent River_Rocky Gorge Dam_PATUXENT RIVER UT5_RKGR-119-S,4,Fish,15300,450,m2
+323,Pocomoke River_Nassawango Creek_NASSAWANGO CREEK_NASS-302-S,4,Fish,15300,450,m2
+323,Upper Potomac River_Fifteen Mile Creek_FIFTEENMILE CREEK_FIMI-207-S,4,Fish,15300,450,m2
+323,maxgrain_Chester River_Lower Chester River_SWAN CREEK_LOCR-102-S,5,Fish,15300,450,m2
+323,maxgrain_Chester River_Upper Chester River_CYPRESS BRANCH_UPCR-208-S,5,Fish,15300,450,m2
+323,maxgrain_Choptank River_Upper Choptank_SKELETON CREEK UT1_UPCK-113-S,5,Fish,15300,450,m2
+323,maxgrain_Elk River_Furnace Bay_PRINCIPIO CREEK UT_FURN-101-S,5,Fish,15300,450,m2
+323,maxgrain_Elk River_Furnace Bay_PRINCIPIO CREEK UT1_FURN-101-S,5,Fish,15300,450,m2
+323,maxgrain_Lower Potomac River_Mattawoman Creek_MATTAWOMAN CREEK_MATT-033-S,5,Fish,15300,450,m2
+323,maxgrain_Lower Potomac River_Nanjemoy Creek_MILL RUN_NANJ-331-S,5,Fish,15300,450,m2
+323,maxgrain_Lower Potomac River_Port Tobacco River_HOGHOLE RUN_PTOB-002-S,5,Fish,15300,450,m2
+323,maxgrain_Nanticoke River_Wicomico River Head_LEONARD POND RUN_WIRH-220-S,5,Fish,15300,450,m2
+323,maxgrain_North Branch Potomac River_Savage River_CRABTREE CREEK_SAVA-204-S,5,Fish,15300,450,m2
+323,maxgrain_North Branch Potomac River_Savage River_SAVAGE RIVER_SAVA-225-S,5,Fish,15300,450,m2
+323,maxgrain_Patapsco River_Jones Falls_NORTH BRANCH JONES FALLS_JONE-315-S,5,Fish,15300,450,m2
+323,maxgrain_Patuxent River_Patuxent River lower_SWANSON CREEK_PAXL-294-S,5,Fish,15300,450,m2
+323,maxgrain_Patuxent River_Rocky Gorge Dam_PATUXENT RIVER UT_RKGR-119-S,5,Fish,15300,450,m2
+323,maxgrain_Patuxent River_Rocky Gorge Dam_PATUXENT RIVER UT5_RKGR-119-S,5,Fish,15300,450,m2
+323,maxgrain_Pocomoke River_Nassawango Creek_NASSAWANGO CREEK_NASS-302-S,5,Fish,15300,450,m2
+323,maxgrain_Upper Potomac River_Fifteen Mile Creek_FIFTEENMILE CREEK_FIMI-207-S,5,Fish,15300,450,m2
+324,ATKI-101-X,1,Invertebrate,20,20,m2
+324,BRET-450-H,1,Invertebrate,20,20,m2
+324,CORS-102-S,1,Invertebrate,20,20,m2
+324,CORS-250-H,1,Invertebrate,20,20,m2
+324,FIMI-207-S,1,Invertebrate,20,20,m2
+324,FURN-101-S,1,Invertebrate,20,20,m2
+324,JONE-109-S,1,Invertebrate,20,20,m2
+324,JONE-315-S,1,Invertebrate,20,20,m2
+324,LIBE-102-S,1,Invertebrate,20,20,m2
+324,LOCH-120-S,1,Invertebrate,20,20,m2
+324,LOCR-102-S,1,Invertebrate,20,20,m2
+324,MATT-033-S,1,Invertebrate,20,20,m2
+324,NANJ-301-H,1,Invertebrate,20,20,m2
+324,NANJ-331-S,1,Invertebrate,20,20,m2
+324,NASS-108-S,1,Invertebrate,20,20,m2
+324,NASS-302-S,1,Invertebrate,20,20,m2
+324,PAXL-294-S,1,Invertebrate,20,20,m2
+324,PRLN-626-S,1,Invertebrate,20,20,m2
+324,PTOB-002-S,1,Invertebrate,20,20,m2
+324,RKGR-119-S,1,Invertebrate,20,20,m2
+324,SAVA-204-S,1,Invertebrate,20,20,m2
+324,SAVA-225-S,1,Invertebrate,20,20,m2
+324,SAVA-276-S,1,Invertebrate,20,20,m2
+324,SEAS-250-H,1,Invertebrate,20,20,m2
+324,STCL-051-S,1,Invertebrate,20,20,m2
+324,TUCK-450-H,1,Invertebrate,20,20,m2
+324,UMON-119-S,1,Invertebrate,20,20,m2
+324,UMON-288-S,1,Invertebrate,20,20,m2
+324,UPCK-113-S,1,Invertebrate,20,20,m2
+324,UPCR-208-S,1,Invertebrate,20,20,m2
+324,WIRH-220-S,1,Invertebrate,20,20,m2
+324,YOUG-432-S,1,Invertebrate,20,20,m2
+324,ZEKI-012-S,1,Invertebrate,20,20,m2
 324,BAISMAN RUN_LOCH-120-S,2,Invertebrate,,20,m2
 324,BEAR CREEK_YOUG-432-S,2,Invertebrate,,20,m2
 324,BUZZARD BRANCH_UMON-119-S,2,Invertebrate,,20,m2

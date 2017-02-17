@@ -268,7 +268,7 @@ table(dataset2$lakeid)
 dataset2$lakeid[dataset2$lakeid == "Tr"] = "TR"
 dataset2$lakeid = factor(dataset2$lakeid)
 # concatenate lakeid and station bc all combinations of lake id and station are unique
-dataset2$lake_stat = paste(dataset2$lakeid, dataset2$station, sep = "_")
+dataset2$lake_stat = paste(dataset2$lakeid, dataset2$station, sep = "")
 
 # Here, we will concatenate all of the potential fields that describe the site 
 # in hierarchical order from largest to smallest grain. Based on the dataset,

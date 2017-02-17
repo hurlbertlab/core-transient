@@ -282,7 +282,7 @@ dataset2$watershed = trim.trailing(as.character(dataset2$watershed))
 dataset2$habitat = trim.trailing(as.character(dataset2$habitat))
 
 dataset2$site="maxgrain"
-dataset2$habrep=paste(dataset2$habitat, dataset2$replicate, sep = "_")
+dataset2$habrep=paste(dataset2$habitat, dataset2$replicate, sep = "")
 #--! PROVIDE INFO !--#
 site_grain_names = c("watershed", "habrep")
 
