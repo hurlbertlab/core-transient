@@ -477,15 +477,13 @@ par(new=TRUE)
 dev.off()
 
 
-#### Fig 3b Area #####
-area = read.csv("output/scaled_areas.csv", header = TRUE)
+#### Fig 3a Area #####
+area = read.csv("output/new_areas.csv", header = TRUE)
 
-# areamerge = merge(occ_taxa, area, by = )
+areamerge = merge(occ_taxa, area, by = c("datasetID", "site"))
 
-
-
-p <- ggplot(predmod, aes(x = datasetID, y = fit))
-p + geom_point(aes(color = as.factor(predmod$taxa))) + geom_errorbar(ymin = predmod3c$lwr, ymax= predmod3c$upr, width=0.2) + theme_classic()
+p <- ggplot(areamerge, aes(x = log10(meanAbundance), y = log10(area)))
+p + geom_point(aes(color = as.factor(areamerge$taxa.x))) + theme_classic()
 ggsave(file="C:/Git/core-transient/output/plots/area3a.pdf", height = 10, width = 15)
 
 
