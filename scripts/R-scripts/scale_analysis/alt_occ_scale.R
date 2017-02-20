@@ -248,7 +248,7 @@ plot2_2 = ggplot(plotsub, aes(x=logN, y =pctCore))+geom_point(colour = "turquois
 plot2_3 =ggplot(plotsub, aes(x=logN, y =pctTran))+geom_point(colour = "olivedrab")+geom_smooth(se=FALSE)
 
 
-####change to log_10^^^^####
+####changed to log_10^^^^####
 
 #setting up aveN and log(area) cols side by side 
 library(gridExtra)
@@ -403,9 +403,14 @@ bbs_allscales$meanP = raster::extract(Pcalc, sites)
 
 #ndvi 
 ndvim<-raster("//bioark.ad.unc.edu/HurlbertLab/GIS/MODIS NDVI/Vegetation_Indices_may-aug_2000-2010.gri")
-ndvi = raster::extract(ndvim, sites)
-ndvimean = ndvi/10000
+ndvimean = ndvim/10000
 bbs_allscales$ndvi<-raster::extract(ndvimean, sites)
+bbs_envs = bbs_allscales
+write.csv(bbs_envs, "data/bbs_envs.csv", row.names = FALSE)
+
+#analyzing env vars 
+
+bbs_envs = read.csv("data/bbs_envs.csv", header = TRUE)
 
 
 
