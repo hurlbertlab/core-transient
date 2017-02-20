@@ -267,8 +267,8 @@ OA.df = data.frame(stateroute = numeric(), OA.A= numeric(), OA.i = numeric(), OA
 ON.df = data.frame(stateroute = numeric(), ON.A= numeric(), ON.i = numeric(), ON.k = numeric())
 CA.df = data.frame(stateroute = numeric(), CA.A= numeric(), CA.i = numeric(), CA.k = numeric())
 CN.df = data.frame(stateroute = numeric(), CN.A= numeric(), CN.i = numeric(), CN.k = numeric())
-TA.df = data.frame(stateroute = numeric(), TA.A= numeric(), TA.i = numeric(), TA.k = numeric())
-TN.df = data.frame(stateroute = numeric(), TN.A= numeric(), TN.i = numeric(), TN.k = numeric())
+TA.df = data.frame(stateroute = numeric(), TAexp= numeric(), TApow = numeric())
+TN.df = data.frame(stateroute = numeric(), TAexp= numeric(), TApow = numeric())
 
 
 #Use tryCatch to run through all routes but store routes with errors
@@ -280,7 +280,9 @@ stateroutes = unique(bbs_allscales$focalrte)
 for(s in stateroutes){
   logsub = subset(bbs_allscales, bbs_allscales$focalrte == s)  
   #fitting the log curve for area (for each route)
-    OAmodel = tryCatch({
+  
+  # 
+  OAmodel = tryCatch({
     OAlog = nls(meanOcc ~ SSlogis(logA, Asym, xmid, scal), data = logsub)
     return(data.frame(stateroute = s, OA.A, OA.i, OA.k))
   }, warning = function(w) {
@@ -298,12 +300,8 @@ for(s in stateroutes){
   
   OA.temp = data.frame(stateroute = s, OA.A, OA.i, OA.k) #fix
   OA.df = rbind(OA.df, OA.temp)
-}
 
-#ON model
-for(s in stateroutes){
-  logsub = subset(bbs_allscales, bbs_allscales$focalrte == s)  
-  #fitting the log curve for aveN (for each route)
+  # 
   ONmodel = tryCatch({
     ONlog = nls(meanOcc ~ SSlogis(logN, Asym, xmid, scal), data = logsub)
     return(data.frame(stateroute = s, ON.A, ON.i, ON.k))
@@ -322,12 +320,9 @@ for(s in stateroutes){
   
   ON.temp = data.frame(stateroute = s, ON.A, ON.i, ON.k) #fix
   ON.df = rbind(ON.df, ON.temp)
-}
   
-#CA model
-for(s in stateroutes){
-  logsub = subset(bbs_allscales, bbs_allscales$focalrte == s)  
-  #fitting the log curve for area (for each route)
+  
+  #
   CAmodel = tryCatch({
     CAlog = nls(pctCore ~ SSlogis(logA, Asym, xmid, scal), data = logsub)
     return(data.frame(stateroute = s, CA.A, CA.i, CA.k))
@@ -346,12 +341,9 @@ for(s in stateroutes){
   
   CA.temp = data.frame(stateroute = s, CA.A, CA.i, CA.k) #fix
   CA.df = rbind(CA.df, CA.temp)
-}
-
-#CN model
-for(s in stateroutes){
-  logsub = subset(bbs_allscales, bbs_allscales$focalrte == s)  
-  #fitting the log curve for aveN (for each route)
+  
+  
+  #
   CNmodel = tryCatch({
     CNlog = nls(pctCore ~ SSlogis(logN, Asym, xmid, scal), data = logsub)
     return(data.frame(stateroute = s, CN.A, CN.i, CN.k))
@@ -370,7 +362,22 @@ for(s in stateroutes){
   
   CN.temp = data.frame(stateroute = s, CN.A, CN.i, CN.k) #fix
   CN.df = rbind(CN.df, CN.temp)
+
+  
+  # Fitting % transient
+  TAlog = lm(log(pctTran) ~ logA, data = logsub)
+  TA = lm(log(pctTran) ~ area, data = logsub)
+
+  TA.temp = data.frame(stateroute = s, TAexp = TAlog$coefficients[2,1],
+                       TApow = TA$coefficients[2,1]) 
+  TA.df = rbind(TA.df, TA.temp)
+  
+  #...TN  
 }
+
+
+
+
 
 ####Env data add-in####
 
@@ -415,6 +422,18 @@ envmod1 = lm(meanOcc~ndvi), data = bbs_allscales)
 summary(envmod1)
 
 ?var
+
+uniq_env = unique(bbs_envs[, c('focalrte', 'temp', 'meanP', 'ndvi')])
+
+# Merge environmental data with the curve shape data
+
+curves = inner_join(coefs, uniq_env, by = c('stateroute' = 'focalrte'))
+
+# linear model explaining either logistic slope or negative exponential or power slopes as
+# a function of env variables
+
+# Can also just look at the correlation matrix, e.g.
+round(cor(curves[, 2:ncol(curves)]), 2)
 
 
 ####Troubleshooting pctTran functions####
