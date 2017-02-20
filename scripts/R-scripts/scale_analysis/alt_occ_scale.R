@@ -214,7 +214,8 @@ bbs_allscales = rbind(bbs_below, bbs_focal_occs)
 bbs_allscales = read.csv("data/bbs_allscales.csv", header = TRUE)
 bbs_allscales$logA = log10(bbs_allscales$area)
 bbs_allscales$logN = log10(bbs_allscales$aveN)
-
+bbs_allscales$lnA = log(bbs_allscales$area) #log is the natural log 
+bbs_allscales$lnN = log(bbs_allscales$aveN) #rerun plots with this?
 
 mod1 = lm(meanOcc~logA, data = bbs_allscales) #explains ~50% of the variation in occ
 mod2 = lm(meanOcc~logN, data = bbs_allscales)
@@ -240,12 +241,12 @@ theme_set(theme_bw()+theme(panel.grid.major = element_blank(), panel.grid.minor 
 plotsub = subset(bbs_allscales, bbs_allscales$focalrte == s)
 plot1 = ggplot(plotsub, aes(x = logA, y = meanOcc))+geom_point(colour = "firebrick")+geom_smooth(se=FALSE)
 plot1_2= ggplot(plotsub, aes(x = logA, y = pctCore))+geom_point(colour = "turquoise")+geom_smooth(se=FALSE)
-plot1_3 = ggplot(plotsub, aes(x = logA, y = pctTran))+geom_point(colour = "olivedrab")+geom_smooth(se=FALSE)
+plot1_3 = ggplot(plotsub, aes(x = lnA, y = pctTran))+geom_point(colour = "olivedrab")+geom_smooth(se=FALSE)
 
 #aveN
 plot2 = ggplot(plotsub, aes(x=logN, y =meanOcc))+geom_point(colour = "firebrick")+geom_smooth(se=FALSE)
 plot2_2 = ggplot(plotsub, aes(x=logN, y =pctCore))+geom_point(colour = "turquoise")+geom_smooth(se=FALSE)
-plot2_3 =ggplot(plotsub, aes(x=logN, y =pctTran))+geom_point(colour = "olivedrab")+geom_smooth(se=FALSE)
+plot2_3 =ggplot(plotsub, aes(x=lnN, y =pctTran))+geom_point(colour = "olivedrab")+geom_smooth(se=FALSE)
 
 
 ####changed to log_10^^^^####
@@ -276,12 +277,12 @@ warnings = data.frame(stateroute = numeric(), warning = character())
 #subspecify to only pull bbs data at year s 
 stateroutes = unique(bbs_allscales$focalrte)
 
-#OA mod 
+
 for(s in stateroutes){
   logsub = subset(bbs_allscales, bbs_allscales$focalrte == s)  
   #fitting the log curve for area (for each route)
   
-  # 
+  #OA 
   OAmodel = tryCatch({
     OAlog = nls(meanOcc ~ SSlogis(logA, Asym, xmid, scal), data = logsub)
     return(data.frame(stateroute = s, OA.A, OA.i, OA.k))
@@ -365,18 +366,33 @@ for(s in stateroutes){
 
   
   # Fitting % transient
-  TAlog = lm(log(pctTran) ~ logA, data = logsub)
+  #TA
+  TAlog = lm(log(pctTran) ~ lnA, data = logsub)
   TA = lm(log(pctTran) ~ area, data = logsub)
-
-  TA.temp = data.frame(stateroute = s, TAexp = TAlog$coefficients[2,1],
-                       TApow = TA$coefficients[2,1]) 
+  TA.temp = data.frame(stateroute = s, 
+                       TAexp = TAlog$coefficients[2],
+                       TApow = TA$coefficients[2]) 
   TA.df = rbind(TA.df, TA.temp)
   
-  #...TN  
+  #TN  
+  TNlog = lm(log(pctTran) ~ lnN, data = logsub)
+  TN = lm(log(pctTran) ~ area, data = logsub)
+    TN.temp = data.frame(stateroute = s, 
+                       TNexp = TNlog$coefficients[2],
+                       TNpow = TN$coefficients[2]) 
+  TN.df = rbind(TN.df, TN.temp)
+  
 }
 
+#join all together using inner_join by focal rte, not cbind 
+coefs = OA.df %>% 
+  inner_join(ON.df, OA.df, by = "stateroute") %>% 
+  inner_join(CA.df, OA.df, by = "stateroute") %>% 
+  inner_join(CN.df, OA.df, by = "stateroute") %>% 
+  inner_join(TA.df, OA.df, by = "stateroute") %>% 
+  inner_join(TN.df, OA.df, by = "stateroute")  
 
-
+write.csv(coefs, "C:/git/core-transient/scripts/R-scripts/scale_analysis/coefs.csv", row.names = FALSE)
 
 
 ####Env data add-in####
@@ -385,7 +401,7 @@ for(s in stateroutes){
 
 #bring in lat-lons for each focal route and creating sites
 
-bbs_latlon = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/good_rtes2.csv", header = TRUE)
+bbs_latlon = read.csv("//bioark.ad.unc.edu/HurlbertLab/Jenkins/BBS scaled/good_rtes2.csv", header = TRUE)
 bbs_allscales = rename(bbs_latlon, focalrte = stateroute) %>%
   right_join(bbs_allscales, by = "focalrte")
 
@@ -400,25 +416,54 @@ meanT = calc(tmean, mean)
 meanT
 # Convert to actual temp
 meanT = meanT/10 #done
-bbs_allscales$temp<-raster::extract(meanT, sites)
+bbs_allscales$temp<-raster::extract(meanT, sites, buffer = 40000, fun = mean) #meters since data pure lat-lons, unprojected, mean of means for cells 
+bbs_allscales$vartemp<-raster::extract(meanT, sites, buffer = 40000, fun = var)
+#then take fun to get mean and var?
 
 #precip 
 prec<-paste('//bioark.ad.unc.edu/HurlbertLab/GIS/ClimateData/2-25-2011/prec/prec',1:12, '.bil', sep ='')
 mprecip = stack(prec)
 Pcalc = calc(mprecip, mean)
-bbs_allscales$meanP = raster::extract(Pcalc, sites)
+bbs_allscales$meanP = raster::extract(Pcalc, sites, buffer = 40000, fun = mean)
+bbs_allscales$varP = raster::extract(Pcalc, sites, buffer = 40000, fun = var)
 
 #ndvi 
 ndvim<-raster("//bioark.ad.unc.edu/HurlbertLab/GIS/MODIS NDVI/Vegetation_Indices_may-aug_2000-2010.gri")
 ndvimean = ndvim/10000
-bbs_allscales$ndvi<-raster::extract(ndvimean, sites)
+bbs_allscales$ndvi<-raster::extract(ndvimean, sites, buffer = 40000, fun = mean)
+bbs_allscales$varndvi<-raster::extract(ndvimean, sites, buffer = 40000, fun = var)
+
+#elev 
+#mean elevation PLUS elevational range 
+elevmean<-raster("alt.bil")
+bbs_allscales$elev<-extract(elevmean, sites, buffer = 40000, fun = mean)
+bbs_allscales$varelev<-extract(elevmean, sites, buffer = 40000, fun = var)
+
+#elev radius
+#pull in radius elev data from Coyle folder 
+elevrad<-raster("elevation_var_40km_radius.gri")
+#need to re-project data points to match projection of elevation raster data 
+#modify below code
+elev_proj = "+proj=laea +lat_0=40.68 +lon_0=-92.925 +units=km +ellps=WGS84" # A string that defines the projection
+points2 = SpatialPoints(sites)
+points2 = SpatialPoints(sites, proj4string=CRS(elev_proj))
+points2 = SpatialPoints(sites, proj4string=CRS("+proj=longlat +datum=WGS84"))
+points3 = spTransform(points2, CRS(elev_proj))
+buff = gBuffer(points3, width=40)
+#extract data just like before with raster function 
+bbs_allscales$erad = raster::extract(elevrad, points3,buffer = 40000, fun = mean)
+bbs_allscales$varerad = raster::extract(elevrad, points3,buffer = 40000, fun = var)
+
+
+
+
 bbs_envs = bbs_allscales
-write.csv(bbs_envs, "data/bbs_envs.csv", row.names = FALSE)
+write.csv(bbs_envs, "scripts/R-scripts/scale_analysis/bbs_envs.csv", row.names = FALSE)
 
 #analyzing env vars, do I need to calc z scores or can I use normal vals? how to get env data for more than just lat lons of focal rte?
 #had talked about characterizing landscape hetero by just means and var of env variables - > what does this look like in modeling?
-bbs_envs = read.csv("data/bbs_envs.csv", header = TRUE)
-envmod1 = lm(meanOcc~ndvi), data = bbs_allscales)
+bbs_envs = read.csv("scripts/R-scripts/scale_analysis/bbs_envs.csv", header = TRUE)
+envmod1 = lm(meanOcc~ndvi, data = bbs_allscales)
 summary(envmod1)
 
 ?var
