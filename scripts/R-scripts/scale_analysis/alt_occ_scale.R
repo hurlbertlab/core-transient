@@ -372,6 +372,30 @@ for(s in stateroutes){
   CN.df = rbind(CN.df, CN.temp)
 }
 
+####Env data add-in####
+
+#for now just use what we have, that's fine 
+
+#bring in lat-lons for each focal route and creating sites
+
+bbs_latlon = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/good_rtes2.csv", header = TRUE)
+bbs_allscales = rename(bbs_latlon, focalrte = stateroute) %>%
+  right_join(bbs_allscales, by = "focalrte")
+
+
+sites = data.frame(longitude = bbs_allscales$Longi, latitude = bbs_allscales$Lati)
+#points(sites$longitude, sites$latitude, col= "red", pch=16)
+temp = paste('//bioark.ad.unc.edu/HurlbertLab/GIS/ClimateData/BIOCLIM_meanTemp/tmean',1:12,'.bil', sep='')
+tmean = stack(temp) 
+# Find MEAN across all months
+meanT = calc(tmean, mean)
+meanT
+# Convert to actual temp
+meanT = meanT/10 #done
+
+bbs_allscales$temp<-raster::extract(meanT, sites)
+
+
 ####Troubleshooting pctTran functions####
 #commented out pctTran models because need to use a diff formula to fit (fault neg slope)
 # fcn = function(x, xmid, Asym, scal) {Asym/1 - exp((xmid-x)/scal)}
@@ -406,58 +430,64 @@ plot(test)
 testpars = getPar(test)
 testpars$params$xmid
 
+#playing with nplr mods (see code below)
 
+pctTran_coefs = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/pctTran_coefs.csv", header = TRUE)
+#same coefs for every stateroute tho, why?
 
-
-#TA model
-for(s in stateroutes){
-  logsub = subset(bbs_allscales, bbs_allscales$focalrte == s)
-  #fitting the log curve for area (for each route)
-  TAmodel = tryCatch({
-    TAlog = nplr(x = logsub$logA, y = convertToProp(logsub$pctTran))
-    return(data.frame(stateroute = s, TA.A, TA.i, TA.k))
-  }, warning = function(w) {
-    warnings = rbind(warnings, data.frame(stateroute = s, warning = w))
-  }, error = function(e) {
-    TA.i <- NA
-    TA.A <- NA
-    TA.k <- NA
-  }, finally = {
-    testpars = getPar(test)
-    TA.i <- testpars$params$xmid
-    TA.A <- testpars$params$bottom
-    TA.k <- testpars$params$scal
-    #TA.tmp = data.frame(stateroute = s, TA.A, TA.i, TA.k)
-  })
-
-  TA.temp = data.frame(stateroute = s, TA.A, TA.i, TA.k) #fix
-  TA.df = rbind(TA.df, TA.temp)
-}
-
-# #TN model
-for(s in stateroutes){
-  logsub = subset(bbs_allscales, bbs_allscales$focalrte == s)
-  #fitting the log curve for area (for each route)
-  TNmodel = tryCatch({
-    TNlog = nplr(x = logsub$logN, y = convertToProp(logsub$pctTran))
-    return(data.frame(stateroute = s, TN.A, TN.i, TN.k))
-  }, warning = function(w) {
-    warnings = rbind(warnings, data.frame(stateroute = s, warning = w))
-  }, error = function(e) {
-    TN.i <- NA
-    TN.A <- NA
-    TN.k <- NA
-  }, finally = {
-    testpars = getPar(test)
-    TN.i <- testpars$params$xmid
-    TN.A <- testpars$params$bottom
-    TN.k <- testpars$params$scal
-    #TN.tmp = daTN.frame(stateroute = s, TN.A, TN.i, TN.k)
-  })
-  
-  TN.temp = data.frame(stateroute = s, TN.A, TN.i, TN.k) #fix
-  TN.df = rbind(TN.df, TN.temp)
-}
+# 
+# #TA model
+# for(s in stateroutes){
+#   logsub = subset(bbs_allscales, bbs_allscales$focalrte == s)
+#   #fitting the log curve for area (for each route)
+#   TAmodel = tryCatch({
+#     TAlog = nplr(x = logsub$logA, y = convertToProp(logsub$pctTran))
+#     return(data.frame(stateroute = s, TA.A, TA.i, TA.k))
+#   }, warning = function(w) {
+#     warnings = rbind(warnings, data.frame(stateroute = s, warning = w))
+#   }, error = function(e) {
+#     TA.i <- NA
+#     TA.A <- NA
+#     TA.k <- NA
+#   }, finally = {
+#     testpars = getPar(test)
+#     TA.i <- testpars$params$xmid
+#     TA.A <- testpars$params$bottom
+#     TA.k <- testpars$params$scal
+#     #TA.tmp = data.frame(stateroute = s, TA.A, TA.i, TA.k)
+#   })
+# 
+#   TA.temp = data.frame(stateroute = s, TA.A, TA.i, TA.k) #fix
+#   TA.df = rbind(TA.df, TA.temp)
+# }
+# 
+# # #TN model
+# for(s in stateroutes){
+#   logsub = subset(bbs_allscales, bbs_allscales$focalrte == s)
+#   #fitting the log curve for area (for each route)
+#   TNmodel = tryCatch({
+#     TNlog = nplr(x = logsub$logN, y = convertToProp(logsub$pctTran))
+#     return(data.frame(stateroute = s, TN.A, TN.i, TN.k))
+#   }, warning = function(w) {
+#     warnings = rbind(warnings, data.frame(stateroute = s, warning = w))
+#   }, error = function(e) {
+#     TN.i <- NA
+#     TN.A <- NA
+#     TN.k <- NA
+#   }, finally = {
+#     testpars = getPar(test)
+#     TN.i <- testpars$params$xmid
+#     TN.A <- testpars$params$bottom
+#     TN.k <- testpars$params$scal
+#     #TN.tmp = daTN.frame(stateroute = s, TN.A, TN.i, TN.k)
+#   })
+#   
+#   TN.temp = data.frame(stateroute = s, TN.A, TN.i, TN.k) #fix
+#   TN.df = rbind(TN.df, TN.temp)
+# }
+# 
+# pctTran_coefs = data.frame(TA.df, TN.df)
+# 
 
 
 logcurve_coefs = data.frame(OA.df, ON.df, CA.df, CN.df, TA.df, TN.df)
@@ -465,29 +495,5 @@ write.csv(logcurve_coefs, "//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/l
 #saving as intermediate in case
 #it appears no NA's! 
 
-theme_set(theme_bw())
-plot1 + geom_point() +    # Use hollow circles
-  geom_smooth(se=FALSE)
-
-#extracted coefs for analysis; but plotting is auto 
-#is loess ok?
-
-curvemod = nls(meanOcc ~ A/(1+exp(i - logA)/k), 
-               data = plotsub) 
-summary(curvemod)
 
 
-
-####Env data add-in####
-
-#for now just use what we have, that's fine 
-
-#bring in lat-lons for each focal route and creating sites
-
-bbs_latlon = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/good_rtes2.csv", header = TRUE)
-bbs_allscales = rename(bbs_latlon, focalrte = stateroute) %>%
-  right_join(bbs_allscales, by = "focalrte")
-
-
-sites = data.frame(longitude = bbs_allscales$Longi, latitude = bbs_allscales$Lati)
-#points(sites$longitude, sites$latitude, col= "red", pch=16)
