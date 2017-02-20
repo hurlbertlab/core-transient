@@ -483,7 +483,7 @@ area = read.csv("output/new_areas.csv", header = TRUE)
 areamerge = merge(occ_taxa, area, by = c("datasetID", "site"))
 
 p <- ggplot(areamerge, aes(x = log10(meanAbundance), y = log10(area)))
-p + geom_point(aes(color = as.factor(areamerge$taxa.x))) + theme_classic()
+p + geom_point(aes(color = as.factor(areamerge$scale.x))) + theme_classic()
 ggsave(file="C:/Git/core-transient/output/plots/area3a.pdf", height = 10, width = 15)
 
 

@@ -268,7 +268,7 @@ table(dataset2$lakeid)
 dataset2$lakeid[dataset2$lakeid == "Tr"] = "TR"
 dataset2$lakeid = factor(dataset2$lakeid)
 # concatenate lakeid and station bc all combinations of lake id and station are unique
-dataset2$lake_stat = paste(dataset2$lakeid, dataset2$station, sep = "")
+dataset2$lakestat = paste(dataset2$lakeid, dataset2$station, sep = "")
 
 # Here, we will concatenate all of the potential fields that describe the site 
 # in hierarchical order from largest to smallest grain. Based on the dataset,
@@ -276,7 +276,7 @@ dataset2$lake_stat = paste(dataset2$lakeid, dataset2$station, sep = "")
 
 #--! PROVIDE INFO !--#
 dataset2$site="maxgrain"
-site_grain_names = c("site","lake_stat")
+site_grain_names = c("site","lakestat")
 
 # We will now create the site field with these codes concatenated if there
 # are multiple grain fields. Otherwise, site will just be the single grain field.
@@ -743,7 +743,7 @@ tGrain = 'year'
 site_grain_names
 
 #--! PROVIDE INFO !--#
-sGrain = 'lake_stat'
+sGrain = 'lakestat'
 
 # This is a reasonable choice of spatial grain because ...
 #--! PROVIDE INFO !--#
