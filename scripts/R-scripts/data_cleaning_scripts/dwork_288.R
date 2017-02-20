@@ -373,7 +373,7 @@ dataFormattingTable[,'Raw_siteUnit'] =
   dataFormattingTableFieldUpdate(datasetID, 'Raw_siteUnit',  
 
 #--! PROVIDE INFO !--#
-                                 'watershed_habitat_replicate') 
+                                 'watershed_habrep') 
 
 
 # spatial_scale_variable. Is a site potentially nested (e.g., plot within a quad or 
