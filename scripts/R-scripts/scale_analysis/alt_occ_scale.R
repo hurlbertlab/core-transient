@@ -267,8 +267,8 @@ OA.df = data.frame(stateroute = numeric(), OA.A= numeric(), OA.i = numeric(), OA
 ON.df = data.frame(stateroute = numeric(), ON.A= numeric(), ON.i = numeric(), ON.k = numeric())
 CA.df = data.frame(stateroute = numeric(), CA.A= numeric(), CA.i = numeric(), CA.k = numeric())
 CN.df = data.frame(stateroute = numeric(), CN.A= numeric(), CN.i = numeric(), CN.k = numeric())
-#TA.df = data.frame(stateroute = numeric(), TA.A= numeric(), TA.i = numeric(), TA.k = numeric())
-#TN.df = data.frame(stateroute = numeric(), TN.A= numeric(), TN.i = numeric(), TN.k = numeric())
+TA.df = data.frame(stateroute = numeric(), TA.A= numeric(), TA.i = numeric(), TA.k = numeric())
+TN.df = data.frame(stateroute = numeric(), TN.A= numeric(), TN.i = numeric(), TN.k = numeric())
 
 
 #Use tryCatch to run through all routes but store routes with errors
@@ -424,9 +424,9 @@ for(s in stateroutes){
     TA.k <- NA
   }, finally = {
     testpars = getPar(test)
-    TA.i <- testpars$params$xmid["xmid","Estimate"]
-    TA.A <- testpars$params$bottom["Asym","Estimate"]
-    TA.k <- testpars$params$scal["scal","Estimate"]
+    TA.i <- testpars$params$xmid
+    TA.A <- testpars$params$bottom
+    TA.k <- testpars$params$scal
     #TA.tmp = data.frame(stateroute = s, TA.A, TA.i, TA.k)
   })
 
@@ -435,32 +435,32 @@ for(s in stateroutes){
 }
 
 # #TN model
-# for(s in stateroutes){
-#   logsub = subset(bbs_allscales, bbs_allscales$focalrte == s)  
-#   #fitting the log curve for aveN (for each route)
-#   TNmodel = tryCatch({
-#     TNlog = nls(pctTran ~ SSlogis(logN, Asym, xmid, scal), data = logsub)
-#     return(data.frame(stateroute = s, TN.A, TN.i, TN.k))
-#   }, warning = function(w) {
-#     warnings = rbind(warnings, data.frame(stateroute = s, warning = w))
-#   }, error = function(e) {
-#     TN.i <- NA
-#     TN.A <- NA
-#     TN.k <- NA
-#   }, finally = {
-#     TN.i <- summary(TNlog)$coefficients["xmid","Estimate"]
-#     TN.A <- summary(TNlog)$coefficients["Asym","Estimate"]
-#     TN.k <- summary(TNlog)$coefficients["scal","Estimate"]
-#     #TN.tmp = data.frame(stateroute = s, TN.A, TN.i, TN.k)
-#   })
-#   
-#   TN.temp = data.frame(stateroute = s, TN.A, TN.i, TN.k) #fix
-#   TN.df = rbind(TN.df, TN.temp)
-# }
+for(s in stateroutes){
+  logsub = subset(bbs_allscales, bbs_allscales$focalrte == s)
+  #fitting the log curve for area (for each route)
+  TNmodel = tryCatch({
+    TNlog = nplr(x = logsub$logN, y = convertToProp(logsub$pctTran))
+    return(data.frame(stateroute = s, TN.A, TN.i, TN.k))
+  }, warning = function(w) {
+    warnings = rbind(warnings, data.frame(stateroute = s, warning = w))
+  }, error = function(e) {
+    TN.i <- NA
+    TN.A <- NA
+    TN.k <- NA
+  }, finally = {
+    testpars = getPar(test)
+    TN.i <- testpars$params$xmid
+    TN.A <- testpars$params$bottom
+    TN.k <- testpars$params$scal
+    #TN.tmp = daTN.frame(stateroute = s, TN.A, TN.i, TN.k)
+  })
+  
+  TN.temp = data.frame(stateroute = s, TN.A, TN.i, TN.k) #fix
+  TN.df = rbind(TN.df, TN.temp)
+}
 
 
-
-logcurve_coefs = data.frame(OA.df, ON.df, CA.df, CN.df)
+logcurve_coefs = data.frame(OA.df, ON.df, CA.df, CN.df, TA.df, TN.df)
 write.csv(logcurve_coefs, "//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/logcurve_coefs.csv", row.names = FALSE)
 #saving as intermediate in case
 #it appears no NA's! 
