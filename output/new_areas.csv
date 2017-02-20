@@ -2618,132 +2618,132 @@ datasetID,site,scale,taxa,area,Raw_spatial_grain,Raw_spatial_grain_unit
 323,maxgrain_Patuxent River_Rocky Gorge Dam_PATUXENT RIVER UT5_RKGR-119-S,5,Fish,15300,450,m2
 323,maxgrain_Pocomoke River_Nassawango Creek_NASSAWANGO CREEK_NASS-302-S,5,Fish,15300,450,m2
 323,maxgrain_Upper Potomac River_Fifteen Mile Creek_FIFTEENMILE CREEK_FIMI-207-S,5,Fish,15300,450,m2
-324,ATKI-101-X,1,Invertebrate,20,20,m2
-324,BRET-450-H,1,Invertebrate,20,20,m2
-324,CORS-102-S,1,Invertebrate,20,20,m2
-324,CORS-250-H,1,Invertebrate,20,20,m2
-324,FIMI-207-S,1,Invertebrate,20,20,m2
-324,FURN-101-S,1,Invertebrate,20,20,m2
-324,JONE-109-S,1,Invertebrate,20,20,m2
-324,JONE-315-S,1,Invertebrate,20,20,m2
-324,LIBE-102-S,1,Invertebrate,20,20,m2
-324,LOCH-120-S,1,Invertebrate,20,20,m2
-324,LOCR-102-S,1,Invertebrate,20,20,m2
-324,MATT-033-S,1,Invertebrate,20,20,m2
-324,NANJ-301-H,1,Invertebrate,20,20,m2
-324,NANJ-331-S,1,Invertebrate,20,20,m2
-324,NASS-108-S,1,Invertebrate,20,20,m2
-324,NASS-302-S,1,Invertebrate,20,20,m2
-324,PAXL-294-S,1,Invertebrate,20,20,m2
-324,PRLN-626-S,1,Invertebrate,20,20,m2
-324,PTOB-002-S,1,Invertebrate,20,20,m2
-324,RKGR-119-S,1,Invertebrate,20,20,m2
-324,SAVA-204-S,1,Invertebrate,20,20,m2
-324,SAVA-225-S,1,Invertebrate,20,20,m2
-324,SAVA-276-S,1,Invertebrate,20,20,m2
-324,SEAS-250-H,1,Invertebrate,20,20,m2
-324,STCL-051-S,1,Invertebrate,20,20,m2
-324,TUCK-450-H,1,Invertebrate,20,20,m2
-324,UMON-119-S,1,Invertebrate,20,20,m2
-324,UMON-288-S,1,Invertebrate,20,20,m2
-324,UPCK-113-S,1,Invertebrate,20,20,m2
-324,UPCR-208-S,1,Invertebrate,20,20,m2
-324,WIRH-220-S,1,Invertebrate,20,20,m2
-324,YOUG-432-S,1,Invertebrate,20,20,m2
-324,ZEKI-012-S,1,Invertebrate,20,20,m2
-324,BAISMAN RUN_LOCH-120-S,2,Invertebrate,,20,m2
-324,BEAR CREEK_YOUG-432-S,2,Invertebrate,,20,m2
-324,BUZZARD BRANCH_UMON-119-S,2,Invertebrate,,20,m2
-324,CRABTREE CREEK_SAVA-204-S,2,Invertebrate,,20,m2
-324,CYPRESS BRANCH_UPCR-208-S,2,Invertebrate,,20,m2
-324,DOUBLE LICK RUN_SAVA-276-S,2,Invertebrate,,20,m2
-324,EMORY CREEK UT1_CORS-102-S,2,Invertebrate,,20,m2
-324,HIGH RUN_UMON-288-S,2,Invertebrate,,20,m2
-324,HOGHOLE RUN_PTOB-002-S,2,Invertebrate,,20,m2
-324,LEONARD POND RUN_WIRH-220-S,2,Invertebrate,,20,m2
-324,MATTAWOMAN CREEK_MATT-033-S,2,Invertebrate,,20,m2
-324,MILL RUN_NANJ-331-S,2,Invertebrate,,20,m2
-324,MILL RUN_PRLN-626-S,2,Invertebrate,,20,m2
-324,MILLVILLE CREEK_NASS-108-S,2,Invertebrate,,20,m2
-324,NASSAWANGO CREEK_NASS-302-S,2,Invertebrate,,20,m2
-324,NORTH BRANCH JONES FALLS_JONE-315-S,2,Invertebrate,,20,m2
-324,PATUXENT RIVER UT_RKGR-119-S,2,Invertebrate,,20,m2
-324,PRINCIPIO CREEK UT_FURN-101-S,2,Invertebrate,,20,m2
-324,SAVAGE RIVER_SAVA-225-S,2,Invertebrate,,20,m2
-324,SWAN CREEK_LOCR-102-S,2,Invertebrate,,20,m2
-324,SWANSON CREEK_PAXL-294-S,2,Invertebrate,,20,m2
-324,THREE BRIDGES BRANCH_CORS-250-H,2,Invertebrate,,20,m2
-324,TIMBER RUN_LIBE-102-S,2,Invertebrate,,20,m2
-324,TUCKAHOE CREEK_TUCK-450-H,2,Invertebrate,,20,m2
-324,Corsica River_EMORY CREEK UT1_CORS-102-S,3,Invertebrate,,20,m2
-324,Corsica River_THREE BRIDGES BRANCH_CORS-250-H,3,Invertebrate,,20,m2
-324,Furnace Bay_PRINCIPIO CREEK UT_FURN-101-S,3,Invertebrate,,20,m2
-324,Jones Falls_NORTH BRANCH JONES FALLS_JONE-315-S,3,Invertebrate,,20,m2
-324,Liberty Reservoir_TIMBER RUN_LIBE-102-S,3,Invertebrate,,20,m2
-324,Loch Raven Reservoir_BAISMAN RUN_LOCH-120-S,3,Invertebrate,,20,m2
-324,Lower Chester River_SWAN CREEK_LOCR-102-S,3,Invertebrate,,20,m2
-324,Mattawoman Creek_MATTAWOMAN CREEK_MATT-033-S,3,Invertebrate,,20,m2
-324,Nanjemoy Creek_MILL RUN_NANJ-331-S,3,Invertebrate,,20,m2
-324,Nassawango Creek_MILLVILLE CREEK_NASS-108-S,3,Invertebrate,,20,m2
-324,Nassawango Creek_NASSAWANGO CREEK_NASS-302-S,3,Invertebrate,,20,m2
-324,Patuxent River lower_SWANSON CREEK_PAXL-294-S,3,Invertebrate,,20,m2
-324,Port Tobacco River_HOGHOLE RUN_PTOB-002-S,3,Invertebrate,,20,m2
-324,Potomac River L N Branch_MILL RUN_PRLN-626-S,3,Invertebrate,,20,m2
-324,Rocky Gorge Dam_PATUXENT RIVER UT_RKGR-119-S,3,Invertebrate,,20,m2
-324,Savage River_CRABTREE CREEK_SAVA-204-S,3,Invertebrate,,20,m2
-324,Savage River_DOUBLE LICK RUN_SAVA-276-S,3,Invertebrate,,20,m2
-324,Savage River_SAVAGE RIVER_SAVA-225-S,3,Invertebrate,,20,m2
-324,Tuckahoe Creek_TUCKAHOE CREEK_TUCK-450-H,3,Invertebrate,,20,m2
-324,Upper Chester River_CYPRESS BRANCH_UPCR-208-S,3,Invertebrate,,20,m2
-324,Upper Monocacy River_BUZZARD BRANCH_UMON-119-S,3,Invertebrate,,20,m2
-324,Upper Monocacy River_HIGH RUN_UMON-288-S,3,Invertebrate,,20,m2
-324,Wicomico River Head_LEONARD POND RUN_WIRH-220-S,3,Invertebrate,,20,m2
-324,Youghiogheny River_BEAR CREEK_YOUG-432-S,3,Invertebrate,,20,m2
-324,Chester River_Corsica River_EMORY CREEK UT1_CORS-102-S,4,Invertebrate,,20,m2
-324,Chester River_Corsica River_THREE BRIDGES BRANCH_CORS-250-H,4,Invertebrate,,20,m2
-324,Chester River_Lower Chester River_SWAN CREEK_LOCR-102-S,4,Invertebrate,,20,m2
-324,Chester River_Upper Chester River_CYPRESS BRANCH_UPCR-208-S,4,Invertebrate,,20,m2
-324,Choptank River_Tuckahoe Creek_TUCKAHOE CREEK_TUCK-450-H,4,Invertebrate,,20,m2
-324,Elk River_Furnace Bay_PRINCIPIO CREEK UT_FURN-101-S,4,Invertebrate,,20,m2
-324,Gunpowder River_Loch Raven Reservoir_BAISMAN RUN_LOCH-120-S,4,Invertebrate,,20,m2
-324,Lower Potomac River_Mattawoman Creek_MATTAWOMAN CREEK_MATT-033-S,4,Invertebrate,,20,m2
-324,Lower Potomac River_Nanjemoy Creek_MILL RUN_NANJ-331-S,4,Invertebrate,,20,m2
-324,Lower Potomac River_Port Tobacco River_HOGHOLE RUN_PTOB-002-S,4,Invertebrate,,20,m2
-324,Middle Potomac River_Upper Monocacy River_BUZZARD BRANCH_UMON-119-S,4,Invertebrate,,20,m2
-324,Middle Potomac River_Upper Monocacy River_HIGH RUN_UMON-288-S,4,Invertebrate,,20,m2
-324,Nanticoke River_Wicomico River Head_LEONARD POND RUN_WIRH-220-S,4,Invertebrate,,20,m2
-324,North Branch Potomac River_Potomac River L N Branch_MILL RUN_PRLN-626-S,4,Invertebrate,,20,m2
-324,North Branch Potomac River_Savage River_CRABTREE CREEK_SAVA-204-S,4,Invertebrate,,20,m2
-324,North Branch Potomac River_Savage River_DOUBLE LICK RUN_SAVA-276-S,4,Invertebrate,,20,m2
-324,North Branch Potomac River_Savage River_SAVAGE RIVER_SAVA-225-S,4,Invertebrate,,20,m2
-324,Patapsco River_Jones Falls_NORTH BRANCH JONES FALLS_JONE-315-S,4,Invertebrate,,20,m2
-324,Patapsco River_Liberty Reservoir_TIMBER RUN_LIBE-102-S,4,Invertebrate,,20,m2
-324,Patuxent River_Patuxent River lower_SWANSON CREEK_PAXL-294-S,4,Invertebrate,,20,m2
-324,Patuxent River_Rocky Gorge Dam_PATUXENT RIVER UT_RKGR-119-S,4,Invertebrate,,20,m2
-324,Pocomoke River_Nassawango Creek_MILLVILLE CREEK_NASS-108-S,4,Invertebrate,,20,m2
-324,Pocomoke River_Nassawango Creek_NASSAWANGO CREEK_NASS-302-S,4,Invertebrate,,20,m2
-324,Youghiogheny River_Youghiogheny River_BEAR CREEK_YOUG-432-S,4,Invertebrate,,20,m2
-324,maxgrain_Chester River_Corsica River_EMORY CREEK UT1_CORS-102-S,5,Invertebrate,,20,m2
-324,maxgrain_Chester River_Corsica River_THREE BRIDGES BRANCH_CORS-250-H,5,Invertebrate,,20,m2
-324,maxgrain_Chester River_Lower Chester River_SWAN CREEK_LOCR-102-S,5,Invertebrate,,20,m2
-324,maxgrain_Chester River_Upper Chester River_CYPRESS BRANCH_UPCR-208-S,5,Invertebrate,,20,m2
-324,maxgrain_Choptank River_Tuckahoe Creek_TUCKAHOE CREEK_TUCK-450-H,5,Invertebrate,,20,m2
-324,maxgrain_Elk River_Furnace Bay_PRINCIPIO CREEK UT_FURN-101-S,5,Invertebrate,,20,m2
-324,maxgrain_Gunpowder River_Loch Raven Reservoir_BAISMAN RUN_LOCH-120-S,5,Invertebrate,,20,m2
-324,maxgrain_Lower Potomac River_Mattawoman Creek_MATTAWOMAN CREEK_MATT-033-S,5,Invertebrate,,20,m2
-324,maxgrain_Lower Potomac River_Nanjemoy Creek_MILL RUN_NANJ-331-S,5,Invertebrate,,20,m2
-324,maxgrain_Lower Potomac River_Port Tobacco River_HOGHOLE RUN_PTOB-002-S,5,Invertebrate,,20,m2
-324,maxgrain_Middle Potomac River_Upper Monocacy River_BUZZARD BRANCH_UMON-119-S,5,Invertebrate,,20,m2
-324,maxgrain_Middle Potomac River_Upper Monocacy River_HIGH RUN_UMON-288-S,5,Invertebrate,,20,m2
-324,maxgrain_Nanticoke River_Wicomico River Head_LEONARD POND RUN_WIRH-220-S,5,Invertebrate,,20,m2
-324,maxgrain_North Branch Potomac River_Potomac River L N Branch_MILL RUN_PRLN-626-S,5,Invertebrate,,20,m2
-324,maxgrain_North Branch Potomac River_Savage River_CRABTREE CREEK_SAVA-204-S,5,Invertebrate,,20,m2
-324,maxgrain_North Branch Potomac River_Savage River_DOUBLE LICK RUN_SAVA-276-S,5,Invertebrate,,20,m2
-324,maxgrain_North Branch Potomac River_Savage River_SAVAGE RIVER_SAVA-225-S,5,Invertebrate,,20,m2
-324,maxgrain_Patapsco River_Jones Falls_NORTH BRANCH JONES FALLS_JONE-315-S,5,Invertebrate,,20,m2
-324,maxgrain_Patapsco River_Liberty Reservoir_TIMBER RUN_LIBE-102-S,5,Invertebrate,,20,m2
-324,maxgrain_Patuxent River_Patuxent River lower_SWANSON CREEK_PAXL-294-S,5,Invertebrate,,20,m2
-324,maxgrain_Patuxent River_Rocky Gorge Dam_PATUXENT RIVER UT_RKGR-119-S,5,Invertebrate,,20,m2
-324,maxgrain_Pocomoke River_Nassawango Creek_MILLVILLE CREEK_NASS-108-S,5,Invertebrate,,20,m2
-324,maxgrain_Pocomoke River_Nassawango Creek_NASSAWANGO CREEK_NASS-302-S,5,Invertebrate,,20,m2
-324,maxgrain_Youghiogheny River_Youghiogheny River_BEAR CREEK_YOUG-432-S,5,Invertebrate,,20,m2
+324,ATKI-101-X,1,Invertebrate,2,2,m2
+324,BRET-450-H,1,Invertebrate,2,2,m2
+324,CORS-102-S,1,Invertebrate,2,2,m2
+324,CORS-250-H,1,Invertebrate,2,2,m2
+324,FIMI-207-S,1,Invertebrate,2,2,m2
+324,FURN-101-S,1,Invertebrate,2,2,m2
+324,JONE-109-S,1,Invertebrate,2,2,m2
+324,JONE-315-S,1,Invertebrate,2,2,m2
+324,LIBE-102-S,1,Invertebrate,2,2,m2
+324,LOCH-120-S,1,Invertebrate,2,2,m2
+324,LOCR-102-S,1,Invertebrate,2,2,m2
+324,MATT-033-S,1,Invertebrate,2,2,m2
+324,NANJ-301-H,1,Invertebrate,2,2,m2
+324,NANJ-331-S,1,Invertebrate,2,2,m2
+324,NASS-108-S,1,Invertebrate,2,2,m2
+324,NASS-302-S,1,Invertebrate,2,2,m2
+324,PAXL-294-S,1,Invertebrate,2,2,m2
+324,PRLN-626-S,1,Invertebrate,2,2,m2
+324,PTOB-002-S,1,Invertebrate,2,2,m2
+324,RKGR-119-S,1,Invertebrate,2,2,m2
+324,SAVA-204-S,1,Invertebrate,2,2,m2
+324,SAVA-225-S,1,Invertebrate,2,2,m2
+324,SAVA-276-S,1,Invertebrate,2,2,m2
+324,SEAS-250-H,1,Invertebrate,2,2,m2
+324,STCL-051-S,1,Invertebrate,2,2,m2
+324,TUCK-450-H,1,Invertebrate,2,2,m2
+324,UMON-119-S,1,Invertebrate,2,2,m2
+324,UMON-288-S,1,Invertebrate,2,2,m2
+324,UPCK-113-S,1,Invertebrate,2,2,m2
+324,UPCR-208-S,1,Invertebrate,2,2,m2
+324,WIRH-220-S,1,Invertebrate,2,2,m2
+324,YOUG-432-S,1,Invertebrate,2,2,m2
+324,ZEKI-012-S,1,Invertebrate,2,2,m2
+324,BAISMAN RUN_LOCH-120-S,2,Invertebrate,75,2,m2
+324,BEAR CREEK_YOUG-432-S,2,Invertebrate,75,2,m2
+324,BUZZARD BRANCH_UMON-119-S,2,Invertebrate,75,2,m2
+324,CRABTREE CREEK_SAVA-204-S,2,Invertebrate,75,2,m2
+324,CYPRESS BRANCH_UPCR-208-S,2,Invertebrate,75,2,m2
+324,DOUBLE LICK RUN_SAVA-276-S,2,Invertebrate,75,2,m2
+324,EMORY CREEK UT1_CORS-102-S,2,Invertebrate,75,2,m2
+324,HIGH RUN_UMON-288-S,2,Invertebrate,75,2,m2
+324,HOGHOLE RUN_PTOB-002-S,2,Invertebrate,75,2,m2
+324,LEONARD POND RUN_WIRH-220-S,2,Invertebrate,75,2,m2
+324,MATTAWOMAN CREEK_MATT-033-S,2,Invertebrate,75,2,m2
+324,MILL RUN_NANJ-331-S,2,Invertebrate,75,2,m2
+324,MILL RUN_PRLN-626-S,2,Invertebrate,75,2,m2
+324,MILLVILLE CREEK_NASS-108-S,2,Invertebrate,75,2,m2
+324,NASSAWANGO CREEK_NASS-302-S,2,Invertebrate,75,2,m2
+324,NORTH BRANCH JONES FALLS_JONE-315-S,2,Invertebrate,75,2,m2
+324,PATUXENT RIVER UT_RKGR-119-S,2,Invertebrate,75,2,m2
+324,PRINCIPIO CREEK UT_FURN-101-S,2,Invertebrate,75,2,m2
+324,SAVAGE RIVER_SAVA-225-S,2,Invertebrate,75,2,m2
+324,SWAN CREEK_LOCR-102-S,2,Invertebrate,75,2,m2
+324,SWANSON CREEK_PAXL-294-S,2,Invertebrate,75,2,m2
+324,THREE BRIDGES BRANCH_CORS-250-H,2,Invertebrate,75,2,m2
+324,TIMBER RUN_LIBE-102-S,2,Invertebrate,75,2,m2
+324,TUCKAHOE CREEK_TUCK-450-H,2,Invertebrate,75,2,m2
+324,Corsica River_EMORY CREEK UT1_CORS-102-S,3,Invertebrate,75,2,m2
+324,Corsica River_THREE BRIDGES BRANCH_CORS-250-H,3,Invertebrate,75,2,m2
+324,Furnace Bay_PRINCIPIO CREEK UT_FURN-101-S,3,Invertebrate,75,2,m2
+324,Jones Falls_NORTH BRANCH JONES FALLS_JONE-315-S,3,Invertebrate,75,2,m2
+324,Liberty Reservoir_TIMBER RUN_LIBE-102-S,3,Invertebrate,75,2,m2
+324,Loch Raven Reservoir_BAISMAN RUN_LOCH-120-S,3,Invertebrate,75,2,m2
+324,Lower Chester River_SWAN CREEK_LOCR-102-S,3,Invertebrate,75,2,m2
+324,Mattawoman Creek_MATTAWOMAN CREEK_MATT-033-S,3,Invertebrate,75,2,m2
+324,Nanjemoy Creek_MILL RUN_NANJ-331-S,3,Invertebrate,75,2,m2
+324,Nassawango Creek_MILLVILLE CREEK_NASS-108-S,3,Invertebrate,75,2,m2
+324,Nassawango Creek_NASSAWANGO CREEK_NASS-302-S,3,Invertebrate,75,2,m2
+324,Patuxent River lower_SWANSON CREEK_PAXL-294-S,3,Invertebrate,75,2,m2
+324,Port Tobacco River_HOGHOLE RUN_PTOB-002-S,3,Invertebrate,75,2,m2
+324,Potomac River L N Branch_MILL RUN_PRLN-626-S,3,Invertebrate,75,2,m2
+324,Rocky Gorge Dam_PATUXENT RIVER UT_RKGR-119-S,3,Invertebrate,75,2,m2
+324,Savage River_CRABTREE CREEK_SAVA-204-S,3,Invertebrate,75,2,m2
+324,Savage River_DOUBLE LICK RUN_SAVA-276-S,3,Invertebrate,75,2,m2
+324,Savage River_SAVAGE RIVER_SAVA-225-S,3,Invertebrate,75,2,m2
+324,Tuckahoe Creek_TUCKAHOE CREEK_TUCK-450-H,3,Invertebrate,75,2,m2
+324,Upper Chester River_CYPRESS BRANCH_UPCR-208-S,3,Invertebrate,75,2,m2
+324,Upper Monocacy River_BUZZARD BRANCH_UMON-119-S,3,Invertebrate,75,2,m2
+324,Upper Monocacy River_HIGH RUN_UMON-288-S,3,Invertebrate,75,2,m2
+324,Wicomico River Head_LEONARD POND RUN_WIRH-220-S,3,Invertebrate,75,2,m2
+324,Youghiogheny River_BEAR CREEK_YOUG-432-S,3,Invertebrate,75,2,m2
+324,Chester River_Corsica River_EMORY CREEK UT1_CORS-102-S,4,Invertebrate,75,2,m2
+324,Chester River_Corsica River_THREE BRIDGES BRANCH_CORS-250-H,4,Invertebrate,75,2,m2
+324,Chester River_Lower Chester River_SWAN CREEK_LOCR-102-S,4,Invertebrate,75,2,m2
+324,Chester River_Upper Chester River_CYPRESS BRANCH_UPCR-208-S,4,Invertebrate,75,2,m2
+324,Choptank River_Tuckahoe Creek_TUCKAHOE CREEK_TUCK-450-H,4,Invertebrate,75,2,m2
+324,Elk River_Furnace Bay_PRINCIPIO CREEK UT_FURN-101-S,4,Invertebrate,75,2,m2
+324,Gunpowder River_Loch Raven Reservoir_BAISMAN RUN_LOCH-120-S,4,Invertebrate,75,2,m2
+324,Lower Potomac River_Mattawoman Creek_MATTAWOMAN CREEK_MATT-033-S,4,Invertebrate,75,2,m2
+324,Lower Potomac River_Nanjemoy Creek_MILL RUN_NANJ-331-S,4,Invertebrate,75,2,m2
+324,Lower Potomac River_Port Tobacco River_HOGHOLE RUN_PTOB-002-S,4,Invertebrate,75,2,m2
+324,Middle Potomac River_Upper Monocacy River_BUZZARD BRANCH_UMON-119-S,4,Invertebrate,75,2,m2
+324,Middle Potomac River_Upper Monocacy River_HIGH RUN_UMON-288-S,4,Invertebrate,75,2,m2
+324,Nanticoke River_Wicomico River Head_LEONARD POND RUN_WIRH-220-S,4,Invertebrate,75,2,m2
+324,North Branch Potomac River_Potomac River L N Branch_MILL RUN_PRLN-626-S,4,Invertebrate,75,2,m2
+324,North Branch Potomac River_Savage River_CRABTREE CREEK_SAVA-204-S,4,Invertebrate,75,2,m2
+324,North Branch Potomac River_Savage River_DOUBLE LICK RUN_SAVA-276-S,4,Invertebrate,75,2,m2
+324,North Branch Potomac River_Savage River_SAVAGE RIVER_SAVA-225-S,4,Invertebrate,75,2,m2
+324,Patapsco River_Jones Falls_NORTH BRANCH JONES FALLS_JONE-315-S,4,Invertebrate,75,2,m2
+324,Patapsco River_Liberty Reservoir_TIMBER RUN_LIBE-102-S,4,Invertebrate,75,2,m2
+324,Patuxent River_Patuxent River lower_SWANSON CREEK_PAXL-294-S,4,Invertebrate,75,2,m2
+324,Patuxent River_Rocky Gorge Dam_PATUXENT RIVER UT_RKGR-119-S,4,Invertebrate,75,2,m2
+324,Pocomoke River_Nassawango Creek_MILLVILLE CREEK_NASS-108-S,4,Invertebrate,75,2,m2
+324,Pocomoke River_Nassawango Creek_NASSAWANGO CREEK_NASS-302-S,4,Invertebrate,75,2,m2
+324,Youghiogheny River_Youghiogheny River_BEAR CREEK_YOUG-432-S,4,Invertebrate,75,2,m2
+324,maxgrain_Chester River_Corsica River_EMORY CREEK UT1_CORS-102-S,5,Invertebrate,1200,2,m2
+324,maxgrain_Chester River_Corsica River_THREE BRIDGES BRANCH_CORS-250-H,5,Invertebrate,1200,2,m2
+324,maxgrain_Chester River_Lower Chester River_SWAN CREEK_LOCR-102-S,5,Invertebrate,1200,2,m2
+324,maxgrain_Chester River_Upper Chester River_CYPRESS BRANCH_UPCR-208-S,5,Invertebrate,1200,2,m2
+324,maxgrain_Choptank River_Tuckahoe Creek_TUCKAHOE CREEK_TUCK-450-H,5,Invertebrate,1200,2,m2
+324,maxgrain_Elk River_Furnace Bay_PRINCIPIO CREEK UT_FURN-101-S,5,Invertebrate,1200,2,m2
+324,maxgrain_Gunpowder River_Loch Raven Reservoir_BAISMAN RUN_LOCH-120-S,5,Invertebrate,1200,2,m2
+324,maxgrain_Lower Potomac River_Mattawoman Creek_MATTAWOMAN CREEK_MATT-033-S,5,Invertebrate,1200,2,m2
+324,maxgrain_Lower Potomac River_Nanjemoy Creek_MILL RUN_NANJ-331-S,5,Invertebrate,1200,2,m2
+324,maxgrain_Lower Potomac River_Port Tobacco River_HOGHOLE RUN_PTOB-002-S,5,Invertebrate,1200,2,m2
+324,maxgrain_Middle Potomac River_Upper Monocacy River_BUZZARD BRANCH_UMON-119-S,5,Invertebrate,1200,2,m2
+324,maxgrain_Middle Potomac River_Upper Monocacy River_HIGH RUN_UMON-288-S,5,Invertebrate,1200,2,m2
+324,maxgrain_Nanticoke River_Wicomico River Head_LEONARD POND RUN_WIRH-220-S,5,Invertebrate,1200,2,m2
+324,maxgrain_North Branch Potomac River_Potomac River L N Branch_MILL RUN_PRLN-626-S,5,Invertebrate,1200,2,m2
+324,maxgrain_North Branch Potomac River_Savage River_CRABTREE CREEK_SAVA-204-S,5,Invertebrate,1200,2,m2
+324,maxgrain_North Branch Potomac River_Savage River_DOUBLE LICK RUN_SAVA-276-S,5,Invertebrate,1200,2,m2
+324,maxgrain_North Branch Potomac River_Savage River_SAVAGE RIVER_SAVA-225-S,5,Invertebrate,1200,2,m2
+324,maxgrain_Patapsco River_Jones Falls_NORTH BRANCH JONES FALLS_JONE-315-S,5,Invertebrate,1200,2,m2
+324,maxgrain_Patapsco River_Liberty Reservoir_TIMBER RUN_LIBE-102-S,5,Invertebrate,1200,2,m2
+324,maxgrain_Patuxent River_Patuxent River lower_SWANSON CREEK_PAXL-294-S,5,Invertebrate,1200,2,m2
+324,maxgrain_Patuxent River_Rocky Gorge Dam_PATUXENT RIVER UT_RKGR-119-S,5,Invertebrate,1200,2,m2
+324,maxgrain_Pocomoke River_Nassawango Creek_MILLVILLE CREEK_NASS-108-S,5,Invertebrate,1200,2,m2
+324,maxgrain_Pocomoke River_Nassawango Creek_NASSAWANGO CREEK_NASS-302-S,5,Invertebrate,1200,2,m2
+324,maxgrain_Youghiogheny River_Youghiogheny River_BEAR CREEK_YOUG-432-S,5,Invertebrate,1200,2,m2
