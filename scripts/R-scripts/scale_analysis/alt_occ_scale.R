@@ -395,6 +395,17 @@ meanT = meanT/10 #done
 
 bbs_allscales$temp<-raster::extract(meanT, sites)
 
+#precip 
+
+prec<-paste('//bioark.ad.unc.edu/HurlbertLab/GIS/ClimateData/2-25-2011/prec/prec',1:12, '.bil', sep ='')
+mprecip = stack(prec)
+Pcalc = calc(mprecip, mean)
+meanP = extract(meanP, sites)
+bbs_allscales$precip<-extract(meanP, sites)
+
+
+
+
 
 ####Troubleshooting pctTran functions####
 #commented out pctTran models because need to use a diff formula to fit (fault neg slope)
