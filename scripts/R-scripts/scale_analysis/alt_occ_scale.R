@@ -408,10 +408,13 @@ bbs_allscales$ndvi<-raster::extract(ndvimean, sites)
 bbs_envs = bbs_allscales
 write.csv(bbs_envs, "data/bbs_envs.csv", row.names = FALSE)
 
-#analyzing env vars 
-
+#analyzing env vars, do I need to calc z scores or can I use normal vals? how to get env data for more than just lat lons of focal rte?
+#had talked about characterizing landscape hetero by just means and var of env variables - > what does this look like in modeling?
 bbs_envs = read.csv("data/bbs_envs.csv", header = TRUE)
+envmod1 = lm(meanOcc~ndvi), data = bbs_allscales)
+summary(envmod1)
 
+?var
 
 
 ####Troubleshooting pctTran functions####
