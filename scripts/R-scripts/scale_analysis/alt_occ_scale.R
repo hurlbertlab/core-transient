@@ -248,7 +248,7 @@ plot2_2 = ggplot(plotsub, aes(x=logN, y =pctCore))+geom_point(colour = "turquois
 plot2_3 =ggplot(plotsub, aes(x=logN, y =pctTran))+geom_point(colour = "olivedrab")+geom_smooth(se=FALSE)
 
 
-####change to log_10^^^^####
+####changed to log_10^^^^####
 
 #setting up aveN and log(area) cols side by side 
 library(gridExtra)
@@ -267,8 +267,8 @@ OA.df = data.frame(stateroute = numeric(), OA.A= numeric(), OA.i = numeric(), OA
 ON.df = data.frame(stateroute = numeric(), ON.A= numeric(), ON.i = numeric(), ON.k = numeric())
 CA.df = data.frame(stateroute = numeric(), CA.A= numeric(), CA.i = numeric(), CA.k = numeric())
 CN.df = data.frame(stateroute = numeric(), CN.A= numeric(), CN.i = numeric(), CN.k = numeric())
-#TA.df = data.frame(stateroute = numeric(), TA.A= numeric(), TA.i = numeric(), TA.k = numeric())
-#TN.df = data.frame(stateroute = numeric(), TN.A= numeric(), TN.i = numeric(), TN.k = numeric())
+TA.df = data.frame(stateroute = numeric(), TA.A= numeric(), TA.i = numeric(), TA.k = numeric())
+TN.df = data.frame(stateroute = numeric(), TN.A= numeric(), TN.i = numeric(), TN.k = numeric())
 
 
 #Use tryCatch to run through all routes but store routes with errors
@@ -372,108 +372,9 @@ for(s in stateroutes){
   CN.df = rbind(CN.df, CN.temp)
 }
 
-####Troubleshooting pctTran functions####
-#commented out pctTran models because need to use a diff formula to fit (fault neg slope)
-# fcn = function(x, xmid, Asym, scal) {Asym/1 - exp((xmid-x)/scal)}
-# st <- coef(nls(log(pctTran) ~ log(fcn(log(area), xmid, Asym, scal)), data = logsub, 
-#                start = c(xmid = 1, Asym = 1, scal = 1)))
-
-#^^^above code produces NaN's and infinite loop 
-
-#revised ref:
-
-pT.0 <- min(logsub$pctTran) * 0.5
-model.0 <- lm(log(pctTran - pT.0) ~ logA, data=logsub)
-start <- list(Asym=exp(coef(model.0)[1]), xmid=coef(model.0)[2], scal=pT.0)
-TAlog = nls(pctTran ~ Asym/(1 + exp((xmid - logA)/scal)),   #Asym is a, xmid is b, and scal is c with pctTran as cost and area as redux
-            data = logsub, 
-            start = start)
-#^^^above code still produces singular gradient matrix even though it's supposed to solve that exact problem
-
-
-TAlog = nls(pctTran ~ Asym/(1 + exp((xmid - logA)/scal)),  
-            start = list(xmid = 0.4, scal = -0.5, Asym = 0.08), data = logsub)
-#model written out
-
-TAlog = nls(pctTran ~ SSlogis(logA, Asym, xmid, scal), 
-            data = logsub, start = list(xmid = -0.4, scal = 0.5, Asym = 0.08))
-#self starting 
-
-#^trying to use graphs to eyeball start vals still not working, still get singular error method; 
-#making xmid negative just repeats step fator redux error
-
-
-# 
-# #TA model
-# for(s in stateroutes){
-#   logsub = subset(bbs_allscales, bbs_allscales$focalrte == s)
-#   #fitting the log curve for area (for each route)
-#   TAmodel = tryCatch({
-#     TAlog = nls(pctTran ~ Asym/(1 + exp((xmid - logA)/scal)),  
-#               start = list(xmid = 1, scal = 1, Asym = 0.1), data = logsub) #this code produces singular gradient matrix error 
-#     return(data.frame(stateroute = s, TA.A, TA.i, TA.k))
-#   }, warning = function(w) {
-#     warnings = rbind(warnings, data.frame(stateroute = s, warning = w))
-#   }, error = function(e) {
-#     TA.i <- NA
-#     TA.A <- NA
-#     TA.k <- NA
-#   }, finally = {
-#     TA.i <- summary(TAlog)$coefficients["xmid","Estimate"]
-#     TA.A <- summary(TAlog)$coefficients["Asym","Estimate"]
-#     TA.k <- summary(TAlog)$coefficients["scal","Estimate"]
-#     #TA.tmp = data.frame(stateroute = s, TA.A, TA.i, TA.k)
-#   })
-# 
-#   TA.temp = data.frame(stateroute = s, TA.A, TA.i, TA.k) #fix
-#   TA.df = rbind(TA.df, TA.temp)
-# }
-
-# #TN model
-# for(s in stateroutes){
-#   logsub = subset(bbs_allscales, bbs_allscales$focalrte == s)  
-#   #fitting the log curve for aveN (for each route)
-#   TNmodel = tryCatch({
-#     TNlog = nls(pctTran ~ SSlogis(logN, Asym, xmid, scal), data = logsub)
-#     return(data.frame(stateroute = s, TN.A, TN.i, TN.k))
-#   }, warning = function(w) {
-#     warnings = rbind(warnings, data.frame(stateroute = s, warning = w))
-#   }, error = function(e) {
-#     TN.i <- NA
-#     TN.A <- NA
-#     TN.k <- NA
-#   }, finally = {
-#     TN.i <- summary(TNlog)$coefficients["xmid","Estimate"]
-#     TN.A <- summary(TNlog)$coefficients["Asym","Estimate"]
-#     TN.k <- summary(TNlog)$coefficients["scal","Estimate"]
-#     #TN.tmp = data.frame(stateroute = s, TN.A, TN.i, TN.k)
-#   })
-#   
-#   TN.temp = data.frame(stateroute = s, TN.A, TN.i, TN.k) #fix
-#   TN.df = rbind(TN.df, TN.temp)
-# }
-
-
-
-logcurve_coefs = data.frame(OA.df, ON.df, CA.df, CN.df)
-write.csv(logcurve_coefs, "//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/logcurve_coefs.csv", row.names = FALSE)
-#saving as intermediate in case
-#it appears no NA's! 
-
-theme_set(theme_bw())
-plot1 + geom_point() +    # Use hollow circles
-  geom_smooth(se=FALSE)
-
-#extracted coefs for analysis; but plotting is auto 
-#is loess ok?
-
-curvemod = nls(meanOcc ~ A/(1+exp(i - logA)/k), 
-               data = plotsub) 
-summary(curvemod)
-
-
-
 ####Env data add-in####
+
+#for now just use what we have, that's fine 
 
 #bring in lat-lons for each focal route and creating sites
 
@@ -482,5 +383,138 @@ bbs_allscales = rename(bbs_latlon, focalrte = stateroute) %>%
   right_join(bbs_allscales, by = "focalrte")
 
 
+#temp
 sites = data.frame(longitude = bbs_allscales$Longi, latitude = bbs_allscales$Lati)
 #points(sites$longitude, sites$latitude, col= "red", pch=16)
+temp = paste('//bioark.ad.unc.edu/HurlbertLab/GIS/ClimateData/BIOCLIM_meanTemp/tmean',1:12,'.bil', sep='')
+tmean = stack(temp) 
+# Find MEAN across all months
+meanT = calc(tmean, mean)
+meanT
+# Convert to actual temp
+meanT = meanT/10 #done
+bbs_allscales$temp<-raster::extract(meanT, sites)
+
+#precip 
+prec<-paste('//bioark.ad.unc.edu/HurlbertLab/GIS/ClimateData/2-25-2011/prec/prec',1:12, '.bil', sep ='')
+mprecip = stack(prec)
+Pcalc = calc(mprecip, mean)
+bbs_allscales$meanP = raster::extract(Pcalc, sites)
+
+#ndvi 
+ndvim<-raster("//bioark.ad.unc.edu/HurlbertLab/GIS/MODIS NDVI/Vegetation_Indices_may-aug_2000-2010.gri")
+ndvimean = ndvim/10000
+bbs_allscales$ndvi<-raster::extract(ndvimean, sites)
+bbs_envs = bbs_allscales
+write.csv(bbs_envs, "data/bbs_envs.csv", row.names = FALSE)
+
+#analyzing env vars, do I need to calc z scores or can I use normal vals? how to get env data for more than just lat lons of focal rte?
+#had talked about characterizing landscape hetero by just means and var of env variables - > what does this look like in modeling?
+bbs_envs = read.csv("data/bbs_envs.csv", header = TRUE)
+envmod1 = lm(meanOcc~ndvi), data = bbs_allscales)
+summary(envmod1)
+
+?var
+
+
+####Troubleshooting pctTran functions####
+#commented out pctTran models because need to use a diff formula to fit (fault neg slope)
+# fcn = function(x, xmid, Asym, scal) {Asym/1 - exp((xmid-x)/scal)}
+# st <- coef(nls(log(pctTran) ~ log(fcn(log(area), xmid, Asym, scal)), data = logsub, 
+#                start = c(xmid = 1, Asym = 1, scal = 1)))
+
+#^^^above code produces NaN's and infinite loop 
+
+#good starting point: 
+
+#try fitting a negative exponential 
+#compare fit with logA vs reg A mods and test agains
+#self starting 
+
+#^trying to use graphs to eyeball start vals still not working, still get singular error method; 
+#making xmid negative just repeats step fator redux error
+#as x increases y decreases in sigmoidal fashion -> find function and try defining it 
+
+#do model between predicted and observed vals -> can get r squared out of that 
+#
+TAlog = lm(log(pctTran) ~ logA, data = logsub)
+TA = lm(log(pctTran) ~ area, data = logsub)
+#log vs non-log models 
+#rsquared on log is better 
+
+
+#playing with nplr package in R prior to lm mods
+
+test = nplr(x = logsub$logA, y = convertToProp(logsub$pctTran))
+test 
+plot(test)
+testpars = getPar(test)
+testpars$params$xmid
+
+#playing with nplr mods (see code below)
+
+pctTran_coefs = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/pctTran_coefs.csv", header = TRUE)
+#same coefs for every stateroute tho, why?
+
+# 
+# #TA model
+# for(s in stateroutes){
+#   logsub = subset(bbs_allscales, bbs_allscales$focalrte == s)
+#   #fitting the log curve for area (for each route)
+#   TAmodel = tryCatch({
+#     TAlog = nplr(x = logsub$logA, y = convertToProp(logsub$pctTran))
+#     return(data.frame(stateroute = s, TA.A, TA.i, TA.k))
+#   }, warning = function(w) {
+#     warnings = rbind(warnings, data.frame(stateroute = s, warning = w))
+#   }, error = function(e) {
+#     TA.i <- NA
+#     TA.A <- NA
+#     TA.k <- NA
+#   }, finally = {
+#     testpars = getPar(test)
+#     TA.i <- testpars$params$xmid
+#     TA.A <- testpars$params$bottom
+#     TA.k <- testpars$params$scal
+#     #TA.tmp = data.frame(stateroute = s, TA.A, TA.i, TA.k)
+#   })
+# 
+#   TA.temp = data.frame(stateroute = s, TA.A, TA.i, TA.k) #fix
+#   TA.df = rbind(TA.df, TA.temp)
+# }
+# 
+# # #TN model
+# for(s in stateroutes){
+#   logsub = subset(bbs_allscales, bbs_allscales$focalrte == s)
+#   #fitting the log curve for area (for each route)
+#   TNmodel = tryCatch({
+#     TNlog = nplr(x = logsub$logN, y = convertToProp(logsub$pctTran))
+#     return(data.frame(stateroute = s, TN.A, TN.i, TN.k))
+#   }, warning = function(w) {
+#     warnings = rbind(warnings, data.frame(stateroute = s, warning = w))
+#   }, error = function(e) {
+#     TN.i <- NA
+#     TN.A <- NA
+#     TN.k <- NA
+#   }, finally = {
+#     testpars = getPar(test)
+#     TN.i <- testpars$params$xmid
+#     TN.A <- testpars$params$bottom
+#     TN.k <- testpars$params$scal
+#     #TN.tmp = daTN.frame(stateroute = s, TN.A, TN.i, TN.k)
+#   })
+#   
+#   TN.temp = data.frame(stateroute = s, TN.A, TN.i, TN.k) #fix
+#   TN.df = rbind(TN.df, TN.temp)
+# }
+# 
+# pctTran_coefs = data.frame(TA.df, TN.df)
+# 
+
+
+logcurve_coefs = data.frame(OA.df, ON.df, CA.df, CN.df, TA.df, TN.df)
+write.csv(logcurve_coefs, "//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/logcurve_coefs.csv", row.names = FALSE)
+#saving as intermediate in case
+#it appears no NA's! 
+
+
+
