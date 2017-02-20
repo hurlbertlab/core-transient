@@ -402,10 +402,10 @@ Pcalc = calc(mprecip, mean)
 bbs_allscales$meanP = raster::extract(Pcalc, sites)
 
 #ndvi 
-ndvimean<-raster("//bioark.ad.unc.edu/HurlbertLab/GIS/MODIS NDVI/Vegetation_Indices_may-aug_2000-2010.gri")
-ndvi = extract(ndvimean, sites)
+ndvim<-raster("//bioark.ad.unc.edu/HurlbertLab/GIS/MODIS NDVI/Vegetation_Indices_may-aug_2000-2010.gri")
+ndvi = raster::extract(ndvim, sites)
 ndvimean = ndvi/10000
-bbs_allscales$ndvi<-extract(ndvimean, sites)
+bbs_allscales$ndvi<-raster::extract(ndvimean, sites)
 
 
 
