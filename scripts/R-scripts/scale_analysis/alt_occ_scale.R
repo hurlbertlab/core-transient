@@ -383,6 +383,7 @@ bbs_allscales = rename(bbs_latlon, focalrte = stateroute) %>%
   right_join(bbs_allscales, by = "focalrte")
 
 
+#temp
 sites = data.frame(longitude = bbs_allscales$Longi, latitude = bbs_allscales$Lati)
 #points(sites$longitude, sites$latitude, col= "red", pch=16)
 temp = paste('//bioark.ad.unc.edu/HurlbertLab/GIS/ClimateData/BIOCLIM_meanTemp/tmean',1:12,'.bil', sep='')
@@ -392,18 +393,19 @@ meanT = calc(tmean, mean)
 meanT
 # Convert to actual temp
 meanT = meanT/10 #done
-
 bbs_allscales$temp<-raster::extract(meanT, sites)
 
 #precip 
-
 prec<-paste('//bioark.ad.unc.edu/HurlbertLab/GIS/ClimateData/2-25-2011/prec/prec',1:12, '.bil', sep ='')
 mprecip = stack(prec)
 Pcalc = calc(mprecip, mean)
-meanP = extract(meanP, sites)
-bbs_allscales$precip<-extract(meanP, sites)
+bbs_allscales$meanP = raster::extract(Pcalc, sites)
 
-
+#ndvi 
+ndvimean<-raster("//bioark.ad.unc.edu/HurlbertLab/GIS/MODIS NDVI/Vegetation_Indices_may-aug_2000-2010.gri")
+ndvi = extract(ndvimean, sites)
+ndvimean = ndvi/10000
+bbs_allscales$ndvi<-extract(ndvimean, sites)
 
 
 
