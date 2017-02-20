@@ -380,19 +380,7 @@ for(s in stateroutes){
 
 #^^^above code produces NaN's and infinite loop 
 
-#revised ref:
-
-pT.0 <- min(logsub$pctTran) * 0.5
-model.0 <- lm(log(pctTran - pT.0) ~ logA, data=logsub)
-start <- list(Asym=exp(coef(model.0)[1]), xmid=coef(model.0)[2], scal=pT.0)
-TAlog = nls(pctTran ~ Asym/(1 + exp((xmid - logA)/scal)),   #Asym is a, xmid is b, and scal is c with pctTran as cost and area as redux
-            data = logsub, 
-            start = start)
-#^^^above code still produces singular gradient matrix even though it's supposed to solve that exact problem
-
-
-TAlog = lm(log(pctTran) ~ logA, data = logsub)
-#good starting point 
+#good starting point: 
 
 #try fitting a negative exponential 
 #compare fit with logA vs reg A mods and test agains
@@ -404,33 +392,47 @@ TAlog = lm(log(pctTran) ~ logA, data = logsub)
 
 #do model between predicted and observed vals -> can get r squared out of that 
 #
+TAlog = lm(log(pctTran) ~ logA, data = logsub)
+TA = lm(log(pctTran) ~ area, data = logsub)
+#log vs non-log models 
+#rsquared on log is better 
 
 
-# 
-# #TA model
-# for(s in stateroutes){
-#   logsub = subset(bbs_allscales, bbs_allscales$focalrte == s)
-#   #fitting the log curve for area (for each route)
-#   TAmodel = tryCatch({
-#     TAlog = nls(pctTran ~ Asym/(1 + exp((xmid - logA)/scal)),  
-#               start = list(xmid = 1, scal = 1, Asym = 0.1), data = logsub) #this code produces singular gradient matrix error 
-#     return(data.frame(stateroute = s, TA.A, TA.i, TA.k))
-#   }, warning = function(w) {
-#     warnings = rbind(warnings, data.frame(stateroute = s, warning = w))
-#   }, error = function(e) {
-#     TA.i <- NA
-#     TA.A <- NA
-#     TA.k <- NA
-#   }, finally = {
-#     TA.i <- summary(TAlog)$coefficients["xmid","Estimate"]
-#     TA.A <- summary(TAlog)$coefficients["Asym","Estimate"]
-#     TA.k <- summary(TAlog)$coefficients["scal","Estimate"]
-#     #TA.tmp = data.frame(stateroute = s, TA.A, TA.i, TA.k)
-#   })
-# 
-#   TA.temp = data.frame(stateroute = s, TA.A, TA.i, TA.k) #fix
-#   TA.df = rbind(TA.df, TA.temp)
-# }
+#playing with nplr package in R prior to lm mods
+
+test = nplr(x = logsub$logA, y = convertToProp(logsub$pctTran))
+test 
+plot(test)
+testpars = getPar(test)
+testpars$params$xmid
+
+
+
+
+#TA model
+for(s in stateroutes){
+  logsub = subset(bbs_allscales, bbs_allscales$focalrte == s)
+  #fitting the log curve for area (for each route)
+  TAmodel = tryCatch({
+    TAlog = nplr(x = logsub$logA, y = convertToProp(logsub$pctTran))
+    return(data.frame(stateroute = s, TA.A, TA.i, TA.k))
+  }, warning = function(w) {
+    warnings = rbind(warnings, data.frame(stateroute = s, warning = w))
+  }, error = function(e) {
+    TA.i <- NA
+    TA.A <- NA
+    TA.k <- NA
+  }, finally = {
+    testpars = getPar(test)
+    TA.i <- testpars$params$xmid["xmid","Estimate"]
+    TA.A <- testpars$params$bottom["Asym","Estimate"]
+    TA.k <- testpars$params$scal["scal","Estimate"]
+    #TA.tmp = data.frame(stateroute = s, TA.A, TA.i, TA.k)
+  })
+
+  TA.temp = data.frame(stateroute = s, TA.A, TA.i, TA.k) #fix
+  TA.df = rbind(TA.df, TA.temp)
+}
 
 # #TN model
 # for(s in stateroutes){
