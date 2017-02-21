@@ -480,7 +480,16 @@ dev.off()
 #### Fig 3a Area #####
 area = read.csv("output/scaled_areas_2_20.csv", header = TRUE)
 
-areamerge = merge(occ_taxa, area, by = c("datasetID", "site"), na.rm = TRUE)
+areamerge.5 = merge(occ_taxa[,c("datasetID", "site", "taxa", "pctTrans")], area, by = c("datasetID", "site"), na.rm = TRUE)
+areamerge.5  = areamerge.5 [, c("datasetID", "site", "taxa", "pctTrans", "area")]
+
+bbs_abun = read.csv("bbs_abun_occ.csv", header=TRUE)
+bbs_abun$site = bbs_abun$stateroute
+bbs_area = merge(bbs_below_st, bbs_abun, by = "site")
+bbs_area$pctTrans = bbs_area$propTrans
+bbs_area = bbs_area[, c("datasetID", "site", "taxa", "pctTrans", "area")]
+
+areamerge = rbind(bbs_area,areamerge.5)
 
 
 pdf('output/plots/sara_scale_area_reg.pdf', height = 6, width = 7.5)
@@ -488,23 +497,9 @@ par(mfrow = c(1, 1), mar = c(6, 6, 1, 1), mgp = c(4, 1, 0),
     cex.axis = 1.5, cex.lab = 2, las = 1)
 palette(colors7)
 scaleIDs = filter(dataformattingtable, spatial_scale_variable == 'Y',
-                  format_flag == 1)$dataset_ID
+                  format_flag == 1)$dataset_ID 
 scaleIDs = scaleIDs[! scaleIDs %in% c(207, 210, 217, 218, 222, 223, 225, 238, 241,258, 282, 322, 280,317, 248)]  # waiting on data for 248
-bbs_abun = read.csv("bbs_abun_occ.csv", header=TRUE)
-
-totalspp = bbs_abun %>% 
-  group_by(AOU, stateroute) %>%
-  tally(sum.groupCount.)
-for(i in unique(bbs_abun$AOU)){
-  sum(bbs_abun$occupancy <= 1/3)/(totalspp$n)
-}
-
-mod3 = lm(bbs_abun$occupancy ~ log10(bbs_abun$area))
-xnew = range(log10(bbs_abun$occupancy))
-xhat <- predict(mod3, newdata = data.frame((xnew)))
-xhats = range(xhat)
-print(xhats)
-
+scaleIDs[28] = 1
 
 for(id in scaleIDs){
   print(id)
@@ -516,11 +511,10 @@ for(id in scaleIDs){
   print(xhats)
   taxcolor = subset(taxcolors, taxa == as.character(plotsub$taxa)[1])
   y=summary(mod3)$coef[1] + (xhats)*summary(mod3)$coef[2]
-  plot(NA, xlim = c(-1, 7), ylim = c(0,1), col = as.character(taxcolor$color), xlab = expression("Log"[10]*" Community Size"), ylab = "% Transients", cex = 1.5)
+  plot(NA, xlim = c(-1, 7), ylim = c(0,1), col = as.character(taxcolor$color), xlab = expression("Log"[10]*" Area"), ylab = "% Transients", cex = 1.5)
   lines(log10(plotsub$area), fitted(mod3), col=as.character(taxcolor$color),lwd=5)
   par(new=TRUE)
 }
-#segments(0,  1, x1 = 5.607, y1 = 0, col = rgb(29/255, 106/255, 155/255), lwd=5)
 par(new=TRUE)
 legend('topright', legend = as.character(taxcolors$taxa), lty=1,lwd=3,col = as.character(taxcolors$color), cex = 1.35)
 dev.off()
