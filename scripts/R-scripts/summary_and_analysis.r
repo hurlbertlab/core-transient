@@ -556,7 +556,7 @@ ggsave(file="C:/Git/core-transient/output/plots/predmod3c.pdf", height = 10, wid
 
 
 #### Fig 4d ####
-
+occ_taxa$total = occ_taxa$pctCore + occ_taxa$pctNeither
 
 ####### MODELS ######
 latlongs = read.csv("data/latlongs/latlongs.csv", header =TRUE)
