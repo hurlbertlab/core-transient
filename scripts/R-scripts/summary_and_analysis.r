@@ -43,6 +43,7 @@ datasetIDs = dataformattingtable$dataset_ID[dataformattingtable$format_flag == 1
 
 datasetIDs = datasetIDs[!datasetIDs %in% c(1,222, 317,67,270,271,319,325)] # 222 is % cover, 317 d/n have enough years
 
+if(FALSE){
 summaries = c()
 for (d in datasetIDs) {
   newsumm = summaryStatsFun(d, threshold, reps)
@@ -52,7 +53,7 @@ for (d in datasetIDs) {
 
 write.csv(summaries, 'output/tabular_data/core-transient_summary.csv', 
           row.names = T)
-
+}
 ##################################################################
 
 # If running summaries for the newly updated or created formatted
@@ -81,8 +82,8 @@ summ$system = factor(summ$system)
 summ = na.omit(summ)
 summ1 =  subset(summ, !datasetID %in% c(1, 99, 85, 90, 91, 92, 97, 124)) # excluding BBS to include below-scale route info
 summ1.5 = summ1[, c("datasetID","site","system","taxa","propCore", "propTrans", "meanAbundance")]
-# insert below-scale bbs dataset (Gartland Z drive)
-bbs_below = read.csv("Z:/Gartland/BBS scaled/bbs_below.csv", header = TRUE)
+# insert below-scale bbs dataset (Jenkina Z drive)
+bbs_below = read.csv("Z:/Jenkins/BBS scaled/bbs_below.csv", header = TRUE)
 bbs_below$site = paste(bbs_below$stateroute, bbs_below$scale, sep = "-")
 bbs_below$datasetID = 1
 bbs_below$system = "Terrestrial"
@@ -292,8 +293,6 @@ prope_long = gather(prope, "class","value", c(mean.propCore.:mean.propNeither.))
 prope_long = arrange(prope_long, desc(class))
 prope_long$system = as.factor(propCT_long$system)
 
-colscale = c("light blue","blue","dark blue")
-
 ##################################################################
 # barplot of % transients versus community size at diff thresholds
 datasetIDs = dataformattingtable$dataset_ID[dataformattingtable$format_flag == 1]
@@ -369,11 +368,14 @@ propCT_long$abbrev = factor(propCT_long$abbrev,
 colscale = c("#c51b8a", "#fdd49e", "#225ea8")
 m = ggplot(data=propCT_long, aes(factor(abbrev), y=value, fill=factor(class))) + geom_bar(stat = "identity")  + theme_classic() + xlab("Taxa") + ylab("Proportion of Species")+ scale_fill_manual(labels = c("Core", "Intermediate", "Transient"),
                                                                                                                                                                                                   values = colscale)+theme(axis.ticks.x=element_blank(),axis.text.x=element_text(size=20),axis.text.y=element_text(size=20),axis.title.x=element_text(size=24),axis.title.y=element_text(size=24,angle=90,vjust = 2.5))+ theme(legend.text=element_text(size=18),legend.key.size = unit(2, 'lines'))+theme(legend.position="top", legend.justification=c(0, 1), legend.key.width=unit(1, "lines"))+ guides(fill = guide_legend(keywidth = 3, keyheight = 1,title="", reverse=TRUE))+ coord_fixed(ratio = 4)
+ggsave(file="C:/Git/core-transient/output/plots/2a.pdf", height = 10, width = 15)
 
+colscaleb = c("tan","brown", "dark green")
 e = ggplot(data=prope_long, aes(factor(system), y=value, fill=factor(class))) + geom_bar(stat = "identity")  + theme_classic() + xlab("Ecosystem") + ylab("")+ scale_fill_manual(labels = c("Core", "Intermediate", "Transient"),
- values = colscale)+theme(axis.ticks.x=element_blank(),axis.text.x=element_text(size=14, angle = 90),axis.text.y=element_text(size=20),axis.title.x=element_text(size=24),axis.title.y=element_text(size=24,angle=90,vjust = 2.5))+ theme(legend.text=element_text(size=18),legend.key.size = unit(2, 'lines'))+theme(legend.position="top", legend.justification=c(0, 1), legend.key.width=unit(1, "lines"))+ guides(fill = guide_legend(keywidth = 3, keyheight = 1,title="", reverse=TRUE))+ coord_fixed(ratio = 4)
+ values = colscaleb)+theme(axis.ticks.x=element_blank(),axis.text.x=element_text(size=14, angle = 90),axis.text.y=element_text(size=20),axis.title.x=element_text(size=24),axis.title.y=element_text(size=24,angle=90,vjust = 2.5))+ theme(legend.text=element_text(size=18),legend.key.size = unit(2, 'lines'))+theme(legend.position="top", legend.justification=c(0, 1), legend.key.width=unit(1, "lines"))+ guides(fill = guide_legend(keywidth = 3, keyheight = 1,title="", reverse=TRUE))+ coord_fixed(ratio = 4)
 
-#### barplot of percent transients by taxa ---FIXED
+ggsave(file="C:/Git/core-transient/output/plots/2b.pdf", height = 10, width = 15)
+#### barplot of percent transients by taxa ---SUPP FIG
 CT_long$taxa = as.factor(CT_long$taxa)
 CT_long$abbrev = CT_long$taxa
 CT_long$abbrev = gsub("Benthos", 'Be', CT_long$abbrev)
@@ -399,13 +401,13 @@ p = p+geom_boxplot(width=0.8,position=position_dodge(width=0.8),aes(x=factor(abb
   scale_fill_manual(labels = c("10%", "25%", "33%"),
                     values = cols)+theme(axis.ticks.x=element_blank(),axis.text.x=element_text(size=20),axis.text.y=element_text(size=20),axis.title.x=element_text(size=24),axis.title.y=element_text(size=24,angle=90,vjust = 2))+guides(fill=guide_legend(title="",keywidth = 2, keyheight = 1)) + theme(legend.text=element_text(size=24),legend.key.size = unit(2, 'lines'), legend.title=element_text(size=24))+theme(legend.position="top", legend.justification=c(0, 1), legend.key.width=unit(1, "lines"))+ coord_fixed(ratio = 4)
 
-colscale = c("#c51b8a", "#fdd49e", "#225ea8")
-plot1 <- m
-cols=c("#ece7f2","#9ecae1",  "#225ea8")
-plot2 <- p
-grid = grid.arrange(plot1, plot2, ncol=2)
+#colscale = c("#c51b8a", "#fdd49e", "#225ea8")
+#plot1 <- m
+#cols=c("#ece7f2","#9ecae1",  "#225ea8")
+#plot2 <- p
+#grid = grid.arrange(plot1, plot2, ncol=2)
 
-ggsave(file="C:/Git/core-transient/output/plots/comboplot.pdf", height = 10, width = 15,grid)
+#ggsave(file="C:/Git/core-transient/output/plots/comboplot.pdf", height = 10, width = 15,grid)
 
 #################### FIG 3 ######################### 
 mod = read.csv("mod.csv", header=TRUE)
@@ -516,7 +518,7 @@ for(id in scaleIDs){
   par(new=TRUE)
 }
 par(new=TRUE)
-legend('topright', legend = as.character(taxcolors$taxa), lty=1,lwd=3,col = as.character(taxcolors$color), cex = 1.35)
+legend('bottomleft', legend = as.character(taxcolors$taxa), lty=1,lwd=3,col = as.character(taxcolors$color), cex = 1)
 dev.off()
 
 #### Fig 3c ####
@@ -525,7 +527,7 @@ bbs_below$pctTrans = bbs_below$propTrans
 bbs_below_occ = bbs_below[,c("datasetID", "site", "taxa", "pctTrans", "meanAbundance")]
 
 bbs_below_occ_taxa = rbind(bbs_occ_taxa, bbs_below_occ)
-bbs_below_occ_taxa = bbs_below_occ_taxa[!bbs_below_occ_taxa$datasetID %in% c(207, 210, 217, 218, 222, 223, 225, 238, 258, 282, 322, 280,317),]
+bbs_below_occ_taxa = bbs_below_occ_taxa[!bbs_below_occ_taxa$datasetID %in% c(207, 210, 217, 218, 222, 223, 225, 238, 241, 258, 282, 322, 280,317),]
 
 
 mod3c = lmer(pctTrans~(1|datasetID) * taxa * log10(meanAbundance), data=bbs_below_occ_taxa)
@@ -534,24 +536,25 @@ occ_sub_pred = data.frame(datasetID = 999, taxa = unique(bbs_below_occ_taxa$taxa
 predmod3c = merTools::predictInterval(mod3c, occ_sub_pred, n.sims=1000)
 
 # matching by predicted output vals
-predmod3c$taxa = c("Invertebrate", "Plant", "Mammal","Benthos", "Fish", "Bird", "Plankton")
+predmod3c$taxa = c("Invertebrate", "Plant", "Mammal","Fish", "Bird", "Plankton")
 write.csv(predmod3c, "predmod3c.csv", row.names = FALSE)
 
 
 predmod = merge(predmod3c, taxcolors, by = "taxa")
 
 predmod$abbrev = factor(predmod$abbrev,
-                          levels = c('I','F','Pn','M','Pt','Bi','Be'),ordered = TRUE)
+                          levels = c('I','F','Pn','M','Pt','Bi'),ordered = TRUE)
 
 colscale = factor(predmod$color,
-                        levels = c("gold2","turquoise2","red","purple4","forestgreen", "#1D6A9B", "azure4"),ordered = TRUE)
-colscale = c("gold2","turquoise2","red","purple4","forestgreen", "#1D6A9B", "azure4")
+                        levels = c("gold2","turquoise2","red","purple4","forestgreen", "#1D6A9B"),ordered = TRUE)
+#colscale = c("gold2","turquoise2","red","purple4","forestgreen", "#1D6A9B")
 
-
-p <- ggplot(predmod, aes(x = factor(abbrev), y = fit, fill=factor(taxa)))
-p +geom_bar(stat = "identity", fill = levels(predmod$color)) + geom_errorbar(ymin = predmod$lwr, ymax= predmod$upr, width=0.2) + xlab("Taxa") + ylab("Proportion of Species") + ylim(-1, 0.75) + theme(axis.ticks.x=element_blank(),axis.text.x=element_text(size=20),axis.text.y=element_text(size=20),axis.title.x=element_text(size=24),axis.title.y=element_text(size=24,angle=90,vjust = 2))+guides(fill=guide_legend(title="",keywidth = 2, keyheight = 1)) + theme_classic()
+p <- ggplot(predmod, aes(x = factor(abbrev), y = fit, fill=factor(predmod$taxa)))
+p +geom_bar(stat = "identity", fill = levels(colscale)) + geom_errorbar(ymin = predmod$lwr, ymax= predmod$upr, width=0.2) + xlab("Taxa") + ylab("Proportion of Species") + ylim(-.1, 1) + theme(axis.ticks.x=element_blank(),axis.text.x=element_text(size=24),axis.text.y=element_text(size=24),axis.title.x=element_text(size=32),axis.title.y=element_text(size=32,angle=90,vjust = 2))+guides(fill=guide_legend(title="",keywidth = 2, keyheight = 1)) + theme_classic()
 ggsave(file="C:/Git/core-transient/output/plots/predmod3c.pdf", height = 10, width = 15)
 
+
+#### Fig 4d ####
 
 
 ####### MODELS ######
