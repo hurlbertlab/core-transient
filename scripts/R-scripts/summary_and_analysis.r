@@ -8,6 +8,7 @@
 setwd("C:/git/core-transient")
 
 library(lme4)
+library(plyr) # for core-transient functions
 library(ggplot2)
 library(tidyr)
 library(maps)
@@ -43,7 +44,7 @@ datasetIDs = dataformattingtable$dataset_ID[dataformattingtable$format_flag == 1
 
 datasetIDs = datasetIDs[!datasetIDs %in% c(1,222, 317,67,270,271,319,325)] # 222 is % cover, 317 d/n have enough years
 
-if(FALSE){
+
 summaries = c()
 for (d in datasetIDs) {
   newsumm = summaryStatsFun(d, threshold, reps)
@@ -53,7 +54,7 @@ for (d in datasetIDs) {
 
 write.csv(summaries, 'output/tabular_data/core-transient_summary.csv', 
           row.names = T)
-}
+
 ##################################################################
 
 # If running summaries for the newly updated or created formatted
@@ -560,7 +561,7 @@ ggsave(file="C:/Git/core-transient/output/plots/predmod3c.pdf", height = 10, wid
 ####### MODELS ######
 latlongs = read.csv("data/latlongs/latlongs.csv", header =TRUE)
 
-occ_taxa = read.csv("occ_taxa.csv",header=TRUE)
+occ_taxa = read.csv("output/tabular_data/occ_taxa.csv",header=TRUE)
 
 # merge multiple lat long file to propOcc to get naming convention correct
 latlong_w_sites = merge(latlongs, summ2[,c("datasetID", "site", "propTrans")], by = c("datasetID", "site"), all.x = TRUE) 

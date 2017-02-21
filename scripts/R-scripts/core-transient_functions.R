@@ -791,7 +791,7 @@ addNewSummariesFun = function(threshold, reps, write = FALSE, allNew = FALSE){
   for(i in 1:length(newDatasetIDs)){
     outList[[i]] = summaryStatsFun(newDatasetIDs[i], threshold, reps)
   }
-  newSummaryData = rbind.fill(outList)
+  newSummaryData = plyr::rbind.fill(outList)
   updatedSummaryData = rbind(currentSummaryData, newSummaryData)
   updatedSummaryData = updatedSummaryData[order(updatedSummaryData$datasetID),]
   if (write) {

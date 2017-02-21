@@ -168,7 +168,10 @@ summaries_grains_w_taxa = merge(summaries_taxa, conversion_table, by.x = "Raw_sp
 
 mean_occ_by_site = propOcc_w_taxa %>%
   group_by(datasetID, site) %>%
-  dplyr::summarize(meanOcc = mean(propOcc), pctTrans = sum(propOcc <= 1/3)/n()) # summarize core and neither here too
+  dplyr::summarize(meanOcc = mean(propOcc), 
+                   pctTrans = sum(propOcc <= 1/3)/n(),
+                   pctCore = sum(propOcc > 2/3)/n(), 
+                   pctNeither = 1-(pctTrans + pctCore)) 
 
 occ_taxa = merge(mean_occ_by_site, summaries_grains_w_taxa, by = c("datasetID", "site"))
 
