@@ -734,7 +734,14 @@ summaryStatsFun = function(datasetID, threshold, reps){
   dataList = getDataList(datasetID)
   sites  = as.character(dataList$siteSummary$site)
   # Get summary stats for each site:         #where is the problem coming from?!
-  outList = list(length = length(sites))
+  outDF = data.frame(datasetID = numeric(), site = character(),
+                     system = character(), taxa = character(),
+                     nTime = numeric(), spRichTotal = numeric(), 
+                     spRichCore = numeric(), spRichTrans = numeric(),
+                     propCore = numeric(), propCore_pVal = numeric(), 
+                     propTrans = numeric(), propTrans_pVal = numeric(),
+                     meanAbundance = numeric(), mu = numeric(), bimodality = numeric(), 
+                     pBimodal = numeric(), alpha = numeric(), beta = numeric())
   for(i in 1:length(sites)){
     propOcc = subset(dataList$propOcc, site == sites[i])$propOcc
     siteSummary = subset(dataList$siteSummary, site == sites[i])
@@ -754,13 +761,13 @@ summaryStatsFun = function(datasetID, threshold, reps){
     
     alpha = betaParms[1]
     beta = betaParms[2]   
-    outList[[i]] = data.frame(datasetID, site = sites[i],
+    outDF = rbind(outDF, data.frame(datasetID, site = sites[i],
                               system = dataList$system, taxa = dataList$taxa,
                               nTime, spRichTotal, spRichCore, spRichTrans,
                               propCore, propCore_pVal,  propTrans, propTrans_pVal,
-                              meanAbundance, mu, bimodality, pBimodal, alpha, beta)
+                              meanAbundance, mu, bimodality, pBimodal, alpha, beta))
   }
-  return(rbind.fill(outList))
+  return(outDF)
 }
 
 #------------------------------------------------------------------------------------------------------*
@@ -787,11 +794,19 @@ addNewSummariesFun = function(threshold, reps, write = FALSE, allNew = FALSE){
   # Find dataset IDs that are not yet summarized:
   newDatasetIDs = propOccDatasetIDs[!propOccDatasetIDs %in% currentDatasetIDs]
   # For loop to extract summary stats for new datasetIDs
-  outList = list(length = length(newDatasetIDs))
+  outDF = data.frame(datasetID = numeric(), site = character(),
+                     system = character(), taxa = character(),
+                     nTime = numeric(), spRichTotal = numeric(), 
+                     spRichCore = numeric(), spRichTrans = numeric(),
+                     propCore = numeric(), propCore_pVal = numeric(), 
+                     propTrans = numeric(), propTrans_pVal = numeric(),
+                     meanAbundance = numeric(), mu = numeric(), bimodality = numeric(), 
+                     pBimodal = numeric(), alpha = numeric(), beta = numeric())
+  
   for(i in 1:length(newDatasetIDs)){
-    outList[[i]] = summaryStatsFun(newDatasetIDs[i], threshold, reps)
+    outDF = rbind(outDF, summaryStatsFun(newDatasetIDs[i], threshold, reps))
   }
-  newSummaryData = plyr::rbind.fill(outList)
+  newSummaryData = outDF
   updatedSummaryData = rbind(currentSummaryData, newSummaryData)
   updatedSummaryData = updatedSummaryData[order(updatedSummaryData$datasetID),]
   if (write) {
