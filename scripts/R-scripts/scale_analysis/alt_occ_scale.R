@@ -408,7 +408,7 @@ coefs = read.csv("C:/git/core-transient/scripts/R-scripts/scale_analysis/coefs.c
 
 #temp
 sites = data.frame(longitude = bbs_allscales$Longi, latitude = bbs_allscales$Lati)
-#points(sites$longitude, sites$latitude, col= "red", pch=16)
+ #points(sites$longitude, sites$latitude, col= "red", pch=16)
 temp = paste('//bioark.ad.unc.edu/HurlbertLab/GIS/ClimateData/BIOCLIM_meanTemp/tmean',1:12,'.bil', sep='')
 tmean = stack(temp) 
 # Find MEAN across all months
@@ -433,43 +433,48 @@ ndvimean = ndvim/10000
 bbs_allscales$ndvi<-raster::extract(ndvimean, sites, buffer = 40000, fun = mean)
 bbs_allscales$varndvi<-raster::extract(ndvimean, sites, buffer = 40000, fun = var)
 
+
+#skipping elev and elev rad for now because files are weird
 #elev 
-#mean elevation PLUS elevational range 
-elevmean<-raster("/wc10/alt.bil")
-bbs_allscales$elev<-extract(elevmean, sites, buffer = 40000, fun = mean)
-bbs_allscales$varelev<-extract(elevmean, sites, buffer = 40000, fun = var)
-
-#elev radius
-#pull in radius elev data from Coyle folder 
-elevrad<-raster("elevation_var_40km_radius.gri")
-elevrad<-raster("//bioark.ad.unc.edu/HurlbertLab/Coyle/Projects/BBS Core/Data/elevation_var_40km_radius.gri")
-
-#OR: 
-elevrad<-raster("C:git/core-transient/scripts/R-scripts/scale_analysis/elevation_var_aggregate_40_1km.gri")
-
-
-
-#need to re-project data points to match projection of elevation raster data 
-#modify below code
-elev_proj = "+proj=laea +lat_0=40.68 +lon_0=-92.925 +units=km +ellps=WGS84" # A string that defines the projection
-points2 = SpatialPoints(sites)
-points2 = SpatialPoints(sites, proj4string=CRS(elev_proj))
-points2 = SpatialPoints(sites, proj4string=CRS("+proj=longlat +datum=WGS84"))
-points3 = spTransform(points2, CRS(elev_proj))
-buff = gBuffer(points3, width=40)
-#extract data just like before with raster function 
-bbs_allscales$erad = raster::extract(elevrad, points3,buffer = 40000, fun = mean)
-bbs_allscales$varerad = raster::extract(elevrad, points3,buffer = 40000, fun = var)
+# #mean elevation PLUS elevational range 
+# elevmean<-raster("C:/git/core-transient/wc10/alt.bil")
+# bbs_allscales$elev<-extract(elevmean, sites, buffer = 40000, fun = mean)
+# bbs_allscales$varelev<-extract(elevmean, sites, buffer = 40000, fun = var)
+# 
+# #elev radius
+# #pull in radius elev data from Coyle folder 
+# elevrad<-raster("elevation_var_40km_radius.gri")
+# elevrad<-raster("//bioark.ad.unc.edu/HurlbertLab/Coyle/Projects/BBS Core/Data/elevation_var_40km_radius.gri")
+# 
+# #OR: 
+# elevrad<-raster("C:git/core-transient/scripts/R-scripts/scale_analysis/elevation_var_aggregate_40_1km.gri")
+# 
+# 
+# 
+# #need to re-project data points to match projection of elevation raster data 
+# #modify below code
+# elev_proj = "+proj=laea +lat_0=40.68 +lon_0=-92.925 +units=km +ellps=WGS84" # A string that defines the projection
+# points2 = SpatialPoints(sites)
+# points2 = SpatialPoints(sites, proj4string=CRS(elev_proj))
+# points2 = SpatialPoints(sites, proj4string=CRS("+proj=longlat +datum=WGS84"))
+# points3 = spTransform(points2, CRS(elev_proj))
+# buff = gBuffer(points3, width=40)
+# #extract data just like before with raster function 
+# bbs_allscales$erad = raster::extract(elevrad, points3,buffer = 40000, fun = mean)
+# bbs_allscales$varerad = raster::extract(elevrad, points3,buffer = 40000, fun = var)
 
 
 
 
 bbs_envs = bbs_allscales
-write.csv(bbs_envs, "scripts/R-scripts/scale_analysis/bbs_envs.csv", row.names = FALSE)
+#write.csv(bbs_envs, "scripts/R-scripts/scale_analysis/bbs_envs.csv", row.names = FALSE) wrote file 2/22 w/out elev and using old env data
 
-#analyzing env vars, do I need to calc z scores or can I use normal vals? how to get env data for more than just lat lons of focal rte?
-#had talked about characterizing landscape hetero by just means and var of env variables - > what does this look like in modeling?
+####Coef vs env variation models####
 bbs_envs = read.csv("scripts/R-scripts/scale_analysis/bbs_envs.csv", header = TRUE)
+
+
+
+
 envmod1 = lm(meanOcc~ndvi, data = bbs_allscales)
 summary(envmod1)
 
@@ -488,104 +493,21 @@ curves = inner_join(coefs, uniq_env, by = c('stateroute' = 'focalrte'))
 round(cor(curves[, 2:ncol(curves)]), 2)
 
 
-####Troubleshooting pctTran functions####
-#commented out pctTran models because need to use a diff formula to fit (fault neg slope)
-# fcn = function(x, xmid, Asym, scal) {Asym/1 - exp((xmid-x)/scal)}
-# st <- coef(nls(log(pctTran) ~ log(fcn(log(area), xmid, Asym, scal)), data = logsub, 
-#                start = c(xmid = 1, Asym = 1, scal = 1)))
 
-#^^^above code produces NaN's and infinite loop 
+####Env data get_bbs_gimms ed####
 
-#good starting point: 
+library(SQlite)
+library(dplyr)
+library(gimms)
 
-#try fitting a negative exponential 
-#compare fit with logA vs reg A mods and test agains
-#self starting 
-
-#^trying to use graphs to eyeball start vals still not working, still get singular error method; 
-#making xmid negative just repeats step fator redux error
-#as x increases y decreases in sigmoidal fashion -> find function and try defining it 
-
-#do model between predicted and observed vals -> can get r squared out of that 
-#
-TAlog = lm(log(pctTran) ~ logA, data = logsub)
-TA = lm(log(pctTran) ~ area, data = logsub)
-#log vs non-log models 
-#rsquared on log is better 
+devtools::load_all()
 
 
-#playing with nplr package in R prior to lm mods
+#ndvi
+ndvi_data_raw <- get_bbs_gimms_ndvi()
 
-test = nplr(x = logsub$logA, y = convertToProp(logsub$pctTran))
-test 
-plot(test)
-testpars = getPar(test)
-testpars$params$xmid
-
-#playing with nplr mods (see code below)
-
-pctTran_coefs = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/pctTran_coefs.csv", header = TRUE)
-#same coefs for every stateroute tho, why?
-
-# 
-# #TA model
-# for(s in stateroutes){
-#   logsub = subset(bbs_allscales, bbs_allscales$focalrte == s)
-#   #fitting the log curve for area (for each route)
-#   TAmodel = tryCatch({
-#     TAlog = nplr(x = logsub$logA, y = convertToProp(logsub$pctTran))
-#     return(data.frame(stateroute = s, TA.A, TA.i, TA.k))
-#   }, warning = function(w) {
-#     warnings = rbind(warnings, data.frame(stateroute = s, warning = w))
-#   }, error = function(e) {
-#     TA.i <- NA
-#     TA.A <- NA
-#     TA.k <- NA
-#   }, finally = {
-#     testpars = getPar(test)
-#     TA.i <- testpars$params$xmid
-#     TA.A <- testpars$params$bottom
-#     TA.k <- testpars$params$scal
-#     #TA.tmp = data.frame(stateroute = s, TA.A, TA.i, TA.k)
-#   })
-# 
-#   TA.temp = data.frame(stateroute = s, TA.A, TA.i, TA.k) #fix
-#   TA.df = rbind(TA.df, TA.temp)
-# }
-# 
-# # #TN model
-# for(s in stateroutes){
-#   logsub = subset(bbs_allscales, bbs_allscales$focalrte == s)
-#   #fitting the log curve for area (for each route)
-#   TNmodel = tryCatch({
-#     TNlog = nplr(x = logsub$logN, y = convertToProp(logsub$pctTran))
-#     return(data.frame(stateroute = s, TN.A, TN.i, TN.k))
-#   }, warning = function(w) {
-#     warnings = rbind(warnings, data.frame(stateroute = s, warning = w))
-#   }, error = function(e) {
-#     TN.i <- NA
-#     TN.A <- NA
-#     TN.k <- NA
-#   }, finally = {
-#     testpars = getPar(test)
-#     TN.i <- testpars$params$xmid
-#     TN.A <- testpars$params$bottom
-#     TN.k <- testpars$params$scal
-#     #TN.tmp = daTN.frame(stateroute = s, TN.A, TN.i, TN.k)
-#   })
-#   
-#   TN.temp = data.frame(stateroute = s, TN.A, TN.i, TN.k) #fix
-#   TN.df = rbind(TN.df, TN.temp)
-# }
-# 
-# pctTran_coefs = data.frame(TA.df, TN.df)
-# 
-
-
-logcurve_coefs = data.frame(OA.df, ON.df, CA.df, CN.df, TA.df, TN.df)
-write.csv(logcurve_coefs, "//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/logcurve_coefs.csv", row.names = FALSE)
-#saving as intermediate in case
-#it appears no NA's! 
-
-
-
+ndvi_data_summer <- ndvi_data_raw %>%
+  filter(!is.na(ndvi), month %in% c('may', 'jun', 'jul'), year > 1981) %>%
+  group_by(site_id, year) %>%
+  summarise(ndvi_sum = mean(ndvi)) %>%
+  ungroup()
