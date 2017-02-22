@@ -20,7 +20,7 @@ head(tidybirds)
 names(tidybirds)[1]<-"BBS_rte"
 tidy_counts<-data.frame(tidybirds)
 write.csv(tidy_counts, file = "tidy_counts.csv")
-env_data<-read.csv("env_data.csv", header=TRUE)
+env_data<-read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/Final folder/env_data.csv", header=TRUE)
 head(env_data)
 BBSlatlon<-subset(env_data, select=c("stateroute", "Longi", "Lati"))
 head(BBSlatlon)

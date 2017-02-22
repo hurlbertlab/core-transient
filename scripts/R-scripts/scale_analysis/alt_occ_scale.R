@@ -392,7 +392,7 @@ coefs = OA.df %>%
   inner_join(TA.df, OA.df, by = "stateroute") %>% 
   inner_join(TN.df, OA.df, by = "stateroute")  
 
-write.csv(coefs, "C:/git/core-transient/scripts/R-scripts/scale_analysis/coefs.csv", row.names = FALSE)
+#write.csv(coefs, "C:/git/core-transient/scripts/R-scripts/scale_analysis/coefs.csv", row.names = FALSE)
 
 
 ####Env data add-in####
@@ -400,11 +400,11 @@ write.csv(coefs, "C:/git/core-transient/scripts/R-scripts/scale_analysis/coefs.c
 #for now just use what we have, that's fine 
 
 #bring in lat-lons for each focal route and creating sites
-
+bbs_allscales = read.csv("data/bbs_allscales.csv", header = TRUE)
 bbs_latlon = read.csv("//bioark.ad.unc.edu/HurlbertLab/Jenkins/BBS scaled/good_rtes2.csv", header = TRUE)
 bbs_allscales = rename(bbs_latlon, focalrte = stateroute) %>%
   right_join(bbs_allscales, by = "focalrte")
-
+coefs = read.csv("C:/git/core-transient/scripts/R-scripts/scale_analysis/coefs.csv", header = TRUE)
 
 #temp
 sites = data.frame(longitude = bbs_allscales$Longi, latitude = bbs_allscales$Lati)
@@ -435,13 +435,20 @@ bbs_allscales$varndvi<-raster::extract(ndvimean, sites, buffer = 40000, fun = va
 
 #elev 
 #mean elevation PLUS elevational range 
-elevmean<-raster("alt.bil")
+elevmean<-raster("/wc10/alt.bil")
 bbs_allscales$elev<-extract(elevmean, sites, buffer = 40000, fun = mean)
 bbs_allscales$varelev<-extract(elevmean, sites, buffer = 40000, fun = var)
 
 #elev radius
 #pull in radius elev data from Coyle folder 
 elevrad<-raster("elevation_var_40km_radius.gri")
+elevrad<-raster("//bioark.ad.unc.edu/HurlbertLab/Coyle/Projects/BBS Core/Data/elevation_var_40km_radius.gri")
+
+#OR: 
+elevrad<-raster("C:git/core-transient/scripts/R-scripts/scale_analysis/elevation_var_aggregate_40_1km.gri")
+
+
+
 #need to re-project data points to match projection of elevation raster data 
 #modify below code
 elev_proj = "+proj=laea +lat_0=40.68 +lon_0=-92.925 +units=km +ellps=WGS84" # A string that defines the projection
