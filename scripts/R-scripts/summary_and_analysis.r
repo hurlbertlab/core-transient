@@ -557,6 +557,10 @@ ggsave(file="C:/Git/core-transient/output/plots/predmod3c.pdf", height = 10, wid
 
 #### Fig 4d ####
 occ_taxa$total = occ_taxa$pctCore + occ_taxa$pctNeither
+occ_taxa$numtrans = (1-occ_taxa$total) * occ_taxa$spRich
+occ_taxa$minustrans = occ_taxa$spRich - occ_taxa$numtrans
+
+# add in BBS below dataset
 
 ####### MODELS ######
 latlongs = read.csv("data/latlongs/latlongs.csv", header =TRUE)
@@ -580,7 +584,7 @@ dft2 = merge(dft, summ2[, c("datasetID","site","propTrans")], by = "datasetID")
 all_latlongs.5 = rbind(dft2, latlong_w_sites)
 
 # rbind in new BBS data
-bbs_below = read.csv("Z:/Gartland/BBS scaled/bbs_below.csv", header = TRUE)
+bbs_below = read.csv("Z:/Jenkins/BBS scaled/bbs_below.csv", header = TRUE)
 bbs_latlong = read.csv("data/latlongs/bbs_2000_2014_latlongs.csv", header = TRUE)
 bbs_be_lat = merge(bbs_below, bbs_latlong, by = "stateroute", all.x = TRUE)
 bbs_be_lat$site = paste(bbs_below$stateroute, bbs_below$scale, sep = "-")
