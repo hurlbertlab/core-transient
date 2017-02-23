@@ -475,9 +475,11 @@ coefs = read.csv("C:/git/core-transient/scripts/R-scripts/scale_analysis/coefs.c
 
 uniq_env = unique(bbs_envs[, c('focalrte', 'temp', 'meanP', 'ndvi')])
 
-# Merge environmental data with the curve shape data
+# Merge environmental data with the coef shape data
 
 env_coefs = inner_join(coefs, uniq_env, by = c('stateroute' = 'focalrte'))
+
+#collapse into loop structure 
 
 #precip
 OAmod1 = lm(OA.A~meanP, data = env_coefs) #3 mods (4 after elev) for each parm, 3 mods for each coef 
@@ -500,7 +502,7 @@ OAmod9 = lm(OA.k~ndvi, data = env_coefs)
 #precip
 ONmod1 = lm(ON.A~meanP, data = env_coefs) #3 mods (4 after elev) for each parm 
 ONmod2 = lm(ON.i~meanP, data = env_coefs)
-ONmod3 = lm(ON.k~meanP, data = env_coefs)
+ONmod3 = lm(ON.k~meanP, data = env_coefs) #12.5% of variation 
 
 
 #temp
@@ -512,13 +514,15 @@ ONmod6 = lm(ON.k~temp, data = env_coefs)
 #ndvi 
 ONmod7 = lm(ON.A~ndvi, data = env_coefs) #3 mods (4 after elev) for each parm 
 ONmod8 = lm(ON.i~ndvi, data = env_coefs)
-ONmod9 = lm(ON.k~ndvi, data = env_coefs)
+ONmod9 = lm(ON.k~ndvi, data = env_coefs) #12% of variation explained
+
+#so ndvi and precip combine to explain about ~25% of what varies the asymptote in the mean occupancy vals overall 
 
 
 #CA mods 
 #precip
 CAmod1 = lm(CA.A~meanP, data = env_coefs) #3 mods (4 after elev) for each parm 
-CAmod2 = lm(CA.i~meanP, data = env_coefs)
+CAmod2 = lm(CA.i~meanP, data = env_coefs) #11.8% var
 CAmod3 = lm(CA.k~meanP, data = env_coefs)
 
 
@@ -530,14 +534,16 @@ CAmod6 = lm(CA.k~temp, data = env_coefs)
 
 #ndvi 
 CAmod7 = lm(CA.A~ndvi, data = env_coefs) #3 mods (4 after elev) for each parm 
-CAmod8 = lm(CA.i~ndvi, data = env_coefs)
+CAmod8 = lm(CA.i~ndvi, data = env_coefs) #10.6% of var
 CAmod9 = lm(CA.k~ndvi, data = env_coefs)
+
+#again, precip and ndvi combine but this time to explain the intercept shifting along the x axis of the pct Core relationship
 
 
 #CN mods 
 #precip
 CNmod1 = lm(CN.A~meanP, data = env_coefs) #3 mods (4 after elev) for each parm 
-CNmod2 = lm(CN.i~meanP, data = env_coefs)
+CNmod2 = lm(CN.i~meanP, data = env_coefs) #10% of var
 CNmod3 = lm(CN.k~meanP, data = env_coefs)
 
 
