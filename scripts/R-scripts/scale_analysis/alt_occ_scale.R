@@ -33,7 +33,7 @@ library(dplyr)
 library(fields)
 library(tidyr)
 library(ggplot2)
-
+library(nlme)
 #'#'#'#'#'#'#'#'#'
 #'----Write for_loop to calculate distances between every BBS site combination to find focal and associated routes that correspond best----
 #''store minimum value for each iteration of combos in output table
@@ -480,6 +480,20 @@ uniq_env = unique(bbs_envs[, c('focalrte', 'temp', 'meanP', 'ndvi')])
 env_coefs = inner_join(coefs, uniq_env, by = c('stateroute' = 'focalrte'))
 
 #collapse into loop structure 
+output = data.frame()
+final_coefs = c("OA.A", "OA.i", "OA.k", "ON.A", "ON.i", "ON.k",
+                "CA.A", "CA.i", "CA.k", "CN.A", "CN.i", "CN.k", 
+                "TAexp", "TAexp", "TApow")
+env_vars = c("meanP", "varP", "temp", "vartemp", "ndvi", "varndvi")
+data = env_coefs
+for(c in final_coefs){
+  for(e in env_vars){
+     mod = lm(c~e, data = env_coefs)
+     temp = summary(mod)
+     output = rbind(output, temp)
+  }
+}
+
 
 #precip
 OAmod1 = lm(OA.A~meanP, data = env_coefs) #3 mods (4 after elev) for each parm, 3 mods for each coef 
