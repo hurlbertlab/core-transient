@@ -404,7 +404,7 @@ bbs_allscales = read.csv("data/bbs_allscales.csv", header = TRUE)
 bbs_latlon = read.csv("//bioark.ad.unc.edu/HurlbertLab/Jenkins/BBS scaled/good_rtes2.csv", header = TRUE)
 bbs_allscales = rename(bbs_latlon, focalrte = stateroute) %>%
   right_join(bbs_allscales, by = "focalrte")
-coefs = read.csv("C:/git/core-transient/scripts/R-scripts/scale_analysis/coefs.csv", header = TRUE)
+
 
 #temp
 sites = data.frame(longitude = bbs_allscales$Longi, latitude = bbs_allscales$Lati)
@@ -471,20 +471,126 @@ bbs_envs = bbs_allscales
 
 ####Coef vs env variation models####
 bbs_envs = read.csv("scripts/R-scripts/scale_analysis/bbs_envs.csv", header = TRUE)
+coefs = read.csv("C:/git/core-transient/scripts/R-scripts/scale_analysis/coefs.csv", header = TRUE)
+
+uniq_env = unique(bbs_envs[, c('focalrte', 'temp', 'meanP', 'ndvi')])
+
+# Merge environmental data with the curve shape data
+
+env_coefs = inner_join(coefs, uniq_env, by = c('stateroute' = 'focalrte'))
+
+#precip
+OAmod1 = lm(OA.A~meanP, data = env_coefs) #3 mods (4 after elev) for each parm, 3 mods for each coef 
+OAmod2 = lm(OA.i~meanP, data = env_coefs)
+OAmod3 = lm(OA.k~meanP, data = env_coefs)
 
 
+#temp 
+OAmod4 = lm(OA.A~temp, data = env_coefs) #3 mods (4 after elev) for each parm, 3 mods for each coef 
+OAmod5 = lm(OA.i~temp, data = env_coefs)
+OAmod6 = lm(OA.k~temp, data = env_coefs)
 
+
+#ndvi
+OAmod7 = lm(OA.A~ndvi, data = env_coefs) #3 mods (4 after elev) for each parm, 3 mods for each coef 
+OAmod8 = lm(OA.i~ndvi, data = env_coefs)
+OAmod9 = lm(OA.k~ndvi, data = env_coefs)
+
+#ON mods
+#precip
+ONmod1 = lm(ON.A~meanP, data = env_coefs) #3 mods (4 after elev) for each parm 
+ONmod2 = lm(ON.i~meanP, data = env_coefs)
+ONmod3 = lm(ON.k~meanP, data = env_coefs)
+
+
+#temp
+ONmod4 = lm(ON.A~temp, data = env_coefs) #3 mods (4 after elev) for each parm 
+ONmod5 = lm(ON.i~temp, data = env_coefs)
+ONmod6 = lm(ON.k~temp, data = env_coefs)
+
+
+#ndvi 
+ONmod7 = lm(ON.A~ndvi, data = env_coefs) #3 mods (4 after elev) for each parm 
+ONmod8 = lm(ON.i~ndvi, data = env_coefs)
+ONmod9 = lm(ON.k~ndvi, data = env_coefs)
+
+
+#CA mods 
+#precip
+CAmod1 = lm(CA.A~meanP, data = env_coefs) #3 mods (4 after elev) for each parm 
+CAmod2 = lm(CA.i~meanP, data = env_coefs)
+CAmod3 = lm(CA.k~meanP, data = env_coefs)
+
+
+#temp 
+CAmod4 = lm(CA.A~temp, data = env_coefs) #3 mods (4 after elev) for each parm 
+CAmod5 = lm(CA.i~temp, data = env_coefs)
+CAmod6 = lm(CA.k~temp, data = env_coefs)
+
+
+#ndvi 
+CAmod7 = lm(CA.A~ndvi, data = env_coefs) #3 mods (4 after elev) for each parm 
+CAmod8 = lm(CA.i~ndvi, data = env_coefs)
+CAmod9 = lm(CA.k~ndvi, data = env_coefs)
+
+
+#CN mods 
+#precip
+CNmod1 = lm(CN.A~meanP, data = env_coefs) #3 mods (4 after elev) for each parm 
+CNmod2 = lm(CN.i~meanP, data = env_coefs)
+CNmod3 = lm(CN.k~meanP, data = env_coefs)
+
+
+#temp 
+CNmod4 = lm(CN.A~temp, data = env_coefs) #3 mods (4 after elev) for each parm 
+CNmod5 = lm(CN.i~temp, data = env_coefs)
+CNmod6 = lm(CN.k~temp, data = env_coefs)
+
+
+#ndvi 
+CNmod7 = lm(CN.A~ndvi, data = env_coefs) #3 mods (4 after elev) for each parm 
+CNmod8 = lm(CN.i~ndvi, data = env_coefs)
+CNmod9 = lm(CN.k~ndvi, data = env_coefs)
+
+
+#TA mods
+#precip
+TAmod1 = lm(TAexp~meanP, data = env_coefs) #3 mods (4 after elev) for each parm 
+TAmod2 = lm(TApow~meanP, data = env_coefs)
+
+
+#temp 
+TAmod3 = lm(TAexp~temp, data = env_coefs) #3 mods (4 after elev) for each parm 
+TAmod4 = lm(TApow~temp, data = env_coefs)
+
+
+#ndvi
+TAmod5 = lm(TAexp~ndvi, data = env_coefs) #3 mods (4 after elev) for each parm 
+TAmod6 = lm(TApow~ndvi, data = env_coefs)
+
+#TN mods
+#precip
+TNmod1 = lm(TNexp~meanP, data = env_coefs)
+TNmod2 = lm(TNpow~meanP, data = env_coefs)
+
+#temp 
+TNmod3 = lm(TNexp~temp, data = env_coefs)
+TNmod4 = lm(TNpow~temp, data = env_coefs)
+
+
+#ndvi 
+TNmod5 = lm(TNexp~ndvi, data = env_coefs)
+TNmod6 = lm(TNpow~ndvi, data = env_coefs)
+
+########################################################
+
+#finished models 
 
 envmod1 = lm(meanOcc~ndvi, data = bbs_allscales)
 summary(envmod1)
 
 ?var
 
-uniq_env = unique(bbs_envs[, c('focalrte', 'temp', 'meanP', 'ndvi')])
-
-# Merge environmental data with the curve shape data
-
-curves = inner_join(coefs, uniq_env, by = c('stateroute' = 'focalrte'))
 
 # linear model explaining either logistic slope or negative exponential or power slopes as
 # a function of env variables
