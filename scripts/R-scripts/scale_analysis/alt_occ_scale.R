@@ -473,7 +473,7 @@ bbs_envs = bbs_allscales
 bbs_envs = read.csv("scripts/R-scripts/scale_analysis/bbs_envs.csv", header = TRUE)
 coefs = read.csv("C:/git/core-transient/scripts/R-scripts/scale_analysis/coefs.csv", header = TRUE)
 
-uniq_env = unique(bbs_envs[, c('focalrte', 'temp', 'meanP', 'ndvi')])
+uniq_env = unique(bbs_envs[, c('focalrte', 'temp', 'vartemp', 'meanP', 'varP', 'ndvi', 'varndvi')])
 
 # Merge environmental data with the coef shape data
 
@@ -491,6 +491,17 @@ for(c in final_coefs){
      mod = lm(c~e, data = env_coefs)
      temp = summary(mod)
      output = rbind(output, temp)
+  }
+}
+
+
+
+resultsList <- list()
+
+for (i in OA.A:TNpow(env_coefs)) {
+  for (e in temp:varndvi(env_coefs)) {
+    lmfit = lm(env_coefs[, i] ~ env_coefs[, e])
+    resultsList[[i]] <- summary(lmfit_i)
   }
 }
 
