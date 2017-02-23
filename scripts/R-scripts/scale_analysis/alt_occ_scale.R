@@ -498,10 +498,10 @@ for(c in final_coefs){
 
 resultsList <- list()
 
-for (i in OA.A:TNpow(env_coefs)) {
-  for (e in temp:varndvi(env_coefs)) {
+for (i in 2:17(env_coefs)) {
+  for (e in 18:ncol(env_coefs)) {
     lmfit = lm(env_coefs[, i] ~ env_coefs[, e])
-    resultsList[[i]] <- summary(lmfit_i)
+    resultsList[[i]] <- summary(lmfit)
   }
 }
 
