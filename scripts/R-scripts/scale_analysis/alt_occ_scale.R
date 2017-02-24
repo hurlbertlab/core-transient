@@ -625,10 +625,19 @@ rsqrd_df = data.frame(m = NULL, r.squared = NULL, adj.r.squared = NULL)
 temp = data.frame(m = NULL, r.squared = NULL, adj.r.squared = NULL)
 for (m in mods){
   mod_sumstats = summary(m)
-  temp = cbind("m" = Reduce(paste, deparse(formula(m))), "rsqd" = mod_sumstats$r.squared, "adj.r" = mod_sumstats$adj.r.squared)
+  mod_var = vcov(m) #how to aggregate the vcov matrices in a sensible way? ignoring in output for now but will have a sep df/output ideally
+  temp = cbind("m" = Reduce(paste, deparse(formula(m))), 
+               "rsqd" = mod_sumstats$r.squared, 
+               "adj.r" = mod_sumstats$adj.r.squared)
   rsqrd_df = rbind(temp, rsqrd_df)
   
 }
+
+#write.csv(rsqrd_df, "scripts/R-scripts/scale_analysis/mod_rsqrds.csv", row.names = FALSE) 
+
+
+
+
 
 
 
