@@ -464,10 +464,9 @@ bbs_allscales$varndvi<-raster::extract(ndvimean, sites, buffer = 40000, fun = va
 # bbs_allscales$varerad = raster::extract(elevrad, points3,buffer = 40000, fun = var)
 
 
-
-
 bbs_envs = bbs_allscales
 #write.csv(bbs_envs, "scripts/R-scripts/scale_analysis/bbs_envs.csv", row.names = FALSE) wrote file 2/22 w/out elev and using old env data
+
 
 ####Coef vs env variation models####
 bbs_envs = read.csv("scripts/R-scripts/scale_analysis/bbs_envs.csv", header = TRUE)
@@ -612,6 +611,27 @@ TNmod4 = lm(TNpow~temp, data = env_coefs)
 #ndvi 
 TNmod5 = lm(TNexp~ndvi, data = env_coefs)
 TNmod6 = lm(TNpow~ndvi, data = env_coefs)
+
+
+#run summary stats and extract R values 
+mods = list(OAmod1, OAmod2, OAmod3, OAmod4, OAmod5, OAmod6, OAmod7, OAmod8, OAmod9,
+                  ONmod1, ONmod2, ONmod3, ONmod4, ONmod5, ONmod6, ONmod7, ONmod8, ONmod9,
+                  CAmod1, CAmod2, CAmod3, CAmod4, CAmod5, CAmod6, CAmod7, CAmod8, CAmod9,
+                  CNmod1, CNmod2, CNmod3, CNmod4, CNmod5, CNmod6, CNmod7, CNmod8, CNmod9,
+                  TAmod1, TAmod2, TAmod3, TAmod4, TAmod5, TAmod6,
+                TNmod1, TNmod2, TNmod3, TNmod4, TNmod5, TNmod6)
+
+rsqrd_df = data.frame(m = NULL, r.squared = NULL, adj.r.squared = NULL)
+temp = data.frame(m = NULL, r.squared = NULL, adj.r.squared = NULL)
+for (m in mods){
+  mod_sumstats = summary(m)
+  temp = cbind("m" = Reduce(paste, deparse(formula(m))), "rsqd" = mod_sumstats$r.squared, "adj.r" = mod_sumstats$adj.r.squared)
+  rsqrd_df = rbind(temp, rsqrd_df)
+  
+}
+
+
+
 
 ########################################################
 
