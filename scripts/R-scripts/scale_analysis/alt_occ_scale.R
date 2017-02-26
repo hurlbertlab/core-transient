@@ -635,8 +635,15 @@ for (m in mods){
 
 #write.csv(rsqrd_df, "scripts/R-scripts/scale_analysis/mod_rsqrds.csv", row.names = FALSE) 
 
+####merging rsqrd vals and generating pred vals from env_coef mods####
+bbs_envs = read.csv("scripts/R-scripts/scale_analysis/bbs_envs.csv", header = TRUE)
+coefs = read.csv("C:/git/core-transient/scripts/R-scripts/scale_analysis/coefs.csv", header = TRUE)
+uniq_env = unique(bbs_envs[, c('focalrte', 'temp', 'vartemp', 'meanP', 'varP', 'ndvi', 'varndvi')])
+# Merge environmental data with the coef shape data
+env_coefs = inner_join(coefs, uniq_env, by = c('stateroute' = 'focalrte'))
 
 
+rsqrd_df = read.csv("scripts/R-scripts/scale_analysis/mod_rsqrds.csv", header = TRUE)
 
 
 
