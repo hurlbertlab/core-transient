@@ -509,37 +509,62 @@ for (i in 2:17(env_coefs)) {
 OAmod1 = lm(OA.A~meanP, data = env_coefs) #3 mods (4 after elev) for each parm, 3 mods for each coef 
 OAmod2 = lm(OA.i~meanP, data = env_coefs)
 OAmod3 = lm(OA.k~meanP, data = env_coefs)
+#precip var
+OAmod4 = lm(OA.A~varP, data = env_coefs) #3 mods (4 after elev) for each parm, 3 mods for each coef 
+OAmod5 = lm(OA.i~varP, data = env_coefs)
+OAmod6 = lm(OA.k~varP, data = env_coefs)
 
 
 #temp 
-OAmod4 = lm(OA.A~temp, data = env_coefs) #3 mods (4 after elev) for each parm, 3 mods for each coef 
-OAmod5 = lm(OA.i~temp, data = env_coefs)
-OAmod6 = lm(OA.k~temp, data = env_coefs)
+OAmod7 = lm(OA.A~temp, data = env_coefs) #3 mods (4 after elev) for each parm, 3 mods for each coef 
+OAmod8 = lm(OA.i~temp, data = env_coefs)
+OAmod9 = lm(OA.k~temp, data = env_coefs)
+#temp var
+OAmod10 = lm(OA.A~vartemp, data = env_coefs) #3 mods (4 after elev) for each parm, 3 mods for each coef 
+OAmod11 = lm(OA.i~vartemp, data = env_coefs)
+OAmod12 = lm(OA.k~vartemp, data = env_coefs)
 
 
 #ndvi
-OAmod7 = lm(OA.A~ndvi, data = env_coefs) #3 mods (4 after elev) for each parm, 3 mods for each coef 
-OAmod8 = lm(OA.i~ndvi, data = env_coefs)
-OAmod9 = lm(OA.k~ndvi, data = env_coefs)
+OAmod13 = lm(OA.A~ndvi, data = env_coefs) #3 mods (4 after elev) for each parm, 3 mods for each coef 
+OAmod14 = lm(OA.i~ndvi, data = env_coefs)
+OAmod15 = lm(OA.k~ndvi, data = env_coefs)
+#ndvi var 
+OAmod16 = lm(OA.A~varndvi, data = env_coefs) #3 mods (4 after elev) for each parm, 3 mods for each coef 
+OAmod17 = lm(OA.i~varndvi, data = env_coefs)
+OAmod18 = lm(OA.k~varndvi, data = env_coefs)
+#18 mods for meanocc and pctCore curve coef mods
+
 
 #ON mods
 #precip
 ONmod1 = lm(ON.A~meanP, data = env_coefs) #3 mods (4 after elev) for each parm 
 ONmod2 = lm(ON.i~meanP, data = env_coefs)
 ONmod3 = lm(ON.k~meanP, data = env_coefs) #12.5% of variation 
+#var precip 
+ONmod4 = lm(ON.A~varP, data = env_coefs) #3 mods (4 after elev) for each parm 
+ONmod5 = lm(ON.i~varP, data = env_coefs)
+ONmod6 = lm(ON.k~varP, data = env_coefs)
 
 
 #temp
-ONmod4 = lm(ON.A~temp, data = env_coefs) #3 mods (4 after elev) for each parm 
-ONmod5 = lm(ON.i~temp, data = env_coefs)
-ONmod6 = lm(ON.k~temp, data = env_coefs)
+ONmod7 = lm(ON.A~temp, data = env_coefs) #3 mods (4 after elev) for each parm 
+ONmod8 = lm(ON.i~temp, data = env_coefs)
+ONmod9 = lm(ON.k~temp, data = env_coefs)
+#var temp 
+ONmod10 = lm(ON.A~vartemp, data = env_coefs) #3 mods (4 after elev) for each parm 
+ONmod11 = lm(ON.i~vartemp, data = env_coefs)
+ONmod12 = lm(ON.k~vartemp, data = env_coefs)
 
 
 #ndvi 
-ONmod7 = lm(ON.A~ndvi, data = env_coefs) #3 mods (4 after elev) for each parm 
-ONmod8 = lm(ON.i~ndvi, data = env_coefs)
-ONmod9 = lm(ON.k~ndvi, data = env_coefs) #12% of variation explained
-
+ONmod13 = lm(ON.A~ndvi, data = env_coefs) #3 mods (4 after elev) for each parm 
+ONmod14 = lm(ON.i~ndvi, data = env_coefs)
+ONmod15 = lm(ON.k~ndvi, data = env_coefs) #12% of variation explained
+#var ndvi 
+ONmod16 = lm(ON.A~varndvi, data = env_coefs) #3 mods (4 after elev) for each parm 
+ONmod17 = lm(ON.i~varndvi, data = env_coefs)
+ONmod18 = lm(ON.k~varndvi, data = env_coefs)
 #so ndvi and precip combine to explain about ~25% of what varies the asymptote in the mean occupancy vals overall 
 
 
@@ -548,19 +573,29 @@ ONmod9 = lm(ON.k~ndvi, data = env_coefs) #12% of variation explained
 CAmod1 = lm(CA.A~meanP, data = env_coefs) #3 mods (4 after elev) for each parm 
 CAmod2 = lm(CA.i~meanP, data = env_coefs) #11.8% var
 CAmod3 = lm(CA.k~meanP, data = env_coefs)
-
+#var precip 
+CAmod4 = lm(CA.A~varP, data = env_coefs) #3 mods (4 after elev) for each parm 
+CAmod5 = lm(CA.i~varP, data = env_coefs) 
+CAmod6 = lm(CA.k~varP, data = env_coefs)
 
 #temp 
-CAmod4 = lm(CA.A~temp, data = env_coefs) #3 mods (4 after elev) for each parm 
-CAmod5 = lm(CA.i~temp, data = env_coefs)
-CAmod6 = lm(CA.k~temp, data = env_coefs)
+CAmod7 = lm(CA.A~temp, data = env_coefs) #3 mods (4 after elev) for each parm 
+CAmod8 = lm(CA.i~temp, data = env_coefs)
+CAmod9 = lm(CA.k~temp, data = env_coefs)
+#var temp 
+CAmod10 = lm(CA.A~vartemp, data = env_coefs) #3 mods (4 after elev) for each parm 
+CAmod11 = lm(CA.i~vartemp, data = env_coefs)
+CAmod12 = lm(CA.k~vartemp, data = env_coefs)
 
 
 #ndvi 
-CAmod7 = lm(CA.A~ndvi, data = env_coefs) #3 mods (4 after elev) for each parm 
-CAmod8 = lm(CA.i~ndvi, data = env_coefs) #10.6% of var
-CAmod9 = lm(CA.k~ndvi, data = env_coefs)
-
+CAmod13 = lm(CA.A~ndvi, data = env_coefs) #3 mods (4 after elev) for each parm 
+CAmod14 = lm(CA.i~ndvi, data = env_coefs) #10.6% of var
+CAmod15 = lm(CA.k~ndvi, data = env_coefs)
+#var ndvi 
+CAmod16 = lm(CA.A~varndvi, data = env_coefs) #3 mods (4 after elev) for each parm 
+CAmod17 = lm(CA.i~varndvi, data = env_coefs) 
+CAmod18 = lm(CA.k~varndvi, data = env_coefs)
 #again, precip and ndvi combine but this time to explain the intercept shifting along the x axis of the pct Core relationship
 
 
@@ -569,49 +604,80 @@ CAmod9 = lm(CA.k~ndvi, data = env_coefs)
 CNmod1 = lm(CN.A~meanP, data = env_coefs) #3 mods (4 after elev) for each parm 
 CNmod2 = lm(CN.i~meanP, data = env_coefs) #10% of var
 CNmod3 = lm(CN.k~meanP, data = env_coefs)
+#var precip 
+CNmod4 = lm(CN.A~varP, data = env_coefs) #3 mods (4 after elev) for each parm 
+CNmod5 = lm(CN.i~varP, data = env_coefs) #10% of var
+CNmod6 = lm(CN.k~varP, data = env_coefs)
 
 
 #temp 
-CNmod4 = lm(CN.A~temp, data = env_coefs) #3 mods (4 after elev) for each parm 
-CNmod5 = lm(CN.i~temp, data = env_coefs)
-CNmod6 = lm(CN.k~temp, data = env_coefs)
+CNmod7 = lm(CN.A~temp, data = env_coefs) #3 mods (4 after elev) for each parm 
+CNmod8 = lm(CN.i~temp, data = env_coefs)
+CNmod9 = lm(CN.k~temp, data = env_coefs)
+#var temp 
+CNmod10 = lm(CN.A~vartemp, data = env_coefs) #3 mods (4 after elev) for each parm 
+CNmod11 = lm(CN.i~vartemp, data = env_coefs)
+CNmod12 = lm(CN.k~vartemp, data = env_coefs)
 
 
 #ndvi 
-CNmod7 = lm(CN.A~ndvi, data = env_coefs) #3 mods (4 after elev) for each parm 
-CNmod8 = lm(CN.i~ndvi, data = env_coefs)
-CNmod9 = lm(CN.k~ndvi, data = env_coefs)
+CNmod13 = lm(CN.A~ndvi, data = env_coefs) #3 mods (4 after elev) for each parm 
+CNmod14 = lm(CN.i~ndvi, data = env_coefs)
+CNmod15 = lm(CN.k~ndvi, data = env_coefs)
+#var ndvi 
+CNmod16 = lm(CN.A~varndvi, data = env_coefs) #3 mods (4 after elev) for each parm 
+CNmod17 = lm(CN.i~varndvi, data = env_coefs)
+CNmod18 = lm(CN.k~varndvi, data = env_coefs)
 
 
 #TA mods
 #precip
 TAmod1 = lm(TAexp~meanP, data = env_coefs) #3 mods (4 after elev) for each parm 
 TAmod2 = lm(TApow~meanP, data = env_coefs)
+#var precip 
+TAmod3 = lm(TAexp~varP, data = env_coefs) #3 mods (4 after elev) for each parm 
+TAmod4 = lm(TApow~varP, data = env_coefs)
 
 
 #temp 
-TAmod3 = lm(TAexp~temp, data = env_coefs) #3 mods (4 after elev) for each parm 
-TAmod4 = lm(TApow~temp, data = env_coefs)
+TAmod5 = lm(TAexp~temp, data = env_coefs) #3 mods (4 after elev) for each parm 
+TAmod6 = lm(TApow~temp, data = env_coefs)
+#var temp 
+TAmod7 = lm(TAexp~vartemp, data = env_coefs) #3 mods (4 after elev) for each parm 
+TAmod8 = lm(TApow~vartemp, data = env_coefs)
 
 
 #ndvi
-TAmod5 = lm(TAexp~ndvi, data = env_coefs) #3 mods (4 after elev) for each parm 
-TAmod6 = lm(TApow~ndvi, data = env_coefs)
+TAmod9 = lm(TAexp~ndvi, data = env_coefs) #3 mods (4 after elev) for each parm 
+TAmod10 = lm(TApow~ndvi, data = env_coefs)
+#var ndvi
+TAmod11 = lm(TAexp~varndvi, data = env_coefs) #3 mods (4 after elev) for each parm 
+TAmod12 = lm(TApow~varndvi, data = env_coefs)
+
 
 #TN mods
 #precip
 TNmod1 = lm(TNexp~meanP, data = env_coefs)
 TNmod2 = lm(TNpow~meanP, data = env_coefs)
+#var precip 
+TNmod3 = lm(TNexp~varP, data = env_coefs)
+TNmod4 = lm(TNpow~varP, data = env_coefs)
+
 
 #temp 
-TNmod3 = lm(TNexp~temp, data = env_coefs)
-TNmod4 = lm(TNpow~temp, data = env_coefs)
+TNmod5 = lm(TNexp~temp, data = env_coefs)
+TNmod6 = lm(TNpow~temp, data = env_coefs)
+# var temp 
+TNmod7 = lm(TNexp~vartemp, data = env_coefs)
+TNmod8 = lm(TNpow~vartemp, data = env_coefs)
 
 
 #ndvi 
-TNmod5 = lm(TNexp~ndvi, data = env_coefs)
-TNmod6 = lm(TNpow~ndvi, data = env_coefs)
-
+TNmod9 = lm(TNexp~ndvi, data = env_coefs)
+TNmod10 = lm(TNpow~ndvi, data = env_coefs)
+# var ndvi 
+TNmod11 = lm(TNexp~varndvi, data = env_coefs)
+TNmod12 = lm(TNpow~varndvi, data = env_coefs)
 
 #run summary stats and extract R values 
 mods = list(OAmod1, OAmod2, OAmod3, OAmod4, OAmod5, OAmod6, OAmod7, OAmod8, OAmod9,
@@ -646,6 +712,9 @@ env_coefs = inner_join(coefs, uniq_env, by = c('stateroute' = 'focalrte'))
 rsqrd_df = read.csv("scripts/R-scripts/scale_analysis/mod_rsqrds.csv", header = TRUE)
 
 
+
+
+####bootstrapping rsqrd from pred vals and comparing to original####
 
 
 
