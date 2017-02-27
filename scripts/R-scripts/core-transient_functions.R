@@ -351,7 +351,7 @@ dataZSubFun  = function(inData, minNTime = 10, proportionalThreshold = .5, seed 
         events[[i]] = subset(siteDateSub, siteTimeDate %in% siteTimeDateSample )
       }
   # Subset data to sampled events:
-    dataZSub = rbind(events, fill =TRUE)
+    dataZSub = rbind.fill(events)
     return(list(data = dataZSub, z = z))
   }
 
@@ -421,7 +421,7 @@ wzSubsetFun = function(inData, minNTime = 10, proportionalThreshold = .5, seed =
       sampledSubsites = sample(UniqueSubsites, wOut$w, replace = F)
       events[[i]] = subset(siteTimeDateSub, site %in% sampledSubsites)
     }
-    outSampledData = rbind(events, fill = TRUE)
+    outSampledData = rbind.fill(events)
   # Keep only pertinent columns:
     outData = dplyr::select(outSampledData, one_of(c('analysisSite', 'analysisDate','species', 'count')))
       names(outData)[1:2] = c('site', 'year') 
