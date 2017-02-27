@@ -83,8 +83,8 @@ summ$system = factor(summ$system)
 summ = na.omit(summ)
 summ1 =  subset(summ, !datasetID %in% c(1, 99, 85, 90, 91, 92, 97, 124)) # excluding BBS to include below-scale route info
 summ1.5 = summ1[, c("datasetID","site","system","taxa","propCore", "propTrans", "meanAbundance")]
-# insert below-scale bbs dataset (Jenkina Z drive)
-bbs_below = read.csv("Z:/Jenkins/BBS scaled/bbs_below.csv", header = TRUE)
+# insert below-scale bbs dataset 
+bbs_below = read.csv("data/bbs_below.csv", header = TRUE)
 bbs_below$site = paste(bbs_below$stateroute, bbs_below$scale, sep = "-")
 bbs_below$datasetID = 1
 bbs_below$system = "Terrestrial"
@@ -619,7 +619,7 @@ dft2 = merge(dft, summ2[, c("datasetID","site","propTrans")], by = "datasetID")
 all_latlongs.5 = rbind(dft2, latlong_w_sites)
 
 # rbind in new BBS data
-bbs_below = read.csv("Z:/Jenkins/BBS scaled/bbs_below.csv", header = TRUE)
+bbs_below = read.csv("data/bbs_below.csv", header = TRUE) # from Jenkins code
 bbs_latlong = read.csv("data/latlongs/bbs_2000_2014_latlongs.csv", header = TRUE)
 bbs_be_lat = merge(bbs_below, bbs_latlong, by = "stateroute", all.x = TRUE)
 bbs_be_lat$site = paste(bbs_below$stateroute, bbs_below$scale, sep = "-")
