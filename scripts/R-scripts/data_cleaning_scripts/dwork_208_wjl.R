@@ -181,7 +181,7 @@ dataFormattingTable[,'Raw_spatial_grain_unit'] =
   dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain_unit',  
                                  
                                  #--! PROVIDE INFO !--#
-                                 m2) #http://lter.kbs.msu.edu/datasets/26.eml
+                                 "m2") #http://lter.kbs.msu.edu/datasets/26.eml
 
 
 # BEFORE YOU CONTINUE. We need to make sure that there are at least minNTime for sites at the coarsest possilbe spatial grain. 
@@ -460,7 +460,7 @@ tGrain = 'year'
 
 site_grain_names
 
-sGrain = 'Station'
+sGrain = 'Treatment'
 
 # This is a reasonable choice of spatial grain because ...
 #  There are 6 replicates with 7 treatments. Within each treatment (87 x 105 m), there are 5 stations with one sticky trap each. The captured insects from one sticky trap is probably not a good indicator of the community composition, so treatment, the next coarsest grain, will be used.   
