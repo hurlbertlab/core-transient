@@ -728,26 +728,20 @@ summary(pred_mod)
 
 ####bootstrapping rsqrd from pred vals and comparing to original####
 # The F-statistic is in the ANOVA table
-Factual<-anova(mod2.lmer)[,4]
+Factual<-anova(pred_mod)[,4]
 Factual
 
 
-###################################################
-### code chunk number 28: lecture6.Rnw:303-306
-###################################################
+##following code borrowed from ENEC563 lec 6 notes
 # use a parametric bootstrap to obtain a p-value
-# fit a model to the data without type as a predictor
-mod1.lmer <- lmer(lw.rat~(1|pot), data=plants)
 
+boot_mod = lm(ON.k~1, data=newdata)
 
-###################################################
-### code chunk number 29: lecture6.Rnw:310-321
-###################################################
-parbootf <- function(){
+parbootf = function(){
   # simulate data from model in which type has no effect
-  rmath <- unlist(simulate(mod1.lmer))
+  rmath = unlist(simulate(boot_mod))
   # estimate type model to these data
-  rmod <- lmer(rmath~(1|pot)+type, data=plants)
+  rmod <- lm(rmath~meanP, data = test_data)
   # extract statistic
   fstat <- anova(rmod)[1,4]
   fstat
@@ -755,10 +749,6 @@ parbootf <- function(){
 
 Fstatdist <- replicate(9999,parbootf())
 
-
-###################################################
-### code chunk number 30: lecture6.Rnw:325-330
-###################################################
 max(Fstatdist)
 Fstatdist <- c(Factual,c(Fstatdist))
 # null distribution of F-statistic
@@ -766,9 +756,6 @@ ggplot(data.frame(Fstatdist),aes(x=Fstatdist))+geom_density()+
   annotate("point",y=0,x=Factual,color="red",size=3)
 
 
-###################################################
-### code chunk number 31: lecture6.Rnw:334-336
-###################################################
 # p-value of actual F-statistic
 sum(Factual<=Fstatdist)/1000
 
