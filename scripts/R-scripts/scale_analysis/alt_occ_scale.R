@@ -287,6 +287,8 @@ for(s in stateroutes){
     OAlog = nls(meanOcc ~ SSlogis(logA, Asym, xmid, scal), data = logsub)
     OApred = predict(OAlog)
     OAlm.r2 = lm(logsub$meanOcc ~ OApred)
+    # plot1 = ggplot(plotsub, aes(x = logA, y = meanOcc))+geom_point(colour = "firebrick")+
+    #   geom_line(aes(x = logA, y = OApred), color = "navy") can I gen plots in a trycatch? 
     return(data.frame(stateroute = s, OA.A, OA.i, OA.k, OA.r2 = summary(OAlm.r2)$r.squared))
   }, warning = function(w) {
     warnings = rbind(warnings, data.frame(stateroute = s, warning = w))
@@ -504,16 +506,62 @@ for (d in 2:25) {
 #write.csv(rsqrd_df, "scripts/R-scripts/scale_analysis/mod_rsqrds.csv", row.names = FALSE) #updated 02/27 POST-meeting
 
 
-#plot obs vs pred
+####Plot obs vs pred####
 #for (s in stateroutes) {
-s = 2001
-plotsub = subset(bbs_allscales, bbs_allscales$focalrte == s)
-OAlog = nls(meanOcc ~ SSlogis(logA, Asym, xmid, scal), data = plotsub)
-OApred = predict(OAlog)
+# s = 2001
+# plotsub = subset(bbs_allscales, bbs_allscales$focalrte == s)
+# OAlog = nls(meanOcc ~ SSlogis(logA, Asym, xmid, scal), data = plotsub)
+# OApred = predict(OAlog)
+# 
+# theme_set(theme_bw()+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()))
+# plot1 = ggplot(plotsub, aes(x = logA, y = meanOcc))+geom_point(colour = "olivedrab")+
+#   geom_line(aes(x = logA, y = OApred), color = "navy")
 
-theme_set(theme_bw()+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()))
-plot1 = ggplot(plotsub, aes(x = logA, y = meanOcc))+geom_point(colour = "olivedrab")+
-  geom_line(aes(x = logA, y = OApred), color = "navy")
 
-#}
+#not yet working in loop but works for s = 2001; not fault of pctTran either  
+
+stateroutes = unique(bbs_allscales$focalrte)
+pdf("output/plots/BBS_predplots.pdf", onefile = TRUE)
+for (s in stateroutes) { 
+  #log(area)
+  theme_set(theme_bw()+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()))
+  plotsub = subset(bbs_allscales, bbs_allscales$focalrte == s)
+  
+   OAlog = nls(meanOcc ~ SSlogis(logA, Asym, xmid, scal), data = plotsub)
+   OApred = predict(OAlog)
+  plot1 = ggplot(plotsub, aes(x = logA, y = meanOcc))+geom_point(colour = "firebrick")+
+    geom_line(aes(x = logA, y = OApred), color = "navy")
+  
+   CAlog = nls(pctCore ~ SSlogis(logA, Asym, xmid, scal), data = plotsub)
+   CApred = predict(CAlog)
+  plot1_2= ggplot(plotsub, aes(x = logA, y = pctCore))+geom_point(colour = "turquoise")+
+    geom_line(aes(x = logA, y = CApred), color = "navy")
+  
+   TAlog = lm(log(pctTran) ~ lnA, data = plotsub)
+   TApred = predict(TAlog)
+  plot1_3 = ggplot(plotsub, aes(x = lnA, y = log(pctTran)))+geom_point(colour = "olivedrab")+
+   geom_line(aes(x = lnA, y = TApred), color = "navy")
+  
+  
+  #aveN
+   ONlog = nls(meanOcc ~ SSlogis(logN, Asym, xmid, scal), data = plotsub)
+   ONpred = predict(ONlog)
+  plot2 = ggplot(plotsub, aes(x = logN, y = meanOcc))+geom_point(colour = "firebrick")+
+    geom_line(aes(x = logN, y = ONpred), color = "navy")
+  
+   CNlog = nls(pctCore ~ SSlogis(logN, Asym, xmid, scal), data = plotsub)
+   CNpred = predict(CNlog)
+  plot2_2= ggplot(plotsub, aes(x = logN, y = pctCore))+geom_point(colour = "turquoise")+
+    geom_line(aes(x = logN, y = CNpred), color = "navy")
+  
+   TNlog = lm(log(pctTran) ~ lnN, data = plotsub)
+   TNpred = predict(TNlog)
+  plot2_3 = ggplot(plotsub, aes(x = lnN, y = log(pctTran)))+geom_point(colour = "olivedrab")+
+    geom_line(aes(x = lnN, y = TNpred), color = "navy")
+  
+  predplot = grid.arrange(plot1, plot2, plot1_2, plot2_2, plot1_3, plot2_3, 
+                          ncol=2, top = paste("predplot_", s, sep = ""))
+  }
+dev.off()
+
 
