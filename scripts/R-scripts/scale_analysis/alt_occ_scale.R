@@ -469,7 +469,7 @@ bbs_envs = bbs_allscales
 # linear models explaining either logistic slope or negative exponential or power slopes as
 # a function of env variables
 bbs_envs = read.csv("scripts/R-scripts/scale_analysis/bbs_envs.csv", header = TRUE)
-coefs = read.csv("C:/git/core-transient/scripts/R-scripts/scale_analysis/coefs.csv", header = TRUE)
+coefs = read.csv("scripts/R-scripts/scale_analysis/coefs.csv", header = TRUE)
 uniq_env = unique(bbs_envs[, c('focalrte', 'temp', 'vartemp', 'meanP', 'varP', 'ndvi', 'varndvi')])
 # Merge environmental data with the coef shape data
 env_coefs = inner_join(coefs, uniq_env, by = c('stateroute' = 'focalrte'))
@@ -481,6 +481,31 @@ covmatrix = round(cor(coefs[, 2:ncol(coefs)]), 2)
 #further collapse using mapply? edit 02/26: now in tightened function, still could be tighter 
 final_coefs = colnames(env_coefs[,2:17])
 env_vars = colnames(env_coefs[,18:ncol(env_coefs)]) 
+
+
+# nested for loop
+rsqrd_df = data.frame(dep = character(), ind = character(), r2 = numeric())
+
+
+for (d in 2:17) {
+  for (i in 18:ncol(env_coefs)) {
+    tempmod = lm(env_coefs[,d] ~ env_coefs[,i])
+    tempdf = data.frame(dep = names(env_coefs)[d], 
+                        ind = names(env_coefs)[i], 
+                        r2 = summary(tempmod)$r.squared)
+    rsqrd_df = rbind(rsqrd_df, tempdf)
+  }
+}
+
+
+
+
+
+
+
+
+
+
 
 #precip 
 meanPmods = lapply(final_coefs, function(x) {
@@ -527,22 +552,9 @@ for (m in mods){
   mod_sumstats = summary(m)
   #mod_var = vcov(m) #how to aggregate the vcov matrices in a sensible way? ignoring in output for now but will have a sep df/output ideally
   temp = cbind("m" = Reduce(paste, deparse(m[[n]]$terms)), 
-               "rsqd" = m[[n]]$r.squared,
-               "adj.r" = m[[n]]$adj.r.squared)
+               "rsqd" = m[[n]]$r.squared)
   rsqrd_df = rbind(temp, rsqrd_df)
   
-  
-  testmod = lm(deparse(m[[n]]$terms), data = env_coefs)
-  fvals = testmod$fitted.values
-  preds = predict(testmod, data = env_coefs)
-  obsvals = unlist(strsplit(deparse(m[[n]]$terms), " ~ ")) 
-  #extract chars from "m" for coef(y) and env(x) var col titles and subsequently, observed vals
-  temp2 = cbind("fvals" = fvals,
-                "preds" = preds,
-                "obsx" = env_coefs[, obsvals[2]],
-                "obsy" = env_coefs[, obsvals[1]]) #,
-                #"mod" = rep(deparse(m[[n]]$terms)))
-  predvals = rbind(temp2, predvals)
    }
 }
 
