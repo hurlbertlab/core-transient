@@ -285,21 +285,25 @@ for(s in stateroutes){
   #OA 
   OAmodel = tryCatch({
     OAlog = nls(meanOcc ~ SSlogis(logA, Asym, xmid, scal), data = logsub)
-    return(data.frame(stateroute = s, OA.A, OA.i, OA.k))
+    OApred = predict(OAlog)
+    OAlm.r2 = lm(logsub$meanOcc ~ OApred)
+    return(data.frame(stateroute = s, OA.A, OA.i, OA.k, OA.r2 = summary(OAlm.r2)$r.squared))
   }, warning = function(w) {
     warnings = rbind(warnings, data.frame(stateroute = s, warning = w))
   }, error = function(e) {
     OA.i <- NA
     OA.A <- NA
     OA.k <- NA
+    OA.r2 <- NA
   }, finally = {
     OA.i <- summary(OAlog)$coefficients["xmid","Estimate"]
     OA.A <- summary(OAlog)$coefficients["Asym","Estimate"]
     OA.k <- summary(OAlog)$coefficients["scal","Estimate"]
+    OA.r2 <- summary(OAlm.r2)$r.squared
     #OA.tmp = data.frame(stateroute = s, OA.A, OA.i, OA.k)
   })
   
-  OA.temp = data.frame(stateroute = s, OA.A, OA.i, OA.k) #fix
+  OA.temp = data.frame(stateroute = s, OA.A, OA.i, OA.k, OA.r2) 
   OA.df = rbind(OA.df, OA.temp)
   # 
   ONmodel = tryCatch({
