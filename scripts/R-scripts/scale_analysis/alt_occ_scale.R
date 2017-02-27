@@ -264,12 +264,12 @@ dev.off()
 #use nls: 
 library(stats)
 
-OA.df = data.frame(stateroute = numeric(), OA.A= numeric(), OA.i = numeric(), OA.k = numeric())
-ON.df = data.frame(stateroute = numeric(), ON.A= numeric(), ON.i = numeric(), ON.k = numeric())
-CA.df = data.frame(stateroute = numeric(), CA.A= numeric(), CA.i = numeric(), CA.k = numeric())
-CN.df = data.frame(stateroute = numeric(), CN.A= numeric(), CN.i = numeric(), CN.k = numeric())
-TA.df = data.frame(stateroute = numeric(), TAexp= numeric(), TApow = numeric())
-TN.df = data.frame(stateroute = numeric(), TAexp= numeric(), TApow = numeric())
+OA.df = data.frame(stateroute = numeric(), OA.A= numeric(), OA.i = numeric(), OA.k = numeric(), OA.r2 = numeric())
+ON.df = data.frame(stateroute = numeric(), ON.A= numeric(), ON.i = numeric(), ON.k = numeric(), ON.r2 = numeric())
+CA.df = data.frame(stateroute = numeric(), CA.A= numeric(), CA.i = numeric(), CA.k = numeric(), CA.r2 = numeric())
+CN.df = data.frame(stateroute = numeric(), CN.A= numeric(), CN.i = numeric(), CN.k = numeric(), CN.r2 = numeric())
+TA.df = data.frame(stateroute = numeric(), TAexp= numeric(), TApow = numeric(), TAexp.r2 = numeric(), TApow.r2 = numeric())
+TN.df = data.frame(stateroute = numeric(), TNexp= numeric(), TNpow = numeric(), TNexp.r2 = numeric(), TNpow.r2 = numeric())
 
 
 #Use tryCatch to run through all routes but store routes with errors
@@ -300,79 +300,85 @@ for(s in stateroutes){
     OA.A <- summary(OAlog)$coefficients["Asym","Estimate"]
     OA.k <- summary(OAlog)$coefficients["scal","Estimate"]
     OA.r2 <- summary(OAlm.r2)$r.squared
-    #OA.tmp = data.frame(stateroute = s, OA.A, OA.i, OA.k)
-  })
-  
+    })
   OA.temp = data.frame(stateroute = s, OA.A, OA.i, OA.k, OA.r2) 
   OA.df = rbind(OA.df, OA.temp)
-  # 
+  
+  #ON 
   ONmodel = tryCatch({
     ONlog = nls(meanOcc ~ SSlogis(logN, Asym, xmid, scal), data = logsub)
-    return(data.frame(stateroute = s, ON.A, ON.i, ON.k))
+    ONpred = predict(ONlog)
+    ONlm.r2 = lm(logsub$meanOcc ~ ONpred)
+    return(data.frame(stateroute = s, ON.A, ON.i, ON.k, ON.r2 = summary(ONlm.r2)$r.squared))
   }, warning = function(w) {
     warnings = rbind(warnings, data.frame(stateroute = s, warning = w))
   }, error = function(e) {
     ON.i <- NA
     ON.A <- NA
     ON.k <- NA
+    OA.r2 <- NA
   }, finally = {
     ON.i <- summary(ONlog)$coefficients["xmid","Estimate"]
     ON.A <- summary(ONlog)$coefficients["Asym","Estimate"]
     ON.k <- summary(ONlog)$coefficients["scal","Estimate"]
-    #ON.tmp = data.frame(stateroute = s, ON.A, ON.i, ON.k)
-  })
-  
-  ON.temp = data.frame(stateroute = s, ON.A, ON.i, ON.k) #fix
+    ON.r2 <- summary(ONlm.r2)$r.squared
+    })
+  ON.temp = data.frame(stateroute = s, ON.A, ON.i, ON.k, ON.r2) #fix
   ON.df = rbind(ON.df, ON.temp)
-  #
+  
+  #CA
   CAmodel = tryCatch({
     CAlog = nls(pctCore ~ SSlogis(logA, Asym, xmid, scal), data = logsub)
-    return(data.frame(stateroute = s, CA.A, CA.i, CA.k))
+    CApred = predict(CAlog)
+    CAlm.r2 = lm(logsub$pctCore ~ CApred)
+    return(data.frame(stateroute = s, CA.A, CA.i, CA.k, CA.r2 = summary(CAlm.r2)$r.squared))
   }, warning = function(w) {
     warnings = rbind(warnings, data.frame(stateroute = s, warning = w))
   }, error = function(e) {
     CA.i <- NA
     CA.A <- NA
     CA.k <- NA
+    CA.r2 <- NA
   }, finally = {
     CA.i <- summary(CAlog)$coefficients["xmid","Estimate"]
     CA.A <- summary(CAlog)$coefficients["Asym","Estimate"]
     CA.k <- summary(CAlog)$coefficients["scal","Estimate"]
-    #CA.tmp = data.frame(stateroute = s, CA.A, CA.i, CA.k)
+    CA.r2 = summary(CAlm.r2)$r.squared
   })
-  
-  CA.temp = data.frame(stateroute = s, CA.A, CA.i, CA.k) #fix
+  CA.temp = data.frame(stateroute = s, CA.A, CA.i, CA.k, CA.r2) 
   CA.df = rbind(CA.df, CA.temp)
   
-  
-  #
+  #CN
   CNmodel = tryCatch({
     CNlog = nls(pctCore ~ SSlogis(logN, Asym, xmid, scal), data = logsub)
-    return(data.frame(stateroute = s, CN.A, CN.i, CN.k))
+    CNpred = predict(CNlog)
+    CNlm.r2 = lm(logsub$pctCore ~ CNpred) #bootstraping r2 vals for CNlog since not in summary stats
+    return(data.frame(stateroute = s, CN.A, CN.i, CN.k, CN.r2 = summary(CNlm.r2)$r.squared))
   }, warning = function(w) {
     warnings = rbind(warnings, data.frame(stateroute = s, warning = w))
   }, error = function(e) {
     CN.i <- NA
     CN.A <- NA
     CN.k <- NA
+    CN.r2 <- NA
   }, finally = {
     CN.i <- summary(CNlog)$coefficients["xmid","Estimate"]
     CN.A <- summary(CNlog)$coefficients["Asym","Estimate"]
     CN.k <- summary(CNlog)$coefficients["scal","Estimate"]
-    #CN.tmp = data.frame(stateroute = s, CN.A, CN.i, CN.k)
-  })
-  
-  CN.temp = data.frame(stateroute = s, CN.A, CN.i, CN.k) #fix
+    CN.r2 <- summary(CNlm.r2)$r.squared
+    })
+  CN.temp = data.frame(stateroute = s, CN.A, CN.i, CN.k, CN.r2) #fix
   CN.df = rbind(CN.df, CN.temp)
 
-  
   # Fitting % transient
   #TA
   TAlog = lm(log(pctTran) ~ lnA, data = logsub)
   TA = lm(log(pctTran) ~ area, data = logsub)
   TA.temp = data.frame(stateroute = s, 
                        TAexp = TAlog$coefficients[2],
-                       TApow = TA$coefficients[2]) 
+                       TApow = TA$coefficients[2], 
+                       TAexp.r2 = summary(TAlog)$r.squared, 
+                       TApow.r2 = summary(TA)$r.squared) 
   TA.df = rbind(TA.df, TA.temp)
   
   #TN  
@@ -380,9 +386,10 @@ for(s in stateroutes){
   TN = lm(log(pctTran) ~ area, data = logsub)
     TN.temp = data.frame(stateroute = s, 
                        TNexp = TNlog$coefficients[2],
-                       TNpow = TN$coefficients[2]) 
+                       TNpow = TN$coefficients[2], 
+                       TNexp.r2 = summary(TNlog)$r.squared, 
+                       TNpow.r2 = summary(TN)$r.squared)
   TN.df = rbind(TN.df, TN.temp)
-  
 }
 
 #join all together using inner_join by focal rte, not cbind 
@@ -393,13 +400,12 @@ coefs = OA.df %>%
   inner_join(TA.df, OA.df, by = "stateroute") %>% 
   inner_join(TN.df, OA.df, by = "stateroute")  
 
-#write.csv(coefs, "C:/git/core-transient/scripts/R-scripts/scale_analysis/coefs.csv", row.names = FALSE)
+#write.csv(coefs, "C:/git/core-transient/scripts/R-scripts/scale_analysis/coefs.csv", row.names = FALSE) #updated 02/27
+#exp mods have much better r2 vals for pctTran than power 
 
 
 ####Env data add-in####
-
 #for now just use what we have, that's fine 
-
 #bring in lat-lons for each focal route and creating sites
 bbs_allscales = read.csv("data/bbs_allscales.csv", header = TRUE)
 bbs_latlon = read.csv("//bioark.ad.unc.edu/HurlbertLab/Jenkins/BBS scaled/good_rtes2.csv", header = TRUE)
@@ -482,17 +488,11 @@ env_coefs = inner_join(coefs, uniq_env, by = c('stateroute' = 'focalrte'))
 covmatrix = round(cor(coefs[, 2:ncol(coefs)]), 2)
 
 
-#further collapse using mapply? edit 02/26: now in tightened function, still could be tighter 
-final_coefs = colnames(env_coefs[,2:17])
-env_vars = colnames(env_coefs[,18:ncol(env_coefs)]) 
-
-
-# nested for loop
+# nested for loop for examining variation in coefs/fitted curves explained by env vars 
 rsqrd_df = data.frame(dep = character(), ind = character(), r2 = numeric())
 
-
-for (d in 2:17) {
-  for (i in 18:ncol(env_coefs)) {
+for (d in 2:25) {
+  for (i in 26:ncol(env_coefs)) {
     tempmod = lm(env_coefs[,d] ~ env_coefs[,i])
     tempdf = data.frame(dep = names(env_coefs)[d], 
                         ind = names(env_coefs)[i], 
@@ -501,115 +501,5 @@ for (d in 2:17) {
   }
 }
 
+#write.csv(rsqrd_df, "scripts/R-scripts/scale_analysis/mod_rsqrds.csv", row.names = FALSE) #updated 02/27 POST-meeting
 
-
-
-
-
-
-
-
-
-
-#precip 
-meanPmods = lapply(final_coefs, function(x) {
-  lm(substitute(i~meanP, list(i = as.name(x))), data = env_coefs)
-})
-mpsum = lapply(meanPmods, summary)
-#varprecip
-varPmods = lapply(final_coefs, function(x) {
-  lm(substitute(i~varP, list(i = as.name(x))), data = env_coefs)
-})
-vpsum = lapply(varPmods, summary)
-#temp
-meanTmods = lapply(final_coefs, function(x) {
-  lm(substitute(i~temp, list(i = as.name(x))), data = env_coefs)
-})
-mtsum = lapply(meanTmods, summary)
-#vartemp
-varTmods = lapply(final_coefs, function(x) {
-  lm(substitute(i~vartemp, list(i = as.name(x))), data = env_coefs)
-})
-vtsum = lapply(varTmods, summary)
-#ndvi 
-meanNmods = lapply(final_coefs, function(x) {
-  lm(substitute(i~ndvi, list(i = as.name(x))), data = env_coefs)
-})
-mnsum = lapply(meanNmods, summary)
-#varndvi
-varNmods = lapply(final_coefs, function(x) {
-  lm(substitute(i~varndvi, list(i = as.name(x))), data = env_coefs)
-})
-vnsum = lapply(varNmods, summary)
-
-#run summary stats and extract R values 
-mods = list(mpsum, vpsum, mtsum, vtsum, mnsum, vnsum)
-#mods = list(varNmods)
-
-predvals = data.frame(fvals = NULL, preds=NULL) #, "vars" = NULL)
-rsqrd_df = data.frame(m = NULL, r.squared = NULL, adj.r.squared = NULL)
-temp = data.frame(m = NULL, r.squared = NULL, adj.r.squared = NULL)
-temp2 = data.frame(fvals = NULL, preds=NULL) #, "vars" = NULL)
-
-for (m in mods){
-  for (n in 1:16){
-  mod_sumstats = summary(m)
-  #mod_var = vcov(m) #how to aggregate the vcov matrices in a sensible way? ignoring in output for now but will have a sep df/output ideally
-  temp = cbind("m" = Reduce(paste, deparse(m[[n]]$terms)), 
-               "rsqd" = m[[n]]$r.squared)
-  rsqrd_df = rbind(temp, rsqrd_df)
-  
-   }
-}
-
-#write.csv(rsqrd_df, "scripts/R-scripts/scale_analysis/mod_rsqrds.csv", row.names = FALSE) #updated 02/27
-#write.csv(predvals, "scripts/R-scripts/scale_analysis/predvals.csv", row.names = FALSE) #updated 02/27
-
-
-####Rerun mods using predvals####
-#gen for coefs/for each stateroute; pred OA.A, pred OA.i, pred OA.k, etc 
-#start with gen predictions only for models that explained >10% of var 
-
-newdata = data.frame(ON.k = env_coefs$ON.k, meanP = env_coefs$meanP)
-ON.k_pred = predict(ONmod3, newdata = newdata) #ON.k ~ meanP mod best
-test_data = cbind(newdata, ON.k_pred)
-
-
-#rerun mod using pred vals instead of original 
-pred_mod = lm(ON.k_pred~meanP, data = test_data)
-summary(pred_mod)
-#lol R squared of 1 for my best model, disastrous  #edit: rerun using new predvals 
-
-
-####bootstrapping rsqrd from pred vals and comparing to original####
-# The F-statistic is in the ANOVA table
-Factual<-anova(pred_mod)[,4]
-Factual
-
-
-##following code borrowed from ENEC563 lec 6 notes
-# use a parametric bootstrap to obtain a p-value
-
-boot_mod = lm(ON.k~1, data=newdata)
-
-parbootf = function(){
-  # simulate data from model in which type has no effect
-  rmath = unlist(simulate(boot_mod))
-  # estimate type model to these data
-  rmod <- lm(rmath~meanP, data = test_data)
-  # extract statistic
-  fstat <- anova(rmod)[1,4]
-  fstat
-}
-
-Fstatdist <- replicate(9999,parbootf())
-
-max(Fstatdist)
-Fstatdist <- c(Factual,c(Fstatdist))
-# null distribution of F-statistic
-ggplot(data.frame(Fstatdist),aes(x=Fstatdist))+geom_density()+
-  annotate("point",y=0,x=Factual,color="red",size=3)
-
-
-# p-value of actual F-statistic
-sum(Factual<=Fstatdist)/1000
