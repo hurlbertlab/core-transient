@@ -560,14 +560,36 @@ ggsave(file="C:/Git/core-transient/output/plots/predmod3c.pdf", height = 10, wid
 # add in BBS below dataset
 occ_taxa4 = occ_taxa[,c("datasetID", "site","meanOcc", "pctTrans","pctCore","pctNeither", "scale", "spRich")]
 occ_taxa4$site = as.numeric(occ_taxa4$site)
-bbs_below4 = bbs_below
-bbs_below4$site = as.numeric(bbs_below4$stateroute)
-bbs_below4$datasetID = 1
-bbs_below4$pctTrans = bbs_below4$pctTran
-bbs_below4$pctNeither = 1-(bbs_below4$pctTrans + bbs_below4$pctCore)
-bbs_below4$spRich = bbs_below4$aveN
-bbs_below4 = bbs_below4[,c("datasetID", "site","meanOcc", "pctTrans","pctCore","pctNeither", "scale", "spRich")]
-occ_taxa_bbs = rbind(occ_taxa4, bbs_below4)
+
+# calculating species richness
+bbs_spRich = bbs_abun %>% 
+  group_by(AOU, stateroute, scale, subrouteID) %>%
+  for(i in unique(bbs_abun$stateroute)){
+   tally(bbs_abun$AOU)
+  }
+
+
+totalspp = bbs_abun %>% 
+  group_by(AOU, stateroute) %>%
+  tally(sum.groupCount.)
+for(i in unique(bbs_abun$AOU)){
+  sum(bbs_abun$occupancy <= 1/3)/(totalspp$n)
+}
+
+
+bbs_abun3.5 = merge(bbs_spRich, bbs_abun, by = "stateroute")
+
+bbs_abun4 = bbs_abun
+bbs_abun4$site = as.numeric(bbs_abun4$stateroute)
+bbs_abun4$datasetID = 1
+bbs_abun4$pctTrans = bbs_abun4$pctTran
+bbs_abun4$pctNeither = 1-(bbs_abun4$pctTrans + bbs_abun4$pctCore)
+bbs_abun4$spRich = 
+
+
+
+bbs_abun4 = bbs_abun4[,c("datasetID", "site","meanOcc", "pctTrans","pctCore","pctNeither", "scale", "spRich")]
+occ_taxa_bbs = rbind(occ_taxa4, bbs_abun4)
 
 occ_taxa_bbs$total = occ_taxa_bbs$pctCore + occ_taxa_bbs$pctNeither
 occ_taxa_bbs$numtrans = (1-occ_taxa_bbs$total) * occ_taxa_bbs$spRich
