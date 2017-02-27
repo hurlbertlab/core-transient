@@ -475,104 +475,101 @@ uniq_env = unique(bbs_envs[, c('focalrte', 'temp', 'vartemp', 'meanP', 'varP', '
 
 env_coefs = inner_join(coefs, uniq_env, by = c('stateroute' = 'focalrte'))
 
-#collapse into loop structure 
-output = data.frame()
-# final_coefs = c("OA.A", "OA.i", "OA.k", "ON.A", "ON.i", "ON.k",
-#                 "CA.A", "CA.i", "CA.k", "CN.A", "CN.i", "CN.k", 
-#                 "TAexp", "TNexp", "TApow", "TNpow")
-# env_vars = c("meanP", "varP", "temp", "vartemp", "ndvi", "varndvi")
+#further collapse using mapply? edit 02/26: now in tightened function, still could be tighter 
+
 final_coefs = colnames(env_coefs[,2:17])
 env_vars = colnames(env_coefs[,18:ncol(env_coefs)]) 
 data = env_coefs
 rsqrd_df = data.frame(m = NULL, r.squared = NULL, adj.r.squared = NULL)
 
-# 
-# for(c in final_coefs){ #want this to pull out of col names, not rows! dang! 
-#   for(e in env_vars){
-#      mod = lm(c~e, data = data) #for some reason model interpreting vars as factors when both numeric
-#      mod_sumstats = summary(mod)
-#      #mod_var = vcov(m) #how to aggregate the vcov matrices in a sensible way? ignoring in output for now but will have a sep df/output ideally
-#      temp = cbind("m" = paste(c, e, sep = "~"), 
-#                   "rsqd" = mod_sumstats$r.squared, 
-#                   "adj.r" = mod_sumstats$adj.r.squared)
-#      rsqrd_df = rbind(temp, rsqrd_df)
-#      
-#      }
-# }
 
 #precip 
 meanPmods = lapply(final_coefs, function(x) {
-  lm(substitute(meanP ~ i, list(i = as.name(x))), data = data)
+  lm(substitute(i~meanP, list(i = as.name(x))), data = data)
 })
 mpsum = lapply(meanPmods, summary)
-
+#varprecip
 varPmods = lapply(final_coefs, function(x) {
-  lm(substitute(varP ~ i, list(i = as.name(x))), data = data)
+  lm(substitute(i~varP, list(i = as.name(x))), data = data)
 })
 vpsum = lapply(varPmods, summary)
-
-
 #temp
 meanTmods = lapply(final_coefs, function(x) {
-  lm(substitute(temp ~ i, list(i = as.name(x))), data = data)
+  lm(substitute(i~temp, list(i = as.name(x))), data = data)
 })
 mtsum = lapply(meanTmods, summary)
-
+#vartemp
 varTmods = lapply(final_coefs, function(x) {
-  lm(substitute(vartemp ~ i, list(i = as.name(x))), data = data)
+  lm(substitute(i~vartemp, list(i = as.name(x))), data = data)
 })
 vtsum = lapply(varTmods, summary)
-
-
 #ndvi 
 meanNmods = lapply(final_coefs, function(x) {
-  lm(substitute(ndvi ~ i, list(i = as.name(x))), data = data)
+  lm(substitute(i~ndvi, list(i = as.name(x))), data = data)
 })
 mnsum = lapply(meanNmods, summary)
-
+#varndvi
 varNmods = lapply(final_coefs, function(x) {
-  lm(substitute(varndvi ~ i, list(i = as.name(x))), data = data)
+  lm(substitute(i~varndvi, list(i = as.name(x))), data = data)
 })
 vnsum = lapply(varNmods, summary)
 
 
-
+mods2 = list(meanPmods, varPmods, meanTmods, varTmods, meanNmods, varNmods)
+output = c()
+for (m in mods2){
+  modsum = lapply(m, summary)
+  output = list(output, modsum)
+}
 
 #run summary stats and extract R values 
-mods = list(OAmod1, OAmod2, OAmod3, OAmod4, OAmod5, OAmod6, OAmod7, OAmod8, OAmod9,
-                  ONmod1, ONmod2, ONmod3, ONmod4, ONmod5, ONmod6, ONmod7, ONmod8, ONmod9,
-                  CAmod1, CAmod2, CAmod3, CAmod4, CAmod5, CAmod6, CAmod7, CAmod8, CAmod9,
-                  CNmod1, CNmod2, CNmod3, CNmod4, CNmod5, CNmod6, CNmod7, CNmod8, CNmod9,
-                  TAmod1, TAmod2, TAmod3, TAmod4, TAmod5, TAmod6,
-                TNmod1, TNmod2, TNmod3, TNmod4, TNmod5, TNmod6)
+mods = list(mpsum, vpsum, mtsum, vtsum, mnsum, vnsum)
+#mods = list(varNmods)
 
 rsqrd_df = data.frame(m = NULL, r.squared = NULL, adj.r.squared = NULL)
 temp = data.frame(m = NULL, r.squared = NULL, adj.r.squared = NULL)
+#temp2 = list()
 for (m in mods){
+  for (n in 1:16){
   mod_sumstats = summary(m)
   #mod_var = vcov(m) #how to aggregate the vcov matrices in a sensible way? ignoring in output for now but will have a sep df/output ideally
-  temp = cbind("m" = Reduce(paste, deparse(formula(m))), 
-               "rsqd" = mod_sumstats$r.squared, 
-               "adj.r" = mod_sumstats$adj.r.squared)
+  temp = cbind("m" = Reduce(paste, deparse(m[[n]]$terms)), 
+               "rsqd" = m[[n]]$r.squared,
+               "adj.r" = m[[n]]$adj.r.squared)
   rsqrd_df = rbind(temp, rsqrd_df)
-  
+   }
 }
 
-#write.csv(rsqrd_df, "scripts/R-scripts/scale_analysis/mod_rsqrds.csv", row.names = FALSE) 
+#write.csv(rsqrd_df, "scripts/R-scripts/scale_analysis/mod_rsqrds.csv", row.names = FALSE) #updated 02/26
+
+#gen pred vals fast?
+for (m in mods){
+  for (n in 1:16){
+  testmod = lm(deparse(m[[n]]$terms), data = data)
+  fvals = testmod$fitted.values
+  preds = predict(testmod, data = data)
+  predvals = cbind("fvals" = fvals,
+                   "preds" = preds,
+                   "m" = data[, m],
+                   "n" = data[, n]) 
+  }
+}
+                 
 
 ####merging rsqrd vals and generating pred vals from env_coef mods####
+#read in mod rsqrd, bring in associated data
 bbs_envs = read.csv("scripts/R-scripts/scale_analysis/bbs_envs.csv", header = TRUE)
 coefs = read.csv("C:/git/core-transient/scripts/R-scripts/scale_analysis/coefs.csv", header = TRUE)
 uniq_env = unique(bbs_envs[, c('focalrte', 'temp', 'vartemp', 'meanP', 'varP', 'ndvi', 'varndvi')])
 # Merge environmental data with the coef shape data
 env_coefs = inner_join(coefs, uniq_env, by = c('stateroute' = 'focalrte'))
-
-
 mod_rsqrds = read.csv("scripts/R-scripts/scale_analysis/mod_rsqrds.csv", header = TRUE)
 
-####Gen predicted values from model####
+
+####Gen predicted values from models####
 #gen for coefs/for each stateroute; pred OA.A, pred OA.i, pred OA.k, etc 
 #start with gen predictions only for models that explained >10% of var 
+
 newdata = data.frame(ON.k = env_coefs$ON.k, meanP = env_coefs$meanP)
 ON.k_pred = predict(ONmod3, newdata = newdata) #ON.k ~ meanP mod best
 test_data = cbind(newdata, ON.k_pred)
