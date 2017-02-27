@@ -679,6 +679,7 @@ TNmod10 = lm(TNpow~ndvi, data = env_coefs)
 TNmod11 = lm(TNexp~varndvi, data = env_coefs)
 TNmod12 = lm(TNpow~varndvi, data = env_coefs)
 
+
 #run summary stats and extract R values 
 mods = list(OAmod1, OAmod2, OAmod3, OAmod4, OAmod5, OAmod6, OAmod7, OAmod8, OAmod9,
                   ONmod1, ONmod2, ONmod3, ONmod4, ONmod5, ONmod6, ONmod7, ONmod8, ONmod9,
@@ -691,7 +692,7 @@ rsqrd_df = data.frame(m = NULL, r.squared = NULL, adj.r.squared = NULL)
 temp = data.frame(m = NULL, r.squared = NULL, adj.r.squared = NULL)
 for (m in mods){
   mod_sumstats = summary(m)
-  mod_var = vcov(m) #how to aggregate the vcov matrices in a sensible way? ignoring in output for now but will have a sep df/output ideally
+  #mod_var = vcov(m) #how to aggregate the vcov matrices in a sensible way? ignoring in output for now but will have a sep df/output ideally
   temp = cbind("m" = Reduce(paste, deparse(formula(m))), 
                "rsqd" = mod_sumstats$r.squared, 
                "adj.r" = mod_sumstats$adj.r.squared)
@@ -709,30 +710,75 @@ uniq_env = unique(bbs_envs[, c('focalrte', 'temp', 'vartemp', 'meanP', 'varP', '
 env_coefs = inner_join(coefs, uniq_env, by = c('stateroute' = 'focalrte'))
 
 
-rsqrd_df = read.csv("scripts/R-scripts/scale_analysis/mod_rsqrds.csv", header = TRUE)
+mod_rsqrds = read.csv("scripts/R-scripts/scale_analysis/mod_rsqrds.csv", header = TRUE)
+
+####Gen predicted values from model####
+#gen for coefs/for each stateroute; pred OA.A, pred OA.i, pred OA.k, etc 
+#start with gen predictions only for models that explained >10% of var 
+newdata = data.frame(ON.k = env_coefs$ON.k, meanP = env_coefs$meanP)
+ON.k_pred = predict(ONmod3, newdata = newdata) #ON.k ~ meanP mod best
+test_data = cbind(newdata, ON.k_pred)
 
 
+#rerun mod using pred vals instead of original 
+pred_mod = lm(ON.k_pred~meanP, data = test_data)
+summary(pred_mod)
+#lol R squared of 1 for my best model, disastrous  
 
 
 ####bootstrapping rsqrd from pred vals and comparing to original####
+# The F-statistic is in the ANOVA table
+Factual<-anova(mod2.lmer)[,4]
+Factual
 
 
+###################################################
+### code chunk number 28: lecture6.Rnw:303-306
+###################################################
+# use a parametric bootstrap to obtain a p-value
+# fit a model to the data without type as a predictor
+mod1.lmer <- lmer(lw.rat~(1|pot), data=plants)
+
+
+###################################################
+### code chunk number 29: lecture6.Rnw:310-321
+###################################################
+parbootf <- function(){
+  # simulate data from model in which type has no effect
+  rmath <- unlist(simulate(mod1.lmer))
+  # estimate type model to these data
+  rmod <- lmer(rmath~(1|pot)+type, data=plants)
+  # extract statistic
+  fstat <- anova(rmod)[1,4]
+  fstat
+}
+
+Fstatdist <- replicate(9999,parbootf())
+
+
+###################################################
+### code chunk number 30: lecture6.Rnw:325-330
+###################################################
+max(Fstatdist)
+Fstatdist <- c(Factual,c(Fstatdist))
+# null distribution of F-statistic
+ggplot(data.frame(Fstatdist),aes(x=Fstatdist))+geom_density()+
+  annotate("point",y=0,x=Factual,color="red",size=3)
+
+
+###################################################
+### code chunk number 31: lecture6.Rnw:334-336
+###################################################
+# p-value of actual F-statistic
+sum(Factual<=Fstatdist)/1000
 
 ########################################################
-
-#finished models 
-
-envmod1 = lm(meanOcc~ndvi, data = bbs_allscales)
-summary(envmod1)
-
-?var
-
 
 # linear model explaining either logistic slope or negative exponential or power slopes as
 # a function of env variables
 
 # Can also just look at the correlation matrix, e.g.
-round(cor(curves[, 2:ncol(curves)]), 2)
+round(cor(coefs[, 2:ncol(coefs)]), 2)
 
 
 
