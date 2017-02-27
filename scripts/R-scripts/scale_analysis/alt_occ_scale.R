@@ -538,8 +538,9 @@ for (m in mods){
   #vars = final_coefs[, n] #how do I pull in obs vals from pre-model for both variables? 
   temp2 = cbind("fvals" = fvals,
                 "preds" = preds)
-                #,"vars" = vars)
-   
+                #,"xvars" = env_coefs[]
+                #,"yvars" = env_coefs[]) 
+  #extract first 4 chars from "m" and 8:end chars of "m" for x and yvar col titles 
   predvals = rbind(temp2, predvals)
    }
 }
