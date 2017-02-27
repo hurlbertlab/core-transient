@@ -556,11 +556,24 @@ ggsave(file="C:/Git/core-transient/output/plots/predmod3c.pdf", height = 10, wid
 
 
 #### Fig 4d ####
-occ_taxa$total = occ_taxa$pctCore + occ_taxa$pctNeither
-occ_taxa$numtrans = (1-occ_taxa$total) * occ_taxa$spRich
-occ_taxa$minustrans = occ_taxa$spRich - occ_taxa$numtrans
 
 # add in BBS below dataset
+occ_taxa4 = occ_taxa[,c("datasetID", "site","meanOcc", "pctTrans","pctCore","pctNeither", "scale", "spRich")]
+occ_taxa4$site = as.numeric(occ_taxa4$site)
+bbs_below4 = bbs_below
+bbs_below4$site = as.numeric(bbs_below4$stateroute)
+bbs_below4$datasetID = 1
+bbs_below4$pctTrans = bbs_below4$pctTran
+bbs_below4$pctNeither = 1-(bbs_below4$pctTrans + bbs_below4$pctCore)
+bbs_below4$spRich = bbs_below4$aveN
+bbs_below4 = bbs_below4[,c("datasetID", "site","meanOcc", "pctTrans","pctCore","pctNeither", "scale", "spRich")]
+occ_taxa_bbs = rbind(occ_taxa4, bbs_below4)
+
+occ_taxa_bbs$total = occ_taxa_bbs$pctCore + occ_taxa_bbs$pctNeither
+occ_taxa_bbs$numtrans = (1-occ_taxa_bbs$total) * occ_taxa_bbs$spRich
+occ_taxa_bbs$minustrans = occ_taxa_bbs$spRich - occ_taxa_bbs$numtrans
+
+
 
 ####### MODELS ######
 latlongs = read.csv("data/latlongs/latlongs.csv", header =TRUE)
