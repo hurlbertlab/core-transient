@@ -352,7 +352,7 @@ for(s in stateroutes){
   CNmodel = tryCatch({
     CNlog = nls(pctCore ~ SSlogis(logN, Asym, xmid, scal), data = logsub)
     CNpred = predict(CNlog)
-    CNlm.r2 = lm(logsub$pctCore ~ CNpred)
+    CNlm.r2 = lm(logsub$pctCore ~ CNpred) #bootstraping r2 vals for CNlog since not in summary stats
     return(data.frame(stateroute = s, CN.A, CN.i, CN.k, CN.r2 = summary(CNlm.r2)$r.squared))
   }, warning = function(w) {
     warnings = rbind(warnings, data.frame(stateroute = s, warning = w))
@@ -488,17 +488,11 @@ env_coefs = inner_join(coefs, uniq_env, by = c('stateroute' = 'focalrte'))
 covmatrix = round(cor(coefs[, 2:ncol(coefs)]), 2)
 
 
-#further collapse using mapply? edit 02/26: now in tightened function, still could be tighter 
-final_coefs = colnames(env_coefs[,2:17])
-env_vars = colnames(env_coefs[,18:ncol(env_coefs)]) 
-
-
-# nested for loop
+# nested for loop for examining variation in coefs/fitted curves explained by env vars 
 rsqrd_df = data.frame(dep = character(), ind = character(), r2 = numeric())
 
-
-for (d in 2:17) {
-  for (i in 18:ncol(env_coefs)) {
+for (d in 2:25) {
+  for (i in 26:ncol(env_coefs)) {
     tempmod = lm(env_coefs[,d] ~ env_coefs[,i])
     tempdf = data.frame(dep = names(env_coefs)[d], 
                         ind = names(env_coefs)[i], 
@@ -507,69 +501,8 @@ for (d in 2:17) {
   }
 }
 
+#write.csv(rsqrd_df, "scripts/R-scripts/scale_analysis/mod_rsqrds.csv", row.names = FALSE) #updated 02/27 POST-meeting
 
-
-
-
-
-
-
-
-
-
-#precip 
-meanPmods = lapply(final_coefs, function(x) {
-  lm(substitute(i~meanP, list(i = as.name(x))), data = env_coefs)
-})
-mpsum = lapply(meanPmods, summary)
-#varprecip
-varPmods = lapply(final_coefs, function(x) {
-  lm(substitute(i~varP, list(i = as.name(x))), data = env_coefs)
-})
-vpsum = lapply(varPmods, summary)
-#temp
-meanTmods = lapply(final_coefs, function(x) {
-  lm(substitute(i~temp, list(i = as.name(x))), data = env_coefs)
-})
-mtsum = lapply(meanTmods, summary)
-#vartemp
-varTmods = lapply(final_coefs, function(x) {
-  lm(substitute(i~vartemp, list(i = as.name(x))), data = env_coefs)
-})
-vtsum = lapply(varTmods, summary)
-#ndvi 
-meanNmods = lapply(final_coefs, function(x) {
-  lm(substitute(i~ndvi, list(i = as.name(x))), data = env_coefs)
-})
-mnsum = lapply(meanNmods, summary)
-#varndvi
-varNmods = lapply(final_coefs, function(x) {
-  lm(substitute(i~varndvi, list(i = as.name(x))), data = env_coefs)
-})
-vnsum = lapply(varNmods, summary)
-
-#run summary stats and extract R values 
-mods = list(mpsum, vpsum, mtsum, vtsum, mnsum, vnsum)
-#mods = list(varNmods)
-
-predvals = data.frame(fvals = NULL, preds=NULL) #, "vars" = NULL)
-rsqrd_df = data.frame(m = NULL, r.squared = NULL, adj.r.squared = NULL)
-temp = data.frame(m = NULL, r.squared = NULL, adj.r.squared = NULL)
-temp2 = data.frame(fvals = NULL, preds=NULL) #, "vars" = NULL)
-
-for (m in mods){
-  for (n in 1:16){
-  mod_sumstats = summary(m)
-  #mod_var = vcov(m) #how to aggregate the vcov matrices in a sensible way? ignoring in output for now but will have a sep df/output ideally
-  temp = cbind("m" = Reduce(paste, deparse(m[[n]]$terms)), 
-               "rsqd" = m[[n]]$r.squared)
-  rsqrd_df = rbind(temp, rsqrd_df)
-  
-   }
-}
-
-#write.csv(rsqrd_df, "scripts/R-scripts/scale_analysis/mod_rsqrds.csv", row.names = FALSE) #updated 02/27
-#write.csv(predvals, "scripts/R-scripts/scale_analysis/predvals.csv", row.names = FALSE) #updated 02/27
 
 
 ####Rerun mods using predvals####
