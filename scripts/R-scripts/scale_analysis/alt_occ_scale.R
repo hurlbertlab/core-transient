@@ -400,13 +400,12 @@ coefs = OA.df %>%
   inner_join(TA.df, OA.df, by = "stateroute") %>% 
   inner_join(TN.df, OA.df, by = "stateroute")  
 
-write.csv(coefs, "C:/git/core-transient/scripts/R-scripts/scale_analysis/coefs.csv", row.names = FALSE)
+#write.csv(coefs, "C:/git/core-transient/scripts/R-scripts/scale_analysis/coefs.csv", row.names = FALSE) #updated 02/27
+#exp mods have much better r2 vals for pctTran than power 
 
 
 ####Env data add-in####
-
 #for now just use what we have, that's fine 
-
 #bring in lat-lons for each focal route and creating sites
 bbs_allscales = read.csv("data/bbs_allscales.csv", header = TRUE)
 bbs_latlon = read.csv("//bioark.ad.unc.edu/HurlbertLab/Jenkins/BBS scaled/good_rtes2.csv", header = TRUE)
