@@ -287,6 +287,8 @@ for(s in stateroutes){
     OAlog = nls(meanOcc ~ SSlogis(logA, Asym, xmid, scal), data = logsub)
     OApred = predict(OAlog)
     OAlm.r2 = lm(logsub$meanOcc ~ OApred)
+    # plot1 = ggplot(plotsub, aes(x = logA, y = meanOcc))+geom_point(colour = "firebrick")+
+    #   geom_line(aes(x = logA, y = OApred), color = "navy") can I gen plots in a trycatch? 
     return(data.frame(stateroute = s, OA.A, OA.i, OA.k, OA.r2 = summary(OAlm.r2)$r.squared))
   }, warning = function(w) {
     warnings = rbind(warnings, data.frame(stateroute = s, warning = w))
@@ -504,7 +506,7 @@ for (d in 2:25) {
 #write.csv(rsqrd_df, "scripts/R-scripts/scale_analysis/mod_rsqrds.csv", row.names = FALSE) #updated 02/27 POST-meeting
 
 
-#plot obs vs pred
+####Plot obs vs pred####
 #for (s in stateroutes) {
 # s = 2001
 # plotsub = subset(bbs_allscales, bbs_allscales$focalrte == s)
