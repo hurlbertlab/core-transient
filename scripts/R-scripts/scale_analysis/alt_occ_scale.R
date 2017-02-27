@@ -466,69 +466,62 @@ bbs_envs = bbs_allscales
 
 
 ####Coef vs env variation models####
+# linear models explaining either logistic slope or negative exponential or power slopes as
+# a function of env variables
 bbs_envs = read.csv("scripts/R-scripts/scale_analysis/bbs_envs.csv", header = TRUE)
 coefs = read.csv("C:/git/core-transient/scripts/R-scripts/scale_analysis/coefs.csv", header = TRUE)
-
 uniq_env = unique(bbs_envs[, c('focalrte', 'temp', 'vartemp', 'meanP', 'varP', 'ndvi', 'varndvi')])
-
 # Merge environmental data with the coef shape data
-
 env_coefs = inner_join(coefs, uniq_env, by = c('stateroute' = 'focalrte'))
 
-#further collapse using mapply? edit 02/26: now in tightened function, still could be tighter 
+# Can also just look at the correlation matrix, e.g.
+covmatrix = round(cor(coefs[, 2:ncol(coefs)]), 2)
 
+
+#further collapse using mapply? edit 02/26: now in tightened function, still could be tighter 
 final_coefs = colnames(env_coefs[,2:17])
 env_vars = colnames(env_coefs[,18:ncol(env_coefs)]) 
-data = env_coefs
-rsqrd_df = data.frame(m = NULL, r.squared = NULL, adj.r.squared = NULL)
-
 
 #precip 
 meanPmods = lapply(final_coefs, function(x) {
-  lm(substitute(i~meanP, list(i = as.name(x))), data = data)
+  lm(substitute(i~meanP, list(i = as.name(x))), data = env_coefs)
 })
 mpsum = lapply(meanPmods, summary)
 #varprecip
 varPmods = lapply(final_coefs, function(x) {
-  lm(substitute(i~varP, list(i = as.name(x))), data = data)
+  lm(substitute(i~varP, list(i = as.name(x))), data = env_coefs)
 })
 vpsum = lapply(varPmods, summary)
 #temp
 meanTmods = lapply(final_coefs, function(x) {
-  lm(substitute(i~temp, list(i = as.name(x))), data = data)
+  lm(substitute(i~temp, list(i = as.name(x))), data = env_coefs)
 })
 mtsum = lapply(meanTmods, summary)
 #vartemp
 varTmods = lapply(final_coefs, function(x) {
-  lm(substitute(i~vartemp, list(i = as.name(x))), data = data)
+  lm(substitute(i~vartemp, list(i = as.name(x))), data = env_coefs)
 })
 vtsum = lapply(varTmods, summary)
 #ndvi 
 meanNmods = lapply(final_coefs, function(x) {
-  lm(substitute(i~ndvi, list(i = as.name(x))), data = data)
+  lm(substitute(i~ndvi, list(i = as.name(x))), data = env_coefs)
 })
 mnsum = lapply(meanNmods, summary)
 #varndvi
 varNmods = lapply(final_coefs, function(x) {
-  lm(substitute(i~varndvi, list(i = as.name(x))), data = data)
+  lm(substitute(i~varndvi, list(i = as.name(x))), data = env_coefs)
 })
 vnsum = lapply(varNmods, summary)
-
-
-mods2 = list(meanPmods, varPmods, meanTmods, varTmods, meanNmods, varNmods)
-output = c()
-for (m in mods2){
-  modsum = lapply(m, summary)
-  output = list(output, modsum)
-}
 
 #run summary stats and extract R values 
 mods = list(mpsum, vpsum, mtsum, vtsum, mnsum, vnsum)
 #mods = list(varNmods)
 
+predvals = data.frame(fvals = NULL, preds=NULL) #, "vars" = NULL)
 rsqrd_df = data.frame(m = NULL, r.squared = NULL, adj.r.squared = NULL)
 temp = data.frame(m = NULL, r.squared = NULL, adj.r.squared = NULL)
-#temp2 = list()
+temp2 = data.frame(fvals = NULL, preds=NULL) #, "vars" = NULL)
+
 for (m in mods){
   for (n in 1:16){
   mod_sumstats = summary(m)
@@ -537,36 +530,25 @@ for (m in mods){
                "rsqd" = m[[n]]$r.squared,
                "adj.r" = m[[n]]$adj.r.squared)
   rsqrd_df = rbind(temp, rsqrd_df)
+  
+  
+  testmod = lm(deparse(m[[n]]$terms), data = env_coefs)
+  fvals = testmod$fitted.values
+  preds = predict(testmod, data = env_coefs)
+  #vars = final_coefs[, n] #how do I pull in obs vals from pre-model for both variables? 
+  temp2 = cbind("fvals" = fvals,
+                "preds" = preds)
+                #,"vars" = vars)
+   
+  predvals = rbind(temp2, predvals)
    }
 }
 
 #write.csv(rsqrd_df, "scripts/R-scripts/scale_analysis/mod_rsqrds.csv", row.names = FALSE) #updated 02/26
-
-#gen pred vals fast?
-for (m in mods){
-  for (n in 1:16){
-  testmod = lm(deparse(m[[n]]$terms), data = data)
-  fvals = testmod$fitted.values
-  preds = predict(testmod, data = data)
-  predvals = cbind("fvals" = fvals,
-                   "preds" = preds,
-                   "m" = data[, m],
-                   "n" = data[, n]) 
-  }
-}
-                 
-
-####merging rsqrd vals and generating pred vals from env_coef mods####
-#read in mod rsqrd, bring in associated data
-bbs_envs = read.csv("scripts/R-scripts/scale_analysis/bbs_envs.csv", header = TRUE)
-coefs = read.csv("C:/git/core-transient/scripts/R-scripts/scale_analysis/coefs.csv", header = TRUE)
-uniq_env = unique(bbs_envs[, c('focalrte', 'temp', 'vartemp', 'meanP', 'varP', 'ndvi', 'varndvi')])
-# Merge environmental data with the coef shape data
-env_coefs = inner_join(coefs, uniq_env, by = c('stateroute' = 'focalrte'))
-mod_rsqrds = read.csv("scripts/R-scripts/scale_analysis/mod_rsqrds.csv", header = TRUE)
+#write.csv(predvals, "scripts/R-scripts/scale_analysis/predvals.csv", row.names = FALSE) #updated 02/26
 
 
-####Gen predicted values from models####
+####Rerun mods using predvals####
 #gen for coefs/for each stateroute; pred OA.A, pred OA.i, pred OA.k, etc 
 #start with gen predictions only for models that explained >10% of var 
 
@@ -578,7 +560,7 @@ test_data = cbind(newdata, ON.k_pred)
 #rerun mod using pred vals instead of original 
 pred_mod = lm(ON.k_pred~meanP, data = test_data)
 summary(pred_mod)
-#lol R squared of 1 for my best model, disastrous  
+#lol R squared of 1 for my best model, disastrous  #edit: rerun using new predvals 
 
 
 ####bootstrapping rsqrd from pred vals and comparing to original####
@@ -613,31 +595,3 @@ ggplot(data.frame(Fstatdist),aes(x=Fstatdist))+geom_density()+
 
 # p-value of actual F-statistic
 sum(Factual<=Fstatdist)/1000
-
-########################################################
-
-# linear model explaining either logistic slope or negative exponential or power slopes as
-# a function of env variables
-
-# Can also just look at the correlation matrix, e.g.
-covmatrix = round(cor(coefs[, 2:ncol(coefs)]), 2)
-
-
-
-####Env data get_bbs_gimms ed####
-
-library(SQlite)
-library(dplyr)
-library(gimms)
-
-devtools::load_all()
-
-
-#ndvi
-ndvi_data_raw <- get_bbs_gimms_ndvi()
-
-ndvi_data_summer <- ndvi_data_raw %>%
-  filter(!is.na(ndvi), month %in% c('may', 'jun', 'jul'), year > 1981) %>%
-  group_by(site_id, year) %>%
-  summarise(ndvi_sum = mean(ndvi)) %>%
-  ungroup()
