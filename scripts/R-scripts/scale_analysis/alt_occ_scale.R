@@ -264,12 +264,12 @@ dev.off()
 #use nls: 
 library(stats)
 
-OA.df = data.frame(stateroute = numeric(), OA.A= numeric(), OA.i = numeric(), OA.k = numeric())
-ON.df = data.frame(stateroute = numeric(), ON.A= numeric(), ON.i = numeric(), ON.k = numeric())
-CA.df = data.frame(stateroute = numeric(), CA.A= numeric(), CA.i = numeric(), CA.k = numeric())
-CN.df = data.frame(stateroute = numeric(), CN.A= numeric(), CN.i = numeric(), CN.k = numeric())
-TA.df = data.frame(stateroute = numeric(), TAexp= numeric(), TApow = numeric())
-TN.df = data.frame(stateroute = numeric(), TAexp= numeric(), TApow = numeric())
+OA.df = data.frame(stateroute = numeric(), OA.A= numeric(), OA.i = numeric(), OA.k = numeric(), OA.r2 = numeric())
+ON.df = data.frame(stateroute = numeric(), ON.A= numeric(), ON.i = numeric(), ON.k = numeric(), ON.r2 = numeric())
+CA.df = data.frame(stateroute = numeric(), CA.A= numeric(), CA.i = numeric(), CA.k = numeric(), CA.r2 = numeric())
+CN.df = data.frame(stateroute = numeric(), CN.A= numeric(), CN.i = numeric(), CN.k = numeric(), CN.r2 = numeric())
+TA.df = data.frame(stateroute = numeric(), TAexp= numeric(), TApow = numeric(), TAexp.r2 = numeric(), TApow.r2 = numeric())
+TN.df = data.frame(stateroute = numeric(), TNexp= numeric(), TNpow = numeric(), TNexp.r2 = numeric(), TNpow.r2 = numeric())
 
 
 #Use tryCatch to run through all routes but store routes with errors
@@ -300,79 +300,85 @@ for(s in stateroutes){
     OA.A <- summary(OAlog)$coefficients["Asym","Estimate"]
     OA.k <- summary(OAlog)$coefficients["scal","Estimate"]
     OA.r2 <- summary(OAlm.r2)$r.squared
-    #OA.tmp = data.frame(stateroute = s, OA.A, OA.i, OA.k)
-  })
-  
+    })
   OA.temp = data.frame(stateroute = s, OA.A, OA.i, OA.k, OA.r2) 
   OA.df = rbind(OA.df, OA.temp)
-  # 
+  
+  #ON 
   ONmodel = tryCatch({
     ONlog = nls(meanOcc ~ SSlogis(logN, Asym, xmid, scal), data = logsub)
-    return(data.frame(stateroute = s, ON.A, ON.i, ON.k))
+    ONpred = predict(ONlog)
+    ONlm.r2 = lm(logsub$meanOcc ~ ONpred)
+    return(data.frame(stateroute = s, ON.A, ON.i, ON.k, ON.r2 = summary(ONlm.r2)$r.squared))
   }, warning = function(w) {
     warnings = rbind(warnings, data.frame(stateroute = s, warning = w))
   }, error = function(e) {
     ON.i <- NA
     ON.A <- NA
     ON.k <- NA
+    OA.r2 <- NA
   }, finally = {
     ON.i <- summary(ONlog)$coefficients["xmid","Estimate"]
     ON.A <- summary(ONlog)$coefficients["Asym","Estimate"]
     ON.k <- summary(ONlog)$coefficients["scal","Estimate"]
-    #ON.tmp = data.frame(stateroute = s, ON.A, ON.i, ON.k)
-  })
-  
-  ON.temp = data.frame(stateroute = s, ON.A, ON.i, ON.k) #fix
+    ON.r2 <- summary(ONlm.r2)$r.squared
+    })
+  ON.temp = data.frame(stateroute = s, ON.A, ON.i, ON.k, ON.r2) #fix
   ON.df = rbind(ON.df, ON.temp)
-  #
+  
+  #CA
   CAmodel = tryCatch({
     CAlog = nls(pctCore ~ SSlogis(logA, Asym, xmid, scal), data = logsub)
-    return(data.frame(stateroute = s, CA.A, CA.i, CA.k))
+    CApred = predict(CAlog)
+    CAlm.r2 = lm(logsub$pctCore ~ CApred)
+    return(data.frame(stateroute = s, CA.A, CA.i, CA.k, CA.r2 = summary(CAlm.r2)$r.squared))
   }, warning = function(w) {
     warnings = rbind(warnings, data.frame(stateroute = s, warning = w))
   }, error = function(e) {
     CA.i <- NA
     CA.A <- NA
     CA.k <- NA
+    CA.r2 <- NA
   }, finally = {
     CA.i <- summary(CAlog)$coefficients["xmid","Estimate"]
     CA.A <- summary(CAlog)$coefficients["Asym","Estimate"]
     CA.k <- summary(CAlog)$coefficients["scal","Estimate"]
-    #CA.tmp = data.frame(stateroute = s, CA.A, CA.i, CA.k)
+    CA.r2 = summary(CAlm.r2)$r.squared
   })
-  
-  CA.temp = data.frame(stateroute = s, CA.A, CA.i, CA.k) #fix
+  CA.temp = data.frame(stateroute = s, CA.A, CA.i, CA.k, CA.r2) 
   CA.df = rbind(CA.df, CA.temp)
   
-  
-  #
+  #CN
   CNmodel = tryCatch({
     CNlog = nls(pctCore ~ SSlogis(logN, Asym, xmid, scal), data = logsub)
-    return(data.frame(stateroute = s, CN.A, CN.i, CN.k))
+    CNpred = predict(CNlog)
+    CNlm.r2 = lm(logsub$pctCore ~ CNpred)
+    return(data.frame(stateroute = s, CN.A, CN.i, CN.k, CN.r2 = summary(CNlm.r2)$r.squared))
   }, warning = function(w) {
     warnings = rbind(warnings, data.frame(stateroute = s, warning = w))
   }, error = function(e) {
     CN.i <- NA
     CN.A <- NA
     CN.k <- NA
+    CN.r2 <- NA
   }, finally = {
     CN.i <- summary(CNlog)$coefficients["xmid","Estimate"]
     CN.A <- summary(CNlog)$coefficients["Asym","Estimate"]
     CN.k <- summary(CNlog)$coefficients["scal","Estimate"]
-    #CN.tmp = data.frame(stateroute = s, CN.A, CN.i, CN.k)
-  })
-  
-  CN.temp = data.frame(stateroute = s, CN.A, CN.i, CN.k) #fix
+    CN.r2 <- summary(CNlm.r2)$r.squared
+    })
+  CN.temp = data.frame(stateroute = s, CN.A, CN.i, CN.k, CN.r2) #fix
   CN.df = rbind(CN.df, CN.temp)
 
-  
   # Fitting % transient
   #TA
   TAlog = lm(log(pctTran) ~ lnA, data = logsub)
   TA = lm(log(pctTran) ~ area, data = logsub)
   TA.temp = data.frame(stateroute = s, 
                        TAexp = TAlog$coefficients[2],
-                       TApow = TA$coefficients[2]) 
+                       TApow = TA$coefficients[2], 
+                       TAexp.r2 = summary(TAlog)$r.squared, 
+                       TApow.r2 = summary(TA)$r.squared) 
   TA.df = rbind(TA.df, TA.temp)
   
   #TN  
@@ -380,9 +386,10 @@ for(s in stateroutes){
   TN = lm(log(pctTran) ~ area, data = logsub)
     TN.temp = data.frame(stateroute = s, 
                        TNexp = TNlog$coefficients[2],
-                       TNpow = TN$coefficients[2]) 
+                       TNpow = TN$coefficients[2], 
+                       TNexp.r2 = summary(TNlog)$r.squared, 
+                       TNpow.r2 = summary(TN)$r.squared)
   TN.df = rbind(TN.df, TN.temp)
-  
 }
 
 #join all together using inner_join by focal rte, not cbind 
@@ -393,7 +400,7 @@ coefs = OA.df %>%
   inner_join(TA.df, OA.df, by = "stateroute") %>% 
   inner_join(TN.df, OA.df, by = "stateroute")  
 
-#write.csv(coefs, "C:/git/core-transient/scripts/R-scripts/scale_analysis/coefs.csv", row.names = FALSE)
+write.csv(coefs, "C:/git/core-transient/scripts/R-scripts/scale_analysis/coefs.csv", row.names = FALSE)
 
 
 ####Env data add-in####
