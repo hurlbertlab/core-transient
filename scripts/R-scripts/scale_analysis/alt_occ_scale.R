@@ -535,18 +535,19 @@ for (m in mods){
   testmod = lm(deparse(m[[n]]$terms), data = env_coefs)
   fvals = testmod$fitted.values
   preds = predict(testmod, data = env_coefs)
-  #vars = final_coefs[, n] #how do I pull in obs vals from pre-model for both variables? 
+  obsvals = unlist(strsplit(deparse(m[[n]]$terms), " ~ ")) 
+  #extract chars from "m" for coef(y) and env(x) var col titles and subsequently, observed vals
   temp2 = cbind("fvals" = fvals,
-                "preds" = preds)
-                #,"xvars" = env_coefs[]
-                #,"yvars" = env_coefs[]) 
-  #extract first 4 chars from "m" and 8:end chars of "m" for x and yvar col titles 
+                "preds" = preds,
+                "obsx" = env_coefs[, obsvals[2]],
+                "obsy" = env_coefs[, obsvals[1]]) #,
+                #"mod" = rep(deparse(m[[n]]$terms)))
   predvals = rbind(temp2, predvals)
    }
 }
 
-#write.csv(rsqrd_df, "scripts/R-scripts/scale_analysis/mod_rsqrds.csv", row.names = FALSE) #updated 02/26
-#write.csv(predvals, "scripts/R-scripts/scale_analysis/predvals.csv", row.names = FALSE) #updated 02/26
+#write.csv(rsqrd_df, "scripts/R-scripts/scale_analysis/mod_rsqrds.csv", row.names = FALSE) #updated 02/27
+#write.csv(predvals, "scripts/R-scripts/scale_analysis/predvals.csv", row.names = FALSE) #updated 02/27
 
 
 ####Rerun mods using predvals####
