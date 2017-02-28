@@ -371,9 +371,9 @@ m = ggplot(data=propCT_long, aes(factor(abbrev), y=value, fill=factor(class))) +
                                                                                                                                                                                                   values = colscale)+theme(axis.ticks.x=element_blank(),axis.text.x=element_text(size=20),axis.text.y=element_text(size=20),axis.title.x=element_text(size=24),axis.title.y=element_text(size=24,angle=90,vjust = 2.5))+ theme(legend.text=element_text(size=18),legend.key.size = unit(2, 'lines'))+theme(legend.position="top", legend.justification=c(0, 1), legend.key.width=unit(1, "lines"))+ guides(fill = guide_legend(keywidth = 3, keyheight = 1,title="", reverse=TRUE))+ coord_fixed(ratio = 4)
 ggsave(file="C:/Git/core-transient/output/plots/2a.pdf", height = 10, width = 15)
 
-colscaleb = c("tan","brown", "dark green")
+# colscaleb = c("tan","brown", "dark green")
 e = ggplot(data=prope_long, aes(factor(system), y=value, fill=factor(class))) + geom_bar(stat = "identity")  + theme_classic() + xlab("Ecosystem") + ylab("")+ scale_fill_manual(labels = c("Core", "Intermediate", "Transient"),
- values = colscaleb)+theme(axis.ticks.x=element_blank(),axis.text.x=element_text(size=14, angle = 90),axis.text.y=element_text(size=20),axis.title.x=element_text(size=24),axis.title.y=element_text(size=24,angle=90,vjust = 2.5))+ theme(legend.text=element_text(size=18),legend.key.size = unit(2, 'lines'))+theme(legend.position="top", legend.justification=c(0, 1), legend.key.width=unit(1, "lines"))+ guides(fill = guide_legend(keywidth = 3, keyheight = 1,title="", reverse=TRUE))+ coord_fixed(ratio = 4)
+ values = colscale)+theme(axis.ticks.x=element_blank(),axis.text.x=element_text(size=14, angle = 90),axis.text.y=element_text(size=20),axis.title.x=element_text(size=24),axis.title.y=element_text(size=24,angle=90,vjust = 2.5))+ theme(legend.text=element_text(size=18),legend.key.size = unit(2, 'lines'))+theme(legend.position="top", legend.justification=c(0, 1), legend.key.width=unit(1, "lines"))+ guides(fill = guide_legend(keywidth = 3, keyheight = 1,title="", reverse=TRUE))+ coord_fixed(ratio = 4)
 
 ggsave(file="C:/Git/core-transient/output/plots/2b.pdf", height = 10, width = 15)
 #### barplot of percent transients by taxa ---SUPP FIG
@@ -561,12 +561,12 @@ ggsave(file="C:/Git/core-transient/output/plots/predmod3c.pdf", height = 10, wid
 occ_taxa4 = occ_taxa[,c("datasetID", "site","meanOcc", "pctTrans","pctCore","pctNeither", "scale", "spRich")]
 occ_taxa4$site = as.numeric(occ_taxa4$site)
 
+bbs_abun$tally = 1
 # calculating species richness
 bbs_spRich = bbs_abun %>% 
-  group_by(AOU, stateroute, scale, subrouteID) %>%
-  for(i in unique(bbs_abun$stateroute)){
-   tally(bbs_abun$AOU)
-  }
+  group_by(AOU, stateroute, scale, subrouteID) %>% 
+   count(AOU, stateroute)
+  
 
 
 totalspp = bbs_abun %>% 
