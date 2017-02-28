@@ -83,8 +83,8 @@ summ$system = factor(summ$system)
 summ = na.omit(summ)
 summ1 =  subset(summ, !datasetID %in% c(1, 99, 85, 90, 91, 92, 97, 124)) # excluding BBS to include below-scale route info
 summ1.5 = summ1[, c("datasetID","site","system","taxa","propCore", "propTrans", "meanAbundance")]
-# insert below-scale bbs dataset (Jenkina Z drive)
-bbs_below = read.csv("Z:/Jenkins/BBS scaled/bbs_below.csv", header = TRUE)
+# insert below-scale bbs dataset 
+bbs_below = read.csv("data/bbs_below.csv", header = TRUE)
 bbs_below$site = paste(bbs_below$stateroute, bbs_below$scale, sep = "-")
 bbs_below$datasetID = 1
 bbs_below$system = "Terrestrial"
@@ -371,9 +371,9 @@ m = ggplot(data=propCT_long, aes(factor(abbrev), y=value, fill=factor(class))) +
                                                                                                                                                                                                   values = colscale)+theme(axis.ticks.x=element_blank(),axis.text.x=element_text(size=20),axis.text.y=element_text(size=20),axis.title.x=element_text(size=24),axis.title.y=element_text(size=24,angle=90,vjust = 2.5))+ theme(legend.text=element_text(size=18),legend.key.size = unit(2, 'lines'))+theme(legend.position="top", legend.justification=c(0, 1), legend.key.width=unit(1, "lines"))+ guides(fill = guide_legend(keywidth = 3, keyheight = 1,title="", reverse=TRUE))+ coord_fixed(ratio = 4)
 ggsave(file="C:/Git/core-transient/output/plots/2a.pdf", height = 10, width = 15)
 
-colscaleb = c("tan","brown", "dark green")
+# colscaleb = c("tan","brown", "dark green")
 e = ggplot(data=prope_long, aes(factor(system), y=value, fill=factor(class))) + geom_bar(stat = "identity")  + theme_classic() + xlab("Ecosystem") + ylab("")+ scale_fill_manual(labels = c("Core", "Intermediate", "Transient"),
- values = colscaleb)+theme(axis.ticks.x=element_blank(),axis.text.x=element_text(size=14, angle = 90),axis.text.y=element_text(size=20),axis.title.x=element_text(size=24),axis.title.y=element_text(size=24,angle=90,vjust = 2.5))+ theme(legend.text=element_text(size=18),legend.key.size = unit(2, 'lines'))+theme(legend.position="top", legend.justification=c(0, 1), legend.key.width=unit(1, "lines"))+ guides(fill = guide_legend(keywidth = 3, keyheight = 1,title="", reverse=TRUE))+ coord_fixed(ratio = 4)
+ values = colscale)+theme(axis.ticks.x=element_blank(),axis.text.x=element_text(size=14, angle = 90),axis.text.y=element_text(size=20),axis.title.x=element_text(size=24),axis.title.y=element_text(size=24,angle=90,vjust = 2.5))+ theme(legend.text=element_text(size=18),legend.key.size = unit(2, 'lines'))+theme(legend.position="top", legend.justification=c(0, 1), legend.key.width=unit(1, "lines"))+ guides(fill = guide_legend(keywidth = 3, keyheight = 1,title="", reverse=TRUE))+ coord_fixed(ratio = 4)
 
 ggsave(file="C:/Git/core-transient/output/plots/2b.pdf", height = 10, width = 15)
 #### barplot of percent transients by taxa ---SUPP FIG
@@ -560,20 +560,61 @@ ggsave(file="C:/Git/core-transient/output/plots/predmod3c.pdf", height = 10, wid
 # add in BBS below dataset
 occ_taxa4 = occ_taxa[,c("datasetID", "site","meanOcc", "pctTrans","pctCore","pctNeither", "scale", "spRich")]
 occ_taxa4$site = as.numeric(occ_taxa4$site)
-bbs_below4 = bbs_below
-bbs_below4$site = as.numeric(bbs_below4$stateroute)
-bbs_below4$datasetID = 1
-bbs_below4$pctTrans = bbs_below4$pctTran
-bbs_below4$pctNeither = 1-(bbs_below4$pctTrans + bbs_below4$pctCore)
-bbs_below4$spRich = bbs_below4$aveN
-bbs_below4 = bbs_below4[,c("datasetID", "site","meanOcc", "pctTrans","pctCore","pctNeither", "scale", "spRich")]
-occ_taxa_bbs = rbind(occ_taxa4, bbs_below4)
+
+# calculating species richness
+bbs_spRich = bbs_abun %>% 
+  #group_by(AOU, stateroute, scale, subrouteID) %>% 
+   count(stateroute, scale, subrouteID)
+bbs_spRich$subscale = substring(bbs_spRich$subrouteID, 5)
+bbs_spRich$site = paste(bbs_spRich$stateroute, bbs_spRich$scale, bbs_spRich$subscale, sep = "-")
+
+bbs_abun3.5 = merge(bbs_spRich, bbs_below, by = c("site"))
+
+bbs_abun4 = bbs_abun3.5
+bbs_abun4$site = as.numeric(bbs_abun4$stateroute)
+bbs_abun4$datasetID = 1
+bbs_abun4$pctTrans = bbs_abun4$propTrans
+bbs_abun4$pctCore = bbs_abun4$propCore
+bbs_abun4$pctNeither = 1-(bbs_abun4$pctTrans + bbs_abun4$propCore)
+bbs_abun4$spRich = bbs_abun4$n
+bbs_abun4$meanOcc = bbs_abun4$meanAbundance
+
+
+bbs_abun4 = bbs_abun4[,c("datasetID", "site","meanOcc", "pctTrans","pctCore","pctNeither", "scale", "spRich")]
+occ_taxa_bbs = rbind(occ_taxa4, bbs_abun4)
 
 occ_taxa_bbs$total = occ_taxa_bbs$pctCore + occ_taxa_bbs$pctNeither
 occ_taxa_bbs$numtrans = (1-occ_taxa_bbs$total) * occ_taxa_bbs$spRich
 occ_taxa_bbs$minustrans = occ_taxa_bbs$spRich - occ_taxa_bbs$numtrans
 
 
+
+pdf('output/plots/spatial_turnover.pdf', height = 6, width = 7.5)
+par(mfrow = c(1, 1), mar = c(6, 6, 1, 1), mgp = c(4, 1, 0), 
+    cex.axis = 1.5, cex.lab = 2, las = 1)
+palette(colors7)
+scaleIDs = filter(dataformattingtable, spatial_scale_variable == 'Y',
+                  format_flag == 1)$dataset_ID 
+scaleIDs = scaleIDs[! scaleIDs %in% c(207, 210, 217, 218, 222, 223, 225, 238, 241,258, 282, 322, 280,317, 248)]  # waiting on data for 248
+scaleIDs[28] = 1
+
+for(id in scaleIDs){
+  print(id)
+  plotsub = subset(occ_taxa_bbs,datasetID == id)
+  mod3 = lm(plotsub$numtrans ~ plotsub$minustrans)
+  xnew = range(plotsub$minustrans)
+  xhat <- predict(mod3, newdata = data.frame((xnew)))
+  xhats = range(xhat)
+  print(xhats)
+  taxcolor = subset(taxcolors, taxa == as.character(plotsub$taxa)[1])
+  y=summary(mod3)$coef[1] + (xhats)*summary(mod3)$coef[2]
+  plot(NA, xlim = c(-1, 30), ylim = c(0,30), col = as.character(taxcolor$color), xlab = expression("Transients"), ylab = "No Transients", cex = 1.5)
+  lines(plotsub$minustrans, fitted(mod3), col=as.character(taxcolor$color),lwd=5)
+  par(new=TRUE)
+}
+par(new=TRUE)
+legend('bottomleft', legend = as.character(taxcolors$taxa), lty=1,lwd=3,col = as.character(taxcolors$color), cex = 1)
+dev.off()
 
 ####### MODELS ######
 latlongs = read.csv("data/latlongs/latlongs.csv", header =TRUE)
@@ -597,7 +638,7 @@ dft2 = merge(dft, summ2[, c("datasetID","site","propTrans")], by = "datasetID")
 all_latlongs.5 = rbind(dft2, latlong_w_sites)
 
 # rbind in new BBS data
-bbs_below = read.csv("Z:/Jenkins/BBS scaled/bbs_below.csv", header = TRUE)
+bbs_below = read.csv("data/bbs_below.csv", header = TRUE) # from Jenkins code
 bbs_latlong = read.csv("data/latlongs/bbs_2000_2014_latlongs.csv", header = TRUE)
 bbs_be_lat = merge(bbs_below, bbs_latlong, by = "stateroute", all.x = TRUE)
 bbs_be_lat$site = paste(bbs_below$stateroute, bbs_below$scale, sep = "-")
