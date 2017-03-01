@@ -149,11 +149,17 @@ propOccfiles = list.files("data/spatialGrainAnalysis/propOcc_datasets")
 allpropOcc = c()
 for(file in propOccfiles){
   nfile= read.csv(paste("data/spatialGrainAnalysis/propOcc_datasets/", file, sep = ""), header= TRUE)
-  nfile$scale = as.numeric(substring(file, 22,last = 22))
+  nfile$scale = as.numeric(substring(file, 18,last = 18))
   nfile$site = as.factor(nfile$site)
   allpropOcc = rbind(allpropOcc, nfile)
 }
 allpropOcc = data.frame(allpropOcc)
+
+# count up spRich with and without transients (for Fig 4)
+minustransrich = allpropOcc %>% filter(propOcc > 1/3) %>% count(datasetID, site, scale)
+write.csv(minustransrich, "output/tabular_data/minustransrich.csv", row.names = FALSE)
+transrich  = allpropOcc %>% count(datasetID, site, scale)
+write.csv(transrich, "output/tabular_data/transrich.csv", row.names = FALSE)
 
 # Summary statistics by datasetID/site, i.e. mean occupancy, % transient species (<=1/3)
 summaries_taxa = merge(allsummaries, dataformattingtable[,c("dataset_ID","taxa","Raw_spatial_grain", "Raw_spatial_grain_unit")], by.x = 'datasetID', by.y = "dataset_ID", all.x=TRUE)

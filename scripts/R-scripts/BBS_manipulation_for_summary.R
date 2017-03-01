@@ -86,18 +86,23 @@ bbs_spRich$site = paste(bbs_spRich$stateroute, bbs_spRich$scale, bbs_spRich$subs
 bbs_abun3.5 = merge(bbs_spRich, bbs_below, by = c("site"))
 
 bbs_abun4 = bbs_abun3.5
-bbs_abun4$site = as.numeric(bbs_abun4$stateroute)
 bbs_abun4$datasetID = 1
 bbs_abun4$taxa = "Bird"
 bbs_abun4$pctTrans = bbs_abun4$propTrans
 bbs_abun4$pctCore = bbs_abun4$propCore
 bbs_abun4$pctNeither = 1-(bbs_abun4$pctTrans + bbs_abun4$propCore)
 bbs_abun4$spRich = bbs_abun4$n
+bbs_abun4$scale[bbs_abun4$scale == 50] = 1
+bbs_abun4$scale[bbs_abun4$scale == 25] = 2
+bbs_abun4$scale[bbs_abun4$scale == 10] = 3
+bbs_abun4$scale[bbs_abun4$scale == 5] = 4
 # bbs_abun4$meanOcc = bbs_abun4$meanAbundance
 
 bbs_abun4 = bbs_abun4[,c("datasetID", "site","taxa","meanAbundance", "pctTrans","pctCore","pctNeither", "scale", "spRich")]
 write.csv(bbs_abun4, "data/BBS/bbs_abun4_spRich.csv", row.names = FALSE)
 
+#### BBS w propOcc ###
+bbs_abun_propOcc = bbs_abun[,c("datasetID", "site", "AOU", "occupancy", "scale")]
 
 #### BBS prep for model, combine with lat longs ####
 bbs_latlong = read.csv("data/latlongs/bbs_2000_2014_latlongs.csv", header = TRUE)

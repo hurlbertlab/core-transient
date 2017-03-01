@@ -462,7 +462,7 @@ par(mfrow = c(1, 1), mar = c(6, 6, 1, 1), mgp = c(4, 1, 0),
 palette(colors7)
 for(id in scaleIDs){
   print(id)
-  plotsub = subset(occ_taxa,datasetID == id)
+  plotsub = subset(bbs_occ,datasetID == id)
   mod3 = lm((1-plotsub$pctTrans) ~ log10(plotsub$meanAbundance))
   xnew=range(log10(plotsub$meanAbundance))
   xhat <- predict(mod3, newdata = data.frame((xnew)))
@@ -479,21 +479,16 @@ par(new=TRUE)
 dev.off()
 
 #### Fig 3c predicted model ####
-bbs_occ_taxa = occ_taxa[,c("datasetID", "site", "taxa", "pctTrans", "meanAbundance")]
-bbs_below$pctTrans = bbs_below$propTrans
-bbs_below_occ = bbs_below[,c("datasetID", "site", "taxa", "pctTrans", "meanAbundance")]
+bbs_occ = bbs_occ[!bbs_occ$datasetID %in% c(207, 210, 217, 218, 222, 223, 225, 238, 241, 258, 282, 322, 280,317),]
 
-bbs_below_occ_taxa = rbind(bbs_occ_taxa, bbs_below_occ)
-bbs_below_occ_taxa = bbs_below_occ_taxa[!bbs_below_occ_taxa$datasetID %in% c(207, 210, 217, 218, 222, 223, 225, 238, 241, 258, 282, 322, 280,317),]
-
-mod3c = lmer(pctTrans~(1|datasetID) * taxa * log10(meanAbundance), data=bbs_below_occ_taxa)
+mod3c = lmer(pctTrans~(1|datasetID) * taxa * log10(meanAbundance), data=bbs_occ)
 summary(mod3c)
-occ_sub_pred = data.frame(datasetID = 999, taxa = unique(bbs_below_occ_taxa$taxa), meanAbundance =  87.86667) # 87 is median abun for data frame
+occ_sub_pred = data.frame(datasetID = 999, taxa = unique(bbs_occ$taxa), meanAbundance =  102.7333) # 102.73333 is median abun for data frame
 predmod3c = merTools::predictInterval(mod3c, occ_sub_pred, n.sims=1000)
 
 # matching by predicted output vals
 predmod3c$taxa = c("Invertebrate", "Plant", "Mammal","Fish", "Bird", "Plankton")
-write.csv(predmod3c, "predmod3c.csv", row.names = FALSE)
+write.csv(predmod3c, "output/tabular_data/predmod3c.csv", row.names = FALSE)
 
 
 predmod = merge(predmod3c, taxcolors, by = "taxa")
@@ -508,35 +503,35 @@ p <- ggplot(predmod, aes(x = factor(abbrev), y = fit, fill=factor(predmod$taxa))
 p +geom_bar(stat = "identity", fill = levels(colscale)) + geom_errorbar(ymin = predmod$lwr, ymax= predmod$upr, width=0.2) + xlab("Taxa") + ylab("Proportion of Species") + ylim(-.1, 1) + theme(axis.ticks.x=element_blank(),axis.text.x=element_text(size=24),axis.text.y=element_text(size=24),axis.title.x=element_text(size=32),axis.title.y=element_text(size=32,angle=90,vjust = 2))+guides(fill=guide_legend(title="",keywidth = 2, keyheight = 1)) + theme_classic()
 ggsave(file="C:/Git/core-transient/output/plots/predmod3c.pdf", height = 10, width = 15)
 
-#### Fig 4d ####
-
+#### Fig 4c ####
 # add in BBS below dataset
-occ_taxa4 = occ_taxa[,c("datasetID", "site","meanOcc", "pctTrans","pctCore","pctNeither", "scale", "spRich")]
-occ_taxa4$site = as.numeric(occ_taxa4$site)
-
-# calculating species richness
-bbs_abun4 = read.csv("data/BBS/bbs_abun4_spRich.csv", header = TRUE)
-
-occ_taxa_bbs = rbind(occ_taxa4, bbs_abun4)
-
-occ_taxa_bbs$total = occ_taxa_bbs$pctCore + occ_taxa_bbs$pctNeither
-occ_taxa_bbs$numtrans = as.integer((1-occ_taxa_bbs$total) * occ_taxa_bbs$spRich) # converted to integer, quick fix
-occ_taxa_bbs$minustrans = occ_taxa_bbs$spRich - occ_taxa_bbs$numtrans
+bbs_occ$total = bbs_occ$pctCore + bbs_occ$pctNeither
+bbs_occ$numtrans = as.integer((1-bbs_occ$total) * bbs_occ$spRich) # converted to integer, quick fix
+bbs_occ$minustrans = bbs_occ$spRich - bbs_occ$numtrans  ### WRONG!!
 
 #### Figure 4c ####
-pdf('output/plots/4d_temporal_turnover.pdf', height = 6, width = 7.5)
+transrich = read.csv("output/tabular_data/transrich.csv", header = TRUE)
+minustransrich = read.csv("output/tabular_data/minustransrich.csv", header = TRUE)
+minustransrich$minustrans = minustransrich$n
+
+bbs_occ_trans = merge(bbs_occ, transrich, by = c("datasetID", "site", "scale"), all.x = TRUE)
+bbs_occ_trans = merge(bbs_occ_trans, minustransrich[, c("datasetID", "site", "scale", "minustrans")], by = c("datasetID", "site", "scale"), all.x = TRUE)
+
+bbs_occ_trans_area = merge(areamerge[,c("datasetID", "site", "area")], bbs_occ_trans, by = c("datasetID", "site"))
+
+pdf('output/plots/4d_spatial_turnover.pdf', height = 6, width = 7.5)
 par(mfrow = c(1, 1), mar = c(6, 6, 1, 1), mgp = c(4, 1, 0), 
     cex.axis = 1.5, cex.lab = 2, las = 1)
 palette(colors7)
 scaleIDs = filter(dataformattingtable, spatial_scale_variable == 'Y',
                   format_flag == 1)$dataset_ID 
-scaleIDs = scaleIDs[! scaleIDs %in% c(207, 210, 217, 218, 222, 223, 225, 238, 241,258, 282, 322, 280,317, 248)]  # waiting on data for 248
-scaleIDs[28] = 1
+scaleIDs = scaleIDs[! scaleIDs %in% c(207, 210, 217, 218, 222, 223, 225, 238, 241,258, 282, 322, 280,317, 248, 221, 313)]  # waiting on data for 248
 
 for(id in scaleIDs){
   print(id)
-  plotsub = subset(occ_taxa_bbs,datasetID == id)
-  mod3 = lm(plotsub$numtrans ~ plotsub$minustrans)
+  plotsub = subset(bbs_occ_trans_area,datasetID == id)          ###### need to do this by trans and no trans - 2 DFs maybe?
+  mod.t = lm(log10(plotsub$meanAbundance) ~ log10(plotsub$area))
+  mod.n= lm(log10(plotsub$meanAbundance) ~ log10(plotsub$area))
   xnew = range(plotsub$minustrans)
   xhat <- predict(mod3, newdata = data.frame((xnew)))
   xhats = range(xhat)
