@@ -108,7 +108,7 @@ for(datasetID in datasetIDs){
 } # end dataset loop
 grainlevels = data.frame(grainlevels)
 colnames(grainlevels) = c("datasetID", "NumGrains")
-write.csv(grainlevels, "output/grainlevels.csv", row.names=FALSE)
+write.csv(grainlevels, "output/tabular_data/grainlevels.csv", row.names=FALSE)
 
 # Merge all output files into 1 file
 #grainlevels = read.csv("output/grainlevels.csv", header = TRUE)
@@ -157,12 +157,14 @@ allpropOcc = data.frame(allpropOcc)
 
 # Summary statistics by datasetID/site, i.e. mean occupancy, % transient species (<=1/3)
 summaries_taxa = merge(allsummaries, dataformattingtable[,c("dataset_ID","taxa","Raw_spatial_grain", "Raw_spatial_grain_unit")], by.x = 'datasetID', by.y = "dataset_ID", all.x=TRUE)
-#write.csv(summaries_taxa, "output/summaries_grains_w_taxa.csv", row.names=FALSE)
+
+# summaries_taxa = summaries_taxa[! datasetID %in% c(207, 210, 217, 218, 222, 223, 225, 238, 241,258, 282, 322, 280,317)]
+#write.csv(summaries_taxa, "output/tabular_data/summaries_grains_w_taxa.csv", row.names=FALSE)
 
 #summaries_taxa = read.csv("output/summaries_grains_w_taxa.csv", header = TRUE) # read in file if not running whole code
 
 # merge in conversion table 
-conversion_table = read.csv("output/conversion_table.csv", header =TRUE)
+conversion_table = read.csv("output/tabular_data/conversion_table.csv", header =TRUE)
 
 summaries_grains_w_taxa = merge(summaries_taxa, conversion_table, by.x = "Raw_spatial_grain_unit", by.y = "intl_units")
 

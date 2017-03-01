@@ -12,6 +12,12 @@ library(dplyr)
 
 source('scripts/R-scripts/core-transient_functions.R')
 
+# Raw input files from Jenkins code
+# read.csv("data/BBS/bbs_below.csv", header = TRUE)
+# read.csv("data/BBS/bbs_below_pctTrans.csv", header = TRUE)
+# read.csv("data/BBS/bbs_abun_occ.csv", header=TRUE)
+# read.csv("data/latlongs/bbs_2000_2014_latlongs.csv", header = TRUE)
+
 # Specify here the datasetIDs and then run the code below.
 dataformattingtable = read.csv('data_formatting_table.csv', header = T) 
 
@@ -30,6 +36,7 @@ bbs_below$propTrans = bbs_below$pctTran
 bbs_below$meanAbundance = bbs_below$aveN
 bbs_below = bbs_below[, c("datasetID","site","system","taxa","propCore","propTrans","meanAbundance")]
 write.csv(bbs_below, "data/BBS/bbs_below_summ2.csv", row.names = FALSE)
+
 
 #### BBS prep to merge with different percent transient thresholds at route scale #####
 # read in BBS route level data for fig 2
@@ -56,6 +63,7 @@ write.csv(bbs_below_st, "data/BBS/bbs_below_st.csv", row.names = FALSE)
 bbs_focal_occs_pctTrans = bbs_focal_occs_pctTrans[, c("datasetID","site","system","taxa","propCore33", "propTrans33", "propTrans25", "propTrans10")]
 write.csv(bbs_focal_occs_pctTrans, "data/BBS/bbs_focal_occs_pctTrans.csv", row.names = FALSE)
 
+
 #### BBS prep to merge area with abundance data ####
 bbs_abun = read.csv("data/BBS/bbs_abun_occ.csv", header=TRUE)
 bbs_abun$site = bbs_abun$stateroute
@@ -67,7 +75,6 @@ write.csv(bbs_area, "data/BBS/bbs_area.csv", row.names = FALSE)
 #### BBS prep for figure 4 ####
 # exclude AOU species codes <=2880 [waterbirds, shorebirds, etc], (>=3650 & <=3810) [owls],
 # (>=3900 &  <=3910) [kingfishers], (>=4160 & <=4210) [nightjars], 7010 [dipper]
-
 bbs_spRich = bbs_abun %>% 
   filter(AOU > 2880 & !(AOU >= 3650 & AOU <= 3810) & !(AOU >= 3900 & AOU <= 3910) & 
            !(AOU >= 4160 & AOU <= 4210) & AOU != 7010)   %>% 
@@ -88,6 +95,7 @@ bbs_abun4$meanOcc = bbs_abun4$meanAbundance
 
 bbs_abun4 = bbs_abun4[,c("datasetID", "site","meanOcc", "pctTrans","pctCore","pctNeither", "scale", "spRich")]
 write.csv(bbs_abun4, "data/BBS/bbs_abun4_spRich.csv", row.names = FALSE)
+
 
 #### BBS prep for model, combine with lat longs ####
 bbs_latlong = read.csv("data/latlongs/bbs_2000_2014_latlongs.csv", header = TRUE)
