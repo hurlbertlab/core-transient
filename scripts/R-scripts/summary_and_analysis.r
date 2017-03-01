@@ -389,9 +389,9 @@ scaleIDs = scaleIDs[! scaleIDs %in% c(207, 210, 217, 218, 222, 223, 225, 238, 24
 bbs_abun = read.csv("data/BBS/bbs_abun_occ.csv", header=TRUE)
 
 #### Fig 3a Area #####
-area = read.csv("output/tabular_data/scaled_areas_2_20.csv", header = TRUE)
+area = read.csv("output/tabular_data/scaled_areas_3_1.csv", header = TRUE)
 
-areamerge.5 = merge(occ_taxa[,c("datasetID", "site", "taxa", "pctTrans")], area, by = c("datasetID", "site"), na.rm = TRUE)
+areamerge.5 = merge(occ_taxa[,c("datasetID", "site", "pctTrans")], area, by = c("datasetID", "site"), na.rm = TRUE)
 areamerge.5  = areamerge.5 [, c("datasetID", "site", "taxa", "pctTrans", "area")]
 
 # read in bbs abundance data
@@ -432,23 +432,14 @@ par(mfrow = c(1, 1), mar = c(6, 6, 1, 1), mgp = c(4, 1, 0),
     cex.axis = 1.5, cex.lab = 2, las = 1)
 palette(colors7)
 
-totalspp = bbs_abun %>% 
-  group_by(AOU, stateroute) %>%
-  tally(sum.groupCount.)
-for(i in unique(bbs_abun$AOU)){
-  sum(bbs_abun$occupancy <= 1/3)/(totalspp$n)
-}
-
-mod3 = lm(bbs_abun$occupancy ~ log10(bbs_abun$sum.groupCount.))
-xnew = range(log10(bbs_abun$sum.groupCount.))
-xhat <- predict(mod3, newdata = data.frame((xnew)))
-xhats = range(xhat)
-print(xhats)
+bbs_spRich = read.csv("data/BBS/bbs_abun4_spRich.csv", header = TRUE)
+occ_merge = occ_taxa[,c("datasetID", "site","taxa", "meanAbundance", "pctTrans","pctCore","pctNeither","scale", "spRich")]
+bbs_occ = rbind(bbs_spRich,occ_merge)
 
 
 for(id in scaleIDs){
   print(id)
-  plotsub = subset(occ_taxa,datasetID == id)
+  plotsub = subset(bbs_occ,datasetID == id)
   mod3 = lm(plotsub$pctTrans ~ log10(plotsub$meanAbundance))
   xnew = range(log10(plotsub$meanAbundance))
   xhat <- predict(mod3, newdata = data.frame((xnew)))
@@ -460,7 +451,6 @@ for(id in scaleIDs){
   lines(log10(plotsub$meanAbundance), fitted(mod3), col=as.character(taxcolor$color),lwd=5)
   par(new=TRUE)
 }
-segments(0,  1, x1 = 5.607, y1 = 0, col = rgb(29/255, 106/255, 155/255), lwd=5)
 par(new=TRUE)
 legend('topright', legend = as.character(taxcolors$taxa), lty=1,lwd=3,col = as.character(taxcolors$color), cex = 1.35)
 dev.off()

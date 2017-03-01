@@ -72,6 +72,7 @@ bbs_area$pctTrans = bbs_area$propTrans
 bbs_area = bbs_area[, c("datasetID", "site", "taxa", "pctTrans", "area")]
 write.csv(bbs_area, "data/BBS/bbs_area.csv", row.names = FALSE)
 
+
 #### BBS prep for figure 4 ####
 # exclude AOU species codes <=2880 [waterbirds, shorebirds, etc], (>=3650 & <=3810) [owls],
 # (>=3900 &  <=3910) [kingfishers], (>=4160 & <=4210) [nightjars], 7010 [dipper]
@@ -87,13 +88,14 @@ bbs_abun3.5 = merge(bbs_spRich, bbs_below, by = c("site"))
 bbs_abun4 = bbs_abun3.5
 bbs_abun4$site = as.numeric(bbs_abun4$stateroute)
 bbs_abun4$datasetID = 1
+bbs_abun4$taxa = "Bird"
 bbs_abun4$pctTrans = bbs_abun4$propTrans
 bbs_abun4$pctCore = bbs_abun4$propCore
 bbs_abun4$pctNeither = 1-(bbs_abun4$pctTrans + bbs_abun4$propCore)
 bbs_abun4$spRich = bbs_abun4$n
-bbs_abun4$meanOcc = bbs_abun4$meanAbundance
+# bbs_abun4$meanOcc = bbs_abun4$meanAbundance
 
-bbs_abun4 = bbs_abun4[,c("datasetID", "site","meanOcc", "pctTrans","pctCore","pctNeither", "scale", "spRich")]
+bbs_abun4 = bbs_abun4[,c("datasetID", "site","taxa","meanAbundance", "pctTrans","pctCore","pctNeither", "scale", "spRich")]
 write.csv(bbs_abun4, "data/BBS/bbs_abun4_spRich.csv", row.names = FALSE)
 
 
