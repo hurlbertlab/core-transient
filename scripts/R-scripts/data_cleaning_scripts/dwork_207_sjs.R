@@ -279,16 +279,15 @@ dataset2 = dataset2[!dataset2$quadrat %in% bad_sites,]
 dataset2 = filter(dataset2, !grepl("gm2", quadrat))
 dataset2$quadrat = factor(dataset2$quadrat)
 
-dataset2$s1 = 'Toolik'
+dataset2$maxgrain = 'Toolik'
 
 library(tidyr)
-dataset2 = separate(dataset2, quadrat, c("Plot", "Quad"), sep = "Q")
-dataset2$Plot = substring(dataset2$Plot, 2)
-dataset2 = unite(dataset2, site_final, s1 , Plot, Quad, sep = "_")
+dataset2$Plot = substring(dataset2$quadrat, 1, 2)
+dataset2$Quad = substring(dataset2$quadrat, 3, 4)
 
 
 #--! PROVIDE INFO !--#
-site_grain_names = c("site_final")
+site_grain_names = c("maxgrain", "Plot", "Quad")
 
 
 # We will now create the site field with these codes concatenated if there
@@ -723,18 +722,25 @@ tGrain = 'year'
 site_grain_names
 
 #--! PROVIDE INFO !--#
-sGrain = 'site_final'
-
-# Save the spatial grain chosen for analysis
-dataFormattingTable[,'Formatted_siteUnit'] = 
-  dataFormattingTableFieldUpdate(datasetID, 'Formatted_siteUnit', sGrain)
-
+sGrain = 'maxgrain_Plot'
 
 # This is a reasonable choice of spatial grain because ...
 #--! PROVIDE INFO !--#
-# quadrats are only 0.25 m2 and record presence absence, whereas sites encompass
-# 28-52 quadrats per depth interval providing a greater sample and an effective
-# abundance measure.
+# quadrats are only 0.8 m2 which is clearly too small so we use the aggregates
+# of 7 quadrats per "Plot".
+
+dataFormattingTable[,'Formatted_spatial_grain'] = 
+  dataFormattingTableFieldUpdate(datasetID, 'Formatted_spatial_grain',  
+                                 
+                                 #--! PROVIDE INFO !--#
+                                 5.6) 
+
+dataFormattingTable[,'Formatted_spatial_grain_unit'] = 
+  dataFormattingTableFieldUpdate(datasetID, 'Formatted_spatial_grain_unit',  
+                                 
+                                 #--! PROVIDE INFO !--#
+                                 'm2') 
+
 
 # The function "richnessYearSubsetFun" below will subset the data to sites with an 
 # adequate number of years of sampling and species richness. If there are no 
