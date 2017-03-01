@@ -18,6 +18,8 @@ library(sp)
 library(rgdal)
 library(raster)
 library(dplyr)
+library(merTools)
+library(digest)
 
 
 source('scripts/R-scripts/core-transient_functions.R')
@@ -73,7 +75,6 @@ write.csv(summaries, 'output/tabular_data/core-transient_summary.csv',
 #####################lump reptile and ampibian into herptile, get rid of invert if possible - other category?, do a table of communities
 
 # Plotting summary results across datasets for Core-Transient analysis
-
 summ = read.csv('output/tabular_data/core-transient_summary.csv', header=T)
 summ$taxa = factor(summ$taxa)
 summ$taxa[summ$taxa == "Arthropod"] <- "Invertebrate"
@@ -83,19 +84,10 @@ summ$system = factor(summ$system)
 summ = na.omit(summ)
 summ1 =  subset(summ, !datasetID %in% c(1, 99, 85, 90, 91, 92, 97, 124)) # excluding BBS to include below-scale route info
 summ1.5 = summ1[, c("datasetID","site","system","taxa","propCore", "propTrans", "meanAbundance")]
-# insert below-scale bbs dataset 
-bbs_below = read.csv("data/bbs_below.csv", header = TRUE)
-bbs_below$site = paste(bbs_below$stateroute, bbs_below$scale, sep = "-")
-bbs_below$datasetID = 1
-bbs_below$system = "Terrestrial"
-bbs_below$taxa = "Bird"
-bbs_below$propCore = bbs_below$pctCore
-bbs_below$propTrans = bbs_below$pctTran
-bbs_below$meanAbundance = bbs_below$aveN
-bbs_below = bbs_below[, c("datasetID","site","system","taxa","propCore","propTrans","meanAbundance")]
 
-summ2 = rbind(bbs_below,summ1.5)
-
+# read in pre formatted bbs below dataset
+bbs_summ2 = read.csv("data/BBS/bbs_below_summ2.csv", header = TRUE)
+summ2 = rbind(bbs_summ2,summ1.5)
 
 dsets = unique(summ2[, c('datasetID', 'system','taxa')])
 
@@ -233,29 +225,9 @@ w + geom_boxplot(width=1, position=position_dodge(width=0.6),aes(x=taxa, y=mu), 
 ggsave("C:/Git/core-transient/output/plots/meanOcc.pdf", height = 8, width = 12)
 
 ##### Boxplots showing distribution of core and transient species by taxon #####
-# read in BBS route level data for fig 2
-bbs_focal_occs_pctTrans = read.csv("data/bbs_below_pctTrans.csv", header = TRUE)
-bbs_focal_occs_pctTrans = subset(bbs_focal_occs_pctTrans, bbs_focal_occs_pctTrans$scale == '50-1')
-bbs_focal_occs_pctTrans$site = bbs_focal_occs_pctTrans$stateroute
-bbs_focal_occs_pctTrans$datasetID = 1
-bbs_focal_occs_pctTrans$system = "Terrestrial"
-bbs_focal_occs_pctTrans$taxa = "Bird"
-bbs_focal_occs_pctTrans$propCore33 = bbs_focal_occs_pctTrans$pctCore
-bbs_focal_occs_pctTrans$propTrans33 = bbs_focal_occs_pctTrans$spRichTrans33
-bbs_focal_occs_pctTrans$propTrans25 = bbs_focal_occs_pctTrans$spRichTrans25
-bbs_focal_occs_pctTrans$propTrans10 = bbs_focal_occs_pctTrans$spRichTrans10
-
-# 2b
-bbs_focal_occs_pctTrans = bbs_focal_occs_pctTrans[, c("datasetID","site","system","taxa","propCore33", "propTrans33", "propTrans25", "propTrans10")]
-
-# 2a
-bbs_below_st = bbs_focal_occs_pctTrans
-bbs_below_st$propCore = bbs_below_st$propCore33
-bbs_below_st$propTrans = bbs_below_st$propTrans33
-bbs_below_st = bbs_below_st [, c("datasetID","site","system","taxa","propCore","propTrans")]
-
 summ1.5$meanAbundance = NULL
-# summ2.5 includes only stateroute level new bbs data
+# summ2.5 includes only stateroute level bbs data 2000-2014
+bbs_below_st = read.csv("data/BBS/bbs_below_st.csv", header = TRUE)
 summ2.5 = rbind(bbs_below_st,summ1.5)
 
 core = summ2.5 %>%
@@ -275,8 +247,6 @@ propCT_long$taxa = as.factor(propCT_long$taxa)
 propCT_long$taxa = factor(propCT_long$taxa,
                     levels = c('Invertebrate','Fish','Plankton','Mammal','Plant','Bird','Benthos'),ordered = TRUE)
 colscale = c("#c51b8a", "#fdd49e", "#225ea8")
-
-
 
 ### Fig 2b
 core_e = summ2.5 %>%
@@ -343,8 +313,9 @@ for (d in datasetIDs) {
   print(d)
 }
 percTransSummaries = percTransSummaries[, c("datasetID","site","system","taxa","propCore33", "propTrans33", "propTrans25", "propTrans10")]
-#### want to rbind bbs here
-
+percTransSummaries$site = as.numeric(percTransSummaries$site)
+#rbind threshold dataset with BBS thresholds
+bbs_focal_occs_pctTrans = read.csv("data/BBS/bbs_focal_occs_pctTrans.csv", header = TRUE)
 percTransSummaries_w_bbs = rbind(percTransSummaries, bbs_focal_occs_pctTrans)
 
 
@@ -411,18 +382,55 @@ p = p+geom_boxplot(width=0.8,position=position_dodge(width=0.8),aes(x=factor(abb
 #ggsave(file="C:/Git/core-transient/output/plots/comboplot.pdf", height = 10, width = 15,grid)
 
 #################### FIG 3 ######################### 
-mod = read.csv("mod.csv", header=TRUE)
-
-pdf('output/plots/3b_sara_scale_transient_reg.pdf', height = 6, width = 7.5)
-par(mfrow = c(1, 1), mar = c(6, 6, 1, 1), mgp = c(4, 1, 0), 
-    cex.axis = 1.5, cex.lab = 2, las = 1)
-palette(colors7)
-
 occ_taxa=read.csv("output/tabular_data/occ_taxa.csv",header=TRUE)
 scaleIDs = filter(dataformattingtable, spatial_scale_variable == 'Y',
                   format_flag == 1)$dataset_ID
 scaleIDs = scaleIDs[! scaleIDs %in% c(207, 210, 217, 218, 222, 223, 225, 238, 241,258, 282, 322, 280,317)]
-bbs_abun = read.csv("bbs_abun_occ.csv", header=TRUE)
+bbs_abun = read.csv("data/BBS/bbs_abun_occ.csv", header=TRUE)
+
+#### Fig 3a Area #####
+area = read.csv("output/tabular_data/scaled_areas_2_20.csv", header = TRUE)
+
+areamerge.5 = merge(occ_taxa[,c("datasetID", "site", "taxa", "pctTrans")], area, by = c("datasetID", "site"), na.rm = TRUE)
+areamerge.5  = areamerge.5 [, c("datasetID", "site", "taxa", "pctTrans", "area")]
+
+# read in bbs abundance data
+bbs_area = read.csv("data/BBS/bbs_area.csv", header = TRUE)
+areamerge = rbind(bbs_area,areamerge.5)
+
+
+pdf('output/plots/3a_sara_scale_area_reg.pdf', height = 6, width = 7.5)
+par(mfrow = c(1, 1), mar = c(6, 6, 1, 1), mgp = c(4, 1, 0), 
+    cex.axis = 1.5, cex.lab = 2, las = 1)
+palette(colors7)
+scaleIDs = filter(dataformattingtable, spatial_scale_variable == 'Y',
+                  format_flag == 1)$dataset_ID 
+scaleIDs = scaleIDs[! scaleIDs %in% c(207, 210, 217, 218, 222, 223, 225, 238, 241,258, 282, 322, 280,317, 248)]  # waiting on data for 248
+scaleIDs[28] = 1
+
+for(id in scaleIDs){
+  print(id)
+  plotsub = subset(areamerge,datasetID == id)
+  mod3 = lm(plotsub$pctTrans ~ log10(plotsub$area))
+  xnew = range(log10(plotsub$area))
+  xhat <- predict(mod3, newdata = data.frame((xnew)))
+  xhats = range(xhat)
+  print(xhats)
+  taxcolor = subset(taxcolors, taxa == as.character(plotsub$taxa)[1])
+  y=summary(mod3)$coef[1] + (xhats)*summary(mod3)$coef[2]
+  plot(NA, xlim = c(-1, 7), ylim = c(0,1), col = as.character(taxcolor$color), xlab = expression("Log"[10]*" Area"), ylab = "% Transients", cex = 1.5)
+  lines(log10(plotsub$area), fitted(mod3), col=as.character(taxcolor$color),lwd=5)
+  par(new=TRUE)
+}
+par(new=TRUE)
+legend('bottomleft', legend = as.character(taxcolors$taxa), lty=1,lwd=3,col = as.character(taxcolors$color), cex = 1)
+dev.off()
+
+#### Figure 3b transients and scale ####
+pdf('output/plots/3b_sara_scale_transient_reg.pdf', height = 6, width = 7.5)
+par(mfrow = c(1, 1), mar = c(6, 6, 1, 1), mgp = c(4, 1, 0), 
+    cex.axis = 1.5, cex.lab = 2, las = 1)
+palette(colors7)
 
 totalspp = bbs_abun %>% 
   group_by(AOU, stateroute) %>%
@@ -457,6 +465,7 @@ par(new=TRUE)
 legend('topright', legend = as.character(taxcolors$taxa), lty=1,lwd=3,col = as.character(taxcolors$color), cex = 1.35)
 dev.off()
 
+#### Supplemental core and scale ####
 pdf('output/plots/supp_sara_scale_core_reg.pdf', height = 6, width = 7.5)
 par(mfrow = c(1, 1), mar = c(6, 6, 1, 1), mgp = c(4, 1, 0), 
     cex.axis = 1.5, cex.lab = 2, las = 1)
@@ -479,57 +488,13 @@ segments(0,  0, x1 = 5.607, y1 = 1, col = rgb(29/255, 106/255, 155/255), lwd=5)
 par(new=TRUE)
 dev.off()
 
-
-#### Fig 3a Area #####
-area = read.csv("output/scaled_areas_2_20.csv", header = TRUE)
-
-areamerge.5 = merge(occ_taxa[,c("datasetID", "site", "taxa", "pctTrans")], area, by = c("datasetID", "site"), na.rm = TRUE)
-areamerge.5  = areamerge.5 [, c("datasetID", "site", "taxa", "pctTrans", "area")]
-
-bbs_abun = read.csv("bbs_abun_occ.csv", header=TRUE)
-bbs_abun$site = bbs_abun$stateroute
-bbs_area = merge(bbs_below_st, bbs_abun, by = "site")
-bbs_area$pctTrans = bbs_area$propTrans
-bbs_area = bbs_area[, c("datasetID", "site", "taxa", "pctTrans", "area")]
-
-areamerge = rbind(bbs_area,areamerge.5)
-
-
-pdf('output/plots/3a_sara_scale_area_reg.pdf', height = 6, width = 7.5)
-par(mfrow = c(1, 1), mar = c(6, 6, 1, 1), mgp = c(4, 1, 0), 
-    cex.axis = 1.5, cex.lab = 2, las = 1)
-palette(colors7)
-scaleIDs = filter(dataformattingtable, spatial_scale_variable == 'Y',
-                  format_flag == 1)$dataset_ID 
-scaleIDs = scaleIDs[! scaleIDs %in% c(207, 210, 217, 218, 222, 223, 225, 238, 241,258, 282, 322, 280,317, 248)]  # waiting on data for 248
-scaleIDs[28] = 1
-
-for(id in scaleIDs){
-  print(id)
-  plotsub = subset(areamerge,datasetID == id)
-  mod3 = lm(plotsub$pctTrans ~ log10(plotsub$area))
-  xnew = range(log10(plotsub$area))
-  xhat <- predict(mod3, newdata = data.frame((xnew)))
-  xhats = range(xhat)
-  print(xhats)
-  taxcolor = subset(taxcolors, taxa == as.character(plotsub$taxa)[1])
-  y=summary(mod3)$coef[1] + (xhats)*summary(mod3)$coef[2]
-  plot(NA, xlim = c(-1, 7), ylim = c(0,1), col = as.character(taxcolor$color), xlab = expression("Log"[10]*" Area"), ylab = "% Transients", cex = 1.5)
-  lines(log10(plotsub$area), fitted(mod3), col=as.character(taxcolor$color),lwd=5)
-  par(new=TRUE)
-}
-par(new=TRUE)
-legend('bottomleft', legend = as.character(taxcolors$taxa), lty=1,lwd=3,col = as.character(taxcolors$color), cex = 1)
-dev.off()
-
-#### Fig 3c ####
+#### Fig 3c predicted model ####
 bbs_occ_taxa = occ_taxa[,c("datasetID", "site", "taxa", "pctTrans", "meanAbundance")]
 bbs_below$pctTrans = bbs_below$propTrans
 bbs_below_occ = bbs_below[,c("datasetID", "site", "taxa", "pctTrans", "meanAbundance")]
 
 bbs_below_occ_taxa = rbind(bbs_occ_taxa, bbs_below_occ)
 bbs_below_occ_taxa = bbs_below_occ_taxa[!bbs_below_occ_taxa$datasetID %in% c(207, 210, 217, 218, 222, 223, 225, 238, 241, 258, 282, 322, 280,317),]
-
 
 mod3c = lmer(pctTrans~(1|datasetID) * taxa * log10(meanAbundance), data=bbs_below_occ_taxa)
 summary(mod3c)
@@ -548,12 +513,10 @@ predmod$abbrev = factor(predmod$abbrev,
 
 colscale = factor(predmod$color,
                         levels = c("gold2","turquoise2","red","purple4","forestgreen", "#1D6A9B"),ordered = TRUE)
-#colscale = c("gold2","turquoise2","red","purple4","forestgreen", "#1D6A9B")
 
 p <- ggplot(predmod, aes(x = factor(abbrev), y = fit, fill=factor(predmod$taxa)))
 p +geom_bar(stat = "identity", fill = levels(colscale)) + geom_errorbar(ymin = predmod$lwr, ymax= predmod$upr, width=0.2) + xlab("Taxa") + ylab("Proportion of Species") + ylim(-.1, 1) + theme(axis.ticks.x=element_blank(),axis.text.x=element_text(size=24),axis.text.y=element_text(size=24),axis.title.x=element_text(size=32),axis.title.y=element_text(size=32,angle=90,vjust = 2))+guides(fill=guide_legend(title="",keywidth = 2, keyheight = 1)) + theme_classic()
 ggsave(file="C:/Git/core-transient/output/plots/predmod3c.pdf", height = 10, width = 15)
-
 
 #### Fig 4d ####
 
@@ -562,34 +525,16 @@ occ_taxa4 = occ_taxa[,c("datasetID", "site","meanOcc", "pctTrans","pctCore","pct
 occ_taxa4$site = as.numeric(occ_taxa4$site)
 
 # calculating species richness
-bbs_spRich = bbs_abun %>% 
-  #group_by(AOU, stateroute, scale, subrouteID) %>% 
-   count(stateroute, scale, subrouteID)
-bbs_spRich$subscale = substring(bbs_spRich$subrouteID, 5)
-bbs_spRich$site = paste(bbs_spRich$stateroute, bbs_spRich$scale, bbs_spRich$subscale, sep = "-")
+bbs_abun4 = read.csv("data/BBS/bbs_abun4_spRich.csv", header = TRUE)
 
-bbs_abun3.5 = merge(bbs_spRich, bbs_below, by = c("site"))
-
-bbs_abun4 = bbs_abun3.5
-bbs_abun4$site = as.numeric(bbs_abun4$stateroute)
-bbs_abun4$datasetID = 1
-bbs_abun4$pctTrans = bbs_abun4$propTrans
-bbs_abun4$pctCore = bbs_abun4$propCore
-bbs_abun4$pctNeither = 1-(bbs_abun4$pctTrans + bbs_abun4$propCore)
-bbs_abun4$spRich = bbs_abun4$n
-bbs_abun4$meanOcc = bbs_abun4$meanAbundance
-
-
-bbs_abun4 = bbs_abun4[,c("datasetID", "site","meanOcc", "pctTrans","pctCore","pctNeither", "scale", "spRich")]
 occ_taxa_bbs = rbind(occ_taxa4, bbs_abun4)
 
 occ_taxa_bbs$total = occ_taxa_bbs$pctCore + occ_taxa_bbs$pctNeither
-occ_taxa_bbs$numtrans = (1-occ_taxa_bbs$total) * occ_taxa_bbs$spRich
+occ_taxa_bbs$numtrans = as.integer((1-occ_taxa_bbs$total) * occ_taxa_bbs$spRich) # converted to integer, quick fix
 occ_taxa_bbs$minustrans = occ_taxa_bbs$spRich - occ_taxa_bbs$numtrans
 
-
-
-pdf('output/plots/4d_spatial_turnover.pdf', height = 6, width = 7.5)
+#### Figure 4c ####
+pdf('output/plots/4d_temporal_turnover.pdf', height = 6, width = 7.5)
 par(mfrow = c(1, 1), mar = c(6, 6, 1, 1), mgp = c(4, 1, 0), 
     cex.axis = 1.5, cex.lab = 2, las = 1)
 palette(colors7)
@@ -619,8 +564,6 @@ dev.off()
 ####### MODELS ######
 latlongs = read.csv("data/latlongs/latlongs.csv", header =TRUE)
 
-occ_taxa = read.csv("output/tabular_data/occ_taxa.csv",header=TRUE)
-
 # merge multiple lat long file to propOcc to get naming convention correct
 latlong_w_sites = merge(latlongs, summ2[,c("datasetID", "site", "propTrans")], by = c("datasetID", "site"), all.x = TRUE) 
 
@@ -638,17 +581,7 @@ dft2 = merge(dft, summ2[, c("datasetID","site","propTrans")], by = "datasetID")
 all_latlongs.5 = rbind(dft2, latlong_w_sites)
 
 # rbind in new BBS data
-bbs_below = read.csv("data/bbs_below.csv", header = TRUE) # from Jenkins code
-bbs_latlong = read.csv("data/latlongs/bbs_2000_2014_latlongs.csv", header = TRUE)
-bbs_be_lat = merge(bbs_below, bbs_latlong, by = "stateroute", all.x = TRUE)
-bbs_be_lat$site = paste(bbs_below$stateroute, bbs_below$scale, sep = "-")
-bbs_be_lat$datasetID = 1
-bbs_be_lat$taxa = "Bird"
-bbs_be_lat$Lat = bbs_be_lat$Lati
-bbs_be_lat$Lon = bbs_be_lat$Longi
-bbs_be_lat$propTrans = bbs_be_lat$pctTran
-bbs_be_lat = bbs_be_lat[,c("datasetID", "Lat","Lon", "taxa","site", "propTrans")]
-
+bbs_be_lat = read.csv("data/BBS/bbs_be_lat.csv", header = TRUE)
 # rbind new bbs data to lat longs
 all_latlongs =  rbind(bbs_be_lat, all_latlongs.5)
 all_latlongs = na.omit(all_latlongs)
