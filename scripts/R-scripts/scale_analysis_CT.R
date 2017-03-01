@@ -51,14 +51,14 @@ for(datasetID in datasetIDs){
   spatialgrains = dataDescription$Raw_siteUnit
   spatialgrains = as.character(spatialgrains)
   spatialgrains = unlist(strsplit(spatialgrains, '_'))
-  spatialgrains = spatialgrains[length(spatialgrains):1] #reversing order to be from small to large
+  #spatialgrains = spatialgrains[length(spatialgrains):1] #reversing order to be from small to large
   #spatialgrains = c(spatialgrains, maxGrain)
   spatialgrain = c()
   grainLevel = 1
   for (sg in spatialgrains) {
-    spatialgrain = paste(sg, spatialgrain, sep = "_")
-    if (substr(spatialgrain, nchar(spatialgrain), nchar(spatialgrain)) == "_") {
-      sGrain = substring(spatialgrain, 1, nchar(spatialgrain)-1)  
+    spatialgrain = paste(spatialgrain, sg, sep = "_")
+    if (substr(spatialgrain, 1, 1) == "_") {
+      sGrain = substring(spatialgrain, 2, nchar(spatialgrain))  
     } else {
       sGrain = spatialgrain
     }
@@ -77,6 +77,7 @@ for(datasetID in datasetIDs){
                                               dataDescription)
     if(class(richnessYearsTest) == "character"){
       goodSites = 0
+      break
     }else
     goodSites <- unique(richnessYearsTest$analysisSite)
 
@@ -87,8 +88,7 @@ for(datasetID in datasetIDs){
       fullGoodSites = c(fullGoodSites, tmp)
     }
     
-    dataset8=dataset7
-    #dataset8 = subset(dataset7, s %in% fullGoodSites)
+    dataset8 = subset(dataset7, site %in% fullGoodSites)
     
    if(goodSites == 0){
       subsettedData = dataset7
