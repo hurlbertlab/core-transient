@@ -413,7 +413,7 @@ p = p+geom_boxplot(width=0.8,position=position_dodge(width=0.8),aes(x=factor(abb
 #################### FIG 3 ######################### 
 mod = read.csv("mod.csv", header=TRUE)
 
-pdf('output/plots/sara_scale_transient_reg.pdf', height = 6, width = 7.5)
+pdf('output/plots/3b_sara_scale_transient_reg.pdf', height = 6, width = 7.5)
 par(mfrow = c(1, 1), mar = c(6, 6, 1, 1), mgp = c(4, 1, 0), 
     cex.axis = 1.5, cex.lab = 2, las = 1)
 palette(colors7)
@@ -457,7 +457,7 @@ par(new=TRUE)
 legend('topright', legend = as.character(taxcolors$taxa), lty=1,lwd=3,col = as.character(taxcolors$color), cex = 1.35)
 dev.off()
 
-pdf('output/plots/sara_scale_core_reg.pdf', height = 6, width = 7.5)
+pdf('output/plots/supp_sara_scale_core_reg.pdf', height = 6, width = 7.5)
 par(mfrow = c(1, 1), mar = c(6, 6, 1, 1), mgp = c(4, 1, 0), 
     cex.axis = 1.5, cex.lab = 2, las = 1)
 palette(colors7)
@@ -495,7 +495,7 @@ bbs_area = bbs_area[, c("datasetID", "site", "taxa", "pctTrans", "area")]
 areamerge = rbind(bbs_area,areamerge.5)
 
 
-pdf('output/plots/sara_scale_area_reg.pdf', height = 6, width = 7.5)
+pdf('output/plots/3a_sara_scale_area_reg.pdf', height = 6, width = 7.5)
 par(mfrow = c(1, 1), mar = c(6, 6, 1, 1), mgp = c(4, 1, 0), 
     cex.axis = 1.5, cex.lab = 2, las = 1)
 palette(colors7)
@@ -589,7 +589,7 @@ occ_taxa_bbs$minustrans = occ_taxa_bbs$spRich - occ_taxa_bbs$numtrans
 
 
 
-pdf('output/plots/spatial_turnover.pdf', height = 6, width = 7.5)
+pdf('output/plots/4d_spatial_turnover.pdf', height = 6, width = 7.5)
 par(mfrow = c(1, 1), mar = c(6, 6, 1, 1), mgp = c(4, 1, 0), 
     cex.axis = 1.5, cex.lab = 2, las = 1)
 palette(colors7)
