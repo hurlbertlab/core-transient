@@ -256,7 +256,7 @@ getNestedDataset = function(dataset, siteGrain, temporalGrain, dataDescription){
 # ---- SUBSET DATASET TO SITES WITH ADEQUATE TIME SAMPLES AND RICHNESS ----
 #======================================================================================================* 
 
-richnessYearSubsetFun = function(dataset, spatialGrain, temporalGrain, minNTime = 10, minSpRich = 10, dataDescription){
+richnessYearSubsetFun = function(dataset, spatialGrain, temporalGrain, minNTime = 6, minSpRich = 10, dataDescription){
     dataset1 = getNestedDataset(dataset, spatialGrain, temporalGrain, dataDescription)
   # Get the number of years and species richness for each site: 
     siteSr_nTime = ddply(dataset1, .(analysisSite), summarize,
@@ -281,7 +281,7 @@ richnessYearSubsetFun = function(dataset, spatialGrain, temporalGrain, minNTime 
 
 # Note: Prior to running "zFinder", you must have already run the function "richnessYearSubsetFun" for which "inData" is the function's output.  
 
-zFinder = function(inData, minNTime = 10, proportionalThreshold = .5){
+zFinder = function(inData, minNTime = 6, proportionalThreshold = .5){
   # Calculate the number of temporal samples per site and year: 
     spaceTime = ddply(inData, .(analysisSite, analysisDate),
                     summarize, temporalSubsamples = length(unique(date)))
@@ -325,7 +325,7 @@ zFinder = function(inData, minNTime = 10, proportionalThreshold = .5){
 # ---- Subset data based on z-threshold ----
 #------------------------------------------------------------------------------------------------------*
 
-dataZSubFun  = function(inData, minNTime = 10, proportionalThreshold = .5, seed = 1){
+dataZSubFun  = function(inData, minNTime = 6, proportionalThreshold = .5, seed = 1){
   # Get z-values
     zOutput = zFinder(inData, minNTime, proportionalThreshold)
     z = zOutput[[1]]
@@ -362,7 +362,7 @@ dataZSubFun  = function(inData, minNTime = 10, proportionalThreshold = .5, seed 
 # This returns a w-value and a list of siteDates that satisfy this value:
 # Note: Prior to running the "wFinder", you must have already run the function "richnessYearSubsetFun".
 
-wFinder = function(inData, minNTime = 10, proportionalThreshold = .5){
+wFinder = function(inData, minNTime = 6, proportionalThreshold = .5){
   # Get data subset by Z-value:
     dataZSub = dataZSubFun(inData, minNTime, proportionalThreshold)
   # Summarize number of spatial subsamples per siteTime :
@@ -407,7 +407,7 @@ wFinder = function(inData, minNTime = 10, proportionalThreshold = .5){
 # ---- Subset the data based on w and z values ----
 #------------------------------------------------------------------------------------------------------*
 
-wzSubsetFun = function(inData, minNTime = 10, proportionalThreshold = .5, seed = 1){
+wzSubsetFun = function(inData, minNTime = 6, proportionalThreshold = .5, seed = 1){
   wOut = wFinder(inData, minNTime, proportionalThreshold)
   # Subset data
     dataW = subset(wOut$dataZSub, siteTimeDate %in% wOut$wSiteTimeDates) 
@@ -436,7 +436,7 @@ wzSubsetFun = function(inData, minNTime = 10, proportionalThreshold = .5, seed =
 # Prior to running this function, make sure to run the richnessYearSubsetFun, if there are no good sites, the proportional occurrence frame cannot be made!
 
 subsetDataFun = function(dataset, datasetID, spatialGrain, temporalGrain,
-                         minNTime = 10, minSpRich = 10,
+                         minNTime = 6, minSpRich = 10,
                          proportionalThreshold = .5,
                          dataDescription){
   inData = richnessYearSubsetFun(dataset, spatialGrain, temporalGrain, minNTime, minSpRich, dataDescription)
