@@ -434,6 +434,7 @@ wzSubsetFun = function(inData, minNTime = 6, proportionalThreshold = .5, seed = 
 #------------------------------------------------------------------------------------------------------*
 # The subsetted dataset is limited to sites above a minimum overall species richness and number of years and each site year is subset to w and z
 # Prior to running this function, make sure to run the richnessYearSubsetFun, if there are no good sites, the proportional occurrence frame cannot be made!
+# This function now sums species counts across subunits at finer spatial grains if there were any.
 
 subsetDataFun = function(dataset, datasetID, spatialGrain, temporalGrain,
                          minNTime = 6, minSpRich = 10,
@@ -441,8 +442,11 @@ subsetDataFun = function(dataset, datasetID, spatialGrain, temporalGrain,
                          dataDescription){
   inData = richnessYearSubsetFun(dataset, spatialGrain, temporalGrain, minNTime, minSpRich, dataDescription)
   subsettedData = wzSubsetFun(inData, minNTime, proportionalThreshold)
-  outData = data.frame(datasetID = datasetID, site = subsettedData$outData$site, year = subsettedData$outData$year,
-                       species = subsettedData$outData$species, count = subsettedData$outData$count)
+  
+  subData = subsettedData$outData %>% group_by(site, year, species) %>% summarize(count = sum(count, is.na = TRUE))
+  
+  outData = data.frame(datasetID = datasetID, site = subData$site, year = subData$year,
+                       species = subData$species, count = subData$count)
                        
   return(list(data = outData, w = subsettedData$w, z = subsettedData$z))
 }
