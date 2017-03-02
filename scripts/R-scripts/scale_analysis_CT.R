@@ -111,7 +111,7 @@ colnames(grainlevels) = c("datasetID", "NumGrains")
 write.csv(grainlevels, "output/tabular_data/grainlevels.csv", row.names=FALSE)
 
 # Merge all output files into 1 file
-#grainlevels = read.csv("output/grainlevels.csv", header = TRUE)
+#grainlevels = read.csv("output/tabular_data/grainlevels.csv", header = TRUE)
 
   files = list.files("data/spatialGrainAnalysis/propOcc_datasets")
   bigfile = c()
@@ -156,9 +156,9 @@ for(file in propOccfiles){
 allpropOcc = data.frame(allpropOcc)
 
 # count up spRich with and without transients (for Fig 4)
-minustransrich = allpropOcc %>% filter(propOcc > 1/3) %>% count(datasetID, site, scale)
+minustransrich = allpropOcc %>% filter(propOcc > 1/3) %>% dplyr::count(datasetID, site, scale)
 write.csv(minustransrich, "output/tabular_data/minustransrich.csv", row.names = FALSE)
-transrich  = allpropOcc %>% count(datasetID, site, scale)
+transrich  = allpropOcc %>% dplyr::count(datasetID, site, scale)
 write.csv(transrich, "output/tabular_data/transrich.csv", row.names = FALSE)
 
 # Summary statistics by datasetID/site, i.e. mean occupancy, % transient species (<=1/3)

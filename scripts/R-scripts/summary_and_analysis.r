@@ -56,7 +56,6 @@ datasetIDs = datasetIDs[!datasetIDs %in% c(1)]
 #    in summaries of proportion transient vs core (e.g. d319, d257)
 #    (although I think these should get weeded out based on the first criterion)
 
-
 summaries = c()
 for (d in datasetIDs) {
   newsumm = summaryStatsFun(d, threshold, reps)
@@ -399,7 +398,7 @@ scaleIDs = scaleIDs[! scaleIDs %in% c(207, 210, 217, 218, 222, 223, 225, 238, 24
 bbs_abun = read.csv("data/BBS/bbs_abun_occ.csv", header=TRUE)
 
 #### Fig 3a Area #####
-area = read.csv("output/tabular_data/scaled_areas_3_1.csv", header = TRUE)
+area = read.csv("output/tabular_data/scaled_areas_3_2.csv", header = TRUE)
 
 areamerge.5 = merge(occ_taxa[,c("datasetID", "site", "pctTrans")], area, by = c("datasetID", "site"), na.rm = TRUE)
 areamerge.5  = areamerge.5 [, c("datasetID", "site", "taxa", "pctTrans", "area")]
@@ -489,11 +488,11 @@ par(new=TRUE)
 dev.off()
 
 #### Fig 3c predicted model ####
-bbs_occ = bbs_occ[!bbs_occ$datasetID %in% c(207, 210, 217, 218, 222, 223, 225, 238, 241, 258, 282, 322, 280,317),]
+bbs_occ_pred = bbs_occ[!bbs_occ$datasetID %in% c(207, 210, 217, 218, 222, 223, 225, 238, 241, 258, 282, 322, 280,317),]
 
-mod3c = lmer(pctTrans~(1|datasetID) * taxa * log10(meanAbundance), data=bbs_occ)
+mod3c = lmer(pctTrans~(1|datasetID) * taxa * log10(meanAbundance), data=bbs_occ_pred)
 summary(mod3c)
-occ_sub_pred = data.frame(datasetID = 999, taxa = unique(bbs_occ$taxa), meanAbundance =  102.7333) # 102.73333 is median abun for data frame
+occ_sub_pred = data.frame(datasetID = 999, taxa = unique(bbs_occ_pred$taxa), meanAbundance =  102.7333) # 102.73333 is median abun for data frame
 predmod3c = merTools::predictInterval(mod3c, occ_sub_pred, n.sims=1000)
 
 # matching by predicted output vals
@@ -529,33 +528,36 @@ bbs_occ_trans = merge(bbs_occ_trans, minustransrich[, c("datasetID", "site", "sc
 
 bbs_occ_trans_area = merge(areamerge[,c("datasetID", "site", "area")], bbs_occ_trans, by = c("datasetID", "site"))
 
-pdf('output/plots/4d_spatial_turnover.pdf', height = 6, width = 7.5)
-par(mfrow = c(1, 1), mar = c(6, 6, 1, 1), mgp = c(4, 1, 0), 
-    cex.axis = 1.5, cex.lab = 2, las = 1)
-palette(colors7)
-scaleIDs = filter(dataformattingtable, spatial_scale_variable == 'Y',
-                  format_flag == 1)$dataset_ID 
-scaleIDs = scaleIDs[! scaleIDs %in% c(207, 210, 217, 218, 222, 223, 225, 238, 241,258, 282, 322, 280,317, 248, 221, 313)]  # waiting on data for 248
+scaleIDs = unique(bbs_occ_trans_area$datasetID)
 
+scaleIDs = scaleIDs[! scaleIDs %in% c(225,248,254, 282,291)] # 248 tbd
+
+slopes = c()
 for(id in scaleIDs){
   print(id)
-  plotsub = subset(bbs_occ_trans_area,datasetID == id)          ###### need to do this by trans and no trans - 2 DFs maybe?
-  mod.t = lm(log10(plotsub$meanAbundance) ~ log10(plotsub$area))
-  mod.n= lm(log10(plotsub$meanAbundance) ~ log10(plotsub$area))
-  xnew = range(plotsub$minustrans)
-  xhat <- predict(mod3, newdata = data.frame((xnew)))
-  xhats = range(xhat)
-  print(xhats)
+  plotsub = subset(bbs_occ_trans_area,datasetID == id) 
+  taxa = as.character(unique(plotsub$taxa))
+  mod.t = lm(log10(plotsub$spRich) ~ log10(plotsub$area))
+  mod.t.slope = summary(mod.t)$coef[2,"Estimate"]
+  mod.n= lm(log10(plotsub$minustrans) ~ log10(plotsub$area))
+  mod.n.slope = summary(mod.n)$coef[2,"Estimate"]
   taxcolor = subset(taxcolors, taxa == as.character(plotsub$taxa)[1])
   y=summary(mod3)$coef[1] + (xhats)*summary(mod3)$coef[2]
-  plot(NA, xlim = c(-1, 30), ylim = c(0,30), col = as.character(taxcolor$color), xlab = expression("Transients"), ylab = "No Transients", cex = 1.5)
-  lines(plotsub$minustrans, fitted(mod3), col=as.character(taxcolor$color),lwd=5)
-  par(new=TRUE)
+  slopes = rbind(slopes, c(mod.t.slope, mod.n.slope, taxa))
 }
-par(new=TRUE)
-legend('bottomleft', legend = as.character(taxcolors$taxa), lty=1,lwd=3,col = as.character(taxcolors$color), cex = 1)
-dev.off()
+colnames(slopes) = c("spRich_slope","minustrans_slope", "taxa")
+plot_relationship = merge(slopes, taxcolors, by = "taxa")
+plot_relationship$spRich_slope = as.numeric(plot_relationship$spRich_slope)
+plot_relationship$minustrans_slope = as.numeric(plot_relationship$minustrans_slope)
 
+
+plot_relationship$taxa = factor(plot_relationship$taxa,
+                        levels = c('Invertebrate','Fish','Plankton','Mammal','Plant','Bird','Benthos'),ordered = TRUE)
+colscale = c("gold2","turquoise2", "red", "purple4","forestgreen","#1D6A9B", "azure4")
+
+p <- ggplot(plot_relationship, aes(x = spRich_slope, y = minustrans_slope))
+p + geom_abline(intercept = 0,slope = 1, lwd =1.5,linetype="dashed")+geom_point(aes(colour = taxa), size = 6) + xlab("Species Richness") + ylab("Species Richness Without Transients") + scale_colour_manual(breaks = plot_relationship$taxa,values = colscale) + theme(axis.text.x=element_text(size=24),axis.text.y=element_text(size=24),axis.title.x=element_text(size=32),axis.title.y=element_text(size=32,angle=90,vjust = 2))+ theme_classic()
+ggsave(file="C:/Git/core-transient/output/plots/sparea_4c.pdf", height = 10, width = 15)
 ####### MODELS ######
 latlongs = read.csv("data/latlongs/latlongs.csv", header =TRUE)
 
