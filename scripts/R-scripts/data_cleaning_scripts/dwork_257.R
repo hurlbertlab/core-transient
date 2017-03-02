@@ -88,7 +88,7 @@ dataFormattingTable[,'countFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'countFormat',  
                                  
                                  #--! PROVIDE INFO !--#                                 
-                                 'presence')
+                                 'NA')
 
 dataFormattingTable[,'Notes_countFormat'] = 
   dataFormattingTableFieldUpdate(datasetID, 'Notes_countFormat', 
