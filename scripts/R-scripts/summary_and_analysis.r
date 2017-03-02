@@ -180,8 +180,6 @@ dev.off()
 
 #### barplot of mean occ by taxa #####
 numCT = read.csv("output/tabular_data/numCT.csv", header=TRUE)
-#numCT_plot$taxa = as.factor(numCT_plot$taxa)
-#numCT_plot$taxa <-droplevels(numCT_plot$taxa, exclude = c("","All","Amphibian", "Reptile"))
 
 # n calculates number of sites by taxa -nested sites
 numCT_taxa = numCT %>%
@@ -414,18 +412,21 @@ par(mfrow = c(1, 1), mar = c(6, 6, 1, 1), mgp = c(4, 1, 0),
 palette(colors7)
 scaleIDs = filter(dataformattingtable, spatial_scale_variable == 'Y',
                   format_flag == 1)$dataset_ID 
-scaleIDs = scaleIDs[! scaleIDs %in% c(207, 210, 217, 218, 222, 223, 225, 238, 241,258, 282, 322, 280,317, 248)]  # waiting on data for 248
-scaleIDs[28] = 1
+scaleIDs = scaleIDs[! scaleIDs %in% c(207, 210, 217, 218, 222, 223, 225, 241,258, 282, 322, 280, 248, 254, 291)]  # waiting on data for 248
 
+area_plot = c()
 for(id in scaleIDs){
   print(id)
   plotsub = subset(areamerge,datasetID == id)
+  taxa = as.character(unique(plotsub$taxa))
   mod3 = lm(plotsub$pctTrans ~ log10(plotsub$area))
+  mod3.slope = summary(mod3)$coef[2,"Estimate"]
   xnew = range(log10(plotsub$area))
   xhat <- predict(mod3, newdata = data.frame((xnew)))
   xhats = range(xhat)
   print(xhats)
   taxcolor = subset(taxcolors, taxa == as.character(plotsub$taxa)[1])
+  area_plot  = rbind(area_plot , c(id, xhats, mod3.slope,taxa))
   y=summary(mod3)$coef[1] + (xhats)*summary(mod3)$coef[2]
   plot(NA, xlim = c(-1, 7), ylim = c(0,1), col = as.character(taxcolor$color), xlab = expression("Log"[10]*" Area"), ylab = "% Transients", cex = 1.5)
   lines(log10(plotsub$area), fitted(mod3), col=as.character(taxcolor$color),lwd=5)
@@ -434,6 +435,23 @@ for(id in scaleIDs){
 par(new=TRUE)
 legend('bottomleft', legend = as.character(taxcolors$taxa), lty=1,lwd=3,col = as.character(taxcolors$color), cex = 1)
 dev.off()
+
+colnames(area_plot) = c("id","xlow","xhigh","slope", "taxa")
+area_plot = data.frame(area_plot)
+area_plot$datasetID = as.numeric(area_plot$id)
+area_plot$xlow = as.numeric(area_plot$xlow)
+area_plot$xhigh = as.numeric(area_plot$xhigh)
+area_plot$slope = as.numeric(area_plot$slope)
+write.csv(area_plot, "fig_3a_output.csv", row.names =FALSE)
+
+
+# ggplot not happening
+#area_plot$taxa = factor(area_plot$taxa, levels = c('Invertebrate','Fish','Plankton','Mammal','Plant','Bird','Benthos'),ordered = TRUE)
+#colscale = c("gold2","turquoise2", "red", "purple4","forestgreen","#1D6A9B", "azure4")
+
+#p <- ggplot(area_plot, aes(x = log10(area), y = slope))
+#p + geom_abline(intercept = 0,slope = 1, lwd =1.5,linetype="dashed") + geom_point(aes(colour = taxa), size = 6) + xlab("Species Richness") + ylab("Species Richness Without Transients") + scale_colour_manual(breaks = plot_relationship$taxa,values = colscale) + theme(axis.text.x=element_text(size=24),axis.text.y=element_text(size=24),axis.title.x=element_text(size=32),axis.title.y=element_text(size=32,angle=90,vjust = 2))+ theme_classic()
+#ggsave(file="C:/Git/core-transient/output/plots/sparea_4c.pdf", height = 10, width = 15)
 
 #### Figure 3b transients and scale ####
 pdf('output/plots/3b_sara_scale_transient_reg.pdf', height = 6, width = 7.5)
