@@ -409,7 +409,7 @@ dataFormattingTable[,'countFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'countFormat',    # Fill value below in quotes
 
 #####                                 
-                                 'count')
+                                 'density')
 
 dataFormattingTable[,'Notes_countFormat'] = 
   dataFormattingTableFieldUpdate(datasetID, 'Notes_countFormat', # Fill value below in quotes

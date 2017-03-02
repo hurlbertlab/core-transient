@@ -44,7 +44,17 @@ dataformattingtable = read.csv('data_formatting_table.csv', header = T)
 
 datasetIDs = dataformattingtable$dataset_ID[dataformattingtable$format_flag == 1]
 
-datasetIDs = datasetIDs[!datasetIDs %in% c(1,222, 317,67,270,271,319,325)] # 222 is % cover, 317 d/n have enough years
+# BBS (dataset 1) will be analyzed separately for now.
+datasetIDs = datasetIDs[!datasetIDs %in% c(1)]
+
+# Other datasets will need to be excluded depending on the particular analysis:
+#  --only datasets with countFormat %in% c('count', 'abundance') can be used
+#    for species abundance distribution analysis
+#  --only datasets with multiple hierarchical spatial scales can be used
+#    for the scale analysis
+#  --datasets without propOcc values for individual species can only be used
+#    in summaries of proportion transient vs core (e.g. d319, d257)
+#    (although I think these should get weeded out based on the first criterion)
 
 
 summaries = c()

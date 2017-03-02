@@ -408,12 +408,12 @@ head(dataset5)
 dataFormattingTable[,'countFormat'] = 
   dataFormattingTableFieldUpdate(datasetID, 'countFormat',    # Fill value below in quotes
                                  
-                                 'count')
+                                 'density')
 
 dataFormattingTable[,'Notes_countFormat'] = 
   dataFormattingTableFieldUpdate(datasetID, 'Notes_countFormat', # Fill value below in quotes
                                  
-                                 'No 0s or NAs. Count is a count of adult individuals')
+      'No 0s or NAs. Count is a count of adult individuals, although 10% of values are <1 (so density?)')
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT SPECIES DATA ----

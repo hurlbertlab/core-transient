@@ -10,12 +10,10 @@ get_valid_datasetIDs = function(){
   dataformattingtable = read.csv('data_formatting_table.csv')
   datasetIDs = dataformattingtable %>%
     filter(format_flag == 1, countFormat %in% c('count', 'abundance')) %>% 
-    # Remove datasets with no abundance data
-    filter(!dataset_ID %in% c(236, 255, 257, 260, 270, 271, 319)) %>%
-    # Remove non-count datasets
-    filter(!dataset_ID %in% c(207, 210, 222, 223, 226, 228, 238, 244, 247, 248, 258, 264, 277, 278,
-                              280, 298, 299, 300, 301, 326, 328, 329)) %>%
-    filter(!dataset_ID %in% c(1, 67, 317, 325)) %>% # Excluded in summary_and_analysis.r
+    # Remove count datasets with decimal values
+    filter(!dataset_ID %in% c(226, 228, 247, 264, 298, 299, 300, 301)) %>%
+    # exclude BBS for now and analyze it separately
+    filter(dataset_ID !=1) %>% 
     select(dataset_ID)
 }
 
@@ -31,6 +29,8 @@ get_abund_data  = function(datasetIDs){
     site_data = read.csv(file.path(dataset_path, filename), stringsAsFactors = FALSE, fileEncoding = 'latin1')
     abund_data = rbind(abund_data, site_data)
   }
+  # Strip zeros which are included to document a sampling event occurred
+  abund_data = abund_data[abund_data$count != 0,]
   return(abund_data)
 }
 

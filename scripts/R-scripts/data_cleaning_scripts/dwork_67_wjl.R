@@ -367,7 +367,7 @@ head(dataset5)
 dataFormattingTable[,'countFormat'] = 
   dataFormattingTableFieldUpdate(datasetID, 'countFormat',    # Fill value below in quotes
                                  
-                                 'count')
+                                 'presence')
 
 dataFormattingTable[,'Notes_countFormat'] = 
   dataFormattingTableFieldUpdate(datasetID, 'Notes_countFormat', 

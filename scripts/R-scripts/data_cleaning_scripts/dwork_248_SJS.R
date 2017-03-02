@@ -497,7 +497,7 @@ data.frame(table(dataset5$species))
 # Because of this, you should really stop here and post an issue on GitHub. 
 
 #--! PROVIDE INFO !--#
-bad_sp = c('', 'Embiotoca spp.', 'Sebastes spp.')
+bad_sp = c('', 'Embiotoca spp.', 'Sebastes spp.', ' ')
 
 dataset6 = dataset5[!dataset5$species %in% bad_sp,]
 
@@ -554,7 +554,7 @@ dataFormattingTable[,'Notes_spFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_spFormat',  
 
 #--! PROVIDE INFO !--#                                 
-  'One blank and two unidentified taxa removed; "No species" retained with count of 0 for accurate calcuation of temporal occupancy.')
+  'One blank and two unidentified taxa removed; "No species" retained with count of 0 for accurate calculation of temporal occupancy.')
 
 #-------------------------------------------------------------------------------*
 # ---- MAKE DATA FRAME OF COUNT BY SITES, SPECIES, AND YEAR ----

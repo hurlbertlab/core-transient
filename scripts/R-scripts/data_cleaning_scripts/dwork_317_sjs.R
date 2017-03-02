@@ -643,7 +643,10 @@ dataFormattingTable[,'format_flag'] =
   dataFormattingTableFieldUpdate(datasetID, 'format_flag', 
      
 #--! PROVIDE INFO !--#                                 
-                                 1)
+                                 5)
+
+# NOT ENOUGH YEARS OF DATA FOR ANY SITE
+
 
 # Flag codes are as follows:
 # 0 = not currently worked on
