@@ -43,6 +43,8 @@ library(ggplot2)
 library(grid)
 library(gridExtra)
 library(MASS)
+library(dplyr)
+library(tidyr)
 
 
 # Source the functions file:
@@ -126,7 +128,7 @@ head(dataset)
 names(dataset)
 
 #--! PROVIDE INFO !--#
-unusedFieldNames = c('Treatment', 'StdERR.g.m.2', 'Count..g.m.2', 'Comments')
+unusedFieldNames = c('')
 
 dataset1 = dataset[, !names(dataset) %in% unusedFieldNames]
 
@@ -168,7 +170,6 @@ dataFormattingTable[,'LatLong_sites'] =
 
 #--! PROVIDE INFO !--#
 ### ADDED IN: only selecting Jul dates bc of variability in sampling effort
-dplyr::filter
 temp = filter(dataset1, grepl("Jul", Date))
 temp$Date = factor(temp$Date)
 dataset1 = temp 
@@ -274,14 +275,9 @@ dataFormattingTable[,'subannualTgrain'] =
 # fill in the fields that specify nested spatial grains below.
 
 ##### ADDED IN CLEANING UP OF SITES
-bad_sites = c('Average', 'Count', 'Std..Err.')
-dataset2 = dataset2[!dataset2$quadrat %in% bad_sites,]
-dataset2 = filter(dataset2, !grepl("gm2", quadrat))
-dataset2$quadrat = factor(dataset2$quadrat)
 
 dataset2$maxgrain = 'Toolik'
 
-library(tidyr)
 dataset2$Plot = substring(dataset2$quadrat, 1, 2)
 dataset2$Quad = substring(dataset2$quadrat, 3, 4)
 
@@ -354,7 +350,7 @@ dataset3 = dataset2
 # Remove any hierarchical site related fields that are no longer needed, IF NECESSARY.
 
 #--! PROVIDE INFO !--#
-dataset3 = dataset3[, !names(dataset3) %in% site_grain_names]
+dataset3 = dataset3[, !names(dataset3) %in% c(site_grain_names, "Site", "quadrat")]
 
 dataset3$site = factor(site)
 
@@ -666,9 +662,6 @@ dataFormattingTable[,'format_flag'] =
 # scale decisions and determine the proportional occupancies.
 
 # Load additional required libraries and dataset:
-
-library(dplyr)
-library(tidyr)
 
 # Read in formatted dataset if skipping above formatting code (lines 1-660).
 
