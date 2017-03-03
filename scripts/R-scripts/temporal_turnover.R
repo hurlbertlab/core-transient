@@ -56,25 +56,27 @@ abund_data = get_abund_data(datasetIDs)
 propocc_data = get_propocc_data(datasetIDs)
 all_data = left_join(abund_data, propocc_data, by = c('datasetID', 'site', 'species'))
 
-notrans_data = filter(all_data, propOcc > 1/3)
-
 
 turnover_output = data.frame()
-for (dataset in datasetIDs) {
+for (dataset in datasetIDs[,1]) {
   subdata = subset(all_data, datasetID == dataset)
   sites = unique(subdata$site)
   print(paste("Calculating turnover: dataset", dataset))
   for (site in sites) {
     sitedata = subdata[subdata$site == site,]
-    notrans = filter(sitedata, propOcc > 1/3)
-    years = unique(sitedata$year)
+    notrans = sitedata[sitedata$propOcc > 1/3,]
+    years = as.numeric(unique(sitedata$year))
     TJs = c()
     TJ_notrans = c()
-    for (year in 1:(length(years)-1)) {
-      T_J = turnover(sitedata$species[sitedata$year == years[year]], 
-                    sitedata$species[sitedata$year == years[year + 1]])
-      T_J_notran = turnover(notrans$species[notrans$year == years[year]], 
-                     notrans$species[notrans$year == years[year + 1]])
+    for (year in years[1:(length(years)-1)]) {
+      comm1 = unique(sitedata$species[sitedata$year == year])
+      comm2 = unique(sitedata$species[sitedata$year == year + 1])
+      T_J = turnover(comm1, comm2)
+      
+      comm1_noT = unique(notrans$species[notrans$year == year])
+      comm2_noT = unique(notrans$species[notrans$year == year + 1])
+      T_J_notran = turnover(comm1_noT, comm2_noT)
+      
       TJs = c(TJs, T_J)
       TJ_notrans = c(TJ_notrans, T_J_notran)
     }
@@ -84,3 +86,4 @@ for (dataset in datasetIDs) {
   }
 }
 
+write.csv(turnover_output, "output/tabular_data/temporal_turnover.csv")
