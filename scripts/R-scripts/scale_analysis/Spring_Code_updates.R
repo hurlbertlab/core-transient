@@ -94,7 +94,7 @@ meanP #done, takes 45 mins to re-run
 bbc_lat_long$precip<-extract(meanP, sites)
 
 #try to bring in ndvi veg indices similarly 
-ndvimean<-raster("Vegetation_Indices_may-aug_2000-2010.gri")
+ndvimean<-raster("//bioark.ad.unc.edu/HurlbertLab/GIS/MODIS NDVI/Vegetation_Indices_may-aug_2000-2010.gri")
 plot(ndvimean)
 points(sites$longitude, sites$latitude, col = 'red', pch = 16)
 test3 = extract(ndvimean, sites)

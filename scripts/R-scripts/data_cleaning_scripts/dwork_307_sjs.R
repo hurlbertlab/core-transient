@@ -112,7 +112,6 @@ dim(dataset)
 
 # View the structure of the dataset:
 
-str(dataset)
 
 # View first 6 rows of the dataset:
 

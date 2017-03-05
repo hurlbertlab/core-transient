@@ -1,0 +1,178 @@
+###############################################
+# Code for running core-transient analysis
+# and data summaries over all formatted datasets.
+#
+# Input files are named propOcc_XXX.csv where
+# XXX is the dataset ID.
+
+setwd("C:/git/core-transient")
+
+library(lme4)
+library(plyr) # for core-transient functions
+library(ggplot2)
+library(tidyr)
+library(maps)
+library(gridExtra)
+library(RColorBrewer)
+library(sp)
+library(rgdal)
+library(raster)
+library(dplyr)
+library(merTools)
+library(digest)
+
+
+source('scripts/R-scripts/core-transient_functions.R')
+
+# Specify here the datasetIDs and then run the code below.
+dataformattingtable = read.csv('data_formatting_table.csv', header = T) 
+
+datasetIDs = dataformattingtable$dataset_ID[dataformattingtable$format_flag == 1]
+
+# BBS (dataset 1) will be analyzed separately for now.
+datasetIDs = datasetIDs[!datasetIDs %in% c(1)]
+
+#################### FIG 3 ######################### 
+occ_taxa=read.csv("output/tabular_data/occ_taxa.csv",header=TRUE)
+taxcolors = read.csv("output/tabular_data/taxcolors.csv", header = TRUE)
+scaleIDs = filter(dataformattingtable, spatial_scale_variable == 'Y',
+                  format_flag == 1)$dataset_ID
+
+# subsetting to only count ids 
+scaleIDs = scaleIDs[! scaleIDs %in% c(207, 210, 217, 218, 222, 223, 225, 238, 241,258, 282, 322, 280,317)]
+bbs_abun = read.csv("data/BBS/bbs_abun_occ.csv", header=TRUE)
+
+#### Fig 3a Area #####
+area = read.csv("output/tabular_data/scaled_areas_3_2.csv", header = TRUE)
+
+areamerge.5 = merge(occ_taxa[,c("datasetID", "site", "pctTrans")], area, by = c("datasetID", "site"), na.rm = TRUE)
+areamerge.5  = areamerge.5 [, c("datasetID", "site", "taxa", "pctTrans", "area")]
+
+# read in bbs abundance data
+bbs_area = read.csv("data/BBS/bbs_area.csv", header = TRUE)
+areamerge = rbind(bbs_area,areamerge.5)
+write.csv(areamerge, "output/tabular_data/areamerge/csv", row.names = FALSE)
+
+pdf('output/plots/3a_sara_scale_area_reg.pdf', height = 6, width = 7.5)
+par(mfrow = c(1, 1), mar = c(6, 6, 1, 1), mgp = c(4, 1, 0), 
+    cex.axis = 1.5, cex.lab = 2, las = 1)
+palette(colors7)
+scaleIDs = filter(dataformattingtable, spatial_scale_variable == 'Y',
+                  format_flag == 1)$dataset_ID 
+scaleIDs = scaleIDs[! scaleIDs %in% c(207, 210, 217, 218, 222, 223, 225, 241,258, 282, 322, 280, 248, 254, 291)]  # waiting on data for 248
+
+area_plot = c()
+for(id in scaleIDs){
+  print(id)
+  plotsub = subset(areamerge,datasetID == id)
+  taxa = as.character(unique(plotsub$taxa))
+  mod3 = lm(plotsub$pctTrans ~ log10(plotsub$area))
+  mod3.slope = summary(mod3)$coef[2,"Estimate"]
+  xnew = range(log10(plotsub$area))
+  xhat <- predict(mod3, newdata = data.frame((xnew)))
+  xhats = range(xhat)
+  print(xhats)
+  taxcolor = subset(taxcolors, taxa == as.character(plotsub$taxa)[1])
+  area_plot  = rbind(area_plot , c(id, xhats, mod3.slope,taxa))
+  y=summary(mod3)$coef[1] + (xhats)*summary(mod3)$coef[2]
+  plot(NA, xlim = c(-1, 7), ylim = c(0,1), col = as.character(taxcolor$color), xlab = expression("Log"[10]*" Area"), ylab = "% Transients", cex = 1.5)
+  lines(log10(plotsub$area), fitted(mod3), col=as.character(taxcolor$color),lwd=5)
+  par(new=TRUE)
+}
+par(new=TRUE)
+legend('bottomleft', legend = as.character(taxcolors$taxa), lty=1,lwd=3,col = as.character(taxcolors$color), cex = 1)
+dev.off()
+
+colnames(area_plot) = c("id","xlow","xhigh","slope", "taxa")
+area_plot = data.frame(area_plot)
+area_plot$datasetID = as.numeric(area_plot$id)
+area_plot$xlow = as.numeric(area_plot$xlow)
+area_plot$xhigh = as.numeric(area_plot$xhigh)
+area_plot$slope = as.numeric(area_plot$slope)
+write.csv(area_plot, "fig_3a_output.csv", row.names =FALSE)
+
+
+# ggplot not happening
+#area_plot$taxa = factor(area_plot$taxa, levels = c('Invertebrate','Fish','Plankton','Mammal','Plant','Bird','Benthos'),ordered = TRUE)
+#colscale = c("gold2","turquoise2", "red", "purple4","forestgreen","#1D6A9B", "azure4")
+
+#p <- ggplot(area_plot, aes(x = log10(area), y = slope))
+#p + geom_abline(intercept = 0,slope = 1, lwd =1.5,linetype="dashed") + geom_point(aes(colour = taxa), size = 6) + xlab("Species Richness") + ylab("Species Richness Without Transients") + scale_colour_manual(breaks = plot_relationship$taxa,values = colscale) + theme(axis.text.x=element_text(size=24),axis.text.y=element_text(size=24),axis.title.x=element_text(size=32),axis.title.y=element_text(size=32,angle=90,vjust = 2))+ theme_classic()
+#ggsave(file="C:/Git/core-transient/output/plots/sparea_4c.pdf", height = 10, width = 15)
+
+#### Figure 3b transients and scale ####
+pdf('output/plots/3b_sara_scale_transient_reg.pdf', height = 6, width = 7.5)
+par(mfrow = c(1, 1), mar = c(6, 6, 1, 1), mgp = c(4, 1, 0), 
+    cex.axis = 1.5, cex.lab = 2, las = 1)
+palette(colors7)
+
+bbs_spRich = read.csv("data/BBS/bbs_abun4_spRich.csv", header = TRUE)
+occ_merge = occ_taxa[,c("datasetID", "site","taxa", "meanAbundance", "pctTrans","pctCore","pctNeither","scale", "spRich")]
+bbs_occ = rbind(bbs_spRich,occ_merge)
+
+
+for(id in scaleIDs){
+  print(id)
+  plotsub = subset(bbs_occ,datasetID == id)
+  mod3 = lm(plotsub$pctTrans ~ log10(plotsub$meanAbundance))
+  xnew = range(log10(plotsub$meanAbundance))
+  xhat <- predict(mod3, newdata = data.frame((xnew)))
+  xhats = range(xhat)
+  print(xhats)
+  taxcolor = subset(taxcolors, taxa == as.character(plotsub$taxa)[1])
+  y=summary(mod3)$coef[1] + (xhats)*summary(mod3)$coef[2]
+  plot(NA, xlim = c(-1, 7), ylim = c(0,1), col = as.character(taxcolor$color), xlab = expression("Log"[10]*" Community Size"), ylab = "% Transients", cex = 1.5)
+  lines(log10(plotsub$meanAbundance), fitted(mod3), col=as.character(taxcolor$color),lwd=5)
+  par(new=TRUE)
+}
+par(new=TRUE)
+legend('topright', legend = as.character(taxcolors$taxa), lty=1,lwd=3,col = as.character(taxcolors$color), cex = 1.35)
+dev.off()
+
+#### Supplemental core and scale ####
+pdf('output/plots/supp_sara_scale_core_reg.pdf', height = 6, width = 7.5)
+par(mfrow = c(1, 1), mar = c(6, 6, 1, 1), mgp = c(4, 1, 0), 
+    cex.axis = 1.5, cex.lab = 2, las = 1)
+palette(colors7)
+for(id in scaleIDs){
+  print(id)
+  plotsub = subset(bbs_occ,datasetID == id)
+  mod3 = lm((1-plotsub$pctTrans) ~ log10(plotsub$meanAbundance))
+  xnew=range(log10(plotsub$meanAbundance))
+  xhat <- predict(mod3, newdata = data.frame((xnew)))
+  xhats = range(xhat)
+  print(xhats)
+  taxcolor=subset(taxcolors, taxa == as.character(plotsub$taxa)[1])
+  y=summary(mod3)$coef[1] + (xhats)*summary(mod3)$coef[2]
+  plot(NA, xlim = c(-1, 7), ylim = c(0,1), col = as.character(taxcolor$color), xlab = expression("Log"[10]*" Community Size"), ylab = "% Core", cex = 1.5)
+  lines(log10(plotsub$meanAbundance), fitted(mod3), col=as.character(taxcolor$color),lwd=5)
+  par(new=TRUE)
+}
+segments(0,  0, x1 = 5.607, y1 = 1, col = rgb(29/255, 106/255, 155/255), lwd=5)
+par(new=TRUE)
+dev.off()
+
+#### Fig 3c predicted model ####
+bbs_occ_pred = bbs_occ[!bbs_occ$datasetID %in% c(207, 210, 217, 218, 222, 223, 225, 238, 241, 258, 282, 322, 280,317),]
+
+mod3c = lmer(pctTrans~(1|datasetID) * taxa * log10(meanAbundance), data=bbs_occ_pred)
+summary(mod3c)
+occ_sub_pred = data.frame(datasetID = 999, taxa = unique(bbs_occ_pred$taxa), meanAbundance =  102.7333) # 102.73333 is median abun for data frame
+predmod3c = merTools::predictInterval(mod3c, occ_sub_pred, n.sims=1000)
+
+# matching by predicted output vals
+predmod3c$taxa = c("Invertebrate", "Plant", "Mammal","Fish", "Bird", "Plankton")
+write.csv(predmod3c, "output/tabular_data/predmod3c.csv", row.names = FALSE)
+
+
+predmod = merge(predmod3c, taxcolors, by = "taxa")
+
+predmod$abbrev = factor(predmod$abbrev,
+                        levels = c('I','F','Pn','M','Pt','Bi'),ordered = TRUE)
+
+colscale = factor(predmod$color,
+                  levels = c("gold2","turquoise2","red","purple4","forestgreen", "#1D6A9B"),ordered = TRUE)
+
+p <- ggplot(predmod, aes(x = factor(abbrev), y = fit, fill=factor(predmod$taxa)))
+p +geom_bar(stat = "identity", fill = levels(colscale)) + geom_errorbar(ymin = predmod$lwr, ymax= predmod$upr, width=0.2) + xlab("Taxa") + ylab("Proportion of Species") + ylim(-.1, 1) + theme(axis.ticks.x=element_blank(),axis.text.x=element_text(size=24),axis.text.y=element_text(size=24),axis.title.x=element_text(size=32),axis.title.y=element_text(size=32,angle=90,vjust = 2))+guides(fill=guide_legend(title="",keywidth = 2, keyheight = 1)) + theme_classic()
+ggsave(file="C:/Git/core-transient/output/plots/predmod3c.pdf", height = 10, width = 15)

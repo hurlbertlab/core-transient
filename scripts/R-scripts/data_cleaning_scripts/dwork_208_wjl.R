@@ -58,7 +58,6 @@ topFractionSites = 0.5
 
 names(dataset)
 dim(dataset)
-str(dataset)
 head(dataset)
 
 # Take out unneeded columns
@@ -123,7 +122,6 @@ dataset2$date = date
 # Check the results:
 
 head(dataset2)
-str(dataset2)
 
 #!DATA FORMATTING TABLE UPDATE!
 
@@ -183,7 +181,7 @@ dataFormattingTable[,'Raw_spatial_grain_unit'] =
   dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain_unit',  
                                  
                                  #--! PROVIDE INFO !--#
-                                 m2) #http://lter.kbs.msu.edu/datasets/26.eml
+                                 "m2") #http://lter.kbs.msu.edu/datasets/26.eml
 
 
 # BEFORE YOU CONTINUE. We need to make sure that there are at least minNTime for sites at the coarsest possilbe spatial grain. 
@@ -226,7 +224,7 @@ head(dataset3)
 dataFormattingTable[,'Raw_siteUnit'] = 
   dataFormattingTableFieldUpdate(datasetID, 'Raw_siteUnit',       # Fill value below in quotes
                                  
-                                 'Replicate_Treatment_Station') 
+                                 'site_Replicate_Treatment_Station') 
 
 
 # spatial_scale_variable. Is a site potentially nested (e.g., plot within a quad or decimal lat longs that could be scaled up)? Y/N
@@ -241,7 +239,7 @@ dataFormattingTable[,'spatial_scale_variable'] =
 dataFormattingTable[,'Notes_siteFormat'] = 
   dataFormattingTableFieldUpdate(datasetID, 'Notes_siteFormat',  # Fill value below in quotes
                                  
-                                 'site fields concatenated. the metadata suggests that there are 6 replicates with 7 treatments each. 5 stations are within each treatment. ')
+                                 'site fields concatenated. the metadata suggests that there are 6 replicates with 10 treatments each. 5 stations are within each treatment. ')
 
 #-------------------------------------------------------------------------------*
 # ---- EXPLORE AND FORMAT COUNT DATA ----
@@ -462,7 +460,7 @@ tGrain = 'year'
 
 site_grain_names
 
-sGrain = 'Replicate_Treatment'
+sGrain = 'Treatment'
 
 # This is a reasonable choice of spatial grain because ...
 #  There are 6 replicates with 7 treatments. Within each treatment (87 x 105 m), there are 5 stations with one sticky trap each. The captured insects from one sticky trap is probably not a good indicator of the community composition, so treatment, the next coarsest grain, will be used.   
@@ -534,11 +532,17 @@ dataset8 = subset(dataset7, site %in% fullGoodSites)
 # and bases the characterization of the community in that site-year based on
 # the aggregate of those standardized subsamples.
 
-subsettedData = subsetDataFun(dataset8, datasetID, spatialGrain = sGrain, 
-                              temporalGrain = tGrain,
-                              minNTime = minNTime, minSpRich = minSpRich,
-                              proportionalThreshold = topFractionSites,
-                              dataDescription)
+dataSubset = subsetDataFun(dataset8, 
+                           datasetID, 
+                           spatialGrain = sGrain, 
+                           temporalGrain = tGrain,
+                           minNTime = minNTime, minSpRich = minSpRich,
+                           proportionalThreshold = topFractionSites,
+                           dataDescription)
+
+subsettedData = dataSubset$data
+
+write.csv(subsettedData, paste("data/standardized_datasets/dataset_", datasetID, ".csv", sep = ""), row.names = F)
 
 # Take a look at the propOcc:
 
@@ -553,6 +557,14 @@ siteSummaryFun(subsettedData)
 # If everything looks good, write the files:
 
 writePropOccSiteSummary(subsettedData)
+
+# Save the spatial and temporal subsampling values to the data formatting table:
+dataFormattingTable[,'Spatial_subsamples'] = 
+  dataFormattingTableFieldUpdate(datasetID, 'Spatial_subsamples', dataSubset$w)
+
+dataFormattingTable[,'Temporal_subsamples'] = 
+  dataFormattingTableFieldUpdate(datasetID, 'Temporal_subsamples', dataSubset$z)
+
 
 # Update Data Formatting Table with summary stats of the formatted,
 # properly subsetted dataset

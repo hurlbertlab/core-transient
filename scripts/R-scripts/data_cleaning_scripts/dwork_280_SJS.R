@@ -112,7 +112,6 @@ dim(dataset)
 
 # View the structure of the dataset:
 
-str(dataset)
 
 # View first 6 rows of the dataset:
 
@@ -129,7 +128,7 @@ names(dataset)
 #--! PROVIDE INFO !--#
 unusedFieldNames = c('division', 'year4','cells_per_nu', 'depth_range', 'nu_per_ml',
                      'biovolume_conc','biomass_conc','gald', 'relative_total_biovolume',
-                     'genus')
+                     'genus', 'sta')
 
 dataset1 = dataset[, !names(dataset) %in% unusedFieldNames]
 
@@ -223,7 +222,6 @@ dataset2$date = date
 # Check the results:
 
 head(dataset2)
-str(dataset2)
 
 # !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE DATE DATA WERE MODIFIED!
 
@@ -272,7 +270,9 @@ dataFormattingTable[,'subannualTgrain'] =
 # fill in the fields that specify nested spatial grains below.
 
 #--! PROVIDE INFO !--#
-site_grain_names = c("lakeid", "sta")
+dataset2$site="maxgrain"
+# drop station bc no unique scale identifier (onl1 1s/NAs)
+site_grain_names = c("site", "lakeid")
 
 # We will now create the site field with these codes concatenated if there
 # are multiple grain fields. Otherwise, site will just be the single grain field.
@@ -371,7 +371,7 @@ dataFormattingTable[,'spatial_scale_variable'] =
   dataFormattingTableFieldUpdate(datasetID, 'spatial_scale_variable',
 
 #--! PROVIDE INFO !--#
-                                 'N')
+                                 'Y')
 
 # Notes_siteFormat. Use this field to THOROUGHLY describe any changes made to the 
 # site field during formatting.
@@ -380,7 +380,7 @@ dataFormattingTable[,'Notes_siteFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_siteFormat', 
 
 #--! PROVIDE INFO !--#
-  'The site field is a concatenation of station and lakeid.')
+  'The site field is the lakeid.')
 
 
 #-------------------------------------------------------------------------------*
@@ -458,7 +458,7 @@ dataFormattingTable[,'countFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'countFormat',  
 
 #--! PROVIDE INFO !--#                                 
-                                 'count')
+                                 'density')
 
 dataFormattingTable[,'Notes_countFormat'] = 
   dataFormattingTableFieldUpdate(datasetID, 'Notes_countFormat', 
@@ -721,7 +721,7 @@ tGrain = 'year'
 site_grain_names
 
 #--! PROVIDE INFO !--#
-sGrain = 'lakeid'
+sGrain = 'site_lakeid'
 
 # This is a reasonable choice of spatial grain because ...
 #--! PROVIDE INFO !--#
@@ -779,13 +779,18 @@ dataset8 = subset(dataset7, site %in% fullGoodSites)
 # and bases the characterization of the community in that site-year based on
 # the aggregate of those standardized subsamples.
 
-subsettedData = subsetDataFun(dataset8, 
-                              datasetID, 
-                              spatialGrain = sGrain, 
-                              temporalGrain = tGrain,
-                              minNTime = minNTime, minSpRich = minSpRich,
-                              proportionalThreshold = topFractionSites,
-                              dataDescription)
+dataSubset = subsetDataFun(dataset8, 
+                           datasetID, 
+                           spatialGrain = sGrain, 
+                           temporalGrain = tGrain,
+                           minNTime = minNTime, minSpRich = minSpRich,
+                           proportionalThreshold = topFractionSites,
+                           dataDescription)
+
+subsettedData = dataSubset$data
+
+write.csv(subsettedData, paste("data/standardized_datasets/dataset_", datasetID, ".csv", sep = ""), row.names = F)
+
 # Take a look at the propOcc:
 
 head(propOccFun(subsettedData))
@@ -799,6 +804,14 @@ siteSummaryFun(subsettedData)
 # If everything looks good, write the files:
 
 writePropOccSiteSummary(subsettedData)
+
+# Save the spatial and temporal subsampling values to the data formatting table:
+dataFormattingTable[,'Spatial_subsamples'] = 
+  dataFormattingTableFieldUpdate(datasetID, 'Spatial_subsamples', dataSubset$w)
+
+dataFormattingTable[,'Temporal_subsamples'] = 
+  dataFormattingTableFieldUpdate(datasetID, 'Temporal_subsamples', dataSubset$z)
+
 
 # Update Data Formatting Table with summary stats of the formatted,
 # properly subsetted dataset

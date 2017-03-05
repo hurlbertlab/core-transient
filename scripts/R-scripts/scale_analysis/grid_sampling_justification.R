@@ -82,6 +82,35 @@ write.csv(top6_grid8, "//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/top6_
 
 # grain of (8, 4, 2, 1) corresponds to suggested samples of 66, 31, 14, 6 rtes in each sample
 
+####Fromerly part of alt_occ_scale.R####
+
+good_rtes2 = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/good_rtes2.csv", header = TRUE)
+fifty_allyears = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/fifty_allyears.csv", header = TRUE)
+
+require(dplyr)
+bbs50_goodrtes = inner_join(fifty_allyears, good_rtes2, by = "stateroute")
+#ID and subset to routes within top six regions id'd in grid_sampling_justification 
+bbs50_goodrtes$grid8ID = paste(floor(bbs50_goodrtes$Lati/8)*8 + 8/2, floor(bbs50_goodrtes$Longi/8)*8 + 8/2, sep = "")
+bbs50_goodrtes$grid8ID = as.character(bbs50_goodrtes$grid8ID)
+
+
+#bring in top 6 grids for max scale (8 degree) from grid_sampling_justification.R script, 66 rte cutoff 
+top6_grid8 = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/top6_grid8.csv", header = TRUE)
+
+
+#filter the 50 stop data to just those routes present within those 6 grid cell regions of interest 
+fifty_top6 = bbs50_goodrtes %>% 
+  filter(grid8ID %in% top6_grid8$x) %>%
+  dplyr::select(7:62)#about halves the bbs50_goodrtes set of usable routes, and no redundant columns
+#write.csv(fifty_top6, "//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/fifty_top6.csv", row.names = FALSE)
+
+
+#######
+
+fifty_top6 = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/fifty_top6.csv", header = TRUE)
+
+
+
 #-----------------------------------------------------------------------------------------
 #Allen Hurlbert's code (for mapping distribution of stateroutes sampled by grain size, 
 #for visually refining samples suggested, based on East-West distribution of sites)
@@ -90,7 +119,7 @@ write.csv(top6_grid8, "//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/top6_
 #in lieu of hardcoding grain and sample_n portions prior to loops 
 
 good_rtes = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/good_rtes.csv", header = TRUE)
-
+library(dplyr)
 #bbs_allyears = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/bbs_allyears.csv", header = TRUE)
 
 # bring in bbs routes file 
@@ -119,13 +148,13 @@ map_threshold = function(grain, thresh) {
   points(ct$longbin[ct$n >= thresh], ct$latbin[ct$n >= thresh], 
          cex = log10(ct$n[ct$n >= thresh]), pch = 16)
   leg_benchmarks = c(2, max(ct$n)/2, max(ct$n))
-  legend("bottomright", legend = c(2, max(ct$n)/2, max(ct$n)), pch = 16,
-         pt.cex = log10(leg_benchmarks))
+  #legend("bottomright", legend = c(2, max(ct$n)/2, max(ct$n)), pch = 16,
+   #      pt.cex = log10(leg_benchmarks))
  
 }
 
 
-map_threshold(8, 66) 
+map_threshold(4, 19) 
 
 #scale 1, sample 5 
 #scale 2, sample 10 

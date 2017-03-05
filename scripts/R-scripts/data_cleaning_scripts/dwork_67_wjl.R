@@ -74,7 +74,6 @@ dim(dataset)
 
 # View the structure of the dataset:
 
-str(dataset)
 
 # View first 6 rows of the dataset:
 
@@ -162,7 +161,6 @@ dataset2$date = date
 # Check the results:
 
 head(dataset2)
-str(dataset2)
 
 # !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE DATE DATA WERE MODIFIED!
 
@@ -369,7 +367,7 @@ head(dataset5)
 dataFormattingTable[,'countFormat'] = 
   dataFormattingTableFieldUpdate(datasetID, 'countFormat',    # Fill value below in quotes
                                  
-                                 'count')
+                                 'presence')
 
 dataFormattingTable[,'Notes_countFormat'] = 
   dataFormattingTableFieldUpdate(datasetID, 'Notes_countFormat', 
@@ -657,12 +655,17 @@ dataset8 = subset(dataset7, site %in% fullGoodSites)
 # and bases the characterization of the community in that site-year based on
 # the aggregate of those standardized subsamples.
 
-subsettedData = subsetDataFun(dataset8, datasetID, spatialGrain = sGrain, 
-                              temporalGrain = tGrain,
-                              minNTime = minNTime, minSpRich = minSpRich,
-                              proportionalThreshold = topFractionSites,
-                              dataDescription)
+dataSubset = subsetDataFun(dataset8, 
+                           datasetID, 
+                           spatialGrain = sGrain, 
+                           temporalGrain = tGrain,
+                           minNTime = minNTime, minSpRich = minSpRich,
+                           proportionalThreshold = topFractionSites,
+                           dataDescription)
 
+subsettedData = dataSubset$data
+
+write.csv(subsettedData, paste("data/standardized_datasets/dataset_", datasetID, ".csv", sep = ""), row.names = F)
 # Take a look at the propOcc:
 
 head(propOccFun(subsettedData))
@@ -671,11 +674,19 @@ hist(propOccFun(subsettedData)$propOcc)
 
 # Take a look at the site summary frame:
 
-summ = siteSummaryFun(subsettedData)
+siteSummaryFun(subsettedData)
 
 # If everything looks good, write the files:
 
 writePropOccSiteSummary(subsettedData)
+
+# Save the spatial and temporal subsampling values to the data formatting table:
+dataFormattingTable[,'Spatial_subsamples'] = 
+  dataFormattingTableFieldUpdate(datasetID, 'Spatial_subsamples', dataSubset$w)
+
+dataFormattingTable[,'Temporal_subsamples'] = 
+  dataFormattingTableFieldUpdate(datasetID, 'Temporal_subsamples', dataSubset$z)
+
 
 # REMOVE meanAbundance info which is unreliable (see notes above)
 summ$meanAbundance = NA

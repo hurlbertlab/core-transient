@@ -43,6 +43,8 @@ library(ggplot2)
 library(grid)
 library(gridExtra)
 library(MASS)
+library(dplyr)
+library(tidyr)
 
 
 # Source the functions file:
@@ -112,7 +114,6 @@ dim(dataset)
 
 # View the structure of the dataset:
 
-str(dataset)
 
 # View first 6 rows of the dataset:
 
@@ -127,7 +128,7 @@ head(dataset)
 names(dataset)
 
 #--! PROVIDE INFO !--#
-unusedFieldNames = c('Treatment', 'StdERR.g.m.2', 'Count..g.m.2', 'Comments')
+unusedFieldNames = c('')
 
 dataset1 = dataset[, !names(dataset) %in% unusedFieldNames]
 
@@ -169,7 +170,6 @@ dataFormattingTable[,'LatLong_sites'] =
 
 #--! PROVIDE INFO !--#
 ### ADDED IN: only selecting Jul dates bc of variability in sampling effort
-dplyr::filter
 temp = filter(dataset1, grepl("Jul", Date))
 temp$Date = factor(temp$Date)
 dataset1 = temp 
@@ -227,7 +227,6 @@ dataset2$date = date
 # Check the results:
 
 head(dataset2)
-str(dataset2)
 
 # !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE DATE DATA WERE MODIFIED!
 
@@ -276,21 +275,15 @@ dataFormattingTable[,'subannualTgrain'] =
 # fill in the fields that specify nested spatial grains below.
 
 ##### ADDED IN CLEANING UP OF SITES
-bad_sites = c('Average', 'Count', 'Std..Err.')
-dataset2 = dataset2[!dataset2$quadrat %in% bad_sites,]
-dataset2 = filter(dataset2, !grepl("gm2", quadrat))
-dataset2$quadrat = factor(dataset2$quadrat)
 
-dataset2$s1 = 'Toolik'
+dataset2$maxgrain = 'Toolik'
 
-library(tidyr)
-dataset2 = separate(dataset2, quadrat, c("Plot", "Quad"), sep = "Q")
-dataset2$Plot = substring(dataset2$Plot, 2)
-dataset2 = unite(dataset2, site_final, s1 , Plot, Quad, sep = "_")
+dataset2$Plot = substring(dataset2$quadrat, 1, 2)
+dataset2$Quad = substring(dataset2$quadrat, 3, 4)
 
 
 #--! PROVIDE INFO !--#
-site_grain_names = c("site_final")
+site_grain_names = c("maxgrain", "Plot", "Quad")
 
 
 # We will now create the site field with these codes concatenated if there
@@ -311,7 +304,7 @@ dataFormattingTable[,'Raw_spatial_grain'] =
   dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain',  
                                  
 #--! PROVIDE INFO !--#
-                                 80) 
+                                 .8) 
 
 dataFormattingTable[,'Raw_spatial_grain_unit'] = 
   dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain_unit',  
@@ -357,7 +350,7 @@ dataset3 = dataset2
 # Remove any hierarchical site related fields that are no longer needed, IF NECESSARY.
 
 #--! PROVIDE INFO !--#
-dataset3 = dataset3[, !names(dataset3) %in% site_grain_names]
+dataset3 = dataset3[, !names(dataset3) %in% c(site_grain_names, "Site", "quadrat")]
 
 dataset3$site = factor(site)
 
@@ -670,9 +663,6 @@ dataFormattingTable[,'format_flag'] =
 
 # Load additional required libraries and dataset:
 
-library(dplyr)
-library(tidyr)
-
 # Read in formatted dataset if skipping above formatting code (lines 1-660).
 
 #dataset7 = read.csv(paste("data/formatted_datasets/dataset_",
@@ -725,13 +715,25 @@ tGrain = 'year'
 site_grain_names
 
 #--! PROVIDE INFO !--#
-sGrain = 'site_final'
+sGrain = 'maxgrain_Plot'
 
 # This is a reasonable choice of spatial grain because ...
 #--! PROVIDE INFO !--#
-# quadrats are only 0.25 m2 and record presence absence, whereas sites encompass
-# 28-52 quadrats per depth interval providing a greater sample and an effective
-# abundance measure.
+# quadrats are only 0.8 m2 which is clearly too small so we use the aggregates
+# of 7 quadrats per "Plot".
+
+dataFormattingTable[,'Formatted_spatial_grain'] = 
+  dataFormattingTableFieldUpdate(datasetID, 'Formatted_spatial_grain',  
+                                 
+                                 #--! PROVIDE INFO !--#
+                                 5.6) 
+
+dataFormattingTable[,'Formatted_spatial_grain_unit'] = 
+  dataFormattingTableFieldUpdate(datasetID, 'Formatted_spatial_grain_unit',  
+                                 
+                                 #--! PROVIDE INFO !--#
+                                 'm2') 
+
 
 # The function "richnessYearSubsetFun" below will subset the data to sites with an 
 # adequate number of years of sampling and species richness. If there are no 
@@ -785,13 +787,18 @@ dataset8 = subset(dataset7, site %in% fullGoodSites)
 # and bases the characterization of the community in that site-year based on
 # the aggregate of those standardized subsamples.
 
-subsettedData = subsetDataFun(dataset8, 
-                              datasetID, 
-                              spatialGrain = sGrain, 
-                              temporalGrain = tGrain,
-                              minNTime = minNTime, minSpRich = minSpRich,
-                              proportionalThreshold = topFractionSites,
-                              dataDescription)
+dataSubset = subsetDataFun(dataset8, 
+                           datasetID, 
+                           spatialGrain = sGrain, 
+                           temporalGrain = tGrain,
+                           minNTime = minNTime, minSpRich = minSpRich,
+                           proportionalThreshold = topFractionSites,
+                           dataDescription)
+
+subsettedData = dataSubset$data 
+
+write.csv(subsettedData, paste("data/standardized_datasets/dataset_", datasetID, ".csv", sep = ""), row.names = F)
+
 # Take a look at the propOcc:
 
 head(propOccFun(subsettedData))
@@ -805,6 +812,14 @@ siteSummaryFun(subsettedData)
 # If everything looks good, write the files:
 
 writePropOccSiteSummary(subsettedData)
+
+# Save the spatial and temporal subsampling values to the data formatting table:
+dataFormattingTable[,'Spatial_subsamples'] = 
+  dataFormattingTableFieldUpdate(datasetID, 'Spatial_subsamples', dataSubset$w)
+
+dataFormattingTable[,'Temporal_subsamples'] = 
+  dataFormattingTableFieldUpdate(datasetID, 'Temporal_subsamples', dataSubset$z)
+
 
 # Update Data Formatting Table with summary stats of the formatted,
 # properly subsetted dataset

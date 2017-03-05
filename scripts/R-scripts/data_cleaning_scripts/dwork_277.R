@@ -112,7 +112,6 @@ dim(dataset)
 
 # View the structure of the dataset:
 
-str(dataset)
 
 # View first 6 rows of the dataset:
 
@@ -221,7 +220,6 @@ dataset2$date = date
 # Check the results:
 
 head(dataset2)
-str(dataset2)
 
 # !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE DATE DATA WERE MODIFIED!
 
@@ -269,6 +267,8 @@ dataFormattingTable[,'subannualTgrain'] =
 table(dataset2$lakeid)
 dataset2$lakeid[dataset2$lakeid == "Tr"] = "TR"
 dataset2$lakeid = factor(dataset2$lakeid)
+# concatenate lakeid and station bc all combinations of lake id and station are unique
+dataset2$lakestat = paste(dataset2$lakeid, dataset2$station, sep = "")
 
 # Here, we will concatenate all of the potential fields that describe the site 
 # in hierarchical order from largest to smallest grain. Based on the dataset,
@@ -276,7 +276,7 @@ dataset2$lakeid = factor(dataset2$lakeid)
 
 #--! PROVIDE INFO !--#
 dataset2$site="maxgrain"
-site_grain_names = c("site","lakeid", "station")
+site_grain_names = c("site","lakestat")
 
 # We will now create the site field with these codes concatenated if there
 # are multiple grain fields. Otherwise, site will just be the single grain field.
@@ -743,7 +743,7 @@ tGrain = 'year'
 site_grain_names
 
 #--! PROVIDE INFO !--#
-sGrain = 'lakeid'
+sGrain = 'lakestat'
 
 # This is a reasonable choice of spatial grain because ...
 #--! PROVIDE INFO !--#
@@ -801,13 +801,18 @@ dataset8 = subset(dataset7, site %in% fullGoodSites)
 # and bases the characterization of the community in that site-year based on
 # the aggregate of those standardized subsamples.
 
-subsettedData = subsetDataFun(dataset8, 
-                              datasetID, 
-                              spatialGrain = sGrain, 
-                              temporalGrain = tGrain,
-                              minNTime = minNTime, minSpRich = minSpRich,
-                              proportionalThreshold = topFractionSites,
-                              dataDescription)
+dataSubset = subsetDataFun(dataset8, 
+                           datasetID, 
+                           spatialGrain = sGrain, 
+                           temporalGrain = tGrain,
+                           minNTime = minNTime, minSpRich = minSpRich,
+                           proportionalThreshold = topFractionSites,
+                           dataDescription)
+
+subsettedData = dataSubset$data
+
+write.csv(subsettedData, paste("data/standardized_datasets/dataset_", datasetID, ".csv", sep = ""), row.names = F)
+
 # Take a look at the propOcc:
 
 head(propOccFun(subsettedData))
@@ -821,6 +826,14 @@ siteSummaryFun(subsettedData)
 # If everything looks good, write the files:
 
 writePropOccSiteSummary(subsettedData)
+
+# Save the spatial and temporal subsampling values to the data formatting table:
+dataFormattingTable[,'Spatial_subsamples'] = 
+  dataFormattingTableFieldUpdate(datasetID, 'Spatial_subsamples', dataSubset$w)
+
+dataFormattingTable[,'Temporal_subsamples'] = 
+  dataFormattingTableFieldUpdate(datasetID, 'Temporal_subsamples', dataSubset$z)
+
 
 # Update Data Formatting Table with summary stats of the formatted,
 # properly subsetted dataset

@@ -112,7 +112,6 @@ dim(dataset)
 
 # View the structure of the dataset:
 
-str(dataset)
 
 # View first 6 rows of the dataset:
 
@@ -125,7 +124,8 @@ head(dataset)
 # If all fields will be used, then set unusedFieldNames = ""
 
 names(dataset)
-
+dataset$site = paste(dataset$PLOT, dataset$REBAR, sep = "_")
+dataset$site = paste(dataset$SITE, dataset$site, sep = "_")
 #--! PROVIDE INFO !--#
 unusedFieldNames = c('YEAR', 'MONTH', 'CAPTURE', 'SEX', 'CONDITION', 'AGE', 'LEFT_HIND_FOOT', 
                      'LEFT_TAG', 'ORIGINAL_TAG', 'ID', 'MARKS', 'WEIGHT', 'notes')
@@ -222,7 +222,6 @@ dataset2$date = date
 # Check the results:
 
 head(dataset2)
-str(dataset2)
 
 # !GIT-ADD-COMMIT-PUSH AND DESCRIBE HOW THE DATE DATA WERE MODIFIED!
 
@@ -272,7 +271,7 @@ dataFormattingTable[,'subannualTgrain'] =
 
 #--! PROVIDE INFO !--#
 dataset2 = subset(dataset2, dataset2$TREATMENT == 'OPEN') # using the open control plots bc total exclusion at a different scale
-site_grain_names = c("PLOT", "REBAR")
+site_grain_names = c("SITE", "PLOT", "REBAR")
 
 # We will now create the site field with these codes concatenated if there
 # are multiple grain fields. Otherwise, site will just be the single grain field.
@@ -509,6 +508,8 @@ data.frame(table(dataset5$species))
 #--! PROVIDE INFO !--#
 bad_sp = c('')
 
+dataset5$species = dataset5$SPECIES
+
 dataset6 = dataset5[!dataset5$species %in% bad_sp,]
 
 # It may be useful to count the number of times each name occurs, as misspellings 
@@ -615,7 +616,7 @@ dataFormattingTable[,'format_flag'] =
   dataFormattingTableFieldUpdate(datasetID, 'format_flag', 
      
 #--! PROVIDE INFO !--#                                 
-                                 1)
+                                 5)
 
 # Flag codes are as follows:
 # 0 = not currently worked on
@@ -692,7 +693,7 @@ tGrain = 'year'
 site_grain_names
 
 #--! PROVIDE INFO !--#
-sGrain = 'site'
+sGrain = "PLOT"
 
 # This is a reasonable choice of spatial grain because ...
 #--! PROVIDE INFO !--#

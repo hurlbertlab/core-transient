@@ -231,7 +231,11 @@ getNestedTimeDataset = function(dataset,  temporalGrain, dataDescription){
   } else if (class(dataset$date)[1] == 'integer') { # if analysis will be performed at annual resolution
     dataset$analysisDate = dataset$date
     dataset$year = dataset$date
-  } else { 
+  } else if (class(dataset$date)[1] == 'numeric') {
+    dataset$analysisDate = as.integer(dataset$date)
+    dataset$year = as.integer(dataset$date)
+  }
+    else{ 
     dataset$analysisDate = as.numeric(format(dataset$date, "%Y"))
     dataset$year = as.numeric(format(dataset$date, "%Y"))
   }
@@ -252,7 +256,7 @@ getNestedDataset = function(dataset, siteGrain, temporalGrain, dataDescription){
 # ---- SUBSET DATASET TO SITES WITH ADEQUATE TIME SAMPLES AND RICHNESS ----
 #======================================================================================================* 
 
-richnessYearSubsetFun = function(dataset, spatialGrain, temporalGrain, minNTime = 10, minSpRich = 10, dataDescription){
+richnessYearSubsetFun = function(dataset, spatialGrain, temporalGrain, minNTime = 6, minSpRich = 10, dataDescription){
     dataset1 = getNestedDataset(dataset, spatialGrain, temporalGrain, dataDescription)
   # Get the number of years and species richness for each site: 
     siteSr_nTime = ddply(dataset1, .(analysisSite), summarize,
@@ -277,7 +281,7 @@ richnessYearSubsetFun = function(dataset, spatialGrain, temporalGrain, minNTime 
 
 # Note: Prior to running "zFinder", you must have already run the function "richnessYearSubsetFun" for which "inData" is the function's output.  
 
-zFinder = function(inData, minNTime = 10, proportionalThreshold = .5){
+zFinder = function(inData, minNTime = 6, proportionalThreshold = .5){
   # Calculate the number of temporal samples per site and year: 
     spaceTime = ddply(inData, .(analysisSite, analysisDate),
                     summarize, temporalSubsamples = length(unique(date)))
@@ -321,7 +325,7 @@ zFinder = function(inData, minNTime = 10, proportionalThreshold = .5){
 # ---- Subset data based on z-threshold ----
 #------------------------------------------------------------------------------------------------------*
 
-dataZSubFun  = function(inData, minNTime = 10, proportionalThreshold = .5){
+dataZSubFun  = function(inData, minNTime = 6, proportionalThreshold = .5, seed = 1){
   # Get z-values
     zOutput = zFinder(inData, minNTime, proportionalThreshold)
     z = zOutput[[1]]
@@ -342,12 +346,13 @@ dataZSubFun  = function(inData, minNTime = 10, proportionalThreshold = .5){
       # Get unique frame of siteYearDates
         siteDates = unique(siteDateSub$siteTimeDate)
       # Sample the events by the Z-value:
+        set.seed(seed)
         siteTimeDateSample = sample(unique(siteDateSub$siteTimeDate), size = z)
         events[[i]] = subset(siteDateSub, siteTimeDate %in% siteTimeDateSample )
       }
   # Subset data to sampled events:
     dataZSub = rbind.fill(events)
-    return(dataZSub)
+    return(list(data = dataZSub, z = z))
   }
 
 #------------------------------------------------------------------------------------------------------*
@@ -357,11 +362,11 @@ dataZSubFun  = function(inData, minNTime = 10, proportionalThreshold = .5){
 # This returns a w-value and a list of siteDates that satisfy this value:
 # Note: Prior to running the "wFinder", you must have already run the function "richnessYearSubsetFun".
 
-wFinder = function(inData, minNTime = 10, proportionalThreshold = .5){
+wFinder = function(inData, minNTime = 6, proportionalThreshold = .5){
   # Get data subset by Z-value:
     dataZSub = dataZSubFun(inData, minNTime, proportionalThreshold)
   # Summarize number of spatial subsamples per siteTime :
-    spaceTime = ddply(dataZSub, .(siteTimeDate), summarize, 
+    spaceTime = ddply(dataZSub$data, .(siteTimeDate), summarize, 
                       spatialSubsamples = length(unique(site)))
   # Determine the number of siteTimes present:
     nSiteTimeDates = nrow(spaceTime)
@@ -391,8 +396,10 @@ wFinder = function(inData, minNTime = 10, proportionalThreshold = .5){
   # Get the names of the siteYearDates that satisfy W:
     wSiteTimeDates = factor(wSiteTimeDateList[[as.character(w)]])
   # Return list of necessary items for the subset:
-    outList = list(dataZSub, wSiteTimeDates, w)
-      names(outList) = c('dataZSub', 'wSiteTimeDates', 'w')
+    outList = list(dataZSub = dataZSub$data, 
+                   wSiteTimeDates = wSiteTimeDates, 
+                   w = w,
+                   z = dataZSub$z)
     return(outList)
 }
 
@@ -400,7 +407,7 @@ wFinder = function(inData, minNTime = 10, proportionalThreshold = .5){
 # ---- Subset the data based on w and z values ----
 #------------------------------------------------------------------------------------------------------*
 
-wzSubsetFun = function(inData, minNTime = 10, proportionalThreshold = .5){
+wzSubsetFun = function(inData, minNTime = 6, proportionalThreshold = .5, seed = 1){
   wOut = wFinder(inData, minNTime, proportionalThreshold)
   # Subset data
     dataW = subset(wOut$dataZSub, siteTimeDate %in% wOut$wSiteTimeDates) 
@@ -410,6 +417,7 @@ wzSubsetFun = function(inData, minNTime = 10, proportionalThreshold = .5){
     for(i in 1:length(siteTimeDateNames)){
       siteTimeDateSub = subset(dataW, siteTimeDate == siteTimeDateNames[i])
       UniqueSubsites = unique(siteTimeDateSub$site) 
+      set.seed(seed)
       sampledSubsites = sample(UniqueSubsites, wOut$w, replace = F)
       events[[i]] = subset(siteTimeDateSub, site %in% sampledSubsites)
     }
@@ -418,7 +426,7 @@ wzSubsetFun = function(inData, minNTime = 10, proportionalThreshold = .5){
     outData = dplyr::select(outSampledData, one_of(c('analysisSite', 'analysisDate','species', 'count')))
       names(outData)[1:2] = c('site', 'year') 
   # Return the subsetted data frame:
-    return(outData)
+    return(list(outData = outData, w = wOut$w, z = wOut$z))
 }
 
 #------------------------------------------------------------------------------------------------------*
@@ -426,16 +434,21 @@ wzSubsetFun = function(inData, minNTime = 10, proportionalThreshold = .5){
 #------------------------------------------------------------------------------------------------------*
 # The subsetted dataset is limited to sites above a minimum overall species richness and number of years and each site year is subset to w and z
 # Prior to running this function, make sure to run the richnessYearSubsetFun, if there are no good sites, the proportional occurrence frame cannot be made!
+# This function now sums species counts across subunits at finer spatial grains if there were any.
 
 subsetDataFun = function(dataset, datasetID, spatialGrain, temporalGrain,
-                         minNTime = 10, minSpRich = 10,
+                         minNTime = 6, minSpRich = 10,
                          proportionalThreshold = .5,
                          dataDescription){
   inData = richnessYearSubsetFun(dataset, spatialGrain, temporalGrain, minNTime, minSpRich, dataDescription)
   subsettedData = wzSubsetFun(inData, minNTime, proportionalThreshold)
-  outData = data.frame(datasetID = datasetID, site = subsettedData$site, year = subsettedData$year,
-                       species = subsettedData$species, count = subsettedData$count)
-  return(outData)
+  
+  subData = subsettedData$outData %>% group_by(site, year, species) %>% summarize(count = sum(count, is.na = TRUE))
+  
+  outData = data.frame(datasetID = datasetID, site = subData$site, year = subData$year,
+                       species = subData$species, count = subData$count)
+                       
+  return(list(data = outData, w = subsettedData$w, z = subsettedData$z))
 }
 
 #------------------------------------------------------------------------------------------------------*
@@ -725,7 +738,14 @@ summaryStatsFun = function(datasetID, threshold, reps){
   dataList = getDataList(datasetID)
   sites  = as.character(dataList$siteSummary$site)
   # Get summary stats for each site:         #where is the problem coming from?!
-  outList = list(length = length(sites))
+  outDF = data.frame(datasetID = numeric(), site = character(),
+                     system = character(), taxa = character(),
+                     nTime = numeric(), spRichTotal = numeric(), 
+                     spRichCore = numeric(), spRichTrans = numeric(),
+                     propCore = numeric(), propCore_pVal = numeric(), 
+                     propTrans = numeric(), propTrans_pVal = numeric(),
+                     meanAbundance = numeric(), mu = numeric(), bimodality = numeric(), 
+                     pBimodal = numeric(), alpha = numeric(), beta = numeric())
   for(i in 1:length(sites)){
     propOcc = subset(dataList$propOcc, site == sites[i])$propOcc
     siteSummary = subset(dataList$siteSummary, site == sites[i])
@@ -745,20 +765,20 @@ summaryStatsFun = function(datasetID, threshold, reps){
     
     alpha = betaParms[1]
     beta = betaParms[2]   
-    outList[[i]] = data.frame(datasetID, site = sites[i],
+    outDF = rbind(outDF, data.frame(datasetID, site = sites[i],
                               system = dataList$system, taxa = dataList$taxa,
                               nTime, spRichTotal, spRichCore, spRichTrans,
                               propCore, propCore_pVal,  propTrans, propTrans_pVal,
-                              meanAbundance, mu, bimodality, pBimodal, alpha, beta)
+                              meanAbundance, mu, bimodality, pBimodal, alpha, beta))
   }
-  return(rbind.fill(outList))
+  return(outDF)
 }
 
 #------------------------------------------------------------------------------------------------------*
 # ---- MAKE SUMMARY STATS OF ANY NEW PROPOCC FILES ----
 #======================================================================================================*
 require(MASS)
-require(plyr)
+#require(plyr)
 
 addNewSummariesFun = function(threshold, reps, write = FALSE, allNew = FALSE){
   if (allNew == FALSE & 
@@ -778,11 +798,19 @@ addNewSummariesFun = function(threshold, reps, write = FALSE, allNew = FALSE){
   # Find dataset IDs that are not yet summarized:
   newDatasetIDs = propOccDatasetIDs[!propOccDatasetIDs %in% currentDatasetIDs]
   # For loop to extract summary stats for new datasetIDs
-  outList = list(length = length(newDatasetIDs))
+  outDF = data.frame(datasetID = numeric(), site = character(),
+                     system = character(), taxa = character(),
+                     nTime = numeric(), spRichTotal = numeric(), 
+                     spRichCore = numeric(), spRichTrans = numeric(),
+                     propCore = numeric(), propCore_pVal = numeric(), 
+                     propTrans = numeric(), propTrans_pVal = numeric(),
+                     meanAbundance = numeric(), mu = numeric(), bimodality = numeric(), 
+                     pBimodal = numeric(), alpha = numeric(), beta = numeric())
+  
   for(i in 1:length(newDatasetIDs)){
-    outList[[i]] = summaryStatsFun(newDatasetIDs[i], threshold, reps)
+    outDF = rbind(outDF, summaryStatsFun(newDatasetIDs[i], threshold, reps))
   }
-  newSummaryData = rbind.fill(outList)
+  newSummaryData = outDF
   updatedSummaryData = rbind(currentSummaryData, newSummaryData)
   updatedSummaryData = updatedSummaryData[order(updatedSummaryData$datasetID),]
   if (write) {
