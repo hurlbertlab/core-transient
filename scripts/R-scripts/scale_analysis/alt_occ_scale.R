@@ -385,10 +385,20 @@ coefs = OA.df %>%
 #write.csv(coefs, "C:/git/core-transient/scripts/R-scripts/scale_analysis/coefs.csv", row.names = FALSE) #updated 02/27
 #exp mods have much better r2 vals for pctTran than power 
 
+
+bbs_allscales = read.csv("data/bbs_allscales.csv", header = TRUE)
+bbs_allscales$logA = log10(bbs_allscales$area)
+bbs_allscales$logN = log10(bbs_allscales$aveN)
+bbs_allscales$lnA = log(bbs_allscales$area) #log is the natural log 
+bbs_allscales$lnN = log(bbs_allscales$aveN) #rerun plots with this?
+coefs = read.csv("scripts/R-scripts/scale_analysis/coefs.csv", header = TRUE)
+
+
 logistic_fcn = function(x, Asym, xmid, scal) {
   out = Asym/(1 + exp((xmid - x)/scal))
   return(out)
 }
+
 
 preds.df = data.frame(stateroute = numeric(), OApreds= numeric(), ONpreds = numeric(), 
                       CApreds = numeric(), CNpreds = numeric(),
@@ -400,10 +410,15 @@ stateroutes = unique(bbs_allscales$focalrte)
 tiff("output/plots/Molly Plots/pngs/BBS_scaleplots%04d.tif")
 
 
+coef_join = coefs %>% inner_join(bbs_allscales, by = c("stateroute"="focalrte"))
+
+
+
+
+stateroutes = c(2001, 2010, 2014)
 for (s in stateroutes) {
   theme_set(theme_bw()+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()))
-  logsub = subset(bbs_allscales, bbs_allscales$focalrte == s) #what about using logsub 
-  coef_sub = subset(coefs, coefs$stateroute == s) %>% inner_join(logsub, by = c("stateroute"="focalrte"))
+  coef_sub = subset(coef_join, coef_join$stateroute == s)
   
   #OA
   OApreds = logistic_fcn(coef_sub[,33], coef_sub[,2], coef_sub[,3], coef_sub[,4]) 
@@ -412,7 +427,7 @@ for (s in stateroutes) {
   
   #ON
   ONpreds = logistic_fcn(coef_sub[,33], coef_sub[,6], coef_sub[,7], coef_sub[,8])
-  plot2 = ggplot(plotsub, aes(x = logN, y = meanOcc))+geom_point(colour = "firebrick")+
+  plot2 = ggplot(coef_sub, aes(x = logN, y = meanOcc))+geom_point(colour = "firebrick")+
     geom_line(aes(x = logN, y = ONpreds), color = "navy")
  
   #CA
