@@ -406,17 +406,12 @@ preds.df = data.frame(stateroute = numeric(), OApreds= numeric(), ONpreds = nume
                       TApreds = numeric(), TNpreds = numeric())
 
 
-stateroutes = unique(bbs_allscales$focalrte)
 #pdf("output/plots/Molly Plots/BBS_scaleplots.pdf", onefile = TRUE)
 tiff("output/plots/Molly Plots/pngs/BBS_scaleplots%04d.tif")
-
-
 coef_join = coefs %>% inner_join(bbs_allscales, by = c("stateroute"="focalrte"))
 
 
-
-
-stateroutes = c(2001, 2010, 2014)
+stateroutes = unique(bbs_allscales$focalrte)
 for (s in stateroutes) {
   theme_set(theme_bw()+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()))
   coef_sub = subset(coef_join, coef_join$stateroute == s)
@@ -424,33 +419,37 @@ for (s in stateroutes) {
   #OA
   OApreds = logistic_fcn(coef_sub[,33], coef_sub[,2], coef_sub[,3], coef_sub[,4]) 
   plot1 = ggplot(coef_sub, aes(x = logA, y = meanOcc))+geom_point(colour = "firebrick")+
-    geom_line(aes(x = logA, y = OApreds), color = "navy")
+    geom_line(aes(x = logA, y = OApreds), color = "navy") +labs(x = "Log area", y = "Mean % Occupancy")
+  
   
   #ON
   ONpreds = logistic_fcn(coef_sub[,34], coef_sub[,6], coef_sub[,7], coef_sub[,8])
   plot2 = ggplot(coef_sub, aes(x = logN, y = meanOcc))+geom_point(colour = "firebrick")+
-    geom_line(aes(x = logN, y = ONpreds), color = "navy")
+    geom_line(aes(x = logN, y = ONpreds), color = "navy") +labs(x = "Log abundance", y = "Mean % Occupancy")
+ 
  
   #CA
   CApreds = logistic_fcn(coef_sub[,33], coef_sub[,10], coef_sub[,11], coef_sub[,12])
   plot1_2= ggplot(coef_sub, aes(x = logA, y = pctCore))+geom_point(colour = "turquoise")+
-    geom_line(aes(x = logA, y = CApreds), color = "navy") 
- 
+    geom_line(aes(x = logA, y = CApreds), color = "navy")+labs(x = "Log area", y = "% Core Occupancy")
+  
+  #aveN
   #CN
   CNpreds = logistic_fcn(coef_sub[,34], coef_sub[,14], coef_sub[,15], coef_sub[,16])
   plot2_2= ggplot(coef_sub, aes(x = logN, y = pctCore))+geom_point(colour = "turquoise")+
-    geom_line(aes(x = logN, y = CNpreds), color = "navy")
-  
+    geom_line(aes(x = logN, y = CNpreds), color = "navy")+labs(x = "Log abundance", y = "% Core Occupancy")
+
   #not using log fcn for %Transient relationships bc relationship diff, exp had higher pred power also 
+  #predictive power still funky though
   #TA
   TApreds =  coef_sub[,35]*(coef_sub[,18]) #35 = optimum; replacing ^ with * bc natural log, removing -1!!!
   plot1_3 = ggplot(coef_sub, aes(x = lnA, y = log(pctTran)))+geom_point(colour = "olivedrab")+
-    geom_line(aes(x = lnA, y = TApreds), color = "navy")
+    geom_line(aes(x = lnA, y = TApreds), color = "navy") +labs(x = "Log area", y = "% Transient Occupancy")
  
   #TN
   TNpreds = coef_sub[,36]*(coef_sub[,22])
   plot2_3 = ggplot(coef_sub, aes(x = lnN, y = log(pctTran)))+geom_point(colour = "olivedrab")+
-    geom_line(aes(x = lnN, y = TNpreds), color = "navy")
+    geom_line(aes(x = lnN, y = TNpreds), color = "navy")+labs(x = "Log abundance", y = "% Transient Occupancy") 
   
   #storing plots
   predplot = grid.arrange(plot1, plot2, plot1_2, plot2_2, plot1_3, plot2_3,
@@ -484,14 +483,7 @@ for (s in stateroutes) {
   #log(area)
   theme_set(theme_bw()+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()))
   plotsub = subset(bbs_allscales, bbs_allscales$focalrte == s)
-  plot1 = ggplot(plotsub, aes(x = logA, y = meanOcc))+labs(x = "Log area", y = "Mean % Occupancy")+geom_point(colour = "firebrick")+geom_smooth(se=FALSE)
-  plot1_2= ggplot(plotsub, aes(x = logA, y = pctCore))+labs(x = "Log area", y = "% Core Occupancy")+geom_point(colour = "turquoise")+geom_smooth(se=FALSE)
-  plot1_3 = ggplot(plotsub, aes(x = lnA, y = pctTran))+labs(x = "Log area", y = "% Transient Occupancy")+geom_point(colour = "olivedrab")+geom_smooth(se=FALSE)
-  
-  #aveN
-  plot2 = ggplot(plotsub, aes(x=logN, y =meanOcc))+labs(x = "Log abundance", y = "Mean % Occupancy")+geom_point(colour = "firebrick")+geom_smooth(se=FALSE)
-  plot2_2 = ggplot(plotsub, aes(x=logN, y =pctCore))+labs(x = "Log abundance", y = "% Core Occupancy")+geom_point(colour = "turquoise")+geom_smooth(se=FALSE)
-  plot2_3 =ggplot(plotsub, aes(x=lnN, y =pctTran))+labs(x = "Log abundance", y = "% Transient Occupancy")+geom_point(colour = "olivedrab")+geom_smooth(se=FALSE)
+ 
   
   
   ####changed to log_10^^^^####
