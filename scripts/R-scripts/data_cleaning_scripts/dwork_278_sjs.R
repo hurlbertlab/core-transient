@@ -288,7 +288,7 @@ dataFormattingTable[,'subannualTgrain'] =
 # concatenate lakeid and station bc all combinations of lake id and station are unique
 dataset2$lake_stat = paste(dataset2$lakeid, dataset2$sta, sep = "_")
 
-site_grain_names = c("lakeid_stat")
+site_grain_names = "lake_stat"
 
 # We will now create the site field with these codes concatenated if there
 # are multiple grain fields. Otherwise, site will just be the single grain field.
