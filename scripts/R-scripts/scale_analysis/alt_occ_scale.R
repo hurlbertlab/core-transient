@@ -443,12 +443,12 @@ for (s in stateroutes) {
   
   #not using log fcn for %Transient relationships bc relationship diff, exp had higher pred power also 
   #TA
-  TApreds =  coef_sub[,35]^(-1*coef_sub[,18]) #35 = optimum
+  TApreds =  coef_sub[,35]*(coef_sub[,18]) #35 = optimum; replacing ^ with * bc natural log, removing -1!!!
   plot1_3 = ggplot(coef_sub, aes(x = lnA, y = log(pctTran)))+geom_point(colour = "olivedrab")+
     geom_line(aes(x = lnA, y = TApreds), color = "navy")
-  
+ 
   #TN
-  TNpreds = coef_sub[,36]^(-1*coef_sub[,22])
+  TNpreds = coef_sub[,36]*(coef_sub[,22])
   plot2_3 = ggplot(coef_sub, aes(x = lnN, y = log(pctTran)))+geom_point(colour = "olivedrab")+
     geom_line(aes(x = lnN, y = TNpreds), color = "navy")
   
