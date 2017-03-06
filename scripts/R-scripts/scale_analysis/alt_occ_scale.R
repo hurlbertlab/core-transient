@@ -226,40 +226,6 @@ plot(meanOcc~logN, data = bbs_allscales, xlab = "Average Abundance" , ylab = "Me
 #^^same pattern
 
 
-
-####Characterizing changes at the level of a single focal rte, above and below#### 
-#six panel plot for each rte, output as pdfs for 02/05
-#set up as forloop that exports each plot before moving on to the next stateroute?
-#just need to replace bbs_allscales with a subset that changes every loop, 
-#dictated by stateroute 
-#and I want R to bring them all together and export/save as pdf at end
-stateroutes = unique(bbs_allscales$focalrte)
-#pdf("output/plots/Molly Plots/BBS_scaleplots.pdf", onefile = TRUE)
-png("output/plots/Molly Plots/pngs/BBS_scaleplots%03d.png") #stored as sep png files for creating gif for talks 
-for (s in stateroutes) { 
-#log(area)
-theme_set(theme_bw()+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()))
-plotsub = subset(bbs_allscales, bbs_allscales$focalrte == s)
-plot1 = ggplot(plotsub, aes(x = logA, y = meanOcc))+labs(x = "Log area", y = "Mean % Occupancy")+geom_point(colour = "firebrick")+geom_smooth(se=FALSE)
-plot1_2= ggplot(plotsub, aes(x = logA, y = pctCore))+labs(x = "Log area", y = "% Core Occupancy")+geom_point(colour = "turquoise")+geom_smooth(se=FALSE)
-plot1_3 = ggplot(plotsub, aes(x = lnA, y = pctTran))+labs(x = "Log area", y = "% Transient Occupancy")+geom_point(colour = "olivedrab")+geom_smooth(se=FALSE)
-
-#aveN
-plot2 = ggplot(plotsub, aes(x=logN, y =meanOcc))+labs(x = "Log abundance", y = "Mean % Occupancy")+geom_point(colour = "firebrick")+geom_smooth(se=FALSE)
-plot2_2 = ggplot(plotsub, aes(x=logN, y =pctCore))+labs(x = "Log abundance", y = "% Core Occupancy")+geom_point(colour = "turquoise")+geom_smooth(se=FALSE)
-plot2_3 =ggplot(plotsub, aes(x=lnN, y =pctTran))+labs(x = "Log abundance", y = "% Transient Occupancy")+geom_point(colour = "olivedrab")+geom_smooth(se=FALSE)
-
-
-####changed to log_10^^^^####
-
-#setting up aveN and log(area) cols side by side 
-library(gridExtra)
-scaleplot = grid.arrange(plot1, plot2, plot1_2, plot2_2, plot1_3, plot2_3, ncol=2, 
-                         top = paste("scaleplot_", s, sep = ""))
-#saved to core-transient/output/plots  
-}
-dev.off()
-
 ####Logistic curve fitting; sep loop for now####
 #want to fit a logistic curve (not a regression!) to each as well 
 #use nls: 
@@ -427,23 +393,52 @@ logistic_fcn = function(x, Asym, xmid, scal) {
 preds.df = data.frame(stateroute = numeric(), OApreds= numeric(), ONpreds = numeric(), 
                       CApreds = numeric(), CNpreds = numeric(),
                       TApreds = numeric(), TNpreds = numeric())
-#can sub out seqs for area/logarea/abundance/logabundance as needed
+
+
+stateroutes = unique(bbs_allscales$focalrte)
+#pdf("output/plots/Molly Plots/BBS_scaleplots.pdf", onefile = TRUE)
+tiff("output/plots/Molly Plots/pngs/BBS_scaleplots%04d.tif")
+
+
 for (s in stateroutes) {
+  theme_set(theme_bw()+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()))
   logsub = subset(bbs_allscales, bbs_allscales$focalrte == s) #what about using logsub 
   coef_sub = subset(coefs, coefs$stateroute == s) %>% inner_join(logsub, by = c("stateroute"="focalrte"))
-    #OA
+  
+  #OA
   OApreds = logistic_fcn(coef_sub[,33], coef_sub[,2], coef_sub[,3], coef_sub[,4]) 
+  plot1 = ggplot(coef_sub, aes(x = logA, y = meanOcc))+geom_point(colour = "firebrick")+
+    geom_line(aes(x = logA, y = OApreds), color = "navy")
+  
   #ON
   ONpreds = logistic_fcn(coef_sub[,33], coef_sub[,6], coef_sub[,7], coef_sub[,8])
+  plot2 = ggplot(plotsub, aes(x = logN, y = meanOcc))+geom_point(colour = "firebrick")+
+    geom_line(aes(x = logN, y = ONpreds), color = "navy")
+ 
   #CA
   CApreds = logistic_fcn(coef_sub[,33], coef_sub[,10], coef_sub[,11], coef_sub[,12])
+  plot1_2= ggplot(coef_sub, aes(x = logA, y = pctCore))+geom_point(colour = "turquoise")+
+    geom_line(aes(x = logA, y = CApreds), color = "navy") 
+ 
   #CN
   CNpreds = logistic_fcn(coef_sub[,33], coef_sub[,14], coef_sub[,15], coef_sub[,16])
+  plot2_2= ggplot(coef_sub, aes(x = logN, y = pctCore))+geom_point(colour = "turquoise")+
+    geom_line(aes(x = logN, y = CNpreds), color = "navy")
+  
   #not using log fcn for %Transient relationships bc relationship diff, exp had higher pred power also 
   #TA
   TApreds =  coef_sub[,35]^(-1*coef_sub[,18]) #35 = optimum
+  plot1_3 = ggplot(coef_sub, aes(x = lnA, y = log(pctTran)))+geom_point(colour = "olivedrab")+
+    geom_line(aes(x = lnA, y = TApreds), color = "navy")
+  
   #TN
   TNpreds = coef_sub[,35]^(-1*coef_sub[,22])
+  plot2_3 = ggplot(coef_sub, aes(x = lnN, y = log(pctTran)))+geom_point(colour = "olivedrab")+
+    geom_line(aes(x = lnN, y = TNpreds), color = "navy")
+  
+  #storing plots
+  predplot = grid.arrange(plot1, plot2, plot1_2, plot2_2, plot1_3, plot2_3,
+                          ncol=2, top = paste("predplot_", s, sep = ""))
   #storing preds:
   temp.df = data.frame(stateroute = s, OApreds= OApreds , ONpreds = ONpreds, 
                        CApreds = CApreds, CNpreds = CNpreds,
@@ -451,12 +446,48 @@ for (s in stateroutes) {
   preds.df = rbind(preds.df, temp.df)
   
 }
-
+dev.off()
 
 #example plot
 #plot(coef_sub$logA, coef_sub$meanOcc)
 # points(coef_sub[,33], OApreds, type=  'l', col='red')
 #cite output in plots in lieu of geom_smooth for updated output
+
+
+
+####Characterizing changes at the level of a single focal rte, above and below#### 
+#six panel plot for each rte, output as pdfs for 02/05
+#set up as forloop that exports each plot before moving on to the next stateroute?
+#just need to replace bbs_allscales with a subset that changes every loop, 
+#dictated by stateroute 
+#and I want R to bring them all together and export/save as pdf at end
+stateroutes = unique(bbs_allscales$focalrte)
+#pdf("output/plots/Molly Plots/BBS_scaleplots.pdf", onefile = TRUE)
+png("output/plots/Molly Plots/pngs/BBS_scaleplots%03d.png") #stored as sep png files for creating gif for talks 
+for (s in stateroutes) { 
+  #log(area)
+  theme_set(theme_bw()+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()))
+  plotsub = subset(bbs_allscales, bbs_allscales$focalrte == s)
+  plot1 = ggplot(plotsub, aes(x = logA, y = meanOcc))+labs(x = "Log area", y = "Mean % Occupancy")+geom_point(colour = "firebrick")+geom_smooth(se=FALSE)
+  plot1_2= ggplot(plotsub, aes(x = logA, y = pctCore))+labs(x = "Log area", y = "% Core Occupancy")+geom_point(colour = "turquoise")+geom_smooth(se=FALSE)
+  plot1_3 = ggplot(plotsub, aes(x = lnA, y = pctTran))+labs(x = "Log area", y = "% Transient Occupancy")+geom_point(colour = "olivedrab")+geom_smooth(se=FALSE)
+  
+  #aveN
+  plot2 = ggplot(plotsub, aes(x=logN, y =meanOcc))+labs(x = "Log abundance", y = "Mean % Occupancy")+geom_point(colour = "firebrick")+geom_smooth(se=FALSE)
+  plot2_2 = ggplot(plotsub, aes(x=logN, y =pctCore))+labs(x = "Log abundance", y = "% Core Occupancy")+geom_point(colour = "turquoise")+geom_smooth(se=FALSE)
+  plot2_3 =ggplot(plotsub, aes(x=lnN, y =pctTran))+labs(x = "Log abundance", y = "% Transient Occupancy")+geom_point(colour = "olivedrab")+geom_smooth(se=FALSE)
+  
+  
+  ####changed to log_10^^^^####
+  
+  #setting up aveN and log(area) cols side by side 
+  library(gridExtra)
+  scaleplot = grid.arrange(plot1, plot2, plot1_2, plot2_2, plot1_3, plot2_3, ncol=2, 
+                           top = paste("scaleplot_", s, sep = ""))
+  #saved to core-transient/output/plots  
+}
+dev.off()
+
 
 
 ####Env data add-in####
