@@ -234,19 +234,20 @@ plot(meanOcc~logN, data = bbs_allscales, xlab = "Average Abundance" , ylab = "Me
 #dictated by stateroute 
 #and I want R to bring them all together and export/save as pdf at end
 stateroutes = unique(bbs_allscales$focalrte)
-pdf("output/plots/BBS_scaleplots.pdf", onefile = TRUE)
+#pdf("output/plots/Molly Plots/BBS_scaleplots.pdf", onefile = TRUE)
+png("output/plots/Molly Plots/pngs/BBS_scaleplots%03d.png") #stored as sep png files for creating gif for talks 
 for (s in stateroutes) { 
 #log(area)
 theme_set(theme_bw()+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()))
 plotsub = subset(bbs_allscales, bbs_allscales$focalrte == s)
-plot1 = ggplot(plotsub, aes(x = logA, y = meanOcc))+geom_point(colour = "firebrick")+geom_smooth(se=FALSE)
-plot1_2= ggplot(plotsub, aes(x = logA, y = pctCore))+geom_point(colour = "turquoise")+geom_smooth(se=FALSE)
-plot1_3 = ggplot(plotsub, aes(x = lnA, y = pctTran))+geom_point(colour = "olivedrab")+geom_smooth(se=FALSE)
+plot1 = ggplot(plotsub, aes(x = logA, y = meanOcc))+labs(x = "Log area", y = "Mean % Occupancy")+geom_point(colour = "firebrick")+geom_smooth(se=FALSE)
+plot1_2= ggplot(plotsub, aes(x = logA, y = pctCore))+labs(x = "Log area", y = "% Core Occupancy")+geom_point(colour = "turquoise")+geom_smooth(se=FALSE)
+plot1_3 = ggplot(plotsub, aes(x = lnA, y = pctTran))+labs(x = "Log area", y = "% Transient Occupancy")+geom_point(colour = "olivedrab")+geom_smooth(se=FALSE)
 
 #aveN
-plot2 = ggplot(plotsub, aes(x=logN, y =meanOcc))+geom_point(colour = "firebrick")+geom_smooth(se=FALSE)
-plot2_2 = ggplot(plotsub, aes(x=logN, y =pctCore))+geom_point(colour = "turquoise")+geom_smooth(se=FALSE)
-plot2_3 =ggplot(plotsub, aes(x=lnN, y =pctTran))+geom_point(colour = "olivedrab")+geom_smooth(se=FALSE)
+plot2 = ggplot(plotsub, aes(x=logN, y =meanOcc))+labs(x = "Log abundance", y = "Mean % Occupancy")+geom_point(colour = "firebrick")+geom_smooth(se=FALSE)
+plot2_2 = ggplot(plotsub, aes(x=logN, y =pctCore))+labs(x = "Log abundance", y = "% Core Occupancy")+geom_point(colour = "turquoise")+geom_smooth(se=FALSE)
+plot2_3 =ggplot(plotsub, aes(x=lnN, y =pctTran))+labs(x = "Log abundance", y = "% Transient Occupancy")+geom_point(colour = "olivedrab")+geom_smooth(se=FALSE)
 
 
 ####changed to log_10^^^^####
@@ -265,6 +266,7 @@ dev.off()
 library(stats)
 
 OA.df = data.frame(stateroute = numeric(), OA.A= numeric(), OA.i = numeric(), OA.k = numeric(), OA.r2 = numeric())
+OA.pred.df = data.frame(stateroute = numeric(), OA.pred = numeric())
 ON.df = data.frame(stateroute = numeric(), ON.A= numeric(), ON.i = numeric(), ON.k = numeric(), ON.r2 = numeric())
 CA.df = data.frame(stateroute = numeric(), CA.A= numeric(), CA.i = numeric(), CA.k = numeric(), CA.r2 = numeric())
 CN.df = data.frame(stateroute = numeric(), CN.A= numeric(), CN.i = numeric(), CN.k = numeric(), CN.r2 = numeric())
@@ -287,9 +289,9 @@ for(s in stateroutes){
     OAlog = nls(meanOcc ~ SSlogis(logA, Asym, xmid, scal), data = logsub)
     OApred = predict(OAlog)
     OAlm.r2 = lm(logsub$meanOcc ~ OApred)
-    # plot1 = ggplot(plotsub, aes(x = logA, y = meanOcc))+geom_point(colour = "firebrick")+
-    #   geom_line(aes(x = logA, y = OApred), color = "navy") can I gen plots in a trycatch? 
-    return(data.frame(stateroute = s, OA.A, OA.i, OA.k, OA.r2 = summary(OAlm.r2)$r.squared))
+    return(data.frame(stateroute = s, OA.A, OA.i, OA.k, 
+                      OA.r2 = summary(OAlm.r2)$r.squared))
+    return(data.frame(stateroute = s, OA.pred = OApred)) #can I return multiple outputs from a trycatch?
   }, warning = function(w) {
     warnings = rbind(warnings, data.frame(stateroute = s, warning = w))
   }, error = function(e) {
@@ -297,35 +299,42 @@ for(s in stateroutes){
     OA.A <- NA
     OA.k <- NA
     OA.r2 <- NA
+    OA.pred <- NA
   }, finally = {
     OA.i <- summary(OAlog)$coefficients["xmid","Estimate"]
     OA.A <- summary(OAlog)$coefficients["Asym","Estimate"]
     OA.k <- summary(OAlog)$coefficients["scal","Estimate"]
     OA.r2 <- summary(OAlm.r2)$r.squared
+    OA.pred <- OApred
     })
-  OA.temp = data.frame(stateroute = s, OA.A, OA.i, OA.k, OA.r2) 
+  OA.temp = data.frame(stateroute = s, OA.A, OA.i, OA.k, OA.r2)
+  OA.temppred = data.frame(stateroute = s, OA.pred = OA.pred)
   OA.df = rbind(OA.df, OA.temp)
+  OA.pred.df = rbind(OA.pred.df, OA.temppred)
   
   #ON 
   ONmodel = tryCatch({
     ONlog = nls(meanOcc ~ SSlogis(logN, Asym, xmid, scal), data = logsub)
     ONpred = predict(ONlog)
     ONlm.r2 = lm(logsub$meanOcc ~ ONpred)
-    return(data.frame(stateroute = s, ON.A, ON.i, ON.k, ON.r2 = summary(ONlm.r2)$r.squared))
+    return(data.frame(stateroute = s, ON.A, ON.i, ON.k, 
+                      ON.r2 = summary(ONlm.r2)$r.squared, ON.pred = ONpred))
   }, warning = function(w) {
     warnings = rbind(warnings, data.frame(stateroute = s, warning = w))
   }, error = function(e) {
     ON.i <- NA
     ON.A <- NA
     ON.k <- NA
-    OA.r2 <- NA
+    ON.r2 <- NA
+    ON.pred <- NA
   }, finally = {
     ON.i <- summary(ONlog)$coefficients["xmid","Estimate"]
     ON.A <- summary(ONlog)$coefficients["Asym","Estimate"]
     ON.k <- summary(ONlog)$coefficients["scal","Estimate"]
     ON.r2 <- summary(ONlm.r2)$r.squared
+    ON.pred <- ONpred
     })
-  ON.temp = data.frame(stateroute = s, ON.A, ON.i, ON.k, ON.r2) #fix
+  ON.temp = data.frame(stateroute = s, ON.A, ON.i, ON.k, ON.r2, ON.pred) #fix
   ON.df = rbind(ON.df, ON.temp)
   
   #CA
@@ -333,7 +342,8 @@ for(s in stateroutes){
     CAlog = nls(pctCore ~ SSlogis(logA, Asym, xmid, scal), data = logsub)
     CApred = predict(CAlog)
     CAlm.r2 = lm(logsub$pctCore ~ CApred)
-    return(data.frame(stateroute = s, CA.A, CA.i, CA.k, CA.r2 = summary(CAlm.r2)$r.squared))
+    return(data.frame(stateroute = s, CA.A, CA.i, CA.k, 
+                      CA.r2 = summary(CAlm.r2)$r.squared, CA.pred = CApred))
   }, warning = function(w) {
     warnings = rbind(warnings, data.frame(stateroute = s, warning = w))
   }, error = function(e) {
@@ -341,13 +351,15 @@ for(s in stateroutes){
     CA.A <- NA
     CA.k <- NA
     CA.r2 <- NA
+    CA.pred <- NA
   }, finally = {
     CA.i <- summary(CAlog)$coefficients["xmid","Estimate"]
     CA.A <- summary(CAlog)$coefficients["Asym","Estimate"]
     CA.k <- summary(CAlog)$coefficients["scal","Estimate"]
     CA.r2 = summary(CAlm.r2)$r.squared
+    CA.pred <- CApred
   })
-  CA.temp = data.frame(stateroute = s, CA.A, CA.i, CA.k, CA.r2) 
+  CA.temp = data.frame(stateroute = s, CA.A, CA.i, CA.k, CA.r2, CA.pred) 
   CA.df = rbind(CA.df, CA.temp)
   
   #CN
@@ -355,7 +367,8 @@ for(s in stateroutes){
     CNlog = nls(pctCore ~ SSlogis(logN, Asym, xmid, scal), data = logsub)
     CNpred = predict(CNlog)
     CNlm.r2 = lm(logsub$pctCore ~ CNpred) #bootstraping r2 vals for CNlog since not in summary stats
-    return(data.frame(stateroute = s, CN.A, CN.i, CN.k, CN.r2 = summary(CNlm.r2)$r.squared))
+    return(data.frame(stateroute = s, CN.A, CN.i, CN.k, 
+                      CN.r2 = summary(CNlm.r2)$r.squared, CN.pred = CNpred))
   }, warning = function(w) {
     warnings = rbind(warnings, data.frame(stateroute = s, warning = w))
   }, error = function(e) {
@@ -363,13 +376,15 @@ for(s in stateroutes){
     CN.A <- NA
     CN.k <- NA
     CN.r2 <- NA
+    CN.pred <- NA
   }, finally = {
     CN.i <- summary(CNlog)$coefficients["xmid","Estimate"]
     CN.A <- summary(CNlog)$coefficients["Asym","Estimate"]
     CN.k <- summary(CNlog)$coefficients["scal","Estimate"]
     CN.r2 <- summary(CNlm.r2)$r.squared
+    CN.pred = CNpred
     })
-  CN.temp = data.frame(stateroute = s, CN.A, CN.i, CN.k, CN.r2) #fix
+  CN.temp = data.frame(stateroute = s, CN.A, CN.i, CN.k, CN.r2, CN.pred) 
   CN.df = rbind(CN.df, CN.temp)
 
   # Fitting % transient
@@ -504,10 +519,18 @@ for (d in 2:25) {
 }
 
 #write.csv(rsqrd_df, "scripts/R-scripts/scale_analysis/mod_rsqrds.csv", row.names = FALSE) #updated 02/27 POST-meeting
+####Visually Characterizing r2 vals####
+rsqrd_df = read.csv("scripts/R-scripts/scale_analysis/mod_rsqrds.csv", header = TRUE)
+
+
+
+
 
 
 ####Plot obs vs pred####
-#for (s in stateroutes) {
+pdf("output/plots/Molly Plots/BBS_testplot.pdf", onefile = TRUE)
+# 
+# for (s in stateroutes) {
 # s = 2001
 # plotsub = subset(bbs_allscales, bbs_allscales$focalrte == s)
 # OAlog = nls(meanOcc ~ SSlogis(logA, Asym, xmid, scal), data = plotsub)
@@ -515,51 +538,52 @@ for (d in 2:25) {
 # 
 # theme_set(theme_bw()+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()))
 # plot1 = ggplot(plotsub, aes(x = logA, y = meanOcc))+geom_point(colour = "olivedrab")+
-#   geom_line(aes(x = logA, y = OApred), color = "navy")
+#   geom_line(aes(x = logA, y = OApred), color = "navy")}
 
 
-#not yet working in loop but works for s = 2001; not fault of pctTran either  
+#not yet working in loop but works for s = 2001; not fault of pctTran either
 
 stateroutes = unique(bbs_allscales$focalrte)
-pdf("output/plots/BBS_predplots.pdf", onefile = TRUE)
-for (s in stateroutes) { 
+tiff("output/plots/Molly Plots/BBS_predplots.tif")
+stateroutes = 2001 
+for (s in stateroutes) {
   #log(area)
   theme_set(theme_bw()+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()))
   plotsub = subset(bbs_allscales, bbs_allscales$focalrte == s)
-  
+
    OAlog = nls(meanOcc ~ SSlogis(logA, Asym, xmid, scal), data = plotsub)
    OApred = predict(OAlog)
   plot1 = ggplot(plotsub, aes(x = logA, y = meanOcc))+geom_point(colour = "firebrick")+
     geom_line(aes(x = logA, y = OApred), color = "navy")
-  
+
    CAlog = nls(pctCore ~ SSlogis(logA, Asym, xmid, scal), data = plotsub)
    CApred = predict(CAlog)
   plot1_2= ggplot(plotsub, aes(x = logA, y = pctCore))+geom_point(colour = "turquoise")+
     geom_line(aes(x = logA, y = CApred), color = "navy")
-  
+
    TAlog = lm(log(pctTran) ~ lnA, data = plotsub)
    TApred = predict(TAlog)
   plot1_3 = ggplot(plotsub, aes(x = lnA, y = log(pctTran)))+geom_point(colour = "olivedrab")+
    geom_line(aes(x = lnA, y = TApred), color = "navy")
-  
-  
+
+
   #aveN
    ONlog = nls(meanOcc ~ SSlogis(logN, Asym, xmid, scal), data = plotsub)
    ONpred = predict(ONlog)
   plot2 = ggplot(plotsub, aes(x = logN, y = meanOcc))+geom_point(colour = "firebrick")+
     geom_line(aes(x = logN, y = ONpred), color = "navy")
-  
+
    CNlog = nls(pctCore ~ SSlogis(logN, Asym, xmid, scal), data = plotsub)
    CNpred = predict(CNlog)
   plot2_2= ggplot(plotsub, aes(x = logN, y = pctCore))+geom_point(colour = "turquoise")+
     geom_line(aes(x = logN, y = CNpred), color = "navy")
-  
+
    TNlog = lm(log(pctTran) ~ lnN, data = plotsub)
    TNpred = predict(TNlog)
   plot2_3 = ggplot(plotsub, aes(x = lnN, y = log(pctTran)))+geom_point(colour = "olivedrab")+
     geom_line(aes(x = lnN, y = TNpred), color = "navy")
-  
-  predplot = grid.arrange(plot1, plot2, plot1_2, plot2_2, plot1_3, plot2_3, 
+
+  predplot = grid.arrange(plot1, plot2, plot1_2, plot2_2, plot1_3, plot2_3,
                           ncol=2, top = paste("predplot_", s, sep = ""))
   }
 dev.off()
