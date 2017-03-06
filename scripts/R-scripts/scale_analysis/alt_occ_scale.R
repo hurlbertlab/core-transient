@@ -266,7 +266,6 @@ dev.off()
 library(stats)
 
 OA.df = data.frame(stateroute = numeric(), OA.A= numeric(), OA.i = numeric(), OA.k = numeric(), OA.r2 = numeric())
-OA.pred.df = data.frame(stateroute = numeric(), OA.pred = numeric())
 ON.df = data.frame(stateroute = numeric(), ON.A= numeric(), ON.i = numeric(), ON.k = numeric(), ON.r2 = numeric())
 CA.df = data.frame(stateroute = numeric(), CA.A= numeric(), CA.i = numeric(), CA.k = numeric(), CA.r2 = numeric())
 CN.df = data.frame(stateroute = numeric(), CN.A= numeric(), CN.i = numeric(), CN.k = numeric(), CN.r2 = numeric())
@@ -425,7 +424,9 @@ logistic_fcn = function(x, Asym, xmid, scal) {
   return(out)
 }
 
-
+preds.df = data.frame(stateroute = numeric(), OApreds= numeric(), ONpreds = numeric(), 
+                      CApreds = numeric(), CNpreds = numeric(),
+                      TApreds = numeric(), TNpreds = numeric())
 #can sub out seqs for area/logarea/abundance/logabundance as needed
 for (s in stateroutes) {
   coef_sub = subset(coefs, coefs$stateroute == s)
@@ -442,8 +443,17 @@ for (s in stateroutes) {
   TApreds =  (seq(0.4, 3.5, by = .1))^(-1*coefs[,18])
   #TN
   TNpreds = (seq(0.4, 3.5, by = .1))^(-1*coefs[,22])
-# points(seq(0.4, 3.5, by =.1), foo2, type=  'l', col='red')
+  #storing preds:
+  temp.df = data.frame(stateroute = s, OApreds= OApreds , ONpreds = ONpreds, 
+                       CApreds = CApreds, CNpreds = CNpreds,
+                       TApreds = TApreds, TNpreds = TNpreds)
+  preds.df = rbind(preds.df, temp.df)
+  
 }
+
+# points(seq(0.4, 3.5, by =.1), foo2, type=  'l', col='red')
+#cite output in plots in lieu of geom_smooth for updated output
+
 
 ####Env data add-in####
 #for now just use what we have, that's fine 
