@@ -425,9 +425,25 @@ logistic_fcn = function(x, Asym, xmid, scal) {
   return(out)
 }
 
-# foo2 = logistic_fcn(seq(0.4, 3.5, by = .1), coefs[1,2], coefs[1,3], coefs[1,4])
-# points(seq(0.4, 3.5, by =.1), foo2, type=  'l', col='red')
 
+#can sub out seqs for area/logarea/abundance/logabundance as needed
+for (s in stateroutes) {
+  coef_sub = subset(coefs, coefs$stateroute == s)
+  #OA
+  OApreds = logistic_fcn(seq(0.4, 3.5, by = .1), coefs[,2], coefs[,3], coefs[,4]) 
+  #ON
+  ONpreds = logistic_fcn(seq(0.4, 3.5, by = .1), coefs[,6], coefs[,7], coefs[,8])
+  #CA
+  CApreds = logistic_fcn(seq(0.4, 3.5, by = .1), coefs[,10], coefs[,11], coefs[,12])
+  #CN
+  CNpreds = logistic_fcn(seq(0.4, 3.5, by = .1), coefs[,14], coefs[,15], coefs[,16])
+  #not using log fcn for %Transient relationships bc relationship diff, exp had higher pred power also 
+  #TA
+  TApreds =  (seq(0.4, 3.5, by = .1))^(-1*coefs[,18])
+  #TN
+  TNpreds = (seq(0.4, 3.5, by = .1))^(-1*coefs[,22])
+# points(seq(0.4, 3.5, by =.1), foo2, type=  'l', col='red')
+}
 
 ####Env data add-in####
 #for now just use what we have, that's fine 
