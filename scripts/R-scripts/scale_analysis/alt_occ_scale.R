@@ -429,20 +429,21 @@ preds.df = data.frame(stateroute = numeric(), OApreds= numeric(), ONpreds = nume
                       TApreds = numeric(), TNpreds = numeric())
 #can sub out seqs for area/logarea/abundance/logabundance as needed
 for (s in stateroutes) {
-  coef_sub = subset(coefs, coefs$stateroute == s)
-  #OA
-  OApreds = logistic_fcn(seq(0.4, 3.5, by = .1), coefs[,2], coefs[,3], coefs[,4]) 
+  logsub = subset(bbs_allscales, bbs_allscales$focalrte == s) #what about using logsub 
+  coef_sub = subset(coefs, coefs$stateroute == s) %>% inner_join(logsub, by = c("stateroute"="focalrte"))
+    #OA
+  OApreds = logistic_fcn(coef_sub[,33], coef_sub[,2], coef_sub[,3], coef_sub[,4]) 
   #ON
-  ONpreds = logistic_fcn(seq(0.4, 3.5, by = .1), coefs[,6], coefs[,7], coefs[,8])
+  ONpreds = logistic_fcn(coef_sub[,33], coef_sub[,6], coef_sub[,7], coef_sub[,8])
   #CA
-  CApreds = logistic_fcn(seq(0.4, 3.5, by = .1), coefs[,10], coefs[,11], coefs[,12])
+  CApreds = logistic_fcn(coef_sub[,33], coef_sub[,10], coef_sub[,11], coef_sub[,12])
   #CN
-  CNpreds = logistic_fcn(seq(0.4, 3.5, by = .1), coefs[,14], coefs[,15], coefs[,16])
+  CNpreds = logistic_fcn(coef_sub[,33], coef_sub[,14], coef_sub[,15], coef_sub[,16])
   #not using log fcn for %Transient relationships bc relationship diff, exp had higher pred power also 
   #TA
-  TApreds =  (seq(0.4, 3.5, by = .1))^(-1*coefs[,18])
+  TApreds =  coef_sub[,35]^(-1*coef_sub[,18]) #35 = optimum
   #TN
-  TNpreds = (seq(0.4, 3.5, by = .1))^(-1*coefs[,22])
+  TNpreds = coef_sub[,35]^(-1*coef_sub[,22])
   #storing preds:
   temp.df = data.frame(stateroute = s, OApreds= OApreds , ONpreds = ONpreds, 
                        CApreds = CApreds, CNpreds = CNpreds,
@@ -451,7 +452,10 @@ for (s in stateroutes) {
   
 }
 
-# points(seq(0.4, 3.5, by =.1), foo2, type=  'l', col='red')
+
+#example plot
+#plot(coef_sub$logA, coef_sub$meanOcc)
+# points(coef_sub[,33], OApreds, type=  'l', col='red')
 #cite output in plots in lieu of geom_smooth for updated output
 
 
