@@ -427,7 +427,7 @@ for (s in stateroutes) {
     geom_line(aes(x = logA, y = OApreds), color = "navy")
   
   #ON
-  ONpreds = logistic_fcn(coef_sub[,33], coef_sub[,6], coef_sub[,7], coef_sub[,8])
+  ONpreds = logistic_fcn(coef_sub[,34], coef_sub[,6], coef_sub[,7], coef_sub[,8])
   plot2 = ggplot(coef_sub, aes(x = logN, y = meanOcc))+geom_point(colour = "firebrick")+
     geom_line(aes(x = logN, y = ONpreds), color = "navy")
  
@@ -437,7 +437,7 @@ for (s in stateroutes) {
     geom_line(aes(x = logA, y = CApreds), color = "navy") 
  
   #CN
-  CNpreds = logistic_fcn(coef_sub[,33], coef_sub[,14], coef_sub[,15], coef_sub[,16])
+  CNpreds = logistic_fcn(coef_sub[,34], coef_sub[,14], coef_sub[,15], coef_sub[,16])
   plot2_2= ggplot(coef_sub, aes(x = logN, y = pctCore))+geom_point(colour = "turquoise")+
     geom_line(aes(x = logN, y = CNpreds), color = "navy")
   
@@ -448,7 +448,7 @@ for (s in stateroutes) {
     geom_line(aes(x = lnA, y = TApreds), color = "navy")
   
   #TN
-  TNpreds = coef_sub[,35]^(-1*coef_sub[,22])
+  TNpreds = coef_sub[,36]^(-1*coef_sub[,22])
   plot2_3 = ggplot(coef_sub, aes(x = lnN, y = log(pctTran)))+geom_point(colour = "olivedrab")+
     geom_line(aes(x = lnN, y = TNpreds), color = "navy")
   
