@@ -521,8 +521,8 @@ for (d in 2:25) {
 #write.csv(rsqrd_df, "scripts/R-scripts/scale_analysis/mod_rsqrds.csv", row.names = FALSE) #updated 02/27 POST-meeting
 ####Visually Characterizing r2 vals####
 rsqrd_df = read.csv("scripts/R-scripts/scale_analysis/mod_rsqrds.csv", header = TRUE)
-
-
+ggplot(data = rsqrd_df, aes(x = dep, y = r2))+geom_boxplot()+facet_wrap(~ind)
+#boxplot(r2~ind, data = rsqrd_df)
 
 
 
