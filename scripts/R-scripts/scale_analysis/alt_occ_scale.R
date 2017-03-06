@@ -420,6 +420,14 @@ coefs = OA.df %>%
 #write.csv(coefs, "C:/git/core-transient/scripts/R-scripts/scale_analysis/coefs.csv", row.names = FALSE) #updated 02/27
 #exp mods have much better r2 vals for pctTran than power 
 
+logistic_fcn = function(x, Asym, xmid, scal) {
+  out = Asym/(1 + exp((xmid - x)/scal))
+  return(out)
+}
+
+# foo2 = logistic_fcn(seq(0.4, 3.5, by = .1), coefs[1,2], coefs[1,3], coefs[1,4])
+# points(seq(0.4, 3.5, by =.1), foo2, type=  'l', col='red')
+
 
 ####Env data add-in####
 #for now just use what we have, that's fine 
