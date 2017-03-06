@@ -34,6 +34,7 @@ library(fields)
 library(tidyr)
 library(ggplot2)
 library(nlme)
+library(gridExtra)
 #'#'#'#'#'#'#'#'#'
 #'----Write for_loop to calculate distances between every BBS site combination to find focal and associated routes that correspond best----
 #''store minimum value for each iteration of combos in output table
