@@ -135,9 +135,9 @@ write.csv(taxcolors, "output/tabular_data/taxcolors.csv", row.names = FALSE)
 pdf('output/plots/data_summary_hists.pdf', height = 8, width = 10)
 par(mfrow = c(2, 2), mar = c(6,6,1,1), cex = 1.25, oma = c(0,0,0,0), las = 1,
     cex.lab = 1)
-b1=barplot(dsetsBySystem, col = c('skyblue', 'navy', 'burlywood')) 
+b1=barplot(dsetsBySystem, col = c('burlywood','skyblue', 'navy')) 
 mtext("# Datasets", 2, cex = 1, las = 0, line = 2.5)
-barplot(log10(sitesBySystem), col = c('skyblue', 'navy', 'burlywood'), cex.names = 1, 
+barplot(log10(sitesBySystem), col = c('burlywood','skyblue', 'navy'), cex.names = 1, 
         yaxt = "n", ylim = c(0,4)) 
 axis(2, 0:4)
 mtext(expression(log[10] ~ " # Assemblages"), 2, cex = 1.5, las = 0, line = 2.5)
