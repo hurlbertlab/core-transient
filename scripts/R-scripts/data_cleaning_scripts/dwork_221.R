@@ -576,7 +576,7 @@ tGrain = 'year'
 site_grain_names
 
 #####
-sGrain = 'siteID'
+sGrain = 'Plot'
 
 # This is a reasonable choice of spatial grain because ...
 # ...the quadrat scale (0.25 m x 0.25 m) is too small, and even the set of 16 quads per Plot  

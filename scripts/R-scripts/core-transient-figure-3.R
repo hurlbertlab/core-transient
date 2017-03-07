@@ -51,7 +51,7 @@ areamerge.5  = areamerge.5 [, c("datasetID", "site", "taxa", "pctTrans", "area")
 # read in bbs abundance data
 bbs_area = read.csv("data/BBS/bbs_area.csv", header = TRUE)
 areamerge = rbind(bbs_area,areamerge.5)
-write.csv(areamerge, "output/tabular_data/areamerge/csv", row.names = FALSE)
+write.csv(areamerge, "output/tabular_data/areamerge.csv", row.names = FALSE)
 
 pdf('output/plots/3a_sara_scale_area_reg.pdf', height = 6, width = 7.5)
 par(mfrow = c(1, 1), mar = c(6, 6, 1, 1), mgp = c(4, 1, 0), 
@@ -89,7 +89,7 @@ area_plot$datasetID = as.numeric(area_plot$id)
 area_plot$xlow = as.numeric(area_plot$xlow)
 area_plot$xhigh = as.numeric(area_plot$xhigh)
 area_plot$slope = as.numeric(area_plot$slope)
-write.csv(area_plot, "fig_3a_output.csv", row.names =FALSE)
+write.csv(area_plot, "output/tabular_data/fig_3a_output.csv", row.names =FALSE)
 
 
 # ggplot not happening
