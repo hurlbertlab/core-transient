@@ -444,8 +444,7 @@ subsetDataFun = function(dataset, datasetID, spatialGrain, temporalGrain,
   subsettedData = wzSubsetFun(inData, minNTime, proportionalThreshold)
   
   subData = subsettedData$outData %>% 
-    dplyr::group_by(site, year, species) %>% 
-    dplyr::summarize(count = sum(count, is.na = TRUE))
+    dplyr::group_by(site, year, species) %>% dplyr::summarize(count = sum(count))
   
   outData = data.frame(datasetID = datasetID, site = subData$site, year = subData$year,
                        species = subData$species, count = subData$count)
