@@ -34,6 +34,19 @@ datasetIDs = datasetIDs[!datasetIDs %in% c(1)]
 
 #################### FIG 3 ######################### 
 occ_taxa=read.csv("output/tabular_data/occ_taxa.csv",header=TRUE)
+
+colors7 = c(colors()[552], # plankton
+            rgb(29/255, 106/255, 155/255), #bird
+            colors()[144], # invert
+            colors()[139], # plant
+            colors()[551], #mammal
+            colors()[17], #benthos
+            colors()[637]) #fish
+
+
+
+symbols7 = c(16, 18, 167, 15, 17, 1, 3) 
+
 taxcolors = read.csv("output/tabular_data/taxcolors.csv", header = TRUE)
 scaleIDs = filter(dataformattingtable, spatial_scale_variable == 'Y',
                   format_flag == 1)$dataset_ID
