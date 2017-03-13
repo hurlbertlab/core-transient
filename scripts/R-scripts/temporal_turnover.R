@@ -86,4 +86,4 @@ for (dataset in datasetIDs[,1]) {
   }
 }
 
-write.csv(turnover_output, "output/tabular_data/temporal_turnover.csv")
+write.csv(turnover_output, "output/tabular_data/temporal_turnover.csv", row.names = FALSE)

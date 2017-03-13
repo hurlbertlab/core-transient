@@ -45,7 +45,21 @@ occ_merge = occ_taxa[,c("datasetID", "site","taxa", "meanAbundance", "pctTrans",
 bbs_occ = rbind(bbs_spRich,occ_merge)
 
 #### Figure 4c ####
+turnover = read.csv("output/tabular_data/temporal_turnover.csv", header = TRUE)
+turnover_taxa = merge(turnover,dataformattingtable[,c("dataset_ID", "taxa")], by.x = "datasetID", by.y = "dataset_ID")
+turnover_col = merge(turnover_taxa, taxcolors, by = "taxa")
 
+turnover_col$taxa = factor(turnover_col$taxa,
+                                levels = c('Invertebrate','Fish','Plankton','Mammal','Plant','Bird','Benthos'),ordered = TRUE)
+colscale = c("gold2","turquoise2", "red", "purple4","forestgreen","#1D6A9B", "azure4")
+
+
+m <- ggplot(turnover_col, aes(x = TJ, y = TJnotrans))
+m + geom_abline(intercept = 0,slope = 1, lwd =1.5,linetype="dashed")+geom_point(aes(colour = taxa), size = 6) + xlab("Transients Slope") + ylab("Without Transients Slope") + scale_colour_manual(breaks = turnover_col$taxa,values = colscale) + theme(axis.text.x=element_text(size=24),axis.text.y=element_text(size=24),axis.title.x=element_text(size=32),axis.title.y=element_text(size=32,angle=90,vjust = 2))+ theme_classic()
+ggsave(file="C:/Git/core-transient/output/plots/spturnover_4c.pdf", height = 10, width = 15)
+
+
+##### Figure 4d ##### only scaled vars
 minustransrich$minustrans = minustransrich$n
 
 bbs_occ_trans = merge(bbs_occ, transrich, by = c("datasetID", "site", "scale"), all.x = TRUE)
@@ -82,5 +96,7 @@ colscale = c("gold2","turquoise2", "red", "purple4","forestgreen","#1D6A9B", "az
 
 p <- ggplot(plot_relationship, aes(x = spRich_slope, y = minustrans_slope))
 p + geom_abline(intercept = 0,slope = 1, lwd =1.5,linetype="dashed")+geom_point(aes(colour = taxa), size = 6) + xlab("Transients Slope") + ylab("Without Transients Slope") + scale_colour_manual(breaks = plot_relationship$taxa,values = colscale) + theme(axis.text.x=element_text(size=24),axis.text.y=element_text(size=24),axis.title.x=element_text(size=32),axis.title.y=element_text(size=32,angle=90,vjust = 2))+ theme_classic()
-ggsave(file="C:/Git/core-transient/output/plots/sparea_4c.pdf", height = 10, width = 15)
+ggsave(file="C:/Git/core-transient/output/plots/sparea_4d.pdf", height = 10, width = 15)
+
+
 
