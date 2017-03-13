@@ -66,13 +66,14 @@ for(id in scaleIDs){
   mod.t.slope = summary(mod.t)$coef[2,"Estimate"]
   mod.n= lm(log10(plotsub$minustrans) ~ log10(plotsub$area))
   mod.n.slope = summary(mod.n)$coef[2,"Estimate"]
+  print(mod.n.slope)
   taxcolor = subset(taxcolors, taxa == as.character(plotsub$taxa)[1])
   slopes = rbind(slopes, c(mod.t.slope, mod.n.slope, taxa))
 }
 colnames(slopes) = c("spRich_slope","minustrans_slope", "taxa")
 plot_relationship = merge(slopes, taxcolors, by = "taxa")
-plot_relationship$spRich_slope = as.numeric(plot_relationship$spRich_slope)
-plot_relationship$minustrans_slope = as.numeric(plot_relationship$minustrans_slope)
+plot_relationship$spRich_slope = as.numeric(as.character(plot_relationship$spRich_slope))
+plot_relationship$minustrans_slope = as.numeric(as.character(plot_relationship$minustrans_slope))
 
 
 plot_relationship$taxa = factor(plot_relationship$taxa,
@@ -80,6 +81,6 @@ plot_relationship$taxa = factor(plot_relationship$taxa,
 colscale = c("gold2","turquoise2", "red", "purple4","forestgreen","#1D6A9B", "azure4")
 
 p <- ggplot(plot_relationship, aes(x = spRich_slope, y = minustrans_slope))
-p + geom_abline(intercept = 0,slope = 1, lwd =1.5,linetype="dashed")+geom_point(aes(colour = taxa), size = 6) + xlab("Species Richness") + ylab("Species Richness Without Transients") + scale_colour_manual(breaks = plot_relationship$taxa,values = colscale) + theme(axis.text.x=element_text(size=24),axis.text.y=element_text(size=24),axis.title.x=element_text(size=32),axis.title.y=element_text(size=32,angle=90,vjust = 2))+ theme_classic()
+p + geom_abline(intercept = 0,slope = 1, lwd =1.5,linetype="dashed")+geom_point(aes(colour = taxa), size = 6) + xlab("Transients Slope") + ylab("Without Transients Slope") + scale_colour_manual(breaks = plot_relationship$taxa,values = colscale) + theme(axis.text.x=element_text(size=24),axis.text.y=element_text(size=24),axis.title.x=element_text(size=32),axis.title.y=element_text(size=32,angle=90,vjust = 2))+ theme_classic()
 ggsave(file="C:/Git/core-transient/output/plots/sparea_4c.pdf", height = 10, width = 15)
 

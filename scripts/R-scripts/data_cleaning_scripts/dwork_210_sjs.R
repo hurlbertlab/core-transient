@@ -271,6 +271,7 @@ dataset2 <- dataset2[ which(dataset2$field != 'D'), ]
 
 
 site_grain_names = c("exp", "field","plot")
+dataset2$exp = "maxgrain"
 
 # We will now create the site field with these codes concatenated if there
 # are multiple grain fields. Otherwise, site will just be the single grain field.
