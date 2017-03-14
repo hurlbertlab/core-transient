@@ -44,6 +44,24 @@ minustransrich = read.csv("output/tabular_data/minustransrich.csv", header = TRU
 occ_merge = occ_taxa[,c("datasetID", "site","taxa", "meanAbundance", "pctTrans","pctCore","pctNeither","scale", "spRich")]
 bbs_occ = rbind(bbs_spRich,occ_merge)
 
+#### Figure 4b ####
+# read in route level ndvi and elevation data (radius = 5 km?!)
+# we want to agg by month here
+gimms_ndvi = read.csv("output/tabular_data/gimms_ndvi_bbs_data.csv", header = TRUE)
+gimms_agg = gimms_ndvi %>% filter(month == c("may", "jun", "jul")) %>% 
+  group_by(site_id, year, month)  %>%  summarise(mean=mean(ndvi))
+
+bbs_spRich$site = sapply(strsplit(as.character(bbs_spRich$site), split='-', fixed=TRUE), function(x) (x[1]))
+bbs_spRich$site_id = as.integer(bbs_spRich$site)
+  
+bbs_env = join(bbs_spRich, gimms_ndvi, type = "left")
+
+# cor test not really working - need for loop?
+cor.test(bbs_env$spRich, bbs_env$ndvi, method = "spearm", alternative = "g")
+
+
+
+
 #### Figure 4c ####
 turnover = read.csv("output/tabular_data/temporal_turnover.csv", header = TRUE)
 turnover_taxa = merge(turnover,dataformattingtable[,c("dataset_ID", "taxa")], by.x = "datasetID", by.y = "dataset_ID")
