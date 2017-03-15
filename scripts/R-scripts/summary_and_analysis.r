@@ -306,14 +306,15 @@ elev.mean = raster::extract(elev, circs.sp, fun = mean, na.rm=T)
 elev.var = raster::extract(elev, circs.sp, fun = var, na.rm=T)
 
 env_elev = data.frame(unique = routes.laea@data$unique, elev.point = elev.point, elev.mean = elev.mean, elev.var = elev.var)
-# write.csv(env_elev, "env_elev.csv", row.names = F)
-# env_elev = read.csv("env_elev.csv", header = TRUE)
+
 
 lat_scale_elev = merge(routes.laea, env_elev, by = c("unique")) # checked to make sure order lined up, d/n seem to be another way to merge since DID keeps getting lost
 lat_scale_elev = data.frame(lat_scale_elev)
 
 lat_scale_rich = merge(lat_scale_elev, summ2[,c("datasetID","site", "meanAbundance")], by = c("datasetID", "site"))
 #  "spRichTrans", 
+# write.csv(lat_scale_rich, "lat_scale_rich.csv", row.names = F)
+# lat_scale_rich = read.csv("lat_scale_rich.csv", header = TRUE)
 
 # Model
 mod1 = lmer(propTrans ~ (1|taxa) * log10(meanAbundance) * log10(elev.var), data=lat_scale_rich) 

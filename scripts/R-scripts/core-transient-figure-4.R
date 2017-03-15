@@ -37,12 +37,18 @@ datasetIDs = datasetIDs[!datasetIDs %in% c(1)]
 taxcolors = read.csv("output/tabular_data/taxcolors.csv", header = TRUE)
 occ_taxa = read.csv("output/tabular_data/occ_taxa.csv", header = TRUE)
 areamerge = read.csv("output/tabular_data/areamerge.csv", header = TRUE)
-bbs_spRich = read.csv("data/BBS/bbs_abun4_spRich.csv", header = TRUE)
 transrich = read.csv("output/tabular_data/transrich.csv", header = TRUE)
 minustransrich = read.csv("output/tabular_data/minustransrich.csv", header = TRUE)
+bbs_abun_occ = read.csv("data/BBS/bbs_abun_occ.csv", header = TRUE)
 
-occ_merge = occ_taxa[,c("datasetID", "site","taxa", "meanAbundance", "pctTrans","pctCore","pctNeither","scale", "spRich")]
-bbs_occ = rbind(bbs_spRich,occ_merge)
+minustransbbs = bbs_abun_occ %>% filter(occupancy > 1/3) %>% dplyr::count(stateroute, scale) %>% filter(scale == 50)
+names(minustransbbs) = c("stateroute", "scale", "spRichnotrans")
+
+transbbs = bbs_abun_occ %>% dplyr::count(stateroute, scale) %>% filter(scale == 50)
+names(transbbs) = c("stateroute", "scale", "spRich")
+
+# occ_merge = occ_taxa[,c("datasetID", "site","taxa", "meanAbundance", "pctTrans","pctCore","pctNeither","scale", "spRich")]
+# all_occ = rbind(bbs_spRich,occ_merge)
 
 #### Figure 4b ####
 # read in route level ndvi and elevation data (radius = 5 km?!)
@@ -51,10 +57,19 @@ gimms_ndvi = read.csv("output/tabular_data/gimms_ndvi_bbs_data.csv", header = TR
 gimms_agg = gimms_ndvi %>% filter(month == c("may", "jun", "jul")) %>% 
   group_by(site_id, year, month)  %>%  summarise(mean=mean(ndvi))
 
-bbs_spRich$site = sapply(strsplit(as.character(bbs_spRich$site), split='-', fixed=TRUE), function(x) (x[1]))
-bbs_spRich$site_id = as.integer(bbs_spRich$site)
-  
+lat_scale_rich = read.csv("output/tabular_data/lat_scale_rich.csv", header = TRUE)
+lat_scale_bbs = filter(lat_scale_rich, datasetID == 1)
+lat_scale_bbs$site_id = sapply(strsplit(as.character(lat_scale_bbs$site), split='-', fixed=TRUE), function(x) (x[1]))
+lat_scale_bbs$site_id = as.integer(lat_scale_bbs$site_id)
+
+bbs_spRich = merge(transbbs, minustransbbs[c("stateroute", "spRichnotrans")], by = "stateroute")
+
+# merging ndvi and elevation to bbs data
 bbs_env = join(bbs_spRich, gimms_ndvi, type = "left")
+bbs_env = merge(bbs_env, lat_scale_bbs[,c("site_id", "elev.point", "elev.mean", "elev.var")], by = "site_id")
+
+
+
 
 # cor test not really working - need for loop?
 cor.test(bbs_env$spRich, bbs_env$ndvi, method = "spearm", alternative = "g")
