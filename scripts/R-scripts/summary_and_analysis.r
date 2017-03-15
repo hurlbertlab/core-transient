@@ -313,7 +313,7 @@ lat_scale_elev = data.frame(lat_scale_elev)
 
 lat_scale_rich = merge(lat_scale_elev, summ2[,c("datasetID","site", "meanAbundance")], by = c("datasetID", "site"))
 #  "spRichTrans", 
-# write.csv(lat_scale_rich, "lat_scale_rich.csv", row.names = F)
+# write.csv(lat_scale_rich, "output/tabular_data/lat_scale_rich.csv", row.names = F)
 # lat_scale_rich = read.csv("lat_scale_rich.csv", header = TRUE)
 
 # Model

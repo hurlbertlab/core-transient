@@ -40,6 +40,7 @@ areamerge = read.csv("output/tabular_data/areamerge.csv", header = TRUE)
 transrich = read.csv("output/tabular_data/transrich.csv", header = TRUE)
 minustransrich = read.csv("output/tabular_data/minustransrich.csv", header = TRUE)
 bbs_abun_occ = read.csv("data/BBS/bbs_abun_occ.csv", header = TRUE)
+bbs_occ = read.csv("data/BBS/bbs_abun4_spRich.csv", header = TRUE)
 
 minustransbbs = bbs_abun_occ %>% filter(occupancy > 1/3) %>% dplyr::count(stateroute, scale) %>% filter(scale == 50)
 names(minustransbbs) = c("stateroute", "scale", "spRichnotrans")
@@ -63,16 +64,31 @@ lat_scale_bbs$site_id = sapply(strsplit(as.character(lat_scale_bbs$site), split=
 lat_scale_bbs$site_id = as.integer(lat_scale_bbs$site_id)
 
 bbs_spRich = merge(transbbs, minustransbbs[c("stateroute", "spRichnotrans")], by = "stateroute")
-
+bbs_spRich$site_id <- bbs_spRich$stateroute
 # merging ndvi and elevation to bbs data
 bbs_env = join(bbs_spRich, gimms_ndvi, type = "left")
 bbs_env = merge(bbs_env, lat_scale_bbs[,c("site_id", "elev.point", "elev.mean", "elev.var")], by = "site_id")
 
-
-
-
 # cor test not really working - need for loop?
-cor.test(bbs_env$spRich, bbs_env$ndvi, method = "spearm", alternative = "g")
+cor.test(bbs_env$spRich, bbs_env$ndvi)
+bar1 = cor.test (bbs_env$spRich, bbs_env$ndvi)$estimate
+bar3 = cor.test(bbs_env$spRich, bbs_env$elev.mean)$estimate
+
+bar2 = cor.test(bbs_env$spRichnotrans, bbs_env$ndvi)$estimate
+bar4 = cor.test(bbs_env$spRichnotrans, bbs_env$elev.mean)$estimate
+
+corr_res <- data.frame(Trans = c(bar1, bar3), Ntrans = c(bar2, bar4)) 
+corr_res$env = c("NDVI", "Elev")
+corr_res_long = gather(corr_res, "class","value", c(Trans:Ntrans))
+
+# no variation - add in CIS?
+cor <- ggplot(data=corr_res_long, aes(factor(env), value)) + geom_boxplot(width=0.8,position=position_dodge(width=0.8),aes(x=factor(env), y=value, fill=factor(class)))
+
++ geom_bar(stat = "identity")+ xlab("Environmental Factor") + ylab("Correlation Coefficient") 
+
++ scale_colour_manual(breaks = corr_res_long$class) + theme(axis.text.x=element_text(size=24),axis.text.y=element_text(size=24),axis.title.x=element_text(size=32),axis.title.y=element_text(size=32,angle=90,vjust = 2))+ theme_classic()
+ggsave(file="C:/Git/core-transient/output/plots/spturnover_4c.pdf", height = 10, width = 15)
+
 
 
 
@@ -94,6 +110,14 @@ ggsave(file="C:/Git/core-transient/output/plots/spturnover_4c.pdf", height = 10,
 
 ##### Figure 4d ##### only scaled vars
 minustransrich$minustrans = minustransrich$n
+
+minustransbbsscale = bbs_abun_occ %>% filter(occupancy > 1/3) %>% dplyr::count(stateroute, scale)
+names(minustransbbsscale) = c("stateroute", "scale", "spRichnotrans")
+
+transbbsscale = bbs_abun_occ %>% dplyr::count(stateroute, scale) 
+names(transbbsscale) = c("stateroute", "scale", "spRich")
+
+bbs_occ_scale = merge(transbbsscale, minustransbbsscale[c("stateroute", "spRichnotrans")], by = "stateroute")
 
 bbs_occ_trans = merge(bbs_occ, transrich, by = c("datasetID", "site", "scale"), all.x = TRUE)
 bbs_occ_trans = merge(bbs_occ_trans, minustransrich[, c("datasetID", "site", "scale", "minustrans")], by = c("datasetID", "site", "scale"), all.x = TRUE)
