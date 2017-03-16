@@ -94,7 +94,7 @@ corr_res_long$CIupper = c(CI1upper,CI3upper,CI2upper,CI4upper)
 colscale = c("light blue","#225ea8")
 limits = aes(ymax = corr_res_long$CIupper, ymin=corr_res_long$CIlower)
 # no variation - add in CIS?
-ggplot(data=corr_res_long, aes(factor(env), value))+ geom_bar(aes(fill = class), position = "dodge", stat="identity")+ geom_errorbar(limits, position="dodge", width=0.25) + scale_fill_manual(values = c("Trans" = "#225ea8","Ntrans" = "light blue"), labels = c("Transients", "No Transients"))+ theme_classic() + theme(axis.text.x=element_text(size=24),axis.text.y=element_text(size=24),axis.title.x=element_text(size=24),axis.title.y=element_text(size=24,angle=90,vjust = 2))+ xlab(NULL) + ylab("Correlation Coefficient")  + ylim(-0.04,0.04) + guides(fill=guide_legend(title=NULL)) + theme(legend.text = element_text(size = 16))
+ggplot(data=corr_res_long, aes(factor(env), value))+ geom_bar(aes(fill = class), position = "dodge", stat="identity")+ geom_errorbar(limits, position="dodge", width=0.25) + scale_fill_manual(values = c("Trans" = "#225ea8","Ntrans" = "light blue"), labels = c("No Transients", "Transients"))+ theme_classic() + theme(axis.text.x=element_text(size=24),axis.text.y=element_text(size=24),axis.title.x=element_text(size=24),axis.title.y=element_text(size=24,angle=90,vjust = 2))+ xlab(NULL) + ylab("Correlation Coefficient")  + ylim(-0.04,0.04) + guides(fill=guide_legend(title=NULL)) + theme(legend.text = element_text(size = 16))
 ggsave(file="C:/Git/core-transient/output/plots/corrcoeff_4b.pdf", height = 10, width = 15)
 
 #### Figure 4c ####
