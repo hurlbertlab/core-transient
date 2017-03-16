@@ -71,27 +71,31 @@ bbs_env = merge(bbs_env, lat_scale_bbs[,c("site_id", "elev.point", "elev.mean", 
 
 # cor test not really working - need for loop?
 cor.test(bbs_env$spRich, bbs_env$ndvi)
-bar1 = cor.test (bbs_env$spRich, bbs_env$ndvi)$estimate
+bar1 = cor.test(bbs_env$spRich, bbs_env$ndvi)$estimate
+CI1lower = 0.01965912
+CI1upper = 0.03821317
 bar3 = cor.test(bbs_env$spRich, bbs_env$elev.mean)$estimate
+CI3lower = -0.004563033
+CI3upper =  -0.001176073
 
 bar2 = cor.test(bbs_env$spRichnotrans, bbs_env$ndvi)$estimate
+CI2lower = -0.03501665
+CI2upper =  -0.01645934
 bar4 = cor.test(bbs_env$spRichnotrans, bbs_env$elev.mean)$estimate
+CI4lower = -0.005683127
+CI4upper =  -0.002296194
 
 corr_res <- data.frame(Trans = c(bar1, bar3), Ntrans = c(bar2, bar4)) 
-corr_res$env = c("NDVI", "Elev")
+corr_res$env = c("NDVI", "Elevation")
 corr_res_long = gather(corr_res, "class","value", c(Trans:Ntrans))
+corr_res_long$CIlower = c(CI1lower,CI3lower,CI2lower,CI4lower)
+corr_res_long$CIupper = c(CI1upper,CI3upper,CI2upper,CI4upper)
 
+colscale = c("light blue","#225ea8")
+limits = aes(ymax = corr_res_long$CIupper, ymin=corr_res_long$CIlower)
 # no variation - add in CIS?
-cor <- ggplot(data=corr_res_long, aes(factor(env), value)) + geom_boxplot(width=0.8,position=position_dodge(width=0.8),aes(x=factor(env), y=value, fill=factor(class)))
-
-+ geom_bar(stat = "identity")+ xlab("Environmental Factor") + ylab("Correlation Coefficient") 
-
-+ scale_colour_manual(breaks = corr_res_long$class) + theme(axis.text.x=element_text(size=24),axis.text.y=element_text(size=24),axis.title.x=element_text(size=32),axis.title.y=element_text(size=32,angle=90,vjust = 2))+ theme_classic()
-ggsave(file="C:/Git/core-transient/output/plots/spturnover_4c.pdf", height = 10, width = 15)
-
-
-
-
+cor <- ggplot(data=corr_res_long, aes(factor(env), value))+ geom_bar(aes(fill = class), position = "dodge", stat="identity")+ geom_errorbar(limits, position="dodge", width=0.25) + scale_fill_manual(values = c("Trans" = "#225ea8","Ntrans" = "light blue"), labels = c("Transients", "No Transients"))+ theme_classic() + theme(axis.text.x=element_text(size=24),axis.text.y=element_text(size=24),axis.title.x=element_text(size=24),axis.title.y=element_text(size=24,angle=90,vjust = 2))+ xlab(NULL) + ylab("Correlation Coefficient")  + ylim(-0.04,0.04) + guides(fill=guide_legend(title=NULL)) + theme(legend.text = element_text(size = 16))
+ggsave(file="C:/Git/core-transient/output/plots/corrcoeff_4b.pdf", height = 10, width = 15)
 
 #### Figure 4c ####
 turnover = read.csv("output/tabular_data/temporal_turnover.csv", header = TRUE)
