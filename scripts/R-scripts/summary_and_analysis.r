@@ -260,14 +260,14 @@ all_latlongs = na.omit(all_latlongs)
 
 # Makes routes into a spatialPointsDataframe
 coordinates(all_latlongs)=c('Lon','Lat')
-projection(all_latlongs) = CRS("+proj=laea +lat_0=45.235 +lon_0=-106.675 +units=km")
+projection(all_latlongs) = CRS("+proj=longlat +ellps=WGS84")
 prj.string <- "+proj=laea +lat_0=45.235 +lon_0=-106.675 +units=km"
 # Transforms routes to an equal-area projection - see previously defined prj.string
 routes.laea = spTransform(all_latlongs, CRS(prj.string))
 
 ##### extracting elevation data ####
 # A function that draws a circle of radius r around a point: p (x,y)
-RADIUS = 1
+RADIUS = 40
 
 make.cir = function(p,r){
   points=c()
