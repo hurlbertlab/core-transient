@@ -75,15 +75,15 @@ bar1 = cor.test(bbs_env$spRich, bbs_env$ndvi)$estimate
 CI1lower = 0.01965912
 CI1upper = 0.03821317
 bar3 = cor.test(bbs_env$spRich, bbs_env$elev.mean)$estimate
-CI3lower = -0.004563033
-CI3upper =  -0.001176073
+CI3lower = -0.0032076144
+CI3upper =  0.0001793654
 
 bar2 = cor.test(bbs_env$spRichnotrans, bbs_env$ndvi)$estimate
 CI2lower = -0.03501665
 CI2upper =  -0.01645934
 bar4 = cor.test(bbs_env$spRichnotrans, bbs_env$elev.mean)$estimate
-CI4lower = -0.005683127
-CI4upper =  -0.002296194
+CI4lower = -0.004432671
+CI4upper =  -0.001045709
 
 corr_res <- data.frame(Trans = c(bar1, bar3), Ntrans = c(bar2, bar4)) 
 corr_res$env = c("NDVI", "Elevation")
