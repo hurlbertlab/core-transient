@@ -5,7 +5,6 @@
 # Input files are named propOcc_XXX.csv where
 # XXX is the dataset ID.
 
-setwd("C:/git/core-transient")
 
 library(lme4)
 library(plyr) # for core-transient functions
@@ -117,18 +116,17 @@ minustransrich$minustrans = minustransrich$n
 
 minustransbbsscale = bbs_abun_occ %>% filter(occupancy > 1/3) %>% dplyr::count(stateroute, scale, subrouteID)
 names(minustransbbsscale) = c("stateroute", "scale", "subrouteID","minustrans")
-minusarea = merge(minustransbbsscale, bbs_abun_occ[,c("stateroute","scale","subrouteID","area")], by = c("stateroute","scale","subrouteID"))
+minusarea = left_join(minustransbbsscale, unique(bbs_abun_occ[,c("stateroute","scale","subrouteID","area")]))
 
 transbbsscale = bbs_abun_occ %>% dplyr::count(stateroute, scale, subrouteID) 
 names(transbbsscale) = c("stateroute", "scale","subrouteID", "spRich")
-transarea = merge(transbbsscale, bbs_abun_occ[,c("stateroute","scale","subrouteID","area")], by = c("stateroute","scale","subrouteID"))
+transarea = left_join(transbbsscale, unique(bbs_abun_occ[,c("stateroute","scale","subrouteID","area")]))
 
 bbs_occ_scale = merge(transarea, minusarea, by = c("stateroute", "scale", "subrouteID", "area"))
 bbs_occ_scale$subrouteID = gsub("Stop", "", bbs_occ_scale$subrouteID)
 bbs_occ_scale$site = paste(bbs_occ_scale$stateroute, bbs_occ_scale$scale, bbs_occ_scale$subrouteID, sep = "-")
 bbs_occ_scale$datasetID = 1
 bbs_occ_scale = bbs_occ_scale[,c("datasetID", "site", "area","scale", "spRich", "minustrans")]
-bbs_occ_scale = unique(bbs_occ_scale)
 
 # merge sp rich and minus trans sprich
 datasetrich = merge(transrich, minustransrich[,c("datasetID", "site", "scale","minustrans")], by = c("datasetID", "site", "scale"))
@@ -144,7 +142,10 @@ scaleIDs = unique(bbs_occ_trans$datasetID)
 
 scaleIDs = scaleIDs[! scaleIDs %in% c(225,248,254, 282,291)] # 248 tbd
 
-slopes = c()
+slopes = data.frame(datasetID = NULL,
+                    taxa = NULL,
+                    areaSlope = NULL,
+                    areaSlope_noTrans = NULL)
 for(id in scaleIDs){
   print(id)
   plotsub = subset(bbs_occ_trans,datasetID == id) 
@@ -155,12 +156,13 @@ for(id in scaleIDs){
   mod.n.slope = summary(mod.n)$coef[2,"Estimate"]
   print(mod.n.slope)
   taxcolor = subset(taxcolors, taxa == as.character(plotsub$taxa)[1])
-  slopes = rbind(slopes, c(mod.t.slope, mod.n.slope, taxa))
+  slopes = rbind(slopes, data.frame(datasetID = id,
+                                    taxa = taxa,
+                                    areaSlope = mod.t.slope, 
+                                    areaSlope_noTrans = mod.n.slope))
 }
-colnames(slopes) = c("spRich_slope","minustrans_slope", "taxa")
+slopes$bbs = 'no'
 plot_relationship = merge(slopes, taxcolors, by = "taxa")
-plot_relationship$spRich_slope = as.numeric(as.character(plot_relationship$spRich_slope))
-plot_relationship$minustrans_slope = as.numeric(as.character(plot_relationship$minustrans_slope))
 
 
 plot_relationship$taxa = factor(plot_relationship$taxa,
