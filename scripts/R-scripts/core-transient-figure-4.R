@@ -116,35 +116,61 @@ ggsave(file="C:/Git/core-transient/output/plots/4c_spturnover.pdf", height = 10,
 # , shape = taxa
 
 ##### Figure 4d ##### only scaled vars
-notransrich$notrans = notransrich$n
+bbs_uniq_area = bbs_abun_occ %>% dplyr::select(stateroute,scale,subrouteID,area) %>% unique()
 
 notransbbsscale = bbs_abun_occ %>% filter(occupancy > 1/3) %>% dplyr::count(stateroute, scale, subrouteID)
 names(notransbbsscale) = c("stateroute", "scale", "subrouteID","notrans")
-noarea = left_join(notransbbsscale, unique(bbs_abun_occ[,c("stateroute","scale","subrouteID","area")]))
+noarea = left_join(notransbbsscale, bbs_uniq_area)
 
 allbbsscale = bbs_abun_occ %>% dplyr::count(stateroute, scale, subrouteID) 
 names(allbbsscale) = c("stateroute", "scale","subrouteID", "spRich")
-allarea = left_join(allbbsscale, unique(bbs_abun_occ[,c("stateroute","scale","subrouteID","area")]))
+allarea = left_join(allbbsscale, bbs_uniq_area)
 
 bbs_occ_scale = merge(allarea, noarea, by = c("stateroute", "scale", "subrouteID", "area"))
 bbs_occ_scale$subrouteID = gsub("Stop", "", bbs_occ_scale$subrouteID)
 bbs_occ_scale$site = paste(bbs_occ_scale$stateroute, bbs_occ_scale$scale, bbs_occ_scale$subrouteID, sep = "-")
-bbs_occ_scale$datasetID = 1
-bbs_occ_scale = bbs_occ_scale[,c("datasetID", "site", "area","scale", "spRich", "notrans")]
 
-# merge sp rich and minus trans sprich
+
+
+scaleIDs = unique(bbs_occ_scale$stateroute)
+slopes_bbs = data.frame(stateroute = NULL,
+                    site = NULL,
+                    taxa = NULL,
+                    areaSlope = NULL,
+                    areaSlope_noTrans = NULL)
+for(id in scaleIDs){
+  print(id)
+  plotsub = subset(bbs_occ_scale,stateroute == id) 
+  site = plotsub$site
+  taxa = "Bird"
+  mod.t = lm(log10(plotsub$spRich) ~ log10(plotsub$area))
+  mod.t.slope = summary(mod.t)$coef[2,"Estimate"]
+  mod.n= lm(log10(plotsub$notrans) ~ log10(plotsub$area))
+  mod.n.slope = summary(mod.n)$coef[2,"Estimate"]
+  print(mod.n.slope)
+  taxcolor = subset(taxcolors, taxa == as.character(plotsub$taxa)[1])
+  slopes_bbs = rbind(slopes_bbs, data.frame(stateroute = id,
+                                    site = site,
+                                    taxa = taxa,
+                                    areaSlope = mod.t.slope, 
+                                    areaSlope_noTrans = mod.n.slope))
+}
+slopes_bbs$bbs = 'yes'
+
+slopes_bbs$datasetID = 1
+slopes_bbs = slopes_bbs[,c("datasetID","taxa","areaSlope", "areaSlope_noTrans", "bbs")]
+
+# merge sp rich and minus trans sprich other datasets
+notransrich$notrans = notransrich$n
+
 datasetrich = merge(allrich, notransrich[,c("datasetID", "site", "scale","notrans")], by = c("datasetID", "site", "scale"), all.x = TRUE)
 colnames(datasetrich)[4] <- "spRich" # rename a single column - make sure index is right
 
 occ_trans_area = merge(areamerge[,c("datasetID", "site", "area")], datasetrich, by = c("datasetID", "site"))
+occ_trans_area = merge(occ_trans_area, dataformattingtable[,c("dataset_ID", "taxa")], by.x = "datasetID", by.y = "dataset_ID")
+scaleIDs = unique(occ_trans_area$datasetID)
 
-# rbind occupancy richness data for bbs with other datasets
-bbs_occ_trans = rbind(bbs_occ_scale, occ_trans_area)
-bbs_occ_trans = merge(bbs_occ_trans, dataformattingtable[,c("dataset_ID", "taxa")], by.x = "datasetID", by.y = "dataset_ID")
-
-scaleIDs = unique(bbs_occ_trans$datasetID)
-
-scaleIDs = scaleIDs[! scaleIDs %in% c(1,225,248,254, 282,291)] # 248 tbd
+scaleIDs = scaleIDs[! scaleIDs %in% c(225,248,254, 282,291)] # 248 tbd
 
 slopes = data.frame(datasetID = NULL,
                     taxa = NULL,
@@ -152,7 +178,7 @@ slopes = data.frame(datasetID = NULL,
                     areaSlope_noTrans = NULL)
 for(id in scaleIDs){
   print(id)
-  plotsub = subset(bbs_occ_trans,datasetID == id) 
+  plotsub = subset(occ_trans_area,datasetID == id) 
   taxa = as.character(unique(plotsub$taxa))
   mod.t = lm(log10(plotsub$spRich) ~ log10(plotsub$area))
   mod.t.slope = summary(mod.t)$coef[2,"Estimate"]
@@ -166,16 +192,22 @@ for(id in scaleIDs){
                                     areaSlope_noTrans = mod.n.slope))
 }
 slopes$bbs = 'no'
-plot_relationship = merge(slopes, taxcolors, by = "taxa")
 
+all_slopes =  rbind(slopes, slopes_bbs)
+
+plot_relationship = merge(slopes, taxcolors, by = "taxa")
 
 plot_relationship$taxa = factor(plot_relationship$taxa,
                                 levels = c('Invertebrate','Fish','Plankton','Mammal','Plant','Bird','Benthos'),ordered = TRUE)
-colscale = c("gold2","turquoise2", "red", "purple4","forestgreen","#1D6A9B", "azure4")
+colscale = c("gold2","turquoise2", "red", "purple4","forestgreen","#1D6A9B", "azure4", "gray")
 
 p <- ggplot(plot_relationship, aes(x = areaSlope, y = areaSlope_noTrans))
-p + geom_abline(intercept = 0,slope = 1, lwd =1.5,linetype="dashed")+geom_point(aes(colour = taxa), size = 6) + xlab("Transients Slope") + ylab("Without Transients Slope") + scale_colour_manual(breaks = plot_relationship$taxa,values = colscale) + theme(axis.text.x=element_text(size=24),axis.text.y=element_text(size=24),axis.title.x=element_text(size=32),axis.title.y=element_text(size=32,angle=90,vjust = 2))+ theme_classic()
+p + geom_abline(intercept = 0,slope = 1, lwd =1.5,linetype="dashed") +geom_point(data=slopes_bbs, alpha = 1/100, size = 2)+  geom_point(aes(colour = as.factor(taxa)), size = 6) + scale_color_manual("Taxa", breaks = plot_relationship$taxa,values = colscale)+ xlab("Transients Slope") + ylab("Without Transients Slope")  + theme(axis.text.x=element_text(size=24),axis.text.y=element_text(size=24),axis.title.x=element_text(size=32),axis.title.y=element_text(size=32,angle=90,vjust = 2))+ theme_classic()
+
 ggsave(file="C:/Git/core-transient/output/plots/4d_sparea.pdf", height = 10, width = 15)
 
 
+
+p <- ggplot(plot_relationship, aes(x = areaSlope, y = areaSlope_noTrans))
+p + geom_abline(intercept = 0,slope = 1, lwd =1.5,linetype="dashed")+geom_point(aes(colour = taxa), size = 6) + xlab("Transients Slope") + ylab("Without Transients Slope") + scale_colour_manual(breaks = plot_relationship$taxa,values = colscale) + theme(axis.text.x=element_text(size=24),axis.text.y=element_text(size=24),axis.title.x=element_text(size=32),axis.title.y=element_text(size=32,angle=90,vjust = 2))+ theme_classic()
 
