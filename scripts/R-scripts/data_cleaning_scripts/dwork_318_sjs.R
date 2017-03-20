@@ -588,7 +588,7 @@ dataFormattingTable[,'format_flag'] =
   dataFormattingTableFieldUpdate(datasetID, 'format_flag', 
      
 #--! PROVIDE INFO !--#                                 
-                                 1)
+                                 5) # because all animals sampled occurred almost every year, suspect that only certain spp are being surveyed so tru transient count would be inacccurate
 
 # Flag codes are as follows:
 # 0 = not currently worked on

@@ -31,28 +31,28 @@ datasetIDs = dataformattingtable$dataset_ID[dataformattingtable$format_flag == 1
 # BBS (dataset 1) will be analyzed separately for now.
 datasetIDs = datasetIDs[!datasetIDs %in% c(1)]
 
-##### Boxplots showing distribution of core and transient species by taxon #####
+##### prep for all figures #####
 # Read in datasets
 taxcolors = read.csv("output/tabular_data/taxcolors.csv", header = TRUE)
 occ_taxa = read.csv("output/tabular_data/occ_taxa.csv", header = TRUE)
 areamerge = read.csv("output/tabular_data/areamerge.csv", header = TRUE)
-transrich = read.csv("output/tabular_data/transrich.csv", header = TRUE)
-minustransrich = read.csv("output/tabular_data/minustransrich.csv", header = TRUE)
+allrich = read.csv("output/tabular_data/allrich.csv", header = TRUE)
+notransrich = read.csv("output/tabular_data/notransrich.csv", header = TRUE)
 bbs_abun_occ = read.csv("data/BBS/bbs_abun_occ.csv", header = TRUE)
 bbs_occ = read.csv("data/BBS/bbs_abun4_spRich.csv", header = TRUE)
 
 # addings symbols to taxcolors
 symbols = c(1:7) 
 taxcolors = cbind(taxcolors, symbols)
+
 # calc bbs with and without trans
-minustransbbs = bbs_abun_occ %>% filter(occupancy > 1/3) %>% dplyr::count(stateroute, scale) %>% filter(scale == 50)
-names(minustransbbs) = c("stateroute", "scale", "spRichnotrans")
+notransbbs = bbs_abun_occ %>% filter(occupancy > 1/3) %>% dplyr::count(stateroute, scale) %>% filter(scale == 50)
+names(notransbbs) = c("stateroute", "scale", "spRichnotrans")
 
-transbbs = bbs_abun_occ %>% dplyr::count(stateroute, scale) %>% filter(scale == 50)
-names(transbbs) = c("stateroute", "scale", "spRich")
+allbbs = bbs_abun_occ %>% dplyr::count(stateroute, scale) %>% filter(scale == 50)
+names(allbbs) = c("stateroute", "scale", "spRich")
 
-# occ_merge = occ_taxa[,c("datasetID", "site","taxa", "meanAbundance", "pctTrans","pctCore","pctNeither","scale", "spRich")]
-# all_occ = rbind(bbs_spRich,occ_merge)
+# Figure 4a in sep script
 
 #### Figure 4b ####
 # read in route level ndvi and elevation data (radius = 5 km?!)
@@ -66,7 +66,7 @@ lat_scale_bbs = filter(lat_scale_rich, datasetID == 1)
 lat_scale_bbs$site_id = sapply(strsplit(as.character(lat_scale_bbs$site), split='-', fixed=TRUE), function(x) (x[1]))
 lat_scale_bbs$site_id = as.integer(lat_scale_bbs$site_id)
 
-bbs_spRich = merge(transbbs, minustransbbs[c("stateroute", "spRichnotrans")], by = "stateroute")
+bbs_spRich = merge(allbbs, notransbbs[c("stateroute", "spRichnotrans")], by = "stateroute")
 bbs_spRich$site_id <- bbs_spRich$stateroute
 # merging ndvi and elevation to bbs data
 bbs_env = join(bbs_spRich, gimms_ndvi, type = "left")
@@ -98,7 +98,7 @@ colscale = c("light blue","#225ea8")
 limits = aes(ymax = corr_res_long$CIupper, ymin=corr_res_long$CIlower)
 # no variation - add in CIS?
 ggplot(data=corr_res_long, aes(factor(env), value))+ geom_bar(aes(fill = class), position = "dodge", stat="identity")+ geom_errorbar(limits, position="dodge", width=0.25) + scale_fill_manual(values = c("Trans" = "#225ea8","Ntrans" = "light blue"), labels = c("No Transients", "Transients"))+ theme_classic() + theme(axis.text.x=element_text(size=24),axis.text.y=element_text(size=24),axis.title.x=element_text(size=24),axis.title.y=element_text(size=24,angle=90,vjust = 2))+ xlab(NULL) + ylab("Correlation Coefficient")  + ylim(-0.04,0.04) + guides(fill=guide_legend(title=NULL)) + theme(legend.text = element_text(size = 16))
-ggsave(file="C:/Git/core-transient/output/plots/corrcoeff_4b.pdf", height = 10, width = 15)
+ggsave(file="C:/Git/core-transient/output/plots/4b_corrcoeff.pdf", height = 10, width = 15)
 
 #### Figure 4c ####
 turnover = read.csv("output/tabular_data/temporal_turnover.csv", header = TRUE)
@@ -111,29 +111,29 @@ colscale = c("gold2","turquoise2", "red", "purple4","forestgreen","#1D6A9B", "az
 
 
 m <- ggplot(turnover_col, aes(x = TJ, y = TJnotrans))
-m + geom_abline(intercept = 0,slope = 1, lwd =1.5,linetype="dashed")+geom_point(aes(colour = taxa, shape = taxa), size = 6) + xlab("Transients Slope") + ylab("Without Transients Slope") + scale_colour_manual(breaks = turnover_col$taxa,values = colscale) + theme(axis.text.x=element_text(size=24),axis.text.y=element_text(size=24),axis.title.x=element_text(size=32),axis.title.y=element_text(size=32,angle=90,vjust = 2))+ theme_classic()
-ggsave(file="C:/Git/core-transient/output/plots/spturnover_4c.pdf", height = 10, width = 15)
-
+m + geom_abline(intercept = 0,slope = 1, lwd =1.5,linetype="dashed")+geom_point(aes(colour = taxa), size = 6) + xlab("Transients Slope") + ylab("Without Transients Slope") + scale_colour_manual(breaks = turnover_col$taxa,values = colscale) + theme(axis.text.x=element_text(size=24),axis.text.y=element_text(size=24),axis.title.x=element_text(size=32),axis.title.y=element_text(size=32,angle=90,vjust = 2))+ theme_classic()
+ggsave(file="C:/Git/core-transient/output/plots/4c_spturnover.pdf", height = 10, width = 15)
+# , shape = taxa
 
 ##### Figure 4d ##### only scaled vars
-minustransrich$minustrans = minustransrich$n
+notransrich$notrans = notransrich$n
 
-minustransbbsscale = bbs_abun_occ %>% filter(occupancy > 1/3) %>% dplyr::count(stateroute, scale, subrouteID)
-names(minustransbbsscale) = c("stateroute", "scale", "subrouteID","minustrans")
-minusarea = left_join(minustransbbsscale, unique(bbs_abun_occ[,c("stateroute","scale","subrouteID","area")]))
+notransbbsscale = bbs_abun_occ %>% filter(occupancy > 1/3) %>% dplyr::count(stateroute, scale, subrouteID)
+names(notransbbsscale) = c("stateroute", "scale", "subrouteID","notrans")
+noarea = left_join(notransbbsscale, unique(bbs_abun_occ[,c("stateroute","scale","subrouteID","area")]))
 
-transbbsscale = bbs_abun_occ %>% dplyr::count(stateroute, scale, subrouteID) 
-names(transbbsscale) = c("stateroute", "scale","subrouteID", "spRich")
-transarea = left_join(transbbsscale, unique(bbs_abun_occ[,c("stateroute","scale","subrouteID","area")]))
+allbbsscale = bbs_abun_occ %>% dplyr::count(stateroute, scale, subrouteID) 
+names(allbbsscale) = c("stateroute", "scale","subrouteID", "spRich")
+allarea = left_join(allbbsscale, unique(bbs_abun_occ[,c("stateroute","scale","subrouteID","area")]))
 
-bbs_occ_scale = merge(transarea, minusarea, by = c("stateroute", "scale", "subrouteID", "area"))
+bbs_occ_scale = merge(allarea, noarea, by = c("stateroute", "scale", "subrouteID", "area"))
 bbs_occ_scale$subrouteID = gsub("Stop", "", bbs_occ_scale$subrouteID)
 bbs_occ_scale$site = paste(bbs_occ_scale$stateroute, bbs_occ_scale$scale, bbs_occ_scale$subrouteID, sep = "-")
 bbs_occ_scale$datasetID = 1
-bbs_occ_scale = bbs_occ_scale[,c("datasetID", "site", "area","scale", "spRich", "minustrans")]
+bbs_occ_scale = bbs_occ_scale[,c("datasetID", "site", "area","scale", "spRich", "notrans")]
 
 # merge sp rich and minus trans sprich
-datasetrich = merge(transrich, minustransrich[,c("datasetID", "site", "scale","minustrans")], by = c("datasetID", "site", "scale"))
+datasetrich = merge(allrich, notransrich[,c("datasetID", "site", "scale","notrans")], by = c("datasetID", "site", "scale"), all.x = TRUE)
 colnames(datasetrich)[4] <- "spRich" # rename a single column - make sure index is right
 
 occ_trans_area = merge(areamerge[,c("datasetID", "site", "area")], datasetrich, by = c("datasetID", "site"))
@@ -144,7 +144,7 @@ bbs_occ_trans = merge(bbs_occ_trans, dataformattingtable[,c("dataset_ID", "taxa"
 
 scaleIDs = unique(bbs_occ_trans$datasetID)
 
-scaleIDs = scaleIDs[! scaleIDs %in% c(225,248,254, 282,291)] # 248 tbd
+scaleIDs = scaleIDs[! scaleIDs %in% c(1,225,248,254, 282,291)] # 248 tbd
 
 slopes = data.frame(datasetID = NULL,
                     taxa = NULL,
@@ -156,7 +156,7 @@ for(id in scaleIDs){
   taxa = as.character(unique(plotsub$taxa))
   mod.t = lm(log10(plotsub$spRich) ~ log10(plotsub$area))
   mod.t.slope = summary(mod.t)$coef[2,"Estimate"]
-  mod.n= lm(log10(plotsub$minustrans) ~ log10(plotsub$area))
+  mod.n= lm(log10(plotsub$notrans) ~ log10(plotsub$area))
   mod.n.slope = summary(mod.n)$coef[2,"Estimate"]
   print(mod.n.slope)
   taxcolor = subset(taxcolors, taxa == as.character(plotsub$taxa)[1])
@@ -173,9 +173,9 @@ plot_relationship$taxa = factor(plot_relationship$taxa,
                                 levels = c('Invertebrate','Fish','Plankton','Mammal','Plant','Bird','Benthos'),ordered = TRUE)
 colscale = c("gold2","turquoise2", "red", "purple4","forestgreen","#1D6A9B", "azure4")
 
-p <- ggplot(plot_relationship, aes(x = spRich_slope, y = minustrans_slope))
+p <- ggplot(plot_relationship, aes(x = areaSlope, y = areaSlope_noTrans))
 p + geom_abline(intercept = 0,slope = 1, lwd =1.5,linetype="dashed")+geom_point(aes(colour = taxa), size = 6) + xlab("Transients Slope") + ylab("Without Transients Slope") + scale_colour_manual(breaks = plot_relationship$taxa,values = colscale) + theme(axis.text.x=element_text(size=24),axis.text.y=element_text(size=24),axis.title.x=element_text(size=32),axis.title.y=element_text(size=32,angle=90,vjust = 2))+ theme_classic()
-ggsave(file="C:/Git/core-transient/output/plots/sparea_4d.pdf", height = 10, width = 15)
+ggsave(file="C:/Git/core-transient/output/plots/4d_sparea.pdf", height = 10, width = 15)
 
 
 
