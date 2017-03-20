@@ -156,10 +156,10 @@ for(file in propOccfiles){
 allpropOcc = data.frame(allpropOcc)
 
 # count up spRich with and without transients (for Fig 4)
-minustransrich = allpropOcc %>% filter(propOcc > 1/3) %>% dplyr::count(datasetID, site, scale)
-write.csv(minustransrich, "output/tabular_data/minustransrich.csv", row.names = FALSE)
-transrich  = allpropOcc %>% dplyr::count(datasetID, site, scale)
-write.csv(transrich, "output/tabular_data/transrich.csv", row.names = FALSE)
+notransrich = allpropOcc %>% filter(propOcc > 1/3) %>% dplyr::count(datasetID, site, scale)
+write.csv(notransrich, "output/tabular_data/notransrich.csv", row.names = FALSE)
+allrich  = allpropOcc %>% dplyr::count(datasetID, site, scale)
+write.csv(allrich, "output/tabular_data/allrich.csv", row.names = FALSE)
 
 # Summary statistics by datasetID/site, i.e. mean occupancy, % transient species (<=1/3)
 summaries_taxa = merge(allsummaries, dataformattingtable[,c("dataset_ID","taxa","Raw_spatial_grain", "Raw_spatial_grain_unit")], by.x = 'datasetID', by.y = "dataset_ID", all.x=TRUE)

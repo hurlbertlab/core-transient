@@ -41,6 +41,10 @@ minustransrich = read.csv("output/tabular_data/minustransrich.csv", header = TRU
 bbs_abun_occ = read.csv("data/BBS/bbs_abun_occ.csv", header = TRUE)
 bbs_occ = read.csv("data/BBS/bbs_abun4_spRich.csv", header = TRUE)
 
+# addings symbols to taxcolors
+symbols = c(1:7) 
+taxcolors = cbind(taxcolors, symbols)
+# calc bbs with and without trans
 minustransbbs = bbs_abun_occ %>% filter(occupancy > 1/3) %>% dplyr::count(stateroute, scale) %>% filter(scale == 50)
 names(minustransbbs) = c("stateroute", "scale", "spRichnotrans")
 
@@ -107,7 +111,7 @@ colscale = c("gold2","turquoise2", "red", "purple4","forestgreen","#1D6A9B", "az
 
 
 m <- ggplot(turnover_col, aes(x = TJ, y = TJnotrans))
-m + geom_abline(intercept = 0,slope = 1, lwd =1.5,linetype="dashed")+geom_point(aes(colour = taxa), size = 6) + xlab("Transients Slope") + ylab("Without Transients Slope") + scale_colour_manual(breaks = turnover_col$taxa,values = colscale) + theme(axis.text.x=element_text(size=24),axis.text.y=element_text(size=24),axis.title.x=element_text(size=32),axis.title.y=element_text(size=32,angle=90,vjust = 2))+ theme_classic()
+m + geom_abline(intercept = 0,slope = 1, lwd =1.5,linetype="dashed")+geom_point(aes(colour = taxa, shape = taxa), size = 6) + xlab("Transients Slope") + ylab("Without Transients Slope") + scale_colour_manual(breaks = turnover_col$taxa,values = colscale) + theme(axis.text.x=element_text(size=24),axis.text.y=element_text(size=24),axis.title.x=element_text(size=32),axis.title.y=element_text(size=32,angle=90,vjust = 2))+ theme_classic()
 ggsave(file="C:/Git/core-transient/output/plots/spturnover_4c.pdf", height = 10, width = 15)
 
 
