@@ -42,8 +42,9 @@ bbs_abun_occ = read.csv("data/BBS/bbs_abun_occ.csv", header = TRUE)
 bbs_occ = read.csv("data/BBS/bbs_abun4_spRich.csv", header = TRUE)
 
 # addings symbols to taxcolors
-symbols = c(1:7) 
-taxcolors = cbind(taxcolors, symbols)
+symbols = c(15, 16, 15, 17, 16, 15, 16) 
+type = c("invert", "vert", "invert", "plant", "vert", "invert", "vert") 
+taxcolors = cbind(taxcolors, type,symbols)
 
 # calc bbs with and without trans
 notransbbs = bbs_abun_occ %>% filter(occupancy > 1/3) %>% dplyr::count(stateroute, scale) %>% filter(scale == 50)
@@ -107,13 +108,14 @@ turnover_col = merge(turnover_taxa, taxcolors, by = "taxa")
 
 turnover_col$taxa = factor(turnover_col$taxa,
                                 levels = c('Invertebrate','Fish','Plankton','Mammal','Plant','Bird','Benthos'),ordered = TRUE)
+# turnover_col$type = factor(turnover_col$type,
+                           # levels = c("invert", "vert", "invert","vert", "plant","vert","invert"),ordered = TRUE)
 colscale = c("gold2","turquoise2", "red", "purple4","forestgreen","#1D6A9B", "azure4")
 
 
 m <- ggplot(turnover_col, aes(x = TJ, y = TJnotrans))
-m + geom_abline(intercept = 0,slope = 1, lwd =1.5,linetype="dashed")+geom_point(aes(colour = taxa), size = 6) + xlab("Transients Slope") + ylab("Without Transients Slope") + scale_colour_manual(breaks = turnover_col$taxa,values = colscale) + theme(axis.text.x=element_text(size=24),axis.text.y=element_text(size=24),axis.title.x=element_text(size=32),axis.title.y=element_text(size=32,angle=90,vjust = 2))+ theme_classic()
+m + geom_abline(intercept = 0,slope = 1, lwd =1.5,linetype="dashed")+geom_point(aes(colour = taxa, shape = type), size = 5.5) + xlab("Transients Slope") + ylab("Without Transients Slope") + scale_colour_manual(breaks = turnover_col$taxa,values = colscale) + theme(axis.text.x=element_text(size=24),axis.text.y=element_text(size=24),axis.title.x=element_text(size=32),axis.title.y=element_text(size=32,angle=90,vjust = 2))+ theme_classic() + guides(colour = guide_legend(title = "Taxa"))
 ggsave(file="C:/Git/core-transient/output/plots/4c_spturnover.pdf", height = 10, width = 15)
-# , shape = taxa
 
 ##### Figure 4d ##### only scaled vars
 bbs_uniq_area = bbs_abun_occ %>% dplyr::select(stateroute,scale,subrouteID,area) %>% unique()
@@ -202,7 +204,7 @@ plot_relationship$taxa = factor(plot_relationship$taxa,
 colscale = c("gold2","turquoise2", "red", "purple4","forestgreen","#1D6A9B", "azure4", "gray")
 
 p <- ggplot(plot_relationship, aes(x = areaSlope, y = areaSlope_noTrans))
-p + geom_abline(intercept = 0,slope = 1, lwd =1.5,linetype="dashed") +geom_point(data=slopes_bbs, alpha = 1/100, size = 2)+  geom_point(aes(colour = as.factor(taxa)), size = 6) + scale_color_manual("Taxa", breaks = plot_relationship$taxa,values = colscale)+ xlab("Transients Slope") + ylab("Without Transients Slope")  + theme(axis.text.x=element_text(size=24),axis.text.y=element_text(size=24),axis.title.x=element_text(size=32),axis.title.y=element_text(size=32,angle=90,vjust = 2))+ theme_classic()
+p + geom_abline(intercept = 0,slope = 1, lwd =1.5,linetype="dashed") +geom_point(data=slopes_bbs, alpha = 1/100, size = 2)+  geom_point(aes(colour = taxa, shape = type), size = 5.5) + scale_color_manual("Taxa", breaks = plot_relationship$taxa,values = colscale)+ xlab("Transients Slope") + ylab("Without Transients Slope")  + theme(axis.text.x=element_text(size=24),axis.text.y=element_text(size=24),axis.title.x=element_text(size=32),axis.title.y=element_text(size=32,angle=90,vjust = 2))+ theme_classic()
 
 ggsave(file="C:/Git/core-transient/output/plots/4d_sparea.pdf", height = 10, width = 15)
 
