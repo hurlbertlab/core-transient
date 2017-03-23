@@ -76,15 +76,15 @@ bbs_env = merge(bbs_env, lat_scale_bbs[,c("site_id", "elev.point", "elev.mean", 
 # cor test not really working - need for loop?
 cor.test(bbs_env$spRich, bbs_env$ndvi)
 bar1 = cor.test(bbs_env$spRich, bbs_env$ndvi)$estimate
-CI1lower = 0.01965912
-CI1upper = 0.03821317
+CI1lower =  0.1881905
+CI1upper = 0.1914568
 bar3 = cor.test(bbs_env$spRich, bbs_env$elev.mean)$estimate
 CI3lower = -0.0032076144
 CI3upper =  0.0001793654
 
 bar2 = cor.test(bbs_env$spRichnotrans, bbs_env$ndvi)$estimate
-CI2lower = -0.03501665
-CI2upper =  -0.01645934
+CI2lower = 0.2323087
+CI2upper =   0.2355118
 bar4 = cor.test(bbs_env$spRichnotrans, bbs_env$elev.mean)$estimate
 CI4lower = -0.004432671
 CI4upper =  -0.001045709
@@ -98,7 +98,7 @@ corr_res_long$CIupper = c(CI1upper,CI3upper,CI2upper,CI4upper)
 colscale = c("light blue","#225ea8")
 limits = aes(ymax = corr_res_long$CIupper, ymin=corr_res_long$CIlower)
 # no variation - add in CIS?
-ggplot(data=corr_res_long, aes(factor(env), value))+ geom_bar(aes(fill = class), position = "dodge", stat="identity")+ geom_errorbar(limits, position="dodge", width=0.25) + scale_fill_manual(values = c("Trans" = "#225ea8","Ntrans" = "light blue"), labels = c("No Transients", "Transients"))+ theme_classic() + theme(axis.text.x=element_text(size=24),axis.text.y=element_text(size=24),axis.title.x=element_text(size=24),axis.title.y=element_text(size=24,angle=90,vjust = 2))+ xlab(NULL) + ylab("Correlation Coefficient")  + ylim(-0.04,0.04) + guides(fill=guide_legend(title=NULL)) + theme(legend.text = element_text(size = 16))
+ggplot(data=corr_res_long, aes(factor(env), value))+ geom_bar(aes(fill = class), position = "dodge", stat="identity")+ geom_errorbar(limits, position="dodge", width=0.25) + scale_fill_manual(values = c("Trans" = "#225ea8","Ntrans" = "light blue"), labels = c("No Transients", "Transients"))+ theme_classic() + theme(axis.text.x=element_text(size=24),axis.text.y=element_text(size=24),axis.title.x=element_text(size=24),axis.title.y=element_text(size=24,angle=90,vjust = 2))+ xlab(NULL) + ylab("Correlation Coefficient")  + ylim(-0.04,0.3) + guides(fill=guide_legend(title=NULL)) + theme(legend.text = element_text(size = 16))
 ggsave(file="C:/Git/core-transient/output/plots/4b_corrcoeff.pdf", height = 10, width = 15)
 
 #### Figure 4c ####
