@@ -406,8 +406,8 @@ preds.df = data.frame(stateroute = numeric(), OApreds= numeric(), ONpreds = nume
                       TApreds = numeric(), TNpreds = numeric())
 
 
-#pdf("output/plots/Molly Plots/BBS_scaleplots.pdf", onefile = TRUE)
-tiff("output/plots/Molly Plots/pngs/BBS_scaleplots%04d.tif")
+pdf("output/plots/Molly Plots/BBS_scaleplots.pdf", onefile = TRUE)
+#tiff("output/plots/Molly Plots/pngs/BBS_scaleplots%04d.tif")
 coef_join = coefs %>% inner_join(bbs_allscales, by = c("stateroute"="focalrte"))
 
 
@@ -605,6 +605,8 @@ ggplot(data = rsqrd_df, aes(x = dep, y = r2))+geom_boxplot()+facet_wrap(~ind)
 
 
 ####Plot obs vs pred####
+
+#don't need anymore; delete below code
 pdf("output/plots/Molly Plots/BBS_testplot.pdf", onefile = TRUE)
 # 
 # for (s in stateroutes) {
