@@ -185,7 +185,7 @@ bbs_below<-data.frame(output)
 
 #'#'#'#'joining above and below route scales, calc area#'#'#'#'
 bbs_focal_occs = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/bbs_focal_occs.csv", header = TRUE)
-bbs_below = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/bbs_below.csv", header = T)
+bbs_below = read.csv("//bioark.ad.unc.edu/HurlbertLab/Jenkins/BBS scaled/bbs_below.csv", header = T)
 
 
 
@@ -401,61 +401,62 @@ logistic_fcn = function(x, Asym, xmid, scal) {
 }
 
 
-preds.df = data.frame(stateroute = numeric(), OApreds= numeric(), ONpreds = numeric(), 
+preds.df = data.frame(stateroute = numeric(), logA = numeric(), 
+                      OApreds= numeric(), ONpreds = numeric(), 
                       CApreds = numeric(), CNpreds = numeric(),
                       TApreds = numeric(), TNpreds = numeric())
 
 
 pdf("output/plots/Molly Plots/BBS_scaleplots.pdf", onefile = TRUE)
-#tiff("output/plots/Molly Plots/pngs/BBS_scaleplots%04d.tif")
+#tiff("output/plots/Molly Plots/BBS_scaleplotposter.tif")
 coef_join = coefs %>% inner_join(bbs_allscales, by = c("stateroute"="focalrte"))
-
 
 stateroutes = unique(bbs_allscales$focalrte)
 for (s in stateroutes) {
   theme_set(theme_bw()+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()))
   coef_sub = subset(coef_join, coef_join$stateroute == s)
-  
+  logA = coef_sub$logA
   #OA
   OApreds = logistic_fcn(coef_sub[,33], coef_sub[,2], coef_sub[,3], coef_sub[,4]) 
-  plot1 = ggplot(coef_sub, aes(x = logA, y = meanOcc))+geom_point(colour = "firebrick")+
-    geom_line(aes(x = logA, y = OApreds), color = "navy") +labs(x = "Log area", y = "Mean % Occupancy")
-  
+  # plot1 = ggplot(coef_sub, aes(x = logA, y = meanOcc))+geom_point(colour = "firebrick")+
+  #   geom_line(aes(x = logA, y = OApreds), color = "navy") +labs(x = "Log area", y = "Mean % Occupancy")
+  # 
   
   #ON
   ONpreds = logistic_fcn(coef_sub[,34], coef_sub[,6], coef_sub[,7], coef_sub[,8])
-  plot2 = ggplot(coef_sub, aes(x = logN, y = meanOcc))+geom_point(colour = "firebrick")+
-    geom_line(aes(x = logN, y = ONpreds), color = "navy") +labs(x = "Log abundance", y = "Mean % Occupancy")
- 
+  # plot2 = ggplot(coef_sub, aes(x = logN, y = meanOcc))+geom_point(colour = "firebrick")+
+  #   geom_line(aes(x = logN, y = ONpreds), color = "navy") +labs(x = "Log abundance", y = "Mean % Occupancy")
+  # 
  
   #CA
   CApreds = logistic_fcn(coef_sub[,33], coef_sub[,10], coef_sub[,11], coef_sub[,12])
-  plot1_2= ggplot(coef_sub, aes(x = logA, y = pctCore))+geom_point(colour = "turquoise")+
-    geom_line(aes(x = logA, y = CApreds), color = "navy")+labs(x = "Log area", y = "% Core Occupancy")
-  
+  # plot1_2= ggplot(coef_sub, aes(x = logA, y = pctCore))+geom_point(colour = "turquoise")+
+  #   geom_line(aes(x = logA, y = CApreds), color = "navy")+labs(x = "Log area", y = "% Core Occupancy")
+  # 
   #aveN
   #CN
   CNpreds = logistic_fcn(coef_sub[,34], coef_sub[,14], coef_sub[,15], coef_sub[,16])
-  plot2_2= ggplot(coef_sub, aes(x = logN, y = pctCore))+geom_point(colour = "turquoise")+
-    geom_line(aes(x = logN, y = CNpreds), color = "navy")+labs(x = "Log abundance", y = "% Core Occupancy")
+  # plot2_2= ggplot(coef_sub, aes(x = logN, y = pctCore))+geom_point(colour = "turquoise")+
+  #   geom_line(aes(x = logN, y = CNpreds), color = "navy")+labs(x = "Log abundance", y = "% Core Occupancy")
 
   #not using log fcn for %Transient relationships bc relationship diff, exp had higher pred power also 
   #predictive power still funky though
   #TA
   TApreds =  coef_sub[,35]*(coef_sub[,18]) #35 = optimum; replacing ^ with * bc natural log, removing -1!!!
-  plot1_3 = ggplot(coef_sub, aes(x = lnA, y = log(pctTran)))+geom_point(colour = "olivedrab")+
-    geom_line(aes(x = lnA, y = TApreds), color = "navy") +labs(x = "Log area", y = "% Transient Occupancy")
- 
+  # plot1_3 = ggplot(coef_sub, aes(x = lnA, y = log(pctTran)))+geom_point(colour = "olivedrab")+
+  #   geom_line(aes(x = lnA, y = TApreds), color = "navy") +labs(x = "Log area", y = "% Transient Occupancy")
+  # 
   #TN
   TNpreds = coef_sub[,36]*(coef_sub[,22])
-  plot2_3 = ggplot(coef_sub, aes(x = lnN, y = log(pctTran)))+geom_point(colour = "olivedrab")+
-    geom_line(aes(x = lnN, y = TNpreds), color = "navy")+labs(x = "Log abundance", y = "% Transient Occupancy") 
-  
+  # plot2_3 = ggplot(coef_sub, aes(x = lnN, y = log(pctTran)))+geom_point(colour = "olivedrab")+
+  #   geom_line(aes(x = lnN, y = TNpreds), color = "navy")+labs(x = "Log abundance", y = "% Transient Occupancy") 
+  # 
   #storing plots
-  predplot = grid.arrange(plot1, plot2, plot1_2, plot2_2, plot1_3, plot2_3,
-                          ncol=2, top = paste("predplot_", s, sep = ""))
+  # predplot = grid.arrange(plot1, plot2, plot1_2, plot2_2, plot1_3, plot2_3,
+  #                         ncol=2, top = paste("predplot_", s, sep = ""))
   #storing preds:
-  temp.df = data.frame(stateroute = s, OApreds= OApreds , ONpreds = ONpreds, 
+  temp.df = data.frame(stateroute = s, logA = logA, 
+                       OApreds= OApreds , ONpreds = ONpreds, 
                        CApreds = CApreds, CNpreds = CNpreds,
                        TApreds = TApreds, TNpreds = TNpreds)
   preds.df = rbind(preds.df, temp.df)
@@ -468,7 +469,7 @@ dev.off()
 # points(coef_sub[,33], OApreds, type=  'l', col='red')
 #cite output in plots in lieu of geom_smooth for updated output
 
-
+write.csv(preds.df, "C:/git/core-transient/scripts/R-scripts/scale_analysis/preds.csv", row.names = FALSE)
 
 ####Characterizing changes at the level of a single focal rte, above and below#### 
 #six panel plot for each rte, output as pdfs for 02/05
