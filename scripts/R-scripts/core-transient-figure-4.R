@@ -60,7 +60,7 @@ names(allbbs) = c("stateroute", "scale", "spRich")
 # we want to agg by month here
 gimms_ndvi = read.csv("output/tabular_data/gimms_ndvi_bbs_data.csv", header = TRUE)
 gimms_agg = gimms_ndvi %>% filter(month == c("may", "jun", "jul")) %>% 
-  group_by(site_id, year, month)  %>%  summarise(mean=mean(ndvi))
+  group_by(site_id)  %>%  summarise(ndvi=mean(ndvi))
 
 lat_scale_rich = read.csv("output/tabular_data/lat_scale_rich.csv", header = TRUE)
 lat_scale_bbs = filter(lat_scale_rich, datasetID == 1)
@@ -70,35 +70,43 @@ lat_scale_bbs$site_id = as.integer(lat_scale_bbs$site_id)
 bbs_spRich = merge(allbbs, notransbbs[c("stateroute", "spRichnotrans")], by = "stateroute")
 bbs_spRich$site_id <- bbs_spRich$stateroute
 # merging ndvi and elevation to bbs data
-bbs_env = join(bbs_spRich, gimms_ndvi, type = "left")
+bbs_env = join(bbs_spRich, gimms_agg, type = "left")
 bbs_env = merge(bbs_env, lat_scale_bbs[,c("site_id", "elev.point", "elev.mean", "elev.var")], by = "site_id")
 
 # cor test not really working - need for loop?
 cor.test(bbs_env$spRich, bbs_env$ndvi)
 bar1 = cor.test(bbs_env$spRich, bbs_env$ndvi)$estimate
-CI1lower =  0.1881905
-CI1upper = 0.1914568
+CI1lower =  cor.test(bbs_env$spRich, bbs_env$ndvi)$conf.int[1]
+CI1upper = cor.test(bbs_env$spRich, bbs_env$ndvi)$conf.int[2]
 bar3 = cor.test(bbs_env$spRich, bbs_env$elev.mean)$estimate
-CI3lower = -0.0032076144
-CI3upper =  0.0001793654
+CI3lower = cor.test(bbs_env$spRich, bbs_env$elev.mean)$conf.int[1]
+CI3upper =  cor.test(bbs_env$spRich, bbs_env$elev.mean)$conf.int[2]
 
 bar2 = cor.test(bbs_env$spRichnotrans, bbs_env$ndvi)$estimate
-CI2lower = 0.2323087
-CI2upper =   0.2355118
+CI2lower = cor.test(bbs_env$spRichnotrans, bbs_env$ndvi)$conf.int[1]
+CI2upper =   cor.test(bbs_env$spRichnotrans, bbs_env$ndvi)$conf.int[2]
 bar4 = cor.test(bbs_env$spRichnotrans, bbs_env$elev.mean)$estimate
-CI4lower = -0.004432671
-CI4upper =  -0.001045709
+CI4lower =  cor.test(bbs_env$spRichnotrans, bbs_env$elev.mean)$conf.int[1]
+CI4upper =  cor.test(bbs_env$spRichnotrans, bbs_env$elev.mean)$conf.int[2]
 
-corr_res <- data.frame(Trans = c(bar1, bar3), Ntrans = c(bar2, bar4)) 
+bar5 = cor.test(bbs_env$spRich-bbs_env$spRichnotrans, bbs_env$ndvi)$estimate
+CI5lower = cor.test(bbs_env$spRich-bbs_env$spRichnotrans, bbs_env$ndvi)$conf.int[1]
+CI5upper =  cor.test(bbs_env$spRich-bbs_env$spRichnotrans, bbs_env$ndvi)$conf.int[2]
+bar6 = cor.test(bbs_env$spRich-bbs_env$spRichnotrans, bbs_env$elev.mean)$estimate
+CI6lower = cor.test(bbs_env$spRich-bbs_env$spRichnotrans, bbs_env$elev.mean)$conf.int[1]
+CI6upper =  cor.test(bbs_env$spRich-bbs_env$spRichnotrans, bbs_env$elev.mean)$conf.int[2]
+
+corr_res <- data.frame(All = c(bar1, bar3), Ntrans = c(bar2, bar4), Trans = c(bar5, bar6)) 
 corr_res$env = c("NDVI", "Elevation")
-corr_res_long = gather(corr_res, "class","value", c(Trans:Ntrans))
-corr_res_long$CIlower = c(CI1lower,CI3lower,CI2lower,CI4lower)
-corr_res_long$CIupper = c(CI1upper,CI3upper,CI2upper,CI4upper)
+corr_res_long = gather(corr_res, "class","value", c(All:Trans))
+corr_res_long$CIlower = c(CI1lower,CI3lower,CI2lower,CI4lower, CI5lower, CI6lower)
+corr_res_long$CIupper = c(CI1upper,CI3upper,CI2upper,CI4upper, CI5upper, CI6upper)
+corr_res_long$env = factor(corr_res_long$env, levels = c("NDVI", "Elevation"), ordered = TRUE)
 
-colscale = c("light blue","#225ea8")
+colscale = c("dark green","light blue","#225ea8")
 limits = aes(ymax = corr_res_long$CIupper, ymin=corr_res_long$CIlower)
 # no variation - add in CIS?
-ggplot(data=corr_res_long, aes(factor(env), value))+ geom_bar(aes(fill = class), position = "dodge", stat="identity")+ geom_errorbar(limits, position="dodge", width=0.25) + scale_fill_manual(values = c("Trans" = "#225ea8","Ntrans" = "light blue"), labels = c("No Transients", "Transients"))+ theme_classic() + theme(axis.text.x=element_text(size=24),axis.text.y=element_text(size=24),axis.title.x=element_text(size=24),axis.title.y=element_text(size=24,angle=90,vjust = 2))+ xlab(NULL) + ylab("Correlation Coefficient")  + ylim(-0.04,0.3) + guides(fill=guide_legend(title=NULL)) + theme(legend.text = element_text(size = 16))
+ggplot(data=corr_res_long, aes(factor(env), value, fill = class))+ geom_bar(width = 0.8, position = position_dodge(width = 0.9), stat="identity")+ geom_errorbar(aes(ymin = CIlower, ymax = CIupper), width =.1, position = position_dodge(.9))+ scale_fill_manual(values = c("All" = "dark green","Trans" = "#225ea8","Ntrans" = "light blue"), labels = c("All species","All species excluding transients", "Transients only"))+ theme_classic() + theme(axis.text.x=element_text(size=24),axis.text.y=element_text(size=24),axis.title.x=element_text(size=24),axis.title.y=element_text(size=24,angle=90,vjust = 2))+ xlab(NULL) + ylab("Correlation Coefficient") + scale_y_continuous(breaks = pretty(corr_res_long$value, n = 8))+ guides(fill=guide_legend(title=NULL)) + theme(legend.text = element_text(size = 16))
 ggsave(file="C:/Git/core-transient/output/plots/4b_corrcoeff.pdf", height = 10, width = 15)
 
 #### Figure 4c ####
@@ -112,9 +120,9 @@ turnover_col$taxa = factor(turnover_col$taxa,
                            # levels = c("invert", "vert", "invert","vert", "plant","vert","invert"),ordered = TRUE)
 colscale = c("gold2","turquoise2", "red", "purple4","forestgreen","#1D6A9B", "azure4")
 
-
+# stuck here why?
 m <- ggplot(turnover_col, aes(x = TJ, y = TJnotrans))
-m + geom_abline(intercept = 0,slope = 1, lwd =1.5,linetype="dashed")+geom_point(aes(colour = taxa, shape = type), size = 5.5) + xlab("Transients Slope") + ylab("Without Transients Slope") + scale_colour_manual(breaks = turnover_col$taxa,values = colscale) + theme(axis.text.x=element_text(size=24),axis.text.y=element_text(size=24),axis.title.x=element_text(size=32),axis.title.y=element_text(size=32,angle=90,vjust = 2))+ theme_classic() + guides(colour = guide_legend(title = "Taxa"))
+m + geom_abline(intercept = 0,slope = 1, lwd =1.5,linetype="dashed")+ geom_point(data=slopes_bbs, alpha = 1/100, size = 2)+geom_point(aes(colour = taxa, shape = type), size = 5.5) + xlab("z (all species)") + ylab("z (excluding transients)") + scale_colour_manual(breaks = turnover_col$taxa,values = colscale) + theme_classic() + theme(axis.text.x=element_text(size=24),axis.text.y=element_text(size=24),axis.title.x=element_text(size=32),axis.title.y=element_text(size=32,angle=90,vjust = 2))+ guides(colour = guide_legend(title = "Taxa"))
 ggsave(file="C:/Git/core-transient/output/plots/4c_spturnover.pdf", height = 10, width = 15)
 
 ##### Figure 4d ##### only scaled vars
@@ -172,7 +180,7 @@ occ_trans_area = merge(areamerge[,c("datasetID", "site", "area")], datasetrich, 
 occ_trans_area = merge(occ_trans_area, dataformattingtable[,c("dataset_ID", "taxa")], by.x = "datasetID", by.y = "dataset_ID")
 scaleIDs = unique(occ_trans_area$datasetID)
 
-scaleIDs = scaleIDs[! scaleIDs %in% c(225,248,254, 282,291)] # 248 tbd
+scaleIDs = scaleIDs[! scaleIDs %in% c(279,225,248,254, 282,291)] # 248 tbd
 
 slopes = data.frame(datasetID = NULL,
                     taxa = NULL,
@@ -198,18 +206,14 @@ slopes$bbs = 'no'
 all_slopes =  rbind(slopes, slopes_bbs)
 
 plot_relationship = merge(slopes, taxcolors, by = "taxa")
+slopes_bbs = merge(slopes_bbs, taxcolors, by = "taxa")
 
 plot_relationship$taxa = factor(plot_relationship$taxa,
                                 levels = c('Invertebrate','Fish','Plankton','Mammal','Plant','Bird','Benthos'),ordered = TRUE)
-colscale = c("gold2","turquoise2", "red", "purple4","forestgreen","#1D6A9B", "azure4", "gray")
+colscale = c("gray","#1D6A9B","turquoise2","gold2","purple4", "red", "forestgreen") 
 
 p <- ggplot(plot_relationship, aes(x = areaSlope, y = areaSlope_noTrans))
-p + geom_abline(intercept = 0,slope = 1, lwd =1.5,linetype="dashed") +geom_point(data=slopes_bbs, alpha = 1/100, size = 2)+  geom_point(aes(colour = taxa, shape = type), size = 5.5) + scale_color_manual("Taxa", breaks = plot_relationship$taxa,values = colscale)+ xlab("Transients Slope") + ylab("Without Transients Slope")  + theme(axis.text.x=element_text(size=24),axis.text.y=element_text(size=24),axis.title.x=element_text(size=32),axis.title.y=element_text(size=32,angle=90,vjust = 2))+ theme_classic()
+p + geom_abline(intercept = 0,slope = 1, lwd =1.5,linetype="dashed") +geom_point(data=slopes_bbs, aes(colour = taxa, shape = type),alpha = 5/100, size = 2)+  geom_point(aes(colour = taxa, shape = type), size = 5.5)+ theme_classic() + scale_color_manual("Taxa", breaks = plot_relationship$taxa,values = colscale)+ xlab(expression(paste(italic("z "), "(all species)"))) + ylab(expression(paste(italic("z "), "(excluding transients)")))  + theme(axis.text.x=element_text(size=24),axis.text.y=element_text(size=24),axis.title.x=element_text(size=32),axis.title.y=element_text(size=32,angle=90,vjust = 2))
 
 ggsave(file="C:/Git/core-transient/output/plots/4d_sparea.pdf", height = 10, width = 15)
-
-
-
-p <- ggplot(plot_relationship, aes(x = areaSlope, y = areaSlope_noTrans))
-p + geom_abline(intercept = 0,slope = 1, lwd =1.5,linetype="dashed")+geom_point(aes(colour = taxa), size = 6) + xlab("Transients Slope") + ylab("Without Transients Slope") + scale_colour_manual(breaks = plot_relationship$taxa,values = colscale) + theme(axis.text.x=element_text(size=24),axis.text.y=element_text(size=24),axis.title.x=element_text(size=32),axis.title.y=element_text(size=32,angle=90,vjust = 2))+ theme_classic()
 
