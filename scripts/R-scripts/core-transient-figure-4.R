@@ -341,7 +341,8 @@ ggsave(file="C:/Git/core-transient/output/plots/4d_sparea.pdf", height = 10, wid
 
 
 
-# make grid plot
+# make grid plots
 grid = grid.arrange(four_a, four_b, ncol=2)
 ggsave(file="C:/Git/core-transient/output/plots/4a_4b.pdf", height = 10, width = 15,grid)
 
+#grid = grid.arrange(four_c, four_d, ncol=2)
