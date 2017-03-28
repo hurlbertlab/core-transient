@@ -20,6 +20,26 @@
 
 #'Set working directory to core-transient folder on github i.e. setwd("C:/git/core-transient/")
 
+install.packages('raster')
+install.packages('maps')
+install.packages('sp')
+install.packages('rgdal')
+install.packages('maptools')
+install.packages('rgeos')
+install.packages('dplyr')
+install.packages('fields')
+install.packages('tidyr')
+install.packages('ggplot2')
+install.packages('nlme')
+install.packages('gridExtra')
+install.packages('plyr') # for core-transient functions
+install.packages('merTools')
+install.packages('digest')
+install.packages('devtools')
+
+
+
+
 
 #'#' Please download and install the following packages:
 #' maps, sp, rgdal, raster, maptools, rgeos, dplyr, fields
@@ -35,6 +55,14 @@ library(tidyr)
 library(ggplot2)
 library(nlme)
 library(gridExtra)
+library(plyr) # for core-transient functions
+library(merTools)
+library(digest)
+library(devtools)
+
+
+source('scripts/R-scripts/core-transient_functions.R')
+
 #'#'#'#'#'#'#'#'#'
 #'----Write for_loop to calculate distances between every BBS site combination to find focal and associated routes that correspond best----
 #''store minimum value for each iteration of combos in output table
@@ -472,7 +500,7 @@ dev.off()
 write.csv(preds.df, "C:/git/core-transient/scripts/R-scripts/scale_analysis/preds.csv", row.names = FALSE)
 
 ####Characterizing changes at the level of a single focal rte, above and below#### 
-#six panel plot for each rte, output as pdfs for 02/05
+#six panel plot for each rte, output as pdfs for 02/05 ^^^now above
 #set up as forloop that exports each plot before moving on to the next stateroute?
 #just need to replace bbs_allscales with a subset that changes every loop, 
 #dictated by stateroute 
@@ -539,32 +567,12 @@ bbs_allscales$varndvi<-raster::extract(ndvimean, sites, buffer = 40000, fun = va
 #skipping elev and elev rad for now because files are weird
 #elev 
 # #mean elevation PLUS elevational range 
-# elevmean<-raster("C:/git/core-transient/wc10/alt.bil")
-# bbs_allscales$elev<-extract(elevmean, sites, buffer = 40000, fun = mean)
-# bbs_allscales$varelev<-extract(elevmean, sites, buffer = 40000, fun = var)
-# 
-# #elev radius
-# #pull in radius elev data from Coyle folder 
-# elevrad<-raster("elevation_var_40km_radius.gri")
-# elevrad<-raster("//bioark.ad.unc.edu/HurlbertLab/Coyle/Projects/BBS Core/Data/elevation_var_40km_radius.gri")
-# 
-# #OR: 
-# elevrad<-raster("C:git/core-transient/scripts/R-scripts/scale_analysis/elevation_var_aggregate_40_1km.gri")
-# 
-# 
-# 
-# #need to re-project data points to match projection of elevation raster data 
-# #modify below code
-# elev_proj = "+proj=laea +lat_0=40.68 +lon_0=-92.925 +units=km +ellps=WGS84" # A string that defines the projection
-# points2 = SpatialPoints(sites)
-# points2 = SpatialPoints(sites, proj4string=CRS(elev_proj))
-# points2 = SpatialPoints(sites, proj4string=CRS("+proj=longlat +datum=WGS84"))
-# points3 = spTransform(points2, CRS(elev_proj))
-# buff = gBuffer(points3, width=40)
-# #extract data just like before with raster function 
-# bbs_allscales$erad = raster::extract(elevrad, points3,buffer = 40000, fun = mean)
-# bbs_allscales$varerad = raster::extract(elevrad, points3,buffer = 40000, fun = var)
+#using the getData function: 
+elev <- raster::getData("worldclim", var = "alt", res = 10)
+alt_files<-paste('alt_10m_bil', sep='')
 
+bbs_allscales$elev<-raster::extract(elevmean, sites, buffer = 40000, fun = mean)
+bbs_allscales$varelev<-raster::extract(elevmean, sites, buffer = 40000, fun = var)
 
 bbs_envs = bbs_allscales
 #write.csv(bbs_envs, "scripts/R-scripts/scale_analysis/bbs_envs.csv", row.names = FALSE) wrote file 2/22 w/out elev and using old env data
