@@ -19,7 +19,9 @@ library(raster)
 library(dplyr)
 library(merTools)
 library(digest)
-
+library(sads)
+library(purrr)
+library(ggplot2)
 
 source('scripts/R-scripts/core-transient_functions.R')
 
@@ -54,6 +56,118 @@ allbbs = bbs_abun_occ %>% dplyr::count(stateroute, scale) %>% filter(scale == 50
 names(allbbs) = c("stateroute", "scale", "spRich")
 
 # Figure 4a in sep script
+#' Get list of dataset IDS for datasets that meet criteria for analysis including:
+#' * Study wide criteria
+#' * Has raw abundance data (not cover or density)
+get_valid_datasetIDs = function(){
+  dataformattingtable = read.csv('data_formatting_table.csv')
+  datasetIDs = dataformattingtable %>%
+    filter(format_flag == 1, countFormat %in% c('count', 'abundance')) %>% 
+    # Remove count datasets with decimal values
+    filter(!dataset_ID %in% c(226, 228, 247, 264, 298, 299, 300, 301)) %>%
+    # exclude BBS for now and analyze it separately
+    filter(dataset_ID !=1) %>% 
+    dplyr::select(dataset_ID)
+}
+
+#' Get table of species abundances
+#' 
+get_abund_data  = function(datasetIDs){
+  datasetIDs = datasetIDs$dataset_ID
+  dataset_path = 'data/standardized_datasets/'
+  abund_data = data.frame()
+  for (dataset in datasetIDs){
+    filename = paste('dataset_', dataset, '.csv', sep = '')
+    print(paste("Loading:", filename))
+    site_data = read.csv(file.path(dataset_path, filename), stringsAsFactors = FALSE, fileEncoding = 'latin1')
+    abund_data = rbind(abund_data, site_data)
+  }
+  # Strip zeros which are included to document a sampling event occurred
+  abund_data = abund_data[abund_data$count != 0,]
+  return(abund_data)
+}
+
+#' Get table of species proportional occupancies
+#' 
+get_propocc_data  = function(datasetIDs){
+  datasetIDs = datasetIDs$dataset_ID
+  dataset_path = 'data/propOcc_datasets/'
+  propocc_data = data.frame()
+  for (dataset in datasetIDs){
+    filename = paste('propOcc_', dataset, '.csv', sep = '')
+    print(paste("Loading:", filename))
+    site_data = read.csv(file.path(dataset_path, filename), stringsAsFactors = FALSE, fileEncoding = 'latin1')
+    propocc_data = rbind(propocc_data, site_data)
+  }
+  return(propocc_data)
+}
+
+
+#' Sum the abundances for each species-site combination across years
+sum_abunds = function(abund_data){
+  summed_abunds = abund_data %>%
+    group_by(datasetID, site, species) %>%
+    summarize(abunds = sum(count)) %>%
+    filter(abunds != 0)
+  return(summed_abunds)
+}
+
+sad_examp = c(109, 14, 4, 4, 680, 195, 13, 3, 123, 116, 1, 5, 105, 26, 14, 2, 9, 29, 15, 133, 5, 41, 45, 33, 
+              17, 27, 37, 11, 169, 1, 27, 7, 19, 23, 100, 4, 8, 5, 19, 1, 21, 12, 6, 1, 10, 2, 1, 94, 2, 4, 28, 1, 3, 
+              34, 3, 20, 72, 21, 1, 84, 10, 528, 18, 1, 1, 10, 10, 48, 7)
+
+#' Get the AICc weight for the log-series compared to the Poisson log-normal
+#' abundance distribution
+#' 
+#' @param abunds vector of abundances
+#' 
+#' @return vector of weights for the log-series
+#' 
+#' @examples 
+#' get_sad_weights(c(10, 20, 5, 1, 1, 2, 3, 7))
+get_logseries_weight = function(abunds){
+  stopifnot(all(abunds == floor(abunds))) # Check that all values are counts
+  abunds = abunds[abunds != 0] # SADs are fit only on species that are present
+  tryCatch({
+    fits = c(fitsad(abunds, 'ls'), fitsad(abunds, 'poilog'))
+    aics = sapply(fits, AICc)
+    min_aic = min(aics)
+    deltas = aics - min_aic
+    rellike = exp(-0.5 * deltas)
+    weights = rellike / sum(rellike)
+    logseries_weight = weights[1]
+    return(logseries_weight)
+  }, error = function(e) {
+    logseries_weight = NA
+    return(logseries_weight)
+  }
+  )
+}
+
+datasetIDs = get_valid_datasetIDs()
+abund_data = get_abund_data(datasetIDs)
+propocc_data = get_propocc_data(datasetIDs)
+summed_abunds = sum_abunds(abund_data)
+sad_data = left_join(summed_abunds, propocc_data, by = c('datasetID', 'site', 'species'))
+
+logseries_weights_incl = sad_data %>%
+  group_by(datasetID, site) %>% 
+  summarize(weights = get_logseries_weight(abunds), treatment = 'All species')
+
+logseries_weights_excl = sad_data %>%
+  filter(propOcc > 1/3) %>%
+  group_by(datasetID, site) %>% 
+  summarize(weights = get_logseries_weight(abunds), treatment = 'All species excluding transients')
+
+logseries_weights = rbind(logseries_weights_incl, logseries_weights_excl)
+
+colscale = c("dark green","light blue")
+
+k = ggplot(logseries_weights, aes(x = treatment, y = weights, fill=factor(treatment))) +
+  geom_violin(linetype="blank") + xlab("Transient Status") + ylab("Proportion of Species") + scale_fill_manual(labels = c("All species","All species excluding transients"),values = colscale)+ theme_classic()+ ylim(0, 1) + theme(axis.text.x=element_text(size=24), axis.ticks.x=element_blank(),axis.text.y=element_text(size=24),axis.title.x=element_text(size=24),axis.title.y=element_text(size=24,angle=90,vjust = 2))+ xlab(NULL) + ylab("Correlation Coefficient")  + theme(legend.position = "none")
+four_a <- k
+ggsave(file="C:/Git/core-transient/output/plots/sad_fit_comparison.pdf", height = 10, width = 15)
+# + guides(fill=guide_legend(title=NULL))+ theme(legend.text = element_text(size = 16),legend.position="top", legend.justification=c(0, 1), legend.key.width=unit(1, "lines"))
 
 #### Figure 4b ####
 # read in route level ndvi and elevation data (radius = 5 km?!)
@@ -106,7 +220,8 @@ corr_res_long$env = factor(corr_res_long$env, levels = c("NDVI", "Elevation"), o
 colscale = c("dark green","light blue","#225ea8")
 limits = aes(ymax = corr_res_long$CIupper, ymin=corr_res_long$CIlower)
 # no variation - add in CIS?
-ggplot(data=corr_res_long, aes(factor(env), value, fill = class))+ geom_bar(width = 0.8, position = position_dodge(width = 0.9), stat="identity")+ geom_errorbar(aes(ymin = CIlower, ymax = CIupper), width =.1, position = position_dodge(.9))+ scale_fill_manual(values = c("All" = "dark green","Trans" = "#225ea8","Ntrans" = "light blue"), labels = c("All species","All species excluding transients", "Transients only"))+ theme_classic() + theme(axis.text.x=element_text(size=24),axis.text.y=element_text(size=24),axis.title.x=element_text(size=24),axis.title.y=element_text(size=24,angle=90,vjust = 2))+ xlab(NULL) + ylab("Correlation Coefficient") + scale_y_continuous(breaks = pretty(corr_res_long$value, n = 8))+ guides(fill=guide_legend(title=NULL)) + theme(legend.text = element_text(size = 16))
+l = ggplot(data=corr_res_long, aes(factor(env), value, fill = class))+ geom_bar(width = 0.8, position = position_dodge(width = 0.9), stat="identity")+ geom_errorbar(aes(ymin = CIlower, ymax = CIupper), width =.1, position = position_dodge(.9))+ scale_fill_manual(values = c("All" = "dark green","Trans" = "#225ea8","Ntrans" = "light blue"), labels = c("All species","All species excluding transients", "Transients only"))+ theme_classic() + theme(axis.text.x=element_text(size=24), axis.ticks.x=element_blank(),axis.text.y=element_text(size=24),axis.title.x=element_text(size=24),axis.title.y=element_text(size=24,angle=90,vjust = 2))+ xlab(NULL) + ylab("Correlation Coefficient") + scale_y_continuous(breaks = pretty(corr_res_long$value, n = 7))+ guides(fill=guide_legend(title=NULL)) + theme(legend.text = element_text(size = 16),legend.position="top", legend.justification=c(0, 1), legend.key.width=unit(1, "lines"))
+four_b <- l
 ggsave(file="C:/Git/core-transient/output/plots/4b_corrcoeff.pdf", height = 10, width = 15)
 
 #### Figure 4c ####
@@ -114,16 +229,22 @@ turnover = read.csv("output/tabular_data/temporal_turnover.csv", header = TRUE)
 turnover_taxa = merge(turnover,dataformattingtable[,c("dataset_ID", "taxa")], by.x = "datasetID", by.y = "dataset_ID")
 turnover_col = merge(turnover_taxa, taxcolors, by = "taxa")
 
-turnover_col$taxa = factor(turnover_col$taxa,
-                                levels = c('Invertebrate','Fish','Plankton','Mammal','Plant','Bird','Benthos'),ordered = TRUE)
-# turnover_col$type = factor(turnover_col$type,
-                           # levels = c("invert", "vert", "invert","vert", "plant","vert","invert"),ordered = TRUE)
-colscale = c("gold2","turquoise2", "red", "purple4","forestgreen","#1D6A9B", "azure4")
+# bbs column for diff point symbols
+turnover_col$bbs =ifelse(turnover_col$datasetID == 1, "yes", "no")
+turnover_bbs = filter(turnover_col, bbs == "yes")
+turnover_else = filter(turnover_col, bbs == "no")
 
-# stuck here why?
-m <- ggplot(turnover_col, aes(x = TJ, y = TJnotrans))
-m + geom_abline(intercept = 0,slope = 1, lwd =1.5,linetype="dashed")+ geom_point(data=slopes_bbs, alpha = 1/100, size = 2)+geom_point(aes(colour = taxa, shape = type), size = 5.5) + xlab("z (all species)") + ylab("z (excluding transients)") + scale_colour_manual(breaks = turnover_col$taxa,values = colscale) + theme_classic() + theme(axis.text.x=element_text(size=24),axis.text.y=element_text(size=24),axis.title.x=element_text(size=32),axis.title.y=element_text(size=32,angle=90,vjust = 2))+ guides(colour = guide_legend(title = "Taxa"))
+turnover_else$taxa = factor(turnover_else$taxa,
+                           levels = c('Invertebrate','Fish','Plankton','Mammal','Plant','Bird'),ordered = TRUE)
+
+colscale = c("gold2","turquoise2", "red", "purple4","forestgreen","#1D6A9B") 
+
+m <- ggplot(turnover_else, aes(x = TJ, y = TJnotrans))
+m + geom_abline(intercept = 0,slope = 1, lwd =1.5,linetype="dashed")+geom_point(aes(colour = taxa, shape = type), size = 5.5)+ geom_point(data = turnover_bbs, aes(colour = taxa, shape = type),size = 2) + xlab(expression(paste(italic("z "), "(all species)"))) + ylab(expression(paste(italic("z "), "(excluding transients)")))  + scale_colour_manual(breaks = turnover_col$taxa,values = colscale) + theme_classic() + theme(axis.text.x=element_text(size=24),axis.text.y=element_text(size=24),axis.title.x=element_text(size=24),axis.title.y=element_text(size=24,angle=90,vjust = 2))+ guides(colour = guide_legend(title = "Taxa"))
+four_c <- m
 ggsave(file="C:/Git/core-transient/output/plots/4c_spturnover.pdf", height = 10, width = 15)
+
+
 
 ##### Figure 4d ##### only scaled vars
 bbs_uniq_area = bbs_abun_occ %>% dplyr::select(stateroute,scale,subrouteID,area) %>% unique()
@@ -213,7 +334,14 @@ plot_relationship$taxa = factor(plot_relationship$taxa,
 colscale = c("gray","#1D6A9B","turquoise2","gold2","purple4", "red", "forestgreen") 
 
 p <- ggplot(plot_relationship, aes(x = areaSlope, y = areaSlope_noTrans))
-p + geom_abline(intercept = 0,slope = 1, lwd =1.5,linetype="dashed") +geom_point(data=slopes_bbs, aes(colour = taxa, shape = type),alpha = 5/100, size = 2)+  geom_point(aes(colour = taxa, shape = type), size = 5.5)+ theme_classic() + scale_color_manual("Taxa", breaks = plot_relationship$taxa,values = colscale)+ xlab(expression(paste(italic("z "), "(all species)"))) + ylab(expression(paste(italic("z "), "(excluding transients)")))  + theme(axis.text.x=element_text(size=24),axis.text.y=element_text(size=24),axis.title.x=element_text(size=32),axis.title.y=element_text(size=32,angle=90,vjust = 2))
+p + geom_abline(intercept = 0,slope = 1, lwd =1.5,linetype="dashed") +geom_point(data=slopes_bbs, aes(colour = taxa, shape = type),alpha = 5/100, size = 2)+  geom_point(aes(colour = taxa, shape = type), size = 5.5)+ theme_classic() + scale_color_manual("Taxa", breaks = plot_relationship$taxa,values = colscale)+ xlab(expression(paste(italic("z "), "(all species)"))) + ylab(expression(paste(italic("z "), "(excluding transients)"))) +ylim(0,1) + theme(axis.text.x=element_text(size=24),axis.text.y=element_text(size=24),axis.title.x=element_text(size=24),axis.title.y=element_text(size=24,angle=90,vjust = 2))
+four_d <- p
 
 ggsave(file="C:/Git/core-transient/output/plots/4d_sparea.pdf", height = 10, width = 15)
+
+
+
+# make grid plot
+grid = grid.arrange(four_a, four_b, ncol=2)
+ggsave(file="C:/Git/core-transient/output/plots/4a_4b.pdf", height = 10, width = 15,grid)
 
