@@ -49,13 +49,14 @@ library(sp)
 library(rgdal)
 library(maptools)
 library(rgeos)
+library(plyr)
 library(dplyr)
 library(fields)
 library(tidyr)
 library(ggplot2)
 library(nlme)
 library(gridExtra)
-library(plyr) # for core-transient functions
+ # for core-transient functions
 library(merTools)
 library(digest)
 library(devtools)
@@ -532,7 +533,7 @@ dev.off()
 #bring in lat-lons for each focal route and creating sites
 bbs_allscales = read.csv("data/bbs_allscales.csv", header = TRUE)
 bbs_latlon = read.csv("//bioark.ad.unc.edu/HurlbertLab/Jenkins/BBS scaled/good_rtes2.csv", header = TRUE)
-bbs_allscales = rename(bbs_latlon, focalrte = stateroute) %>%
+bbs_allscales = dplyr::rename(bbs_latlon, focalrte = stateroute) %>%
   right_join(bbs_allscales, by = "focalrte")
 
 
@@ -563,18 +564,19 @@ ndvimean = ndvim/10000
 bbs_allscales$ndvi<-raster::extract(ndvimean, sites, buffer = 40000, fun = mean)
 bbs_allscales$varndvi<-raster::extract(ndvimean, sites, buffer = 40000, fun = var)
 
+bbs_envs = bbs_allscales #wrote to file; reading back in and adding elev data 
+#instead of rerunning raster extractions for previous env variables
 
-#skipping elev and elev rad for now because files are weird
 #elev 
 # #mean elevation PLUS elevational range 
 #using the getData function: 
 elev <- raster::getData("worldclim", var = "alt", res = 10)
 alt_files<-paste('alt_10m_bil', sep='')
 
-bbs_allscales$elev<-raster::extract(elevmean, sites, buffer = 40000, fun = mean)
-bbs_allscales$varelev<-raster::extract(elevmean, sites, buffer = 40000, fun = var)
+bbs_envs$elev<-raster::extract(elev, sites, buffer = 40000, fun = mean)
+bbs_envs$varelev<-raster::extract(elev, sites, buffer = 40000, fun = var)
 
-bbs_envs = bbs_allscales
+
 #write.csv(bbs_envs, "scripts/R-scripts/scale_analysis/bbs_envs.csv", row.names = FALSE) wrote file 2/22 w/out elev and using old env data
 
 
