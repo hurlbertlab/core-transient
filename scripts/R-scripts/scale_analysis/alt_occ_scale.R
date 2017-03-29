@@ -577,7 +577,7 @@ bbs_envs$elev<-raster::extract(elev, sites, buffer = 40000, fun = mean)
 #bbs_envs$varelev<-raster::extract(elev, sites, buffer = 40000, fun = var)
 #^save for later since var irrelvant anyway
 
-write.csv(bbs_envs, "scripts/R-scripts/scale_analysis/bbs_envs.csv", row.names = FALSE) #wrote file 03/28 w/elev and using old env data
+#write.csv(bbs_envs, "scripts/R-scripts/scale_analysis/bbs_envs.csv", row.names = FALSE) #wrote file 03/28 w/elev and using old env data
 
 
 ####Coef vs env variation models####
@@ -585,7 +585,7 @@ write.csv(bbs_envs, "scripts/R-scripts/scale_analysis/bbs_envs.csv", row.names =
 # a function of env variables
 bbs_envs = read.csv("scripts/R-scripts/scale_analysis/bbs_envs.csv", header = TRUE)
 coefs = read.csv("scripts/R-scripts/scale_analysis/coefs.csv", header = TRUE)
-uniq_env = unique(bbs_envs[, c('focalrte', 'temp', 'vartemp', 'meanP', 'varP', 'ndvi', 'varndvi')])
+uniq_env = unique(bbs_envs[, c('focalrte', 'temp', 'vartemp', 'meanP', 'varP', 'ndvi', 'varndvi', 'elev')])
 # Merge environmental data with the coef shape data
 env_coefs = inner_join(coefs, uniq_env, by = c('stateroute' = 'focalrte'))
 
