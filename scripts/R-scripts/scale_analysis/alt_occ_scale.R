@@ -577,7 +577,7 @@ bbs_envs$elev<-raster::extract(elev, sites, buffer = 40000, fun = mean)
 #bbs_envs$varelev<-raster::extract(elev, sites, buffer = 40000, fun = var)
 #^save for later since var irrelvant anyway
 
-write.csv(bbs_envs, "scripts/R-scripts/scale_analysis/bbs_envs.csv", row.names = FALSE) #wrote file 03/28 w/out elev and using old env data
+write.csv(bbs_envs, "scripts/R-scripts/scale_analysis/bbs_envs.csv", row.names = FALSE) #wrote file 03/28 w/elev and using old env data
 
 
 ####Coef vs env variation models####
