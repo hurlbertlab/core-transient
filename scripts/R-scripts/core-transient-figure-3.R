@@ -66,15 +66,15 @@ bbs_area = read.csv("data/BBS/bbs_area.csv", header = TRUE)
 areamerge = rbind(bbs_area,areamerge.5)
 write.csv(areamerge, "output/tabular_data/areamerge.csv", row.names = FALSE)
 
+scaleIDs = filter(dataformattingtable, spatial_scale_variable == 'Y',
+                  format_flag == 1)$dataset_ID 
+scaleIDs = scaleIDs[! scaleIDs %in% c(207, 210, 217, 218, 222, 223, 225, 241,258, 282, 322, 280, 248, 254, 291)]  # waiting on data for 248
+area_plot = c()
 pdf('output/plots/3a_sara_scale_area_reg.pdf', height = 6, width = 7.5)
 par(mfrow = c(1, 1), mar = c(6, 6, 1, 1), mgp = c(4, 1, 0), 
     cex.axis = 1.5, cex.lab = 2, las = 1)
 palette(colors7)
-scaleIDs = filter(dataformattingtable, spatial_scale_variable == 'Y',
-                  format_flag == 1)$dataset_ID 
-scaleIDs = scaleIDs[! scaleIDs %in% c(207, 210, 217, 218, 222, 223, 225, 241,258, 282, 322, 280, 248, 254, 291)]  # waiting on data for 248
 
-area_plot = c()
 for(id in scaleIDs){
   print(id)
   plotsub = subset(areamerge,datasetID == id)
