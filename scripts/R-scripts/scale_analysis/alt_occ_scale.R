@@ -606,76 +606,67 @@ for (d in 2:25) {
   }
 }
 
-#write.csv(rsqrd_df, "scripts/R-scripts/scale_analysis/mod_rsqrds.csv", row.names = FALSE) #updated 02/27 POST-meeting
+#write.csv(rsqrd_df, "scripts/R-scripts/scale_analysis/mod_rsqrds.csv", row.names = FALSE) #updated 03/28 with elev
 ####Visually Characterizing r2 vals####
 rsqrd_df = read.csv("scripts/R-scripts/scale_analysis/mod_rsqrds.csv", header = TRUE)
-ggplot(data = rsqrd_df, aes(x = dep, y = r2))+geom_boxplot()+facet_wrap(~ind)
-#boxplot(r2~ind, data = rsqrd_df)
+ggplot(data = rsqrd_df, aes(x = ind, y = r2))+geom_boxplot()
+#subset to examine just r2 vals vs env var for the inflexion points (i) alone 
 
+rsub = rsqrd_df %>%
+  filter(dep == "OA.i" | dep == "ON.i" | dep == "CA.i" | dep == "CN.i") %>%
+  filter(ind == "elev" | ind == "meanP" | ind == "ndvi" | ind == "temp")
 
+rsub = droplevels(rsub) #removing ghost levels to ensure correct plotting/analyses
 
+ggplot(data = rsub, aes(x = ind, y = r2)) + geom_boxplot()
 
-####Plot obs vs pred####
+####R2 vals for env vars and coefs####
+####Visually Characterizing r2 vals####
+rsqrd_df = read.csv("scripts/R-scripts/scale_analysis/mod_rsqrds.csv", header = TRUE)
+ggplot(data = rsqrd_df, aes(x = ind, y = r2))+geom_boxplot()
+#subset to examine just r2 vals vs env var for the inflexion points (i) alone 
 
-#don't need anymore; delete below code
-pdf("output/plots/Molly Plots/BBS_testplot.pdf", onefile = TRUE)
-# 
-# for (s in stateroutes) {
-# s = 2001
-# plotsub = subset(bbs_allscales, bbs_allscales$focalrte == s)
-# OAlog = nls(meanOcc ~ SSlogis(logA, Asym, xmid, scal), data = plotsub)
-# OApred = predict(OAlog)
-# 
-# theme_set(theme_bw()+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()))
-# plot1 = ggplot(plotsub, aes(x = logA, y = meanOcc))+geom_point(colour = "olivedrab")+
-#   geom_line(aes(x = logA, y = OApred), color = "navy")}
+rsub = rsqrd_df %>%
+  filter(dep == "OA.i" | dep == "ON.i" | dep == "CA.i" | dep == "CN.i") %>%
+  filter(ind == "elev" | ind == "meanP" | ind == "ndvi" | ind == "temp")
 
+rsub = droplevels(rsub) #removing ghost levels to ensure correct plotting/analyses
+rsub$ind = factor(rsub$ind, labels = c("Elevation", "Mean Precipitation", "NDVI", "Mean Temperature"))
+#checked to make sure labels appropriate order; in future ensure by reordering manually? 
 
-#not yet working in loop but works for s = 2001; not fault of pctTran either
+ggplot(data = rsub, aes(x = ind, y = r2, fill = ind))+geom_boxplot()+
+  scale_fill_manual(values = c("#00A08A", "#F2AD00", "#FF0000", "#F98400"), guide = FALSE)+
+  labs(x = "Environmental Predictors", 
+       y = expression(paste("Variation in Scale-Occupancy Relationship ", "(", R^{2}, ")")))+theme_classic()
+ggsave("C:/git/core-transient/output/plots/Molly Plots/envr_inflxn.tiff")  
 
-stateroutes = unique(bbs_allscales$focalrte)
-tiff("output/plots/Molly Plots/BBS_predplots.tif")
-stateroutes = 2001 
-for (s in stateroutes) {
-  #log(area)
-  theme_set(theme_bw()+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()))
-  plotsub = subset(bbs_allscales, bbs_allscales$focalrte == s)
+####Variance Partitioning of Env Predictors####
+#would I be basing my total remaining unexplained variation off of the meanOcc~logA relationship? (OA.i?)
+#so the 12% remaining
+#focusing just on OA.i and main env vars
+#how do variance partitioning with more than 4 parts? 
 
-   OAlog = nls(meanOcc ~ SSlogis(logA, Asym, xmid, scal), data = plotsub)
-   OApred = predict(OAlog)
-  plot1 = ggplot(plotsub, aes(x = logA, y = meanOcc))+geom_point(colour = "firebrick")+
-    geom_line(aes(x = logA, y = OApred), color = "navy")
+globalmod<-lm(OA.i~elev+meanP+temp+ndvi, data=env_coefs)
+mod1<-lm(OA.i~elev, data=env_coefs)
+mod2<-lm(OA.i~meanP, data=env_coefs)
+mod3<-lm(OA.i~ndvi, data=env_coefs)
+mod4<-lm(OA.i~temp, data=env_coefs)
+#and then Euclid_mod2
+summary(globalmod)$r.squared
+summary(mod1)$r.squared
+summary(mod2)$r.squared
+summary(mod3)$r.squared
+summary(mod4)$r.squared 
 
-   CAlog = nls(pctCore ~ SSlogis(logA, Asym, xmid, scal), data = plotsub)
-   CApred = predict(CAlog)
-  plot1_2= ggplot(plotsub, aes(x = logA, y = pctCore))+geom_point(colour = "turquoise")+
-    geom_line(aes(x = logA, y = CApred), color = "navy")
+#running with mods 2+3 bc best ranked and most interesting 
 
-   TAlog = lm(log(pctTran) ~ lnA, data = plotsub)
-   TApred = predict(TAlog)
-  plot1_3 = ggplot(plotsub, aes(x = lnA, y = log(pctTran)))+geom_point(colour = "olivedrab")+
-   geom_line(aes(x = lnA, y = TApred), color = "navy")
+a= summary(globalmod)$r.squared - summary(mod2)$r.squared
+a
+c= summary(globalmod)$r.squared - summary(mod3)$r.squared
+c
+b= summary(mod2)$r.squared - c
+b
+d= 1- summary(globalmod)$r.squared
+d
 
-
-  #aveN
-   ONlog = nls(meanOcc ~ SSlogis(logN, Asym, xmid, scal), data = plotsub)
-   ONpred = predict(ONlog)
-  plot2 = ggplot(plotsub, aes(x = logN, y = meanOcc))+geom_point(colour = "firebrick")+
-    geom_line(aes(x = logN, y = ONpred), color = "navy")
-
-   CNlog = nls(pctCore ~ SSlogis(logN, Asym, xmid, scal), data = plotsub)
-   CNpred = predict(CNlog)
-  plot2_2= ggplot(plotsub, aes(x = logN, y = pctCore))+geom_point(colour = "turquoise")+
-    geom_line(aes(x = logN, y = CNpred), color = "navy")
-
-   TNlog = lm(log(pctTran) ~ lnN, data = plotsub)
-   TNpred = predict(TNlog)
-  plot2_3 = ggplot(plotsub, aes(x = lnN, y = log(pctTran)))+geom_point(colour = "olivedrab")+
-    geom_line(aes(x = lnN, y = TNpred), color = "navy")
-
-  predplot = grid.arrange(plot1, plot2, plot1_2, plot2_2, plot1_3, plot2_3,
-                          ncol=2, top = paste("predplot_", s, sep = ""))
-  }
-dev.off()
-
-
+#isn't it ok that d = ~87.5% tho, given that the r^2 for occ~logA was 88%? 
