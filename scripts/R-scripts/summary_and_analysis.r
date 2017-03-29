@@ -135,45 +135,45 @@ write.csv(taxcolors, "output/tabular_data/taxcolors.csv", row.names = FALSE)
 pdf('output/plots/data_summary_hists.pdf', height = 8, width = 10)
 par(mfrow = c(2, 2), mar = c(6,6,1,1), cex = 1.25, oma = c(0,0,0,0), las = 1,
     cex.lab = 1)
-b1=barplot(dsetsBySystem, col = c('burlywood','skyblue', 'navy')) 
+b1=barplot(dsetsBySystem, col = c('burlywood','skyblue', 'navy'), cex.names = 0.75) 
 mtext("# Datasets", 2, cex = 1, las = 0, line = 2.5)
-barplot(log10(sitesBySystem), col = c('burlywood','skyblue', 'navy'), cex.names = 1, 
+barplot(log10(sitesBySystem), col = c('burlywood','skyblue', 'navy'), cex.names = 0.75, 
         yaxt = "n", ylim = c(0,4)) 
 axis(2, 0:4)
-mtext(expression(log[10] ~ " # Assemblages"), 2, cex = 1.5, las = 0, line = 2.5)
+mtext(expression(log[10] ~ " # Assemblages"), 2, cex = 1, las = 0, line = 2.5)
 bar1 = barplot(dsetsByTaxa[taxorder], xaxt = "n", axisnames = F,
                col = as.character(taxcolors$color[match(taxorder, taxcolors$taxa)]))
 # text(bar1, par("usr")[3], taxcolors$abbrev, adj = c(1, 1), xpd = TRUE, cex = 1) 
 
-mtext("# Datasets", 2, cex = 1.5, las = 0, line = 2.5)
+mtext("# Datasets", 2, cex = 1, las = 0, line = 2.5)
 bar2 = barplot(log10(sitesByTaxa[taxorder]), axes = F, axisnames = F, ylim = c(0,3),
                col = as.character(taxcolors$color[match(taxorder, taxcolors$taxa)]))
 axis(2, 0:4)
-mtext(expression(log[10] ~ " # Assemblages"), 2, cex = 1.5, las = 0, line = 2.5)
+mtext(expression(log[10] ~ " # Assemblages"), 2, cex = 1, las = 0, line = 2.5)
 dev.off()
 
 
 ### boxplot summary fig of all time/richness by taxa
 pdf('output/plots/numspp_comm.pdf', height = 8, width = 10)
+par(mfrow = c(1, 2), mar = c(6,6,1,1), cex = 1.25, oma = c(0,0), las = 1)
 summ1$taxa <-droplevels(summ1$taxa, exclude = c("","All","Amphibian", "Reptile"))
 summ1.col = merge(summ1, taxcolors, by = "taxa")
 summ1.col$taxa <- factor(summ1.col$taxa,
                     levels = c('Bird','Plant','Mammal','Fish','Invertebrate','Benthos','Plankton'),ordered = TRUE)
 rankedtaxorder = c('Bird','Mammal','Plankton','Benthos','Invertebrate','Plant','Fish')
 
-bar1 = boxplot(summ1.col$spRichTotal~summ1.col$taxa, xaxt = "n",  col = as.character(summ1.col$color[match(taxorder, summ1.col$taxa)]))
+bar1 = boxplot(summ1.col$spRichTotal~summ1.col$taxa, xaxt = "n", cex.axis =1.5,  col = as.character(summ1.col$color[match(taxorder, summ1.col$taxa)]))
 
 mtext(expression(" # Species"), 2, cex = 1.5, las = 0, line = 2.5)
-dev.off()
-
-pdf('output/plots/numcomm.pdf', height = 8, width = 10)
+#dev.off()
+#pdf('output/plots/numcomm.pdf', height = 8, width = 10)
 summ1$taxa <-droplevels(summ1$taxa, exclude = c("","All","Amphibian", "Reptile"))
 summ1.col = merge(summ1, taxcolors, by = "taxa")
 summ1.col$taxa <- factor(summ1.col$taxa,
                          levels = c('Bird','Plant','Mammal','Fish','Invertebrate','Benthos','Plankton'),ordered = TRUE)
 rankedtaxorder = c('Bird','Plant','Mammal','Fish','Invertebrate','Benthos','Plankton')
 
-bar2 = boxplot(summ1.col$nTime~summ1.col$taxa, xaxt = "n",col = as.character(summ1.col$color[match(taxorder, summ1.col$taxa)]))
+bar2 = boxplot(summ1.col$nTime~summ1.col$taxa, xaxt = "n", cex.axis =1.5,col = as.character(summ1.col$color[match(taxorder, summ1.col$taxa)]))
 
 mtext(expression(" Years of Study"), 2, cex = 1.5, las = 0, line = 2.5)
 dev.off()

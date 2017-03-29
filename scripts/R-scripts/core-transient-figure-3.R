@@ -187,5 +187,5 @@ colscale = factor(predmod$color,
                   levels = c("gold2","turquoise2","red","purple4","forestgreen", "#1D6A9B"),ordered = TRUE)
 
 p <- ggplot(predmod, aes(x = factor(abbrev), y = fit, fill=factor(predmod$taxa)))
-p +geom_bar(stat = "identity", fill = levels(colscale)) + geom_errorbar(ymin = predmod$lwr, ymax= predmod$upr, width=0.2) + xlab("Taxa") + ylab("Proportion of Species") + ylim(-.1, 1) + theme(axis.ticks.x=element_blank(),axis.text.x=element_text(size=24),axis.text.y=element_text(size=24),axis.title.x=element_text(size=32),axis.title.y=element_text(size=32,angle=90,vjust = 2))+guides(fill=guide_legend(title="",keywidth = 2, keyheight = 1)) + theme_classic()
-ggsave(file="C:/Git/core-transient/output/plots/predmod3c.pdf", height = 10, width = 15)
+p +geom_bar(stat = "identity", fill = levels(colscale))+ theme_classic() + geom_errorbar(ymin = predmod$lwr, ymax= predmod$upr, width=0.2) + xlab("Taxa") + ylab("Proportion of Species") + ylim(0, 1) + theme(axis.ticks.x=element_blank(),axis.text.x=element_blank(),axis.text.y=element_text(size=30),axis.title.x=element_text(size=30),axis.title.y=element_text(size=24,angle=90,vjust = 2))+guides(fill=guide_legend(title="",keywidth = 2, keyheight = 1)) 
+ggsave(file="C:/Git/core-transient/output/plots/3c_predmod.pdf", height = 10, width = 15)

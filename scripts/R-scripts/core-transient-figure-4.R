@@ -45,8 +45,8 @@ bbs_occ = read.csv("data/BBS/bbs_abun4_spRich.csv", header = TRUE)
 
 # addings symbols to taxcolors
 symbols = c(15, 16, 15, 17, 16, 15, 16) 
-type = c("invert", "vert", "invert", "plant", "vert", "invert", "vert") 
-taxcolors = cbind(taxcolors, type,symbols)
+Type = c("Invertebrate", "Vertebrate", "Invertebrate", "Plant", "Vertebrate", "Invertebrate", "Vertebrate") 
+taxcolors = cbind(taxcolors, Type,symbols)
 
 # calc bbs with and without trans
 notransbbs = bbs_abun_occ %>% filter(occupancy > 1/3) %>% dplyr::count(stateroute, scale) %>% filter(scale == 50)
@@ -157,14 +157,14 @@ logseries_weights_incl = sad_data %>%
 logseries_weights_excl = sad_data %>%
   filter(propOcc > 1/3) %>%
   group_by(datasetID, site) %>% 
-  summarize(weights = get_logseries_weight(abunds), treatment = 'All species excluding transients')
+  summarize(weights = get_logseries_weight(abunds), treatment = 'Excluding transients')
 
 logseries_weights = rbind(logseries_weights_incl, logseries_weights_excl)
 
 colscale = c("dark green","light blue")
 
 k = ggplot(logseries_weights, aes(x = treatment, y = weights, fill=factor(treatment))) +
-  geom_violin(linetype="blank") + xlab("Transient Status") + ylab("Proportion of Species") + scale_fill_manual(labels = c("All species","All species excluding transients"),values = colscale)+ theme_classic()+ ylim(0, 1) + theme(axis.text.x=element_text(size=24), axis.ticks.x=element_blank(),axis.text.y=element_text(size=24),axis.title.x=element_text(size=24),axis.title.y=element_text(size=24,angle=90,vjust = 2))+ xlab(NULL) + ylab("Correlation Coefficient")  + theme(legend.position = "none")
+  geom_violin(linetype="blank") + xlab("Transient Status") + ylab("Proportion of Species") + scale_fill_manual(labels = c("All species","All species excluding transients"),values = colscale)+ theme_classic()+ ylim(-0.01, 1) + theme(axis.text.x=element_text(size=24), axis.ticks.x=element_blank(),axis.text.y=element_text(size=24),axis.title.x=element_text(size=24),axis.title.y=element_text(size=24,angle=90,vjust = 2))+ xlab(NULL) + ylab("Correlation Coefficient")  + theme(legend.position = "none")
 four_a <- k
 ggsave(file="C:/Git/core-transient/output/plots/sad_fit_comparison.pdf", height = 10, width = 15)
 # + guides(fill=guide_legend(title=NULL))+ theme(legend.text = element_text(size = 16),legend.position="top", legend.justification=c(0, 1), legend.key.width=unit(1, "lines"))
@@ -240,8 +240,8 @@ turnover_else$taxa = factor(turnover_else$taxa,
 colscale = c("gold2","turquoise2", "red", "purple4","forestgreen","#1D6A9B") 
 
 m <- ggplot(turnover_else, aes(x = TJ, y = TJnotrans))
-m + geom_abline(intercept = 0,slope = 1, lwd =1.5,linetype="dashed")+geom_point(aes(colour = taxa, shape = type), size = 5.5)+ geom_point(data = turnover_bbs, aes(colour = taxa, shape = type),size = 2) + xlab(expression(paste(italic("z "), "(all species)"))) + ylab(expression(paste(italic("z "), "(excluding transients)")))  + scale_colour_manual(breaks = turnover_col$taxa,values = colscale) + theme_classic() + theme(axis.text.x=element_text(size=24),axis.text.y=element_text(size=24),axis.title.x=element_text(size=24),axis.title.y=element_text(size=24,angle=90,vjust = 2))+ guides(colour = guide_legend(title = "Taxa"))
-four_c <- m
+four_c <-m + geom_abline(intercept = 0,slope = 1, lwd =1.5,linetype="dashed")+geom_point(aes(colour = taxa, shape = Type), size = 5.5)+ geom_point(data = turnover_bbs, aes(colour = taxa, shape = Type),size = 2) + xlab(expression(paste(italic("z "), "(all species)"))) + ylab(expression(paste(italic("z "), "(excluding transients)")))  + scale_colour_manual(breaks = turnover_col$taxa,values = colscale) + theme_classic() + theme(axis.text.x=element_text(size=24),axis.text.y=element_text(size=24),axis.title.x=element_text(size=24),axis.title.y=element_text(size=24,angle=90,vjust = 2))+ guides(colour = guide_legend(title = "Taxa"))
+
 ggsave(file="C:/Git/core-transient/output/plots/4c_spturnover.pdf", height = 10, width = 15)
 
 
@@ -331,11 +331,11 @@ slopes_bbs = merge(slopes_bbs, taxcolors, by = "taxa")
 
 plot_relationship$taxa = factor(plot_relationship$taxa,
                                 levels = c('Invertebrate','Fish','Plankton','Mammal','Plant','Bird','Benthos'),ordered = TRUE)
-colscale = c("gray","#1D6A9B","turquoise2","gold2","purple4", "red", "forestgreen") 
+colscales = c("gray","#1D6A9B","turquoise2","gold2","purple4", "red", "forestgreen") 
 
 p <- ggplot(plot_relationship, aes(x = areaSlope, y = areaSlope_noTrans))
-p + geom_abline(intercept = 0,slope = 1, lwd =1.5,linetype="dashed") +geom_point(data=slopes_bbs, aes(colour = taxa, shape = type),alpha = 5/100, size = 2)+  geom_point(aes(colour = taxa, shape = type), size = 5.5)+ theme_classic() + scale_color_manual("Taxa", breaks = plot_relationship$taxa,values = colscale)+ xlab(expression(paste(italic("z "), "(all species)"))) + ylab(expression(paste(italic("z "), "(excluding transients)"))) +ylim(0,1) + theme(axis.text.x=element_text(size=24),axis.text.y=element_text(size=24),axis.title.x=element_text(size=24),axis.title.y=element_text(size=24,angle=90,vjust = 2))
-four_d <- p
+four_d <-p + geom_abline(intercept = 0,slope = 1, lwd =1.5,linetype="dashed") +geom_point(data=slopes_bbs, aes(colour = taxa, shape = Type),alpha = 5/100, size = 2)+  geom_point(aes(colour = taxa, shape = Type), size = 5.5)+ theme_classic() + scale_color_manual("Taxa", breaks = plot_relationship$taxa,values = colscales)+ xlab(expression(paste(italic("z "), "(all species)"))) + ylab(expression(paste(italic("z "), "(excluding transients)"))) +ylim(0,1)+xlim(0,1) + theme(axis.text.x=element_text(size=24),axis.text.y=element_text(size=24),axis.title.x=element_text(size=24),axis.title.y=element_text(size=24,angle=90,vjust = 2))
+
 
 ggsave(file="C:/Git/core-transient/output/plots/4d_sparea.pdf", height = 10, width = 15)
 
@@ -345,4 +345,25 @@ ggsave(file="C:/Git/core-transient/output/plots/4d_sparea.pdf", height = 10, wid
 grid = grid.arrange(four_a, four_b, ncol=2)
 ggsave(file="C:/Git/core-transient/output/plots/4a_4b.pdf", height = 10, width = 15,grid)
 
+prow <- plot_grid( k + theme(legend.position="none"),
+                   l+ theme(legend.position="none"),
+                   #p1 + theme(legend.position="none"),
+                   align = 'h',
+                   #labels = c("A", "B", "C"),
+                   hjust = -1,
+                   nrow = 1
+)
+ggsave(file="C:/Git/core-transient/output/plots/4a_4b.pdf", height = 12, width = 16,prow)
 #grid = grid.arrange(four_c, four_d, ncol=2)
+
+
+
+z <- plot_grid(four_c + theme(legend.position="none"),
+                   four_d + theme(legend.position="none"),
+                   #p1 + theme(legend.position="none"),
+                   align = 'hv',
+                   #labels = c("A", "B", "C"),
+                   hjust = -1,
+                   nrow = 1
+)
+ggsave(file="C:/Git/core-transient/output/plots/4c_4d.pdf", height = 12, width = 16,z)
