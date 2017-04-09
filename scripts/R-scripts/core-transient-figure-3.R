@@ -34,6 +34,19 @@ datasetIDs = datasetIDs[!datasetIDs %in% c(1)]
 
 #################### FIG 3 ######################### 
 occ_taxa=read.csv("output/tabular_data/occ_taxa.csv",header=TRUE)
+
+colors7 = c(colors()[552], # plankton
+            rgb(29/255, 106/255, 155/255), #bird
+            colors()[144], # invert
+            colors()[139], # plant
+            colors()[551], #mammal
+            colors()[17], #benthos
+            colors()[637]) #fish
+
+
+
+symbols7 = c(16, 18, 167, 15, 17, 1, 3) 
+
 taxcolors = read.csv("output/tabular_data/taxcolors.csv", header = TRUE)
 scaleIDs = filter(dataformattingtable, spatial_scale_variable == 'Y',
                   format_flag == 1)$dataset_ID
@@ -51,17 +64,17 @@ areamerge.5  = areamerge.5 [, c("datasetID", "site", "taxa", "pctTrans", "area")
 # read in bbs abundance data
 bbs_area = read.csv("data/BBS/bbs_area.csv", header = TRUE)
 areamerge = rbind(bbs_area,areamerge.5)
-write.csv(areamerge, "output/tabular_data/areamerge/csv", row.names = FALSE)
+write.csv(areamerge, "output/tabular_data/areamerge.csv", row.names = FALSE)
 
+scaleIDs = filter(dataformattingtable, spatial_scale_variable == 'Y',
+                  format_flag == 1)$dataset_ID 
+scaleIDs = scaleIDs[! scaleIDs %in% c(207, 210, 217, 218, 222, 223, 225, 241,258, 282, 322, 280, 248, 254, 291)]  # waiting on data for 248
+area_plot = c()
 pdf('output/plots/3a_sara_scale_area_reg.pdf', height = 6, width = 7.5)
 par(mfrow = c(1, 1), mar = c(6, 6, 1, 1), mgp = c(4, 1, 0), 
     cex.axis = 1.5, cex.lab = 2, las = 1)
 palette(colors7)
-scaleIDs = filter(dataformattingtable, spatial_scale_variable == 'Y',
-                  format_flag == 1)$dataset_ID 
-scaleIDs = scaleIDs[! scaleIDs %in% c(207, 210, 217, 218, 222, 223, 225, 241,258, 282, 322, 280, 248, 254, 291)]  # waiting on data for 248
 
-area_plot = c()
 for(id in scaleIDs){
   print(id)
   plotsub = subset(areamerge,datasetID == id)
@@ -80,7 +93,7 @@ for(id in scaleIDs){
   par(new=TRUE)
 }
 par(new=TRUE)
-legend('bottomleft', legend = as.character(taxcolors$taxa), lty=1,lwd=3,col = as.character(taxcolors$color), cex = 1)
+#legend('bottomleft', legend = as.character(taxcolors$taxa), lty=1,lwd=3,col = as.character(taxcolors$color), cex = 1)
 dev.off()
 
 colnames(area_plot) = c("id","xlow","xhigh","slope", "taxa")
@@ -89,7 +102,7 @@ area_plot$datasetID = as.numeric(area_plot$id)
 area_plot$xlow = as.numeric(area_plot$xlow)
 area_plot$xhigh = as.numeric(area_plot$xhigh)
 area_plot$slope = as.numeric(area_plot$slope)
-write.csv(area_plot, "fig_3a_output.csv", row.names =FALSE)
+write.csv(area_plot, "output/tabular_data/fig_3a_output.csv", row.names =FALSE)
 
 
 # ggplot not happening
@@ -121,7 +134,7 @@ for(id in scaleIDs){
   print(xhats)
   taxcolor = subset(taxcolors, taxa == as.character(plotsub$taxa)[1])
   y=summary(mod3)$coef[1] + (xhats)*summary(mod3)$coef[2]
-  plot(NA, xlim = c(-1, 7), ylim = c(0,1), col = as.character(taxcolor$color), xlab = expression("Log"[10]*" Community Size"), ylab = "% Transients", cex = 1.5)
+  plot(NA, xlim = c(0, 7), ylim = c(0,1), col = as.character(taxcolor$color), xlab = expression("Log"[10]*" Community Size"), ylab = "% Transients", cex = 1.5)
   lines(log10(plotsub$meanAbundance), fitted(mod3), col=as.character(taxcolor$color),lwd=5)
   par(new=TRUE)
 }
@@ -144,7 +157,7 @@ for(id in scaleIDs){
   print(xhats)
   taxcolor=subset(taxcolors, taxa == as.character(plotsub$taxa)[1])
   y=summary(mod3)$coef[1] + (xhats)*summary(mod3)$coef[2]
-  plot(NA, xlim = c(-1, 7), ylim = c(0,1), col = as.character(taxcolor$color), xlab = expression("Log"[10]*" Community Size"), ylab = "% Core", cex = 1.5)
+  plot(NA, xlim = c(0, 7), ylim = c(0,1), col = as.character(taxcolor$color), xlab = expression("Log"[10]*" Community Size"), ylab = "% Core", cex = 1.5)
   lines(log10(plotsub$meanAbundance), fitted(mod3), col=as.character(taxcolor$color),lwd=5)
   par(new=TRUE)
 }
@@ -174,5 +187,5 @@ colscale = factor(predmod$color,
                   levels = c("gold2","turquoise2","red","purple4","forestgreen", "#1D6A9B"),ordered = TRUE)
 
 p <- ggplot(predmod, aes(x = factor(abbrev), y = fit, fill=factor(predmod$taxa)))
-p +geom_bar(stat = "identity", fill = levels(colscale)) + geom_errorbar(ymin = predmod$lwr, ymax= predmod$upr, width=0.2) + xlab("Taxa") + ylab("Proportion of Species") + ylim(-.1, 1) + theme(axis.ticks.x=element_blank(),axis.text.x=element_text(size=24),axis.text.y=element_text(size=24),axis.title.x=element_text(size=32),axis.title.y=element_text(size=32,angle=90,vjust = 2))+guides(fill=guide_legend(title="",keywidth = 2, keyheight = 1)) + theme_classic()
-ggsave(file="C:/Git/core-transient/output/plots/predmod3c.pdf", height = 10, width = 15)
+p +geom_bar(stat = "identity", fill = levels(colscale))+ theme_classic() + geom_errorbar(ymin = predmod$lwr, ymax= predmod$upr, width=0.2) + xlab("") + ylab("Proportion of Species") + ylim(0, 1) + theme(axis.ticks.x=element_blank(),axis.text.x=element_blank(),axis.text.y=element_text(size=30),axis.title.x=element_text(size=30),axis.title.y=element_text(size=24,angle=90,vjust = 2))+guides(fill=guide_legend(title="",keywidth = 2, keyheight = 1)) 
+ggsave(file="C:/Git/core-transient/output/plots/3c_predmod.pdf", height = 10, width = 15)

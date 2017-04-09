@@ -10,15 +10,15 @@ setwd("C:/git/core-transient")
 library(lme4)
 library(plyr) # for core-transient functions
 library(ggplot2)
+library(gridExtra)
 library(tidyr)
 library(maps)
-library(gridExtra)
+library(cowplot)
 library(RColorBrewer)
 library(sp)
 library(rgdal)
 library(raster)
 library(dplyr)
-library(merTools)
 library(digest)
 
 
@@ -148,7 +148,7 @@ propCT_long$abbrev = gsub("Mammal", 'M', propCT_long$abbrev)
 propCT_long$abbrev = gsub("Plankton", 'Pn', propCT_long$abbrev)
 propCT_long$abbrev = gsub("Plant", 'Pt', propCT_long$abbrev)
 propCT_long$abbrev = factor(propCT_long$abbrev,
-                            levels = c('I','F','Pn','M','Pt','Bi','Be'),ordered = TRUE)
+                            levels = c('I','F','Pn','Pt','M','Bi','Be'),ordered = TRUE)
 
 colscale = c("#c51b8a", "#fdd49e", "#225ea8")
 m = ggplot(data=propCT_long, aes(factor(abbrev), y=value, fill=factor(class))) + geom_bar(stat = "identity")  + theme_classic() + xlab("Taxa") + ylab("Proportion of Species")+ scale_fill_manual(labels = c("Core", "Intermediate", "Transient"),values = colscale)+theme(axis.ticks.x=element_blank(),axis.text.x=element_text(size=20),axis.text.y=element_text(size=20),axis.title.x=element_text(size=24),axis.title.y=element_text(size=24,angle=90,vjust = 2.5))+ theme(legend.text=element_text(size=18),legend.key.size = unit(2, 'lines'))+theme(legend.position="top", legend.justification=c(0, 1), legend.key.width=unit(1, "lines"))+ guides(fill = guide_legend(keywidth = 3, keyheight = 1,title="", reverse=TRUE))+ coord_fixed(ratio = 4)
@@ -162,6 +162,21 @@ prope_long$system = factor(prope_long$system,
 e = ggplot(data=prope_long, aes(factor(system), y=value, fill=factor(class))) + geom_bar(stat = "identity")  + theme_classic() + xlab("Ecosystem") + ylab("")+ scale_fill_manual(labels = c("Core", "Intermediate", "Transient"), values = colscale)+theme(axis.ticks.x=element_blank(),axis.text.x=element_text(size=14, angle = 90),axis.text.y=element_text(size=20),axis.title.x=element_text(size=24),axis.title.y=element_text(size=24,angle=90,vjust = 2.5))+ theme(legend.text=element_text(size=18),legend.key.size = unit(2, 'lines'))+theme(legend.position="top", legend.justification=c(0, 1), legend.key.width=unit(1, "lines"))+ guides(fill = guide_legend(keywidth = 3, keyheight = 1,title="", reverse=TRUE))+ coord_fixed(ratio = 4)
 
 ggsave(file="C:/Git/core-transient/output/plots/2b.pdf", height = 10, width = 15)
+
+# make a gridded plot
+legend <- get_legend(m)
+p1 = NULL
+prow <- plot_grid( m + theme(legend.position="none"),
+                   e + theme(legend.position="none"),
+                   #p1 + theme(legend.position="none"),
+                   align = 'vh',
+                   #labels = c("A", "B", "C"),
+                   hjust = -1,
+                   nrow = 1
+)
+#plot_grid(prow,legend, ncol = 1,rel_heights = c(1, 0.2)) #, labels = c("A", "B")
+ggsave(file="C:/Git/core-transient/output/plots/2a_2b.pdf", height = 10, width = 15,prow)
+
 #### barplot of percent transients by taxa ---SUPP FIG
 CT_long$taxa = as.factor(CT_long$taxa)
 CT_long$abbrev = CT_long$taxa
@@ -188,10 +203,3 @@ p = p+geom_boxplot(width=0.8,position=position_dodge(width=0.8),aes(x=factor(abb
   scale_fill_manual(labels = c("10%", "25%", "33%"),
                     values = cols)+theme(axis.ticks.x=element_blank(),axis.text.x=element_text(size=20),axis.text.y=element_text(size=20),axis.title.x=element_text(size=24),axis.title.y=element_text(size=24,angle=90,vjust = 2))+guides(fill=guide_legend(title="",keywidth = 2, keyheight = 1)) + theme(legend.text=element_text(size=24),legend.key.size = unit(2, 'lines'), legend.title=element_text(size=24))+theme(legend.position="top", legend.justification=c(0, 1), legend.key.width=unit(1, "lines"))+ coord_fixed(ratio = 4)
 
-#colscale = c("#c51b8a", "#fdd49e", "#225ea8")
-#plot1 <- m
-#cols=c("#ece7f2","#9ecae1",  "#225ea8")
-#plot2 <- p
-#grid = grid.arrange(plot1, plot2, ncol=2)
-
-#ggsave(file="C:/Git/core-transient/output/plots/comboplot.pdf", height = 10, width = 15,grid)

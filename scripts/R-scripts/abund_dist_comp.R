@@ -14,7 +14,7 @@ get_valid_datasetIDs = function(){
     filter(!dataset_ID %in% c(226, 228, 247, 264, 298, 299, 300, 301)) %>%
     # exclude BBS for now and analyze it separately
     filter(dataset_ID !=1) %>% 
-    select(dataset_ID)
+    dplyr::select(dataset_ID)
 }
 
 #' Get table of species abundances
@@ -99,16 +99,17 @@ sad_data = left_join(summed_abunds, propocc_data, by = c('datasetID', 'site', 's
 
 logseries_weights_incl = sad_data %>%
   group_by(datasetID, site) %>% 
-  summarize(weights = get_logseries_weight(abunds), treatment = 'incl')
+  summarize(weights = get_logseries_weight(abunds), treatment = 'Transients')
 
 logseries_weights_excl = sad_data %>%
   filter(propOcc > 1/3) %>%
   group_by(datasetID, site) %>% 
-  summarize(weights = get_logseries_weight(abunds), treatment = 'excl')
+  summarize(weights = get_logseries_weight(abunds), treatment = 'No Transients')
 
 logseries_weights = rbind(logseries_weights_incl, logseries_weights_excl)
 
-ggplot(logseries_weights, aes(x = treatment, y = weights)) +
-  geom_violin()
+colscale = c("dark green","light blue")
 
-ggsave('output/plots/sad_fit_comparison.png')
+ggplot(logseries_weights, aes(x = treatment, y = weights, fill=factor(treatment))) +
+  geom_violin(linetype="blank") + xlab("Transient Status") + ylab("Proportion of Species") + scale_fill_manual(labels = c("All species","All species excluding transients"),values = colscale)+ theme_classic()+ ylim(0, 1) + theme(axis.ticks.x=element_blank(),axis.text.x=element_blank(),axis.text.y=element_text(size=24),axis.title.x=element_text(size=32),axis.title.y=element_text(size=32,angle=90,vjust = 2))+guides(fill=guide_legend(title="",keywidth = 2, keyheight = 1))
+ggsave('output/plots/sad_fit_comparison.pdf')

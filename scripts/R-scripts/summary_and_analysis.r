@@ -135,45 +135,45 @@ write.csv(taxcolors, "output/tabular_data/taxcolors.csv", row.names = FALSE)
 pdf('output/plots/data_summary_hists.pdf', height = 8, width = 10)
 par(mfrow = c(2, 2), mar = c(6,6,1,1), cex = 1.25, oma = c(0,0,0,0), las = 1,
     cex.lab = 1)
-b1=barplot(dsetsBySystem, col = c('burlywood','skyblue', 'navy')) 
+b1=barplot(dsetsBySystem, col = c('burlywood','skyblue', 'navy'), cex.names = 0.75) 
 mtext("# Datasets", 2, cex = 1, las = 0, line = 2.5)
-barplot(log10(sitesBySystem), col = c('burlywood','skyblue', 'navy'), cex.names = 1, 
+barplot(log10(sitesBySystem), col = c('burlywood','skyblue', 'navy'), cex.names = 0.75, 
         yaxt = "n", ylim = c(0,4)) 
 axis(2, 0:4)
-mtext(expression(log[10] ~ " # Assemblages"), 2, cex = 1.5, las = 0, line = 2.5)
+mtext(expression(log[10] ~ " # Assemblages"), 2, cex = 1, las = 0, line = 2.5)
 bar1 = barplot(dsetsByTaxa[taxorder], xaxt = "n", axisnames = F,
                col = as.character(taxcolors$color[match(taxorder, taxcolors$taxa)]))
 # text(bar1, par("usr")[3], taxcolors$abbrev, adj = c(1, 1), xpd = TRUE, cex = 1) 
 
-mtext("# Datasets", 2, cex = 1.5, las = 0, line = 2.5)
+mtext("# Datasets", 2, cex = 1, las = 0, line = 2.5)
 bar2 = barplot(log10(sitesByTaxa[taxorder]), axes = F, axisnames = F, ylim = c(0,3),
                col = as.character(taxcolors$color[match(taxorder, taxcolors$taxa)]))
 axis(2, 0:4)
-mtext(expression(log[10] ~ " # Assemblages"), 2, cex = 1.5, las = 0, line = 2.5)
+mtext(expression(log[10] ~ " # Assemblages"), 2, cex = 1, las = 0, line = 2.5)
 dev.off()
 
 
 ### boxplot summary fig of all time/richness by taxa
 pdf('output/plots/numspp_comm.pdf', height = 8, width = 10)
+par(mfrow = c(1, 2), mar = c(6,6,1,1), cex = 1.25, oma = c(0,0), las = 1)
 summ1$taxa <-droplevels(summ1$taxa, exclude = c("","All","Amphibian", "Reptile"))
 summ1.col = merge(summ1, taxcolors, by = "taxa")
 summ1.col$taxa <- factor(summ1.col$taxa,
                     levels = c('Bird','Plant','Mammal','Fish','Invertebrate','Benthos','Plankton'),ordered = TRUE)
 rankedtaxorder = c('Bird','Mammal','Plankton','Benthos','Invertebrate','Plant','Fish')
 
-bar1 = boxplot(summ1.col$spRichTotal~summ1.col$taxa, xaxt = "n",  col = as.character(summ1.col$color[match(taxorder, summ1.col$taxa)]))
+bar1 = boxplot(summ1.col$spRichTotal~summ1.col$taxa, xaxt = "n", cex.axis =1.5,  col = as.character(summ1.col$color[match(taxorder, summ1.col$taxa)]))
 
 mtext(expression(" # Species"), 2, cex = 1.5, las = 0, line = 2.5)
-dev.off()
-
-pdf('output/plots/numcomm.pdf', height = 8, width = 10)
+#dev.off()
+#pdf('output/plots/numcomm.pdf', height = 8, width = 10)
 summ1$taxa <-droplevels(summ1$taxa, exclude = c("","All","Amphibian", "Reptile"))
 summ1.col = merge(summ1, taxcolors, by = "taxa")
 summ1.col$taxa <- factor(summ1.col$taxa,
                          levels = c('Bird','Plant','Mammal','Fish','Invertebrate','Benthos','Plankton'),ordered = TRUE)
 rankedtaxorder = c('Bird','Plant','Mammal','Fish','Invertebrate','Benthos','Plankton')
 
-bar2 = boxplot(summ1.col$nTime~summ1.col$taxa, xaxt = "n",col = as.character(summ1.col$color[match(taxorder, summ1.col$taxa)]))
+bar2 = boxplot(summ1.col$nTime~summ1.col$taxa, xaxt = "n", cex.axis =1.5,col = as.character(summ1.col$color[match(taxorder, summ1.col$taxa)]))
 
 mtext(expression(" Years of Study"), 2, cex = 1.5, las = 0, line = 2.5)
 dev.off()
@@ -261,13 +261,13 @@ all_latlongs = na.omit(all_latlongs)
 # Makes routes into a spatialPointsDataframe
 coordinates(all_latlongs)=c('Lon','Lat')
 projection(all_latlongs) = CRS("+proj=longlat +ellps=WGS84")
-prj.string <- "+proj=longlat +ellps=WGS84"
+prj.string <- "+proj=laea +lat_0=45.235 +lon_0=-106.675 +units=km"
 # Transforms routes to an equal-area projection - see previously defined prj.string
 routes.laea = spTransform(all_latlongs, CRS(prj.string))
 
 ##### extracting elevation data ####
 # A function that draws a circle of radius r around a point: p (x,y)
-RADIUS = 5
+RADIUS = 40
 
 make.cir = function(p,r){
   points=c()
@@ -283,7 +283,7 @@ make.cir = function(p,r){
 }
 
 routes.laea@data$dId_site = paste(routes.laea@data$datasetID, routes.laea@data$site, sep = "_")
-routes.laea@data$unique = 1:16549
+routes.laea@data$unique = 1:16604
 
 
 #Draw circles around all routes 
@@ -306,14 +306,15 @@ elev.mean = raster::extract(elev, circs.sp, fun = mean, na.rm=T)
 elev.var = raster::extract(elev, circs.sp, fun = var, na.rm=T)
 
 env_elev = data.frame(unique = routes.laea@data$unique, elev.point = elev.point, elev.mean = elev.mean, elev.var = elev.var)
-# write.csv(env_elev, "env_elev.csv", row.names = F)
-# env_elev = read.csv("env_elev.csv", header = TRUE)
+
 
 lat_scale_elev = merge(routes.laea, env_elev, by = c("unique")) # checked to make sure order lined up, d/n seem to be another way to merge since DID keeps getting lost
 lat_scale_elev = data.frame(lat_scale_elev)
 
 lat_scale_rich = merge(lat_scale_elev, summ2[,c("datasetID","site", "meanAbundance")], by = c("datasetID", "site"))
 #  "spRichTrans", 
+# write.csv(lat_scale_rich, "output/tabular_data/lat_scale_rich.csv", row.names = F)
+# lat_scale_rich = read.csv("lat_scale_rich.csv", header = TRUE)
 
 # Model
 mod1 = lmer(propTrans ~ (1|taxa) * log10(meanAbundance) * log10(elev.var), data=lat_scale_rich) 

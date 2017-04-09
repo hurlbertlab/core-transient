@@ -763,6 +763,7 @@ head(propOccFun(subsettedData))
 
 hist(propOccFun(subsettedData)$propOcc)
 
+mean(propOccFun(subsettedData)$propOcc)
 # Take a look at the site summary frame:
 
 siteSummaryFun(subsettedData)
@@ -788,7 +789,7 @@ dataFormattingTable[,'General_notes'] =
   dataFormattingTableFieldUpdate(datasetID, 'General_notes', 
                                  
                                  #--! PROVIDE INFO !--#                                 
-                                 )
+                                na )
 
 # And write the final data formatting table:
 

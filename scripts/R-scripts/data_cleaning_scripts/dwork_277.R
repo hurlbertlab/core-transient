@@ -819,6 +819,7 @@ head(propOccFun(subsettedData))
 
 hist(propOccFun(subsettedData)$propOcc)
 
+mean(propOccFun(subsettedData)$propOcc)
 # Take a look at the site summary frame:
 
 siteSummaryFun(subsettedData)

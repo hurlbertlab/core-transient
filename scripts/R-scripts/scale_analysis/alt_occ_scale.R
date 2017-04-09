@@ -20,6 +20,26 @@
 
 #'Set working directory to core-transient folder on github i.e. setwd("C:/git/core-transient/")
 
+install.packages('raster')
+install.packages('maps')
+install.packages('sp')
+install.packages('rgdal')
+install.packages('maptools')
+install.packages('rgeos')
+install.packages('dplyr')
+install.packages('fields')
+install.packages('tidyr')
+install.packages('ggplot2')
+install.packages('nlme')
+install.packages('gridExtra')
+install.packages('plyr') # for core-transient functions
+install.packages('merTools')
+install.packages('digest')
+install.packages('devtools')
+
+
+
+
 
 #'#' Please download and install the following packages:
 #' maps, sp, rgdal, raster, maptools, rgeos, dplyr, fields
@@ -29,12 +49,21 @@ library(sp)
 library(rgdal)
 library(maptools)
 library(rgeos)
+library(plyr)
 library(dplyr)
 library(fields)
 library(tidyr)
 library(ggplot2)
 library(nlme)
 library(gridExtra)
+ # for core-transient functions
+library(merTools)
+library(digest)
+library(devtools)
+
+
+source('scripts/R-scripts/core-transient_functions.R')
+
 #'#'#'#'#'#'#'#'#'
 #'----Write for_loop to calculate distances between every BBS site combination to find focal and associated routes that correspond best----
 #''store minimum value for each iteration of combos in output table
@@ -185,7 +214,7 @@ bbs_below<-data.frame(output)
 
 #'#'#'#'joining above and below route scales, calc area#'#'#'#'
 bbs_focal_occs = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/bbs_focal_occs.csv", header = TRUE)
-bbs_below = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/bbs_below.csv", header = T)
+bbs_below = read.csv("//bioark.ad.unc.edu/HurlbertLab/Jenkins/BBS scaled/bbs_below.csv", header = T)
 
 
 
@@ -401,61 +430,62 @@ logistic_fcn = function(x, Asym, xmid, scal) {
 }
 
 
-preds.df = data.frame(stateroute = numeric(), OApreds= numeric(), ONpreds = numeric(), 
+preds.df = data.frame(stateroute = numeric(), logA = numeric(), 
+                      OApreds= numeric(), ONpreds = numeric(), 
                       CApreds = numeric(), CNpreds = numeric(),
                       TApreds = numeric(), TNpreds = numeric())
 
 
-#pdf("output/plots/Molly Plots/BBS_scaleplots.pdf", onefile = TRUE)
-tiff("output/plots/Molly Plots/pngs/BBS_scaleplots%04d.tif")
+pdf("output/plots/Molly Plots/BBS_scaleplots.pdf", onefile = TRUE)
+#tiff("output/plots/Molly Plots/BBS_scaleplotposter.tif")
 coef_join = coefs %>% inner_join(bbs_allscales, by = c("stateroute"="focalrte"))
-
 
 stateroutes = unique(bbs_allscales$focalrte)
 for (s in stateroutes) {
   theme_set(theme_bw()+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()))
   coef_sub = subset(coef_join, coef_join$stateroute == s)
-  
+  logA = coef_sub$logA
   #OA
   OApreds = logistic_fcn(coef_sub[,33], coef_sub[,2], coef_sub[,3], coef_sub[,4]) 
-  plot1 = ggplot(coef_sub, aes(x = logA, y = meanOcc))+geom_point(colour = "firebrick")+
-    geom_line(aes(x = logA, y = OApreds), color = "navy") +labs(x = "Log area", y = "Mean % Occupancy")
-  
+  # plot1 = ggplot(coef_sub, aes(x = logA, y = meanOcc))+geom_point(colour = "firebrick")+
+  #   geom_line(aes(x = logA, y = OApreds), color = "navy") +labs(x = "Log area", y = "Mean % Occupancy")
+  # 
   
   #ON
   ONpreds = logistic_fcn(coef_sub[,34], coef_sub[,6], coef_sub[,7], coef_sub[,8])
-  plot2 = ggplot(coef_sub, aes(x = logN, y = meanOcc))+geom_point(colour = "firebrick")+
-    geom_line(aes(x = logN, y = ONpreds), color = "navy") +labs(x = "Log abundance", y = "Mean % Occupancy")
- 
+  # plot2 = ggplot(coef_sub, aes(x = logN, y = meanOcc))+geom_point(colour = "firebrick")+
+  #   geom_line(aes(x = logN, y = ONpreds), color = "navy") +labs(x = "Log abundance", y = "Mean % Occupancy")
+  # 
  
   #CA
   CApreds = logistic_fcn(coef_sub[,33], coef_sub[,10], coef_sub[,11], coef_sub[,12])
-  plot1_2= ggplot(coef_sub, aes(x = logA, y = pctCore))+geom_point(colour = "turquoise")+
-    geom_line(aes(x = logA, y = CApreds), color = "navy")+labs(x = "Log area", y = "% Core Occupancy")
-  
+  # plot1_2= ggplot(coef_sub, aes(x = logA, y = pctCore))+geom_point(colour = "turquoise")+
+  #   geom_line(aes(x = logA, y = CApreds), color = "navy")+labs(x = "Log area", y = "% Core Occupancy")
+  # 
   #aveN
   #CN
   CNpreds = logistic_fcn(coef_sub[,34], coef_sub[,14], coef_sub[,15], coef_sub[,16])
-  plot2_2= ggplot(coef_sub, aes(x = logN, y = pctCore))+geom_point(colour = "turquoise")+
-    geom_line(aes(x = logN, y = CNpreds), color = "navy")+labs(x = "Log abundance", y = "% Core Occupancy")
+  # plot2_2= ggplot(coef_sub, aes(x = logN, y = pctCore))+geom_point(colour = "turquoise")+
+  #   geom_line(aes(x = logN, y = CNpreds), color = "navy")+labs(x = "Log abundance", y = "% Core Occupancy")
 
   #not using log fcn for %Transient relationships bc relationship diff, exp had higher pred power also 
   #predictive power still funky though
   #TA
   TApreds =  coef_sub[,35]*(coef_sub[,18]) #35 = optimum; replacing ^ with * bc natural log, removing -1!!!
-  plot1_3 = ggplot(coef_sub, aes(x = lnA, y = log(pctTran)))+geom_point(colour = "olivedrab")+
-    geom_line(aes(x = lnA, y = TApreds), color = "navy") +labs(x = "Log area", y = "% Transient Occupancy")
- 
+  # plot1_3 = ggplot(coef_sub, aes(x = lnA, y = log(pctTran)))+geom_point(colour = "olivedrab")+
+  #   geom_line(aes(x = lnA, y = TApreds), color = "navy") +labs(x = "Log area", y = "% Transient Occupancy")
+  # 
   #TN
   TNpreds = coef_sub[,36]*(coef_sub[,22])
-  plot2_3 = ggplot(coef_sub, aes(x = lnN, y = log(pctTran)))+geom_point(colour = "olivedrab")+
-    geom_line(aes(x = lnN, y = TNpreds), color = "navy")+labs(x = "Log abundance", y = "% Transient Occupancy") 
-  
+  # plot2_3 = ggplot(coef_sub, aes(x = lnN, y = log(pctTran)))+geom_point(colour = "olivedrab")+
+  #   geom_line(aes(x = lnN, y = TNpreds), color = "navy")+labs(x = "Log abundance", y = "% Transient Occupancy") 
+  # 
   #storing plots
-  predplot = grid.arrange(plot1, plot2, plot1_2, plot2_2, plot1_3, plot2_3,
-                          ncol=2, top = paste("predplot_", s, sep = ""))
+  # predplot = grid.arrange(plot1, plot2, plot1_2, plot2_2, plot1_3, plot2_3,
+  #                         ncol=2, top = paste("predplot_", s, sep = ""))
   #storing preds:
-  temp.df = data.frame(stateroute = s, OApreds= OApreds , ONpreds = ONpreds, 
+  temp.df = data.frame(stateroute = s, logA = logA, 
+                       OApreds= OApreds , ONpreds = ONpreds, 
                        CApreds = CApreds, CNpreds = CNpreds,
                        TApreds = TApreds, TNpreds = TNpreds)
   preds.df = rbind(preds.df, temp.df)
@@ -468,10 +498,10 @@ dev.off()
 # points(coef_sub[,33], OApreds, type=  'l', col='red')
 #cite output in plots in lieu of geom_smooth for updated output
 
-
+write.csv(preds.df, "C:/git/core-transient/scripts/R-scripts/scale_analysis/preds.csv", row.names = FALSE)
 
 ####Characterizing changes at the level of a single focal rte, above and below#### 
-#six panel plot for each rte, output as pdfs for 02/05
+#six panel plot for each rte, output as pdfs for 02/05 ^^^now above
 #set up as forloop that exports each plot before moving on to the next stateroute?
 #just need to replace bbs_allscales with a subset that changes every loop, 
 #dictated by stateroute 
@@ -503,7 +533,7 @@ dev.off()
 #bring in lat-lons for each focal route and creating sites
 bbs_allscales = read.csv("data/bbs_allscales.csv", header = TRUE)
 bbs_latlon = read.csv("//bioark.ad.unc.edu/HurlbertLab/Jenkins/BBS scaled/good_rtes2.csv", header = TRUE)
-bbs_allscales = rename(bbs_latlon, focalrte = stateroute) %>%
+bbs_allscales = dplyr::rename(bbs_latlon, focalrte = stateroute) %>%
   right_join(bbs_allscales, by = "focalrte")
 
 
@@ -534,39 +564,20 @@ ndvimean = ndvim/10000
 bbs_allscales$ndvi<-raster::extract(ndvimean, sites, buffer = 40000, fun = mean)
 bbs_allscales$varndvi<-raster::extract(ndvimean, sites, buffer = 40000, fun = var)
 
+bbs_envs = bbs_allscales #wrote to file; reading back in and adding elev data 
+#instead of rerunning raster extractions for previous env variables
 
-#skipping elev and elev rad for now because files are weird
 #elev 
 # #mean elevation PLUS elevational range 
-# elevmean<-raster("C:/git/core-transient/wc10/alt.bil")
-# bbs_allscales$elev<-extract(elevmean, sites, buffer = 40000, fun = mean)
-# bbs_allscales$varelev<-extract(elevmean, sites, buffer = 40000, fun = var)
-# 
-# #elev radius
-# #pull in radius elev data from Coyle folder 
-# elevrad<-raster("elevation_var_40km_radius.gri")
-# elevrad<-raster("//bioark.ad.unc.edu/HurlbertLab/Coyle/Projects/BBS Core/Data/elevation_var_40km_radius.gri")
-# 
-# #OR: 
-# elevrad<-raster("C:git/core-transient/scripts/R-scripts/scale_analysis/elevation_var_aggregate_40_1km.gri")
-# 
-# 
-# 
-# #need to re-project data points to match projection of elevation raster data 
-# #modify below code
-# elev_proj = "+proj=laea +lat_0=40.68 +lon_0=-92.925 +units=km +ellps=WGS84" # A string that defines the projection
-# points2 = SpatialPoints(sites)
-# points2 = SpatialPoints(sites, proj4string=CRS(elev_proj))
-# points2 = SpatialPoints(sites, proj4string=CRS("+proj=longlat +datum=WGS84"))
-# points3 = spTransform(points2, CRS(elev_proj))
-# buff = gBuffer(points3, width=40)
-# #extract data just like before with raster function 
-# bbs_allscales$erad = raster::extract(elevrad, points3,buffer = 40000, fun = mean)
-# bbs_allscales$varerad = raster::extract(elevrad, points3,buffer = 40000, fun = var)
+#using the getData function: 
+elev <- raster::getData("worldclim", var = "alt", res = 10)
+alt_files<-paste('alt_10m_bil', sep='')
 
+bbs_envs$elev<-raster::extract(elev, sites, buffer = 40000, fun = mean)
+#bbs_envs$varelev<-raster::extract(elev, sites, buffer = 40000, fun = var)
+#^save for later since var irrelvant anyway
 
-bbs_envs = bbs_allscales
-#write.csv(bbs_envs, "scripts/R-scripts/scale_analysis/bbs_envs.csv", row.names = FALSE) wrote file 2/22 w/out elev and using old env data
+#write.csv(bbs_envs, "scripts/R-scripts/scale_analysis/bbs_envs.csv", row.names = FALSE) #wrote file 03/28 w/elev and using old env data
 
 
 ####Coef vs env variation models####
@@ -574,7 +585,7 @@ bbs_envs = bbs_allscales
 # a function of env variables
 bbs_envs = read.csv("scripts/R-scripts/scale_analysis/bbs_envs.csv", header = TRUE)
 coefs = read.csv("scripts/R-scripts/scale_analysis/coefs.csv", header = TRUE)
-uniq_env = unique(bbs_envs[, c('focalrte', 'temp', 'vartemp', 'meanP', 'varP', 'ndvi', 'varndvi')])
+uniq_env = unique(bbs_envs[, c('focalrte', 'temp', 'vartemp', 'meanP', 'varP', 'ndvi', 'varndvi', 'elev')])
 # Merge environmental data with the coef shape data
 env_coefs = inner_join(coefs, uniq_env, by = c('stateroute' = 'focalrte'))
 
@@ -595,76 +606,75 @@ for (d in 2:25) {
   }
 }
 
-#write.csv(rsqrd_df, "scripts/R-scripts/scale_analysis/mod_rsqrds.csv", row.names = FALSE) #updated 02/27 POST-meeting
+#write.csv(rsqrd_df, "scripts/R-scripts/scale_analysis/mod_rsqrds.csv", row.names = FALSE) #updated 03/28 with elev
 ####Visually Characterizing r2 vals####
 rsqrd_df = read.csv("scripts/R-scripts/scale_analysis/mod_rsqrds.csv", header = TRUE)
+<<<<<<< HEAD
 ggplot(data = rsqrd_df, aes(x = ind, y = r2, fill = ind))+geom_boxplot()+theme_classic()+
   scale_fill_manual(values = wes_palette("BottleRocket"))+theme(legend.position="none")+
   labs(x = "Environmental variables", y = "Variation Explained (R^2)")
 #boxplot(r2~ind, data = rsqrd_df)
 
+=======
+ggplot(data = rsqrd_df, aes(x = ind, y = r2))+geom_boxplot()
+#subset to examine just r2 vals vs env var for the inflexion points (i) alone 
+>>>>>>> 5f7b8e72a9d927467859f1fc3d687c7f3e981bc9
 
+rsub = rsqrd_df %>%
+  filter(dep == "OA.i" | dep == "ON.i" | dep == "CA.i" | dep == "CN.i") %>%
+  filter(ind == "elev" | ind == "meanP" | ind == "ndvi" | ind == "temp")
 
+rsub = droplevels(rsub) #removing ghost levels to ensure correct plotting/analyses
 
-####Plot obs vs pred####
-pdf("output/plots/Molly Plots/BBS_testplot.pdf", onefile = TRUE)
-# 
-# for (s in stateroutes) {
-# s = 2001
-# plotsub = subset(bbs_allscales, bbs_allscales$focalrte == s)
-# OAlog = nls(meanOcc ~ SSlogis(logA, Asym, xmid, scal), data = plotsub)
-# OApred = predict(OAlog)
-# 
-# theme_set(theme_bw()+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()))
-# plot1 = ggplot(plotsub, aes(x = logA, y = meanOcc))+geom_point(colour = "olivedrab")+
-#   geom_line(aes(x = logA, y = OApred), color = "navy")}
+ggplot(data = rsub, aes(x = ind, y = r2)) + geom_boxplot()
 
+####R2 vals for env vars and coefs####
+####Visually Characterizing r2 vals####
+rsqrd_df = read.csv("scripts/R-scripts/scale_analysis/mod_rsqrds.csv", header = TRUE)
+ggplot(data = rsqrd_df, aes(x = ind, y = r2))+geom_boxplot()
+#subset to examine just r2 vals vs env var for the inflexion points (i) alone 
 
-#not yet working in loop but works for s = 2001; not fault of pctTran either
+rsub = rsqrd_df %>%
+  filter(dep == "OA.i" | dep == "ON.i" | dep == "CA.i" | dep == "CN.i") %>%
+  filter(ind == "elev" | ind == "meanP" | ind == "ndvi" | ind == "temp")
 
-stateroutes = unique(bbs_allscales$focalrte)
-tiff("output/plots/Molly Plots/BBS_predplots.tif")
-stateroutes = 2001 
-for (s in stateroutes) {
-  #log(area)
-  theme_set(theme_bw()+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()))
-  plotsub = subset(bbs_allscales, bbs_allscales$focalrte == s)
+rsub = droplevels(rsub) #removing ghost levels to ensure correct plotting/analyses
+rsub$ind = factor(rsub$ind, labels = c("Elevation", "Mean Precipitation", "NDVI", "Mean Temperature"))
+#checked to make sure labels appropriate order; in future ensure by reordering manually? 
 
-   OAlog = nls(meanOcc ~ SSlogis(logA, Asym, xmid, scal), data = plotsub)
-   OApred = predict(OAlog)
-  plot1 = ggplot(plotsub, aes(x = logA, y = meanOcc))+geom_point(colour = "firebrick")+
-    geom_line(aes(x = logA, y = OApred), color = "navy")
+ggplot(data = rsub, aes(x = ind, y = r2, fill = ind))+geom_boxplot()+
+  scale_fill_manual(values = c("#00A08A", "#F2AD00", "#FF0000", "#F98400"), guide = FALSE)+
+  labs(x = "Environmental Predictors", 
+       y = expression(paste("Variation in Scale-Occupancy Relationship ", "(", R^{2}, ")")))+theme_classic()
+ggsave("C:/git/core-transient/output/plots/Molly Plots/envr_inflxn.tiff")  
 
-   CAlog = nls(pctCore ~ SSlogis(logA, Asym, xmid, scal), data = plotsub)
-   CApred = predict(CAlog)
-  plot1_2= ggplot(plotsub, aes(x = logA, y = pctCore))+geom_point(colour = "turquoise")+
-    geom_line(aes(x = logA, y = CApred), color = "navy")
+####Variance Partitioning of Env Predictors####
+#would I be basing my total remaining unexplained variation off of the meanOcc~logA relationship? (OA.i?)
+#so the 12% remaining
+#focusing just on OA.i and main env vars
+#how do variance partitioning with more than 4 parts? 
 
-   TAlog = lm(log(pctTran) ~ lnA, data = plotsub)
-   TApred = predict(TAlog)
-  plot1_3 = ggplot(plotsub, aes(x = lnA, y = log(pctTran)))+geom_point(colour = "olivedrab")+
-   geom_line(aes(x = lnA, y = TApred), color = "navy")
+globalmod<-lm(OA.i~elev+meanP+temp+ndvi, data=env_coefs)
+mod1<-lm(OA.i~elev, data=env_coefs)
+mod2<-lm(OA.i~meanP, data=env_coefs)
+mod3<-lm(OA.i~ndvi, data=env_coefs)
+mod4<-lm(OA.i~temp, data=env_coefs)
+#and then Euclid_mod2
+summary(globalmod)$r.squared
+summary(mod1)$r.squared
+summary(mod2)$r.squared
+summary(mod3)$r.squared
+summary(mod4)$r.squared 
 
+#running with mods 2+3 bc best ranked and most interesting 
 
-  #aveN
-   ONlog = nls(meanOcc ~ SSlogis(logN, Asym, xmid, scal), data = plotsub)
-   ONpred = predict(ONlog)
-  plot2 = ggplot(plotsub, aes(x = logN, y = meanOcc))+geom_point(colour = "firebrick")+
-    geom_line(aes(x = logN, y = ONpred), color = "navy")
+a= summary(globalmod)$r.squared - summary(mod2)$r.squared
+a
+c= summary(globalmod)$r.squared - summary(mod3)$r.squared
+c
+b= summary(mod2)$r.squared - c
+b
+d= 1- summary(globalmod)$r.squared
+d
 
-   CNlog = nls(pctCore ~ SSlogis(logN, Asym, xmid, scal), data = plotsub)
-   CNpred = predict(CNlog)
-  plot2_2= ggplot(plotsub, aes(x = logN, y = pctCore))+geom_point(colour = "turquoise")+
-    geom_line(aes(x = logN, y = CNpred), color = "navy")
-
-   TNlog = lm(log(pctTran) ~ lnN, data = plotsub)
-   TNpred = predict(TNlog)
-  plot2_3 = ggplot(plotsub, aes(x = lnN, y = log(pctTran)))+geom_point(colour = "olivedrab")+
-    geom_line(aes(x = lnN, y = TNpred), color = "navy")
-
-  predplot = grid.arrange(plot1, plot2, plot1_2, plot2_2, plot1_3, plot2_3,
-                          ncol=2, top = paste("predplot_", s, sep = ""))
-  }
-dev.off()
-
-
+#isn't it ok that d = ~87.5% tho, given that the r^2 for occ~logA was 88%? 
