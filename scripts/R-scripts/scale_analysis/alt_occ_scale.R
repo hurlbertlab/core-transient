@@ -562,7 +562,6 @@ coefs = read.csv("scripts/R-scripts/scale_analysis/coefs.csv", header = TRUE)
 uniq_env = unique(bbs_envs[, c('focalrte', 'temp', 'vartemp', 'meanP', 'varP', 'ndvi', 'varndvi', 'elev')])
 # Merge environmental data with the coef shape data
 env_coefs = inner_join(coefs, uniq_env, by = c('stateroute' = 'focalrte'))
-
 # Can also just look at the correlation matrix, e.g.
 covmatrix = round(cor(coefs[, 2:ncol(coefs)]), 2)
 
@@ -579,8 +578,9 @@ for (d in 2:25) {
     rsqrd_df = rbind(rsqrd_df, tempdf)
   }
 }
-
 #write.csv(rsqrd_df, "scripts/R-scripts/scale_analysis/mod_rsqrds.csv", row.names = FALSE) #updated 03/28 with elev
+
+
 ####Visually Characterizing r2 vals####
 rsqrd_df = read.csv("scripts/R-scripts/scale_analysis/mod_rsqrds.csv", header = TRUE)
 
@@ -597,10 +597,20 @@ ggplot(data = rsqrd_df, aes(x = ind, y = r2))+geom_boxplot()+theme_classic()
 rsub_i = rsqrd_df %>%
   filter(dep == "OA.i" | dep == "ON.i" | dep == "CA.i" | dep == "CN.i") %>%
   filter(ind == "elev" | ind == "meanP" | ind == "ndvi" | ind == "temp")
-
 rsub_i = droplevels(rsub_i) #removing ghost levels to ensure correct plotting/analyses
 
-ggplot(data = rsub_i, aes(x = ind, y = r2)) + geom_boxplot()+theme_classic() #what I used for poster
+
+ggplot(data = rsub_i, aes(x = ind, y = r2)) + geom_boxplot()+theme_classic() #what I used for poster w/out color 
+
+##separate analysis for transients since relationship not immediately apparent
+
+rsub_t = rsqrd_df %>%
+  filter(dep == "TAexp" | dep == "TApow" | dep == "TNexp" | dep == "TNpow") %>%
+  filter(ind == "elev" | ind == "meanP" | ind == "ndvi" | ind == "temp")
+rsub_t = droplevels(rsub_t) #removing ghost levels to ensure correct plotting/analyses
+
+
+ggplot(data = rsub_t, aes(x = ind, y = r2)) + geom_boxplot()+theme_classic() #elev explains more variation in the transients
 
 ####Variance Partitioning of Env Predictors####
 #would I be basing my total remaining unexplained variation off of the meanOcc~logA relationship? (OA.i?)
