@@ -19,27 +19,7 @@
 
 
 #'Set working directory to core-transient folder on github i.e. setwd("C:/git/core-transient/")
-
-install.packages('raster')
-install.packages('maps')
-install.packages('sp')
-install.packages('rgdal')
-install.packages('maptools')
-install.packages('rgeos')
-install.packages('dplyr')
-install.packages('fields')
-install.packages('tidyr')
-install.packages('ggplot2')
-install.packages('nlme')
-install.packages('gridExtra')
-install.packages('plyr') # for core-transient functions
-install.packages('merTools')
-install.packages('digest')
-install.packages('devtools')
-
-
-
-
+#'source('scripts/R-scripts/core-transient_functions.R')
 
 #'#' Please download and install the following packages:
 #' maps, sp, rgdal, raster, maptools, rgeos, dplyr, fields
@@ -49,20 +29,14 @@ library(sp)
 library(rgdal)
 library(maptools)
 library(rgeos)
-library(plyr)
 library(dplyr)
 library(fields)
 library(tidyr)
 library(ggplot2)
 library(nlme)
 library(gridExtra)
- # for core-transient functions
-library(merTools)
-library(digest)
-library(devtools)
+library(wesanderson)
 
-
-source('scripts/R-scripts/core-transient_functions.R')
 
 #'#'#'#'#'#'#'#'#'
 #'----Write for_loop to calculate distances between every BBS site combination to find focal and associated routes that correspond best----
@@ -574,10 +548,10 @@ elev <- raster::getData("worldclim", var = "alt", res = 10)
 alt_files<-paste('alt_10m_bil', sep='')
 
 bbs_envs$elev<-raster::extract(elev, sites, buffer = 40000, fun = mean)
-#bbs_envs$varelev<-raster::extract(elev, sites, buffer = 40000, fun = var)
+#bbs_envs$varelev<-raster::extract(elev, sites, buffer = 40000, fun = var) #intentionally skipped bc vars not explaining much 
 #^save for later since var irrelvant anyway
-
 #write.csv(bbs_envs, "scripts/R-scripts/scale_analysis/bbs_envs.csv", row.names = FALSE) #wrote file 03/28 w/elev and using old env data
+
 
 
 ####Coef vs env variation models####
@@ -609,44 +583,24 @@ for (d in 2:25) {
 #write.csv(rsqrd_df, "scripts/R-scripts/scale_analysis/mod_rsqrds.csv", row.names = FALSE) #updated 03/28 with elev
 ####Visually Characterizing r2 vals####
 rsqrd_df = read.csv("scripts/R-scripts/scale_analysis/mod_rsqrds.csv", header = TRUE)
-<<<<<<< HEAD
+
 ggplot(data = rsqrd_df, aes(x = ind, y = r2, fill = ind))+geom_boxplot()+theme_classic()+
   scale_fill_manual(values = wes_palette("BottleRocket"))+theme(legend.position="none")+
   labs(x = "Environmental variables", y = "Variation Explained (R^2)")
 #boxplot(r2~ind, data = rsqrd_df)
 
-=======
-ggplot(data = rsqrd_df, aes(x = ind, y = r2))+geom_boxplot()
-#subset to examine just r2 vals vs env var for the inflexion points (i) alone 
->>>>>>> 5f7b8e72a9d927467859f1fc3d687c7f3e981bc9
 
-rsub = rsqrd_df %>%
+ggplot(data = rsqrd_df, aes(x = ind, y = r2))+geom_boxplot()+theme_classic()
+#subset to examine just r2 vals vs env var for the inflexion points (i) alone; for Transients just keep to power rltshnp 
+
+
+rsub_i = rsqrd_df %>%
   filter(dep == "OA.i" | dep == "ON.i" | dep == "CA.i" | dep == "CN.i") %>%
   filter(ind == "elev" | ind == "meanP" | ind == "ndvi" | ind == "temp")
 
-rsub = droplevels(rsub) #removing ghost levels to ensure correct plotting/analyses
+rsub_i = droplevels(rsub_i) #removing ghost levels to ensure correct plotting/analyses
 
-ggplot(data = rsub, aes(x = ind, y = r2)) + geom_boxplot()
-
-####R2 vals for env vars and coefs####
-####Visually Characterizing r2 vals####
-rsqrd_df = read.csv("scripts/R-scripts/scale_analysis/mod_rsqrds.csv", header = TRUE)
-ggplot(data = rsqrd_df, aes(x = ind, y = r2))+geom_boxplot()
-#subset to examine just r2 vals vs env var for the inflexion points (i) alone 
-
-rsub = rsqrd_df %>%
-  filter(dep == "OA.i" | dep == "ON.i" | dep == "CA.i" | dep == "CN.i") %>%
-  filter(ind == "elev" | ind == "meanP" | ind == "ndvi" | ind == "temp")
-
-rsub = droplevels(rsub) #removing ghost levels to ensure correct plotting/analyses
-rsub$ind = factor(rsub$ind, labels = c("Elevation", "Mean Precipitation", "NDVI", "Mean Temperature"))
-#checked to make sure labels appropriate order; in future ensure by reordering manually? 
-
-ggplot(data = rsub, aes(x = ind, y = r2, fill = ind))+geom_boxplot()+
-  scale_fill_manual(values = c("#00A08A", "#F2AD00", "#FF0000", "#F98400"), guide = FALSE)+
-  labs(x = "Environmental Predictors", 
-       y = expression(paste("Variation in Scale-Occupancy Relationship ", "(", R^{2}, ")")))+theme_classic()
-ggsave("C:/git/core-transient/output/plots/Molly Plots/envr_inflxn.tiff")  
+ggplot(data = rsub_i, aes(x = ind, y = r2)) + geom_boxplot()+theme_classic() #what I used for poster
 
 ####Variance Partitioning of Env Predictors####
 #would I be basing my total remaining unexplained variation off of the meanOcc~logA relationship? (OA.i?)
