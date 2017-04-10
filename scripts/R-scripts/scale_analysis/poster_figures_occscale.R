@@ -31,14 +31,17 @@ mpreds = preds.df %>%
 
 groupcolors = c(mpreds = "firebrick", stateroute = "grey70")
 
-ggplot(coef_psub, aes(x = logA, y = meanOcc))+ 
+ggplot(coef_psub, aes(x = logA, y = meanOcc))+theme_classic()+ 
   geom_line(aes(group = stateroute, colour = "observed"))+
   geom_line(data = mpreds, size = 1.3, aes(colour = "mean predicted"))+ #using a sep subset dataset
-  labs(x = "Log area", y = "Mean % Occupancy")+theme_classic()+
+  labs(x = "Log area", y = "Mean % Occupancy")+
   scale_color_manual(values = c("observed" = "grey70", "mean predicted" = "firebrick"))+
-  theme(legend.title = element_blank(), legend.position = c(0.8, 0.2))
+  theme(legend.title = element_blank(), legend.position = c(0.8, 0.2),
+        axis.text=element_text(size=12),
+              axis.title=element_text(size=14,face="bold"),
+        legend.text = element_text(size = 12))
 
-ggsave("C:/git/core-transient/output/plots/Molly Plots/predplot.tiff")  
+ggsave("C:/git/core-transient/output/plots/Molly Plots/templateplot.tiff")  
 
 
 scale_linetype_manual(values = c(rep("solid", 10), rep("dashed", 6))) +
@@ -61,8 +64,11 @@ moda = lm(meanOcc ~ metric_type, data = subplot)
 ggplot(subplot, aes(x = metric_type, y = meanOcc, fill = metric_type))+
   geom_boxplot()+
   scale_fill_manual(values = c("#00A08A", "#F98400"), guide = FALSE)+
-  labs(x = "", y = "Mean % Occupancy")+theme_classic()+
-  annotate("text", x = 1:2, y = 0.78, label = c("R^{2}==0.88", "R^{2}==0.90"), parse = TRUE)
+  labs(title = "Figure 5", x = "Scale Metric", y = "Mean % Occupancy")+theme_classic()+
+  annotate("text", x = 1:2, y = 0.78, label = c("R^{2}==0.88", "R^{2}==0.90"), parse = TRUE)+
+  theme(axis.text=element_text(size=12),
+        axis.title=element_text(size=14,face="bold"),
+        plot.title = element_text(size =18, face = "bold", vjust = 0.1, hjust = 0.5))
 ggsave("C:/git/core-transient/output/plots/Molly Plots/abunvarea.tiff")  
 
 ####R2 vals for env vars and coefs####
@@ -80,9 +86,13 @@ rsub$ind = factor(rsub$ind, labels = c("Elevation", "Mean Precipitation", "NDVI"
 #checked to make sure labels appropriate order; in future ensure by reordering manually? 
 
 ggplot(data = rsub, aes(x = ind, y = r2, fill = ind))+geom_boxplot()+
-  scale_fill_manual(values = c("#00A08A", "#F2AD00", "#FF0000", "#F98400"), guide = FALSE)+
+  scale_fill_manual(values = c("#a6611a", "#0091A0", "#63BA97", "firebrick"), guide = FALSE)+
   labs(x = "Environmental Predictors", 
-       y = expression(paste("Variation in Scale-Occupancy Relationship ", "(", R^{2}, ")")))+theme_classic()
+       y = expression(bold(paste("Variation in Scale-Occupancy Relationship ", "(", R^{2}, ")"))))+
+  theme_classic()+theme(axis.text=element_text(size=12),
+        axis.title=element_text(size=14,face="bold"), 
+        plot.title = element_text(size =18, face = "bold", vjust = 0.1, hjust = 0.89))+ggtitle("Figure 4") 
+                                
 ggsave("C:/git/core-transient/output/plots/Molly Plots/envr_inflxn.tiff")  
 
 
