@@ -38,6 +38,13 @@ library(gridExtra)
 library(wesanderson)
 
 
+# To run this script, you need temperature, precip, etc data in the following directories
+# Data directories
+tempdatadir = '//bioark.ad.unc.edu/HurlbertLab/GIS/ClimateData/BIOCLIM_meanTemp/'
+
+
+
+
 #'#'#'#'#'#'#'#'#'
 #'----Write for_loop to calculate distances between every BBS site combination to find focal and associated routes that correspond best----
 #''store minimum value for each iteration of combos in output table
@@ -505,7 +512,7 @@ dev.off()
 ####Env data add-in####
 #for now just use what we have, that's fine 
 #bring in lat-lons for each focal route and creating sites
-bbs_allscales = read.csv("data/bbs_allscales.csv", header = TRUE)
+bbs_allscales = read.csv("data/BBS/bbs_allscales.csv", header = TRUE)
 bbs_latlon = read.csv("//bioark.ad.unc.edu/HurlbertLab/Jenkins/BBS scaled/good_rtes2.csv", header = TRUE)
 bbs_allscales = dplyr::rename(bbs_latlon, focalrte = stateroute) %>%
   right_join(bbs_allscales, by = "focalrte")
@@ -514,7 +521,7 @@ bbs_allscales = dplyr::rename(bbs_latlon, focalrte = stateroute) %>%
 #temp
 sites = data.frame(longitude = bbs_allscales$Longi, latitude = bbs_allscales$Lati)
  #points(sites$longitude, sites$latitude, col= "red", pch=16)
-temp = paste('//bioark.ad.unc.edu/HurlbertLab/GIS/ClimateData/BIOCLIM_meanTemp/tmean',1:12,'.bil', sep='')
+temp = paste(tempdatadir, 'tmean',1:12,'.bil', sep='')
 tmean = stack(temp) 
 # Find MEAN across all months
 meanT = calc(tmean, mean)
@@ -547,7 +554,7 @@ bbs_envs = bbs_allscales #wrote to file; reading back in and adding elev data
 elev <- raster::getData("worldclim", var = "alt", res = 10)
 alt_files<-paste('alt_10m_bil', sep='')
 
-bbs_envs$elev<-raster::extract(elev, sites, buffer = 40000, fun = mean)
+bbs_envs$elev<-raster::extract(elev, bbs_latlon, buffer = 40000, fun = mean)
 #bbs_envs$varelev<-raster::extract(elev, sites, buffer = 40000, fun = var) #intentionally skipped bc vars not explaining much 
 #^save for later since var irrelvant anyway
 #write.csv(bbs_envs, "scripts/R-scripts/scale_analysis/bbs_envs.csv", row.names = FALSE) #wrote file 03/28 w/elev and using old env data
