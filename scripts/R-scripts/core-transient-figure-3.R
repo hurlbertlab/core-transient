@@ -88,7 +88,7 @@ for(id in scaleIDs){
   taxcolor = subset(taxcolors, taxa == as.character(plotsub$taxa)[1])
   area_plot  = rbind(area_plot , c(id, xhats, mod3.slope,taxa))
   y=summary(mod3)$coef[1] + (xhats)*summary(mod3)$coef[2]
-  plot(NA, xlim = c(-1, 7), ylim = c(0,1), col = as.character(taxcolor$color), xlab = expression("Log"[10]*" Area"), ylab = "% Transients", cex = 1.5)
+  plot(NA, xlim = c(-2, 7), ylim = c(0,1), col = as.character(taxcolor$color), xlab = expression("Log"[10]*" Area"), ylab = "% Transients", cex = 1.5)
   lines(log10(plotsub$area), fitted(mod3), col=as.character(taxcolor$color),lwd=5)
   par(new=TRUE)
 }
@@ -122,7 +122,6 @@ palette(colors7)
 bbs_spRich = read.csv("data/BBS/bbs_abun4_spRich.csv", header = TRUE)
 occ_merge = occ_taxa[,c("datasetID", "site","taxa", "meanAbundance", "pctTrans","pctCore","pctNeither","scale", "spRich")]
 bbs_occ = rbind(bbs_spRich,occ_merge)
-
 
 for(id in scaleIDs){
   print(id)
@@ -187,5 +186,14 @@ colscale = factor(predmod$color,
                   levels = c("gold2","turquoise2","red","purple4","forestgreen", "#1D6A9B"),ordered = TRUE)
 
 p <- ggplot(predmod, aes(x = factor(abbrev), y = fit, fill=factor(predmod$taxa)))
-p +geom_bar(stat = "identity", fill = levels(colscale))+ theme_classic() + geom_errorbar(ymin = predmod$lwr, ymax= predmod$upr, width=0.2) + xlab("") + ylab("Proportion of Species") + ylim(0, 1) + theme(axis.ticks.x=element_blank(),axis.text.x=element_blank(),axis.text.y=element_text(size=30),axis.title.x=element_text(size=30),axis.title.y=element_text(size=24,angle=90,vjust = 2))+guides(fill=guide_legend(title="",keywidth = 2, keyheight = 1)) 
+p +geom_bar(stat = "identity", fill = levels(colscale))+ theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) + geom_errorbar(ymin = predmod$lwr, ymax= predmod$upr, width=0.2) + xlab("") + ylab("% Transients") + ylim(0, 1)+ theme(axis.ticks.x=element_blank(),axis.text.x=element_blank(),axis.text.y=element_text(size=30),axis.title.x=element_text(size=30),axis.title.y=element_text(size=24,angle=90,vjust = 2))+guides(fill=guide_legend(title="",keywidth = 2, keyheight = 1)) 
 ggsave(file="C:/Git/core-transient/output/plots/3c_predmod.pdf", height = 10, width = 15)
+
+
+test = plot_grid(p + theme(legend.position="none"),
+          four_d + theme(legend.position="none"),
+          #p1 + theme(legend.position="none"),
+          align = 'hv',
+          #labels = c("A", "B", "C"),
+          hjust = -1,
+          nrow = 1)
