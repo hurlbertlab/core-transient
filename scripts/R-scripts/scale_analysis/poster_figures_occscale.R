@@ -96,8 +96,6 @@ ggplot(data = rsub, aes(x = ind, y = r2, fill = ind))+geom_boxplot()+
 ggsave("C:/git/core-transient/output/plots/Molly Plots/envr_inflxn.tiff")  
 
 
-
-
 # sr2 = rsub %>% 
 #   filter(dep == "OA.i")
 # 

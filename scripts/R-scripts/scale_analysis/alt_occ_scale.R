@@ -19,27 +19,7 @@
 
 
 #'Set working directory to core-transient folder on github i.e. setwd("C:/git/core-transient/")
-
-install.packages('raster')
-install.packages('maps')
-install.packages('sp')
-install.packages('rgdal')
-install.packages('maptools')
-install.packages('rgeos')
-install.packages('dplyr')
-install.packages('fields')
-install.packages('tidyr')
-install.packages('ggplot2')
-install.packages('nlme')
-install.packages('gridExtra')
-install.packages('plyr') # for core-transient functions
-install.packages('merTools')
-install.packages('digest')
-install.packages('devtools')
-
-
-
-
+#'source('scripts/R-scripts/core-transient_functions.R')
 
 #'#' Please download and install the following packages:
 #' maps, sp, rgdal, raster, maptools, rgeos, dplyr, fields
@@ -49,20 +29,21 @@ library(sp)
 library(rgdal)
 library(maptools)
 library(rgeos)
-library(plyr)
 library(dplyr)
 library(fields)
 library(tidyr)
 library(ggplot2)
 library(nlme)
 library(gridExtra)
- # for core-transient functions
-library(merTools)
-library(digest)
-library(devtools)
+library(wesanderson)
 
 
-source('scripts/R-scripts/core-transient_functions.R')
+# To run this script, you need temperature, precip, etc data in the following directories
+# Data directories
+tempdatadir = '//bioark.ad.unc.edu/HurlbertLab/GIS/ClimateData/BIOCLIM_meanTemp/'
+
+
+
 
 #'#'#'#'#'#'#'#'#'
 #'----Write for_loop to calculate distances between every BBS site combination to find focal and associated routes that correspond best----
@@ -531,7 +512,7 @@ dev.off()
 ####Env data add-in####
 #for now just use what we have, that's fine 
 #bring in lat-lons for each focal route and creating sites
-bbs_allscales = read.csv("data/bbs_allscales.csv", header = TRUE)
+bbs_allscales = read.csv("data/BBS/bbs_allscales.csv", header = TRUE)
 bbs_latlon = read.csv("//bioark.ad.unc.edu/HurlbertLab/Jenkins/BBS scaled/good_rtes2.csv", header = TRUE)
 bbs_allscales = dplyr::rename(bbs_latlon, focalrte = stateroute) %>%
   right_join(bbs_allscales, by = "focalrte")
@@ -540,7 +521,7 @@ bbs_allscales = dplyr::rename(bbs_latlon, focalrte = stateroute) %>%
 #temp
 sites = data.frame(longitude = bbs_allscales$Longi, latitude = bbs_allscales$Lati)
  #points(sites$longitude, sites$latitude, col= "red", pch=16)
-temp = paste('//bioark.ad.unc.edu/HurlbertLab/GIS/ClimateData/BIOCLIM_meanTemp/tmean',1:12,'.bil', sep='')
+temp = paste(tempdatadir, 'tmean',1:12,'.bil', sep='')
 tmean = stack(temp) 
 # Find MEAN across all months
 meanT = calc(tmean, mean)
@@ -573,11 +554,11 @@ bbs_envs = bbs_allscales #wrote to file; reading back in and adding elev data
 elev <- raster::getData("worldclim", var = "alt", res = 10)
 alt_files<-paste('alt_10m_bil', sep='')
 
-bbs_envs$elev<-raster::extract(elev, sites, buffer = 40000, fun = mean)
-#bbs_envs$varelev<-raster::extract(elev, sites, buffer = 40000, fun = var)
+bbs_envs$elev<-raster::extract(elev, bbs_latlon, buffer = 40000, fun = mean)
+#bbs_envs$varelev<-raster::extract(elev, sites, buffer = 40000, fun = var) #intentionally skipped bc vars not explaining much 
 #^save for later since var irrelvant anyway
-
 #write.csv(bbs_envs, "scripts/R-scripts/scale_analysis/bbs_envs.csv", row.names = FALSE) #wrote file 03/28 w/elev and using old env data
+
 
 
 ####Coef vs env variation models####
@@ -588,7 +569,6 @@ coefs = read.csv("scripts/R-scripts/scale_analysis/coefs.csv", header = TRUE)
 uniq_env = unique(bbs_envs[, c('focalrte', 'temp', 'vartemp', 'meanP', 'varP', 'ndvi', 'varndvi', 'elev')])
 # Merge environmental data with the coef shape data
 env_coefs = inner_join(coefs, uniq_env, by = c('stateroute' = 'focalrte'))
-
 # Can also just look at the correlation matrix, e.g.
 covmatrix = round(cor(coefs[, 2:ncol(coefs)]), 2)
 
@@ -605,40 +585,39 @@ for (d in 2:25) {
     rsqrd_df = rbind(rsqrd_df, tempdf)
   }
 }
-
 #write.csv(rsqrd_df, "scripts/R-scripts/scale_analysis/mod_rsqrds.csv", row.names = FALSE) #updated 03/28 with elev
+
+
 ####Visually Characterizing r2 vals####
 rsqrd_df = read.csv("scripts/R-scripts/scale_analysis/mod_rsqrds.csv", header = TRUE)
-ggplot(data = rsqrd_df, aes(x = ind, y = r2))+geom_boxplot()
-#subset to examine just r2 vals vs env var for the inflexion points (i) alone 
 
-rsub = rsqrd_df %>%
+ggplot(data = rsqrd_df, aes(x = ind, y = r2, fill = ind))+geom_boxplot()+theme_classic()+
+  scale_fill_manual(values = wes_palette("BottleRocket"))+theme(legend.position="none")+
+  labs(x = "Environmental variables", y = "Variation Explained (R^2)")
+#boxplot(r2~ind, data = rsqrd_df)
+
+
+ggplot(data = rsqrd_df, aes(x = ind, y = r2))+geom_boxplot()+theme_classic()
+#subset to examine just r2 vals vs env var for the inflexion points (i) alone; for Transients just keep to power rltshnp 
+
+
+rsub_i = rsqrd_df %>%
   filter(dep == "OA.i" | dep == "ON.i" | dep == "CA.i" | dep == "CN.i") %>%
   filter(ind == "elev" | ind == "meanP" | ind == "ndvi" | ind == "temp")
+rsub_i = droplevels(rsub_i) #removing ghost levels to ensure correct plotting/analyses
 
-rsub = droplevels(rsub) #removing ghost levels to ensure correct plotting/analyses
 
-ggplot(data = rsub, aes(x = ind, y = r2)) + geom_boxplot()
+ggplot(data = rsub_i, aes(x = ind, y = r2)) + geom_boxplot()+theme_classic() #what I used for poster w/out color 
 
-####R2 vals for env vars and coefs####
-####Visually Characterizing r2 vals####
-rsqrd_df = read.csv("scripts/R-scripts/scale_analysis/mod_rsqrds.csv", header = TRUE)
-ggplot(data = rsqrd_df, aes(x = ind, y = r2))+geom_boxplot()
-#subset to examine just r2 vals vs env var for the inflexion points (i) alone 
+##separate analysis for transients since relationship not immediately apparent
 
-rsub = rsqrd_df %>%
-  filter(dep == "OA.i" | dep == "ON.i" | dep == "CA.i" | dep == "CN.i") %>%
+rsub_t = rsqrd_df %>%
+  filter(dep == "TAexp" | dep == "TApow" | dep == "TNexp" | dep == "TNpow") %>%
   filter(ind == "elev" | ind == "meanP" | ind == "ndvi" | ind == "temp")
+rsub_t = droplevels(rsub_t) #removing ghost levels to ensure correct plotting/analyses
 
-rsub = droplevels(rsub) #removing ghost levels to ensure correct plotting/analyses
-rsub$ind = factor(rsub$ind, labels = c("Elevation", "Mean Precipitation", "NDVI", "Mean Temperature"))
-#checked to make sure labels appropriate order; in future ensure by reordering manually? 
 
-ggplot(data = rsub, aes(x = ind, y = r2, fill = ind))+geom_boxplot()+
-  scale_fill_manual(values = c("#00A08A", "#F2AD00", "#FF0000", "#F98400"), guide = FALSE)+
-  labs(x = "Environmental Predictors", 
-       y = expression(paste("Variation in Scale-Occupancy Relationship ", "(", R^{2}, ")")))+theme_classic()
-ggsave("C:/git/core-transient/output/plots/Molly Plots/envr_inflxn.tiff")  
+ggplot(data = rsub_t, aes(x = ind, y = r2)) + geom_boxplot()+theme_classic() #elev explains more variation in the transients
 
 ####Variance Partitioning of Env Predictors####
 #would I be basing my total remaining unexplained variation off of the meanOcc~logA relationship? (OA.i?)
