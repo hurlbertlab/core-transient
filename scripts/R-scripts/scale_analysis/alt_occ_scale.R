@@ -41,7 +41,9 @@ library(wesanderson)
 # To run this script, you need temperature, precip, etc data in the following directories
 # Data directories
 tempdatadir = '//bioark.ad.unc.edu/HurlbertLab/GIS/ClimateData/BIOCLIM_meanTemp/'
-
+precipdata = '//bioark.ad.unc.edu/HurlbertLab/GIS/ClimateData/2-25-2011/prec/'
+ndvidata = "//bioark.ad.unc.edu/HurlbertLab/GIS/MODIS NDVI/"
+BBS = '//bioark.ad.unc.edu/HurlbertLab/Jenkins/BBS scaled/'
 
 
 
@@ -51,7 +53,7 @@ tempdatadir = '//bioark.ad.unc.edu/HurlbertLab/GIS/ClimateData/BIOCLIM_meanTemp/
 #'does any of this use any of the fifty_top6 data? Have we moved on from that?
 
 
-good_rtes2 = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/good_rtes2.csv", header = TRUE) 
+good_rtes2 = read.csv(paste(BBS, "good_rtes2.csv", sep = ""), header = TRUE) 
 
 
 require(fields)
@@ -71,7 +73,7 @@ uniqrtes = unique(dist.df2$rte1)
 #'#'#'#'Aggregating loop for above-route scales#'#'#'#' 
 
 #'bring in NON-50 stop data 
-bbs_allyears = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/bbs_allyears.csv", header = TRUE)
+bbs_allyears = read.csv(paste(BBS, "bbs_allyears.csv", sep = ""), header = TRUE)
 #'exclude AOU species codes <=2880 [waterbirds, shorebirds, etc], (>=3650 & <=3810) [owls],
 #'(>=3900 &  <=3910) [kingfishers], (>=4160 & <=4210) [nightjars], 7010 [dipper]
 #'^best practices 
@@ -137,7 +139,7 @@ routes$stateroute = 1000*routes$statenum + routes$Route
 
 #'#'#'#'rerun sub-route occ analysis#'#'#'#'
 
-fifty_allyears = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/fifty_allyears.csv", header = TRUE)
+fifty_allyears = read.csv(paste(BBS, "fifty_allyears.csv", sep = ""), header = TRUE)
 
 fifty_bestAous = fifty_allyears %>% 
   filter(AOU > 2880 & !(AOU >= 3650 & AOU <= 3810) & !(AOU >= 3900 & AOU <= 3910) & 
@@ -194,8 +196,8 @@ bbs_below<-data.frame(output)
 
 
 #'#'#'#'joining above and below route scales, calc area#'#'#'#'
-bbs_focal_occs = read.csv("//bioark.ad.unc.edu/HurlbertLab/Gartland/BBS scaled/bbs_focal_occs.csv", header = TRUE)
-bbs_below = read.csv("//bioark.ad.unc.edu/HurlbertLab/Jenkins/BBS scaled/bbs_below.csv", header = T)
+bbs_focal_occs = read.csv(paste(BBS, "bbs_focal_occs.csv", sep = ""), header = TRUE) 
+bbs_below = read.csv(paste(BBS, "bbs_below.csv", sep = ""), header = T)
 
 
 
@@ -513,52 +515,41 @@ dev.off()
 #for now just use what we have, that's fine 
 #bring in lat-lons for each focal route and creating sites
 bbs_allscales = read.csv("data/BBS/bbs_allscales.csv", header = TRUE)
-bbs_latlon = read.csv("//bioark.ad.unc.edu/HurlbertLab/Jenkins/BBS scaled/good_rtes2.csv", header = TRUE)
+bbs_latlon = read.csv(paste(BBS, "good_rtes2.csv", sep = ""), header = TRUE)
 bbs_allscales = dplyr::rename(bbs_latlon, focalrte = stateroute) %>%
   right_join(bbs_allscales, by = "focalrte")
 
+sites = data.frame(longitude = bbs_latlon$Longi, latitude = bbs_latlon$Lati) 
+ #points(sites$longitude, sites$latitude, col= "red", pch=16)
 
 #temp
-sites = data.frame(longitude = bbs_allscales$Longi, latitude = bbs_allscales$Lati)
- #points(sites$longitude, sites$latitude, col= "red", pch=16)
-temp = paste(tempdatadir, 'tmean',1:12,'.bil', sep='')
-tmean = stack(temp) 
-# Find MEAN across all months
-meanT = calc(tmean, mean)
-meanT
-# Convert to actual temp
-meanT = meanT/10 #done
-bbs_allscales$temp<-raster::extract(meanT, sites, buffer = 40000, fun = mean) #meters since data pure lat-lons, unprojected, mean of means for cells 
-bbs_allscales$vartemp<-raster::extract(meanT, sites, buffer = 40000, fun = var)
-#then take fun to get mean and var?
+temp <- raster::getData("worldclim", var = "bio", res = 2.5) #supposed to be already /10 according to site
+bbs_latlon$temp<-raster::extract(temp, sites, buffer = 40000, fun = mean)
+bbs_latlon$vartemp<-raster::extract(temp, sites, buffer = 40000, fun = var)
+#errors in downloading from getData?
+
 
 #precip 
-prec<-paste('//bioark.ad.unc.edu/HurlbertLab/GIS/ClimateData/2-25-2011/prec/prec',1:12, '.bil', sep ='')
-mprecip = stack(prec)
-Pcalc = calc(mprecip, mean)
-bbs_allscales$meanP = raster::extract(Pcalc, sites, buffer = 40000, fun = mean)
-bbs_allscales$varP = raster::extract(Pcalc, sites, buffer = 40000, fun = var)
+prec<- raster::getData("worldclim", var = "prec", res = 2.5)
+bbs_latlon$meanP = raster::extract(prec, sites, buffer = 40000, fun = mean)
+bbs_latlon$varP = raster::extract(prec, sites, buffer = 40000, fun = var)
 
 #ndvi 
-ndvim<-raster("//bioark.ad.unc.edu/HurlbertLab/GIS/MODIS NDVI/Vegetation_Indices_may-aug_2000-2010.gri")
+ndvim<-raster(paste(ndvidata, "Vegetation_Indices_may-aug_2000-2010.gri", sep = "")) #can't find on getData
 ndvimean = ndvim/10000
-bbs_allscales$ndvi<-raster::extract(ndvimean, sites, buffer = 40000, fun = mean)
-bbs_allscales$varndvi<-raster::extract(ndvimean, sites, buffer = 40000, fun = var)
-
-bbs_envs = bbs_allscales #wrote to file; reading back in and adding elev data 
-#instead of rerunning raster extractions for previous env variables
+bbs_latlon$ndvi<-raster::extract(ndvimean, sites, buffer = 40000, fun = mean)
+bbs_latlon$varndvi<-raster::extract(ndvimean, sites, buffer = 40000, fun = var)
 
 #elev 
-# #mean elevation PLUS elevational range 
-#using the getData function: 
 elev <- raster::getData("worldclim", var = "alt", res = 10)
-alt_files<-paste('alt_10m_bil', sep='')
+bbs_latlon$elev<-raster::extract(elev, sites, buffer = 40000, fun = mean)
+bbs_latlon$varelev<-raster::extract(elev, sites, buffer = 40000, fun = var) 
 
-bbs_envs$elev<-raster::extract(elev, bbs_latlon, buffer = 40000, fun = mean)
-#bbs_envs$varelev<-raster::extract(elev, sites, buffer = 40000, fun = var) #intentionally skipped bc vars not explaining much 
-#^save for later since var irrelvant anyway
-#write.csv(bbs_envs, "scripts/R-scripts/scale_analysis/bbs_envs.csv", row.names = FALSE) #wrote file 03/28 w/elev and using old env data
+bbs_envs = bbs_latlon 
+#write.csv(bbs_envs, "scripts/R-scripts/scale_analysis/bbs_envs.csv", row.names = FALSE) 
+#wrote file 03/28 w/elev and using old env data; need to overwrite with updated env vars
 
+#merge into bbs_allscales data
 
 
 ####Coef vs env variation models####
