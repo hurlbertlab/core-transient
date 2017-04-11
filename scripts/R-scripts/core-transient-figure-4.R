@@ -337,7 +337,7 @@ plot_relationship$taxa = factor(plot_relationship$taxa,
 colscales = c("gray","#1D6A9B","turquoise2","gold2","purple4", "red", "forestgreen") 
 
 p <- ggplot(plot_relationship, aes(x = areaSlope, y = areaSlope_noTrans))
-four_d <-p + geom_abline(intercept = 0,slope = 1, lwd =1.5,linetype="dashed") +geom_point(data=slopes_bbs, aes(colour = taxa, shape = Type),alpha = 5/100, size = 2)+  geom_point(aes(colour = taxa, shape = Type), size = 5.5)+ theme_classic() + scale_color_manual("Taxa", breaks = plot_relationship$taxa,values = colscales)+ xlab(expression(paste(italic("z "), "(all species)"))) + ylab(expression(paste(italic("z "), "(excluding transients)"))) +ylim(0,1)+xlim(0,1) + theme(axis.text.x=element_text(size=24),axis.text.y=element_text(size=24),axis.title.x=element_text(size=24),axis.title.y=element_text(size=24,angle=90,vjust = 2))
+four_d <-p + geom_abline(intercept = 0,slope = 1, lwd =1.5,linetype="dashed") +geom_point(data=slopes_bbs, aes(colour = taxa, shape = Type),alpha = 5/100, size = 2)+  geom_point(aes(colour = taxa, shape = Type), size = 5.5)+ theme_classic() + scale_color_manual("Taxa", breaks = plot_relationship$taxa,values = colscales)+ xlab(expression(paste(italic("z "), "(all species)"))) + ylab(expression(paste(italic("z "), "(excluding transients)"))) +ylim(0,1)+xlim(0,1) + theme(axis.text.x=element_text(size=24),axis.text.y=element_text(size=24),axis.title.x=element_text(size=24),axis.title.y=element_text(size=24,angle=90,vjust = 2))+ theme(legend.text = element_text(size = 14), legend.title = element_text(size = 16))
 
 
 ggsave(file="C:/Git/core-transient/output/plots/4d_sparea.pdf", height = 10, width = 15)
@@ -356,7 +356,7 @@ pt1 <- plot_grid(k + theme(legend.position="none"),
                  l + theme(legend.position="none"),
                    align = 'vh',
                    labels = c("A", "B"),
-                   hjust = -1,
+                   hjust = -10,
                    nrow = 1
 )
 p1 = plot_grid(pt1,legenda, ncol = 1,rel_heights = c(1, 0.05)) 
@@ -368,12 +368,12 @@ z <- plot_grid(four_c+ theme(legend.position="none"),
                four_d + theme(legend.position="none"),
                align = 'vh',
                labels = c("C", "D"),
-               hjust = -1,
+               hjust = -10,
                nrow = 1)
-p2 = plot_grid(z,legendc, ncol = 2, rel_widths = c(5,0.4)) 
+p2 = plot_grid(z,legendc, ncol = 2, rel_widths = c(5,.9)) 
 ggsave(file="C:/Git/core-transient/output/plots/4c_4d.pdf", height = 12, width = 16,p2)
 
-all4 = plot_grid(p1, p2)
+all4 = plot_grid(p1, p2, align = "hv", nrow = 2,rel_heights = c(1,2), rel_widths = c(1,1))
 ggsave(file="C:/Git/core-transient/output/plots/4a_4d.pdf", height = 12, width = 16,all4)
 
 
