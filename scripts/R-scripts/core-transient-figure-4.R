@@ -17,11 +17,11 @@ library(sp)
 library(rgdal)
 library(raster)
 library(dplyr)
-library(merTools)
 library(digest)
 library(sads)
 library(purrr)
 library(ggplot2)
+library(cowplot)
 
 source('scripts/R-scripts/core-transient_functions.R')
 
@@ -161,7 +161,7 @@ logseries_weights_excl = sad_data %>%
 
 logseries_weights = rbind(logseries_weights_incl, logseries_weights_excl)
 
-colscale = c("dark green","light blue")
+colscale = c("dark orange2","yellow")
 
 k = ggplot(logseries_weights, aes(x = treatment, y = weights, fill=factor(treatment))) +
   geom_violin(linetype="blank") + xlab("Transient Status") + ylab("Proportion of Species") + scale_fill_manual(labels = c("All species","All species excluding transients"),values = colscale)+ theme_classic()+ ylim(0, 1) + theme(axis.text.x=element_text(size=24), axis.ticks.x=element_blank(),axis.text.y=element_text(size=24),axis.title.x=element_text(size=24),axis.title.y=element_text(size=24,angle=90,vjust = 2))+ xlab(NULL) + ylab("Correlation Coefficient")  + theme(legend.position = "none")
@@ -219,15 +219,16 @@ corr_res_long$env = factor(corr_res_long$env, levels = c("NDVI", "Elevation"), o
 
 corr_NDVI = filter(corr_res_long, env == "NDVI")
 corr_elev = filter(corr_res_long, env == "Elevation")
-colscale = c("dark green","light blue","#225ea8")
+colscale = c("dark orange2","yellow","#c51b8a")
 limits = aes(ymax = corr_res_long$CIupper, ymin=corr_res_long$CIlower)
 # no variation - add in CIS?
-l = ggplot(data=corr_NDVI, aes(factor(env), value, fill = class))+ geom_bar(width = 0.8, position = position_dodge(width = 0.9), stat="identity")+ geom_errorbar(aes(ymin = CIlower, ymax = CIupper), width =.1, position = position_dodge(.9))+ scale_fill_manual(values = c("All" = "dark green","Trans" = "#225ea8","Ntrans" = "light blue"), labels = c("All species","All species excluding transients", "Transients only"))+ theme_classic() + theme(axis.text.x=element_text(size=24), axis.ticks.x=element_blank(),axis.text.y=element_text(size=24),axis.title.x=element_text(size=24),axis.title.y=element_text(size=24,angle=90,vjust = 2))+ xlab(NULL) + ylab("Correlation Coefficient") + scale_y_continuous(breaks = pretty(corr_res_long$value, n = 7))+ guides(fill=guide_legend(title=NULL)) + theme(legend.text = element_text(size = 16),legend.position="top", legend.justification=c(0, 1), legend.key.width=unit(1, "lines"))
+l = ggplot(data=corr_NDVI, aes(factor(env), value, fill = class))+ geom_bar(width = 0.8, position = position_dodge(width = 0.9), stat="identity")+ geom_errorbar(aes(ymin = CIlower, ymax = CIupper), width =.1, position = position_dodge(.9))+ scale_fill_manual(values = c("All" = "dark orange2","Trans" = "#c51b8a","Ntrans" = "yellow"), labels = c("All species","Excluding transients", "Transients only"))+ theme_classic() + theme(axis.text.x=element_text(size=24), axis.ticks.x=element_blank(),axis.text.y=element_text(size=24),axis.title.x=element_text(size=24),axis.title.y=element_text(size=24,angle=90,vjust = 2))+ xlab(NULL) + ylab("Correlation Coefficient") + scale_y_continuous(breaks = pretty(corr_res_long$value, n = 7))+ guides(fill=guide_legend(title=NULL)) + theme(legend.text = element_text(size = 16))
 four_b <- l
 ggsave(file="C:/Git/core-transient/output/plots/4b_corrcoeff_NDVI.pdf", height = 5, width = 15)
 
-e = ggplot(data=corr_elev, aes(factor(env), value, fill = class))+ geom_bar(width = 0.8, position = position_dodge(width = 0.9), stat="identity")+ geom_errorbar(aes(ymin = CIlower, ymax = CIupper), width =.1, position = position_dodge(.9))+ scale_fill_manual(values = c("All" = "dark green","Trans" = "#225ea8","Ntrans" = "light blue"), labels = c("All species","All species excluding transients", "Transients only"))+ theme_classic() + theme(axis.text.x=element_text(size=24), axis.ticks.x=element_blank(),axis.text.y=element_text(size=24),axis.title.x=element_text(size=24),axis.title.y=element_text(size=24,angle=90,vjust = 2))+ xlab(NULL) + ylab("Correlation Coefficient") +  guides(fill=guide_legend(title=NULL)) + theme(legend.text = element_text(size = 16),legend.position="top", legend.justification=c(0, 1), legend.key.width=unit(1, "lines"))
+e = ggplot(data=corr_elev, aes(factor(env), value, fill = class))+ geom_bar(width = 0.8, position = position_dodge(width = 0.9), stat="identity")+ geom_errorbar(aes(ymin = CIlower, ymax = CIupper), width =.1, position = position_dodge(.9))+ scale_fill_manual(values = c("All" = "dark orange2","Trans" = "#225ea8","Ntrans" = "light blue"), labels = c("All species","All species excluding transients", "Transients only"))+ theme_classic() + theme(axis.text.x=element_text(size=24), axis.ticks.x=element_blank(),axis.text.y=element_text(size=24),axis.title.x=element_text(size=24),axis.title.y=element_text(size=24,angle=90,vjust = 2))+ xlab(NULL) + ylab("Correlation Coefficient") +  guides(fill=guide_legend(title=NULL)) + theme(legend.text = element_text(size = 16),legend.position="top", legend.justification=c(0, 1), legend.key.width=unit(1, "lines"))
 ggsave(file="C:/Git/core-transient/output/plots/4b_corrcoeff_elev.pdf", height = 5, width = 15)
+
 #### Figure 4c ####
 turnover = read.csv("output/tabular_data/temporal_turnover.csv", header = TRUE)
 turnover_taxa = merge(turnover,dataformattingtable[,c("dataset_ID", "taxa")], by.x = "datasetID", by.y = "dataset_ID")
@@ -247,8 +248,6 @@ m <- ggplot(turnover_else, aes(x = TJ, y = TJnotrans))
 four_c <-m + geom_abline(intercept = 0,slope = 1, lwd =1.5,linetype="dashed")+geom_point(aes(colour = taxa, shape = Type), size = 5.5)+ geom_point(data = turnover_bbs, aes(colour = taxa, shape = Type),size = 2) + xlab(expression(paste(italic("z "), "(all species)"))) + ylab(expression(paste(italic("z "), "(excluding transients)")))  + scale_colour_manual(breaks = turnover_col$taxa,values = colscale) + theme_classic() + theme(axis.text.x=element_text(size=24),axis.text.y=element_text(size=24),axis.title.x=element_text(size=24),axis.title.y=element_text(size=24,angle=90,vjust = 2))+ guides(colour = guide_legend(title = "Taxa"))
 
 ggsave(file="C:/Git/core-transient/output/plots/4c_spturnover.pdf", height = 10, width = 15)
-
-
 
 ##### Figure 4d ##### only scaled vars
 bbs_uniq_area = bbs_abun_occ %>% dplyr::select(stateroute,scale,subrouteID,area) %>% unique()
@@ -344,30 +343,38 @@ four_d <-p + geom_abline(intercept = 0,slope = 1, lwd =1.5,linetype="dashed") +g
 ggsave(file="C:/Git/core-transient/output/plots/4d_sparea.pdf", height = 10, width = 15)
 
 
-
-# make grid plots
-grid = grid.arrange(four_a, four_b, ncol=2)
-ggsave(file="C:/Git/core-transient/output/plots/4a_4b.pdf", height = 10, width = 15,grid)
-
-prow <- plot_grid( k + theme(legend.position="none"),
-                   l+ theme(legend.position="none"),
-                   #p1 + theme(legend.position="none"),
-                   align = 'h',
-                   #labels = c("A", "B", "C"),
+# make a gridded plot
+get_legend<-function(myggplot){
+  tmp <- ggplot_gtable(ggplot_build(myggplot))
+  leg <- which(sapply(tmp$grobs, function(x) x$name) == "guide-box")
+  legend <- tmp$grobs[[leg]]
+  return(legend)
+}
+legenda <- get_legend(l + theme(legend.position="top"))
+p1 = NULL
+pt1 <- plot_grid(k + theme(legend.position="none"),
+                 l + theme(legend.position="none"),
+                   align = 'vh',
+                   labels = c("A", "B"),
                    hjust = -1,
                    nrow = 1
 )
-ggsave(file="C:/Git/core-transient/output/plots/4a_4b.pdf", height = 12, width = 16,prow)
-#grid = grid.arrange(four_c, four_d, ncol=2)
+p1 = plot_grid(pt1,legenda, ncol = 1,rel_heights = c(1, 0.05)) 
+ggsave(file="C:/Git/core-transient/output/plots/4a_4b.pdf", height = 10, width = 15,p1)
+
+# c & d
+legendc <- get_legend(four_d)
+z <- plot_grid(four_c+ theme(legend.position="none"),
+               four_d + theme(legend.position="none"),
+               align = 'vh',
+               labels = c("C", "D"),
+               hjust = -1,
+               nrow = 1)
+p2 = plot_grid(z,legendc, ncol = 2, rel_widths = c(5,0.4)) 
+ggsave(file="C:/Git/core-transient/output/plots/4c_4d.pdf", height = 12, width = 16,p2)
+
+all4 = plot_grid(p1, p2)
+ggsave(file="C:/Git/core-transient/output/plots/4a_4d.pdf", height = 12, width = 16,all4)
 
 
 
-z <- plot_grid(four_c + theme(legend.position="none"),
-                   four_d + theme(legend.position="none"),
-                   #p1 + theme(legend.position="none"),
-                   align = 'hv',
-                   #labels = c("A", "B", "C"),
-                   hjust = -1,
-                   nrow = 1
-)
-ggsave(file="C:/Git/core-transient/output/plots/4c_4d.pdf", height = 12, width = 16,z)

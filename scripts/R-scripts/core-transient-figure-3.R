@@ -20,6 +20,7 @@ library(raster)
 library(dplyr)
 library(merTools)
 library(digest)
+library(cowplot)
 
 
 source('scripts/R-scripts/core-transient_functions.R')
@@ -70,12 +71,12 @@ scaleIDs = filter(dataformattingtable, spatial_scale_variable == 'Y',
                   format_flag == 1)$dataset_ID 
 scaleIDs = scaleIDs[! scaleIDs %in% c(207, 210, 217, 218, 222, 223, 225, 241,258, 282, 322, 280, 248, 254, 291)]  # waiting on data for 248
 area_plot = c()
-pdf('output/plots/3a_sara_scale_area_reg.pdf', height = 6, width = 7.5)
-par(mfrow = c(1, 1), mar = c(6, 6, 1, 1), mgp = c(4, 1, 0), 
-    cex.axis = 1.5, cex.lab = 2, las = 1)
+pdf('output/plots/3a_sara_scale_area_reg.pdf', height = 8, width = 10)
+par(mfrow = c(1, 2), mar = c(4, 4, 1, 1), mar = c(3.75,3.75,1,1), cex = 1.25, oma = c(0,0,0,0), las = 1,
+    cex.lab = 1.25)
 palette(colors7)
 
-for(id in scaleIDs){
+b1 = for(id in scaleIDs){
   print(id)
   plotsub = subset(areamerge,datasetID == id)
   taxa = as.character(unique(plotsub$taxa))
@@ -92,8 +93,30 @@ for(id in scaleIDs){
   lines(log10(plotsub$area), fitted(mod3), col=as.character(taxcolor$color),lwd=5)
   par(new=TRUE)
 }
+
+bbs_spRich = read.csv("data/BBS/bbs_abun4_spRich.csv", header = TRUE)
+occ_merge = occ_taxa[,c("datasetID", "site","taxa", "meanAbundance", "pctTrans","pctCore","pctNeither","scale", "spRich")]
+bbs_occ = rbind(bbs_spRich,occ_merge)
+
+b2 = for(id in scaleIDs){
+  print(id)
+  plotsub = subset(bbs_occ,datasetID == id)
+  mod3 = lm(plotsub$pctTrans ~ log10(plotsub$meanAbundance))
+  xnew = range(log10(plotsub$meanAbundance))
+  xhat <- predict(mod3, newdata = data.frame((xnew)))
+  xhats = range(xhat)
+  print(xhats)
+  taxcolor = subset(taxcolors, taxa == as.character(plotsub$taxa)[1])
+  y=summary(mod3)$coef[1] + (xhats)*summary(mod3)$coef[2]
+  plot(NA, xlim = c(0, 7), ylim = c(0,1), col = as.character(taxcolor$color), xlab = expression("Log"[10]*" Community Size"), ylab = "% Transients", cex = 1.5)
+  lines(log10(plotsub$meanAbundance), fitted(mod3), col=as.character(taxcolor$color),lwd=5)
+  par(new=TRUE)
+}
 par(new=TRUE)
-#legend('bottomleft', legend = as.character(taxcolors$taxa), lty=1,lwd=3,col = as.character(taxcolors$color), cex = 1)
+legend('topright', legend = as.character(taxcolors$taxa), lty=1,lwd=3,col = as.character(taxcolors$color), cex = 1.35)
+
+
+
 dev.off()
 
 colnames(area_plot) = c("id","xlow","xhigh","slope", "taxa")
@@ -139,6 +162,7 @@ for(id in scaleIDs){
 }
 par(new=TRUE)
 legend('topright', legend = as.character(taxcolors$taxa), lty=1,lwd=3,col = as.character(taxcolors$color), cex = 1.35)
+L = legend('topright', legend = as.character(taxcolors$taxa), lty=1,lwd=3,col = as.character(taxcolors$color), cex = 1.35)
 dev.off()
 
 #### Supplemental core and scale ####
@@ -185,15 +209,3 @@ predmod$abbrev = factor(predmod$abbrev,
 colscale = factor(predmod$color,
                   levels = c("gold2","turquoise2","red","purple4","forestgreen", "#1D6A9B"),ordered = TRUE)
 
-p <- ggplot(predmod, aes(x = factor(abbrev), y = fit, fill=factor(predmod$taxa)))
-p +geom_bar(stat = "identity", fill = levels(colscale))+ theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) + geom_errorbar(ymin = predmod$lwr, ymax= predmod$upr, width=0.2) + xlab("") + ylab("% Transients") + ylim(0, 1)+ theme(axis.ticks.x=element_blank(),axis.text.x=element_blank(),axis.text.y=element_text(size=30),axis.title.x=element_text(size=30),axis.title.y=element_text(size=24,angle=90,vjust = 2))+guides(fill=guide_legend(title="",keywidth = 2, keyheight = 1)) 
-ggsave(file="C:/Git/core-transient/output/plots/3c_predmod.pdf", height = 10, width = 15)
-
-
-test = plot_grid(p + theme(legend.position="none"),
-          four_d + theme(legend.position="none"),
-          #p1 + theme(legend.position="none"),
-          align = 'hv',
-          #labels = c("A", "B", "C"),
-          hjust = -1,
-          nrow = 1)
