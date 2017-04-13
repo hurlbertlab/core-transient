@@ -75,9 +75,8 @@ occ_merge = occ_taxa[,c("datasetID", "site","taxa", "meanAbundance", "pctTrans",
 bbs_occ = rbind(bbs_spRich,occ_merge)
 
 area_plot = data.frame()
-pdf('output/plots/3a_sara_scale_area_reg.pdf', height = 16, width = 20)
-par(mfrow = c(1, 3), mar = c(5.1, 4.1, 4.1, 2.1), cex = 1.25, oma = c(0,0,0,0), las = 1,
-    cex.lab = 1.25)
+pdf('output/plots/3a_sara_scale_area_reg.pdf', height = 18, width = 36)
+par(mfrow = c(1, 3), mar = c(5.1, 4.1, 4.1, 2.1), cex = 2, oma = c(0,0,0,0), las = 1)
 palette(colors7)
 
 b1 = for(id in scaleIDs){
@@ -94,12 +93,11 @@ b1 = for(id in scaleIDs){
   taxcolor = subset(taxcolors, taxa == as.character(plotsub$taxa)[1])
   area_plot  = rbind(area_plot , c(id, xhats, mod3.slope,mod3.coef1,y,taxa))
   y=summary(mod3)$coef[1] + (xhats)*summary(mod3)$coef[2]
-  plot(NA, xlim = c(-2, 7), ylim = c(0,1), col = as.character(taxcolor$color), xlab = expression("Log"[10]*" Area"), ylab = "% Transients", cex = 1.75,frame.plot=FALSE)
+  plot(NA, xlim = c(-2, 7), ylim = c(0,1), col = as.character(taxcolor$color), xlab = expression("Log"[10]*" Area"), ylab = "% Transients", cex = 3,frame.plot=FALSE)
   lines(log10(plotsub$area), fitted(mod3), col=as.character(taxcolor$color),lwd=5)
   par(new=TRUE)
 }
-title(outer=FALSE,adj=0.01,main="A",cex.main=1.5,col="black",font=2,line=-2)
-legend('topright', legend = as.character(taxcolors$taxa), lty=1,lwd=3,col = as.character(taxcolors$color), cex = 1.25, bty = "n")
+title(outer=FALSE,adj=0.02,main="A",cex.main=2,col="black",font=2,line=-2)
 par(new= FALSE)
 
 b2 = for(id in scaleIDs){
@@ -112,18 +110,19 @@ b2 = for(id in scaleIDs){
   print(xhats)
   taxcolor = subset(taxcolors, taxa == as.character(plotsub$taxa)[1])
   y=summary(mod3)$coef[1] + (xhats)*summary(mod3)$coef[2]
-  plot(NA, xlim = c(0, 7), ylim = c(0,1), col = as.character(taxcolor$color), xlab = expression("Log"[10]*" Community Size"), ylab = "% Transients", cex = 1.75,frame.plot=FALSE)
+  plot(NA, xlim = c(0, 7), ylim = c(0,1), col = as.character(taxcolor$color), xlab = expression("Log"[10]*" Community Size"), ylab = "% Transients", cex = 3,frame.plot=FALSE)
   lines(log10(plotsub$meanAbundance), fitted(mod3), col=as.character(taxcolor$color),lwd=5)
   par(new=TRUE)
 }
 par(new=TRUE)
-title(outer=FALSE,adj=0.01,main="B",cex.main=1.5,col="black",font=2,line=-2)
+title(outer=FALSE,adj=0.02,main="B",cex.main=2,col="black",font=2,line=-2)
+legend('topright', legend = as.character(taxcolors$taxa), lty=1,lwd=4,col = as.character(taxcolors$color), cex = 1.5, bty = "n")
 par(new = FALSE)
 
 b3 = barplot(predmod$fit, cex.names = 1,col = c("#1D6A9B", "turquoise2","gold2","purple4","red","forestgreen"), ylim = c(0, 0.8))
 Hmisc::errbar(c(0.7, 1.9, 3.1, 4.3, 5.5, 6.7), predmod$fit, predmod$upr, predmod$lwr, add= TRUE, lwd = 1.5, pch = 3)
-mtext("% Transients", 2, cex = 1.75, las = 0, line = 2.5)
-title(outer=FALSE,adj=0.01,main="c",cex.main=1.5,col="black",font=2,line=-2)
+mtext("% Transients", 2, cex = 2, las = 0, line = 2.5)
+title(outer=FALSE,adj=0.02,main="C",cex.main=2,col="black",font=2,line=-2)
 dev.off()
 
 colnames(area_plot) = c("id","xlow","xhigh","slope", "taxa")
