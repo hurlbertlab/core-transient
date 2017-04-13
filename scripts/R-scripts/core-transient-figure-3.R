@@ -67,6 +67,20 @@ bbs_area = read.csv("data/BBS/bbs_area.csv", header = TRUE)
 areamerge = rbind(bbs_area,areamerge.5)
 write.csv(areamerge, "output/tabular_data/areamerge.csv", row.names = FALSE)
 
+#### Fig 3c predicted model ####
+bbs_occ_pred = bbs_occ[!bbs_occ$datasetID %in% c(207, 210, 217, 218, 222, 223, 225, 238, 241, 258, 282, 322, 280,317),]
+
+mod3c = lmer(pctTrans~(1|datasetID) * taxa * log10(meanAbundance), data=bbs_occ_pred)
+summary(mod3c)
+occ_sub_pred = data.frame(datasetID = 999, taxa = unique(bbs_occ_pred$taxa), meanAbundance =  274.213) # 274 is median abun for data frame minus the crazy high plankton
+predmod3c = merTools::predictInterval(mod3c, occ_sub_pred, n.sims=1000)
+
+# matching by predicted output vals
+predmod3c$taxa = c("Invertebrate", "Plant", "Mammal","Fish", "Bird", "Plankton")
+write.csv(predmod3c, "output/tabular_data/predmod3c.csv", row.names = FALSE)
+
+
+#### Figures 3a-3c panel plot #####
 scaleIDs = filter(dataformattingtable, spatial_scale_variable == 'Y',
                   format_flag == 1)$dataset_ID 
 scaleIDs = scaleIDs[! scaleIDs %in% c(207, 210, 217, 218, 222, 223, 225, 241,258, 282, 322, 280, 248, 254, 291)]  # waiting on data for 248
@@ -193,18 +207,6 @@ for(id in scaleIDs){
 segments(0,  0, x1 = 5.607, y1 = 1, col = rgb(29/255, 106/255, 155/255), lwd=5)
 par(new=TRUE)
 dev.off()
-
-#### Fig 3c predicted model ####
-bbs_occ_pred = bbs_occ[!bbs_occ$datasetID %in% c(207, 210, 217, 218, 222, 223, 225, 238, 241, 258, 282, 322, 280,317),]
-
-mod3c = lmer(pctTrans~(1|datasetID) * taxa * log10(meanAbundance), data=bbs_occ_pred)
-summary(mod3c)
-occ_sub_pred = data.frame(datasetID = 999, taxa = unique(bbs_occ_pred$taxa), meanAbundance =  102.7333) # 102.73333 is median abun for data frame
-predmod3c = merTools::predictInterval(mod3c, occ_sub_pred, n.sims=1000)
-
-# matching by predicted output vals
-predmod3c$taxa = c("Invertebrate", "Plant", "Mammal","Fish", "Bird", "Plankton")
-write.csv(predmod3c, "output/tabular_data/predmod3c.csv", row.names = FALSE)
 
 
 predmod = merge(predmod3c, taxcolors, by = "taxa")
