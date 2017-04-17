@@ -160,7 +160,7 @@ logseries_weights_excl = sad_data %>%
   summarize(weights = get_logseries_weight(abunds), treatment = 'Excluding transients')
 
 logseries_weights = rbind(logseries_weights_incl, logseries_weights_excl)
-
+write.csv(logseries_weights, "output/tabular_data/logseries_weights.csv")
 colscale = c("dark orange2","yellow")
 
 k = ggplot(logseries_weights, aes(x = treatment, y = weights, fill=factor(treatment))) +
