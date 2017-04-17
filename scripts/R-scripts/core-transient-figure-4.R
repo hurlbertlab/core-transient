@@ -356,6 +356,7 @@ pt1 <- plot_grid(k + theme(legend.position="none"),
                  l + theme(legend.position="none"),
                    align = 'vh',
                    labels = c("A", "B"),
+                   
                    hjust = -10,
                    nrow = 1
 )

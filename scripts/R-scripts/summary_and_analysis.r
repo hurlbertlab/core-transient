@@ -137,22 +137,22 @@ par(mfrow = c(3, 2), mar = c(3.75,3.75,1,1), cex = 1, oma = c(0,0,0,0), las = 1,
     cex.lab = 1)
 b1=barplot(dsetsBySystem, col = c('burlywood','skyblue', 'navy'), xaxt = "n",cex.names = 1) 
 mtext("# Datasets", 2, cex = 1, las = 0, line = 2.5)
-title(outer=FALSE,adj=1,main="A",cex.main=1.5,col="black",font=2,line=-2)
+title(outer=FALSE,adj=1,main="A",cex.main=1.5,col="black",font=2,line=-0.1)
 barplot(log10(sitesBySystem), col = c('burlywood','skyblue', 'navy'), cex.names = 1, 
         xaxt = "n",yaxt = "n", ylim = c(0,4)) 
 axis(2, 0:4)
 mtext(expression(log[10] ~ " # Assemblages"), 2, cex = 1, las = 0, line = 2.5)
-title(outer=FALSE,adj=1,main="B",cex.main=1.5,col="black",font=2,line=-2)
+title(outer=FALSE,adj=1,main="B",cex.main=1.5,col="black",font=2,line=-0.1)
 bar1 = barplot(dsetsByTaxa[taxorder], xaxt = "n", axisnames = F,
                col = as.character(taxcolors$color[match(taxorder, taxcolors$taxa)]))
 
 mtext("# Datasets", 2, cex = 1, las = 0, line = 2.5)
-title(outer=FALSE,adj=1,main="C",cex.main=1.5,col="black",font=2,line=-2)
+title(outer=FALSE,adj=1,main="C",cex.main=1.5,col="black",font=2,line=-0.1)
 bar2 = barplot(log10(sitesByTaxa[taxorder]), axes = F, axisnames = F, ylim = c(0,3),
                col = as.character(taxcolors$color[match(taxorder, taxcolors$taxa)]))
 axis(2, 0:4)
 mtext(expression(log[10] ~ " # Assemblages"), 2, cex = 1, las = 0, line = 2.5)
-title(outer=FALSE,adj=0.95,main="D",cex.main=1.5,col="black",font=2,line=-2)
+title(outer=FALSE,adj=0.95,main="D",cex.main=1.5,col="black",font=2,line=-0.1)
 
 # numspp_comm 
 summ1$taxa <-droplevels(summ1$taxa, exclude = c("","All","Amphibian", "Reptile"))
@@ -161,13 +161,13 @@ summ1.col$taxa <- factor(summ1.col$taxa,
                          levels = c('Bird','Plant','Mammal','Fish','Invertebrate','Benthos','Plankton'),ordered = TRUE)
 rankedtaxorder = c('Bird','Mammal','Plankton','Benthos','Invertebrate','Plant','Fish')
 
-bar1 = boxplot(log10(summ1.col$spRichTotal)~summ1.col$taxa, cex.axis =1, frame.plot = FALSE,  col = as.character(summ1.col$color[match(taxorder, summ1.col$taxa)]), axes = FALSE)
-axis(side = 2, at=c(1,1.5,2,2.5),labels=c("50","100","150","200"))
+bar1 = boxplot(log10(summ1.col$spRichTotal)~summ1.col$taxa, cex.axis =1, frame.plot = FALSE,  col = as.character(summ1.col$color[match(taxorder, summ1.col$taxa)]), axes = FALSE) 
+axis(side = 2, at=c(0.6,1.25,2,2.5),labels=c("4","80","140","280"))
 mtext(expression(" # Species"), 2, cex = 1, las = 0, line = 2.5)
-title(outer=FALSE,adj=1,main="E",cex.main=1.5,col="black",font=2,line=-2)
+title(outer=FALSE,adj=1,main="E",cex.main=1.5,col="black",font=2,line=-0.1)
 bar2 = boxplot(summ1.col$nTime~summ1.col$taxa, xaxt = "n", frame.plot = FALSE, cex.axis =1,col = as.character(summ1.col$color[match(taxorder, summ1.col$taxa)]))
 mtext(expression(" Years of Study"), 2, cex = 1, las = 0, line = 2.5)
-title(outer=FALSE,adj=1,main="F",cex.main=1.5,col="black",font=2,line=-2)
+title(outer=FALSE,adj=1,main="F",cex.main=1.5,col="black",font=2,line=-0.1)
 
 dev.off()
 
