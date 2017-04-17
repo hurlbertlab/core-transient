@@ -75,7 +75,7 @@ bbs_spRich = read.csv("data/BBS/bbs_abun4_spRich.csv", header = TRUE)
 occ_merge = occ_taxa[,c("datasetID", "site","taxa", "meanAbundance", "pctTrans","pctCore","pctNeither","scale", "spRich")]
 bbs_occ = rbind(bbs_spRich,occ_merge)
 
-#### Fig 3c predicted model ####
+#### Fig 3c/d predicted model ####
 bbs_occ_pred = bbs_occ[!bbs_occ$datasetID %in% c(207, 210, 217, 218, 222, 223, 225, 238, 241, 258, 282, 322, 280,317),]
 
 mod3c = lmer(pctTrans~(1|datasetID) * taxa * log10(meanAbundance), data=bbs_occ_pred)
@@ -90,6 +90,13 @@ write.csv(predmod3c, "output/tabular_data/predmod3c.csv", row.names = FALSE)
 
 predmod = merge(predmod3c, taxcolors, by = "taxa")
 predmod$taxorder = c(3,2,5,4,6,1)
+
+# 3d
+ecosys = merge(dataformattingtable[,c("dataset_ID", "system")], bbs_occ_pred, by.x = "dataset_ID", by.y = "datasetID")
+mod3d = lmer(pctTrans~(1|dataset_ID) * system * log10(meanAbundance), data=ecosys)
+summary(mod3d)
+occ_pred_3d = data.frame(datasetID = 999, sys = unique(ecosys$system), meanAbundance =  102) # 102 is median abun for data frame (median(bbs_occ_pred$meanAbundance))
+predmod3d = merTools::predictInterval(mod3d, occ_pred_3d, n.sims=1000)
 
 #### panel plot ####
 area_plot = data.frame()
