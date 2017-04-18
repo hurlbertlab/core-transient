@@ -291,7 +291,8 @@ circs.sp = SpatialPolygons(circs, proj4string=CRS(prj.string))
 # Check that circle locations look right
 plot(circs.sp)
 
-elev <- getData("worldclim", var = "alt", res = 10)
+elev <- readOGR(dsn = "Z:/GIS/DEM/30 arc-second DEM of North America/data", "0000namer_dem.lyr")
+  #getData("worldclim", var = "alt", res = .5)
 alt_files<-paste('alt_10m_bil', sep='')
 
 elev.point = raster::extract(elev, routes.laea)
