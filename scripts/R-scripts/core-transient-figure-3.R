@@ -10,6 +10,7 @@ setwd("C:/git/core-transient")
 library(lme4)
 library(plyr) # for core-transient functions
 library(ggplot2)
+library(merTools)
 library(tidyr)
 library(maps)
 library(gridExtra)
@@ -18,7 +19,6 @@ library(sp)
 library(rgdal)
 library(raster)
 library(dplyr)
-library(merTools)
 library(digest)
 library(Hmisc)
 
@@ -92,11 +92,11 @@ predmod = merge(predmod3c, taxcolors, by = "taxa")
 predmod$taxorder = c(3,2,5,4,6,1)
 
 # 3d
-ecosys = merge(dataformattingtable[,c("dataset_ID", "system")], bbs_occ_pred, by.x = "dataset_ID", by.y = "datasetID")
-mod3d = lmer(pctTrans~(1|dataset_ID) * system * log10(as.numeric(meanAbundance)), data=ecosys)
+ecosys = merge(bbs_occ_pred, dataformattingtable[,c("dataset_ID", "system")], by.y = "dataset_ID", by.x = "datasetID")
+mod3d = lmer(pctTrans~(1|datasetID) * system * log10(as.numeric(meanAbundance)), data=ecosys)
 summary(mod3d)
 occ_pred_3d = data.frame(datasetID = 999, sys = unique(ecosys$system), meanAbundance =  102) # 102 is median abun for data frame (median(bbs_occ_pred$meanAbundance))
-predmod3d = merTools::predictInterval(mod3d, as.matrix(occ_pred_3d), n.sims=1000)
+predmod3d = merTools::predictInterval(mod3d, occ_pred_3d, n.sims=1000)
 
 #### panel plot ####
 area_plot = data.frame()
