@@ -93,18 +93,18 @@ predmod$taxorder = c(3,2,5,4,6,1)
 
 # 3d
 ecosys = merge(dataformattingtable[,c("dataset_ID", "system")], bbs_occ_pred, by.x = "dataset_ID", by.y = "datasetID")
-mod3d = lmer(pctTrans~(1|dataset_ID) * system * log10(meanAbundance), data=ecosys)
+mod3d = lmer(pctTrans~(1|dataset_ID) * system * log10(as.numeric(meanAbundance)), data=ecosys)
 summary(mod3d)
 occ_pred_3d = data.frame(datasetID = 999, sys = unique(ecosys$system), meanAbundance =  102) # 102 is median abun for data frame (median(bbs_occ_pred$meanAbundance))
-predmod3d = merTools::predictInterval(mod3d, occ_pred_3d, n.sims=1000)
+predmod3d = merTools::predictInterval(mod3d, as.matrix(occ_pred_3d), n.sims=1000)
 
 #### panel plot ####
 area_plot = data.frame()
-pdf('output/plots/3a_3c.pdf', height = 4, width = 12)
-par(mfrow = c(1, 3), mar = c(4, 4, 1, 1), cex = 1, oma = c(0,0,0,0), las = 1)
+pdf('output/plots/3a_3d.pdf', height = 10, width = 12)
+par(mfrow = c(2, 2), mar = c(4.5, 4.5, 1, 1), cex = 1, oma = c(0,0,0,0), las = 1)
 palette(colors7)
 
-plot(NA, xlim = c(-2, 7), ylim = c(0,1), col = as.character(taxcolor$color), xlab = expression("Log"[10]*" Area"), ylab = "% Transients", cex = 1,frame.plot=FALSE)
+plot(NA, xlim = c(-2, 7), ylim = c(0,1), col = as.character(taxcolor$color), xlab = expression("Log"[10]*" Area"), ylab = "% Transients", cex.lab = 1.5,frame.plot=FALSE)
 b1 = for(id in scaleIDs){
   print(id)
   plotsub = subset(areamerge,datasetID == id)
@@ -125,7 +125,7 @@ b1 = for(id in scaleIDs){
 title(outer=FALSE,adj=0.02,main="A",cex.main=1.5,col="black",font=2,line=-1)
 par(new= FALSE)
 
-plot(NA, xlim = c(0, 7), ylim = c(0,1), col = as.character(taxcolor$color), xlab = expression("Log"[10]*" Community Size"), ylab = "% Transients", cex = 1,frame.plot=FALSE)
+plot(NA, xlim = c(0, 7), ylim = c(0,1), col = as.character(taxcolor$color), xlab = expression("Log"[10]*" Community Size"), ylab = "% Transients", cex.lab = 1.5,frame.plot=FALSE)
 b2 = for(id in scaleIDs){
   print(id)
   plotsub = subset(bbs_occ,datasetID == id)
@@ -141,13 +141,20 @@ b2 = for(id in scaleIDs){
 }
 par(new=TRUE)
 title(outer=FALSE,adj=0.02,main="B",cex.main=1.5,col="black",font=2,line=-1)
-legend('topright', legend = as.character(taxcolors$taxa), lty=1,lwd=3,col = as.character(taxcolors$color), cex = 0.75, bty = "n")
+legend('topright', legend = as.character(taxcolors$taxa), lty=1,lwd=3,col = as.character(taxcolors$color), cex = 1.25, bty = "n")
 par(new = FALSE)
 
-b3 = barplot(predmod$fit[predmod$taxorder], cex.names = 1,col = c("gold2", "turquoise2","red","purple4","forestgreen","#1D6A9B"), ylim = c(0, 0.8))
+b3 = barplot(predmod$fit[predmod$taxorder], cex.names = 1.5,col = c("gold2", "turquoise2","red","purple4","forestgreen","#1D6A9B"), ylim = c(0, 0.8))
 Hmisc::errbar(c(0.7, 1.9, 3.1, 4.3, 5.5, 6.7), predmod$fit[predmod$taxorder], predmod$upr[predmod$taxorder], predmod$lwr[predmod$taxorder], add= TRUE, lwd = 1.25, pch = 3)
-mtext("% Transients", 2, cex = 1, las = 0, line = 2.5)
+mtext("% Transients", 2, cex = 1.5, las = 0, line = 2.5)
 title(outer=FALSE,adj=0.02,main="C",cex.main=1.5,col="black",font=2,line=-1)
+
+b4 = barplot(predmod$fit[predmod$taxorder], cex.names = 1.5,col = c('burlywood','skyblue', 'navy'), ylim = c(0, 0.8))
+Hmisc::errbar(c(0.7, 1.9, 3.1, 4.3, 5.5, 6.7), predmod$fit[predmod$taxorder], predmod$upr[predmod$taxorder], predmod$lwr[predmod$taxorder], add= TRUE, lwd = 1.25, pch = 3)
+mtext("% Transients", 2, cex = 1.5, las = 0, line = 2.5)
+title(outer=FALSE,adj=0.02,main="D",cex.main=1.5,col="black",font=2,line=-1)
+dev.off()
+
 dev.off()
 
 colnames(area_plot) = c("id","xlow","xhigh","slope", "taxa")
