@@ -17,7 +17,6 @@
 #'then, for five focal routes, rank by distance, and take just the top five 
 
 
-
 #'Set working directory to core-transient folder on github i.e. setwd("C:/git/core-transient/")
 #'source('scripts/R-scripts/core-transient_functions.R')
 
@@ -444,16 +443,18 @@ for (s in stateroutes) {
 
   #not using log fcn for %Transient relationships bc relationship diff, exp had higher pred power also 
   #predictive power still funky though
+  
+  #using exponential function since higher explanatory power than pwr function
   #TA
   TApreds =  coef_sub[,35]*(coef_sub[,18]) #35 = optimum; replacing ^ with * bc natural log, removing -1!!!
-  # plot1_3 = ggplot(coef_sub, aes(x = lnA, y = log(pctTran)))+geom_point(colour = "olivedrab")+
-  #   geom_line(aes(x = lnA, y = TApreds), color = "navy") +labs(x = "Log area", y = "% Transient Occupancy")
-  # 
+  plot1_3 = ggplot(coef_sub, aes(x = lnA, y = log(pctTran)))+geom_point(colour = "olivedrab")+
+    geom_line(aes(x = lnA, y = log(TApreds)), color = "navy") +labs(x = "Log area", y = "% Transient Occupancy")
+
   #TN
   TNpreds = coef_sub[,36]*(coef_sub[,22])
-  # plot2_3 = ggplot(coef_sub, aes(x = lnN, y = log(pctTran)))+geom_point(colour = "olivedrab")+
-  #   geom_line(aes(x = lnN, y = TNpreds), color = "navy")+labs(x = "Log abundance", y = "% Transient Occupancy") 
-  # 
+  plot2_3 = ggplot(coef_sub, aes(x = lnN, y = log(pctTran)))+geom_point(colour = "olivedrab")+
+    geom_line(aes(x = lnN, y = TNpreds), color = "navy")+labs(x = "Log abundance", y = "% Transient Occupancy")
+
   #storing plots
   # predplot = grid.arrange(plot1, plot2, plot1_2, plot2_2, plot1_3, plot2_3,
   #                         ncol=2, top = paste("predplot_", s, sep = ""))
