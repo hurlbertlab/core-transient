@@ -80,7 +80,7 @@ for (r in uniqrtes) {
 bbs_focal_occs = as.data.frame(output)
 #Calc area for above route scale
 bbs_focal_occs$area = bbs_focal_occs$numrtes*50*(pi*(0.4^2)) #number of routes * fifty stops * area in sq km of a stop 
-# write.csv(bbs_focal_occs, "//bioark.ad.unc.edu/HurlbertLab/Jenkins/BBS scaled/bbs_focal_occs.csv", row.names = FALSE)
+# write.csv(bbs_focal_occs, "/scripts/R-scripts/scale_analysis/bbs_focal_occs.csv", row.names = FALSE)
 
 
 ####Plotting BBS occupancy at scales above a BBS route####
