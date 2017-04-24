@@ -95,7 +95,7 @@ predmod$taxorder = c(3,2,5,4,6,1)
 ecosys = merge(bbs_occ_pred, dataformattingtable[,c("dataset_ID", "system")], by.y = "dataset_ID", by.x = "datasetID")
 mod3d = lmer(pctTrans~(1|datasetID) * system * log10(as.numeric(meanAbundance)), data=ecosys)
 summary(mod3d)
-occ_pred_3d = data.frame(datasetID = 999, sys = unique(ecosys$system), meanAbundance =  102) # 102 is median abun for data frame (median(bbs_occ_pred$meanAbundance))
+occ_pred_3d = data.frame(datasetID = 999, system = unique(ecosys$system), meanAbundance =  102) # 102 is median abun for data frame (median(bbs_occ_pred$meanAbundance))
 predmod3d = merTools::predictInterval(mod3d, occ_pred_3d, n.sims=1000)
 
 #### panel plot ####
