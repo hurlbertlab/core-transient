@@ -97,7 +97,8 @@ mod3d = lmer(pctTrans~(1|datasetID) * system * log10(as.numeric(meanAbundance)),
 summary(mod3d)
 occ_pred_3d = data.frame(datasetID = 999, system = unique(ecosys$system), meanAbundance =  102) # 102 is median abun for data frame (median(bbs_occ_pred$meanAbundance))
 predmod3d = merTools::predictInterval(mod3d, occ_pred_3d, n.sims=1000)
-
+predmod3d$order = c(1,3,2)
+  
 #### panel plot ####
 area_plot = data.frame()
 pdf('output/plots/3a_3d.pdf', height = 10, width = 12)
@@ -149,8 +150,8 @@ Hmisc::errbar(c(0.7, 1.9, 3.1, 4.3, 5.5, 6.7), predmod$fit[predmod$taxorder], pr
 mtext("% Transients", 2, cex = 1.5, las = 0, line = 2.5)
 title(outer=FALSE,adj=0.02,main="C",cex.main=1.5,col="black",font=2,line=-1)
 
-b4 = barplot(predmod$fit[predmod$taxorder], cex.names = 1.5,col = c('burlywood','skyblue', 'navy'), ylim = c(0, 0.8))
-Hmisc::errbar(c(0.7, 1.9, 3.1, 4.3, 5.5, 6.7), predmod$fit[predmod$taxorder], predmod$upr[predmod$taxorder], predmod$lwr[predmod$taxorder], add= TRUE, lwd = 1.25, pch = 3)
+b4 = barplot(predmod3d$fit[predmod3d$order], cex.names = 1.5,col = c('burlywood','navy','skyblue'), ylim = c(0, 0.8))
+Hmisc::errbar(c(0.7, 1.9, 3.1), predmod3d$fit[predmod3d$order], predmod3d$upr[predmod3d$order], predmod3d$lwr[predmod3d$order], add= TRUE, lwd = 1.25, pch = 3)
 mtext("% Transients", 2, cex = 1.5, las = 0, line = 2.5)
 title(outer=FALSE,adj=0.02,main="D",cex.main=1.5,col="black",font=2,line=-1)
 dev.off()
