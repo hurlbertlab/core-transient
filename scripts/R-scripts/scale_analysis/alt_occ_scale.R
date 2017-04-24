@@ -420,26 +420,26 @@ sites = data.frame(longitude = bbs_latlon$Longi, latitude = bbs_latlon$Lati)
 points(sites$longitude, sites$latitude, col= "red", pch=16) #check on map
 
 #temp
-temp <- raster::getData("worldclim", var = "bio", res = 2.5) #supposed to be already /10 according to site
-bbs_latlon$temp<-raster::extract(temp, sites, buffer = 40000, fun = mean)
-bbs_latlon$vartemp<-raster::extract(temp, sites, buffer = 40000, fun = var)
-#working but insanely slow to extract
+temp = raster::getData("worldclim", var = "bio", res = 2.5) #supposed to be already /10 according to site
+bbs_latlon$temp = raster::extract(temp, sites, buffer = 40000, fun = mean)
+bbs_latlon$vartemp = raster::extract(temp, sites, buffer = 40000, fun = var)
+#getData working for all but insanely slow to extract
 
 #precip 
-prec<- raster::getData("worldclim", var = "prec", res = 2.5)
+prec = raster::getData("worldclim", var = "prec", res = 2.5)
 bbs_latlon$meanP = raster::extract(prec, sites, buffer = 40000, fun = mean)
 bbs_latlon$varP = raster::extract(prec, sites, buffer = 40000, fun = var)
 
 #ndvi 
-ndvim<-raster(paste(ndvidata, "Vegetation_Indices_may-aug_2000-2010.gri", sep = "")) #can't find on getData
+ndvim = raster(paste(ndvidata, "Vegetation_Indices_may-aug_2000-2010.gri", sep = "")) #can't find on getData
 ndvimean = ndvim/10000
-bbs_latlon$ndvi<-raster::extract(ndvimean, sites, buffer = 40000, fun = mean)
-bbs_latlon$varndvi<-raster::extract(ndvimean, sites, buffer = 40000, fun = var)
+bbs_latlon$ndvi = raster::extract(ndvimean, sites, buffer = 40000, fun = mean)
+bbs_latlon$varndvi = raster::extract(ndvimean, sites, buffer = 40000, fun = var)
 
 #elev 
-elev <- raster::getData("worldclim", var = "alt", res = 10)
-bbs_latlon$elev<-raster::extract(elev, sites, buffer = 40000, fun = mean)
-bbs_latlon$varelev<-raster::extract(elev, sites, buffer = 40000, fun = var) 
+elev = raster::getData("worldclim", var = "alt", res = 2.5)
+bbs_latlon$elev = raster::extract(elev, sites, buffer = 40000, fun = mean)
+bbs_latlon$varelev = raster::extract(elev, sites, buffer = 40000, fun = var) 
 
 bbs_envs = bbs_latlon 
 #write.csv(bbs_envs, "scripts/R-scripts/scale_analysis/bbs_envs.csv", row.names = FALSE) 
