@@ -415,14 +415,14 @@ bbs_allscales = read.csv("data/BBS/bbs_allscales.csv", header = TRUE)
 bbs_latlon = read.csv(paste(BBS, "good_rtes2.csv", sep = ""), header = TRUE)
 bbs_allscales = dplyr::rename(bbs_latlon, focalrte = stateroute) %>%
   right_join(bbs_allscales, by = "focalrte")
-
 sites = data.frame(longitude = bbs_latlon$Longi, latitude = bbs_latlon$Lati) 
 points(sites$longitude, sites$latitude, col= "red", pch=16) #check on map
 
 #temp
 temp = raster::getData("worldclim", var = "bio", res = 2.5) #supposed to be already /10 according to site
-bbs_latlon$temp = raster::extract(temp, sites, buffer = 40000, fun = mean)
-bbs_latlon$vartemp = raster::extract(temp, sites, buffer = 40000, fun = var)
+bbs_latlon_$temp = raster::extract(temp, bbs_latlon[,3:2], buffer = 40000, fun = mean) 
+#trying within latlon because 2001 test ran fine; keeping stateroute ID's associated
+bbs_latlon$vartemp = raster::extract(temp, bbs_latlon[,3:2], buffer = 40000, fun = var)
 #getData working for all but insanely slow to extract
 
 #precip 
