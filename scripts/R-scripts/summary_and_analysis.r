@@ -299,7 +299,7 @@ plot(elev)
 plot(NorthAm,add=TRUE)
 
 elevNA <- raster::mask(elev, NorthAm)
-
+elevNA2 = projectRaster(elev, crs = prj.string) #UNMASKED!
 
 elev.point = raster::extract(elevNA, routes.laea)
 elev.mean = raster::extract(elevNA, circs.sp, fun = mean, na.rm=T)
@@ -316,7 +316,7 @@ lat_scale_rich = merge(lat_scale_elev, summ2[,c("datasetID","site", "meanAbundan
 # write.csv(lat_scale_rich, "output/tabular_data/lat_scale_rich.csv", row.names = F)
 # lat_scale_rich = read.csv("output/tabular_data/lat_scale_rich.csv", header = TRUE)
 
-# Model
+# Model -  want 5 km radius here!!!!
 mod1 = lmer(propTrans ~ (1|taxa) * log10(meanAbundance) * log10(elev.var), data=lat_scale_rich) 
 summary(mod1)
 
