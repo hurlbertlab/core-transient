@@ -254,8 +254,7 @@ all_latlongs = na.omit(all_latlongs)
 # Makes routes into a spatialPointsDataframe
 coordinates(all_latlongs)=c('Lon','Lat')
 projection(all_latlongs) = CRS("+proj=longlat +ellps=WGS84")
-prj.string <- "+proj=laea +lat_0=45.235 +lon_0=-106.675 +units=m"
-#+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0, units = km
+prj.string <- "+proj=laea +lat_0=45.235 +lon_0=-106.675 +units=km"
 # Transforms routes to an equal-area projection - see previously defined prj.string
 routes.laea = spTransform(all_latlongs, CRS(prj.string))
 
@@ -294,18 +293,13 @@ plot(circs.sp)
 
 # read in elevation raster at 1 km resolution
 elev <- raster("Z:/GIS/DEM/sdat_10003_1_20170424_102000103.tif")
-
 NorthAm = readOGR("Z:/GIS/geography", "continent")
-#NorthAm = spTransform(NorthAm, CRS(prj.string))
-
 
 plot(elev)
 plot(NorthAm,add=TRUE)
 
 elevNA <- raster::mask(elev, NorthAm)
-elevNA2 = elevNA
-elevNA3 = projectRaster(elevNA2, crs = ("+proj=laea +lat_0=45.235 +lon_0=-106.675 +units=m"))
-plot(circs.sp, add = TRUE)
+
 
 elev.point = raster::extract(elevNA, routes.laea)
 elev.mean = raster::extract(elevNA, circs.sp, fun = mean, na.rm=T)
