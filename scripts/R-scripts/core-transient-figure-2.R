@@ -125,11 +125,11 @@ for (d in datasetIDs) {
   print(d)
 }
 percTransSummaries = percTransSummaries[, c("datasetID","site","system","taxa","propCore33", "propTrans33", "propTrans25", "propTrans10")]
-percTransSummaries$site = as.numeric(percTransSummaries$site)
+# percTransSummaries$site = as.numeric(percTransSummaries$site)
 #rbind threshold dataset with BBS thresholds
 bbs_focal_occs_pctTrans = read.csv("data/BBS/bbs_focal_occs_pctTrans.csv", header = TRUE)
 percTransSummaries_w_bbs = rbind(percTransSummaries, bbs_focal_occs_pctTrans)
-
+write.csv(percTransSummaries_w_bbs, "output/tabular_data/alt_trans_thresholds.csv", row.names = F)
 
 CT_plot=merge(percTransSummaries_w_bbs, taxcolors, by="taxa")
 CT_long = gather(CT_plot, "level_trans","pTrans", propTrans33:propTrans10)
@@ -205,4 +205,4 @@ p = p+geom_boxplot(width=0.8,position=position_dodge(width=0.8),aes(x=factor(abb
                       values = taxcolors$color)  + xlab("Taxa") + ylab("Proportion of Species")+
   scale_fill_manual(labels = c("10%", "25%", "33%"),
                     values = cols)+theme(axis.ticks.x=element_blank(),axis.text.x=element_text(size=20),axis.text.y=element_text(size=20),axis.title.x=element_text(size=24),axis.title.y=element_text(size=24,angle=90,vjust = 2))+guides(fill=guide_legend(title="",keywidth = 2, keyheight = 1)) + theme(legend.text=element_text(size=24),legend.key.size = unit(2, 'lines'), legend.title=element_text(size=24))+theme(legend.position="top", legend.justification=c(0, 1), legend.key.width=unit(1, "lines"))+ coord_fixed(ratio = 4)
-
+ggsave(file="C:/Git/core-transient/output/plots/supp_2.pdf", height = 10, width = 15,p)
