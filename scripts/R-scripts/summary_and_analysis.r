@@ -299,7 +299,7 @@ plot(elev)
 plot(NorthAm,add=TRUE)
 
 elevNA <- raster::mask(elev, NorthAm)
-elevNA2 = projectRaster(elevNA, crs = prj.string) #UNMASKED!
+elevNA2 = projectRaster(elev, crs = prj.string) #UNMASKED!
 
 elev.point = raster::extract(elevNA2, routes.laea)
 elev.mean = raster::extract(elevNA2, circs.sp, fun = mean, na.rm=T)

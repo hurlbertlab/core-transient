@@ -37,7 +37,7 @@ datasetIDs = dataformattingtable$dataset_ID[dataformattingtable$format_flag == 1
 occ_taxa=read.csv("output/tabular_data/occ_taxa.csv",header=TRUE)
 alt_trans = read.csv("output/tabular_data/alt_trans_thresholds.csv", header =TRUE)
 
-occ_alt = merge(occ_taxa, alt_trans[,c("datasetID", "site","propTrans33", "propTrans25", "propTrans10")], all.x = TRUE)
+occ_alt = merge(occ_taxa, alt_trans[,c("datasetID", "site","propTrans33", "propTrans25", "propTrans10")], all = TRUE)
 
 colors7 = c(colors()[552], # plankton
             rgb(29/255, 106/255, 155/255), #bird

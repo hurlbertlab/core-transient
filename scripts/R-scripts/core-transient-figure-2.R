@@ -128,6 +128,7 @@ percTransSummaries = percTransSummaries[, c("datasetID","site","system","taxa","
 # percTransSummaries$site = as.numeric(percTransSummaries$site)
 #rbind threshold dataset with BBS thresholds
 bbs_focal_occs_pctTrans = read.csv("data/BBS/bbs_focal_occs_pctTrans.csv", header = TRUE)
+bbs_focal_occs_pctTrans$site = as.factor(bbs_focal_occs_pctTrans$site)
 percTransSummaries_w_bbs = rbind(percTransSummaries, bbs_focal_occs_pctTrans)
 write.csv(percTransSummaries_w_bbs, "output/tabular_data/alt_trans_thresholds.csv", row.names = F)
 
