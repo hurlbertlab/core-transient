@@ -254,9 +254,10 @@ all_latlongs = na.omit(all_latlongs)
 # Makes routes into a spatialPointsDataframe
 coordinates(all_latlongs)=c('Lon','Lat')
 projection(all_latlongs) = CRS("+proj=longlat +ellps=WGS84")
-prj.string <- "+proj=laea +lat_0=45.235 +lon_0=-106.675 +units=km"
+prj.string <- CRS("+proj=laea +lat_0=45.235 +lon_0=-106.675 +units=km")
+# "+proj=laea +lat_0=45.235 +lon_0=-106.675 +units=km"
 # Transforms routes to an equal-area projection - see previously defined prj.string
-routes.laea = spTransform(all_latlongs, CRS(prj.string))
+routes.laea = spTransform(all_latlongs, CRS("+proj=laea +lat_0=45.235 +lon_0=-106.675 +units=km"))
 
 ##### extracting elevation data ####
 # A function that draws a circle of radius r around a point: p (x,y)
@@ -286,24 +287,33 @@ circs = sapply(1:nrow(routes.laea@data), function(x){
 }
 )
 
-circs.sp = SpatialPolygons(circs, proj4string=CRS(prj.string))
+circs.sp = SpatialPolygons(circs, proj4string=CRS("+proj=laea +lat_0=45.235 +lon_0=-106.675 +units=km"))
 
 # Check that circle locations look right
-plot(circs.sp)
+plot(circs.sp, add = TRUE)
 
 # read in elevation raster at 1 km resolution
 elev <- raster("Z:/GIS/DEM/sdat_10003_1_20170424_102000103.tif")
 NorthAm = readOGR("Z:/GIS/geography", "continent")
+NorthAm2 = spTransform(NorthAm, CRS("+proj=laea +lat_0=45.235 +lon_0=-106.675 +units=km"))
 
 plot(elev)
-plot(NorthAm,add=TRUE)
+plot(NorthAm2,add=TRUE)
 
-elevNA <- raster::mask(elev, NorthAm)
+clip<-function(raster,shape) {
+  a1_crop<-crop(raster,shape)
+  step1<-rasterize(shape,a1_crop)
+  a1_crop*step1}
+
+test = clip(elevNA2, NorthAm2)
+
+
 elevNA2 = projectRaster(elev, crs = prj.string) #UNMASKED!
+elevNA3 <- raster::mask(elevNA2, NorthAm)
 
-elev.point = raster::extract(elevNA2, routes.laea)
-elev.mean = raster::extract(elevNA2, circs.sp, fun = mean, na.rm=T)
-elev.var = raster::extract(elevNA2, circs.sp, fun = var, na.rm=T)
+elev.point = raster::extract(test, routes.laea)
+elev.mean = raster::extract(test, circs.sp, fun = mean, na.rm=T)
+elev.var = raster::extract(test, circs.sp, fun = var, na.rm=T)
 
 env_elev = data.frame(unique = routes.laea@data$unique, elev.point = elev.point, elev.mean = elev.mean, elev.var = elev.var)
 
