@@ -298,7 +298,7 @@ NorthAm = readOGR("Z:/GIS/geography", "continent")
 NorthAm2 = spTransform(NorthAm, CRS("+proj=laea +lat_0=45.235 +lon_0=-106.675 +units=km"))
 
 plot(elev)
-plot(NorthAm2,add=TRUE)
+plot(NorthAm2)
 
 clip<-function(raster,shape) {
   a1_crop<-crop(raster,shape)
