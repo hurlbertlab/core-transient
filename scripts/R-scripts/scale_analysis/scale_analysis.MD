@@ -76,6 +76,17 @@ It also highlights which pieces of .R code in the folder are associated with spe
 			
 	-because BBC sites are often irregular in size and smaller than a single BBS route, may be more environmentally similar to a single segment of a route than the entire route itself 
 
+# Roadmap: 
+* alt_occ_scale.R -> Script that calculates occupancy for both above and below BBS-route scales. Identifies relationship between occupancy and scale (in both km and in abundance as a proxy for scale). Extraction of coefficients for each stateroute, predicted values for each stateroute and scale. 
+
+* env_analysis.R -> Script that extracts environmental variables of interest (NDVI, Elevation, Precipitation, Temperature) for each stateroute (ideally also scale-specific extractions). Evaluates relationships between individual environmental variables and coefficients from occupancy-scale curves. Do these variables have bearing on variation in the relationship between occupancy and scale? 
+
+### Older analyses for reference: 
+* Spring_Code_updates -> Environmental analyses for both BBS and BBC sites. Extraction of environmental data for BBC sites. Pairing of sites by minimum distance in both geographic and environmental space. 
+
+* Gartland_Code -> original prototypical code for Component II for FS 2015 Macroecology project.
+
+* Grid_sampling_justification -> code exploring number of BBS routes available per region across the United States and appropriate cutoff thresholds for aggregating routes in above-route scale calculations. Describes how we arrived at a cutoff of 66 BBS routes aggregated for each focal route as our maximum scale. 
 
 # Notes on exploring the impacts of spatial scale on temporal occupancy
 
