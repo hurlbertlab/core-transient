@@ -410,42 +410,74 @@ dev.off()
 write.csv(preds.df, "C:/git/core-transient/scripts/R-scripts/scale_analysis/preds.csv", row.names = FALSE)
 
 
-####Env data add-in####
-bbs_allscales = read.csv("data/BBS/bbs_allscales.csv", header = TRUE)
-bbs_latlon = read.csv(paste(BBS, "good_rtes2.csv", sep = ""), header = TRUE)
-bbs_allscales = dplyr::rename(bbs_latlon, focalrte = stateroute) %>%
-  right_join(bbs_allscales, by = "focalrte")
-sites = data.frame(longitude = bbs_latlon$Longi, latitude = bbs_latlon$Lati) 
-points(sites$longitude, sites$latitude, col= "red", pch=16) #check on map
+####Env data add-in: Alternate 'cookie-cutter' method for env variables####
+#based on Sara's code from summary_and_analysis.R file
 
-#temp
-temp = raster::getData("worldclim", var = "bio", res = 2.5) #supposed to be already /10 according to site
-bbs_latlon_$temp = raster::extract(temp, bbs_latlon[,3:2], buffer = 40000, fun = mean) 
-#trying within latlon because 2001 test ran fine; keeping stateroute ID's associated
-bbs_latlon$vartemp = raster::extract(temp, bbs_latlon[,3:2], buffer = 40000, fun = var)
-#getData working for all but insanely slow to extract
+# Makes routes into a spatialPointsDataframe
+coordinates(all_latlongs)=c('Lon','Lat')
+projection(all_latlongs) = CRS("+proj=longlat +ellps=WGS84")
+prj.string <- "+proj=laea +lat_0=45.235 +lon_0=-106.675 +units=km"
+# Transforms routes to an equal-area projection - see previously defined prj.string
+routes.laea = spTransform(all_latlongs, CRS(prj.string))
 
-#precip 
-prec = raster::getData("worldclim", var = "prec", res = 2.5)
-bbs_latlon$meanP = raster::extract(prec, sites, buffer = 40000, fun = mean)
-bbs_latlon$varP = raster::extract(prec, sites, buffer = 40000, fun = var)
+##### extracting elevation data ####
+# A function that draws a circle of radius r around a point: p (x,y)
+RADIUS = 40
 
-#ndvi 
-ndvim = raster(paste(ndvidata, "Vegetation_Indices_may-aug_2000-2010.gri", sep = "")) #can't find on getData
-ndvimean = ndvim/10000
-bbs_latlon$ndvi = raster::extract(ndvimean, sites, buffer = 40000, fun = mean)
-bbs_latlon$varndvi = raster::extract(ndvimean, sites, buffer = 40000, fun = var)
+make.cir = function(p,r){
+  points=c()
+  for(i in 1:360){
+    theta = i*2*pi/360
+    y = p[2] + r*cos(theta)
+    x = p[1] + r*sin(theta)
+    points = rbind(points,c(x,y))
+  }
+  points=rbind(points,points[1,])
+  circle=Polygon(points,hole=F)
+  circle
+}
 
-#elev 
-elev = raster::getData("worldclim", var = "alt", res = 2.5)
-bbs_latlon$elev = raster::extract(elev, sites, buffer = 40000, fun = mean)
-bbs_latlon$varelev = raster::extract(elev, sites, buffer = 40000, fun = var) 
+routes.laea@data$dId_site = paste(routes.laea@data$datasetID, routes.laea@data$site, sep = "_")
+routes.laea@data$unique = 1:16602
 
-bbs_envs = bbs_latlon 
-#write.csv(bbs_envs, "scripts/R-scripts/scale_analysis/bbs_envs.csv", row.names = FALSE) 
-#wrote file 03/28 w/elev from getData and using old env data; need to overwrite with updated env vars
 
-#merge into bbs_allscales data
+#Draw circles around all routes 
+circs = sapply(1:nrow(routes.laea@data), function(x){
+  circ =  make.cir(routes.laea@coords[x,],RADIUS)
+  circ = Polygons(list(circ),ID=routes.laea$unique[x]) 
+}
+)
+
+circs.sp = SpatialPolygons(circs, proj4string=CRS(prj.string))
+
+# Check that circle locations look right
+plot(circs.sp)
+
+# read in elevation raster at 1 km resolution
+elev <- raster("Z:/GIS/DEM/sdat_10003_1_20170424_102000103.tif")
+NorthAm = readOGR("Z:/GIS/geography", "continent")
+
+plot(elev)
+plot(NorthAm,add=TRUE)
+
+elevNA <- raster::mask(elev, NorthAm)
+
+
+elev.point = raster::extract(elevNA, routes.laea)
+elev.mean = raster::extract(elevNA, circs.sp, fun = mean, na.rm=T)
+elev.var = raster::extract(elevNA, circs.sp, fun = var, na.rm=T)
+
+env_elev = data.frame(unique = routes.laea@data$unique, elev.point = elev.point, elev.mean = elev.mean, elev.var = elev.var)
+
+
+lat_scale_elev = merge(routes.laea, env_elev, by = c("unique")) # checked to make sure order lined up, d/n seem to be another way to merge since DID keeps getting lost
+lat_scale_elev = data.frame(lat_scale_elev)
+
+
+
+
+
+
 
 
 ####Coef vs env variation models####
