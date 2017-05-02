@@ -132,6 +132,7 @@ taxcolors$abbrev = gsub("Plant", 'Pt', taxcolors$abbrev)
 
 write.csv(taxcolors, "output/tabular_data/taxcolors.csv", row.names = FALSE)
 
+
 pdf('output/plots/data_summary_hists.pdf', height = 8, width = 10)
 par(mfrow = c(3, 2), mar = c(3.75,3.75,1,1), cex = 1, oma = c(0,0,0,0), las = 1,
     cex.lab = 1)
@@ -297,7 +298,7 @@ elev <- raster("Z:/GIS/DEM/sdat_10003_1_20170424_102000103.tif")
 NorthAm = readOGR("Z:/GIS/geography", "continent")
 NorthAm2 = spTransform(NorthAm, CRS("+proj=laea +lat_0=45.235 +lon_0=-106.675 +units=km"))
 
-plot(elev)
+plot(elevNA2)
 plot(NorthAm2)
 
 clip<-function(raster,shape) {
@@ -305,21 +306,27 @@ clip<-function(raster,shape) {
   step1<-rasterize(shape,a1_crop)
   a1_crop*step1}
 
-test = clip(elevNA2, NorthAm2)
-
 
 elevNA2 = projectRaster(elev, crs = prj.string) #UNMASKED!
-elevNA3 <- raster::mask(elevNA2, NorthAm)
+elevNA3 <- raster::mask(elevNA2, NorthAm2)
 
-elev.point = raster::extract(test, routes.laea)
-elev.mean = raster::extract(test, circs.sp, fun = mean, na.rm=T)
-elev.var = raster::extract(test, circs.sp, fun = var, na.rm=T)
+test = clip(elevNA2, NorthAm2)
+
+elev.point = raster::extract(elevNA3, routes.laea)
+elev.mean = raster::extract(elevNA3, circs.sp, fun = mean, na.rm=T)
+elev.var = raster::extract(elevNA3, circs.sp, fun = var, na.rm=T)
 
 env_elev = data.frame(unique = routes.laea@data$unique, elev.point = elev.point, elev.mean = elev.mean, elev.var = elev.var)
 
 
 lat_scale_elev = merge(routes.laea, env_elev, by = c("unique")) # checked to make sure order lined up, d/n seem to be another way to merge since DID keeps getting lost
 lat_scale_elev = data.frame(lat_scale_elev)
+
+# lat_scale_elev = subset(lat_scale_elev, unique < 26)
+# lat_scale_elev$stateroute = strsplit(as.character(lat_scale_elev$site), "-")
+# lat_scale_elev$stateroute = lapply(lat_scale_elev$stateroute, "[[", 1) 
+# lat_scale_elev$stateroute = unlist(lat_scale_elev$stateroute)
+# lat_scale_elev$stateroute = as.numeric(lat_scale_elev$stateroute)
 
 lat_scale_rich = merge(lat_scale_elev, summ2[,c("datasetID","site", "meanAbundance")], by = c("datasetID", "site"))
 #  "spRichTrans", 

@@ -230,6 +230,17 @@ ggsave(file="C:/Git/core-transient/output/plots/4b_corrcoeff_NDVI.pdf", height =
 e = ggplot(data=corr_elev, aes(factor(env), value, fill = class))+ geom_bar(width = 0.8, position = position_dodge(width = 0.9), stat="identity")+ geom_errorbar(aes(ymin = CIlower, ymax = CIupper), width =.1, position = position_dodge(.9))+ scale_fill_manual(values = c("All" = "dark orange2","Trans" = "#225ea8","Ntrans" = "light blue"), labels = c("All species","All species excluding transients", "Transients only"))+ theme_classic() + theme(axis.text.x=element_text(size=24), axis.ticks.x=element_blank(),axis.text.y=element_text(size=24),axis.title.x=element_text(size=24),axis.title.y=element_text(size=24,angle=90,vjust = 2))+ xlab(NULL) + ylab("Correlation Coefficient") +  guides(fill=guide_legend(title=NULL)) + theme(legend.text = element_text(size = 16),legend.position="top", legend.justification=c(0, 1), legend.key.width=unit(1, "lines"))
 ggsave(file="C:/Git/core-transient/output/plots/4b_corrcoeff_elev.pdf", height = 5, width = 15)
 
+
+
+#### test for fig 1 new #####
+qplot(log10(bbs_env$spRich), geom = "histogram", binwidth = .05, ylim = c(0, 110)) + xlab("Proportion Transient") + ylab ("Count") 
+qplot(log10(bbs_env$spRichnotrans), geom = "histogram", binwidth = .05, ylim = c(0, 110)) + xlab("Proportion Transient") + ylab ("Count") 
+
+
+
+
+
+
 #### Figure 4c ####
 turnover = read.csv("output/tabular_data/temporal_turnover.csv", header = TRUE)
 turnover_taxa = merge(turnover,dataformattingtable[,c("dataset_ID", "taxa")], by.x = "datasetID", by.y = "dataset_ID")
