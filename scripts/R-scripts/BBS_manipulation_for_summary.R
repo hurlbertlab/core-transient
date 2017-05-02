@@ -120,7 +120,7 @@ bbs_abun_propOcc = bbs_abun[,c("datasetID", "site", "AOU", "occupancy", "scale")
 bbs_latlong = read.csv("data/latlongs/bbs_2000_2014_latlongs.csv", header = TRUE)
 bbs_below = read.csv("data/BBS/bbs_below.csv", header = TRUE)
 bbs_be_lat = merge(bbs_below, bbs_latlong, by = "stateroute", all.x = TRUE)
-bbs_be_lat$site = paste(bbs_below$stateroute, bbs_below$scale, sep = "-")
+bbs_be_lat$site = paste(bbs_be_lat$stateroute, bbs_be_lat$scale, sep = "-")
 bbs_be_lat$datasetID = 1
 bbs_be_lat$taxa = "Bird"
 bbs_be_lat$Lat = bbs_be_lat$Lati
