@@ -40,9 +40,11 @@ str(elev)
 
 # Makes routes into a spatialPointsDataframe
 latlon = na.omit(bbs_latlon)
-coordinates(latlon)=c('Lati','Longi')
-projection(latlon) = CRS("+proj=longlat +ellps=WGS84") #is this where my code is messing up? 
-#out of order? 
+coordinates(latlon)=c('Longi', 'Lati')
+projection(latlon) = CRS("+proj=longlat +ellps=WGS84") 
+#out of order? YUP. 
+#had Lati, Longi -> needed to be Longi, Lati. 
+
 prj.string <- CRS("+proj=laea +lat_0=25.5 +lon_0=-59 +units=km")
 # original in Sara's code: "+proj=laea +lat_0=45.235 +lon_0=-106.675 +units=km"
 # Transforms routes to an equal-area projection - see previously defined prj.string
