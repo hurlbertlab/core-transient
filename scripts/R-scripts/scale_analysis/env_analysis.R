@@ -96,8 +96,8 @@ clip<-function(raster,shape) {
   step1<-rasterize(shape,a1_crop)
   a1_crop*step1}
 
-elevNA2 = projectRaster(elev, crs = prj.string) #UNMASKED!
-elevNA3 <- raster::mask(elevNA2, NorthAm2)
+elev2 = projectRaster(elev, crs = CRS("+proj=laea +lat_0=45.235 +lon_0=-106.675 +units=km")) #UNMASKED!
+elev3 <- raster::mask(elev, NorthAm2)
 
 test = clip(elevNA2, NorthAm2)
 
