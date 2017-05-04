@@ -233,13 +233,11 @@ ggsave(file="C:/Git/core-transient/output/plots/4b_corrcoeff_elev.pdf", height =
 
 
 #### test for fig 1 new #####
-qplot(log10(bbs_env$spRich), geom = "histogram", binwidth = .05, ylim = c(0, 110)) + xlab("Proportion Transient") + ylab ("Count") 
-qplot(log10(bbs_env$spRichnotrans), geom = "histogram", binwidth = .05, ylim = c(0, 110)) + xlab("Proportion Transient") + ylab ("Count") 
+bbs_env_long = gather(bbs_env, "spRich", "count", 4:5)
 
+# ggplot(bbs_env_long, aes(x = count)) + geom_histogram(data=subset(bbs_env_long,spRich  == 'spRich'), binwidth = 5) + xlab("Proportion Transient") + ylab ("Count") + geom_histogram(data = subset(bbs_env_long,spRich  == 'spRichnotrans'),binwidth = 5, fill = "blue", alpha = 0.7)
 
-
-
-
+ggplot(bbs_env_long, aes(x=count, fill=spRich)) + geom_histogram(alpha=0.5, position="identity", binwidth = 5)+ xlab("Proportion Transient") + ylab ("Count")+ scale_fill_manual(breaks = bbs_env_long$spRich,values = c("black", "dark gray"))+ theme_classic() + theme(axis.text.x=element_text(size=24),axis.text.y=element_text(size=24),axis.ticks.x=element_blank(),axis.title.x=element_text(size=24),axis.title.y=element_text(size=24,angle=90,vjust = 2))+  guides(fill=guide_legend(title=NULL)) + theme(legend.text = element_text(size = 16),legend.position="right", legend.justification=c(0, 1), legend.key.width=unit(1, "lines"))
 
 #### Figure 4c ####
 turnover = read.csv("output/tabular_data/temporal_turnover.csv", header = TRUE)
