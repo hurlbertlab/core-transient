@@ -41,11 +41,15 @@ str(elev)
 # Makes routes into a spatialPointsDataframe
 latlon = na.omit(bbs_latlon)
 coordinates(latlon)=c('Lati','Longi')
-projection(latlon) = CRS("+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0")
-prj.string <- CRS("+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0")
-# "+proj=laea +lat_0=45.235 +lon_0=-106.675 +units=km"
+projection(latlon) = CRS("+proj=longlat +ellps=WGS84") #is this where my code is messing up? 
+#out of order? 
+prj.string <- CRS("+proj=laea +lat_0=25.5 +lon_0=-59 +units=km")
+# original in Sara's code: "+proj=laea +lat_0=45.235 +lon_0=-106.675 +units=km"
 # Transforms routes to an equal-area projection - see previously defined prj.string
-routes.laea = spTransform(latlon, CRS = prj.string) #works now
+routes.laea = spTransform(latlon, CRS = CRS("+proj=laea +lat_0=25.5 +lon_0=-59 +units=km")) 
+#works w/blank projection; doesn't work otherwise
+#keep receiving "non finite transformation detected: Lat Longi" error and 
+#"error failure in points, 532 projected points not finite 
 
 ##### extracting elevation data ####
 # A function that draws a circle of radius r around a point: p (x,y)
@@ -75,23 +79,25 @@ circs = sapply(1:nrow(routes.laea@data), function(x){
 }
 )
 
-circs.sp = SpatialPolygons(circs, proj4string=CRS("+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0"))
+circs.sp = SpatialPolygons(circs, proj4string=CRS("+proj=laea +lat_0=45.235 +lon_0=-106.675 +units=km"))
 
 # read in elevation raster at 2.5 km resolution (see above)
 NorthAm = readOGR(dsn = "//bioark.ad.unc.edu/HurlbertLab/GIS/geography", layer = "continent")
-NorthAm2 = spTransform(NorthAm, CRS("+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0"))
+NorthAm2 = spTransform(NorthAm, CRS("+proj=laea +lat_0=45.235 +lon_0=-106.675 +units=km"))
 
 plot(elev)
 plot(NorthAm2)
 # Check that circle locations look right #big surprise, they don't -> fix projection!!!
 plot(circs.sp, add = TRUE)
 
-
-####working####
 clip<-function(raster,shape) {
   a1_crop<-crop(raster,shape)
   step1<-rasterize(shape,a1_crop)
   a1_crop*step1}
+
+
+
+
 
 ####not working####
 elevNA2 = projectRaster(elev, crs = prj.string) #UNMASKED!
