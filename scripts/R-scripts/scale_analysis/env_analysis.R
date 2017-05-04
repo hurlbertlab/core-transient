@@ -78,13 +78,12 @@ circs = sapply(1:nrow(routes.laea@data), function(x){
 circs.sp = SpatialPolygons(circs, proj4string=CRS("+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0"))
 
 # read in elevation raster at 2.5 km resolution (see above)
-####below not working, which is STUPID)#### 
-NorthAm = rgdal::readOGR(dsn = "C:/Users/mollyfrn/Desktop", layer = "continent")
-NorthAm2 = spTransform(NorthAm, CRS("+proj=laea +lat_0=45.235 +lon_0=-106.675 +units=km"))
+NorthAm = readOGR(dsn = "//bioark.ad.unc.edu/HurlbertLab/GIS/geography", layer = "continent")
+NorthAm2 = spTransform(NorthAm, CRS("+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0"))
 
-plot(elevNA2)
+plot(elev)
 plot(NorthAm2)
-# Check that circle locations look right
+# Check that circle locations look right #big surprise, they don't -> fix projection!!!
 plot(circs.sp, add = TRUE)
 
 
@@ -186,67 +185,3 @@ b
 d= 1- summary(globalmod)$r.squared
 d
 #isn't it ok that d = ~87.5% tho, given that the r^2 for occ~logA was 88%? 
-
-
-
-#temp
-precip_temp = raster::getData("worldclim", var = "bio", res = 2.5) #supposed to be already /10 according to site
-btest_temp = raster::extract(temp, sites[1:5,]) #just want bio1 -> mean annual temp 
-#trying within latlon because 2001 test ran fine; keeping stateroute ID's associated
-bbs_latlon$vartemp = raster::extract(temp, sites, buffer = 40000, fun = var)
-#getData working for all but insanely slow to extract
-
-#precip 
-prec = raster::getData("worldclim", var = "bio", res = 2.5) #just want bio12 -> annual precip 
-b_test_meanP = raster::extract(prec, sites[1:5,], buffer = 40000, fun = mean)
-bbs_latlon$varP = raster::extract(prec, sites, buffer = 40000, fun = var)
-
-#ndvi 
-ndvi = raster(paste(ndvidata, "Vegetation_Indices_may-aug_2000-2010.gri", sep = "")) #can't find on getData
-#coming out as a RasterLayer, converting to rasterstack 
-ndvis = stack(ndvi)
-
-ndvimean = ndvi/10000
-btest_ndvi = raster::extract(ndvis, sites[1:5,], buffer = 40000, fun = mean)
-bbs_latlon$varndvi = raster::extract(ndvimean, sites, buffer = 40000, fun = var)
-
-#elev 
-elev = raster::getData("worldclim", var = "alt", res = 2.5) #raster::getData("alt", country = 'USA', res = 2.5)
-#coming out as a RasterLayer, converting to rasterstack 
-elevs = stack(elev)
-
-btest_elev = raster::extract(elevs, sites[1:5,], buffer = 40000, fun = mean)
-bbs_latlon$varelev = raster::extract(elevs, sites, buffer = 40000, fun = var) 
-
-bbs_envs = bbs_latlon 
-#write.csv(bbs_envs, "scripts/R-scripts/scale_analysis/bbs_envs.csv", row.names = FALSE) 
-#wrote file 03/28 w/elev from getData and using old env data; need to overwrite with updated env vars
-
-#merge into bbs_allscales data
-
-
-####Env data add-in: Alternate 'cookie-cutter' method for env variables####
-#based on Sara's code from summary_and_analysis.R file
-# latlongs = read.csv("data/latlongs/latlongs.csv", header =TRUE)
-# 
-# # merge multiple lat long file to propOcc to get naming convention correct
-# latlong_w_sites = merge(latlongs, summ2[,c("datasetID", "site", "propTrans")], by = c("datasetID", "site"), all.x = TRUE) 
-# 
-# #drop BBS and add in below scale
-# latlong_w_sites = subset(latlong_w_sites, !datasetID == 1)
-# 
-# # reformat non multi grain lat longs
-# dft = subset(dataformattingtable, countFormat == "count" & format_flag == 1) # only want count data for model
-# dft = subset(dft, !dataset_ID %in% c(1,247,248,269,289,315))
-# dft = dft[,c("CentralLatitude", "CentralLongitude","dataset_ID", "taxa")]
-# names(dft) <- c("Lat","Lon", "datasetID", "taxa")
-# dft2 = merge(dft, summ2[, c("datasetID","site","propTrans")], by = "datasetID")
-# 
-# # combining all lat longs, including scaled up data
-# all_latlongs.5 = rbind(dft2, latlong_w_sites)
-# 
-# # rbind in new BBS data
-# bbs_be_lat = read.csv("data/BBS/bbs_be_lat.csv", header = TRUE)
-# # rbind new bbs data to lat longs
-# all_latlongs =  rbind(bbs_be_lat, all_latlongs.5)
-# all_latlongs = na.omit(all_latlongs)
