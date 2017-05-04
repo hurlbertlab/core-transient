@@ -26,7 +26,7 @@ source('scripts/R-scripts/core-transient_functions.R')
 
 # Maximum occupancy of transient species
 # (and hence the minimum occupancy of core species is 1 - threshold)
-threshold = 1/3
+threshold = 1/10
 
 # Number of replicates for randomization tests
 reps = 999
@@ -63,7 +63,7 @@ for (d in datasetIDs) {
   print(d)
 }
 
-write.csv(summaries, 'output/tabular_data/core-transient_summary.csv', 
+write.csv(summaries, 'output/tabular_data/core-transient_summary_10.csv', 
           row.names = T)
 
 ##################################################################

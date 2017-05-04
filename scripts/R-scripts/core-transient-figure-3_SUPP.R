@@ -40,8 +40,8 @@ occ_taxa10=read.csv("output/tabular_data/occ_taxa_10.csv",header=TRUE)
 occ_taxa10$pctTrans10 = occ_taxa10$pctTrans
 occ_taxa = merge(occ_taxa25, occ_taxa10[,c("datasetID", "site", "pctTrans10")], by = c("datasetID", "site"))
 
-
-alt_trans = read.csv("output/tabular_data/alt_trans_thresholds.csv", header =TRUE)
+summ25 = read.csv("output/tabular_data/core-transient_summary_25.csv", header = TRUE)
+# alt_trans = read.csv("output/tabular_data/alt_trans_thresholds.csv", header =TRUE)
 
 occ_alt = merge(occ_taxa, alt_trans[,c("datasetID", "site","propTrans33", "propTrans25", "propTrans10")], all = TRUE)
 
