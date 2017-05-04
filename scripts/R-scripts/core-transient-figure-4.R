@@ -233,11 +233,12 @@ ggsave(file="C:/Git/core-transient/output/plots/4b_corrcoeff_elev.pdf", height =
 
 
 #### test for fig 1 new #####
-bbs_env_long = gather(bbs_env, "spRich", "count", 4:5)
-
+bbs_env_long = gather(bbs_env, "type", "count", 4:5)
+bbs_env_long$type[(bbs_env_long$type)=="spRich"] <- "All Species"
+bbs_env_long$type[bbs_env_long$type=="spRichnotrans"] <- "Excluding Transients"
 # ggplot(bbs_env_long, aes(x = count)) + geom_histogram(data=subset(bbs_env_long,spRich  == 'spRich'), binwidth = 5) + xlab("Proportion Transient") + ylab ("Count") + geom_histogram(data = subset(bbs_env_long,spRich  == 'spRichnotrans'),binwidth = 5, fill = "blue", alpha = 0.7)
 
-ggplot(bbs_env_long, aes(x=count, fill=spRich)) + geom_histogram(alpha=0.5, position="identity", binwidth = 5)+ xlab("Proportion Transient") + ylab ("Count")+ scale_fill_manual(breaks = bbs_env_long$spRich,values = c("black", "dark gray"))+ theme_classic() + theme(axis.text.x=element_text(size=24),axis.text.y=element_text(size=24),axis.ticks.x=element_blank(),axis.title.x=element_text(size=24),axis.title.y=element_text(size=24,angle=90,vjust = 2))+  guides(fill=guide_legend(title=NULL)) + theme(legend.text = element_text(size = 16),legend.position="right", legend.justification=c(0, 1), legend.key.width=unit(1, "lines"))
+ggplot(bbs_env_long, aes(x=count, fill=type)) + geom_histogram(alpha=0.7, position="identity", binwidth = 5)+ xlab("Proportion Transient") + ylab ("Count")+ scale_fill_manual(breaks = bbs_env_long$type,values = c("dark orange2","yellow"))+ theme_classic() + theme(axis.text.x=element_text(size=24),axis.text.y=element_text(size=24),axis.ticks.x=element_blank(),axis.title.x=element_text(size=24),axis.title.y=element_text(size=24,angle=90,vjust = 2))+  guides(fill=guide_legend(title=NULL)) + theme(legend.text = element_text(size = 16), legend.justification=c(0, 1), legend.key.width=unit(1, "lines"))
 
 #### Figure 4c ####
 turnover = read.csv("output/tabular_data/temporal_turnover.csv", header = TRUE)
