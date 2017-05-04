@@ -45,10 +45,10 @@ projection(latlon) = CRS("+proj=longlat +ellps=WGS84")
 #out of order? YUP. 
 #had Lati, Longi -> needed to be Longi, Lati. 
 
-prj.string <- CRS("+proj=laea +lat_0=25.5 +lon_0=-59 +units=km")
+prj.string <- CRS("+proj=laea +lat_0=45.235 +lon_0=-106.675 +units=km")
 # original in Sara's code: "+proj=laea +lat_0=45.235 +lon_0=-106.675 +units=km"
 # Transforms routes to an equal-area projection - see previously defined prj.string
-routes.laea = spTransform(latlon, CRS = CRS("+proj=laea +lat_0=25.5 +lon_0=-59 +units=km")) 
+routes.laea = spTransform(latlon, CRS = CRS("+proj=laea +lat_0=45.235 +lon_0=-106.675 +units=km")) 
 #works w/blank projection; doesn't work otherwise
 #keep receiving "non finite transformation detected: Lat Longi" error and 
 #"error failure in points, 532 projected points not finite 
@@ -87,21 +87,15 @@ circs.sp = SpatialPolygons(circs, proj4string=CRS("+proj=laea +lat_0=45.235 +lon
 NorthAm = readOGR(dsn = "//bioark.ad.unc.edu/HurlbertLab/GIS/geography", layer = "continent")
 NorthAm2 = spTransform(NorthAm, CRS("+proj=laea +lat_0=45.235 +lon_0=-106.675 +units=km"))
 
-plot(elev)
 plot(NorthAm2)
 # Check that circle locations look right #big surprise, they don't -> fix projection!!!
-plot(circs.sp, add = TRUE)
+plot(circs.sp, add = TRUE) #looks great
 
 clip<-function(raster,shape) {
   a1_crop<-crop(raster,shape)
   step1<-rasterize(shape,a1_crop)
   a1_crop*step1}
 
-
-
-
-
-####not working####
 elevNA2 = projectRaster(elev, crs = prj.string) #UNMASKED!
 elevNA3 <- raster::mask(elevNA2, NorthAm2)
 
