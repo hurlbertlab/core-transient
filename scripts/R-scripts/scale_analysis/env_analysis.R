@@ -99,17 +99,47 @@ clip<-function(raster,shape) {
 elev2 = projectRaster(elev, crs = CRS("+proj=laea +lat_0=45.235 +lon_0=-106.675 +units=km")) #should work, just needs time
 elev3 <- raster::mask(elev2, NorthAm2)
 
-test = clip(elevNA2, NorthAm2)
+test = clip(elev2, NorthAm2)
 
-elev.point = raster::extract(elevNA3, routes.laea)
-elev.mean = raster::extract(elevNA3, circs.sp, fun = mean, na.rm=T)
-elev.var = raster::extract(elevNA3, circs.sp, fun = var, na.rm=T)
+elev.point = raster::extract(elev3, routes.laea)
+elev.mean = raster::extract(elev3, circs.sp, fun = mean, na.rm=T)
+elev.var = raster::extract(elev3, circs.sp, fun = var, na.rm=T)
 
-env_elev = data.frame(unique = routes.laea@data$unique, elev.point = elev.point, elev.mean = elev.mean, elev.var = elev.var)
+env_elev = data.frame(routes = routes.laea, 
+                      elev.point = elev.point, 
+                      elev.mean = elev.mean, elev.var = elev.var)
+
+#write.csv(env_elev, "C:/git/core-transient/scripts/R-scripts/scale_analysis/env_elev.csv", row.names = FALSE)
+
+#ndvi 
+ndvi = raster(paste(ndvidata, "Vegetation_Indices_may-aug_2000-2010.gri", sep = "")) #can't find on getData
+str(ndvi)
+#layer format; need to define projection
+
+ndvi2 = projectRaster(ndvi, crs = CRS("+proj=laea +lat_0=45.235 +lon_0=-106.675 +units=km")) #should work, just needs time
+ndvi3 <- raster::mask(ndvi2, NorthAm2)
+
+ndvi.point = raster::extract(ndvi3, routes.laea)
+ndvi.mean = raster::extract(ndvi3, circs.sp, fun = mean, na.rm=T)
+ndvi.var = raster::extract(ndvi3, circs.sp, fun = var, na.rm=T)
+
+env_ndvi = data.frame(routes = routes.laea, 
+                      ndvi.point = ndvi.point, 
+                      ndvi.mean = ndvi.mean, ndvi.var = ndvi.var)
 
 
-lat_scale_elev = merge(routes.laea, env_elev, by = c("unique")) # checked to make sure order lined up, d/n seem to be another way to merge since DID keeps getting lost
-lat_scale_elev = data.frame(lat_scale_elev)
+
+
+#precip 
+prec = raster::getData("worldclim", var = "prec", res = 2.5)  
+str(prec) #stack format
+
+#temp 
+temp = raster::getData("worldclim", var = "tmean", res = 2.5) 
+str(temp) #stack format
+
+
+
 
 ####Coef vs env variation models####
 bbs_envs = read.csv("scripts/R-scripts/scale_analysis/bbs_envs.csv", header = TRUE)
