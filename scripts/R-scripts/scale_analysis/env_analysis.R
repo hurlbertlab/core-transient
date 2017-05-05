@@ -127,17 +127,33 @@ env_ndvi = data.frame(routes = routes.laea,
                       ndvi.point = ndvi.point, 
                       ndvi.mean = ndvi.mean, ndvi.var = ndvi.var)
 
-
-
-
 #precip 
 prec = raster::getData("worldclim", var = "prec", res = 2.5)  
 str(prec) #stack format
+prec2 = projectRaster(prec, crs = CRS("+proj=laea +lat_0=45.235 +lon_0=-106.675 +units=km")) #should work, just needs time
+prec3 <- raster::mask(prec2, NorthAm2)
+
+prec.point = raster::extract(prec3, routes.laea)
+prec.mean = raster::extract(prec3, circs.sp, fun = mean, na.rm=T)
+prec.var = raster::extract(prec3, circs.sp, fun = var, na.rm=T)
+
+env_prec = data.frame(routes = routes.laea, 
+                      prec.point = prec.point, 
+                      prec.mean = prec.mean, prec.var = prec.var)
 
 #temp 
 temp = raster::getData("worldclim", var = "tmean", res = 2.5) 
 str(temp) #stack format
+temp2 = projectRaster(temp, crs = CRS("+proj=laea +lat_0=45.235 +lon_0=-106.675 +units=km")) #should work, just needs time
+temp3 <- raster::mask(temp2, NorthAm2)
 
+temp.point = raster::extract(temp3, routes.laea)
+temp.mean = raster::extract(temp3, circs.sp, fun = mean, na.rm=T)
+temp.var = raster::extract(temp3, circs.sp, fun = var, na.rm=T)
+
+env_temp = data.frame(routes = routes.laea, 
+                      temp.point = temp.point, 
+                      temp.mean = temp.mean, temp.var = temp.var)
 
 
 
