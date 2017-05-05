@@ -126,8 +126,9 @@ ndvi.var = raster::extract(ndvi3, circs.sp, fun = var, na.rm=T)
 env_ndvi = data.frame(routes = routes.laea, 
                       ndvi.point = ndvi.point, 
                       ndvi.mean = ndvi.mean, ndvi.var = ndvi.var)
+#write.csv(env_ndvi, "C:/git/core-transient/scripts/R-scripts/scale_analysis/env_ndvi.csv", row.names = FALSE)
 
-#precip 
+#precip #fix because rasterstack may not be compatible
 prec = raster::getData("worldclim", var = "prec", res = 2.5)  
 str(prec) #stack format
 prec2 = projectRaster(prec, crs = CRS("+proj=laea +lat_0=45.235 +lon_0=-106.675 +units=km")) #should work, just needs time
@@ -140,6 +141,7 @@ prec.var = raster::extract(prec3, circs.sp, fun = var, na.rm=T)
 env_prec = data.frame(routes = routes.laea, 
                       prec.point = prec.point, 
                       prec.mean = prec.mean, prec.var = prec.var)
+write.csv(env_prec, "C:/git/core-transient/scripts/R-scripts/scale_analysis/env_prec.csv", row.names = FALSE)
 
 #temp 
 temp = raster::getData("worldclim", var = "tmean", res = 2.5) 
@@ -154,7 +156,7 @@ temp.var = raster::extract(temp3, circs.sp, fun = var, na.rm=T)
 env_temp = data.frame(routes = routes.laea, 
                       temp.point = temp.point, 
                       temp.mean = temp.mean, temp.var = temp.var)
-
+write.csv(env_temp, "C:/git/core-transient/scripts/R-scripts/scale_analysis/env_temp.csv", row.names = FALSE)
 
 
 ####Coef vs env variation models####
