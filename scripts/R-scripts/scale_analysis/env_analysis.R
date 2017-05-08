@@ -190,7 +190,7 @@ for (d in 2:25) {
     rsqrd_df = rbind(rsqrd_df, tempdf)
   }
 }
-#write.csv(rsqrd_df, "scripts/R-scripts/scale_analysis/mod_rsqrds.csv", row.names = FALSE) #updated 05/07 with new env extracted vars
+#write.csv(rsqrd_df, "scripts/R-scripts/scale_analysis/rsqrd_df.csv", row.names = FALSE) #updated 05/07 with new env extracted vars
 
 
 ####Visually Characterizing r2 vals####
