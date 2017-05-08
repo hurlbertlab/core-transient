@@ -109,7 +109,7 @@ env_elev = data.frame(routes = routes.laea,
                       elev.point = elev.point, 
                       elev.mean = elev.mean, elev.var = elev.var)
 
-#write.csv(env_elev, "C:/git/core-transient/scripts/R-scripts/scale_analysis/env_elev.csv", row.names = FALSE)
+write.csv(env_elev, "C:/git/core-transient/scripts/R-scripts/scale_analysis/env_elev.csv", row.names = FALSE)
 
 #ndvi 
 ndvi = raster(paste(ndvidata, "Vegetation_Indices_may-aug_2000-2010.gri", sep = "")) #can't find on getData
@@ -126,7 +126,7 @@ ndvi.var = raster::extract(ndvi3, circs.sp, fun = var, na.rm=T)
 env_ndvi = data.frame(routes = routes.laea, 
                       ndvi.point = ndvi.point, 
                       ndvi.mean = ndvi.mean, ndvi.var = ndvi.var)
-#write.csv(env_ndvi, "C:/git/core-transient/scripts/R-scripts/scale_analysis/env_ndvi.csv", row.names = FALSE)
+write.csv(env_ndvi, "C:/git/core-transient/scripts/R-scripts/scale_analysis/env_ndvi.csv", row.names = FALSE)
 
 #precip #fix because rasterstack may not be compatible
 prec = raster::getData("worldclim", var = "prec", res = 2.5)  
@@ -160,7 +160,11 @@ write.csv(env_temp, "C:/git/core-transient/scripts/R-scripts/scale_analysis/env_
 
 
 ####Coef vs env variation models####
-bbs_envs = read.csv("scripts/R-scripts/scale_analysis/bbs_envs.csv", header = TRUE)
+elev = read.csv("scripts/R-scripts/scale_analysis/env_elev.csv", header = TRUE)
+ndvi = read.csv("scripts/R-scripts/scale_analysis/ndvi_elev.csv", header = TRUE)
+
+
+
 coefs = read.csv("scripts/R-scripts/scale_analysis/coefs.csv", header = TRUE)
 uniq_env = unique(bbs_envs[, c('focalrte', 'temp', 'vartemp', 'meanP', 'varP', 'ndvi', 'varndvi', 'elev')])
 env_coefs = inner_join(coefs, uniq_env, by = c('stateroute' = 'focalrte'))
