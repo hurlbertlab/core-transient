@@ -159,17 +159,24 @@ env_temp = data.frame(routes = routes.laea,
                       temp.mean = temp.mean, temp.var = temp.var)
 write.csv(env_temp, "C:/git/core-transient/scripts/R-scripts/scale_analysis/env_temp.csv", row.names = FALSE)
 
-
-####Coef vs env variation models####
-
+####Merge env df's together into one with relevant stateroutes, mean, and var data 
 env_elev = read.csv("scripts/R-scripts/scale_analysis/env_elev.csv", header = TRUE)
 env_ndvi = read.csv("scripts/R-scripts/scale_analysis/env_ndvi.csv", header = TRUE)
+#env_prec = read.csv("scripts/R-scripts/scale_analysis/env_prec.csv", header = TRUE)
+#env_temp = read.csv("scripts/R-scripts/scale_analysis/env_temp.csv", header = TRUE)
 
+bbs_envs = env_elev %>%
+  left_join(env_ndvi, by = "routes.stateroute")%>% 
+  select(stateroute = routes.stateroute, elev.mean, elev.var, ndvi.mean, ndvi.var)
+#write.csv(bbs_envs, "C:/git/core-transient/scripts/R-scripts/scale_analysis/bbs_envs.csv", row.names = FALSE)
+#current version just has elev and NDVI 05/07
+
+####Coef vs env variation models####
+bbs_envs = read.csv("scripts/R-scripts/scale_analysis/bbs_envs.csv", header = TRUE)
 coefs = read.csv("scripts/R-scripts/scale_analysis/coefs.csv", header = TRUE)
-uniq_env = unique(bbs_envs[, c('focalrte', 'temp', 'vartemp', 'meanP', 'varP', 'ndvi', 'varndvi', 'elev')])
-env_coefs = inner_join(coefs, uniq_env, by = c('stateroute' = 'focalrte'))
+env_coefs = inner_join(coefs, bbs_envs, by = "stateroute")
 covmatrix = round(cor(coefs[, 2:ncol(coefs)]), 2)
-
+covmatrix
 
 # nested loop for examining variation in coefs/fitted curves explained by env vars 
 rsqrd_df = data.frame(dep = character(), ind = character(), r2 = numeric())
@@ -183,7 +190,7 @@ for (d in 2:25) {
     rsqrd_df = rbind(rsqrd_df, tempdf)
   }
 }
-#write.csv(rsqrd_df, "scripts/R-scripts/scale_analysis/mod_rsqrds.csv", row.names = FALSE) #updated 03/28 with elev
+#write.csv(rsqrd_df, "scripts/R-scripts/scale_analysis/mod_rsqrds.csv", row.names = FALSE) #updated 05/07 with new env extracted vars
 
 
 ####Visually Characterizing r2 vals####
@@ -195,8 +202,7 @@ ggplot(data = rsqrd_df, aes(x = ind, y = r2, fill = ind))+geom_boxplot()+theme_c
 
 #excluding transient data for incompleteness
 rsub_i = rsqrd_df %>%
-  filter(dep == "OA.i" | dep == "ON.i" | dep == "CA.i" | dep == "CN.i") %>%
-  filter(ind == "elev" | ind == "meanP" | ind == "ndvi" | ind == "temp")
+  filter(dep == "OA.i" | dep == "ON.i" | dep == "CA.i" | dep == "CN.i")
 rsub_i = droplevels(rsub_i) #removing ghost levels to ensure correct plotting/analyses
 
 ggplot(data = rsub_i, aes(x = ind, y = r2)) + geom_boxplot()+theme_classic() #what I used for poster w/out color 
@@ -204,11 +210,28 @@ ggplot(data = rsub_i, aes(x = ind, y = r2)) + geom_boxplot()+theme_classic() #wh
 
 #separate analysis for just transients since relationship not immediately apparent
 rsub_t = rsqrd_df %>%
-  filter(dep == "TAexp" | dep == "TApow" | dep == "TNexp" | dep == "TNpow") %>%
-  filter(ind == "elev" | ind == "meanP" | ind == "ndvi" | ind == "temp")
+  filter(dep == "TAexp" | dep == "TApow" | dep == "TNexp" | dep == "TNpow")
 rsub_t = droplevels(rsub_t) #removing ghost levels to ensure correct plotting/analyses
 
 ggplot(data = rsub_t, aes(x = ind, y = r2)) + geom_boxplot()+theme_classic() #elev explains more variation in the transients
+
+#what we expected: 
+#Homogenous communities (i.e. low ndvi, low elev values)
+  #i as a coefficient should be lower, accumulation of core species more linear early on in scale relationship 
+  #k is difficult to predict but is the slope AT the inflexion point i 
+  #A should be higher, relationship should asymptote out earlier and a greater stretch should be in an asymptotic form 
+
+#Heterogenous communities (i.e. high ndvi, high elev values)
+  #i as a coef should be higher (relative to what?) due to a longer period of Transient dominance in the lower scales pulling down the average, 
+    #meaning i is further along in the x axis relative to the y 
+  #k is again, difficult to predict 
+  #A should be lower and shorter, as asymptotic form barely reached 
+
+#what does this comparison look like? How do I split sites up via a threshold for hetero vs homogenous 
+#to compare their avg coefs? 
+
+
+
 
 ####Variance Partitioning of Env Predictors####
 #would I be basing my total remaining unexplained variation off of the meanOcc~logA relationship? (OA.i?)
