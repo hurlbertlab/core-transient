@@ -118,8 +118,9 @@ b1 = for(id in scaleIDs){
   xhats = range(xhat)
   print(xhats)
   taxcolor = subset(taxcolors, taxa == as.character(plotsub$taxa)[1])
-  area_plot  = rbind(area_plot , c(id, xhats, mod3.slope,mod3.coef1,y,taxa))
   y=summary(mod3)$coef[1] + (xhats)*summary(mod3)$coef[2]
+  area_plot  = rbind(area_plot , c(id, xhats, mod3.slope,mod3.coef1,y,taxa))
+  
    lines(log10(plotsub$area), fitted(mod3), col=as.character(taxcolor$color),lwd=4)
   par(new=TRUE)
 }
@@ -145,7 +146,7 @@ title(outer=FALSE,adj=0.02,main="B",cex.main=1.5,col="black",font=2,line=-1)
 legend('topright', legend = as.character(taxcolors$taxa), lty=1,lwd=3,col = as.character(taxcolors$color), cex = 1.25, bty = "n")
 par(new = FALSE)
 
-b3 = barplot(predmod$fit[predmod$taxorder], cex.names = 1.5,col = c("gold2", "turquoise2","red","purple4","forestgreen","#1D6A9B"), ylim = c(0, 0.8))
+b3 = barplot(predmod$fit[predmod$taxorder], cex.names = 1.5,col = c("gold2", "turquoise2","red","purple4","forestgreen","#1D6A9B"), ylim = c(0, 1))
 Hmisc::errbar(c(0.7, 1.9, 3.1, 4.3, 5.5, 6.7), predmod$fit[predmod$taxorder], predmod$upr[predmod$taxorder], predmod$lwr[predmod$taxorder], add= TRUE, lwd = 1.25, pch = 3)
 mtext("% Transients", 2, cex = 1.5, las = 0, line = 2.5)
 title(outer=FALSE,adj=0.02,main="C",cex.main=1.5,col="black",font=2,line=-1)

@@ -38,7 +38,7 @@ datasetIDs = filter(dataformattingtable, spatial_scale_variable == 'Y',
                     format_flag == 1)$dataset_ID
 datasetIDs = datasetIDs[datasetIDs  != c(1,317)] #dropped 317 bc ended up only being one spatial grain
 
-summ = read.csv('output/tabular_data/core-transient_summary_25.csv', header=T)
+summ = read.csv('output/tabular_data/core-transient_summary_10.csv', header=T)
 
 grainlevels = c()
 #function(datasetID, dataDescription) {
@@ -108,7 +108,7 @@ for(datasetID in datasetIDs){
 } # end dataset loop
 grainlevels = data.frame(grainlevels)
 colnames(grainlevels) = c("datasetID", "NumGrains")
-write.csv(grainlevels, "output/tabular_data/grainlevels.csv", row.names=FALSE)
+write.csv(grainlevels, "output/tabular_data/grainlevels_10.csv", row.names=FALSE)
 
 # Merge all output files into 1 file
 #grainlevels = read.csv("output/tabular_data/grainlevels.csv", header = TRUE)

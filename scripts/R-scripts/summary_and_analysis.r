@@ -26,7 +26,7 @@ source('scripts/R-scripts/core-transient_functions.R')
 
 # Maximum occupancy of transient species
 # (and hence the minimum occupancy of core species is 1 - threshold)
-threshold = 1/10
+threshold = 1/3
 
 # Number of replicates for randomization tests
 reps = 999
