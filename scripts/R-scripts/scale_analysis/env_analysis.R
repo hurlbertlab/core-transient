@@ -131,6 +131,7 @@ write.csv(env_ndvi, "C:/git/core-transient/scripts/R-scripts/scale_analysis/env_
 #precip #fix because rasterstack may not be compatible
 prec = raster::getData("worldclim", var = "prec", res = 2.5)  
 str(prec) #stack format
+prec2 = raster(prec)
 prec2 = projectRaster(prec, crs = CRS("+proj=laea +lat_0=45.235 +lon_0=-106.675 +units=km")) #should work, just needs time
 prec3 <- raster::mask(prec2, NorthAm2)
 
@@ -145,7 +146,7 @@ write.csv(env_prec, "C:/git/core-transient/scripts/R-scripts/scale_analysis/env_
 
 #temp 
 temp = raster::getData("worldclim", var = "tmean", res = 2.5) 
-str(temp) #stack format
+temp2 = raster(temp) #stack format
 temp2 = projectRaster(temp, crs = CRS("+proj=laea +lat_0=45.235 +lon_0=-106.675 +units=km")) #should work, just needs time
 temp3 <- raster::mask(temp2, NorthAm2)
 
@@ -160,10 +161,9 @@ write.csv(env_temp, "C:/git/core-transient/scripts/R-scripts/scale_analysis/env_
 
 
 ####Coef vs env variation models####
-elev = read.csv("scripts/R-scripts/scale_analysis/env_elev.csv", header = TRUE)
-ndvi = read.csv("scripts/R-scripts/scale_analysis/ndvi_elev.csv", header = TRUE)
 
-
+env_elev = read.csv("scripts/R-scripts/scale_analysis/env_elev.csv", header = TRUE)
+env_ndvi = read.csv("scripts/R-scripts/scale_analysis/env_ndvi.csv", header = TRUE)
 
 coefs = read.csv("scripts/R-scripts/scale_analysis/coefs.csv", header = TRUE)
 uniq_env = unique(bbs_envs[, c('focalrte', 'temp', 'vartemp', 'meanP', 'varP', 'ndvi', 'varndvi', 'elev')])
