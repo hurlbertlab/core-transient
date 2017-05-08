@@ -243,7 +243,7 @@ MH$all[MH$all <= 1/3] <- "All Species"
 MH$all[MH$all > 1/3 &  MH$all != "All Species"] <- "Excluding Transients"
 
 
-ggplot(MH, aes(x=count, fill=all)) + geom_histogram(position="identity", binwidth = 2)+ xlab("Frequency") + ylab ("Abundance")+ scale_fill_manual(breaks = bbs_env_long$type,values = c("dark orange2","yellow"))+ theme_classic() + theme(axis.text.x=element_text(size=24),axis.text.y=element_text(size=24),axis.ticks.x=element_blank(),axis.title.x=element_text(size=24),axis.title.y=element_text(size=24,angle=90,vjust = 2))+  guides(fill=guide_legend(title=NULL)) + theme(legend.text = element_text(size = 16),legend.position = "top", legend.justification=c(0, 1), legend.key.width=unit(1, "lines"))
+ggplot(MH, aes(x=count, fill=all)) + geom_histogram(position="identity", binwidth = 2)+ ylab("Frequency") + xlab ("Abundance")+ scale_fill_manual(breaks = bbs_env_long$type,values = c("dark orange2","yellow"))+ theme_classic() + theme(axis.text.x=element_text(size=24),axis.text.y=element_text(size=24),axis.ticks.x=element_blank(),axis.title.x=element_text(size=24),axis.title.y=element_text(size=24,angle=90,vjust = 2))+  guides(fill=guide_legend(title=NULL)) + theme(legend.text = element_text(size = 16),legend.position = "top", legend.justification=c(0, 1), legend.key.width=unit(1, "lines"))
 
 
 # ggplot(bbs_env_long, aes(x = count)) + geom_histogram(data=subset(bbs_env_long,spRich  == 'spRich'), binwidth = 5) + xlab("Proportion Transient") + ylab ("Count") + geom_histogram(data = subset(bbs_env_long,spRich  == 'spRichnotrans'),binwidth = 5, fill = "blue", alpha = 0.7)
