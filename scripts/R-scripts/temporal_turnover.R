@@ -76,7 +76,7 @@ for (dataset in datasetIDs[,1]) {
   print(paste("Calculating turnover: dataset", dataset))
   for (site in sites) {
     sitedata = subdata[subdata$site == site,]
-    notrans = sitedata[sitedata$propOcc > 1/3,]
+    notrans = sitedata[sitedata$propOcc > 1/4,]
     years = as.numeric(unique(sitedata$year))
     TJs = c()
     TJ_notrans = c()
@@ -98,4 +98,4 @@ for (dataset in datasetIDs[,1]) {
   }
 }
 
-write.csv(turnover_output, "output/tabular_data/temporal_turnover.csv", row.names = FALSE)
+write.csv(turnover_output, "output/tabular_data/temporal_turnover_25.csv", row.names = FALSE)
