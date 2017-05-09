@@ -155,9 +155,9 @@ logseries_weights_incl = sad_data %>%
   dplyr::summarize(weights = get_logseries_weight(abunds), treatment = 'All species')
 
 logseries_weights_excl = sad_data %>%
-  filter(propOcc > 1/3) %>%
+  filter(propOcc > 1/4) %>%
   group_by(datasetID, site) %>% 
-  splyr::summarize(weights = get_logseries_weight(abunds), treatment = 'Excluding transients')
+  dplyr::summarize(weights = get_logseries_weight(abunds), treatment = 'Excluding transients')
 
 logseries_weights = rbind(logseries_weights_incl, logseries_weights_excl)
 write.csv(logseries_weights, "output/tabular_data/logseries_weights.csv")
@@ -225,25 +225,6 @@ limits = aes(ymax = corr_res_long$CIupper, ymin=corr_res_long$CIlower)
 # no variation - add in CIS?
 l = ggplot(data=corr_res_long, aes(factor(env), value, fill = class))+ geom_bar(width = 0.8, position = position_dodge(width = 0.9), stat="identity")+ scale_fill_manual(values = c("All" = "dark orange2","Trans" = "#c51b8a","Ntrans" = "yellow"), labels = c("All species","Excluding transients", "Transients only"))+ geom_bar(data=corr_res_long, aes(factor(env), value, fill = class), width = 0.8, position = position_dodge(width = 0.9), stat="identity")+ geom_errorbar(aes(ymin = corr_res_long$CIlower, ymax = corr_res_long$CIupper), width =.1, position = position_dodge(.9))+ theme_classic() + theme(axis.text.x=element_text(size=24), axis.ticks.x=element_blank(),axis.text.y=element_text(size=24),axis.title.x=element_text(size=24),axis.title.y=element_text(size=24,angle=90,vjust = 2))+ xlab(NULL) + ylab("Correlation Coefficient") + scale_y_continuous(breaks = pretty(corr_res_long$value, n = 7))+ guides(fill=guide_legend(title=NULL)) + theme(legend.text = element_text(size = 16)) + geom_hline(yintercept=0, lty = "dashed", lwd = 1.25)
 four_b <- l
-
-e = ggplot(data=corr_elev, aes(factor(env), value, fill = class))+ geom_bar(width = 0.8, position = position_dodge(width = 0.9), stat="identity")+ geom_errorbar(aes(ymin = CIlower, ymax = CIupper), width =.1, position = position_dodge(.9))+ scale_fill_manual(values = c("All" = "dark orange2","Trans" = "#225ea8","Ntrans" = "light blue"), labels = c("All species","All species excluding transients", "Transients only"))+ theme_classic() + theme(axis.text.x=element_text(size=24), axis.ticks.x=element_blank(),axis.text.y=element_text(size=24),axis.title.x=element_text(size=24),axis.title.y=element_text(size=24,angle=90,vjust = 2))+ xlab(NULL) + ylab("Correlation Coefficient") +  guides(fill=guide_legend(title=NULL)) + theme(legend.text = element_text(size = 16),legend.position="top", legend.justification=c(0, 1), legend.key.width=unit(1, "lines"))
-
-
-
-
-#### test for fig 1 new #####
-bbs_env_long = gather(bbs_env, "type", "count", 4:5)
-bbs_env_long$type[(bbs_env_long$type)=="spRich"] <- "All Species"
-bbs_env_long$type[bbs_env_long$type=="spRichnotrans"] <- "Excluding Transients"
-MH = read.csv("data/propOcc_datasets/propOcc_255.csv", header = TRUE)
-MH$count = MH$propOcc*21
-MH$all = MH$propOcc
-MH$all[MH$all <= 1/3] <- "All Species"
-MH$all[MH$all > 1/3 &  MH$all != "All Species"] <- "Excluding Transients"
-
-
-ggplot(MH, aes(x=count, fill=all)) + geom_histogram(position="identity", binwidth = 2)+ ylab("Frequency") + xlab ("Abundance")+ scale_fill_manual(breaks = bbs_env_long$type,values = c("dark orange2","yellow"))+ theme_classic() + theme(axis.text.x=element_text(size=24),axis.text.y=element_text(size=24),axis.ticks.x=element_blank(),axis.title.x=element_text(size=24),axis.title.y=element_text(size=24,angle=90,vjust = 2))+  guides(fill=guide_legend(title=NULL)) + theme(legend.text = element_text(size = 16),legend.position = "top", legend.justification=c(0, 1), legend.key.width=unit(1, "lines"))
-
 
 #### Figure 4c ####
 turnover = read.csv("output/tabular_data/temporal_turnover.csv", header = TRUE)
