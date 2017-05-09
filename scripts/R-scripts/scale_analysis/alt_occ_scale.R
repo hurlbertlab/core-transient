@@ -165,7 +165,7 @@ bbs_allscales = rbind(bbs_below, bbs_focal_occs) #rbind ok since all share colum
 
 
 ####Cross-scale analysis and visualization####
-bbs_allscales = read.csv("data/bbs_allscales.csv", header = TRUE)
+bbs_allscales = read.csv("data/BBS/bbs_allscales.csv", header = TRUE)
 bbs_allscales$logA = log10(bbs_allscales$area)
 bbs_allscales$logN = log10(bbs_allscales$aveN)
 bbs_allscales$lnA = log(bbs_allscales$area) #log is the natural log 
