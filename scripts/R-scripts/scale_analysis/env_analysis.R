@@ -14,7 +14,9 @@ library(nlme)
 library(gridExtra)
 library(wesanderson)
 library(stats)
-
+library(gimms)
+library(devtools)
+library(root)
 
 # To run this script, you need temperature, precip, etc data, 
 # which are currently stored in the following directories off of github: 
@@ -27,6 +29,11 @@ BBS = '//bioark.ad.unc.edu/HurlbertLab/Jenkins/BBS scaled/'
 geog = "//bioark.ad.unc.edu/HurlbertLab/GIS/geography/"
 
 bbs_allscales = read.csv("data/BBS/bbs_allscales.csv", header = TRUE)
+
+
+dist.df = read.csv("C:/git/core-transient/scripts/R-scripts/scale_analysis/dist_df.csv", header = TRUE)
+#all focal rtes with all possible pairings
+
 bbs_latlon = read.csv(paste(BBS, "good_rtes2.csv", sep = ""), header = TRUE)
 bbs_allscales = dplyr::rename(bbs_latlon, focalrte = stateroute) %>%
   right_join(bbs_allscales, by = "focalrte")
@@ -130,9 +137,8 @@ write.csv(env_ndvi, "C:/git/core-transient/scripts/R-scripts/scale_analysis/env_
 
 #precip #fix because rasterstack may not be compatible
 prec = raster::getData("worldclim", var = "prec", res = 2.5)  
-str(prec) #stack format
-prec2 = raster(prec)
-prec2 = projectRaster(prec, crs = CRS("+proj=laea +lat_0=45.235 +lon_0=-106.675 +units=km")) #should work, just needs time
+prec2 = sum(prec)
+prec2 = projectRaster(prec2, crs = CRS("+proj=laea +lat_0=45.235 +lon_0=-106.675 +units=km")) #should work, just needs time
 prec3 <- raster::mask(prec2, NorthAm2)
 
 prec.point = raster::extract(prec3, routes.laea)
@@ -146,7 +152,7 @@ write.csv(env_prec, "C:/git/core-transient/scripts/R-scripts/scale_analysis/env_
 
 #temp 
 temp = raster::getData("worldclim", var = "tmean", res = 2.5) 
-temp2 = raster(temp) #stack format
+temp2 = mean(temp) #stack format
 temp2 = projectRaster(temp, crs = CRS("+proj=laea +lat_0=45.235 +lon_0=-106.675 +units=km")) #should work, just needs time
 temp3 <- raster::mask(temp2, NorthAm2)
 
@@ -262,3 +268,16 @@ b
 d= 1- summary(globalmod)$r.squared
 d
 #isn't it ok that d = ~87.5% tho, given that the r^2 for occ~logA was 88%? 
+
+########
+
+
+devtools::load_all(path = 'C:/git/core-transient')
+
+ndvi_data_raw <- get_bbs_gimms_ndvi()
+
+ndvi_data_summer <- ndvi_data_raw %>%
+  filter(!is.na(ndvi), month %in% c('may', 'jun', 'jul'), year > 1981) %>%
+  group_by(site_id, year) %>%
+  summarise(ndvi_sum = mean(ndvi)) %>%
+  ungroup()
