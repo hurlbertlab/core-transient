@@ -156,10 +156,11 @@ env_prec = data.frame(routes = routes.laea,
 #temp 
 temp = raster::getData("worldclim", var = "tmean", res = 2.5) 
 temp2 = mean(temp) #stack format to layer
-temp2 = temp2/10
+temp2 = temp2/10 #taking to degrees Celsius in correct units
 plot(temp2)
+
 temp2 = projectRaster(temp, crs = CRS("+proj=laea +lat_0=45.235 +lon_0=-106.675 +units=km")) #should work, just needs time
-temp3 <- raster::mask(temp2, NorthAm2)
+#temp3 <- raster::mask(temp2, NorthAm2) #again, check with Sara on skipping this
 
 temp.point = raster::extract(temp3, routes.laea)
 temp.mean = raster::extract(temp3, circs.sp, fun = mean, na.rm=T)
