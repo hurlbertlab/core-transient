@@ -174,14 +174,33 @@ write.csv(env_temp, "C:/git/core-transient/scripts/R-scripts/scale_analysis/env_
 ####Merge env df's together into one with relevant stateroutes, mean, and var data 
 env_elev = read.csv("scripts/R-scripts/scale_analysis/env_elev.csv", header = TRUE)
 env_ndvi = read.csv("scripts/R-scripts/scale_analysis/env_ndvi.csv", header = TRUE)
-#env_prec = read.csv("scripts/R-scripts/scale_analysis/env_prec.csv", header = TRUE)
-#env_temp = read.csv("scripts/R-scripts/scale_analysis/env_temp.csv", header = TRUE)
+env_prec = read.csv("scripts/R-scripts/scale_analysis/env_prec.csv", header = TRUE)
+env_temp = read.csv("scripts/R-scripts/scale_analysis/env_temp.csv", header = TRUE)
 
 bbs_envs = env_elev %>%
-  left_join(env_ndvi, by = "routes.stateroute")%>% 
-  select(stateroute = routes.stateroute, elev.mean, elev.var, ndvi.mean, ndvi.var)
-#write.csv(bbs_envs, "C:/git/core-transient/scripts/R-scripts/scale_analysis/bbs_envs.csv", row.names = FALSE)
-#current version just has elev and NDVI 05/07
+  left_join(env_ndvi, by = "routes.stateroute") %>% 
+  left_join(env_prec, by = "routes.stateroute") %>%
+  left_join(env_temp, by = "routes.stateroute") %>%
+  select(stateroute = routes.stateroute, elev.point, elev.mean, elev.var, 
+         ndvi.point, ndvi.mean, ndvi.var,
+         prec.point, prec.mean, prec.var, 
+         temp.point, temp.mean, temp.var)
+write.csv(bbs_envs, "C:/git/core-transient/scripts/R-scripts/scale_analysis/bbs_envs.csv", row.names = FALSE)
+#current version all vars up to date except ndvi 05/12
+
+####Pair env data to secondary rtes associated with each focal rte; calc variance for each focal rte####
+
+#rename
+
+
+
+
+envs_4var = bbs_envs %>% 
+  full_join(dist.df, by = "routes.stateroute")
+
+
+
+
 
 ####Coef vs env variation models####
 bbs_envs = read.csv("scripts/R-scripts/scale_analysis/bbs_envs.csv", header = TRUE)
