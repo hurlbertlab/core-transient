@@ -40,11 +40,6 @@ bbs_allscales = dplyr::rename(bbs_latlon, focalrte = stateroute) %>%
 sites = data.frame(longitude = bbs_latlon$Longi, latitude = bbs_latlon$Lati) 
 #points(sites$longitude, sites$latitude, col= "red", pch=16) #check on map
 
-#find proj of elev -> may need to do for each raster set? 
-elev = raster::getData("worldclim", var = "alt", res = 2.5) #raster::getData("alt", country = 'USA', res = 2.5)
-str(elev)
-#"+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0"
-
 # Makes routes into a spatialPointsDataframe
 latlon = na.omit(bbs_latlon)
 coordinates(latlon)=c('Longi', 'Lati')
@@ -103,6 +98,10 @@ clip<-function(raster,shape) {
   step1<-rasterize(shape,a1_crop)
   a1_crop*step1}
 
+
+#elev
+elev = raster::getData("worldclim", var = "alt", res = 2.5) #raster::getData("alt", country = 'USA', res = 2.5)
+str(elev)
 elev2 = projectRaster(elev, crs = CRS("+proj=laea +lat_0=45.235 +lon_0=-106.675 +units=km")) #should work, just needs time
 elev3 <- raster::mask(elev2, NorthAm2)
 
@@ -116,10 +115,10 @@ env_elev = data.frame(routes = routes.laea,
                       elev.point = elev.point, 
                       elev.mean = elev.mean, elev.var = elev.var)
 
-write.csv(env_elev, "C:/git/core-transient/scripts/R-scripts/scale_analysis/env_elev.csv", row.names = FALSE)
+#write.csv(env_elev, "C:/git/core-transient/scripts/R-scripts/scale_analysis/env_elev.csv", row.names = FALSE)
 
 #ndvi 
-ndvi = raster(paste(ndvidata, "Vegetation_Indices_may-aug_2000-2010.gri", sep = "")) #can't find on getData
+ndvi = raster(paste(ndvidata, "Vegetation_Indices_may-aug_2000-2010.gri", sep = "")) #fine for now, troubleshoot NDVI next 
 str(ndvi)
 #layer format; need to define projection
 
@@ -133,26 +132,32 @@ ndvi.var = raster::extract(ndvi3, circs.sp, fun = var, na.rm=T)
 env_ndvi = data.frame(routes = routes.laea, 
                       ndvi.point = ndvi.point, 
                       ndvi.mean = ndvi.mean, ndvi.var = ndvi.var)
-write.csv(env_ndvi, "C:/git/core-transient/scripts/R-scripts/scale_analysis/env_ndvi.csv", row.names = FALSE)
+#write.csv(env_ndvi, "C:/git/core-transient/scripts/R-scripts/scale_analysis/env_ndvi.csv", row.names = FALSE)
 
 #precip #fix because rasterstack may not be compatible
 prec = raster::getData("worldclim", var = "prec", res = 2.5)  
 prec2 = sum(prec)
-prec2 = projectRaster(prec2, crs = CRS("+proj=laea +lat_0=45.235 +lon_0=-106.675 +units=km")) #should work, just needs time
-prec3 <- raster::mask(prec2, NorthAm2)
+prec2 = prec2/1000 #convert to m from mm
+plot(prec2) #plotting correctly
 
-prec.point = raster::extract(prec3, routes.laea)
-prec.mean = raster::extract(prec3, circs.sp, fun = mean, na.rm=T)
-prec.var = raster::extract(prec3, circs.sp, fun = var, na.rm=T)
+prec2 = projectRaster(prec2, crs = CRS("+proj=laea +lat_0=45.235 +lon_0=-106.675 +units=km")) #worked 
+#need to reset CRS here bc otherwise spatialpoints objects like routes.laea get coerced to the default CRS of prec2
+#prec3 <- raster::mask(prec2, NorthAm2) check with Sara on masking data
+
+prec.point = raster::extract(prec2, routes.laea) #working!!!! 
+prec.mean = raster::extract(prec2, circs.sp, fun = mean, na.rm=T)
+prec.var = raster::extract(prec2, circs.sp, fun = var, na.rm=T)
 
 env_prec = data.frame(routes = routes.laea, 
                       prec.point = prec.point, 
                       prec.mean = prec.mean, prec.var = prec.var)
-write.csv(env_prec, "C:/git/core-transient/scripts/R-scripts/scale_analysis/env_prec.csv", row.names = FALSE)
+#write.csv(env_prec, "C:/git/core-transient/scripts/R-scripts/scale_analysis/env_prec.csv", row.names = FALSE) # updated 05/12
 
 #temp 
 temp = raster::getData("worldclim", var = "tmean", res = 2.5) 
-temp2 = mean(temp) #stack format
+temp2 = mean(temp) #stack format to layer
+temp2 = temp2/10
+plot(temp2)
 temp2 = projectRaster(temp, crs = CRS("+proj=laea +lat_0=45.235 +lon_0=-106.675 +units=km")) #should work, just needs time
 temp3 <- raster::mask(temp2, NorthAm2)
 
