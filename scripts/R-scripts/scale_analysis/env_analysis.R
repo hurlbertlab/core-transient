@@ -162,9 +162,9 @@ plot(temp3)
 temp4 = projectRaster(temp3, crs = CRS("+proj=laea +lat_0=45.235 +lon_0=-106.675 +units=km")) #should work, just needs time
 #temp3 <- raster::mask(temp2, NorthAm2) #again, check with Sara on skipping this
 
-temp.point = raster::extract(temp3, routes.laea)
-temp.mean = raster::extract(temp3, circs.sp, fun = mean, na.rm=T)
-temp.var = raster::extract(temp3, circs.sp, fun = var, na.rm=T)
+temp.point = raster::extract(temp4, routes.laea)
+temp.mean = raster::extract(temp4, circs.sp, fun = mean, na.rm=T)
+temp.var = raster::extract(temp4, circs.sp, fun = var, na.rm=T)
 
 env_temp = data.frame(routes = routes.laea, 
                       temp.point = temp.point, 
