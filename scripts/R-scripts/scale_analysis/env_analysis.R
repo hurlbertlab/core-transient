@@ -16,7 +16,6 @@ library(wesanderson)
 library(stats)
 library(gimms)
 library(devtools)
-library(root)
 
 # To run this script, you need temperature, precip, etc data, 
 # which are currently stored in the following directories off of github: 
@@ -30,8 +29,6 @@ geog = "//bioark.ad.unc.edu/HurlbertLab/GIS/geography/"
 
 bbs_allscales = read.csv("data/BBS/bbs_allscales.csv", header = TRUE)
 
-
-dist.df = read.csv("C:/git/core-transient/scripts/R-scripts/scale_analysis/dist_df.csv", header = TRUE)
 #all focal rtes with all possible pairings
 
 bbs_latlon = read.csv(paste(BBS, "good_rtes2.csv", sep = ""), header = TRUE)
@@ -189,14 +186,29 @@ write.csv(bbs_envs, "C:/git/core-transient/scripts/R-scripts/scale_analysis/bbs_
 #current version all vars up to date except ndvi 05/12
 
 ####Pair env data to secondary rtes associated with each focal rte; calc variance for each focal rte####
-
-#rename
-
-
+bbs_envs = read.csv("C:/git/core-transient/scripts/R-scripts/scale_analysis/bbs_envs.csv", header = TRUE)
+dist.df = read.csv("C:/git/core-transient/scripts/R-scripts/scale_analysis/dist_df.csv", header = TRUE)
+dist.df$stateroute = dist.df$rte2 
 
 
 envs_4var = bbs_envs %>% 
-  full_join(dist.df, by = "routes.stateroute")
+  full_join(dist.df, by = c("stateroute" = "rte2")) #paired by secondary rtes 
+#num of rows matches num of rows in dts.df, good 
+#now calc var for each focal rte (rte1)
+focal_var = data.frame(stateroute = NULL, ndvi_v = NULL, elev_v = NULL, prec_v = NULL, temp_v = NULL)
+focal_rtes = unique(bbs_envs$stateroute)
+
+for(r in focal_rtes){
+  rte_group = filter(envs_4var, rte1 == r) %>%
+    top_n(66, desc(dist)) #sort in descending order of distance; for each primary focal rte: calc var across top 66 2ndary rtes 
+  temp = data.frame(stateroute = r,
+                    ndvi_v = var(rte_group$ndvi.mean),
+                    elev_v = var(rte_group$elev.mean), #bc each of these values is calculated across the 2ndary rtes for each focal rte
+                    prec_v = var(rte_group$prec.mean), #such that all 66 2ndary rtes will be summed into one variance value for each focal rte
+                    temp_v = var(rte_group$temp.mean)) 
+  focal_var = rbind(focal_var, temp)
+}
+
 
 
 
