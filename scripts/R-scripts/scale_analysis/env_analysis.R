@@ -208,10 +208,11 @@ for(r in focal_rtes){
                     temp_v = var(rte_group$temp.mean)) 
   focal_var = rbind(focal_var, temp)
 }
+write.csv(focal_var, "C:/git/core-transient/scripts/R-scripts/scale_analysis/focal_var.csv", row.names = FALSE)
+#now I have variance for each variable for each focal rte - how do I make env variables comparable? 
+ggplot(focal_var, aes(x = factor(stateroute), y = temp_v))+geom_boxplot()
 
-
-
-
+####Standardizing environmental variables for comparison####
 
 
 ####Coef vs env variation models####
