@@ -118,7 +118,7 @@ env_elev = data.frame(routes = routes.laea,
 ndvi = raster(paste(ndvidata, "Vegetation_Indices_may-aug_2000-2010.gri", sep = "")) #fine for now, troubleshoot NDVI next 
 str(ndvi)
 #layer format; need to define projection
-
+nidvi2 = ndvi/10000 
 ndvi2 = projectRaster(ndvi, crs = CRS("+proj=laea +lat_0=45.235 +lon_0=-106.675 +units=km")) #should work, just needs time
 ndvi3 <- raster::mask(ndvi2, NorthAm2)
 
@@ -210,10 +210,27 @@ for(r in focal_rtes){
 }
 write.csv(focal_var, "C:/git/core-transient/scripts/R-scripts/scale_analysis/focal_var.csv", row.names = FALSE)
 #now I have variance for each variable for each focal rte - how do I make env variables comparable? 
-ggplot(focal_var, aes(x = factor(stateroute), y = temp_v))+geom_boxplot()
+ggplot(focal_var, aes(x = stateroute, y = temp_v))+geom_point()+geom_jitter()
 
 ####Standardizing environmental variables for comparison####
+#notes on geometry package and min convex polygon:
+#convhulln from geometry package, optimized by qhull -> convex hull 
+#http://www.qhull.org/html/qconvex.htm#synopsis
 
+
+
+#alt simplistic standardization using z scores
+focal_var$ztemp = (focal_var$temp_v - mean(focal_var$temp_v)) / sd(focal_var$temp_v)
+focal_var$zprec = (focal_var$prec_v - mean(focal_var$prec_v)) / sd(focal_var$prec_v)
+focal_var$zelev = (focal_var$elev_v - mean(focal_var$elev_v)) / sd(focal_var$elev_v)
+focal_var$zndvi = (focal_var$ndvi_v - mean(focal_var$ndvi_v)) / sd(focal_var$ndvi_v)
+
+focal_var$rte_bin = as.factor(substr(as.character(signif(focal_var$stateroute, digits = 3)), 1, 2))
+
+varplot = ggplot(focal_var, aes(x = stateroute, color = rte_bin))
+varplot+geom_point(aes(y=ztemp))
+varplot+geom_point(aes(y=zprec))
+varplot+geom_point(aes(y=zelev))
 
 ####Coef vs env variation models####
 bbs_envs = read.csv("scripts/R-scripts/scale_analysis/bbs_envs.csv", header = TRUE)
