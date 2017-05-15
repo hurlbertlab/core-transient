@@ -231,7 +231,9 @@ for(r in focal_rtes){
   focal_var = rbind(focal_var, temp)
 }
 write.csv(focal_var, "C:/git/core-transient/scripts/R-scripts/scale_analysis/focal_var.csv", row.names = FALSE)
-#now I have variance for each variable for each focal rte - how do I make env variables comparable? 
+#updated 05/15
+
+
 ggplot(focal_var, aes(x = stateroute, y = temp_v))+geom_point()+geom_jitter()
 
 ####Elev vs NDVI plotting####
