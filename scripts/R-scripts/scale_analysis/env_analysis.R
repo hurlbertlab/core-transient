@@ -223,7 +223,7 @@ focal_var = read.csv("C:/git/core-transient/scripts/R-scripts/scale_analysis/foc
 focal_var$ztemp = (focal_var$temp_v - mean(focal_var$temp_v)) / sd(focal_var$temp_v)
 focal_var$zprec = (focal_var$prec_v - mean(focal_var$prec_v)) / sd(focal_var$prec_v)
 focal_var$zelev = (focal_var$elev_v - mean(focal_var$elev_v)) / sd(focal_var$elev_v)
-focal_var$zndvi = (focal_var$ndvi_v - mean(focal_var$ndvi_v)) / sd(focal_var$ndvi_v)
+focal_var$zndvi = (focal_var$ndvi_v - mean(focal_var$ndvi_v)) / sd(focal_var$ndvi_v) #why getting NA for z scores...?
 
 focal_var$rte_bin = as.factor(substr(as.character(signif(focal_var$stateroute, digits = 3)), 1, 2))
 
