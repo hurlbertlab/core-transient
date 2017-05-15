@@ -232,6 +232,10 @@ varplot+geom_point(aes(y=ztemp))
 varplot+geom_point(aes(y=zprec))
 varplot+geom_point(aes(y=zelev))
 
+#elev vs ndvi on plot
+varplot2 = ggplot(focal_var, aes(x = ndvi_v, y = elev_v))+geom_point()
+varplot2
+
 ####Coef vs env variation models####
 bbs_envs = read.csv("scripts/R-scripts/scale_analysis/bbs_envs.csv", header = TRUE)
 coefs = read.csv("scripts/R-scripts/scale_analysis/coefs.csv", header = TRUE)
