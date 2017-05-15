@@ -217,7 +217,7 @@ ggplot(focal_var, aes(x = stateroute, y = temp_v))+geom_point()+geom_jitter()
 #convhulln from geometry package, optimized by qhull -> convex hull 
 #http://www.qhull.org/html/qconvex.htm#synopsis
 
-
+focal_var = read.csv("C:/git/core-transient/scripts/R-scripts/scale_analysis/focal_var.csv", header = TRUE)
 
 #alt simplistic standardization using z scores
 focal_var$ztemp = (focal_var$temp_v - mean(focal_var$temp_v)) / sd(focal_var$temp_v)
