@@ -118,8 +118,8 @@ env_elev = data.frame(routes = routes.laea,
 ndvi = raster(paste(ndvidata, "Vegetation_Indices_may-aug_2000-2010.gri", sep = "")) #fine for now, troubleshoot NDVI next 
 str(ndvi)
 #layer format; need to define projection
-nidvi2 = ndvi/10000 
-ndvi2 = projectRaster(ndvi, crs = CRS("+proj=laea +lat_0=45.235 +lon_0=-106.675 +units=km")) #should work, just needs time
+ndvi2 = ndvi/10000 
+ndvi2 = projectRaster(ndvi2, crs = CRS("+proj=laea +lat_0=45.235 +lon_0=-106.675 +units=km")) #should work, just needs time
 ndvi3 <- raster::mask(ndvi2, NorthAm2)
 
 ndvi.point = raster::extract(ndvi3, routes.laea)
@@ -184,7 +184,7 @@ bbs_envs = env_elev %>%
          prec.point, prec.mean, prec.var, 
          temp.point, temp.mean, temp.var)
 write.csv(bbs_envs, "C:/git/core-transient/scripts/R-scripts/scale_analysis/bbs_envs.csv", row.names = FALSE)
-#current version all vars up to date except ndvi 05/12
+#current version all vars up to date except ndvi 05/15
 
 ####Pair env data to secondary rtes associated with each focal rte; calc variance for each focal rte####
 bbs_envs = read.csv("C:/git/core-transient/scripts/R-scripts/scale_analysis/bbs_envs.csv", header = TRUE)
@@ -219,9 +219,6 @@ ggplot(focal_var, aes(x = stateroute, y = temp_v))+geom_point()+geom_jitter()
 #http://www.qhull.org/html/qconvex.htm#synopsis
 
 focal_var = read.csv("C:/git/core-transient/scripts/R-scripts/scale_analysis/focal_var.csv", header = TRUE)
-focal_var$ndvi_v = focal_var$ndvi_v/10000 #fixing ndvi scaling ad-hoc
-
-
 #alt simplistic standardization using z scores
 focal_var$ztemp = (focal_var$temp_v - mean(focal_var$temp_v)) / sd(focal_var$temp_v)
 focal_var$zprec = (focal_var$prec_v - mean(focal_var$prec_v)) / sd(focal_var$prec_v)
