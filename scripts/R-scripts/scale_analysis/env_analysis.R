@@ -112,7 +112,7 @@ env_elev = data.frame(routes = routes.laea,
                       elev.point = elev.point, 
                       elev.mean = elev.mean, elev.var = elev.var)
 
-#write.csv(env_elev, "C:/git/core-transient/scripts/R-scripts/scale_analysis/env_elev.csv", row.names = FALSE)
+#write.csv(env_elev, "scripts/R-scripts/scale_analysis/env_elev.csv", row.names = FALSE)
 
 #ndvi 
 ndvi = raster(paste(ndvidata, "Vegetation_Indices_may-aug_2000-2010.gri", sep = "")) #fine for now, troubleshoot NDVI next 
@@ -129,7 +129,7 @@ ndvi.var = raster::extract(ndvi3, circs.sp, fun = var, na.rm=T)
 env_ndvi = data.frame(routes = routes.laea, 
                       ndvi.point = ndvi.point, 
                       ndvi.mean = ndvi.mean, ndvi.var = ndvi.var)
-write.csv(env_ndvi, "C:/git/core-transient/scripts/R-scripts/scale_analysis/env_ndvi.csv", row.names = FALSE)
+#write.csv(env_ndvi, "scripts/R-scripts/scale_analysis/env_ndvi.csv", row.names = FALSE)
 #updated 05/15 to reflect dividing ndvi/10,000 to fix value scaling
 
 #precip 
@@ -149,7 +149,7 @@ prec.var = raster::extract(prec2, circs.sp, fun = var, na.rm=T)
 env_prec = data.frame(routes = routes.laea, 
                       prec.point = prec.point, 
                       prec.mean = prec.mean, prec.var = prec.var)
-#write.csv(env_prec, "C:/git/core-transient/scripts/R-scripts/scale_analysis/env_prec.csv", row.names = FALSE) # updated 05/12
+#write.csv(env_prec, "scripts/R-scripts/scale_analysis/env_prec.csv", row.names = FALSE) # updated 05/12
 
 #temp 
 temp = raster::getData("worldclim", var = "tmean", res = 2.5) 
@@ -167,7 +167,7 @@ temp.var = raster::extract(temp4, circs.sp, fun = var, na.rm=T)
 env_temp = data.frame(routes = routes.laea, 
                       temp.point = temp.point, 
                       temp.mean = temp.mean, temp.var = temp.var)
-write.csv(env_temp, "C:/git/core-transient/scripts/R-scripts/scale_analysis/env_temp.csv", row.names = FALSE)
+#write.csv(env_temp, "scripts/R-scripts/scale_analysis/env_temp.csv", row.names = FALSE)
 
 ####Merge env df's together into one with relevant stateroutes, mean, and var data 
 env_elev = read.csv("scripts/R-scripts/scale_analysis/env_elev.csv", header = TRUE)
@@ -186,25 +186,33 @@ bbs_envs = env_elev %>%
 write.csv(bbs_envs, "scripts/R-scripts/scale_analysis/bbs_envs.csv", row.names = FALSE)
 #current version all vars up to date except ndvi 05/15
 
+####Calc z-scores, quantiles pre-variance loop####
+bbs_envs = read.csv("scripts/R-scripts/scale_analysis/bbs_envs.csv", header = TRUE)
+
+#alt simplistic standardization using z scores
+bbs_envs$ztemp = (bbs_envs$temp.mean - mean(bbs_envs$temp.mean)) / sd(bbs_envs$temp.mean)
+bbs_envs$zprec = (bbs_envs$prec.mean - mean(bbs_envs$prec.mean)) / sd(bbs_envs$prec.mean)
+bbs_envs$zelev = (bbs_envs$elev.mean - mean(bbs_envs$elev.mean)) / sd(bbs_envs$elev.mean)
+bbs_envs$zndvi = ((bbs_envs$ndvi.mean) - mean(na.exclude(bbs_envs$ndvi.mean))) / sd(na.exclude(bbs_envs$ndvi.mean)) 
+#NA's for ndvi vals around statertes in the 3000's
+#with z scores
+
+# Calc quantiles
+bbs_envs$ndvi_q= rank(bbs_envs$ndvi.mean)/nrow(bbs_envs) #needs to be corrected since NA values in ndvi col
+bbs_envs$elev_q= rank(bbs_envs$elev.mean)/nrow(bbs_envs) 
+bbs_envs$temp_q= rank(bbs_envs$temp.mean)/nrow(bbs_envs) 
+bbs_envs$prec_q= rank(bbs_envs$prec.mean)/nrow(bbs_envs)
+#write.csv(bbs_envs, "scripts/R-scripts/scale_analysis/bbs_envs.csv", row.names = FALSE)
+#with z scores and quantiles both
+
 ####Pair env data to secondary rtes associated with each focal rte; calc variance for each focal rte####
 bbs_envs = read.csv("scripts/R-scripts/scale_analysis/bbs_envs.csv", header = TRUE)
 dist.df = read.csv("scripts/R-scripts/scale_analysis/dist_df.csv", header = TRUE)
-
 
 #num of rows matches num of rows in dts.df, good 
 #now calc var for each focal rte (rte1)
 focal_var = data.frame(stateroute = NULL, ndvi_v = NULL, elev_v = NULL, prec_v = NULL, temp_v = NULL)
 focal_rtes = unique(bbs_envs$stateroute)
-
-
-# Calc z-scores
-
-# Calc quantiles, e.g., 
-qtiles = rank(bbs_envs$ndvi.mean)/nrow(bbs_envs)
-
-
-
-
 
 for(r in focal_rtes){
   rte_group = dist.df %>% 
@@ -216,34 +224,17 @@ for(r in focal_rtes){
     filter(stateroute %in% rte_group$rte2)
    
   temp = data.frame(stateroute = r,
-                    ndvi_v = var(tempenv$ndvi.mean),
-                    elev_v = var(tempenv$elev.mean), #bc each of these values is calculated across the 2ndary rtes for each focal rte
-                    prec_v = var(tempenv$prec.mean), #such that all 66 2ndary rtes will be summed into one variance value for each focal rte
-                    temp_v = var(tempenv$temp.mean)) 
+                    ndvi_v = var(tempenv$zndvi),
+                    elev_v = var(tempenv$zelev), #bc each of these values is calculated across the 2ndary rtes for each focal rte
+                    prec_v = var(tempenv$zprec), #such that all 66 2ndary rtes will be summed into one variance value for each focal rte
+                    temp_v = var(tempenv$ztemp)) 
   focal_var = rbind(focal_var, temp)
 }
 write.csv(focal_var, "C:/git/core-transient/scripts/R-scripts/scale_analysis/focal_var.csv", row.names = FALSE)
 #now I have variance for each variable for each focal rte - how do I make env variables comparable? 
 ggplot(focal_var, aes(x = stateroute, y = temp_v))+geom_point()+geom_jitter()
 
-####Standardizing environmental variables for comparison####
-#notes on geometry package and min convex polygon:
-#convhulln from geometry package, optimized by qhull -> convex hull 
-#http://www.qhull.org/html/qconvex.htm#synopsis
-
-
-convhulln(..., "FA")
-
-$vol
-
-
-focal_var = read.csv("C:/git/core-transient/scripts/R-scripts/scale_analysis/focal_var.csv", header = TRUE)
-#alt simplistic standardization using z scores
-focal_var$ztemp = (focal_var$temp_v - mean(focal_var$temp_v)) / sd(focal_var$temp_v)
-focal_var$zprec = (focal_var$prec_v - mean(focal_var$prec_v)) / sd(focal_var$prec_v)
-focal_var$zelev = (focal_var$elev_v - mean(focal_var$elev_v)) / sd(focal_var$elev_v)
-focal_var$zndvi = (focal_var$ndvi_v - mean(focal_var$ndvi_v)) / sd(focal_var$ndvi_v) #why getting NA for z scores...?
-
+####Elev vs NDVI plotting####
 focal_var$rte_bin = as.factor(substr(as.character(signif(focal_var$stateroute, digits = 3)), 1, 2))
 
 varplot = ggplot(focal_var, aes(x = stateroute, color = rte_bin))
@@ -254,6 +245,16 @@ varplot+geom_point(aes(y=zelev))
 #elev vs ndvi on plot
 varplot2 = ggplot(focal_var, aes(x = ndvi_v, y = elev_v))+geom_point()
 varplot2
+
+####Convex polygon comparison of variables####
+#notes on geometry package and min convex polygon:
+#convhulln from geometry package, optimized by qhull -> convex hull 
+#http://www.qhull.org/html/qconvex.htm#synopsis
+
+
+convhulln(..., "FA")
+
+$vol
 
 ####Coef vs env variation models####
 bbs_envs = read.csv("scripts/R-scripts/scale_analysis/bbs_envs.csv", header = TRUE)
