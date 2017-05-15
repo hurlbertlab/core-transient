@@ -183,30 +183,43 @@ bbs_envs = env_elev %>%
          ndvi.point, ndvi.mean, ndvi.var,
          prec.point, prec.mean, prec.var, 
          temp.point, temp.mean, temp.var)
-write.csv(bbs_envs, "C:/git/core-transient/scripts/R-scripts/scale_analysis/bbs_envs.csv", row.names = FALSE)
+write.csv(bbs_envs, "scripts/R-scripts/scale_analysis/bbs_envs.csv", row.names = FALSE)
 #current version all vars up to date except ndvi 05/15
 
 ####Pair env data to secondary rtes associated with each focal rte; calc variance for each focal rte####
-bbs_envs = read.csv("C:/git/core-transient/scripts/R-scripts/scale_analysis/bbs_envs.csv", header = TRUE)
-dist.df = read.csv("C:/git/core-transient/scripts/R-scripts/scale_analysis/dist_df.csv", header = TRUE)
-dist.df$stateroute = dist.df$rte2 
+bbs_envs = read.csv("scripts/R-scripts/scale_analysis/bbs_envs.csv", header = TRUE)
+dist.df = read.csv("scripts/R-scripts/scale_analysis/dist_df.csv", header = TRUE)
 
 
-envs_4var = bbs_envs %>% 
-  full_join(dist.df, by = c("stateroute" = "rte2")) #paired by secondary rtes 
 #num of rows matches num of rows in dts.df, good 
 #now calc var for each focal rte (rte1)
 focal_var = data.frame(stateroute = NULL, ndvi_v = NULL, elev_v = NULL, prec_v = NULL, temp_v = NULL)
 focal_rtes = unique(bbs_envs$stateroute)
 
+
+# Calc z-scores
+
+# Calc quantiles, e.g., 
+qtiles = rank(bbs_envs$ndvi.mean)/nrow(bbs_envs)
+
+
+
+
+
 for(r in focal_rtes){
-  rte_group = filter(envs_4var, rte1 == r) %>%
-    top_n(66, desc(dist)) #sort in descending order of distance; for each primary focal rte: calc var across top 66 2ndary rtes 
+  rte_group = dist.df %>% 
+    filter(rte1 == r) %>% 
+    top_n(66, desc(dist)) %>%
+    select(rte2) %>% as.vector()
+  
+  tempenv = bbs_envs %>%
+    filter(stateroute %in% rte_group$rte2)
+   
   temp = data.frame(stateroute = r,
-                    ndvi_v = var(rte_group$ndvi.mean),
-                    elev_v = var(rte_group$elev.mean), #bc each of these values is calculated across the 2ndary rtes for each focal rte
-                    prec_v = var(rte_group$prec.mean), #such that all 66 2ndary rtes will be summed into one variance value for each focal rte
-                    temp_v = var(rte_group$temp.mean)) 
+                    ndvi_v = var(tempenv$ndvi.mean),
+                    elev_v = var(tempenv$elev.mean), #bc each of these values is calculated across the 2ndary rtes for each focal rte
+                    prec_v = var(tempenv$prec.mean), #such that all 66 2ndary rtes will be summed into one variance value for each focal rte
+                    temp_v = var(tempenv$temp.mean)) 
   focal_var = rbind(focal_var, temp)
 }
 write.csv(focal_var, "C:/git/core-transient/scripts/R-scripts/scale_analysis/focal_var.csv", row.names = FALSE)
@@ -217,6 +230,12 @@ ggplot(focal_var, aes(x = stateroute, y = temp_v))+geom_point()+geom_jitter()
 #notes on geometry package and min convex polygon:
 #convhulln from geometry package, optimized by qhull -> convex hull 
 #http://www.qhull.org/html/qconvex.htm#synopsis
+
+
+convhulln(..., "FA")
+
+$vol
+
 
 focal_var = read.csv("C:/git/core-transient/scripts/R-scripts/scale_analysis/focal_var.csv", header = TRUE)
 #alt simplistic standardization using z scores
