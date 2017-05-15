@@ -129,9 +129,10 @@ ndvi.var = raster::extract(ndvi3, circs.sp, fun = var, na.rm=T)
 env_ndvi = data.frame(routes = routes.laea, 
                       ndvi.point = ndvi.point, 
                       ndvi.mean = ndvi.mean, ndvi.var = ndvi.var)
-#write.csv(env_ndvi, "C:/git/core-transient/scripts/R-scripts/scale_analysis/env_ndvi.csv", row.names = FALSE)
+write.csv(env_ndvi, "C:/git/core-transient/scripts/R-scripts/scale_analysis/env_ndvi.csv", row.names = FALSE)
+#updated 05/15 to reflect dividing ndvi/10,000 to fix value scaling
 
-#precip #fix because rasterstack may not be compatible
+#precip 
 prec = raster::getData("worldclim", var = "prec", res = 2.5)  
 prec2 = sum(prec)
 prec2 = prec2/1000 #convert to m from mm
@@ -218,6 +219,8 @@ ggplot(focal_var, aes(x = stateroute, y = temp_v))+geom_point()+geom_jitter()
 #http://www.qhull.org/html/qconvex.htm#synopsis
 
 focal_var = read.csv("C:/git/core-transient/scripts/R-scripts/scale_analysis/focal_var.csv", header = TRUE)
+focal_var$ndvi_v = focal_var$ndvi_v/10000 #fixing ndvi scaling ad-hoc
+
 
 #alt simplistic standardization using z scores
 focal_var$ztemp = (focal_var$temp_v - mean(focal_var$temp_v)) / sd(focal_var$temp_v)
