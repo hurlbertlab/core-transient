@@ -238,16 +238,15 @@ for(r in focal_rtes){
   focal_var = rbind(focal_var, temp)
   focal_qv = rbind(focal_qv, temp2)
 }
-write.csv(focal_var, "C:/git/core-transient/scripts/R-scripts/scale_analysis/focal_var.csv", row.names = FALSE)
-write.csv(focal_qv, "C:/git/core-transient/scripts/R-scripts/scale_analysis/focal_qv.csv", row.names = FALSE)
+write.csv(focal_var, "scripts/R-scripts/scale_analysis/focal_var.csv", row.names = FALSE)
+write.csv(focal_qv, "scripts/R-scripts/scale_analysis/focal_qv.csv", row.names = FALSE)
 #updated 05/15
 
 ####Elev vs NDVI plotting####
 focal_var$rte_bin = as.factor(substr(as.character(signif(focal_var$stateroute, digits = 3)), 1, 2))
 
 #elev vs ndvi on plot - z scores
-varplot2 = ggplot(focal_var, aes(x = ndvi_v, y = elev_v))+geom_point()
-varplot2
+ggplot(focal_qv, aes(x = ndvi_qv, y = elev_qv))+geom_point()+theme_classic()
 
 ####Convex polygon comparison of variables####
 #notes on geometry package and min convex polygon:
@@ -317,7 +316,6 @@ ggplot(data = rsub_t, aes(x = ind, y = r2)) + geom_boxplot()+theme_classic() #el
 
 #what does this comparison look like? How do I split sites up via a threshold for hetero vs homogenous 
 #to compare their avg coefs? 
-
 
 
 
