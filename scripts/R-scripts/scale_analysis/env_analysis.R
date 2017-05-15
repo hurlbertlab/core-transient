@@ -212,6 +212,7 @@ dist.df = read.csv("scripts/R-scripts/scale_analysis/dist_df.csv", header = TRUE
 #num of rows matches num of rows in dts.df, good 
 #now calc var for each focal rte (rte1)
 focal_var = data.frame(stateroute = NULL, ndvi_v = NULL, elev_v = NULL, prec_v = NULL, temp_v = NULL)
+focal_qv = data.frame(stateroute = NULL, ndvi_qv = NULL, elev_qv = NULL, prec_qv = NULL, temp_qv = NULL)
 focal_rtes = unique(bbs_envs$stateroute)
 
 for(r in focal_rtes){
@@ -228,23 +229,23 @@ for(r in focal_rtes){
                     elev_v = var(tempenv$zelev), #bc each of these values is calculated across the 2ndary rtes for each focal rte
                     prec_v = var(tempenv$zprec), #such that all 66 2ndary rtes will be summed into one variance value for each focal rte
                     temp_v = var(tempenv$ztemp)) 
+  temp2 = data.frame(stateroute = r,
+                     ndvi_qv = var(tempenv$ndvi_q),
+                     elev_qv = var(tempenv$elev_q), #bc each of these values is calculated across the 2ndary rtes for each focal rte
+                     prec_qv = var(tempenv$prec_q), #such that all 66 2ndary rtes will be summed into one variance value for each focal rte
+                     temp_qv = var(tempenv$temp_q)) 
+  
   focal_var = rbind(focal_var, temp)
+  focal_qv = rbind(focal_qv, temp2)
 }
 write.csv(focal_var, "C:/git/core-transient/scripts/R-scripts/scale_analysis/focal_var.csv", row.names = FALSE)
+write.csv(focal_qv, "C:/git/core-transient/scripts/R-scripts/scale_analysis/focal_qv.csv", row.names = FALSE)
 #updated 05/15
-
-
-ggplot(focal_var, aes(x = stateroute, y = temp_v))+geom_point()+geom_jitter()
 
 ####Elev vs NDVI plotting####
 focal_var$rte_bin = as.factor(substr(as.character(signif(focal_var$stateroute, digits = 3)), 1, 2))
 
-varplot = ggplot(focal_var, aes(x = stateroute, color = rte_bin))
-varplot+geom_point(aes(y=ztemp))
-varplot+geom_point(aes(y=zprec))
-varplot+geom_point(aes(y=zelev))
-
-#elev vs ndvi on plot
+#elev vs ndvi on plot - z scores
 varplot2 = ggplot(focal_var, aes(x = ndvi_v, y = elev_v))+geom_point()
 varplot2
 
