@@ -14,7 +14,8 @@ library(nlme)
 library(gridExtra)
 library(wesanderson)
 library(stats)
-
+library(gimms)
+library(devtools)
 
 # To run this script, you need temperature, precip, etc data, 
 # which are currently stored in the following directories off of github: 
@@ -27,16 +28,14 @@ BBS = '//bioark.ad.unc.edu/HurlbertLab/Jenkins/BBS scaled/'
 geog = "//bioark.ad.unc.edu/HurlbertLab/GIS/geography/"
 
 bbs_allscales = read.csv("data/BBS/bbs_allscales.csv", header = TRUE)
+
+#all focal rtes with all possible pairings
+
 bbs_latlon = read.csv(paste(BBS, "good_rtes2.csv", sep = ""), header = TRUE)
 bbs_allscales = dplyr::rename(bbs_latlon, focalrte = stateroute) %>%
   right_join(bbs_allscales, by = "focalrte")
 sites = data.frame(longitude = bbs_latlon$Longi, latitude = bbs_latlon$Lati) 
 #points(sites$longitude, sites$latitude, col= "red", pch=16) #check on map
-
-#find proj of elev -> may need to do for each raster set? 
-elev = raster::getData("worldclim", var = "alt", res = 2.5) #raster::getData("alt", country = 'USA', res = 2.5)
-str(elev)
-#"+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0"
 
 # Makes routes into a spatialPointsDataframe
 latlon = na.omit(bbs_latlon)
@@ -96,6 +95,10 @@ clip<-function(raster,shape) {
   step1<-rasterize(shape,a1_crop)
   a1_crop*step1}
 
+
+#elev
+elev = raster::getData("worldclim", var = "alt", res = 2.5) #raster::getData("alt", country = 'USA', res = 2.5)
+str(elev)
 elev2 = projectRaster(elev, crs = CRS("+proj=laea +lat_0=45.235 +lon_0=-106.675 +units=km")) #should work, just needs time
 elev3 <- raster::mask(elev2, NorthAm2)
 
@@ -109,14 +112,14 @@ env_elev = data.frame(routes = routes.laea,
                       elev.point = elev.point, 
                       elev.mean = elev.mean, elev.var = elev.var)
 
-write.csv(env_elev, "C:/git/core-transient/scripts/R-scripts/scale_analysis/env_elev.csv", row.names = FALSE)
+#write.csv(env_elev, "scripts/R-scripts/scale_analysis/env_elev.csv", row.names = FALSE)
 
 #ndvi 
-ndvi = raster(paste(ndvidata, "Vegetation_Indices_may-aug_2000-2010.gri", sep = "")) #can't find on getData
+ndvi = raster(paste(ndvidata, "Vegetation_Indices_may-aug_2000-2010.gri", sep = "")) #fine for now, troubleshoot NDVI next 
 str(ndvi)
 #layer format; need to define projection
-
-ndvi2 = projectRaster(ndvi, crs = CRS("+proj=laea +lat_0=45.235 +lon_0=-106.675 +units=km")) #should work, just needs time
+ndvi2 = ndvi/10000 
+ndvi2 = projectRaster(ndvi2, crs = CRS("+proj=laea +lat_0=45.235 +lon_0=-106.675 +units=km")) #should work, just needs time
 ndvi3 <- raster::mask(ndvi2, NorthAm2)
 
 ndvi.point = raster::extract(ndvi3, routes.laea)
@@ -126,50 +129,134 @@ ndvi.var = raster::extract(ndvi3, circs.sp, fun = var, na.rm=T)
 env_ndvi = data.frame(routes = routes.laea, 
                       ndvi.point = ndvi.point, 
                       ndvi.mean = ndvi.mean, ndvi.var = ndvi.var)
-write.csv(env_ndvi, "C:/git/core-transient/scripts/R-scripts/scale_analysis/env_ndvi.csv", row.names = FALSE)
+#write.csv(env_ndvi, "scripts/R-scripts/scale_analysis/env_ndvi.csv", row.names = FALSE)
+#updated 05/15 to reflect dividing ndvi/10,000 to fix value scaling
 
-#precip #fix because rasterstack may not be compatible
+#precip 
 prec = raster::getData("worldclim", var = "prec", res = 2.5)  
-str(prec) #stack format
-prec2 = raster(prec)
-prec2 = projectRaster(prec, crs = CRS("+proj=laea +lat_0=45.235 +lon_0=-106.675 +units=km")) #should work, just needs time
-prec3 <- raster::mask(prec2, NorthAm2)
+prec2 = sum(prec)
+prec2 = prec2/1000 #convert to m from mm
+plot(prec2) #plotting correctly
 
-prec.point = raster::extract(prec3, routes.laea)
-prec.mean = raster::extract(prec3, circs.sp, fun = mean, na.rm=T)
-prec.var = raster::extract(prec3, circs.sp, fun = var, na.rm=T)
+prec2 = projectRaster(prec2, crs = CRS("+proj=laea +lat_0=45.235 +lon_0=-106.675 +units=km")) #worked 
+#need to reset CRS here bc otherwise spatialpoints objects like routes.laea get coerced to the default CRS of prec2
+#prec3 <- raster::mask(prec2, NorthAm2) check with Sara on masking data
+
+prec.point = raster::extract(prec2, routes.laea) #working!!!! 
+prec.mean = raster::extract(prec2, circs.sp, fun = mean, na.rm=T)
+prec.var = raster::extract(prec2, circs.sp, fun = var, na.rm=T)
 
 env_prec = data.frame(routes = routes.laea, 
                       prec.point = prec.point, 
                       prec.mean = prec.mean, prec.var = prec.var)
-write.csv(env_prec, "C:/git/core-transient/scripts/R-scripts/scale_analysis/env_prec.csv", row.names = FALSE)
+#write.csv(env_prec, "scripts/R-scripts/scale_analysis/env_prec.csv", row.names = FALSE) # updated 05/12
 
 #temp 
 temp = raster::getData("worldclim", var = "tmean", res = 2.5) 
-temp2 = raster(temp) #stack format
-temp2 = projectRaster(temp, crs = CRS("+proj=laea +lat_0=45.235 +lon_0=-106.675 +units=km")) #should work, just needs time
-temp3 <- raster::mask(temp2, NorthAm2)
+temp2 = temp/10 #taking to degrees Celsius in correct units
+temp3 = mean(temp2) #stack/brick format to layer
+plot(temp3)
 
-temp.point = raster::extract(temp3, routes.laea)
-temp.mean = raster::extract(temp3, circs.sp, fun = mean, na.rm=T)
-temp.var = raster::extract(temp3, circs.sp, fun = var, na.rm=T)
+temp4 = projectRaster(temp3, crs = CRS("+proj=laea +lat_0=45.235 +lon_0=-106.675 +units=km")) #should work, just needs time
+#temp3 <- raster::mask(temp2, NorthAm2) #again, check with Sara on skipping this
+
+temp.point = raster::extract(temp4, routes.laea)
+temp.mean = raster::extract(temp4, circs.sp, fun = mean, na.rm=T)
+temp.var = raster::extract(temp4, circs.sp, fun = var, na.rm=T)
 
 env_temp = data.frame(routes = routes.laea, 
                       temp.point = temp.point, 
                       temp.mean = temp.mean, temp.var = temp.var)
-write.csv(env_temp, "C:/git/core-transient/scripts/R-scripts/scale_analysis/env_temp.csv", row.names = FALSE)
+#write.csv(env_temp, "scripts/R-scripts/scale_analysis/env_temp.csv", row.names = FALSE)
 
 ####Merge env df's together into one with relevant stateroutes, mean, and var data 
 env_elev = read.csv("scripts/R-scripts/scale_analysis/env_elev.csv", header = TRUE)
 env_ndvi = read.csv("scripts/R-scripts/scale_analysis/env_ndvi.csv", header = TRUE)
-#env_prec = read.csv("scripts/R-scripts/scale_analysis/env_prec.csv", header = TRUE)
-#env_temp = read.csv("scripts/R-scripts/scale_analysis/env_temp.csv", header = TRUE)
+env_prec = read.csv("scripts/R-scripts/scale_analysis/env_prec.csv", header = TRUE)
+env_temp = read.csv("scripts/R-scripts/scale_analysis/env_temp.csv", header = TRUE)
 
 bbs_envs = env_elev %>%
-  left_join(env_ndvi, by = "routes.stateroute")%>% 
-  select(stateroute = routes.stateroute, elev.mean, elev.var, ndvi.mean, ndvi.var)
-#write.csv(bbs_envs, "C:/git/core-transient/scripts/R-scripts/scale_analysis/bbs_envs.csv", row.names = FALSE)
-#current version just has elev and NDVI 05/07
+  left_join(env_ndvi, by = "routes.stateroute") %>% 
+  left_join(env_prec, by = "routes.stateroute") %>%
+  left_join(env_temp, by = "routes.stateroute") %>%
+  select(stateroute = routes.stateroute, elev.point, elev.mean, elev.var, 
+         ndvi.point, ndvi.mean, ndvi.var,
+         prec.point, prec.mean, prec.var, 
+         temp.point, temp.mean, temp.var)
+write.csv(bbs_envs, "scripts/R-scripts/scale_analysis/bbs_envs.csv", row.names = FALSE)
+#current version all vars up to date except ndvi 05/15
+
+####Calc z-scores, quantiles pre-variance loop####
+bbs_envs = read.csv("scripts/R-scripts/scale_analysis/bbs_envs.csv", header = TRUE)
+
+#alt simplistic standardization using z scores
+bbs_envs$ztemp = (bbs_envs$temp.mean - mean(bbs_envs$temp.mean)) / sd(bbs_envs$temp.mean)
+bbs_envs$zprec = (bbs_envs$prec.mean - mean(bbs_envs$prec.mean)) / sd(bbs_envs$prec.mean)
+bbs_envs$zelev = (bbs_envs$elev.mean - mean(bbs_envs$elev.mean)) / sd(bbs_envs$elev.mean)
+bbs_envs$zndvi = ((bbs_envs$ndvi.mean) - mean(na.exclude(bbs_envs$ndvi.mean))) / sd(na.exclude(bbs_envs$ndvi.mean)) 
+#NA's for ndvi vals around statertes in the 3000's
+#with z scores
+
+# Calc quantiles
+bbs_envs$ndvi_q= rank(bbs_envs$ndvi.mean)/nrow(bbs_envs) #needs to be corrected since NA values in ndvi col
+bbs_envs$elev_q= rank(bbs_envs$elev.mean)/nrow(bbs_envs) 
+bbs_envs$temp_q= rank(bbs_envs$temp.mean)/nrow(bbs_envs) 
+bbs_envs$prec_q= rank(bbs_envs$prec.mean)/nrow(bbs_envs)
+#write.csv(bbs_envs, "scripts/R-scripts/scale_analysis/bbs_envs.csv", row.names = FALSE)
+#with z scores and quantiles both
+
+####Pair env data to secondary rtes associated with each focal rte; calc variance for each focal rte####
+bbs_envs = read.csv("scripts/R-scripts/scale_analysis/bbs_envs.csv", header = TRUE)
+dist.df = read.csv("scripts/R-scripts/scale_analysis/dist_df.csv", header = TRUE)
+
+#num of rows matches num of rows in dts.df, good 
+#now calc var for each focal rte (rte1)
+focal_var = data.frame(stateroute = NULL, ndvi_v = NULL, elev_v = NULL, prec_v = NULL, temp_v = NULL)
+focal_qv = data.frame(stateroute = NULL, ndvi_qv = NULL, elev_qv = NULL, prec_qv = NULL, temp_qv = NULL)
+focal_rtes = unique(bbs_envs$stateroute)
+
+for(r in focal_rtes){
+  rte_group = dist.df %>% 
+    filter(rte1 == r) %>% 
+    top_n(66, desc(dist)) %>%
+    select(rte2) %>% as.vector()
+  
+  tempenv = bbs_envs %>%
+    filter(stateroute %in% rte_group$rte2)
+   
+  temp = data.frame(stateroute = r,
+                    ndvi_v = var(tempenv$zndvi),
+                    elev_v = var(tempenv$zelev), #bc each of these values is calculated across the 2ndary rtes for each focal rte
+                    prec_v = var(tempenv$zprec), #such that all 66 2ndary rtes will be summed into one variance value for each focal rte
+                    temp_v = var(tempenv$ztemp)) 
+  temp2 = data.frame(stateroute = r,
+                     ndvi_qv = var(tempenv$ndvi_q),
+                     elev_qv = var(tempenv$elev_q), #bc each of these values is calculated across the 2ndary rtes for each focal rte
+                     prec_qv = var(tempenv$prec_q), #such that all 66 2ndary rtes will be summed into one variance value for each focal rte
+                     temp_qv = var(tempenv$temp_q)) 
+  
+  focal_var = rbind(focal_var, temp)
+  focal_qv = rbind(focal_qv, temp2)
+}
+write.csv(focal_var, "scripts/R-scripts/scale_analysis/focal_var.csv", row.names = FALSE)
+write.csv(focal_qv, "scripts/R-scripts/scale_analysis/focal_qv.csv", row.names = FALSE)
+#updated 05/15
+
+####Elev vs NDVI plotting####
+focal_var$rte_bin = as.factor(substr(as.character(signif(focal_var$stateroute, digits = 3)), 1, 2))
+
+#elev vs ndvi on plot - z scores
+ggplot(focal_qv, aes(x = ndvi_qv, y = elev_qv))+geom_point()+theme_classic()
+
+####Convex polygon comparison of variables####
+#notes on geometry package and min convex polygon:
+#convhulln from geometry package, optimized by qhull -> convex hull 
+#http://www.qhull.org/html/qconvex.htm#synopsis
+
+
+convhulln(..., "FA")
+
+$vol
 
 ####Coef vs env variation models####
 bbs_envs = read.csv("scripts/R-scripts/scale_analysis/bbs_envs.csv", header = TRUE)
@@ -232,7 +319,6 @@ ggplot(data = rsub_t, aes(x = ind, y = r2)) + geom_boxplot()+theme_classic() #el
 
 
 
-
 ####Variance Partitioning of Env Predictors####
 #would I be basing my total remaining unexplained variation off of the meanOcc~logA relationship? (OA.i?)
 #so the 12% remaining
@@ -262,3 +348,16 @@ b
 d= 1- summary(globalmod)$r.squared
 d
 #isn't it ok that d = ~87.5% tho, given that the r^2 for occ~logA was 88%? 
+
+########
+
+
+devtools::load_all(path = 'C:/git/core-transient')
+
+ndvi_data_raw <- get_bbs_gimms_ndvi()
+
+ndvi_data_summer <- ndvi_data_raw %>%
+  filter(!is.na(ndvi), month %in% c('may', 'jun', 'jul'), year > 1981) %>%
+  group_by(site_id, year) %>%
+  summarise(ndvi_sum = mean(ndvi)) %>%
+  ungroup()

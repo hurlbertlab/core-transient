@@ -6,7 +6,7 @@
 #----Set working directory----
 setwd("//bioark.ad.unc.edu/hurlbertlab/Gartland/Final folder")
 #----Read in/open necessary Data----
-newbbsdata<-read.csv("site_sp_occupancy_matrix.csv", header=TRUE)
+newbbsdata<-read.csv("//bioark.ad.unc.edu/hurlbertlab/Jenkins/Final folder/site_sp_occupancy_matrix.csv", header=TRUE)
 head(newbbsdata)
 #----Create two further subsetted and tidied dataframes from BBS data----
 #one with headers "BBS Route", "Lat", and "Long", one with BBS route, AOU codes, and occupancy values---- 
