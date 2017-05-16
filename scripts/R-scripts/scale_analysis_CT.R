@@ -3,7 +3,6 @@
 # Load libraries:
 
 library(stringr)
-library(plyr)
 library(ggplot2)
 library(grid)
 library(gridExtra)
@@ -11,6 +10,7 @@ library(MASS)
 library(dplyr)
 library(tidyr)
 library(lme4)
+library(plyr)
 
 # Source the functions file:
 source('scripts/R-scripts/core-transient_functions.R')
@@ -38,7 +38,7 @@ datasetIDs = filter(dataformattingtable, spatial_scale_variable == 'Y',
                     format_flag == 1)$dataset_ID
 datasetIDs = datasetIDs[datasetIDs  != c(1,317)] #dropped 317 bc ended up only being one spatial grain
 
-summ = read.csv('output/tabular_data/core-transient_summary_10.csv', header=T)
+summ = read.csv('output/tabular_data/core-transient_summary.csv', header=T)
 
 grainlevels = c()
 #function(datasetID, dataDescription) {
@@ -108,7 +108,7 @@ for(datasetID in datasetIDs){
 } # end dataset loop
 grainlevels = data.frame(grainlevels)
 colnames(grainlevels) = c("datasetID", "NumGrains")
-write.csv(grainlevels, "output/tabular_data/grainlevels_10.csv", row.names=FALSE)
+write.csv(grainlevels, "output/tabular_data/grainlevel.csv", row.names=FALSE)
 
 # Merge all output files into 1 file
 #grainlevels = read.csv("output/tabular_data/grainlevels.csv", header = TRUE)
@@ -156,8 +156,8 @@ for(file in propOccfiles){
 allpropOcc = data.frame(allpropOcc)
 
 # count up spRich with and without transients (for Fig 4)
-notransrich = allpropOcc %>% filter(propOcc > 1/3) %>% dplyr::count(datasetID, site, scale)
-write.csv(notransrich, "output/tabular_data/notransrich.csv", row.names = FALSE)
+notransrich = allpropOcc %>% filter(propOcc > 1/4) %>% dplyr::count(datasetID, site, scale)
+write.csv(notransrich, "output/tabular_data/notransrich_25.csv", row.names = FALSE)
 allrich  = allpropOcc %>% dplyr::count(datasetID, site, scale)
 write.csv(allrich, "output/tabular_data/allrich.csv", row.names = FALSE)
 

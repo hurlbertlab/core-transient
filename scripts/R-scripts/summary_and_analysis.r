@@ -231,7 +231,7 @@ ggsave("C:/Git/core-transient/output/plots/meanOcc.pdf", height = 8, width = 12)
 latlongs = read.csv("data/latlongs/latlongs.csv", header =TRUE)
 
 # merge multiple lat long file to propOcc to get naming convention correct
-latlong_w_sites = merge(latlongs, summ2[,c("datasetID", "site", "propTrans")], by = c("datasetID", "site"), all.x = TRUE) 
+latlong_w_sites = merge(latlongs, summ25[,c("datasetID", "site", "propTrans")], by = c("datasetID", "site"), all.x = TRUE) 
 
 #drop BBS and add in below scale
 latlong_w_sites = subset(latlong_w_sites, !datasetID == 1)
@@ -241,7 +241,7 @@ dft = subset(dataformattingtable, countFormat == "count" & format_flag == 1) # o
 dft = subset(dft, !dataset_ID %in% c(1,247,248,269,289,315))
 dft = dft[,c("CentralLatitude", "CentralLongitude","dataset_ID", "taxa")]
 names(dft) <- c("Lat","Lon", "datasetID", "taxa")
-dft2 = merge(dft, summ2[, c("datasetID","site","propTrans")], by = "datasetID")
+dft2 = merge(dft, summ25[, c("datasetID","site","propTrans")], by = "datasetID")
   
 # combining all lat longs, including scaled up data
 all_latlongs.5 = rbind(dft2, latlong_w_sites)
@@ -262,7 +262,7 @@ routes.laea = spTransform(all_latlongs, CRS("+proj=laea +lat_0=45.235 +lon_0=-10
 
 ##### extracting elevation data ####
 # A function that draws a circle of radius r around a point: p (x,y)
-RADIUS = 5
+RADIUS = 40
 
 make.cir = function(p,r){
   points=c()
@@ -278,7 +278,7 @@ make.cir = function(p,r){
 }
 
 routes.laea@data$dId_site = paste(routes.laea@data$datasetID, routes.laea@data$site, sep = "_")
-routes.laea@data$unique = 1:16602
+routes.laea@data$unique = 1:16604
 
 
 #Draw circles around all routes 
@@ -328,7 +328,7 @@ lat_scale_elev = data.frame(lat_scale_elev)
 # lat_scale_elev$stateroute = unlist(lat_scale_elev$stateroute)
 # lat_scale_elev$stateroute = as.numeric(lat_scale_elev$stateroute)
 
-lat_scale_rich = merge(lat_scale_elev, summ2[,c("datasetID","site", "meanAbundance")], by = c("datasetID", "site"))
+lat_scale_rich = merge(lat_scale_elev, summ25[,c("datasetID","site", "meanAbundance")], by = c("datasetID", "site"))
 #  "spRichTrans", 
 # write.csv(lat_scale_rich, "output/tabular_data/lat_scale_rich_5km.csv", row.names = F)
 # lat_scale_rich = read.csv("output/tabular_data/lat_scale_rich.csv", header = TRUE)

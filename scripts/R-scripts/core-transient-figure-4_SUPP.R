@@ -39,10 +39,10 @@ taxcolors = read.csv("output/tabular_data/taxcolors.csv", header = TRUE)
 occ_taxa = read.csv("output/tabular_data/occ_taxa_25.csv", header = TRUE)
 areamerge = read.csv("output/tabular_data/areamerge.csv", header = TRUE)
 allrich = read.csv("output/tabular_data/allrich.csv", header = TRUE)
-notransrich = read.csv("output/tabular_data/notransrich.csv", header = TRUE)
+notransrich = read.csv("output/tabular_data/notransrich_25.csv", header = TRUE)
 bbs_abun_occ = read.csv("data/BBS/bbs_abun_occ.csv", header = TRUE)
 bbs_occ = read.csv("data/BBS/bbs_abun4_spRich.csv", header = TRUE)
-
+summ25 = read.csv('output/tabular_data/core-transient_summary_25.csv', header=T)
 # addings symbols to taxcolors
 symbols = c(15, 16, 15, 17, 16, 15, 16) 
 Type = c("Invertebrate", "Vertebrate", "Invertebrate", "Plant", "Vertebrate", "Invertebrate", "Vertebrate") 

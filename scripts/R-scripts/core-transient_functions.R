@@ -259,7 +259,7 @@ getNestedDataset = function(dataset, siteGrain, temporalGrain, dataDescription){
 richnessYearSubsetFun = function(dataset, spatialGrain, temporalGrain, minNTime = 6, minSpRich = 10, dataDescription){
     dataset1 = getNestedDataset(dataset, spatialGrain, temporalGrain, dataDescription)
   # Get the number of years and species richness for each site: 
-    siteSr_nTime = ddply(dataset1, .(analysisSite), summarize,
+    siteSr_nTime = ddply(dataset1, .(analysisSite), plyr::summarize,
                          sr = length(unique(species)), 
                          nTime = length(unique(analysisDate)))
   # Subset to sites with a high enough species richness and year samples:
