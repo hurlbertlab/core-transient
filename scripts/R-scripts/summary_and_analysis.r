@@ -262,7 +262,7 @@ routes.laea = spTransform(all_latlongs, CRS("+proj=laea +lat_0=45.235 +lon_0=-10
 
 ##### extracting elevation data ####
 # A function that draws a circle of radius r around a point: p (x,y)
-RADIUS = 40
+RADIUS = 5
 
 make.cir = function(p,r){
   points=c()
