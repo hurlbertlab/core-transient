@@ -330,7 +330,7 @@ lat_scale_elev = data.frame(lat_scale_elev)
 
 lat_scale_rich = merge(lat_scale_elev, summ25[,c("datasetID","site", "meanAbundance")], by = c("datasetID", "site"))
 #  "spRichTrans", 
-# write.csv(lat_scale_rich, "output/tabular_data/lat_scale_rich_5km.csv", row.names = F)
+write.csv(lat_scale_rich, "output/tabular_data/lat_scale_rich_25.csv", row.names = F)
 # lat_scale_rich = read.csv("output/tabular_data/lat_scale_rich.csv", header = TRUE)
 
 # Model -  want 5 km radius here!!!!
