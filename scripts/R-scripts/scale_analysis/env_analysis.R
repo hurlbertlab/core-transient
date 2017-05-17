@@ -16,6 +16,7 @@ library(wesanderson)
 library(stats)
 library(gimms)
 library(devtools)
+library(geometry)
 
 # To run this script, you need temperature, precip, etc data, 
 # which are currently stored in the following directories off of github: 
@@ -205,6 +206,27 @@ bbs_envs$prec_q= rank(bbs_envs$prec.mean)/nrow(bbs_envs)
 #write.csv(bbs_envs, "scripts/R-scripts/scale_analysis/bbs_envs.csv", row.names = FALSE)
 #with z scores and quantiles both
 
+####Convex polygon comparison of variables####
+#not variances yet 
+#notes on geometry package and min convex polygon:
+#convhulln from geometry package, optimized by qhull -> convex hull 
+#http://www.qhull.org/html/qconvex.htm#synopsis
+bbs_envs = read.csv("scripts/R-scripts/scale_analysis/bbs_envs.csv", header = TRUE)
+#subset to just appropriate dims for convhulln 
+sub_envs = bbs_envs %>% select(ztemp, zprec, zelev, zndvi) %>% filter(zndvi != 'NA') #cuts down to 982 
+
+
+hull = convhulln(sub_envs, "FA")
+hull$area #189.74
+hull$vol #66.22 
+
+#multi panel plot comparing spread of routes bet diff z scores 
+#for entire set, vol is 66.22 
+#should I do for each stateroute...? and compare? 
+
+
+
+
 ####Pair env data to secondary rtes associated with each focal rte; calc variance for each focal rte####
 bbs_envs = read.csv("scripts/R-scripts/scale_analysis/bbs_envs.csv", header = TRUE)
 dist.df = read.csv("scripts/R-scripts/scale_analysis/dist_df.csv", header = TRUE)
@@ -248,15 +270,6 @@ focal_var$rte_bin = as.factor(substr(as.character(signif(focal_var$stateroute, d
 #elev vs ndvi on plot - z scores
 ggplot(focal_qv, aes(x = ndvi_qv, y = elev_qv))+geom_point()+theme_classic()
 
-####Convex polygon comparison of variables####
-#notes on geometry package and min convex polygon:
-#convhulln from geometry package, optimized by qhull -> convex hull 
-#http://www.qhull.org/html/qconvex.htm#synopsis
-
-
-convhulln(..., "FA")
-
-$vol
 
 ####Coef vs env variation models####
 bbs_envs = read.csv("scripts/R-scripts/scale_analysis/bbs_envs.csv", header = TRUE)
