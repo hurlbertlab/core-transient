@@ -175,9 +175,9 @@ k
 # we want to agg by month here
 gimms_ndvi = read.csv("output/tabular_data/gimms_ndvi_bbs_data.csv", header = TRUE)
 gimms_agg = gimms_ndvi %>% filter(month == c("may", "jun", "jul")) %>% 
-  group_by(site_id)  %>%  summarise(ndvi=mean(ndvi))
+  group_by(site_id)  %>%  dplyr::summarise(ndvi=mean(ndvi))
 
-lat_scale_rich = read.csv("output/tabular_data/lat_scale_rich.csv", header = TRUE)
+lat_scale_rich = read.csv("output/tabular_data/lat_scale_rich_25.csv", header = TRUE)
 lat_scale_bbs = filter(lat_scale_rich, datasetID == 1)
 lat_scale_bbs$site_id = sapply(strsplit(as.character(lat_scale_bbs$site), split='-', fixed=TRUE), function(x) (x[1]))
 lat_scale_bbs$site_id = as.integer(lat_scale_bbs$site_id)
