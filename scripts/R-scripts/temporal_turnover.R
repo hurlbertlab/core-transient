@@ -52,6 +52,8 @@ datasetIDs = dataformattingtable %>%
          countFormat %in% c('count', 'cover', 'density', 'abundance', 'presence', 'biomass')) %>% 
   dplyr::select(dataset_ID)
 
+datasetIDs = subset(datasetIDs, datasetIDs != 1)
+
 abund_data = get_abund_data(datasetIDs)
 propocc_data = get_propocc_data(datasetIDs)
 all_data = left_join(abund_data, propocc_data, by = c('datasetID', 'site', 'species'))
@@ -76,7 +78,7 @@ for (dataset in datasetIDs[,1]) {
   print(paste("Calculating turnover: dataset", dataset))
   for (site in sites) {
     sitedata = subdata[subdata$site == site,]
-    notrans = sitedata[sitedata$propOcc > 1/4,]
+    notrans = sitedata[sitedata$propOcc > 1/3,]
     years = as.numeric(unique(sitedata$year))
     TJs = c()
     TJ_notrans = c()
@@ -98,4 +100,4 @@ for (dataset in datasetIDs[,1]) {
   }
 }
 
-write.csv(turnover_output, "output/tabular_data/temporal_turnover_25.csv", row.names = FALSE)
+write.csv(turnover_output, "output/tabular_data/temporal_turnover.csv", row.names = FALSE)

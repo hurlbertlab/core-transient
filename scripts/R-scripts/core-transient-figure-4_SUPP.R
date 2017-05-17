@@ -36,20 +36,20 @@ datasetIDs = datasetIDs[!datasetIDs %in% c(1)]
 ##### prep for all figures #####
 # Read in datasets
 taxcolors = read.csv("output/tabular_data/taxcolors.csv", header = TRUE)
-occ_taxa = read.csv("output/tabular_data/occ_taxa_25.csv", header = TRUE)
+occ_taxa = read.csv("output/tabular_data/occ_taxa_10.csv", header = TRUE)
 areamerge = read.csv("output/tabular_data/areamerge.csv", header = TRUE)
 allrich = read.csv("output/tabular_data/allrich.csv", header = TRUE)
-notransrich = read.csv("output/tabular_data/notransrich_25.csv", header = TRUE)
+notransrich = read.csv("output/tabular_data/notransrich_10.csv", header = TRUE)
 bbs_abun_occ = read.csv("data/BBS/bbs_abun_occ.csv", header = TRUE)
 bbs_occ = read.csv("data/BBS/bbs_abun4_spRich.csv", header = TRUE)
-summ25 = read.csv('output/tabular_data/core-transient_summary_25.csv', header=T)
+summ10 = read.csv('output/tabular_data/core-transient_summary_10.csv', header=T)
 # addings symbols to taxcolors
 symbols = c(15, 16, 15, 17, 16, 15, 16) 
 Type = c("Invertebrate", "Vertebrate", "Invertebrate", "Plant", "Vertebrate", "Invertebrate", "Vertebrate") 
 taxcolors = cbind(taxcolors, Type,symbols)
 
 # calc bbs with and without trans
-notransbbs = bbs_abun_occ %>% filter(occupancy > 1/4) %>% dplyr::count(stateroute, scale) %>% filter(scale == 50)
+notransbbs = bbs_abun_occ %>% filter(occupancy > 1/10) %>% dplyr::count(stateroute, scale) %>% filter(scale == 50)
 names(notransbbs) = c("stateroute", "scale", "spRichnotrans")
 
 allbbs = bbs_abun_occ %>% dplyr::count(stateroute, scale) %>% filter(scale == 50)
@@ -155,7 +155,7 @@ logseries_weights_incl = sad_data %>%
   dplyr::summarize(weights = get_logseries_weight(abunds), treatment = 'All species')
 
 logseries_weights_excl = sad_data %>%
-  filter(propOcc > 1/4) %>%
+  filter(propOcc > 1/10) %>%
   group_by(datasetID, site) %>% 
   dplyr::summarize(weights = get_logseries_weight(abunds), treatment = 'Excluding transients')
 
@@ -167,7 +167,7 @@ colscale = c("dark orange2","yellow")
 k = ggplot(logseries_weights, aes(x = treatment, y = weights, fill=factor(treatment))) +
   geom_violin(linetype="blank") + xlab("Transient Status") + ylab("Proportion of Species") + scale_fill_manual(labels = c("All species","All species excluding transients"),values = colscale)+ theme_classic()+ ylim(0, 1) + theme(axis.text.x=element_text(size=24), axis.ticks.x=element_blank(),axis.text.y=element_text(size=24),axis.title.x=element_text(size=24),axis.title.y=element_text(size=24,angle=90,vjust = 2))+ xlab(NULL) + ylab(expression(paste(italic("w "), "Akaike Weights"))) + theme(legend.position = "none")+ geom_text(x=1.4, y=0.8, size = 6, angle = 90, label="Log series")+ geom_text(x=1.4, y=0.2, size = 6,angle = 90, label="Log normal")+   geom_segment(aes(x = 1.5, y = 0.35, xend = 1.5, yend = 0.05), colour='black', size=0.5,arrow = arrow(length = unit(0.5, "cm")))+   geom_segment(aes(x = 1.5, y = 0.65, xend = 1.5, yend = 0.95), colour='black', size=0.5,arrow = arrow(length = unit(0.5, "cm")))
 k
-#ggsave(file="C:/Git/core-transient/output/plots/sad_fit_comparison25.pdf", height = 5, width = 15)
+#ggsave(file="C:/Git/core-transient/output/plots/sad_fit_comparison10.pdf", height = 5, width = 15)
 # + guides(fill=guide_legend(title=NULL))+ theme(legend.text = element_text(size = 16),legend.position="top", legend.justification=c(0, 1), legend.key.width=unit(1, "lines"))
 
 #### Figure 4b ####
@@ -177,7 +177,7 @@ gimms_ndvi = read.csv("output/tabular_data/gimms_ndvi_bbs_data.csv", header = TR
 gimms_agg = gimms_ndvi %>% filter(month == c("may", "jun", "jul")) %>% 
   group_by(site_id)  %>%  dplyr::summarise(ndvi=mean(ndvi))
 
-lat_scale_rich = read.csv("output/tabular_data/lat_scale_rich_25.csv", header = TRUE)
+lat_scale_rich = read.csv("output/tabular_data/lat_scale_rich_10.csv", header = TRUE)
 lat_scale_bbs = filter(lat_scale_rich, datasetID == 1)
 lat_scale_bbs$site_id = sapply(strsplit(as.character(lat_scale_bbs$site), split='-', fixed=TRUE), function(x) (x[1]))
 lat_scale_bbs$site_id = as.integer(lat_scale_bbs$site_id)
@@ -227,7 +227,7 @@ l = ggplot(data=corr_res_long, aes(factor(env), value, fill = class))+ geom_bar(
 four_b <- l
 
 #### Figure 4c ####
-turnover = read.csv("output/tabular_data/temporal_turnover.csv", header = TRUE)
+turnover = read.csv("output/tabular_data/temporal_turnover_10.csv", header = TRUE)
 turnover_taxa = merge(turnover,dataformattingtable[,c("dataset_ID", "taxa")], by.x = "datasetID", by.y = "dataset_ID")
 turnover_col = merge(turnover_taxa, taxcolors, by = "taxa")
 
@@ -248,7 +248,7 @@ four_c <-m + geom_abline(intercept = 0,slope = 1, lwd =1.5,linetype="dashed")+ge
 ##### Figure 4d ##### only scaled vars
 bbs_uniq_area = bbs_abun_occ %>% dplyr::select(stateroute,scale,subrouteID,area) %>% unique()
 
-notransbbsscale = bbs_abun_occ %>% filter(occupancy > 1/4) %>% dplyr::count(stateroute, scale, subrouteID)
+notransbbsscale = bbs_abun_occ %>% filter(occupancy > 1/10) %>% dplyr::count(stateroute, scale, subrouteID)
 names(notransbbsscale) = c("stateroute", "scale", "subrouteID","notrans")
 noarea = left_join(notransbbsscale, bbs_uniq_area)
 
@@ -354,7 +354,6 @@ pt1 <- plot_grid(k + theme(legend.position="none"),
                    nrow = 1
 )
 p1 = plot_grid(pt1,legenda, ncol = 2,rel_widths = c(5, 0.9))
-ggsave(file="C:/Git/core-transient/output/plots/4a_4b.pdf", height = 10, width = 15,p1)
 
 # c & d
 legendc <- get_legend(four_d)
@@ -366,10 +365,9 @@ z <- plot_grid(four_c+ theme(legend.position="none"),
                hjust = -8,
                nrow = 1)
 p2 = plot_grid(z,legendc, ncol = 2, rel_widths = c(5,.9)) 
-ggsave(file="C:/Git/core-transient/output/plots/4c_4d.pdf", height = 12, width = 16,p2)
 
 all4 = plot_grid(p1, p2, align = "hv", nrow = 2,rel_heights = c(1,2), rel_widths = c(1,1))
-ggsave(file="C:/Git/core-transient/output/plots/4a_4d.pdf", height = 12, width = 16,all4)
+ggsave(file="C:/Git/core-transient/output/plots/4a_4d_10.pdf", height = 12, width = 16,all4)
 
 
 

@@ -156,8 +156,8 @@ for(file in propOccfiles){
 allpropOcc = data.frame(allpropOcc)
 
 # count up spRich with and without transients (for Fig 4)
-notransrich = allpropOcc %>% filter(propOcc > 1/4) %>% dplyr::count(datasetID, site, scale)
-write.csv(notransrich, "output/tabular_data/notransrich_25.csv", row.names = FALSE)
+notransrich = allpropOcc %>% filter(propOcc > 1/3) %>% dplyr::count(datasetID, site, scale)
+write.csv(notransrich, "output/tabular_data/notransrich.csv", row.names = FALSE)
 allrich  = allpropOcc %>% dplyr::count(datasetID, site, scale)
 write.csv(allrich, "output/tabular_data/allrich.csv", row.names = FALSE)
 
