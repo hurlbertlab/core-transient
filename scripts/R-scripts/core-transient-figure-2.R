@@ -151,7 +151,7 @@ propCT_long$abbrev = factor(propCT_long$abbrev,
                             levels = c('I','F','Pn','Pt','M','Bi','Be'),ordered = TRUE)
 
 colscale = c("#225ea8","#fdd49e", "#c51b8a")
-m = ggplot(data=propCT_long, aes(factor(abbrev), y=value, fill=factor(class))) + geom_bar(stat = "identity")  + xlab("") + ylab("Proportion of Species") + scale_fill_manual(labels = c("Core", "Intermediate", "Transient"),values = colscale)+theme(axis.ticks.x=element_blank(),axis.text.x=element_text(size=6),axis.text.y=element_text(size=20),axis.title.y=element_text(size=24,angle=90,vjust = 4),axis.line.x = element_blank(),axis.line.y = element_blank())+ theme(legend.text=element_text(size=18),legend.key.size = unit(2, 'lines'))+theme(legend.position="bottom", legend.justification=c(0, 1), legend.key.width=unit(1, "lines"))+ guides(fill = guide_legend(keywidth = 3, keyheight = 1,title="", reverse=TRUE))+ coord_fixed(ratio = 4)
+m = ggplot(data=propCT_long, aes(factor(abbrev), y=value, fill=factor(class))) + geom_bar(stat = "identity")  + xlab("") + ylab("Proportion of Species") + scale_fill_manual(labels = c("Core", "Intermediate", "Transient"),values = colscale)+theme(axis.ticks.x=element_blank(),axis.text.x=element_text(size=6),axis.text.y=element_text(size=20),axis.title.y=element_text(size=24,angle=90,vjust = 4),axis.line.x = element_blank(),axis.line.y = element_blank())+ theme(legend.text=element_text(size=24),legend.key.size = unit(2, 'lines'))+theme(legend.position="right", legend.key.width=unit(1, "lines"))+ guides(fill = guide_legend(keywidth = 3, keyheight = 1,title="", reverse=TRUE))+ coord_fixed(ratio = 4)
 # ggsave(file="C:/Git/core-transient/output/plots/2a.pdf", height = 10, width = 15)
 
 prope_long$system = factor(prope_long$system,
@@ -169,7 +169,7 @@ get_legend<-function(myggplot){
   legend <- tmp$grobs[[leg]]
   return(legend)
 }
-legend <- get_legend(m + theme(legend.position="bottom"))
+legend <- get_legend(m + theme(legend.position="right"))
 prow <- plot_grid( m + theme(legend.position="none"),
                    e + theme(legend.position="none"),
                    align = 'vh',
@@ -178,7 +178,7 @@ prow <- plot_grid( m + theme(legend.position="none"),
                    hjust = -1,
                    nrow = 1
 )
-p2 = plot_grid(prow,legend, ncol = 1,rel_heights = c(.5, 0.05)) 
+p2 = plot_grid(prow,legend, rel_widths = c(3, 0.7)) 
 ggsave(file="C:/Git/core-transient/output/plots/2a_2b.pdf", height = 10, width = 15,p2)
 
 #### barplot of percent transients by taxa ---SUPP FIG

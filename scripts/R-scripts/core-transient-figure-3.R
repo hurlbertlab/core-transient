@@ -105,7 +105,9 @@ pdf('output/plots/3a_3d.pdf', height = 10, width = 12)
 par(mfrow = c(2, 2), mar = c(4.5, 4.5, 1, 1), cex = 1, oma = c(0,0,0,0), las = 1)
 palette(colors7)
 
-plot(NA, xlim = c(-2, 7), ylim = c(0,1), col = as.character(taxcolor$color), xlab = expression("Log"[10]*" Area"), ylab = "% Transients", cex.lab = 1.5,frame.plot=FALSE)
+plot(NA, xlim = c(-2, 7), ylim = c(0,1), col = as.character(taxcolor$color), xlab = expression("Log"[10]*" Area"), ylab = "% Transients", cex.lab = 2,frame.plot=FALSE, xaxt = "n", yaxt = "n")
+axis(1, cex.axis =  1.5)
+axis(2, cex.axis =  1.5)
 b1 = for(id in scaleIDs){
   print(id)
   plotsub = subset(areamerge,datasetID == id)
@@ -127,7 +129,9 @@ b1 = for(id in scaleIDs){
 title(outer=FALSE,adj=0.02,main="A",cex.main=1.5,col="black",font=2,line=-1)
 par(new= FALSE)
 
-plot(NA, xlim = c(0, 7), ylim = c(0,1), col = as.character(taxcolor$color), xlab = expression("Log"[10]*" Community Size"), ylab = "% Transients", cex.lab = 1.5,frame.plot=FALSE)
+plot(NA, xlim = c(0, 7), ylim = c(0,1), col = as.character(taxcolor$color), xlab = expression("Log"[10]*" Community Size"), ylab = "% Transients", cex.lab = 2,frame.plot=FALSE, yaxt = "n", xaxt = "n")
+axis(1, cex.axis =  1.5)
+axis(2, cex.axis =  1.5)
 b2 = for(id in scaleIDs){
   print(id)
   plotsub = subset(bbs_occ,datasetID == id)
@@ -143,17 +147,19 @@ b2 = for(id in scaleIDs){
 }
 par(new=TRUE)
 title(outer=FALSE,adj=0.02,main="B",cex.main=1.5,col="black",font=2,line=-1)
-legend('topright', legend = as.character(taxcolors$taxa), lty=1,lwd=3,col = as.character(taxcolors$color), cex = 1.25, bty = "n")
+legend('topright', legend = as.character(taxcolors$taxa), lty=1,lwd=3,col = as.character(taxcolors$color), cex = 1.5, bty = "n")
 par(new = FALSE)
 
-b3 = barplot(predmod$fit[predmod$taxorder], cex.names = 1.5,col = c("gold2", "turquoise2","red","purple4","forestgreen","#1D6A9B"), ylim = c(0, 1))
+b3 = barplot(predmod$fit[predmod$taxorder], cex.names = 2,col = c("gold2", "turquoise2","red","purple4","forestgreen","#1D6A9B"), ylim = c(0, 1), yaxt = "n")
+axis(2, cex.axis = 1.5)
 Hmisc::errbar(c(0.7, 1.9, 3.1, 4.3, 5.5, 6.7), predmod$fit[predmod$taxorder], predmod$upr[predmod$taxorder], predmod$lwr[predmod$taxorder], add= TRUE, lwd = 1.25, pch = 3)
-mtext("% Transients", 2, cex = 1.5, las = 0, line = 2.5)
+mtext("% Transients", 2, cex = 2, las = 0, line = 3)
 title(outer=FALSE,adj=0.02,main="C",cex.main=1.5,col="black",font=2,line=-1)
 
-b4 = barplot(predmod3d$fit[predmod3d$order], cex.names = 1.5,col = c('burlywood','navy','skyblue'), ylim = c(0, 0.8))
+b4 = barplot(predmod3d$fit[predmod3d$order], cex.names = 1.5,col = c('burlywood','navy','skyblue'), ylim = c(0, 0.8), yaxt = "n")
+axis(2, cex.axis = 1.5)
 Hmisc::errbar(c(0.7, 1.9, 3.1), predmod3d$fit[predmod3d$order], predmod3d$upr[predmod3d$order], predmod3d$lwr[predmod3d$order], add= TRUE, lwd = 1.25, pch = 3)
-mtext("% Transients", 2, cex = 1.5, las = 0, line = 2.5)
+mtext("% Transients", 2, cex = 2, las = 0, line = 3)
 title(outer=FALSE,adj=0.02,main="D",cex.main=1.5,col="black",font=2,line=-1)
 dev.off()
 
