@@ -152,12 +152,12 @@ sad_data = left_join(summed_abunds, propocc_data, by = c('datasetID', 'site', 's
 
 logseries_weights_incl = sad_data %>%
   group_by(datasetID, site) %>% 
-  summarize(weights = get_logseries_weight(abunds), treatment = 'All species')
+  dplyr::summarize(weights = get_logseries_weight(abunds), treatment = 'All species')
 
 logseries_weights_excl = sad_data %>%
   filter(propOcc > 1/3) %>%
   group_by(datasetID, site) %>% 
-  summarize(weights = get_logseries_weight(abunds), treatment = 'Excluding transients')
+  dplyr::summarize(weights = get_logseries_weight(abunds), treatment = 'Excl. transients')
 
 logseries_weights = rbind(logseries_weights_incl, logseries_weights_excl)
 write.csv(logseries_weights, "output/tabular_data/logseries_weights.csv")
@@ -223,7 +223,7 @@ corr_elev = filter(corr_res_long, env == "Elevation")
 colscale = c("dark orange2","yellow","#c51b8a")
 limits = aes(ymax = corr_res_long$CIupper, ymin=corr_res_long$CIlower)
 # no variation - add in CIS?
-l = ggplot(data=corr_res_long, aes(factor(env), value, fill = class))+ geom_bar(width = 0.8, position = position_dodge(width = 0.9), stat="identity")+ scale_fill_manual(values = c("All" = "dark orange2","Trans" = "#c51b8a","Ntrans" = "yellow"), labels = c("All species","Excluding transients", "Transients only"))+ geom_bar(data=corr_res_long, aes(factor(env), value, fill = class), width = 0.8, position = position_dodge(width = 0.9), stat="identity")+ geom_errorbar(aes(ymin = corr_res_long$CIlower, ymax = corr_res_long$CIupper), width =.1, position = position_dodge(.9))+ theme_classic() + theme(axis.text.x=element_text(size=28), axis.ticks.x=element_blank(),axis.text.y=element_text(size=28),axis.title.x=element_text(size=28),axis.title.y=element_text(size=28,angle=90,vjust = 2))+ xlab(NULL) + ylab("Correlation Coefficient") + scale_y_continuous(breaks = pretty(corr_res_long$value, n = 7))+ guides(fill=guide_legend(title=NULL)) + theme(legend.text = element_text(size = 18)) + geom_hline(yintercept=0, lty = "dashed", lwd = 1.25)
+l = ggplot(data=corr_res_long, aes(factor(env), value, fill = class))+ geom_bar(width = 0.8, position = position_dodge(width = 0.9), stat="identity")+ scale_fill_manual(values = c("All" = "dark orange2","Trans" = "#c51b8a","Ntrans" = "yellow"), labels = c("All species","Excluding transients", "Transients only"))+ geom_bar(data=corr_res_long, aes(factor(env), value, fill = class), width = 0.8, position = position_dodge(width = 0.9), stat="identity")+ geom_errorbar(aes(ymin = corr_res_long$CIlower, ymax = corr_res_long$CIupper), width =.1, position = position_dodge(.9))+ theme_classic() + theme(axis.text.x=element_text(size=28), axis.ticks.x=element_blank(),axis.text.y=element_text(size=28),axis.title.x=element_text(size=28),axis.title.y=element_text(size=28,angle=90,vjust = 2))+ xlab(NULL) + ylab("Correlation Coefficient") + scale_y_continuous(breaks = pretty(corr_res_long$value, n = 7))+ guides(fill=guide_legend(title=NULL)) + theme(legend.text = element_text(size = 20)) + geom_hline(yintercept=0, lty = "dashed", lwd = 1.25)
 four_b <- l
 ggsave(file="C:/Git/core-transient/output/plots/4b_corrcoeff_NDVI.pdf", height = 5, width = 15)
 
@@ -346,7 +346,7 @@ plot_relationship$taxa = factor(plot_relationship$taxa,
 colscales = c("gray","#1D6A9B","turquoise2","gold2","purple4", "red", "forestgreen") 
 
 p <- ggplot(plot_relationship, aes(x = areaSlope, y = areaSlope_noTrans))
-four_d <-p + geom_abline(intercept = 0,slope = 1, lwd =1.5,linetype="dashed") +geom_point(data=slopes_bbs, aes(colour = taxa, shape = Type),alpha = 5/100, size = 2)+  geom_point(aes(colour = taxa, shape = Type), size = 5.5)+ theme_classic() + scale_color_manual("Taxa", breaks = plot_relationship$taxa,values = colscales)+ xlab(expression(paste(italic("z "), "(all species)"))) + ylab(expression(paste(italic("z "), "(excluding transients)"))) +ylim(0,1)+xlim(0,1) + theme(axis.text.x=element_text(size=28),axis.ticks.x=element_blank(),axis.text.y=element_text(size=28),axis.title.x=element_text(size=28),axis.title.y=element_text(size=28,angle=90,vjust = 2))+ theme(legend.text = element_text(size = 16), legend.title = element_text(size = 16))
+four_d <-p + geom_abline(intercept = 0,slope = 1, lwd =1.5,linetype="dashed") +geom_point(data=slopes_bbs, aes(colour = taxa, shape = Type),alpha = 5/100, size = 2)+  geom_point(aes(colour = taxa, shape = Type), size = 5.5)+ theme_classic() + scale_color_manual("Taxa", breaks = plot_relationship$taxa,values = colscales)+ xlab(expression(paste(italic("z "), "(all species)"))) + ylab(expression(paste(italic("z "), "(excluding transients)"))) +ylim(0,1)+xlim(0,1) + theme(axis.text.x=element_text(size=28),axis.ticks.x=element_blank(),axis.text.y=element_text(size=28),axis.title.x=element_text(size=28),axis.title.y=element_text(size=28,angle=90,vjust = 2))+ theme(legend.text = element_text(size = 18), legend.title = element_text(size = 20))
 
 
 ggsave(file="C:/Git/core-transient/output/plots/4d_sparea.pdf", height = 10, width = 15)
@@ -385,6 +385,6 @@ p2 = plot_grid(z,legendc, ncol = 2, rel_widths = c(5,.9), scale = 0.95)
 ggsave(file="C:/Git/core-transient/output/plots/4c_4d.pdf", height = 12, width = 16,p2)
 
 all4 = plot_grid(p1, p2, align = "hv", nrow = 2,rel_heights = c(1,2), rel_widths = c(1,1), scale = 0.95)
-ggsave(file="C:/Git/core-transient/output/plots/4a_4d.pdf", height = 14, width = 18,all4)
+ggsave(file="C:/Git/core-transient/output/plots/4a_4d.pdf", height = 15, width = 20,all4)
 
 
