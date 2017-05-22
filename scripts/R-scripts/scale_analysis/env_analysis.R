@@ -224,9 +224,6 @@ hull$vol #66.22
 #for entire set, vol is 66.22 
 #should I do for each stateroute...? and compare? 
 
-
-
-
 ####Pair env data to secondary rtes associated with each focal rte; calc variance for each focal rte####
 bbs_envs = read.csv("scripts/R-scripts/scale_analysis/bbs_envs.csv", header = TRUE)
 dist.df = read.csv("scripts/R-scripts/scale_analysis/dist_df.csv", header = TRUE)
@@ -265,10 +262,18 @@ write.csv(focal_qv, "scripts/R-scripts/scale_analysis/focal_qv.csv", row.names =
 #updated 05/15
 
 ####Elev vs NDVI plotting####
-focal_var$rte_bin = as.factor(substr(as.character(signif(focal_var$stateroute, digits = 3)), 1, 2))
+focal_qv = read.csv("scripts/R-scripts/scale_analysis/focal_qv.csv", header = TRUE)
+bbs_envs = read.csv("scripts/R-scripts/scale_analysis/bbs_envs.csv", header = TRUE)
 
-#elev vs ndvi on plot - z scores
-ggplot(focal_qv, aes(x = ndvi_qv, y = elev_qv))+geom_point()+theme_classic()
+#elev vs ndvi on plot - variance of quantile scores
+q_scores = ggplot(focal_qv, aes(x = ndvi_qv, y = elev_qv))+geom_point()+theme_classic()+ggtitle("Variance of quantiles")
+
+#elev vs ndvi on plot - straight z scores, no var calc 
+z_scores = ggplot(bbs_envs, aes(x=zndvi, y = zelev))+geom_point()+theme_classic()+ggtitle("Z scores of raw data")
+qz = grid.arrange(q_scores, z_scores, ncol = 2)
+dev.off()
+
+
 
 
 ####Coef vs env variation models####
