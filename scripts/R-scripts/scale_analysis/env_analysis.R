@@ -17,6 +17,7 @@ library(stats)
 library(gimms)
 library(devtools)
 library(geometry)
+library(RSQLite) #absolutely necessary for NDVI data
 
 # To run this script, you need temperature, precip, etc data, 
 # which are currently stored in the following directories off of github: 
@@ -213,7 +214,7 @@ bbs_envs$prec_q= rank(bbs_envs$prec.mean)/nrow(bbs_envs)
 #http://www.qhull.org/html/qconvex.htm#synopsis
 bbs_envs = read.csv("scripts/R-scripts/scale_analysis/bbs_envs.csv", header = TRUE)
 #subset to just appropriate dims for convhulln 
-sub_envs = bbs_envs %>% select(ztemp, zprec, zelev, zndvi) %>% filter(zndvi != 'NA') #cuts down to 982 
+sub_envs = bbs_envs %>% select(temp_q, prec_q, elev_q, ndvi_q) %>% filter(ndvi_q != 'NA') #cuts down to 982 
 
 
 hull = convhulln(sub_envs, "FA")
