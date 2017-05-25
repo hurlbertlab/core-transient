@@ -163,7 +163,7 @@ summ1.col$taxa <- factor(summ1.col$taxa,
 rankedtaxorder = c('Bird','Mammal','Plankton','Benthos','Invertebrate','Plant','Fish')
 
 bar1 = boxplot(log10(summ1.col$spRichTotal)~summ1.col$taxa, cex.axis =1, frame.plot = FALSE,  col = as.character(summ1.col$color[match(taxorder, summ1.col$taxa)]), axes = FALSE) 
-axis(side = 2, at=c(0.60206,1.491362,2.440909),labels=c("4","31","276"))
+axis(side = 2, at=c(0.7,1,1.5,2,2.5),labels=c("3","10","30","100","300")) 
 mtext(expression(" # Species"), 2, cex = 1, las = 0, line = 2.5)
 title(outer=FALSE,adj=1,main="E",cex.main=1.5,col="black",font=2,line=-0.1)
 bar2 = boxplot(summ1.col$nTime~summ1.col$taxa, xaxt = "n", frame.plot = FALSE, cex.axis =1,col = as.character(summ1.col$color[match(taxorder, summ1.col$taxa)]))
