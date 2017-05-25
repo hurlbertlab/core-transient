@@ -89,7 +89,10 @@ predmod3c$taxa = c("Bird","Invertebrate", "Plant", "Mammal","Fish", "Plankton")
 write.csv(predmod3c, "output/tabular_data/predmod3c.csv", row.names = FALSE)
 
 predmod = merge(predmod3c, taxcolors, by = "taxa")
-predmod$taxorder = c(3,2,5,4,6,1)
+predmod$ta
+
+lm.log_app_food = lm(count_log10 ~ plantSpecies, data= count_common_app_food) #Tukeys HSD
+HSD_log_app_food<- HSD.test(lm.log_app_food, "plantSpecies")xorder = c(3,2,5,4,6,1)
 
 # 3d
 ecosys = merge(bbs_occ_pred, dataformattingtable[,c("dataset_ID", "system")], by.y = "dataset_ID", by.x = "datasetID")
