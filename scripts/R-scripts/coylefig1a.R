@@ -1,4 +1,4 @@
-occupancy.matrix = read.csv("Z:/Snell/coyle_occ.csv", header = TRUE)
+occupancy.matrix = read.csv("site_sp_occupancy_matrix.csv", header = TRUE)
 coyle_long = gather(coyle, "AOU", "occ", X2881:X22860)
 coyle_long$AOU = substring(coyle_long$AOU, 2)
 coyle_long = na.omit(coyle_long)
@@ -6,6 +6,7 @@ coyle_long$stateroute = coyle_long$X
 density(coyle_long$occ)
 par(mar=c(4,4,1,1)+0.5)
 par(lend=2)
+num.years = 15
 
 pdf('output/plots/coyle.pdf', height = 8, width = 10)
 # Add kernel density
@@ -24,12 +25,12 @@ segments(0.33,0,0.33,partdensity$y[which(round(partdensity$x,2)==0.33)[1]], lty=
 segments(0.66,0,0.66,partdensity$y[which(round(partdensity$x,2)==0.66)[1]], lty=3,lwd=2) #v2
 
 # Add axes
-axis(1,at=seq(0,1,0.1),pos=0,lwd=2, font=2, cex.axis=1.5)
-axis(2,at=seq(0,2.5,0.5),labels=c(NA,seq(0.5,2.5,0.5)),las=2,pos=0,lwd=2, font=2, cex.axis=1.5)
+axis(1,at=seq(0,1,0.1),pos=0,lwd=2, font=2, cex.axis=2)
+axis(2,at=seq(0,2.5,0.5),labels=c(NA,seq(0.5,2.5,0.5)),las=2,pos=0,lwd=2, font=2, cex.axis=2)
 
 # Add titles
 title(main='',xlab='Proportion of time present at site',ylab='Density of species-sites',
-      line=2,cex.lab=1.8)
+      line=2,cex.lab=2.25)
 
 # Add proportions
 allsp = !is.na(occupancy.matrix)

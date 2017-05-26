@@ -53,6 +53,11 @@ propCT = merge(core, trans, by = "taxa")
 propCT = data.frame(propCT)
 propCT$mean.propNeither. = 1 - propCT$mean.propCore. - propCT$mean.propTrans.
 
+
+lm.hsd = lm(mean.propTrans. ~ taxa, data= propCT) #Tukeys HSD
+aov(lm.hsd)
+agricolae::HSD.test(lm.hsd, "taxa")
+
 propCT_long = gather(propCT, "class","value", c(mean.propCore.:mean.propNeither.))
 propCT_long = arrange(propCT_long, desc(class))
 propCT_long$taxa = as.factor(propCT_long$taxa)
