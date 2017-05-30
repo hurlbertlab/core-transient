@@ -17,8 +17,11 @@ library(stats)
 library(gimms)
 library(devtools)
 library(geometry)
+library(DBI)
 library(RSQLite) #absolutely necessary for NDVI data
-
+library(rdataretriever)
+library(magrittr)
+library(stringr)
 # To run this script, you need temperature, precip, etc data, 
 # which are currently stored in the following directories off of github: 
 
@@ -272,8 +275,31 @@ q_scores = ggplot(focal_qv, aes(x = ndvi_qv, y = elev_qv))+geom_point()+theme_cl
 #elev vs ndvi on plot - straight z scores, no var calc 
 z_scores = ggplot(bbs_envs, aes(x=zndvi, y = zelev))+geom_point()+theme_classic()+ggtitle("Z scores of raw data")
 qz = grid.arrange(q_scores, z_scores, ncol = 2)
-dev.off()
 
+
+#compare GIMMS to old MODIS based raster data
+#may-aug, 2000-2014
+
+#gimms
+ndvi_data_raw <- get_bbs_gimms_ndvi()
+
+ndvi_data_summer <- ndvi_data_raw %>%
+  filter(!is.na(ndvi), month %in% c('may', 'jun', 'jul', 'aug'), year > 2000) %>%
+  group_by(site_id, year) %>% #calc avg across summer months for each year
+  summarise(ndvi_sum = mean(ndvi)) %>%
+  group_by(site_id) %>% #calc avg across years
+  summarise(ndvi_mean = mean(ndvi_sum)) %>% 
+  ungroup()
+#only 429 rows/unique combos of route and ndvi when ndvi avgd across summer months, years past 2000
+#in looking at the raw data, a TON of NaN's were produced, so still not worth it to use gimms seemingly 
+
+#modis still has 1003 vals - why? 
+ndvi_modis = read.csv("scripts/R-scripts/scale_analysis/env_ndvi.csv", header = TRUE)
+
+
+
+write.csv(ndvi_data_raw, "data/BBS/ndvi_raw.csv", row.names = FALSE)
+write.csv(ndvi_data_summer, "scripts/R-scripts/scale_analysis/ndvi_summer.csv", row.names = FALSE)
 
 
 
