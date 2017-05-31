@@ -120,22 +120,23 @@ env_elev = data.frame(routes = routes.laea,
 #write.csv(env_elev, "scripts/R-scripts/scale_analysis/env_elev.csv", row.names = FALSE)
 
 #ndvi 
-ndvi = raster(paste(ndvidata, "Vegetation_Indices_may-aug_2000-2010.gri", sep = "")) #fine for now, troubleshoot NDVI next 
-str(ndvi)
-#layer format; need to define projection
-ndvi2 = ndvi/10000 
-ndvi2 = projectRaster(ndvi2, crs = CRS("+proj=laea +lat_0=45.235 +lon_0=-106.675 +units=km")) #should work, just needs time
-ndvi3 <- raster::mask(ndvi2, NorthAm2)
+#gimms
+#ndvi_gimms_raw <- get_bbs_gimms_ndvi()
+ndvi_gimms_raw = read.csv("data/BBS/ndvi_raw.csv") #Sara version, sourced from tabular data folder 
 
-ndvi.point = raster::extract(ndvi3, routes.laea)
-ndvi.mean = raster::extract(ndvi3, circs.sp, fun = mean, na.rm=T)
-ndvi.var = raster::extract(ndvi3, circs.sp, fun = var, na.rm=T)
+ndvi_data_summer <- ndvi_gimms_raw %>%
+  filter(!is.na(ndvi), month %in% c('may', 'jun', 'jul', 'aug'), year > 2000) %>%
+  group_by(site_id, year) %>% #calc avg across summer months for each year
+  summarise(ndvi_sum = mean(ndvi), na.rm = TRUE) %>%
+  group_by(site_id) %>% #calc avg across years
+  summarise(ndvi_mean = mean(ndvi_sum), na.rm = TRUE) %>% 
+  ungroup()
 
-env_ndvi = data.frame(routes = routes.laea, 
-                      ndvi.point = ndvi.point, 
-                      ndvi.mean = ndvi.mean, ndvi.var = ndvi.var)
+write.csv(ndvi_data_summer, "scripts/R-scripts/scale_analysis/ndvi_summer.csv", row.names = FALSE) #updated with correct NDVI extraction
+#5015 routes with associated ndvi data
+#means calculated across 40 km buffer zone, use as would means from other vars 
 #write.csv(env_ndvi, "scripts/R-scripts/scale_analysis/env_ndvi.csv", row.names = FALSE)
-#updated 05/15 to reflect dividing ndvi/10,000 to fix value scaling
+#updated 05/31 
 
 #precip 
 prec = raster::getData("worldclim", var = "prec", res = 2.5)  
@@ -176,20 +177,20 @@ env_temp = data.frame(routes = routes.laea,
 
 ####Merge env df's together into one with relevant stateroutes, mean, and var data 
 env_elev = read.csv("scripts/R-scripts/scale_analysis/env_elev.csv", header = TRUE)
-env_ndvi = read.csv("scripts/R-scripts/scale_analysis/env_ndvi.csv", header = TRUE)
+env_ndvi = read.csv("scripts/R-scripts/scale_analysis/ndvi_summer.csv", header = TRUE)
 env_prec = read.csv("scripts/R-scripts/scale_analysis/env_prec.csv", header = TRUE)
 env_temp = read.csv("scripts/R-scripts/scale_analysis/env_temp.csv", header = TRUE)
 
 bbs_envs = env_elev %>%
-  left_join(env_ndvi, by = "routes.stateroute") %>% 
+  left_join(env_ndvi, by = c("routes.stateroute" = "site_id")) %>% 
   left_join(env_prec, by = "routes.stateroute") %>%
   left_join(env_temp, by = "routes.stateroute") %>%
   select(stateroute = routes.stateroute, elev.point, elev.mean, elev.var, 
-         ndvi.point, ndvi.mean, ndvi.var,
+         ndvi.mean = ndvi_mean,
          prec.point, prec.mean, prec.var, 
          temp.point, temp.mean, temp.var)
 write.csv(bbs_envs, "scripts/R-scripts/scale_analysis/bbs_envs.csv", row.names = FALSE)
-#current version all vars up to date except ndvi 05/15
+#current version all vars up to date 05/31
 
 ####Calc z-scores, quantiles pre-variance loop####
 bbs_envs = read.csv("scripts/R-scripts/scale_analysis/bbs_envs.csv", header = TRUE)
@@ -207,7 +208,7 @@ bbs_envs$ndvi_q= rank(bbs_envs$ndvi.mean)/nrow(bbs_envs) #needs to be corrected 
 bbs_envs$elev_q= rank(bbs_envs$elev.mean)/nrow(bbs_envs) 
 bbs_envs$temp_q= rank(bbs_envs$temp.mean)/nrow(bbs_envs) 
 bbs_envs$prec_q= rank(bbs_envs$prec.mean)/nrow(bbs_envs)
-#write.csv(bbs_envs, "scripts/R-scripts/scale_analysis/bbs_envs.csv", row.names = FALSE)
+#write.csv(bbs_envs, "scripts/R-scripts/scale_analysis/bbs_envs.csv", row.names = FALSE) #updated 05/31
 #with z scores and quantiles both
 
 ####Convex polygon comparison of variables####
@@ -221,8 +222,8 @@ sub_envs = bbs_envs %>% select(temp_q, prec_q, elev_q, ndvi_q) %>% filter(ndvi_q
 
 
 hull = convhulln(sub_envs, "FA")
-hull$area #189.74
-hull$vol #66.22 
+hull$area #189.74 #4.502 
+hull$vol #66.22 #0.54 second time around....
 
 #multi panel plot comparing spread of routes bet diff z scores 
 #for entire set, vol is 66.22 
@@ -248,12 +249,12 @@ for(r in focal_rtes){
     filter(stateroute %in% rte_group$rte2)
    
   temp = data.frame(stateroute = r,
-                    ndvi_v = var(tempenv$zndvi),
+                    ndvi_v = var(tempenv$zndvi, na.rm = TRUE), #fix missing values!!!!
                     elev_v = var(tempenv$zelev), #bc each of these values is calculated across the 2ndary rtes for each focal rte
                     prec_v = var(tempenv$zprec), #such that all 66 2ndary rtes will be summed into one variance value for each focal rte
                     temp_v = var(tempenv$ztemp)) 
   temp2 = data.frame(stateroute = r,
-                     ndvi_qv = var(tempenv$ndvi_q),
+                     ndvi_qv = var(tempenv$ndvi_q, na.rm = TRUE),
                      elev_qv = var(tempenv$elev_q), #bc each of these values is calculated across the 2ndary rtes for each focal rte
                      prec_qv = var(tempenv$prec_q), #such that all 66 2ndary rtes will be summed into one variance value for each focal rte
                      temp_qv = var(tempenv$temp_q)) 
@@ -263,7 +264,7 @@ for(r in focal_rtes){
 }
 write.csv(focal_var, "scripts/R-scripts/scale_analysis/focal_var.csv", row.names = FALSE)
 write.csv(focal_qv, "scripts/R-scripts/scale_analysis/focal_qv.csv", row.names = FALSE)
-#updated 05/15
+#updated 05/31
 
 ####Elev vs NDVI plotting####
 focal_qv = read.csv("scripts/R-scripts/scale_analysis/focal_qv.csv", header = TRUE)
@@ -281,26 +282,11 @@ z_raw
 #compare GIMMS to old MODIS based raster data
 #may-aug, 2000-2014
 
-#gimms
-ndvi_data_raw <- get_bbs_gimms_ndvi()
-
-ndvi_data_summer <- ndvi_data_raw %>%
-  filter(!is.na(ndvi), month %in% c('may', 'jun', 'jul', 'aug'), year > 2000) %>%
-  group_by(site_id, year) %>% #calc avg across summer months for each year
-  summarise(ndvi_sum = mean(ndvi)) %>%
-  group_by(site_id) %>% #calc avg across years
-  summarise(ndvi_mean = mean(ndvi_sum)) %>% 
-  ungroup()
-#only 429 rows/unique combos of route and ndvi when ndvi avgd across summer months, years past 2000
-#in looking at the raw data, a TON of NaN's were produced, so still not worth it to use gimms seemingly 
-
-#modis still has 1003 vals - why? 
-ndvi_modis = read.csv("scripts/R-scripts/scale_analysis/env_ndvi.csv", header = TRUE)
 
 
 
-write.csv(ndvi_data_raw, "data/BBS/ndvi_raw.csv", row.names = FALSE)
-write.csv(ndvi_data_summer, "scripts/R-scripts/scale_analysis/ndvi_summer.csv", row.names = FALSE)
+
+
 
 
 
