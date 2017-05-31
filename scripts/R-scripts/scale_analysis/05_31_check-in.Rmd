@@ -1,0 +1,173 @@
+---
+title: "05/31 update"
+author: "Molly Jenkins"
+date: "May 31, 2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_knit$set(root.dir = "C:/git/core-transient")
+
+library(raster)
+library(maps)
+library(sp)
+library(rgdal)
+library(maptools)
+library(rgeos)
+library(dplyr)
+library(fields)
+library(tidyr)
+library(ggplot2)
+library(nlme)
+library(gridExtra)
+library(stats)
+library(gimms)
+library(devtools)
+library(geometry)
+library(DBI)
+
+```
+
+## MODIS vs GIMMS NDVI data
+
+I used the Weecology lab's scripts for "get_ndvi_data" and "forecast_bbs_core" to extract the GIMMS data for BBS routes. I saved the raw extracted data to the core-transient data folder, and the post-2000 May-Aug subset to my scale_analysis folder. 
+
+The GIMMS BBS data (2000-2013) only generated 429 unique combinations of stateroute and NDVI values. 
+The MODIS data (2000-2010) by comparison has vales for all 1003 unique combinations of stateroute and NDVI values. 
+
+```{r}
+ndvi_modis = read.csv("scripts/R-scripts/scale_analysis/env_ndvi.csv", header = TRUE)
+ndvi_gimms = read.csv("scripts/R-scripts/scale_analysis/ndvi_summer.csv", header = TRUE)
+dim(ndvi_modis)
+dim(ndvi_gimms)
+
+```
+
+Subsetting NDVI code below: 
+
+```{r}
+#compare GIMMS to old MODIS based raster data
+#may-aug, 2000-2014 (1005 rtes, vs 953 for 2001-2015)
+
+#gimms
+# ndvi_gimms_raw <- get_bbs_gimms_ndvi()
+ndvi_gimms_raw = read.csv("data/BBS/ndvi_raw.csv", header = TRUE)
+
+ndvi_data_summer <- ndvi_gimms_raw %>%
+  filter(!is.na(ndvi), month %in% c('may', 'jun', 'jul', 'aug'), year > 2000) %>%
+  group_by(site_id, year) %>% #calc avg across summer months for each year
+  summarise(ndvi_sum = mean(ndvi), na.rm = TRUE) %>%
+  group_by(site_id) %>% #calc avg across years
+  summarise(ndvi_mean = mean(ndvi_sum), na.rm = TRUE) %>% 
+  ungroup()
+
+dim(ndvi_data_summer)
+```
+
+
+## Comparing variance in NDVI (MODIS) to variance in elevation 
+### Quantiles vs z scores, calculating scores themselves: 
+
+```{r}
+####Calc z-scores, quantiles pre-variance loop####
+bbs_envs = read.csv("scripts/R-scripts/scale_analysis/bbs_envs.csv", header = TRUE)
+
+#alt simplistic standardization using z scores
+bbs_envs$ztemp = (bbs_envs$temp.mean - mean(bbs_envs$temp.mean)) / sd(bbs_envs$temp.mean)
+bbs_envs$zprec = (bbs_envs$prec.mean - mean(bbs_envs$prec.mean)) / sd(bbs_envs$prec.mean)
+bbs_envs$zelev = (bbs_envs$elev.mean - mean(bbs_envs$elev.mean)) / sd(bbs_envs$elev.mean)
+bbs_envs$zndvi = ((bbs_envs$ndvi.mean) - mean(na.exclude(bbs_envs$ndvi.mean))) / sd(na.exclude(bbs_envs$ndvi.mean)) 
+#NA's for ndvi vals around statertes in the 3000's
+#with z scores
+
+# Calc quantiles
+bbs_envs$ndvi_q= rank(bbs_envs$ndvi.mean)/nrow(bbs_envs) #needs to be corrected since NA values in ndvi col not being accounted for
+bbs_envs$elev_q= rank(bbs_envs$elev.mean)/nrow(bbs_envs) 
+bbs_envs$temp_q= rank(bbs_envs$temp.mean)/nrow(bbs_envs) 
+bbs_envs$prec_q= rank(bbs_envs$prec.mean)/nrow(bbs_envs)
+#write.csv(bbs_envs, "scripts/R-scripts/scale_analysis/bbs_envs.csv", row.names = FALSE)
+#with z scores and quantiles both
+```
+
+
+### Calculating variance for both quantiles and z scores: 
+
+```{r}
+bbs_envs = read.csv("scripts/R-scripts/scale_analysis/bbs_envs.csv", header = TRUE) #all env variables; both raw quantiles and raw z
+dist.df = read.csv("scripts/R-scripts/scale_analysis/dist_df.csv", header = TRUE)
+
+#num of rows matches num of rows in dts.df, good 
+#now calc var for each focal rte (rte1)
+focal_var = data.frame(stateroute = NULL, ndvi_v = NULL, elev_v = NULL, prec_v = NULL, temp_v = NULL)
+focal_qv = data.frame(stateroute = NULL, ndvi_qv = NULL, elev_qv = NULL, prec_qv = NULL, temp_qv = NULL)
+focal_rtes = unique(bbs_envs$stateroute)
+
+for(r in focal_rtes){
+  rte_group = dist.df %>% 
+    filter(rte1 == r) %>% 
+    top_n(66, desc(dist)) %>%
+    select(rte2) %>% as.vector()
+  
+  tempenv = bbs_envs %>%
+    filter(stateroute %in% rte_group$rte2)
+ 
+  #variance of z scores  
+  temp = data.frame(stateroute = r,
+                    ndvi_v = var(tempenv$zndvi),
+                    elev_v = var(tempenv$zelev), #bc each of these values is calculated across the 2ndary rtes for each focal rte
+                    prec_v = var(tempenv$zprec), #such that all 66 2ndary rtes will be summed into one variance value for each focal rte
+                    temp_v = var(tempenv$ztemp)) 
+  
+  #variance of quantiles
+  temp2 = data.frame(stateroute = r,
+                     ndvi_qv = var(tempenv$ndvi_q),
+                     elev_qv = var(tempenv$elev_q), 
+                     prec_qv = var(tempenv$prec_q), 
+                     temp_qv = var(tempenv$temp_q)) 
+  
+  focal_var = rbind(focal_var, temp) #var of z scores
+  focal_qv = rbind(focal_qv, temp2)  #var of quantiles
+}
+```
+
+### Plotting variance of quantiles and variance of z scores; elev vs ndvi 
+
+```{r, echo=FALSE}
+focal_qv = read.csv("scripts/R-scripts/scale_analysis/focal_qv.csv", header = TRUE)
+focal_var = read.csv("scripts/R-scripts/scale_analysis/focal_var.csv", header = TRUE)
+bbs_envs = read.csv("scripts/R-scripts/scale_analysis/bbs_envs.csv", header = TRUE)
+
+#elev vs ndvi on plot - variance of quantile scores
+q_scores = ggplot(focal_qv, aes(x = ndvi_qv, y = elev_qv))+geom_point()+theme_classic()+ggtitle("Variance of quantiles")
+z_scores = ggplot(focal_var, aes(x = ndvi_v, y = elev_v))+geom_point()+theme_classic()+ggtitle("Variance of z-scores")
+#elev vs ndvi on plot - straight z scores, no var calc 
+z_raw = ggplot(bbs_envs, aes(x=zndvi, y = zelev))+geom_point()+theme_classic()+ggtitle("Z scores of raw data")
+qz = grid.arrange(q_scores, z_scores)
+z_raw 
+```
+
+## Convex polygon hull 
+
+Not variances, just quantile values OR z scores for all four environmental variables - to boil them down to a single value. We went back and forth last time over which raw value tranformation would be more suitable, quantiles or z-scores, with no clear resolution. 
+
+
+So I get a value - what does this tell us? Should I recalculate this in a loop for each stateroute and compare them to each other? 
+Such that the loop would calculate the convhulln for 4 environmental variables for a single row, and arrive at a single volume for each route 
+And then I could analyze the variance in the volumes for each route? 
+
+```{r}
+#notes on geometry package and min convex polygon:
+#convhulln from geometry package, optimized by qhull -> convex hull 
+#http://www.qhull.org/html/qconvex.htm#synopsis
+bbs_envs = read.csv("scripts/R-scripts/scale_analysis/bbs_envs.csv", header = TRUE)
+#subset to just appropriate dims for convhulln 
+sub_envs = bbs_envs %>% select(temp_q, prec_q, elev_q, ndvi_q) %>% filter(ndvi_q != 'NA') #cuts down to 982 
+
+
+hull = convhulln(sub_envs, "FA")
+hull$area #189.74
+hull$vol #66.22 
+
+```
+
+

@@ -267,15 +267,16 @@ write.csv(focal_qv, "scripts/R-scripts/scale_analysis/focal_qv.csv", row.names =
 
 ####Elev vs NDVI plotting####
 focal_qv = read.csv("scripts/R-scripts/scale_analysis/focal_qv.csv", header = TRUE)
+focal_var = read.csv("scripts/R-scripts/scale_analysis/focal_var.csv", header = TRUE)
 bbs_envs = read.csv("scripts/R-scripts/scale_analysis/bbs_envs.csv", header = TRUE)
 
 #elev vs ndvi on plot - variance of quantile scores
 q_scores = ggplot(focal_qv, aes(x = ndvi_qv, y = elev_qv))+geom_point()+theme_classic()+ggtitle("Variance of quantiles")
-
+z_scores = ggplot(focal_var, aes(x = ndvi_v, y = elev_v))+geom_point()+theme_classic()+ggtitle("Variance of z-scores")
 #elev vs ndvi on plot - straight z scores, no var calc 
-z_scores = ggplot(bbs_envs, aes(x=zndvi, y = zelev))+geom_point()+theme_classic()+ggtitle("Z scores of raw data")
-qz = grid.arrange(q_scores, z_scores, ncol = 2)
-
+z_raw = ggplot(bbs_envs, aes(x=zndvi, y = zelev))+geom_point()+theme_classic()+ggtitle("Z scores of raw data")
+qz = grid.arrange(q_scores, z_scores)
+z_raw 
 
 #compare GIMMS to old MODIS based raster data
 #may-aug, 2000-2014
