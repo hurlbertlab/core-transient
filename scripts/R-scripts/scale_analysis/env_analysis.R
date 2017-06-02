@@ -225,9 +225,6 @@ hull = convhulln(sub_envs, "FA")
 hull$area #189.74 #4.502 
 hull$vol #66.22 #0.54 second time around....
 
-#multi panel plot comparing spread of routes bet diff z scores 
-#for entire set, vol is 66.22 
-#should I do for each stateroute...? and compare? 
 
 ####Pair env data to secondary rtes associated with each focal rte; calc variance for each focal rte####
 bbs_envs = read.csv("scripts/R-scripts/scale_analysis/bbs_envs.csv", header = TRUE)
@@ -235,8 +232,11 @@ dist.df = read.csv("scripts/R-scripts/scale_analysis/dist_df.csv", header = TRUE
 
 #num of rows matches num of rows in dts.df, good 
 #now calc var for each focal rte (rte1)
-focal_var = data.frame(stateroute = NULL, ndvi_v = NULL, elev_v = NULL, prec_v = NULL, temp_v = NULL)
-focal_qv = data.frame(stateroute = NULL, ndvi_qv = NULL, elev_qv = NULL, prec_qv = NULL, temp_qv = NULL)
+env_hetero = data.frame(stateroute = NULL, 
+                        ndvi_v = NULL, elev_v = NULL, prec_v = NULL, temp_v = NULL,
+                        ndvi_qv = NULL, elev_qv = NULL, prec_qv = NULL, temp_qv = NULL, 
+                        hull_vol = NULL)
+
 focal_rtes = unique(bbs_envs$stateroute)
 
 for(r in focal_rtes){
@@ -247,24 +247,26 @@ for(r in focal_rtes){
   
   tempenv = bbs_envs %>%
     filter(stateroute %in% rte_group$rte2)
-   
+  
+  hull = convhulln(sub_envs, "FA")
+  
   temp = data.frame(stateroute = r,
                     ndvi_v = var(tempenv$zndvi, na.rm = TRUE), #fix missing values!!!!
                     elev_v = var(tempenv$zelev), #bc each of these values is calculated across the 2ndary rtes for each focal rte
                     prec_v = var(tempenv$zprec), #such that all 66 2ndary rtes will be summed into one variance value for each focal rte
-                    temp_v = var(tempenv$ztemp)) 
-  temp2 = data.frame(stateroute = r,
-                     ndvi_qv = var(tempenv$ndvi_q, na.rm = TRUE),
-                     elev_qv = var(tempenv$elev_q), #bc each of these values is calculated across the 2ndary rtes for each focal rte
-                     prec_qv = var(tempenv$prec_q), #such that all 66 2ndary rtes will be summed into one variance value for each focal rte
-                     temp_qv = var(tempenv$temp_q)) 
+                    temp_v = var(tempenv$ztemp), 
+                    ndvi_qv = var(tempenv$ndvi_q, na.rm = TRUE),
+                    elev_qv = var(tempenv$elev_q), 
+                    prec_qv = var(tempenv$prec_q), 
+                    temp_qv = var(tempenv$temp_q),
+                    hull_vol = hull$vol)
   
-  focal_var = rbind(focal_var, temp)
-  focal_qv = rbind(focal_qv, temp2)
+  env_hetero = rbind(env_hetero, temp)
 }
-write.csv(focal_var, "scripts/R-scripts/scale_analysis/focal_var.csv", row.names = FALSE)
-write.csv(focal_qv, "scripts/R-scripts/scale_analysis/focal_qv.csv", row.names = FALSE)
-#updated 05/31
+
+write.csv(env_hetero, "scripts/R-scripts/scale_analysis/env_hetero.csv", row.names = FALSE)
+#updated 06/02
+
 
 ####Elev vs NDVI plotting####
 focal_qv = read.csv("scripts/R-scripts/scale_analysis/focal_qv.csv", header = TRUE)
