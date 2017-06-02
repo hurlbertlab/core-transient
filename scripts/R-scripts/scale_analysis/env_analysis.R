@@ -256,10 +256,10 @@ for(r in focal_rtes){
     select(ztemp, zprec, zelev, zndvi) %>% 
     filter(zndvi != 'NA')
   
-  qhull_vol = convhulln(tempenv_q, "FA")
-  zhull_vol = convhulln(tempenv_z, "FA")
+  qhull = convhulln(tempenv_q, "FA")
+  zhull = convhulln(tempenv_z, "FA")
     
-      temp = data.frame(stateroute = r,
+  temp = data.frame(stateroute = r,
                     ndvi_v = var(tempenv$zndvi, na.rm = TRUE), #fix missing values!!!!
                     elev_v = var(tempenv$zelev), #bc each of these values is calculated across the 2ndary rtes for each focal rte
                     prec_v = var(tempenv$zprec), #such that all 66 2ndary rtes will be summed into one variance value for each focal rte
