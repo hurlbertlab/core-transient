@@ -279,49 +279,37 @@ write.csv(env_hetero, "scripts/R-scripts/scale_analysis/env_hetero.csv", row.nam
 
 
 ####Elev vs NDVI plotting####
-focal_qv = read.csv("scripts/R-scripts/scale_analysis/focal_qv.csv", header = TRUE)
-focal_var = read.csv("scripts/R-scripts/scale_analysis/focal_var.csv", header = TRUE)
+env_hetero = read.csv("scripts/R-scripts/scale_analysis/env_hetero.csv", header = TRUE)
 bbs_envs = read.csv("scripts/R-scripts/scale_analysis/bbs_envs.csv", header = TRUE)
 
 #elev vs ndvi on plot - variance of quantile scores
-q_scores = ggplot(focal_qv, aes(x = ndvi_qv, y = elev_qv))+geom_point()+theme_classic()+ggtitle("Variance of quantiles")
-z_scores = ggplot(focal_var, aes(x = ndvi_v, y = elev_v))+geom_point()+theme_classic()+ggtitle("Variance of z-scores")
+q_scores = ggplot(env_hetero, aes(x = ndvi_qv, y = elev_qv))+geom_point()+theme_classic()+ggtitle("Variance of quantiles")
+z_scores = ggplot(env_hetero, aes(x = ndvi_v, y = elev_v))+geom_point()+theme_classic()+ggtitle("Variance of z-scores")
 #elev vs ndvi on plot - straight z scores, no var calc 
 z_raw = ggplot(bbs_envs, aes(x=zndvi, y = zelev))+geom_point()+theme_classic()+ggtitle("Z scores of raw data")
 qz = grid.arrange(q_scores, z_scores)
 z_raw 
 
-#compare GIMMS to old MODIS based raster data
-#may-aug, 2000-2014
-
-
-
-
-
-
-
-
-
-####Coef vs env variation models####
-bbs_envs = read.csv("scripts/R-scripts/scale_analysis/bbs_envs.csv", header = TRUE)
+####Coef vs env hetero models####
+env_hetero = read.csv("scripts/R-scripts/scale_analysis/env_hetero.csv", header = TRUE) #replacing bbs_envs with hetero measures
 coefs = read.csv("scripts/R-scripts/scale_analysis/coefs.csv", header = TRUE)
-env_coefs = inner_join(coefs, bbs_envs, by = "stateroute")
+env_coefs = inner_join(coefs, env_hetero, by = "stateroute")
 covmatrix = round(cor(coefs[, 2:ncol(coefs)]), 2)
 covmatrix
 
-# nested loop for examining variation in coefs/fitted curves explained by env vars 
-rsqrd_df = data.frame(dep = character(), ind = character(), r2 = numeric())
+# nested loop for examining variation in coefs/fitted curves explained by env heterogeneity 
+rsqrd_hetero = data.frame(dep = character(), ind = character(), r2 = numeric())
 
-for (d in 2:25) {
+for (d in 2:25) { #adjust columns appropriately -> don't seem to need adjusting
   for (i in 26:ncol(env_coefs)) {
     tempmod = lm(env_coefs[,d] ~ env_coefs[,i])
     tempdf = data.frame(dep = names(env_coefs)[d], 
                         ind = names(env_coefs)[i], 
                         r2 = summary(tempmod)$r.squared)
-    rsqrd_df = rbind(rsqrd_df, tempdf)
+    rsqrd_hetero = rbind(rsqrd_hetero, tempdf)
   }
 }
-#write.csv(rsqrd_df, "scripts/R-scripts/scale_analysis/rsqrd_df.csv", row.names = FALSE) #updated 05/07 with new env extracted vars
+#write.csv(rsqrd_hetero, "scripts/R-scripts/scale_analysis/rsqrd_hetero.csv", row.names = FALSE) #updated 06/02 with new env hetero vars
 
 
 ####Visually Characterizing r2 vals####
