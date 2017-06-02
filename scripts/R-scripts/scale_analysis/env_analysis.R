@@ -309,18 +309,18 @@ for (d in 2:25) { #adjust columns appropriately -> don't seem to need adjusting
     rsqrd_hetero = rbind(rsqrd_hetero, tempdf)
   }
 }
-#write.csv(rsqrd_hetero, "scripts/R-scripts/scale_analysis/rsqrd_hetero.csv", row.names = FALSE) #updated 06/02 with new env hetero vars
+write.csv(rsqrd_hetero, "scripts/R-scripts/scale_analysis/rsqrd_hetero.csv", row.names = FALSE) #updated 06/02 with new env hetero vars
 
 
 ####Visually Characterizing r2 vals####
-rsqrd_df = read.csv("scripts/R-scripts/scale_analysis/mod_rsqrds.csv", header = TRUE)
+rsqrd_hetero = read.csv("scripts/R-scripts/scale_analysis/rsqrd_hetero.csv", header = TRUE)
 
-ggplot(data = rsqrd_df, aes(x = ind, y = r2, fill = ind))+geom_boxplot()+theme_classic()+
-  scale_fill_manual(values = wes_palette("BottleRocket"))+theme(legend.position="none")+
+ggplot(data = rsqrd_hetero, aes(x = ind, y = r2, fill = ind))+geom_boxplot()+theme_classic()+
+  theme(legend.position="none")+
   labs(x = "Environmental variables", y = "Variation Explained (R^2)")
 
 #excluding transient data for incompleteness
-rsub_i = rsqrd_df %>%
+rsub_i = rsqrd_hetero %>%
   filter(dep == "OA.i" | dep == "ON.i" | dep == "CA.i" | dep == "CN.i")
 rsub_i = droplevels(rsub_i) #removing ghost levels to ensure correct plotting/analyses
 
@@ -328,7 +328,7 @@ ggplot(data = rsub_i, aes(x = ind, y = r2)) + geom_boxplot()+theme_classic() #wh
 
 
 #separate analysis for just transients since relationship not immediately apparent
-rsub_t = rsqrd_df %>%
+rsub_t = rsqrd_hetero %>%
   filter(dep == "TAexp" | dep == "TApow" | dep == "TNexp" | dep == "TNpow")
 rsub_t = droplevels(rsub_t) #removing ghost levels to ensure correct plotting/analyses
 
@@ -348,6 +348,11 @@ ggplot(data = rsub_t, aes(x = ind, y = r2)) + geom_boxplot()+theme_classic() #el
 
 #what does this comparison look like? How do I split sites up via a threshold for hetero vs homogenous 
 #to compare their avg coefs? 
+
+
+
+
+
 
 
 
