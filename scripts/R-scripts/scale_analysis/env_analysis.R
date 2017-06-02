@@ -235,7 +235,7 @@ dist.df = read.csv("scripts/R-scripts/scale_analysis/dist_df.csv", header = TRUE
 env_hetero = data.frame(stateroute = NULL, 
                         ndvi_v = NULL, elev_v = NULL, prec_v = NULL, temp_v = NULL,
                         ndvi_qv = NULL, elev_qv = NULL, prec_qv = NULL, temp_qv = NULL, 
-                        hull_vol = NULL)
+                        qhull_vol = NULL, zhull_vol = NULL)
 
 focal_rtes = unique(bbs_envs$stateroute)
 
@@ -248,9 +248,18 @@ for(r in focal_rtes){
   tempenv = bbs_envs %>%
     filter(stateroute %in% rte_group$rte2)
   
-  hull = convhulln(sub_envs, "FA")
+  tempenv_q = tempenv %>%
+    select(temp_q, prec_q, elev_q, ndvi_q) %>% 
+    filter(ndvi_q != 'NA')
   
-  temp = data.frame(stateroute = r,
+  tempenv_z = tempenv %>%
+    select(ztemp, zprec, zelev, zndvi) %>% 
+    filter(zndvi != 'NA')
+  
+  qhull_vol = convhulln(tempenv_q, "FA")
+  zhull_vol = convhulln(tempenv_z, "FA")
+    
+      temp = data.frame(stateroute = r,
                     ndvi_v = var(tempenv$zndvi, na.rm = TRUE), #fix missing values!!!!
                     elev_v = var(tempenv$zelev), #bc each of these values is calculated across the 2ndary rtes for each focal rte
                     prec_v = var(tempenv$zprec), #such that all 66 2ndary rtes will be summed into one variance value for each focal rte
@@ -259,7 +268,8 @@ for(r in focal_rtes){
                     elev_qv = var(tempenv$elev_q), 
                     prec_qv = var(tempenv$prec_q), 
                     temp_qv = var(tempenv$temp_q),
-                    hull_vol = hull$vol)
+                    qhull_vol = qhull$vol,
+                    zhull_vol = zhull$vol)
   
   env_hetero = rbind(env_hetero, temp)
 }
