@@ -225,9 +225,6 @@ hull = convhulln(sub_envs, "FA")
 hull$area #189.74 #4.502 
 hull$vol #66.22 #0.54 second time around....
 
-#multi panel plot comparing spread of routes bet diff z scores 
-#for entire set, vol is 66.22 
-#should I do for each stateroute...? and compare? 
 
 ####Pair env data to secondary rtes associated with each focal rte; calc variance for each focal rte####
 bbs_envs = read.csv("scripts/R-scripts/scale_analysis/bbs_envs.csv", header = TRUE)
@@ -235,8 +232,11 @@ dist.df = read.csv("scripts/R-scripts/scale_analysis/dist_df.csv", header = TRUE
 
 #num of rows matches num of rows in dts.df, good 
 #now calc var for each focal rte (rte1)
-focal_var = data.frame(stateroute = NULL, ndvi_v = NULL, elev_v = NULL, prec_v = NULL, temp_v = NULL)
-focal_qv = data.frame(stateroute = NULL, ndvi_qv = NULL, elev_qv = NULL, prec_qv = NULL, temp_qv = NULL)
+env_hetero = data.frame(stateroute = NULL, 
+                        ndvi_v = NULL, elev_v = NULL, prec_v = NULL, temp_v = NULL,
+                        ndvi_qv = NULL, elev_qv = NULL, prec_qv = NULL, temp_qv = NULL, 
+                        qhull_vol = NULL, zhull_vol = NULL)
+
 focal_rtes = unique(bbs_envs$stateroute)
 
 for(r in focal_rtes){
@@ -247,80 +247,80 @@ for(r in focal_rtes){
   
   tempenv = bbs_envs %>%
     filter(stateroute %in% rte_group$rte2)
-   
+  
+  tempenv_q = tempenv %>%
+    select(temp_q, prec_q, elev_q, ndvi_q) %>% 
+    filter(ndvi_q != 'NA')
+  
+  tempenv_z = tempenv %>%
+    select(ztemp, zprec, zelev, zndvi) %>% 
+    filter(zndvi != 'NA')
+  
+  qhull = convhulln(tempenv_q, "FA")
+  zhull = convhulln(tempenv_z, "FA")
+    
   temp = data.frame(stateroute = r,
                     ndvi_v = var(tempenv$zndvi, na.rm = TRUE), #fix missing values!!!!
                     elev_v = var(tempenv$zelev), #bc each of these values is calculated across the 2ndary rtes for each focal rte
                     prec_v = var(tempenv$zprec), #such that all 66 2ndary rtes will be summed into one variance value for each focal rte
-                    temp_v = var(tempenv$ztemp)) 
-  temp2 = data.frame(stateroute = r,
-                     ndvi_qv = var(tempenv$ndvi_q, na.rm = TRUE),
-                     elev_qv = var(tempenv$elev_q), #bc each of these values is calculated across the 2ndary rtes for each focal rte
-                     prec_qv = var(tempenv$prec_q), #such that all 66 2ndary rtes will be summed into one variance value for each focal rte
-                     temp_qv = var(tempenv$temp_q)) 
+                    temp_v = var(tempenv$ztemp), 
+                    ndvi_qv = var(tempenv$ndvi_q, na.rm = TRUE),
+                    elev_qv = var(tempenv$elev_q), 
+                    prec_qv = var(tempenv$prec_q), 
+                    temp_qv = var(tempenv$temp_q),
+                    qhull_vol = qhull$vol,
+                    zhull_vol = zhull$vol)
   
-  focal_var = rbind(focal_var, temp)
-  focal_qv = rbind(focal_qv, temp2)
+  env_hetero = rbind(env_hetero, temp)
 }
-write.csv(focal_var, "scripts/R-scripts/scale_analysis/focal_var.csv", row.names = FALSE)
-write.csv(focal_qv, "scripts/R-scripts/scale_analysis/focal_qv.csv", row.names = FALSE)
-#updated 05/31
+
+write.csv(env_hetero, "scripts/R-scripts/scale_analysis/env_hetero.csv", row.names = FALSE)
+#updated 06/02
+
 
 ####Elev vs NDVI plotting####
-focal_qv = read.csv("scripts/R-scripts/scale_analysis/focal_qv.csv", header = TRUE)
-focal_var = read.csv("scripts/R-scripts/scale_analysis/focal_var.csv", header = TRUE)
+env_hetero = read.csv("scripts/R-scripts/scale_analysis/env_hetero.csv", header = TRUE)
 bbs_envs = read.csv("scripts/R-scripts/scale_analysis/bbs_envs.csv", header = TRUE)
 
 #elev vs ndvi on plot - variance of quantile scores
-q_scores = ggplot(focal_qv, aes(x = ndvi_qv, y = elev_qv))+geom_point()+theme_classic()+ggtitle("Variance of quantiles")
-z_scores = ggplot(focal_var, aes(x = ndvi_v, y = elev_v))+geom_point()+theme_classic()+ggtitle("Variance of z-scores")
+q_scores = ggplot(env_hetero, aes(x = ndvi_qv, y = elev_qv))+geom_point()+theme_classic()+ggtitle("Variance of quantiles")
+z_scores = ggplot(env_hetero, aes(x = ndvi_v, y = elev_v))+geom_point()+theme_classic()+ggtitle("Variance of z-scores")
 #elev vs ndvi on plot - straight z scores, no var calc 
 z_raw = ggplot(bbs_envs, aes(x=zndvi, y = zelev))+geom_point()+theme_classic()+ggtitle("Z scores of raw data")
 qz = grid.arrange(q_scores, z_scores)
 z_raw 
 
-#compare GIMMS to old MODIS based raster data
-#may-aug, 2000-2014
-
-
-
-
-
-
-
-
-
-####Coef vs env variation models####
-bbs_envs = read.csv("scripts/R-scripts/scale_analysis/bbs_envs.csv", header = TRUE)
+####Coef vs env hetero models####
+env_hetero = read.csv("scripts/R-scripts/scale_analysis/env_hetero.csv", header = TRUE) #replacing bbs_envs with hetero measures
 coefs = read.csv("scripts/R-scripts/scale_analysis/coefs.csv", header = TRUE)
-env_coefs = inner_join(coefs, bbs_envs, by = "stateroute")
+env_coefs = inner_join(coefs, env_hetero, by = "stateroute")
 covmatrix = round(cor(coefs[, 2:ncol(coefs)]), 2)
 covmatrix
 
-# nested loop for examining variation in coefs/fitted curves explained by env vars 
-rsqrd_df = data.frame(dep = character(), ind = character(), r2 = numeric())
+# nested loop for examining variation in coefs/fitted curves explained by env heterogeneity 
+rsqrd_hetero = data.frame(dep = character(), ind = character(), r2 = numeric())
 
-for (d in 2:25) {
+for (d in 2:25) { #adjust columns appropriately -> don't seem to need adjusting
   for (i in 26:ncol(env_coefs)) {
     tempmod = lm(env_coefs[,d] ~ env_coefs[,i])
     tempdf = data.frame(dep = names(env_coefs)[d], 
                         ind = names(env_coefs)[i], 
                         r2 = summary(tempmod)$r.squared)
-    rsqrd_df = rbind(rsqrd_df, tempdf)
+    rsqrd_hetero = rbind(rsqrd_hetero, tempdf)
   }
 }
-#write.csv(rsqrd_df, "scripts/R-scripts/scale_analysis/rsqrd_df.csv", row.names = FALSE) #updated 05/07 with new env extracted vars
+write.csv(rsqrd_hetero, "scripts/R-scripts/scale_analysis/rsqrd_hetero.csv", row.names = FALSE) #updated 06/02 with new env hetero vars
 
 
 ####Visually Characterizing r2 vals####
-rsqrd_df = read.csv("scripts/R-scripts/scale_analysis/mod_rsqrds.csv", header = TRUE)
+rsqrd_hetero = read.csv("scripts/R-scripts/scale_analysis/rsqrd_hetero.csv", header = TRUE)
 
-ggplot(data = rsqrd_df, aes(x = ind, y = r2, fill = ind))+geom_boxplot()+theme_classic()+
-  scale_fill_manual(values = wes_palette("BottleRocket"))+theme(legend.position="none")+
+ggplot(data = rsqrd_hetero, aes(x = ind, y = r2, fill = ind))+geom_boxplot()+theme_classic()+
+  theme(legend.position="none")+
   labs(x = "Environmental variables", y = "Variation Explained (R^2)")
 
 #excluding transient data for incompleteness
-rsub_i = rsqrd_df %>%
+rsub_i = rsqrd_hetero %>%
   filter(dep == "OA.i" | dep == "ON.i" | dep == "CA.i" | dep == "CN.i")
 rsub_i = droplevels(rsub_i) #removing ghost levels to ensure correct plotting/analyses
 
@@ -328,7 +328,7 @@ ggplot(data = rsub_i, aes(x = ind, y = r2)) + geom_boxplot()+theme_classic() #wh
 
 
 #separate analysis for just transients since relationship not immediately apparent
-rsub_t = rsqrd_df %>%
+rsub_t = rsqrd_hetero %>%
   filter(dep == "TAexp" | dep == "TApow" | dep == "TNexp" | dep == "TNpow")
 rsub_t = droplevels(rsub_t) #removing ghost levels to ensure correct plotting/analyses
 
@@ -348,6 +348,11 @@ ggplot(data = rsub_t, aes(x = ind, y = r2)) + geom_boxplot()+theme_classic() #el
 
 #what does this comparison look like? How do I split sites up via a threshold for hetero vs homogenous 
 #to compare their avg coefs? 
+
+
+
+
+
 
 
 
