@@ -231,9 +231,9 @@ ggsave(file="C:/Git/core-transient/output/plots/4b_corrcoeff_NDVI.pdf", height =
 mh = read.csv("data/raw_datasets/dataset_255RAW/MHfig1.csv", header = TRUE)
 mh$class = factor(mh$class, levels = c('trans','core'),ordered = TRUE)
 
-ggplot(mh, aes(x=abunx, freqy,fill=factor(class))) + geom_bar(stat="identity")+ ylab("Frequency") + xlab ("Maximum abundance")  + scale_x_continuous(breaks = c(1,4, 8, 11, 15), labels = c("1","10","100","1,000","10,000"))+ scale_fill_manual(labels = c("Transient", "Core"),values = c("black","gray"))+ theme_classic() + theme(axis.text.x=element_text(size=24),axis.text.y=element_text(size=24),axis.ticks.x=element_blank(),axis.title.x=element_text(size=24),axis.title.y=element_text(size=24,angle=90,vjust = 2))+  guides(fill=guide_legend(title=NULL)) + theme(legend.position = "top", legend.text = element_text(size = 25)) #, legend.position = c(0.5,0.8)
+ggplot(mh, aes(x=abunx, freqy,fill=factor(class))) + geom_bar(stat="identity")+ ylab("Frequency") + xlab ("Maximum abundance")  + scale_x_continuous(breaks = c(1,4, 8, 11, 15), labels = c("1","10","100","1,000","10,000"))+ scale_fill_manual(labels = c("Transient", "Core"),values = c("black","gray"))+ theme_classic() + theme(axis.text.x=element_text(size=24),axis.text.y=element_text(size=24),axis.ticks.x=element_blank(),axis.title.x=element_text(size=24),axis.title.y=element_text(size=24,angle=90,vjust = 2))+  guides(fill=guide_legend(title=NULL)) # theme(legend.position = "top", legend.text = element_text(size = 25)) #, legend.position = c(0.5,0.8)
 
-ggsave(file="C:/Git/core-transient/output/plots/1b_M_H_hists.pdf", height = 5, width = 10)
+ggsave(file="C:/Git/core-transient/output/plots/1b_M_H_hists.pdf", height = 8, width = 10)
 
 #### Figure 4c ####
 turnover = read.csv("output/tabular_data/temporal_turnover.csv", header = TRUE)
