@@ -317,19 +317,35 @@ for (d in 2:25) { #adjust columns appropriately -> don't seem to need adjusting
 write.csv(rsqrd_hetero, "scripts/R-scripts/scale_analysis/rsqrd_hetero.csv", row.names = FALSE) #updated 06/02 with new env hetero vars
 
 
-####Visually Characterizing r2 vals####
+####Visually Characterizing measures of habitat heterogeneity####
 rsqrd_hetero = read.csv("scripts/R-scripts/scale_analysis/rsqrd_hetero.csv", header = TRUE)
+env_coefs = read.csv("scripts/R-scripts/scale_analysis/env_coefs.csv", header = TRUE)
 
 ggplot(data = rsqrd_hetero, aes(x = ind, y = r2, fill = ind))+geom_boxplot()+theme_classic()+
   theme(legend.position="none")+
   labs(x = "Environmental variables", y = "Variation Explained (R^2)")
 
-#excluding transient data for incompleteness
+#excluding transient data for incompleteness, selecting only relevant measures of heterogeneity 
+#INFLEXION POINTS: 
 rsub_i = rsqrd_hetero %>%
-  filter(dep == "OA.i" | dep == "ON.i" | dep == "CA.i" | dep == "CN.i")
+  filter((dep == "OA.i" | dep == "ON.i" | dep == "CA.i" | dep == "CN.i") & 
+           (ind == "elev_qv" | ind == "ndvi_qv" | ind == "qhull_vol" | ind == "zhull_vol"))
 rsub_i = droplevels(rsub_i) #removing ghost levels to ensure correct plotting/analyses
 
-ggplot(data = rsub_i, aes(x = ind, y = r2)) + geom_boxplot()+theme_classic() #what I used for poster w/out color 
+ggplot(data = rsub_i, aes(x = ind, y = r2)) + geom_boxplot()+theme_classic() 
+#variance in elevation (quantiles) and convex hull polygon volume (all 4 env vars, z scores) 
+#both explain more variance in the INFLEXION POINTS (i) of the occ-scale relationship than ndvi or qhull volume 
+
+#ASYMPTOTES (A)
+rsub_A = rsqrd_hetero %>%
+  filter((dep == "OA.A" | dep == "ON.A" | dep == "CA.A" | dep == "CN.A") & 
+           (ind == "elev_qv" | ind == "ndvi_qv" | ind == "qhull_vol" | ind == "zhull_vol"))
+rsub_A = droplevels(rsub_A) #removing ghost levels to ensure correct plotting/analyses
+
+ggplot(data = rsub_A, aes(x = ind, y = r2)) + geom_boxplot()+theme_classic() 
+#variance in elevation (quantiles) and convex hull polygon volume (all 4 env vars, z scores) 
+#once again, elevation performs well, altho in this case ndvi explains more variation more consistently than convex hull volume. 
+
 
 
 #separate analysis for just transients since relationship not immediately apparent
@@ -354,6 +370,9 @@ ggplot(data = rsub_t, aes(x = ind, y = r2)) + geom_boxplot()+theme_classic() #el
 #what does this comparison look like? How do I split sites up via a threshold for hetero vs homogenous 
 #to compare their avg coefs? 
 
+#a distribution of hull_vol (panel 1), elev (panel 2), and ndvi (panel 3)? 
+
+ggplot(data = env_coefs, aes(x = qhull_vol))+geom_histogram(binwidth = 0.005)
 
 
 
