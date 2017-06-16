@@ -303,9 +303,10 @@ covmatrix = round(cor(coefs[, 2:ncol(coefs)]), 2)
 covmatrix
 
 # nested loop for examining variation in coefs/fitted curves explained by env heterogeneity 
+#so: response = coefficients = dependent; predictor = environmental heterogeneity = independent
 rsqrd_hetero = data.frame(dep = character(), ind = character(), r2 = numeric())
 
-for (d in 2:25) { #adjust columns appropriately -> don't seem to need adjusting
+for (d in 2:25) { #adjust columns appropriately -> make sure correct order of ind and dep vars!
   for (i in 26:ncol(env_coefs)) {
     tempmod = lm(env_coefs[,d] ~ env_coefs[,i])
     tempdf = data.frame(dep = names(env_coefs)[d], 
@@ -314,7 +315,7 @@ for (d in 2:25) { #adjust columns appropriately -> don't seem to need adjusting
     rsqrd_hetero = rbind(rsqrd_hetero, tempdf)
   }
 }
-write.csv(rsqrd_hetero, "scripts/R-scripts/scale_analysis/rsqrd_hetero.csv", row.names = FALSE) #updated 06/02 with new env hetero vars
+write.csv(rsqrd_hetero, "scripts/R-scripts/scale_analysis/rsqrd_hetero.csv", row.names = FALSE) #updated 06/16 with new env hetero vars
 
 
 ####Visually Characterizing measures of habitat heterogeneity####
@@ -347,13 +348,37 @@ ggplot(data = rsub_A, aes(x = ind, y = r2)) + geom_boxplot()+theme_classic()
 #once again, elevation performs well, altho in this case ndvi explains more variation more consistently than convex hull volume. 
 
 
-
 #separate analysis for just transients since relationship not immediately apparent
 rsub_t = rsqrd_hetero %>%
-  filter(dep == "TAexp" | dep == "TApow" | dep == "TNexp" | dep == "TNpow")
+  filter((dep == "TAexp" | dep == "TApow" | dep == "TNexp" | dep == "TNpow") & 
+  (ind == "elev_qv" | ind == "ndvi_qv" | ind == "qhull_vol" | ind == "zhull_vol"))
 rsub_t = droplevels(rsub_t) #removing ghost levels to ensure correct plotting/analyses
 
 ggplot(data = rsub_t, aes(x = ind, y = r2)) + geom_boxplot()+theme_classic() #elev explains more variation in the transients
+
+
+
+
+# the above are all based on the models themselves...what about the numbers? 
+p1 = ggplot(data = env_coefs, aes(OA.A, elev_qv))+geom_point()
+p2 = ggplot(data = env_coefs, aes(OA.A, ndvi_qv))+geom_point()
+p3 = ggplot(data = env_coefs, aes(OA.A, qhull_vol))+geom_point()
+p4 = ggplot(data = env_coefs, aes(OA.A, zhull_vol))+geom_point()
+
+p5 = gridExtra::grid.arrange(p1, p2, p3, p4)
+
+max(env_coefs$OA.A) #why.....is there a 7 in my OA.A values....? that shouldn't be possible. Data errors!!!
+
+
+p1 = ggplot(data = env_coefs, aes(OA.i, elev_qv))+geom_point()
+p2 = ggplot(data = env_coefs, aes(OA.i, ndvi_qv))+geom_point()
+p3 = ggplot(data = env_coefs, aes(OA.i, qhull_vol))+geom_point()
+p4 = ggplot(data = env_coefs, aes(OA.i, zhull_vol))+geom_point()
+
+p5 = gridExtra::grid.arrange(p1, p2, p3, p4)
+max(env_coefs$OA.i) #16??? really shouldn't be possible. is this bc dealing with log area? 
+
+
 
 #what we expected: 
 #Homogenous communities (i.e. low ndvi, low elev values)
