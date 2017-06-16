@@ -370,8 +370,6 @@ p5 = gridExtra::grid.arrange(p1, p2, p3, p4)
 max(env_coefs$OA.A) #why.....is there a 7 in my OA.A values....? that shouldn't be possible. Data errors!!!
 
 
-
-
 p1 = ggplot(data = env_coefs, aes(OA.i, elev_qv))+geom_point()
 p2 = ggplot(data = env_coefs, aes(OA.i, ndvi_qv))+geom_point()
 p3 = ggplot(data = env_coefs, aes(OA.i, qhull_vol))+geom_point()
