@@ -189,8 +189,71 @@ TA.df = data.frame(stateroute = numeric(), TAexp= numeric(), TApow = numeric(), 
 TN.df = data.frame(stateroute = numeric(), TNexp= numeric(), TNpow = numeric(), TNexp.r2 = numeric(), TNpow.r2 = numeric())
 
 warnings = data.frame(stateroute = numeric(), warning = character())
-stateroutes = unique(bbs_allscales$focalrte)
+stateroutes = unique(bbs_allscales$focalrte) #this stuff is the same, looks normal ^
 
+
+#OA Feb 27 version when added in R2 vals 
+for(s in stateroutes){
+  logsub = subset(bbs_allscales, bbs_allscales$focalrte == s)  
+  #fitting the log curve for area (for each route)
+  
+  #OA 
+  OAmodel = tryCatch({
+    OAlog = nls(meanOcc ~ SSlogis(logA, Asym, xmid, scal), data = logsub)
+    OApred = predict(OAlog)
+    OAlm.r2 = lm(logsub$meanOcc ~ OApred)
+    return(data.frame(stateroute = s, OA.A, OA.i, OA.k, OA.r2 = summary(OAlm.r2)$r.squared))
+  }, warning = function(w) {
+    warnings = rbind(warnings, data.frame(stateroute = s, warning = w))
+  }, error = function(e) {
+    OA.i <- NA
+    OA.A <- NA
+    OA.k <- NA
+    OA.r2 <- NA
+  }, finally = {
+    OA.i <- summary(OAlog)$coefficients["xmid","Estimate"]
+    OA.A <- summary(OAlog)$coefficients["Asym","Estimate"]
+    OA.k <- summary(OAlog)$coefficients["scal","Estimate"]
+    OA.r2 <- summary(OAlm.r2)$r.squared
+  })
+  OA.temp = data.frame(stateroute = s, OA.A, OA.i, OA.k, OA.r2) 
+  OA.df = rbind(OA.df, OA.temp)
+}
+
+#current version (return statement adjusted)
+for(s in stateroutes){
+  logsub = subset(bbs_allscales, bbs_allscales$focalrte == s)  
+  #fitting the log curve for area (for each route)
+  
+  #OA 
+  OAmodel = tryCatch({
+    OAlog = nls(meanOcc ~ SSlogis(logA, Asym, xmid, scal), data = logsub)
+    OApred = predict(OAlog)
+    OAlm.r2 = lm(logsub$meanOcc ~ OApred)
+    
+  }, warning = function(w) {
+    warnings = rbind(warnings, data.frame(stateroute = s, warning = w))
+  }, error = function(e) {
+    OA.i <- NA
+    OA.A <- NA
+    OA.k <- NA
+    OA.r2 <- NA
+    
+  }, finally = {
+    OA.i <- summary(OAlog)$coefficients["xmid","Estimate"]
+    OA.A <- summary(OAlog)$coefficients["Asym","Estimate"]
+    OA.k <- summary(OAlog)$coefficients["scal","Estimate"]
+    OA.r2 <- summary(OAlm.r2)$r.squared
+    
+    return(data.frame(stateroute = s, OA.A, OA.i, OA.k, OA.r2 = summary(OAlm.r2)$r.squared)) #error in trycatch, no function to return from
+  })
+  OA.temp = data.frame(stateroute = s, OA.A, OA.i, OA.k, OA.r2) 
+  OA.df = rbind(OA.df, OA.temp)
+}
+#throwing an error when return statement is at the bottom 
+
+
+#OA current problem version 
 for(s in stateroutes){
   logsub = subset(bbs_allscales, bbs_allscales$focalrte == s)  
   #OA 
@@ -331,6 +394,185 @@ coefs = OA.df %>%
 
 #write.csv(coefs, "C:/git/core-transient/scripts/R-scripts/scale_analysis/coefs.csv", row.names = FALSE) #updated 02/27
 #exp mods have much better r2 vals for pctTran than power 
+
+####Old trycatch from Feb 15th#### #working 
+library(stats)
+
+OA.df = data.frame(stateroute = numeric(), OA.A= numeric(), OA.i = numeric(), OA.k = numeric())
+ON.df = data.frame(stateroute = numeric(), ON.A= numeric(), ON.i = numeric(), ON.k = numeric())
+CA.df = data.frame(stateroute = numeric(), CA.A= numeric(), CA.i = numeric(), CA.k = numeric())
+CN.df = data.frame(stateroute = numeric(), CN.A= numeric(), CN.i = numeric(), CN.k = numeric())
+#TA.df = data.frame(stateroute = numeric(), TA.A= numeric(), TA.i = numeric(), TA.k = numeric())
+#TN.df = data.frame(stateroute = numeric(), TN.A= numeric(), TN.i = numeric(), TN.k = numeric())
+
+
+#Use tryCatch to run through all routes but store routes with errors
+warnings = data.frame(stateroute = numeric(), warning = character())
+#subspecify to only pull bbs data at year s 
+stateroutes = unique(bbs_allscales$focalrte)
+
+#OA mod 
+for(s in stateroutes){
+  logsub = subset(bbs_allscales, bbs_allscales$focalrte == s)  
+  #fitting the log curve for area (for each route)
+  OAmodel = tryCatch({
+    OAlog = nls(meanOcc ~ SSlogis(logA, Asym, xmid, scal), data = logsub)
+    return(data.frame(stateroute = s, OA.A, OA.i, OA.k))
+  }, warning = function(w) {
+    warnings = rbind(warnings, data.frame(stateroute = s, warning = w))
+  }, error = function(e) {
+    OA.i <- NA
+    OA.A <- NA
+    OA.k <- NA
+  }, finally = {
+    OA.i <- summary(OAlog)$coefficients["xmid","Estimate"]
+    OA.A <- summary(OAlog)$coefficients["Asym","Estimate"]
+    OA.k <- summary(OAlog)$coefficients["scal","Estimate"]
+    #OA.tmp = data.frame(stateroute = s, OA.A, OA.i, OA.k)
+  })
+  
+  OA.temp = data.frame(stateroute = s, OA.A, OA.i, OA.k) #fix
+  OA.df = rbind(OA.df, OA.temp)
+}
+
+#ON model
+for(s in stateroutes){
+  logsub = subset(bbs_allscales, bbs_allscales$focalrte == s)  
+  #fitting the log curve for aveN (for each route)
+  ONmodel = tryCatch({
+    ONlog = nls(meanOcc ~ SSlogis(logN, Asym, xmid, scal), data = logsub)
+    return(data.frame(stateroute = s, ON.A, ON.i, ON.k))
+  }, warning = function(w) {
+    warnings = rbind(warnings, data.frame(stateroute = s, warning = w))
+  }, error = function(e) {
+    ON.i <- NA
+    ON.A <- NA
+    ON.k <- NA
+  }, finally = {
+    ON.i <- summary(ONlog)$coefficients["xmid","Estimate"]
+    ON.A <- summary(ONlog)$coefficients["Asym","Estimate"]
+    ON.k <- summary(ONlog)$coefficients["scal","Estimate"]
+    #ON.tmp = data.frame(stateroute = s, ON.A, ON.i, ON.k)
+  })
+  
+  ON.temp = data.frame(stateroute = s, ON.A, ON.i, ON.k) #fix
+  ON.df = rbind(ON.df, ON.temp)
+}
+
+#CA model
+for(s in stateroutes){
+  logsub = subset(bbs_allscales, bbs_allscales$focalrte == s)  
+  #fitting the log curve for area (for each route)
+  CAmodel = tryCatch({
+    CAlog = nls(pctCore ~ SSlogis(logA, Asym, xmid, scal), data = logsub)
+    return(data.frame(stateroute = s, CA.A, CA.i, CA.k))
+  }, warning = function(w) {
+    warnings = rbind(warnings, data.frame(stateroute = s, warning = w))
+  }, error = function(e) {
+    CA.i <- NA
+    CA.A <- NA
+    CA.k <- NA
+  }, finally = {
+    CA.i <- summary(CAlog)$coefficients["xmid","Estimate"]
+    CA.A <- summary(CAlog)$coefficients["Asym","Estimate"]
+    CA.k <- summary(CAlog)$coefficients["scal","Estimate"]
+    #CA.tmp = data.frame(stateroute = s, CA.A, CA.i, CA.k)
+  })
+  
+  CA.temp = data.frame(stateroute = s, CA.A, CA.i, CA.k) #fix
+  CA.df = rbind(CA.df, CA.temp)
+}
+
+#CN model
+for(s in stateroutes){
+  logsub = subset(bbs_allscales, bbs_allscales$focalrte == s)  
+  #fitting the log curve for aveN (for each route)
+  CNmodel = tryCatch({
+    CNlog = nls(pctCore ~ SSlogis(logN, Asym, xmid, scal), data = logsub)
+    return(data.frame(stateroute = s, CN.A, CN.i, CN.k))
+  }, warning = function(w) {
+    warnings = rbind(warnings, data.frame(stateroute = s, warning = w))
+  }, error = function(e) {
+    CN.i <- NA
+    CN.A <- NA
+    CN.k <- NA
+  }, finally = {
+    CN.i <- summary(CNlog)$coefficients["xmid","Estimate"]
+    CN.A <- summary(CNlog)$coefficients["Asym","Estimate"]
+    CN.k <- summary(CNlog)$coefficients["scal","Estimate"]
+    #CN.tmp = data.frame(stateroute = s, CN.A, CN.i, CN.k)
+  })
+  
+  CN.temp = data.frame(stateroute = s, CN.A, CN.i, CN.k) #fix
+  CN.df = rbind(CN.df, CN.temp)
+}
+
+####Troubleshooting pctTran functions####
+#commented out pctTran models because need to use a diff formula to fit (fault neg slope)
+# fcn = function(x, xmid, Asym, scal) {Asym/1 - exp((xmid-x)/scal)}
+# st <- coef(nls(log(pctTran) ~ log(fcn(log(area), xmid, Asym, scal)), data = logsub, 
+#                start = c(xmid = 1, Asym = 1, scal = 1)))
+
+#^^^above code produces NaN's and infinite loop 
+
+#revised ref:
+
+# 
+# #TA model
+# for(s in stateroutes){
+#   logsub = subset(bbs_allscales, bbs_allscales$focalrte == s)
+#   #fitting the log curve for area (for each route)
+#   TAmodel = tryCatch({
+#     TAlog = nls(pctTran ~ Asym/(1 + exp((xmid - logA)/scal)),  
+#               start = list(xmid = 1, scal = 1, Asym = 0.1), data = logsub) #this code produces singular gradient matrix error 
+#     return(data.frame(stateroute = s, TA.A, TA.i, TA.k))
+#   }, warning = function(w) {
+#     warnings = rbind(warnings, data.frame(stateroute = s, warning = w))
+#   }, error = function(e) {
+#     TA.i <- NA
+#     TA.A <- NA
+#     TA.k <- NA
+#   }, finally = {
+#     TA.i <- summary(TAlog)$coefficients["xmid","Estimate"]
+#     TA.A <- summary(TAlog)$coefficients["Asym","Estimate"]
+#     TA.k <- summary(TAlog)$coefficients["scal","Estimate"]
+#     #TA.tmp = data.frame(stateroute = s, TA.A, TA.i, TA.k)
+#   })
+# 
+#   TA.temp = data.frame(stateroute = s, TA.A, TA.i, TA.k) #fix
+#   TA.df = rbind(TA.df, TA.temp)
+# }
+
+# #TN model
+# for(s in stateroutes){
+#   logsub = subset(bbs_allscales, bbs_allscales$focalrte == s)  
+#   #fitting the log curve for aveN (for each route)
+#   TNmodel = tryCatch({
+#     TNlog = nls(pctTran ~ SSlogis(logN, Asym, xmid, scal), data = logsub)
+#     return(data.frame(stateroute = s, TN.A, TN.i, TN.k))
+#   }, warning = function(w) {
+#     warnings = rbind(warnings, data.frame(stateroute = s, warning = w))
+#   }, error = function(e) {
+#     TN.i <- NA
+#     TN.A <- NA
+#     TN.k <- NA
+#   }, finally = {
+#     TN.i <- summary(TNlog)$coefficients["xmid","Estimate"]
+#     TN.A <- summary(TNlog)$coefficients["Asym","Estimate"]
+#     TN.k <- summary(TNlog)$coefficients["scal","Estimate"]
+#     #TN.tmp = data.frame(stateroute = s, TN.A, TN.i, TN.k)
+#   })
+#   
+#   TN.temp = data.frame(stateroute = s, TN.A, TN.i, TN.k) #fix
+#   TN.df = rbind(TN.df, TN.temp)
+# }
+
+
+
+logcurve_coefs = data.frame(OA.df, ON.df, CA.df, CN.df)
+
+
+
 
 
 ####Plotting occupancy-scale relationships with observed and predicted values####
