@@ -360,20 +360,19 @@ ggplot(data = rsub_t, aes(x = ind, y = r2)) + geom_boxplot()+theme_classic() #el
 
 
 # the above are all based on the models themselves...what about the numbers? 
-p1A = ggplot(data = env_coefs, aes(OA.A, elev_qv))+geom_point()
-p2A = ggplot(data = env_coefs, aes(OA.A, ndvi_qv))+geom_point()
-p3A = ggplot(data = env_coefs, aes(OA.A, qhull_vol))+geom_point()
-p4A = ggplot(data = env_coefs, aes(OA.A, zhull_vol))+geom_point()
+p1 = ggplot(data = env_coefs, aes(elev_qv, OA.A))+geom_point()
+p2 = ggplot(data = env_coefs, aes(ndvi_qv, OA.A))+geom_point()
+p3 = ggplot(data = env_coefs, aes(qhull_vol, OA.A))+geom_point()
+p4 = ggplot(data = env_coefs, aes(zhull_vol, OA.A))+geom_point()
 
 p5_1 = gridExtra::grid.arrange(p1A, p2A, p3A, p4A)
 
 max(env_coefs$OA.A) #why.....is there a 7 in my OA.A values....? that shouldn't be possible. Data errors!!!
 
-
-p1B = ggplot(data = env_coefs, aes(OA.i, elev_qv))+geom_point()
-p2B = ggplot(data = env_coefs, aes(OA.i, ndvi_qv))+geom_point()
-p3B = ggplot(data = env_coefs, aes(OA.i, qhull_vol))+geom_point()
-p4B = ggplot(data = env_coefs, aes(OA.i, zhull_vol))+geom_point()
+p1 = ggplot(data = env_coefs, aes(elev_qv, OA.i))+geom_point()
+p2 = ggplot(data = env_coefs, aes(ndvi_qv, OA.i))+geom_point()
+p3 = ggplot(data = env_coefs, aes(qhull_vol, OA.i))+geom_point()
+p4 = ggplot(data = env_coefs, aes(zhull_vol, OA.i))+geom_point()
 
 p5_2 = gridExtra::grid.arrange(p1B, p2B, p3B, p4B)
 max(env_coefs$OA.i) #16??? really shouldn't be possible. is this bc dealing with log area? 
