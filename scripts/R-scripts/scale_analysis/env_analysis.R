@@ -295,7 +295,7 @@ env_hetero = read.csv("scripts/R-scripts/scale_analysis/env_hetero.csv", header 
 coefs = read.csv("scripts/R-scripts/scale_analysis/coefs.csv", header = TRUE)
 env_coefs = inner_join(coefs, env_hetero, by = "stateroute")
 write.csv(env_coefs, "scripts/R-scripts/scale_analysis/env_coefs.csv", row.names = FALSE)
-#updated 06/13
+#NEED TO UPDATE
 
 
 
