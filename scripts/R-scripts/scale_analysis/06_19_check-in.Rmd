@@ -1,0 +1,165 @@
+---
+title: "06_19_check-in"
+author: "Molly Jenkins"
+date: "June 19, 2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_knit$set(root.dir = "C:/git/core-transient")
+
+library(raster)
+library(maps)
+library(sp)
+library(rgdal)
+library(maptools)
+library(rgeos)
+library(dplyr)
+library(fields)
+library(tidyr)
+library(ggplot2)
+library(nlme)
+library(gridExtra)
+library(stats)
+library(gimms)
+library(devtools)
+library(geometry)
+library(DBI)
+
+```
+
+## GIMMS NDVI data
+
+I sourced Sara's raw GIMMS NDVI data associated with BBS routes and copied it to the BBS data folder for ease of access and organization. 
+The raw data was extracted for each BBS route with a 40km buffer around each route. I then sifted out the data relevant to my analysis and calculated the mean ndvi values for each year, and then again for each site across years. I then saved the sifted version to my own project folder as an intermediate file.   
+
+```{r}
+ndvi_gimms_raw = read.csv("data/BBS/ndvi_raw.csv") #Sara version, sourced from tabular data folder 
+
+ndvi_data_summer <- ndvi_gimms_raw %>%
+  filter(!is.na(ndvi), month %in% c('may', 'jun', 'jul', 'aug'), year > 2000) %>%
+  group_by(site_id, year) %>% #calc avg across summer months for each year
+  summarise(ndvi_sum = mean(ndvi), na.rm = TRUE) %>%
+  group_by(site_id) %>% #calc avg across years
+  summarise(ndvi_mean = mean(ndvi_sum), na.rm = TRUE) %>% 
+  ungroup()
+
+write.csv(ndvi_data_summer, "scripts/R-scripts/scale_analysis/ndvi_summer.csv", row.names = FALSE) #updated with correct NDVI extraction
+
+```
+
+I then merged all of the environmental variable columns together, where each row still represented a single stateroute. This is the "bbs_envs" file. I transformed the environmental variables into both z scores and quantiles, and both are saved in the intermediate file as separate columns for quick comparison.  
+
+I then used the dist_df reference file to guide a forloop calculating variance of the different environmental variables across each focal route's aggregated domain (across all 66 routes paired with that focal route). Each variance value summarizes the variance across the full extent of that focal route's domain. In addition, I calculated the convex hull polygon volume for each focal route's domain.  
+
+
+
+```{r}
+####Pair env data to secondary rtes associated with each focal rte; calc variance for each focal rte####
+bbs_envs = read.csv("scripts/R-scripts/scale_analysis/bbs_envs.csv", header = TRUE)
+dist.df = read.csv("scripts/R-scripts/scale_analysis/dist_df.csv", header = TRUE)
+
+#num of rows matches num of rows in dts.df, good 
+#now calc var for each focal rte (rte1)
+env_hetero = data.frame(stateroute = NULL, 
+                        ndvi_v = NULL, elev_v = NULL, prec_v = NULL, temp_v = NULL,
+                        ndvi_qv = NULL, elev_qv = NULL, prec_qv = NULL, temp_qv = NULL, 
+                        qhull_vol = NULL, zhull_vol = NULL)
+
+focal_rtes = unique(bbs_envs$stateroute)
+
+for(r in focal_rtes){
+  rte_group = dist.df %>% 
+    filter(rte1 == r) %>% 
+    top_n(66, desc(dist)) %>%
+    select(rte2) %>% as.vector()
+  
+  tempenv = bbs_envs %>%
+    filter(stateroute %in% rte_group$rte2)
+  
+  tempenv_q = tempenv %>%
+    select(temp_q, prec_q, elev_q, ndvi_q) %>% 
+    filter(ndvi_q != 'NA')
+  
+  tempenv_z = tempenv %>%
+    select(ztemp, zprec, zelev, zndvi) %>% 
+    filter(zndvi != 'NA')
+  
+  qhull = convhulln(tempenv_q, "FA")
+  zhull = convhulln(tempenv_z, "FA")
+    
+  temp = data.frame(stateroute = r,
+                    ndvi_v = var(tempenv$zndvi, na.rm = TRUE), #fix missing values!!!!
+                    elev_v = var(tempenv$zelev), #bc each of these values is calculated across the 2ndary rtes for each focal rte
+                    prec_v = var(tempenv$zprec), #such that all 66 2ndary rtes will be summed into one variance value for each focal rte
+                    temp_v = var(tempenv$ztemp), 
+                    ndvi_qv = var(tempenv$ndvi_q, na.rm = TRUE),
+                    elev_qv = var(tempenv$elev_q), 
+                    prec_qv = var(tempenv$prec_q), 
+                    temp_qv = var(tempenv$temp_q),
+                    qhull_vol = qhull$vol,
+                    zhull_vol = zhull$vol)
+  
+  env_hetero = rbind(env_hetero, temp)
+}
+
+write.csv(env_hetero, "scripts/R-scripts/scale_analysis/env_hetero.csv", row.names = FALSE)
+```
+
+
+## Comparing variance in NDVI (GIMMS) to variance in elevation 
+### Plotting variance of quantiles and variance of z scores; elev vs ndvi 
+
+```{r, echo=FALSE}
+env_hetero = read.csv("scripts/R-scripts/scale_analysis/env_hetero.csv", header = TRUE)
+bbs_envs = read.csv("scripts/R-scripts/scale_analysis/bbs_envs.csv", header = TRUE)
+
+#elev vs ndvi on plot - variance of quantile scores
+q_scores = ggplot(env_hetero, aes(x = ndvi_qv, y = elev_qv))+geom_point()+theme_classic()+ggtitle("Variance of quantiles")
+z_scores = ggplot(env_hetero, aes(x = ndvi_v, y = elev_v))+geom_point()+theme_classic()+ggtitle("Variance of z-scores")
+#elev vs ndvi on plot - straight z scores, no var calc 
+z_raw = ggplot(bbs_envs, aes(x=zndvi, y = zelev))+geom_point()+theme_classic()+ggtitle("Z scores of raw data")
+qz = grid.arrange(q_scores, z_scores)
+z_raw 
+
+```
+
+Looking at the values for the different coefficients versus the variance in the environmental variables
+
+We expected high heterogeneity/high variance/high convex polygon volume to correspond to lower occupancy averages, characterized by high inflexion point values (inflexion point i occurs further along x axis) and lower asymptote values (asymptote A plateaus out at a lower y value due to the occupancy average being pulled down by a higher occurence of transients). 
+
+We expected low heterogeneity/low variance/low convex polygon volume to correspond to higher occupancy averages, characterized by low inflexion point values (inflexion point i occurs early along x axis) and higher asymptote values (asymptote A plataeus out closer to maximum occupancy).
+
+This would look like: points with high variance (high variance in elev/NDVI, high polygon volume would have high i values (low occ values)
+AND 
+points with low variance and volume would have low i values (high occupancy). This would be a positive linear relationship.  
+
+The inverse being true for A values: high variance and volume would correspond to low A values (low occupancy) and low variance and volume would correspond to high A values. This would be a negative linear relationship. 
+
+Instead, I got the following: 
+
+```{r, echo = FALSE}
+p1A = ggplot(data = env_coefs, aes(OA.A, elev_qv))+geom_point()
+p2A = ggplot(data = env_coefs, aes(OA.A, ndvi_qv))+geom_point()
+p3A = ggplot(data = env_coefs, aes(OA.A, qhull_vol))+geom_point()
+p4A = ggplot(data = env_coefs, aes(OA.A, zhull_vol))+geom_point()
+
+p5_1 = gridExtra::grid.arrange(p1A, p2A, p3A, p4A)
+
+p1B = ggplot(data = env_coefs, aes(OA.i, elev_qv))+geom_point()
+p2B = ggplot(data = env_coefs, aes(OA.i, ndvi_qv))+geom_point()
+p3B = ggplot(data = env_coefs, aes(OA.i, qhull_vol))+geom_point()
+p4B = ggplot(data = env_coefs, aes(OA.i, zhull_vol))+geom_point()
+
+p5_2 = gridExtra::grid.arrange(p1B, p2B, p3B, p4B)
+
+p_final = grid.arrange(p5_1, p5_2)
+```
+
+Additionally, when I look at the maxiumum values for my A and i points, I get the following: 
+
+```{r}
+max(env_coefs$OA.A) #why.....is there a 7 in my OA.A values....?
+max(env_coefs$OA.i) #16??? 
+```
+
