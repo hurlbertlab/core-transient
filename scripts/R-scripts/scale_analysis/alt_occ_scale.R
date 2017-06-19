@@ -198,9 +198,7 @@ for(s in stateroutes){
     OAlog = nls(meanOcc ~ SSlogis(logA, Asym, xmid, scal), data = logsub)
     OApred = predict(OAlog)
     OAlm.r2 = lm(logsub$meanOcc ~ OApred)
-    return(data.frame(stateroute = s, OA.A, OA.i, OA.k, 
-                      OA.r2 = summary(OAlm.r2)$r.squared))
-    return(data.frame(stateroute = s, OA.pred = OApred)) #can I return multiple outputs from a trycatch?
+    
   }, warning = function(w) {
     warnings = rbind(warnings, data.frame(stateroute = s, warning = w))
   }, error = function(e) {
@@ -215,6 +213,8 @@ for(s in stateroutes){
     OA.k <- summary(OAlog)$coefficients["scal","Estimate"]
     OA.r2 <- summary(OAlm.r2)$r.squared
     OA.pred <- OApred
+    return(data.frame(stateroute = s, OA.A, OA.i, OA.k, 
+                      OA.r2 = summary(OAlm.r2)$r.squared))
     })
   OA.temp = data.frame(stateroute = s, OA.A, OA.i, OA.k, OA.r2)
   OA.temppred = data.frame(stateroute = s, OA.pred = OA.pred)
