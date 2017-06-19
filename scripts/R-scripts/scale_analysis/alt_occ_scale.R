@@ -171,12 +171,18 @@ bbs_allscales$logN = log10(bbs_allscales$aveN)
 bbs_allscales$lnA = log(bbs_allscales$area) #log is the natural log 
 bbs_allscales$lnN = log(bbs_allscales$aveN) #rerun plots with this?
 
-mod1 = lm(meanOcc~logA, data = bbs_allscales) #explains ~50% of the variation in occ
-mod2 = lm(meanOcc~logN, data = bbs_allscales)
+####filter out stateroutes that are one-sided in scale####
+#in terms of their representation of below vs above scale (should have both, not one alone)
+bbs_allscales2 = bbs_allscales %>% count(focalrte) %>% filter(n == 83) %>% data.frame() 
+bbs_allscales3 = filter(bbs_allscales, focalrte %in% bbs_allscales2$focalrte)
+
+
+mod1 = lm(meanOcc~logA, data = bbs_allscales3) #explains ~50% of the variation in occ
+mod2 = lm(meanOcc~logN, data = bbs_allscales3)
 summary(mod1)
 
-plot(meanOcc~logA, data = bbs_allscales, xlab = "Log Area" , ylab = "Mean Temporal Occupancy")
-plot(meanOcc~logN, data = bbs_allscales, xlab = "Average Abundance" , ylab = "Mean Temporal Occupancy")
+plot(meanOcc~logA, data = bbs_allscales3, xlab = "Log Area" , ylab = "Mean Temporal Occupancy")
+plot(meanOcc~logN, data = bbs_allscales3, xlab = "Average Abundance" , ylab = "Mean Temporal Occupancy")
 #^^same pattern roughly; abundance describes ~same amt of variance as area so serves as a good proxy 
 
 
@@ -189,12 +195,12 @@ TA.df = data.frame(stateroute = numeric(), TAexp= numeric(), TApow = numeric(), 
 TN.df = data.frame(stateroute = numeric(), TNexp= numeric(), TNpow = numeric(), TNexp.r2 = numeric(), TNpow.r2 = numeric())
 
 warnings = data.frame(stateroute = numeric(), warning = character())
-stateroutes = unique(bbs_allscales$focalrte) #this stuff is the same, looks normal ^
+stateroutes = unique(bbs_allscales3$focalrte) #this stuff is the same, looks normal ^
 
 
 #06/19 version of tryCatch
 for(s in stateroutes){
-  logsub = subset(bbs_allscales, bbs_allscales$focalrte == s)  
+  logsub = subset(bbs_allscales3, bbs_allscales3$focalrte == s)  
   #fitting the log curve for area (for each route)
   
   #OA 
@@ -330,19 +336,22 @@ write.csv(coefs, "C:/git/core-transient/scripts/R-scripts/scale_analysis/coefs.c
 #exp mods have much better r2 vals for pctTran than power 
 
 ####Plotting occupancy-scale relationships with observed and predicted values####
-bbs_allscales = read.csv("data/bbs_allscales.csv", header = TRUE)
+bbs_allscales = read.csv("data/BBS/bbs_allscales.csv", header = TRUE)
 bbs_allscales$logA = log10(bbs_allscales$area)
 bbs_allscales$logN = log10(bbs_allscales$aveN)
 bbs_allscales$lnA = log(bbs_allscales$area) #log is the natural log 
 bbs_allscales$lnN = log(bbs_allscales$aveN) #rerun plots with this?
 coefs = read.csv("scripts/R-scripts/scale_analysis/coefs.csv", header = TRUE)
 
+####filter out stateroutes that are one-sided in scale####
+#in terms of their representation of below vs above scale (should have both, not one alone)
+bbs_allscales2 = bbs_allscales %>% count(focalrte) %>% filter(n == 83) %>% data.frame() 
+bbs_allscales3 = filter(bbs_allscales, focalrte %in% bbs_allscales2$focalrte)
 #function for extracting predicted values from models built with observed data
 logistic_fcn = function(x, Asym, xmid, scal) {
   out = Asym/(1 + exp((xmid - x)/scal))
   return(out)
 }
-
 
 preds.df = data.frame(stateroute = numeric(), logA = numeric(), 
                       OApreds= numeric(), ONpreds = numeric(), 
@@ -351,8 +360,8 @@ preds.df = data.frame(stateroute = numeric(), logA = numeric(),
 
 
 pdf("output/plots/Molly Plots/BBS_scaleplots.pdf", onefile = TRUE)
-coef_join = coefs %>% inner_join(bbs_allscales, by = c("stateroute"="focalrte"))
-stateroutes = unique(bbs_allscales$focalrte)
+coef_join = coefs %>% inner_join(bbs_allscales3, by = c("stateroute"="focalrte"))
+stateroutes = unique(bbs_allscales3$focalrte)
 
 #extracting predicted values and plotting in same loop
 for (s in stateroutes) {
