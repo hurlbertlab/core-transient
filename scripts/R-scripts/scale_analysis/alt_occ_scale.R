@@ -206,28 +206,25 @@ for(s in stateroutes){
     OA.A <- NA
     OA.k <- NA
     OA.r2 <- NA
-    OA.pred <- NA
-  }, finally = {
+    
+    }, finally = {
     OA.i <- summary(OAlog)$coefficients["xmid","Estimate"]
     OA.A <- summary(OAlog)$coefficients["Asym","Estimate"]
     OA.k <- summary(OAlog)$coefficients["scal","Estimate"]
     OA.r2 <- summary(OAlm.r2)$r.squared
-    OA.pred <- OApred
+    
     return(data.frame(stateroute = s, OA.A, OA.i, OA.k, 
                       OA.r2 = summary(OAlm.r2)$r.squared))
     })
   OA.temp = data.frame(stateroute = s, OA.A, OA.i, OA.k, OA.r2)
-  OA.temppred = data.frame(stateroute = s, OA.pred = OA.pred)
   OA.df = rbind(OA.df, OA.temp)
-  OA.pred.df = rbind(OA.pred.df, OA.temppred)
   
   #ON 
   ONmodel = tryCatch({
     ONlog = nls(meanOcc ~ SSlogis(logN, Asym, xmid, scal), data = logsub)
     ONpred = predict(ONlog)
     ONlm.r2 = lm(logsub$meanOcc ~ ONpred)
-    return(data.frame(stateroute = s, ON.A, ON.i, ON.k, 
-                      ON.r2 = summary(ONlm.r2)$r.squared, ON.pred = ONpred))
+    
   }, warning = function(w) {
     warnings = rbind(warnings, data.frame(stateroute = s, warning = w))
   }, error = function(e) {
@@ -235,15 +232,17 @@ for(s in stateroutes){
     ON.A <- NA
     ON.k <- NA
     ON.r2 <- NA
-    ON.pred <- NA
-  }, finally = {
+    
+    }, finally = {
     ON.i <- summary(ONlog)$coefficients["xmid","Estimate"]
     ON.A <- summary(ONlog)$coefficients["Asym","Estimate"]
     ON.k <- summary(ONlog)$coefficients["scal","Estimate"]
     ON.r2 <- summary(ONlm.r2)$r.squared
-    ON.pred <- ONpred
+    
+    return(data.frame(stateroute = s, ON.A, ON.i, ON.k, 
+                      ON.r2 = summary(ONlm.r2)$r.squared))
     })
-  ON.temp = data.frame(stateroute = s, ON.A, ON.i, ON.k, ON.r2, ON.pred) #fix
+  ON.temp = data.frame(stateroute = s, ON.A, ON.i, ON.k, ON.r2) 
   ON.df = rbind(ON.df, ON.temp)
   
   #CA
@@ -251,24 +250,26 @@ for(s in stateroutes){
     CAlog = nls(pctCore ~ SSlogis(logA, Asym, xmid, scal), data = logsub)
     CApred = predict(CAlog)
     CAlm.r2 = lm(logsub$pctCore ~ CApred)
-    return(data.frame(stateroute = s, CA.A, CA.i, CA.k, 
-                      CA.r2 = summary(CAlm.r2)$r.squared, CA.pred = CApred))
-  }, warning = function(w) {
+    
+    }, warning = function(w) {
     warnings = rbind(warnings, data.frame(stateroute = s, warning = w))
   }, error = function(e) {
     CA.i <- NA
     CA.A <- NA
     CA.k <- NA
     CA.r2 <- NA
-    CA.pred <- NA
+    
   }, finally = {
     CA.i <- summary(CAlog)$coefficients["xmid","Estimate"]
     CA.A <- summary(CAlog)$coefficients["Asym","Estimate"]
     CA.k <- summary(CAlog)$coefficients["scal","Estimate"]
     CA.r2 = summary(CAlm.r2)$r.squared
-    CA.pred <- CApred
+    
+    return(data.frame(stateroute = s, CA.A, CA.i, CA.k, 
+                      CA.r2 = summary(CAlm.r2)$r.squared))
+  
   })
-  CA.temp = data.frame(stateroute = s, CA.A, CA.i, CA.k, CA.r2, CA.pred) 
+  CA.temp = data.frame(stateroute = s, CA.A, CA.i, CA.k, CA.r2) 
   CA.df = rbind(CA.df, CA.temp)
   
   #CN
@@ -276,8 +277,7 @@ for(s in stateroutes){
     CNlog = nls(pctCore ~ SSlogis(logN, Asym, xmid, scal), data = logsub)
     CNpred = predict(CNlog)
     CNlm.r2 = lm(logsub$pctCore ~ CNpred) #bootstraping r2 vals for CNlog since not in summary stats
-    return(data.frame(stateroute = s, CN.A, CN.i, CN.k, 
-                      CN.r2 = summary(CNlm.r2)$r.squared, CN.pred = CNpred))
+    
   }, warning = function(w) {
     warnings = rbind(warnings, data.frame(stateroute = s, warning = w))
   }, error = function(e) {
@@ -285,15 +285,18 @@ for(s in stateroutes){
     CN.A <- NA
     CN.k <- NA
     CN.r2 <- NA
-    CN.pred <- NA
+    
   }, finally = {
     CN.i <- summary(CNlog)$coefficients["xmid","Estimate"]
     CN.A <- summary(CNlog)$coefficients["Asym","Estimate"]
     CN.k <- summary(CNlog)$coefficients["scal","Estimate"]
     CN.r2 <- summary(CNlm.r2)$r.squared
-    CN.pred = CNpred
+    
+    return(data.frame(stateroute = s, CN.A, CN.i, CN.k, 
+                      CN.r2 = summary(CNlm.r2)$r.squared))
+    
     })
-  CN.temp = data.frame(stateroute = s, CN.A, CN.i, CN.k, CN.r2, CN.pred) 
+  CN.temp = data.frame(stateroute = s, CN.A, CN.i, CN.k, CN.r2) 
   CN.df = rbind(CN.df, CN.temp)
 
   # Fitting % transient
