@@ -125,10 +125,10 @@ occ_counts = function(countData, countColumns, scale) {
 
 
 # Generic calculation of occupancy for a specified scale
-scales = c(5, 10, 25, 50)
+b_scales = c(5, 10, 25, 50)
 
 output = c()
-for (scale in scales) {
+for (scale in bscales) {
   numGroups = floor(50/scale)
   for (g in 1:numGroups) {
     groupedCols = paste("Stop", ((g-1)*scale + 1):(g*scale), sep = "")
@@ -137,6 +137,76 @@ for (scale in scales) {
   }
 }
 bbs_below<-data.frame(output)
+
+#should be able to use the 50 stop info (1 rte) from this output to aggregate routes AFTER below scale, because currently pulling from sep 
+
+####Revised above-route scale occ calcs####
+a_scales = seq(0,3250, by = 50)
+
+output = c()
+for (scale in ascales) {
+  numGroups = floor(50/scale)
+  for (g in 1:numGroups) {
+    groupedCols = paste("Stop", ((g-1)*scale + 1):(g*scale), sep = "")
+    temp = occ_counts(fifty_bestAous, groupedCols, scale)
+    output = rbind(output, temp) 
+  }
+}
+
+
+
+good_rtes2 = read.csv(paste(BBS, "good_rtes2.csv", sep = ""), header = TRUE) 
+require(fields)
+#Distance calculation between all combination of routes to pair them by min dist for aggregation
+distances = rdist.earth(matrix(c(good_rtes2$Longi, good_rtes2$Lati), ncol=2),
+                        matrix(c(good_rtes2$Longi, good_rtes2$Lati), ncol=2),
+                        miles=FALSE, R=6371)
+dist.df = data.frame(rte1 = rep(good_rtes2$stateroute, each = nrow(good_rtes2)),
+                     rte2 = rep(good_rtes2$stateroute, times = nrow(good_rtes2)),
+                     dist = as.vector(distances))
+#write.csv(dist.df, "C:/git/core-transient/scripts/R-scripts/scale_analysis/dist_df.csv", row.names = FALSE) for later calcs
+
+#bring in NON-50 stop data for above-route scale res
+bbs_allyears = read.csv(paste(BBS, "bbs_allyears.csv", sep = ""), header = TRUE)
+bbs_bestAous = bbs_allyears %>% 
+  filter(Aou > 2880 & !(Aou >= 3650 & Aou <= 3810) & !(Aou >= 3900 & Aou <= 3910) & 
+           !(Aou >= 4160 & Aou <= 4210) & Aou != 7010)  #excluding shorebirds and owls, data less reliable
+
+
+numrtes = 1:65 # based on min common number in top 6 grid cells, see grid_sampling_justification script 
+output = data.frame(r = NULL, nu = NULL, AOU = NULL, occ = NULL)
+for (r in uniqrtes) {
+  for (nu in numrtes) {
+    tmp = filter(dist.df2, rte1 == r) %>%
+      arrange(dist)
+    tmprtes = tmp$rte2[1:nu]   
+    #Aggregate routes together based on distance, calc occupancy, etc
+    
+    bbssub = filter(bbs_bestAous, stateroute %in% c(r, tmprtes)) 
+    bbsuniq = unique(bbssub[, c('Aou', 'Year')])
+    occs = bbsuniq %>% dplyr::count(Aou) %>% dplyr::mutate(occ = n/15)
+    
+    temp = data.frame(focalrte = r,
+                      numrtes = nu+1,                           #total # routes being aggregated
+                      meanOcc = mean(occs$occ, na.rm =T),       #mean occupancy
+                      pctCore = sum(occs$occ > 2/3)/nrow(occs),
+                      pctTrans = sum(occs$occ <= 1/3)/nrow(occs), #fraction of species that are transient
+                      totalAbun = sum(bbssub$SpeciesTotal)/15,  #total community size (per year)
+                      maxRadius = tmp$dist[nu])                 #radius including rtes aggregated
+    output = rbind(output, temp)
+    print(paste("Focal rte", r, "#' rtes sampled", nu))
+    
+  } #n loop
+  
+} #r loop
+
+bbs_focal_occs = as.data.frame(output)
+#Calc area for above route scale
+bbs_focal_occs$area = bbs_focal_occs$numrtes*50*(pi*(0.4^2)) #number of routes * fifty stops * area in sq km of a stop 
+# write.csv(bbs_focal_occs, "/scripts/R-scripts/scale_analysis/bbs_focal_occs.csv", row.names = FALSE)
+
+
+
 
 
 ####Binding above and below route scales, calc area####
@@ -375,36 +445,42 @@ for (s in stateroutes) {
   #OA
   OApreds = logistic_fcn(coef_sub[,33], coef_sub[,2], coef_sub[,3], coef_sub[,4]) 
    plot1 = ggplot(coef_sub, aes(x = logA, y = meanOcc))+geom_point(colour = "firebrick")+
-     geom_line(aes(x = logA, y = OApreds), color = "navy") +labs(x = "Log area", y = "Mean % Occupancy")
+     geom_line(aes(x = logA, y = OApreds), color = "navy") +labs(x = "Log area", y = "Mean % Occupancy")+
+     coord_cartesian(ylim = c(0, 1))
   
   
   #ON
   ONpreds = logistic_fcn(coef_sub[,34], coef_sub[,6], coef_sub[,7], coef_sub[,8])
    plot2 = ggplot(coef_sub, aes(x = logN, y = meanOcc))+geom_point(colour = "firebrick")+
-     geom_line(aes(x = logN, y = ONpreds), color = "navy") +labs(x = "Log abundance", y = "Mean % Occupancy")
+     geom_line(aes(x = logN, y = ONpreds), color = "navy") +labs(x = "Log abundance", y = "Mean % Occupancy")+
+     coord_cartesian(ylim = c(0, 1))
    
  
   #CA
   CApreds = logistic_fcn(coef_sub[,33], coef_sub[,10], coef_sub[,11], coef_sub[,12])
    plot1_2= ggplot(coef_sub, aes(x = logA, y = pctCore))+geom_point(colour = "turquoise")+
-     geom_line(aes(x = logA, y = CApreds), color = "navy")+labs(x = "Log area", y = "% Core Occupancy")
+     geom_line(aes(x = logA, y = CApreds), color = "navy")+labs(x = "Log area", y = "% Core Occupancy")+
+     coord_cartesian(ylim = c(0, 1))
    
   #aveN
   #CN
   CNpreds = logistic_fcn(coef_sub[,34], coef_sub[,14], coef_sub[,15], coef_sub[,16])
    plot2_2= ggplot(coef_sub, aes(x = logN, y = pctCore))+geom_point(colour = "turquoise")+
-     geom_line(aes(x = logN, y = CNpreds), color = "navy")+labs(x = "Log abundance", y = "% Core Occupancy")
+     geom_line(aes(x = logN, y = CNpreds), color = "navy")+labs(x = "Log abundance", y = "% Core Occupancy")+
+     coord_cartesian(ylim = c(0, 1))
 
   #using exponential function since higher explanatory power than pwr function
   #TA
   TApreds =  coef_sub[,35]*(coef_sub[,18]) #35 = optimum; replacing ^ with * bc natural log, removing -1
   plot1_3 = ggplot(coef_sub, aes(x = lnA, y = log(pctTran)))+geom_point(colour = "olivedrab")+
-    geom_line(aes(x = lnA, y = log(TApreds)), color = "navy") +labs(x = "Log area", y = "% Transient Occupancy")
-
+    geom_line(aes(x = lnA, y = log(TApreds)), color = "navy") +labs(x = "Log area", y = "% Transient Occupancy")+
+    coord_cartesian(ylim = c(-4, 1)) #FIX
+  
   #TN
   TNpreds = coef_sub[,36]*(coef_sub[,22])
   plot2_3 = ggplot(coef_sub, aes(x = lnN, y = log(pctTran)))+geom_point(colour = "olivedrab")+
-    geom_line(aes(x = lnN, y = TNpreds), color = "navy")+labs(x = "Log abundance", y = "% Transient Occupancy")
+    geom_line(aes(x = lnN, y = TNpreds), color = "navy")+labs(x = "Log abundance", y = "% Transient Occupancy")+
+    coord_cartesian(ylim = c(-4, 1))
 
   #storing plots
   predplot = grid.arrange(plot1, plot2, plot1_2, plot2_2, plot1_3, plot2_3,
