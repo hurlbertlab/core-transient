@@ -32,13 +32,15 @@ ndvidata = "//bioark.ad.unc.edu/HurlbertLab/GIS/MODIS NDVI/"
 BBS = '//bioark.ad.unc.edu/HurlbertLab/Jenkins/BBS scaled/'
 geog = "//bioark.ad.unc.edu/HurlbertLab/GIS/geography/"
 
-bbs_allscales = read.csv("data/BBS/bbs_allscales.csv", header = TRUE)
-
 #all focal rtes with all possible pairings
-
 bbs_latlon = read.csv(paste(BBS, "good_rtes2.csv", sep = ""), header = TRUE)
-bbs_allscales = dplyr::rename(bbs_latlon, focalrte = stateroute) %>%
-  right_join(bbs_allscales, by = "focalrte")
+
+#exclude routes that have missing above OR below scale data, such that sites are only calculated for routes that cover all 83 scales
+bbs_allscales = read.csv("data/BBS/bbs_allscales.csv", header = TRUE)
+bbs_allscales2 = bbs_allscales %>% count(focalrte) %>% filter(n == 83) %>% data.frame() 
+bbs_latlon = filter(bbs_latlon, stateroute %in% bbs_allscales2$focalrte)
+
+
 sites = data.frame(longitude = bbs_latlon$Longi, latitude = bbs_latlon$Lati) 
 #points(sites$longitude, sites$latitude, col= "red", pch=16) #check on map
 
@@ -189,11 +191,20 @@ bbs_envs = env_elev %>%
          ndvi.mean = ndvi_mean,
          prec.point, prec.mean, prec.var, 
          temp.point, temp.mean, temp.var)
-write.csv(bbs_envs, "scripts/R-scripts/scale_analysis/bbs_envs.csv", row.names = FALSE)
+write.csv(bbs_envs, "scripts/R-scripts/scale_analysis/bbs_envs.csv", row.names = FALSE) #updated 06/20 to reflect exclusive scale filtering
 #current version all vars up to date 05/31
+
+####Pare down routes to exclude routes that are missing above OR below scale####
+bbs_allscales = read.csv("data/BBS/bbs_allscales.csv", header = TRUE)
+bbs_allscales2 = bbs_allscales %>% count(focalrte) %>% filter(n == 83) %>% data.frame() 
+bbs_envs = filter(bbs_envs, stateroute %in% bbs_allscales2$focalrte)
 
 ####Calc z-scores, quantiles pre-variance loop####
 bbs_envs = read.csv("scripts/R-scripts/scale_analysis/bbs_envs.csv", header = TRUE)
+
+
+
+
 
 #alt simplistic standardization using z scores
 bbs_envs$ztemp = (bbs_envs$temp.mean - mean(bbs_envs$temp.mean)) / sd(bbs_envs$temp.mean)
