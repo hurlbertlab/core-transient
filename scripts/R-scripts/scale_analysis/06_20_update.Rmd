@@ -68,6 +68,7 @@ Additionally, when I look at the maxiumum values for my A and i points, I get th
 ```{r}
 max(env_coefs$OA.A, na.rm = T) #7
 max(env_coefs$OA.i, na.rm = T) #8
+dim(env_coefs)
 ```
 
 ^ the coefficients are calculated using a trycatch system in "alt_occ_scale.R" lines 167-329, including all files necessary to extract coefs. 
