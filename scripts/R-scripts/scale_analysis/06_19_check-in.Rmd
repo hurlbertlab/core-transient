@@ -144,20 +144,21 @@ p1A = ggplot(data = env_coefs, aes(OA.A, elev_qv))+geom_point()
 p2A = ggplot(data = env_coefs, aes(OA.A, ndvi_qv))+geom_point()
 p3A = ggplot(data = env_coefs, aes(OA.A, qhull_vol))+geom_point()
 p4A = ggplot(data = env_coefs, aes(OA.A, zhull_vol))+geom_point()
-
+p5_1 = gridExtra::grid.arrange(p1A, p2A, p3A, p4A)
 
 p1B = ggplot(data = env_coefs, aes(OA.i, elev_qv))+geom_point()
 p2B = ggplot(data = env_coefs, aes(OA.i, ndvi_qv))+geom_point()
 p3B = ggplot(data = env_coefs, aes(OA.i, qhull_vol))+geom_point()
 p4B = ggplot(data = env_coefs, aes(OA.i, zhull_vol))+geom_point()
+p5_2 = gridExtra::grid.arrange(p1B, p2B, p3B, p4B)
 
 ```
 
 Additionally, when I look at the maxiumum values for my A and i points, I get the following: 
 
 ```{r}
-max(env_coefs$OA.A) #why.....is there a 7 in my OA.A values....?
-max(env_coefs$OA.i) #16??? 
+max(env_coefs$OA.A, na.rm = T) #7
+max(env_coefs$OA.i, na.rm = T) #8
 ```
 
 ^ the coefficients are calculated using a trycatch system in "alt_occ_scale.R" lines 167-329, including all files necessary to extract coefs. 
