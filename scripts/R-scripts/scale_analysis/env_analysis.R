@@ -191,20 +191,17 @@ bbs_envs = env_elev %>%
          ndvi.mean = ndvi_mean,
          prec.point, prec.mean, prec.var, 
          temp.point, temp.mean, temp.var)
-write.csv(bbs_envs, "scripts/R-scripts/scale_analysis/bbs_envs.csv", row.names = FALSE) #updated 06/20 to reflect exclusive scale filtering
-#current version all vars up to date 05/31
+write.csv(bbs_envs, "scripts/R-scripts/scale_analysis/bbs_envs.csv", row.names = FALSE) 
+#current version 06/20
 
 ####Pare down routes to exclude routes that are missing above OR below scale####
 bbs_allscales = read.csv("data/BBS/bbs_allscales.csv", header = TRUE)
 bbs_allscales2 = bbs_allscales %>% count(focalrte) %>% filter(n == 83) %>% data.frame() 
 bbs_envs = filter(bbs_envs, stateroute %in% bbs_allscales2$focalrte)
+write.csv(bbs_envs, "scripts/R-scripts/scale_analysis/bbs_envs.csv", row.names = FALSE) #updated 06/20 to reflect exclusive scale filtering
 
 ####Calc z-scores, quantiles pre-variance loop####
 bbs_envs = read.csv("scripts/R-scripts/scale_analysis/bbs_envs.csv", header = TRUE)
-
-
-
-
 
 #alt simplistic standardization using z scores
 bbs_envs$ztemp = (bbs_envs$temp.mean - mean(bbs_envs$temp.mean)) / sd(bbs_envs$temp.mean)
@@ -229,7 +226,7 @@ bbs_envs$prec_q= rank(bbs_envs$prec.mean)/nrow(bbs_envs)
 #http://www.qhull.org/html/qconvex.htm#synopsis
 bbs_envs = read.csv("scripts/R-scripts/scale_analysis/bbs_envs.csv", header = TRUE)
 #subset to just appropriate dims for convhulln 
-sub_envs = bbs_envs %>% select(temp_q, prec_q, elev_q, ndvi_q) %>% filter(ndvi_q != 'NA') #cuts down to 982 
+sub_envs = bbs_envs %>% select(temp_q, prec_q, elev_q, ndvi_q) %>% filter(ndvi_q != 'NA') #cuts down to 890 
 
 
 hull = convhulln(sub_envs, "FA")
@@ -240,6 +237,9 @@ hull$vol #66.22 #0.54 second time around....
 ####Pair env data to secondary rtes associated with each focal rte; calc variance for each focal rte####
 bbs_envs = read.csv("scripts/R-scripts/scale_analysis/bbs_envs.csv", header = TRUE)
 dist.df = read.csv("scripts/R-scripts/scale_analysis/dist_df.csv", header = TRUE)
+
+#need to pair down by routes existing in bbs_envs (which have been sorted appropriately) and then calculated the top n 66 based on distance
+dist.df2 = filter(dist.df, rte1 %in% bbs_envs$stateroute & rte2 %in% bbs_envs$stateroute) 
 
 #num of rows matches num of rows in dts.df, good 
 #now calc var for each focal rte (rte1)
