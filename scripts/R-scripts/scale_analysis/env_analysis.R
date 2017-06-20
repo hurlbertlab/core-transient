@@ -286,7 +286,7 @@ for(r in focal_rtes){
 }
 
 write.csv(env_hetero, "scripts/R-scripts/scale_analysis/env_hetero.csv", row.names = FALSE)
-#updated 06/02
+#updated 06/20
 
 
 ####Elev vs NDVI plotting####
@@ -306,7 +306,7 @@ env_hetero = read.csv("scripts/R-scripts/scale_analysis/env_hetero.csv", header 
 coefs = read.csv("scripts/R-scripts/scale_analysis/coefs.csv", header = TRUE)
 env_coefs = inner_join(coefs, env_hetero, by = "stateroute")
 write.csv(env_coefs, "scripts/R-scripts/scale_analysis/env_coefs.csv", row.names = FALSE)
-#NEED TO UPDATE
+#updated 06/20
 
 
 
@@ -326,7 +326,7 @@ for (d in 2:25) { #adjust columns appropriately -> make sure correct order of in
     rsqrd_hetero = rbind(rsqrd_hetero, tempdf)
   }
 }
-write.csv(rsqrd_hetero, "scripts/R-scripts/scale_analysis/rsqrd_hetero.csv", row.names = FALSE) #updated 06/16 with new env hetero vars
+write.csv(rsqrd_hetero, "scripts/R-scripts/scale_analysis/rsqrd_hetero.csv", row.names = FALSE) #updated 06/20 using best stateroutes
 
 
 ####Visually Characterizing measures of habitat heterogeneity####
@@ -371,22 +371,22 @@ ggplot(data = rsub_t, aes(x = ind, y = r2)) + geom_boxplot()+theme_classic() #el
 
 
 # the above are all based on the models themselves...what about the numbers? 
-p1 = ggplot(data = env_coefs, aes(elev_qv, OA.A))+geom_point()
-p2 = ggplot(data = env_coefs, aes(ndvi_qv, OA.A))+geom_point()
-p3 = ggplot(data = env_coefs, aes(qhull_vol, OA.A))+geom_point()
-p4 = ggplot(data = env_coefs, aes(zhull_vol, OA.A))+geom_point()
+p1A = ggplot(data = env_coefs, aes(elev_qv, OA.A))+geom_point()
+p2A = ggplot(data = env_coefs, aes(ndvi_qv, OA.A))+geom_point()
+p3A = ggplot(data = env_coefs, aes(qhull_vol, OA.A))+geom_point()
+p4A = ggplot(data = env_coefs, aes(zhull_vol, OA.A))+geom_point()
 
 p5_1 = gridExtra::grid.arrange(p1A, p2A, p3A, p4A)
 
-max(env_coefs$OA.A) #why.....is there a 7 in my OA.A values....? that shouldn't be possible. Data errors!!!
+max(env_coefs$OA.A, na.rm = T) #why.....is there a 7 in my OA.A values....? still a 7
 
-p1 = ggplot(data = env_coefs, aes(elev_qv, OA.i))+geom_point()
-p2 = ggplot(data = env_coefs, aes(ndvi_qv, OA.i))+geom_point()
-p3 = ggplot(data = env_coefs, aes(qhull_vol, OA.i))+geom_point()
-p4 = ggplot(data = env_coefs, aes(zhull_vol, OA.i))+geom_point()
+p1B = ggplot(data = env_coefs, aes(elev_qv, OA.i))+geom_point()
+p2B = ggplot(data = env_coefs, aes(ndvi_qv, OA.i))+geom_point()
+p3B = ggplot(data = env_coefs, aes(qhull_vol, OA.i))+geom_point()
+p4B = ggplot(data = env_coefs, aes(zhull_vol, OA.i))+geom_point()
 
 p5_2 = gridExtra::grid.arrange(p1B, p2B, p3B, p4B)
-max(env_coefs$OA.i) #16??? really shouldn't be possible. is this bc dealing with log area? 
+max(env_coefs$OA.i, na.rm = T) #16??? really shouldn't be possible. is this bc dealing with log area? -> after data fixes, now 8 
 
 p_final = grid.arrange(p5_1, p5_2)
 
