@@ -251,7 +251,7 @@ env_hetero = data.frame(stateroute = NULL,
 focal_rtes = unique(bbs_envs$stateroute)
 
 for(r in focal_rtes){
-  rte_group = dist.df %>% 
+  rte_group = dist.df2 %>% 
     filter(rte1 == r) %>% 
     top_n(66, desc(dist)) %>%
     select(rte2) %>% as.vector()
