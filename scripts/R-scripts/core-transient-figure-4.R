@@ -165,7 +165,7 @@ logseries_weights = read.csv("output/tabular_data/logseries_weights.csv", header
 
 colscale = c("dark orange2","yellow")
 k = ggplot(logseries_weights, aes(x = treatment, y = weights, fill=factor(treatment))) +
-  geom_violin(linetype="blank") + xlab("Transient Status") + ylab("Proportion of Species") + scale_fill_manual(labels = c("All \n species","All species excluding transients"),values = colscale)+ theme_classic()+ ylim(0, 1) + theme(axis.text.x=element_text(size  =46, color = "black"), axis.ticks.x=element_blank(),axis.text.y=element_text(size=30, color = "black"),axis.title.x=element_text(size=46, color = "black"),axis.title.y=element_text(size=46,angle=90,vjust = 2))+ scale_x_discrete(breaks=c("All species","Excluding transients"),labels=c("All \n species","Excluding \n transients")) + xlab(NULL) + ylab("Akaike weight \n of logseries model") + theme(legend.position = "none")+ geom_text(x=1.4, y=0.8, size = 6, angle = 90, label="Log series")+ geom_text(x=1.4, y=0.2, size = 6,angle = 90, label="Log normal")+   geom_segment(aes(x = 1.5, y = 0.35, xend = 1.5, yend = 0.05), colour='black', size=0.5,arrow = arrow(length = unit(0.5, "cm")))+   geom_segment(aes(x = 1.5, y = 0.65, xend = 1.5, yend = 0.95), colour='black', size=0.5,arrow = arrow(length = unit(0.5, "cm")))
+  geom_violin(linetype="blank") + xlab("Transient Status") + ylab("Proportion of Species") + scale_fill_manual(labels = c("All \n species","All species excluding transients"),values = colscale)+ theme_classic()+ ylim(0, 1) + theme(axis.text.x=element_text(size  =46, color = "black"), axis.ticks.x=element_blank(),axis.text.y=element_text(size=30, color = "black"),axis.title.x=element_text(size=46, color = "black"),axis.title.y=element_text(size=46,angle=90,vjust = 5))+ scale_x_discrete(breaks=c("All species","Excluding transients"),labels=c("All\n species","Excluding\n transients")) + xlab(NULL) + ylab("Akaike weight \n of logseries model") + theme(legend.position = "none")+ geom_text(x=1.4, y=0.8, size = 6, angle = 90, label="Log series")+ geom_text(x=1.4, y=0.2, size = 6,angle = 90, label="Log normal")+   geom_segment(aes(x = 1.5, y = 0.35, xend = 1.5, yend = 0.05), colour='black', size=0.5,arrow = arrow(length = unit(0.5, "cm")))+   geom_segment(aes(x = 1.5, y = 0.65, xend = 1.5, yend = 0.95), colour='black', size=0.5,arrow = arrow(length = unit(0.5, "cm")))
 k
 ggsave(file="C:/Git/core-transient/output/plots/sad_fit_comparison.pdf", height = 5, width = 15)
 # + guides(fill=guide_legend(title=NULL))+ theme(legend.text = element_text(size = 16),legend.position="top", legend.justification=c(0, 1), legend.key.width=unit(1, "lines"))
@@ -231,9 +231,9 @@ ggsave(file="C:/Git/core-transient/output/plots/4b_corrcoeff_NDVI.pdf", height =
 mh = read.csv("data/raw_datasets/dataset_255RAW/MHfig1.csv", header = TRUE)
 mh$class = factor(mh$class, levels = c('trans','core'),ordered = TRUE)
 
-ggplot(mh, aes(x=abunx, freqy,fill=factor(class))) + geom_bar(stat="identity", position = "identity",color = "gray50", alpha = 0.5, lwd = 1.05)+ ylab("Frequency") + xlab ("Maximum abundance")  + scale_x_continuous(breaks = c(1,4, 8, 11, 15), labels = c("1","10","100","1,000","10,000"))+ scale_fill_manual(labels = c("Transient", "Core"),values = c("white","gray0"))+ theme_classic() + theme(axis.text.x=element_text(size=30, color = "black"),axis.text.y=element_text(size=30, color = "black"),axis.title.x=element_text(size=46, color = "black"),axis.title.y=element_text(size=46,angle=90,vjust = 2))+  theme(legend.text = element_text(size = 30), legend.title = element_blank(), legend.key.height=unit(2, "points")) 
+ggplot(mh, aes(x=abunx, freqy,fill=factor(class))) + geom_bar(stat="identity", position = "identity",color = "gray50", alpha = 0.5, lwd = 1.05)+ ylab("Frequency") + xlab ("Maximum abundance")  + scale_x_continuous(breaks = c(1,4, 8, 11, 15), labels = c("1","10","100","1,000","10,000"))+ scale_fill_manual(labels = c("Transient", "Core"),values = c("white","gray0"))+ theme_classic() + theme(axis.text.x=element_text(size=40, color = "black"),axis.text.y=element_text(size=40, color = "black"),axis.title.x=element_text(size=50, color = "black"),axis.title.y=element_text(size=50,angle=90,vjust = 3.5))#+  theme(legend.text = element_text(size = 30), legend.title = element_blank(), legend.key.height=unit(2, "points")) 
 
-ggsave(file="C:/Git/core-transient/output/plots/1b_M_H_hists.pdf", height = 10, width = 12)
+ggsave(file="C:/Git/core-transient/output/plots/1b_M_H_hists.pdf", height = 10, width = 16)
 
 #### Figure 4c ####
 turnover = read.csv("output/tabular_data/temporal_turnover.csv", header = TRUE)
@@ -251,7 +251,7 @@ turnover_else$taxa = factor(turnover_else$taxa,
 colscale = c("gold2","turquoise2", "red", "purple4","forestgreen","#1D6A9B") 
 
 m <- ggplot(turnover_else, aes(x = TJ, y = TJnotrans))
-four_c <-m + geom_abline(intercept = 0,slope = 1, lwd =1.5,linetype="dashed")+geom_point(aes(colour = taxa), size = 5)+ geom_point(data = turnover_bbs, aes(colour = taxa),size = 2) + xlab("Turnover (all species)") + ylab("Turnover \n (excluding transients)")  + scale_colour_manual(breaks = turnover_col$taxa,values = colscale) + theme_classic() + theme(axis.text.x=element_text(size=30, color = "black"),axis.text.y=element_text(size=30, color = "black"),axis.ticks.x=element_blank(),axis.title.x=element_text(size=46, color = "black"),axis.title.y=element_text(size=46,angle=90,vjust = 2))+ guides(colour = guide_legend(title = "Taxa"))
+four_c <-m + geom_abline(intercept = 0,slope = 1, lwd =1.5,linetype="dashed")+geom_point(aes(colour = taxa), size = 5)+ geom_point(data = turnover_bbs, aes(colour = taxa),size = 2) + xlab("Turnover (all species)") + ylab("Turnover \n (excluding transients)")  + scale_colour_manual(breaks = turnover_col$taxa,values = colscale) + theme_classic() + theme(axis.text.x=element_text(size=30, color = "black"),axis.text.y=element_text(size=30, color = "black"),axis.ticks.x=element_blank(),axis.title.x=element_text(size=46, color = "black"),axis.title.y=element_text(size=46,angle=90,vjust = 5))+ guides(colour = guide_legend(title = "Taxa"))
 
 ggsave(file="C:/Git/core-transient/output/plots/4c_spturnover.pdf", height = 10, width = 15)
 
@@ -363,8 +363,8 @@ pt1 <- plot_grid(k + theme(legend.position="none"),
                  l + theme(legend.position="none"),
                  align = 'hv',
                  labels = c("A","", "B"),
-                 label_size = 30,
-                 hjust = -9,
+                 label_size = 36,
+                 hjust = -7,
                  rel_widths = c(1, 0.05, 1),
                  nrow = 1
 )
@@ -378,8 +378,8 @@ z <- plot_grid(four_c+ theme(legend.position="none"),
                four_d + theme(legend.position="none"),
                align = 'hv',
                labels = c("C","", "D"),
-               label_size = 30,
-               hjust = -9,
+               label_size = 36,
+               hjust = -7,
                rel_widths = c(1, 0.05, 1),
                nrow = 1)
 p2 = plot_grid(z,legendc, ncol = 2) 
