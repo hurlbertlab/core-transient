@@ -104,6 +104,11 @@ occ_pred_3d = data.frame(datasetID = 999, system = unique(ecosys$system), meanAb
 predmod3d = merTools::predictInterval(mod3d, occ_pred_3d, n.sims=1000)
 predmod3d$order = c(1:3)
   
+# pseudo r2
+mod3 = lm(areamerge$pctTrans ~ log10(areamerge$area))
+area_r = na.omit(areamerge)
+mod_r = lm(area_r$pctTrans~predict(mod3))
+  
 #### panel plot ####
 area_plot = data.frame()
 pdf('output/plots/3a_3d.pdf', height = 10, width = 14)
@@ -189,6 +194,11 @@ write.csv(area_plot, "output/tabular_data/fig_3a_output.csv", row.names =FALSE)
 #p <- ggplot(area_plot, aes(x = log10(area), y = slope))
 #p + geom_abline(intercept = 0,slope = 1, lwd =1.5,linetype="dashed") + geom_point(aes(colour = taxa), size = 6) + xlab("Species Richness") + ylab("Species Richness Without Transients") + scale_colour_manual(breaks = plot_relationship$taxa,values = colscale) + theme(axis.text.x=element_text(size=24),axis.text.y=element_text(size=24),axis.title.x=element_text(size=32),axis.title.y=element_text(size=32,angle=90,vjust = 2))+ theme_classic()
 #ggsave(file="C:/Git/core-transient/output/plots/sparea_4c.pdf", height = 10, width = 15)
+
+# pseudo r2
+mod4 = lm(bbs_occ$pctTrans ~ log10(bbs_occ$meanAbundance))
+bbs_r = na.omit(bbs_occ)
+mod4_r = lm(bbs_r$pctTrans~predict(mod4))
 
 #### Figure 3b transients and scale ####
 pdf('output/plots/3b_sara_scale_transient_reg.pdf', height = 6, width = 7.5)

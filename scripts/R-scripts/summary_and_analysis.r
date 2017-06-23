@@ -328,7 +328,7 @@ lat_scale_elev = data.frame(lat_scale_elev)
 # lat_scale_elev$stateroute = unlist(lat_scale_elev$stateroute)
 # lat_scale_elev$stateroute = as.numeric(lat_scale_elev$stateroute)
 
-lat_scale_rich = merge(lat_scale_elev, summ[,c("datasetID","site", "meanAbundance")], by = c("datasetID", "site"), all.x = TRUE)
+lat_scale_rich = merge(lat_scale_elev, summ10[,c("datasetID","site", "meanAbundance")], by = c("datasetID", "site"), all.x = TRUE)
 #  "spRichTrans", 
 write.csv(lat_scale_rich, "output/tabular_data/lat_scale_rich_10.csv", row.names = F)
 # lat_scale_rich = read.csv("output/tabular_data/lat_scale_rich.csv", header = TRUE)
