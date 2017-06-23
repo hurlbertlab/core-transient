@@ -134,25 +134,25 @@ write.csv(taxcolors, "output/tabular_data/taxcolors.csv", row.names = FALSE)
 
 
 pdf('output/plots/data_summary_hists.pdf', height = 8, width = 10)
-par(mfrow = c(3, 2), mar = c(3.75,3.75,1,1), cex = 1, oma = c(0,0,0,0), las = 1,
+par(mfrow = c(3, 2), mar = c(4,4,1.2,1.2), cex = 1.25, oma = c(0,0,0,0), las = 1,
     cex.lab = 1)
 b1=barplot(dsetsBySystem, col = c('burlywood','skyblue', 'navy'), xaxt = "n",cex.names = 1) 
-mtext("# Datasets", 2, cex = 1, las = 0, line = 2.5)
+mtext("Datasets", 2, cex = 1.25, las = 0, line = 2.5)
 title(outer=FALSE,adj=1,main="A",cex.main=1.5,col="black",font=2,line=-0.1)
 barplot(log10(sitesBySystem), col = c('burlywood','skyblue', 'navy'), cex.names = 1, 
         xaxt = "n",yaxt = "n", ylim = c(0,4)) 
 axis(side = 2, 0:4,labels=c("0","1","10","1000","10000"))
-mtext(expression(log[10] ~ " # Assemblages"), 2, cex = 1, las = 0, line = 3)
+mtext(expression(log[10] ~ " Assemblages"), 2, cex = 1.25, las = 0, line = 3.5)
 title(outer=FALSE,adj=1,main="B",cex.main=1.5,col="black",font=2,line=-0.1)
 bar1 = barplot(dsetsByTaxa[taxorder], xaxt = "n", axisnames = F,
                col = as.character(taxcolors$color[match(taxorder, taxcolors$taxa)]))
 
-mtext("# Datasets", 2, cex = 1, las = 0, line = 2.5)
+mtext("Datasets", 2, cex = 1.25, las = 0, line = 2.5)
 title(outer=FALSE,adj=1,main="C",cex.main=1.5,col="black",font=2,line=-0.1)
 bar2 = barplot(log10(sitesByTaxa[taxorder]), axes = F, axisnames = F, ylim = c(0,4),
                col = as.character(taxcolors$color[match(taxorder, taxcolors$taxa)]))
 axis(2, 0:4,labels=c("0","1","10","1000","10000"))
-mtext(expression(log[10] ~ " # Assemblages"), 2, cex = 1, las = 0, line = 3)
+mtext(expression(log[10] ~ " Assemblages"), 2, cex = 1.25, las = 0, line = 3.5)
 title(outer=FALSE,adj=0.95,main="D",cex.main=1.5,col="black",font=2,line=-0.1)
 
 # numspp_comm 
@@ -164,10 +164,10 @@ rankedtaxorder = c('Bird','Mammal','Plankton','Benthos','Invertebrate','Plant','
 
 bar1 = boxplot(summ1.col$spRichTotal~summ1.col$taxa, cex.axis =1, frame.plot = FALSE,  col = as.character(summ1.col$color[match(taxorder, summ1.col$taxa)]), axes = FALSE, ylim = c(0, 160)) 
 axis(side = 2) 
-mtext(expression(" # Species"), 2, cex = 1, las = 0, line = 2.5)
+mtext(expression("Species Richness"), 2, cex = 1.25, las = 0, line = 2.5)
 title(outer=FALSE,adj=1,main="E",cex.main=1.5,col="black",font=2,line=-0.1)
 bar2 = boxplot(summ1.col$nTime~summ1.col$taxa, xaxt = "n", frame.plot = FALSE, cex.axis =1,col = as.character(summ1.col$color[match(taxorder, summ1.col$taxa)]))
-mtext(expression(" Years of Study"), 2, cex = 1, las = 0, line = 2.5)
+mtext(expression("Years"), 2, cex = 1.25, las = 0, line = 2.5)
 title(outer=FALSE,adj=1,main="F",cex.main=1.5,col="black",font=2,line=-0.1)
 
 dev.off()
@@ -330,7 +330,7 @@ lat_scale_elev = data.frame(lat_scale_elev)
 
 lat_scale_rich = merge(lat_scale_elev, summ[,c("datasetID","site", "meanAbundance")], by = c("datasetID", "site"), all.x = TRUE)
 #  "spRichTrans", 
-write.csv(lat_scale_rich, "output/tabular_data/lat_scale_rich.csv", row.names = F)
+write.csv(lat_scale_rich, "output/tabular_data/lat_scale_rich_10.csv", row.names = F)
 # lat_scale_rich = read.csv("output/tabular_data/lat_scale_rich.csv", header = TRUE)
 
 # Model -  want 5 km radius here!!!!

@@ -1,89 +1,90 @@
-Dataset Name,Link,System,Taxa,Number of Sites,Years of Study,Number of Species,Citation,,Dataset ID
-North American Breeding Bird Survey,https://www.pwrc.usgs.gov/bbs/,Terrestrial,Bird,850,15,405,"Pardieck et. al, 2016",,1
-Western English Channel phytoplankton,http://plankt.oxfordjournals.org/content/32/5/643.full#sec-5,Marine,Plankton,1,18,157,"Widdicombe et. al, 2010",,33
-Breeding Birds from Preston 1948,http://www.jstor.org/stable/1931793,Terrestrial,Bird,1,10,56,"Preston, 1960",,41
-Skokholm birds,http://ecologicaldata.org/wiki/skokholm-bird-observatory,Terrestrial,Bird,1,47,29,"Williamson, 1983",,46
-Canadian duck censuses,http://ecologicaldata.org/wiki/redvers-waterfowl-census,Terrestrial,Bird,2,26,13,"Vickery et. al, 1984",,47
-Belgian Migrating Lepidoptera Survey,https://web.archive.org/web/19990220041409/http://users.skynet.be/bs663526/,Terrestrial,Invertebrate,1,14,25,"Vanholder, 1997",,70
-"Above ground plant biomass in a mesic acidic tussock tundra experimental site from 1982 to 2000 Arctic LTER, Toolik Lake, Alaska",http://arc-lter.ecosystems.mbl.edu/19822000gs81tusbm,Terrestrial,Plant,4,6,24,"Shaver, 2006",,207
-Insect Populations via Sticky Traps at KBS-LTER,http://lter.kbs.msu.edu/datatables/67,Terrestrial,Invertebrate,10,23,20,"Landis and S. Gage, 2015",acknowledgement request,208
-"Long-Term Nitrogen Deposition: Population, Community, and Ecosystem Consequences - Experiment 001",https://www.cedarcreek.umn.edu/research/data/dataset?ple001,Terrestrial,Plant,3,30,148,"Tilman, 2012",acknowledgement request,210
-Long-term mapped quadrats from Kansas prairie: demographic information for herbaceaous Plant. Ecology 88:2673.,http://esapubs.org/archive/ecol/E088/161/,Terrestrial,Plant,51,41,137,"Adler et. al, 2007",,213
-Plant species composition on selected watersheds at Konza Prairie,http://lter.konza.ksu.edu/content/pvc02-plant-species-composition-selected-watersheds-konza-prairie,Terrestrial,Plant,4,18,294,"Briggs et. al, 2002",acknowledgement request,217
-Lac Croche understory vegetation data set,http://www.esapubs.org/archive/ecol/E088/197/default.htm,Terrestrial,Plant,43,8,83,"Paquette et. al, 2007",,218
-"Portal Plants, summer",http://esapubs.org/archive/ecol/E090/118/metadata.htm,Terrestrial,Plant,24,14,105,"Ernest et. al, 2009",,221
-Mapped quadrats in sagebrush steppe: long-term data for analyzing demographic rates and plant–plant interactions,http://onlinelibrary.wiley.com/doi/10.1890/10-0404.1/abstract,Terrestrial,Plant,1,17,18,"Zachmann et. al, 2016",,222
-"Small Mammal Exclosure Study (SMES) Vegetation Data from the Chihuahuan Desert Grassland and Shrubland at the Sevilleta National Wildlife Refuge, New Mexico (2006-2009)",http://repository.unm.edu/handle/1928/29843,Terrestrial,Plant,7,15,101,"Lightfoot, 2010",,223
-One hundred and six years of population and community dynamics of Sonoran Desert Laboratory perennials. Ecology 94:976. http://dx.doi.org/10.1890/12-1164.1,http://esapubs.org/archive/ecol/E094/083/,Terrestrial,Plant,2,28,58,"Rodriguez-Buritica et. al, 2013",,224
-A 12-year study on the scaling of vascular plant composition in an Oklahoma tallgrass prairie.,http://esapubs.org/Archive/ecol/E091/124/default.htm#data,Terrestrial,Plant,20,12,318,"McGlinn et. al, 2010",,225
-Eastern Wood Breeding Bird Data,http://onlinelibrary.wiley.com/doi/10.1002/9780470999592.app2/pdf,Terrestrial,Bird,1,29,45,"Gaston et. al, 2000",,226
-Hubbard Brook LTER,https://portal.lternet.edu/nis/mapbrowse?packageid=knb-lter-hbr.81.5,Terrestrial,Bird,4,14,37,"Holmes, 2016",,228
-Konza LTER small mammals,http://lter.konza.ksu.edu/content/csm01-seasonal-summary-numbers-small-mammals-14-lter-traplines-prairie-habitats-konza,Terrestrial,Mammal,14,33,15,"Ricketts and Sandercock, 2016",acknowledgement request,231
-Sevilleta LTER mammals,http://sev.lternet.edu/content/small-mammal-exclosure-study-smes-0,Terrestrial,Mammal,1,16,24,"Baéz et. al, 2006",acknowledgement ,232
-Powdermill,http://ecologicaldata.org/wiki/powdermill-biological-station-small-mammal-database,Terrestrial,Mammal,1,11,16,"Merritt, 1999",,234
-Long-term monitoring of Mammals in the face of biotic and abiotic influences at a semiarid site in north-central Chile.Mammals-sjs.,http://esapubs.org/archive/ecol/E094/084/metadata.php,Terrestrial,Mammal,4,12,12,"Kelt et. al, 2013",,237
-Long-term monitoring of Mammals in the face of biotic and abiotic influences at a semiarid site in north-central Chile. Ecology 94:977. shrub and herbaceous Plant.,http://esapubs.org/archive/ecol/E094/084/metadata.php,Terrestrial,Plant,16,16,85,"Kelt et. al, 2013",,238
-"A multi-decade time series of kelp forest community structure at San Nicolas Island, California (USA). Ecology 94:2654.",http://esapubs.org/archive/ecol/E094/244/#data,Marine,Benthos,7,27,128,"Kenner et. al, 2013",,241
-"A multi-decade time series of kelp forest community structure at San Nicolas Island, California (USA). Ecology 94:2654.",http://esapubs.org/archive/ecol/E094/244/#data,Marine,Fish,7,26,36,"Kenner et. al, 2013",,242
-"A multi-decade time series of kelp forest community structure at San Nicolas Island, California (USA). Ecology 94:2654.",http://esapubs.org/archive/ecol/E094/244/#data,Marine,Fish,1,17,57,"Kenner et. al, 2013",,243
- A multi-decade time series of kelp forest community structure at the California Channel Islands. Ecology 94:2655.,http://esapubs.org/archive/ecol/E094/245/,Marine,Benthos,33,30,28,"Kushner et. al, 2013",,244
-A multi-decade time series of kelp forest community structure at the California Channel Islands. Ecology 94:2655.,http://esapubs.org/archive/ecol/E094/245/,Marine,Fish,32,16,86,"Kushner et. al, 2013",,246
-Mosquitoes of North America with emphasis in the midwestern United States: long-term occurrence patterns. Ecology 94:1433.,http://esapubs.org/archive/ecol/E094/126/,Terrestrial,Invertebrate,13,37,28,"Hellmann et. al, 2013",,247
-SBC LTER: Reef: Kelp Forest Community Dynamics: Fish abundance,https://portal.lternet.edu/nis/mapbrowse?packageid=knb-lter-sbc.17.27,Marine,Fish,39,13,58,"Reed, 2013",,248
-Stream fish assemblage stability in a southern Appalachian stream at the Coweeta Hydrologic Laboratory from 1984 to 1995,https://portal.lternet.edu/nis/mapbrowse?packageid=knb-lter-cwt.3047.13,Freshwater,Fish,2,10,14,"Grossman,  2007",,250
-Sevilleta LTER arthropod data,https://portal.lternet.edu/nis/mapbrowse?packageid=knb-lter-sev.29.175390,Terrestrial,Invertebrate,42,12,365,"Lightfoot, 2010", acknowledgement ,252
-Portal Rodents,http://esapubs.org/archive/ecol/E090/118/metadata.htm,Terrestrial,Mammal,1,15,21,"Ernest et. al, 2009",,254
-Hinkley Point fish,http://www.nature.com/nature/journal/v422/n6933/full/nature01547.html,Marine,Fish,1,21,80,"Magurran & Henderson, 2003",,255
-Ireland amphipods,http://www.sciencedirect.com/science/article/pii/0022098196000305,Marine,Invertebrate,1,12*,27,"Costello & Myers,  1996",,257
-"2003 Prescribed Burn Effect on Chihuahuan Desert Grasses and Shrubs at the Sevilleta National Wildlife Refuge, New Mexico: Species Composition Study (2004- ) ",http://sev.lternet.edu/data/sev-166,Terrestrial,Plant,16,9,147,"Muldavin and Collins, 2016", acknowledgement ,258
-"Portal Plants, winter",http://esapubs.org/archive/ecol/E090/118/metadata.htm,Terrestrial,Plant,1,14,95,"Ernest et. al, 2009",,259
-Mediterranean tintinnid ciliates,http://onlinelibrary.wiley.com/doi/10.1111/j.1365-2699.2008.02046.x/abstract,Marine,Plankton,1,18*,49,"Dolan et. al, 2009",,260
-Indiana stream fish assemblage,http://www.jstor.org/stable/2461070?seq=1#page_scan_tab_contents,Freshwater,Fish,1,12,49,"Grossman et. al, 1982",,261
-Farne Island birds,http://www.jstor.org/stable/1744518,Terrestrial,Bird,1,29,16,"Diamond and May, 1977",,263
-Bialowieza National Park bird assemblage,http://www.bioone.org/doi/abs/10.3161/000164510X551354,Terrestrial,Bird,7,40,84,"Weso?owski et. al, 2010 ",,264
-"Species trends, turnover and composition of a woodland bird community in southern Sweden during a period of 57 years",https://www.researchgate.net/profile/Soeren_Svensson/publication/283248722_Species_trends_turnover_and_composition_of_a_woodland_bird_community_in_southern_Sweden_during_a_period_of_fifty-seven_years/links/5742f71508aea45ee84a744b.pdf,Terrestrial,Bird,1,57,41,"Svensson et. al, 2010",,265
-"The 37-year dynamics of a subalpine passerine bird community, with special emphasis on the influence of environmental temperature and Epirrita autumnata cycles","http://www.luvre.org/data_o_pdf/Luvre-130,%202004%20Enemar%20mfl,%2037%20ar%20skogen.pdf",Terrestrial,Bird,1,37,35,"Enemar et. al, 2004",,266
-A long-term bird population study in an Appalachian spruce forest,http://www.jstor.org/stable/4161914,Terrestrial,Bird,1,22,20,"Hall, 1984",,267
-Long-term dynamics of breeding birds in broad-leaved deciduous forest on Hanikatsi Island in the West-Estonian archipelago,https://www.researchgate.net/publication/253704570_Long-term_dynamics_of_breeding_birds_in_broad-leaved_deciduous_forest_on_Hanikatsi_Island_in_the_West-Estonian_archipelago,Terrestrial,Bird,1,27,33,"Leito et. al, 2006",,268
-Species composition and population fluctuations of alpine bird communities during 38 years in the Scandinavian mountain range,"http://www.luvre.org/data_o_pdf/Luvre-135,%202006%20Svensson,%20Heden%2038%20ar.pdf",Terrestrial,Bird,4,38,47,"Svensson, 2006",,269
-Long-Term Community Dynamics of Small Landbirds with and Without Exposure to Extensive Disturbance from Military Training Activities - Konza prairie site,http://link.springer.com/article/10.1007%2Fs00267-009-9421-6,Terrestrial,Bird,1,11,62,"Rivers et. al, 2010",,270
-Structure and dynamics of a passerine bird community in a spruce-dominated boreal forest,http://www.sekj.org/PDF/anzf30/anz30-043-054.pdf,Terrestrial,Bird,1,12,33,"Hogstad, 1993",,272
-Konza LTER grasshopper monitoring,http://lter.konza.ksu.edu/content/cgr02-sweep-sampling-grasshoppers-konza-prairie-lter-watersheds-1982-present,Terrestrial,Invertebrate,16,24,37,"Rode et. al, 2017",acknowledgement request,274
-El Verde Grid long-term invertebrate data,http://luq2.lternet.edu/data/luqmetadata107,Terrestrial,Invertebrate,33,22,19,Willig et al. 2007,,275
-Luquillo LTER bird point counts,http://luq.lternet.edu/data/luqmetadata23,Terrestrial,Bird,1,19,39,Willig et al. 2007,,276
-North Temperate Lakes LTER: Zooplankton - Trout Lake Area 1982 - current,https://lter.limnology.wisc.edu/dataset/north-temperate-lakes-lter-zooplankton-trout-lake-area-1982-current,Freshwater,Plankton,7,29,100,"Magnuson et. al, 1983",,277
-North Temperate Lakes LTER: Phytoplankton - Trout Lake Area 1984 - current,https://lter.limnology.wisc.edu/dataset/north-temperate-lakes-lter-phytoplankton-trout-lake-area-1984-current,Freshwater,Plankton,2,10,135,"Magnuson et. al, 2007",,278
-North Temperate Lakes LTER: Zooplankton - Madison Lakes Area 1997 - current,https://lter.limnology.wisc.edu/dataset/north-temperate-lakes-lter-zooplankton-madison-lakes-area-1997-current,Freshwater,Plankton,2,19,26,"Magnuson et. al, 2011",,279
-North Temperate Lakes LTER: Phytoplankton - Madison Lakes Area 1995 - current,https://lter.limnology.wisc.edu/dataset/north-temperate-lakes-lter-phytoplankton-madison-lakes-area-1995-current,Freshwater,Plankton,2,18,315,"Magnuson et. al, 2011",,280
-North Temperate Lakes LTER: Macrophyte Transects - Trout Lake 1982 - current,https://lter.limnology.wisc.edu/dataset/north-temperate-lakes-lter-macrophyte-transects-trout-lake-1982-current,Freshwater,Plant,2,22,29,"Magnuson et. al, 2010",,281
-North Temperate Lakes LTER: Macrophyte Species at Quadrat Level - Trout Lake 1993 - current,https://lter.limnology.wisc.edu/dataset/north-temperate-lakes-lter-macrophyte-species-quadrat-level-trout-lake-1993-current,Freshwater,Plant,2,20,28,"Magnuson et. al, 2010",,282
-An efficient light-trap for catching insects. Acta Entomologica,http://www3.imperial.ac.uk/cpb/databases/gpdd,Terrestrial,Invertebrate,1,26,133,"Novak, 1983",,285
-Weekly record of bird species observed on Konza Prairie,http://lter.konza.ksu.edu/content/cbp01-variable-distance-line-transect-sampling-bird-population-numbers-different-habitats,Terrestrial,Bird,16,26,221,"Verheijen et. al, 2017"," no citation, but specific acknowledgement request",287
-Fish population on selected watersheds at Konza Prairie,http://onlinelibrary.wiley.com/doi/10.1111/fwb.12668/abstract,Freshwater,Fish,1,7,17,"Whitney et. al, 2015",,288
-Long-term stem inventory data from tropical rain forest plots in Australia: trees >10cm dbh,http://esapubs.org/archive/ecol/E095/209/,Terrestrial,Plant,20,34,488,"Bradford et. al, 2014",,289
-"Fourteen years of mapped, permanent quadrats in a northern mixed prairie, USA",http://esapubs.org/archive/ecol/E092/143/metadata.htm,Terrestrial,Plant,1,7,52,"Anderson et. al, 2011",,291
-"North Temperate Lakes LTER: Fish Abundance 1981-current, SEINE",https://portal.lternet.edu/nis/mapbrowse?packageid=knb-lter-ntl.7.10,Freshwater,Fish,9,15,57,"De Stasio et. al, 1996",,294
-"North Temperate Lakes LTER: Fish Abundance 1981-current, FYKE NET",https://portal.lternet.edu/nis/mapbrowse?packageid=knb-lter-ntl.7.10,Freshwater,Fish,9,31,53,"De Stasio et. al, 1996",,295
-"North Temperate Lakes LTER: Fish Abundance 1981-current, ELECTRO FISH",https://portal.lternet.edu/nis/mapbrowse?packageid=knb-lter-ntl.7.10,Freshwater,Fish,8,21,61,"De Stasio et. al, 1996",,296
-Breeding Bird Populations at William Trelease Woods,http://hdl.handle.net/2142/25182,Terrestrial,Bird,1,44,60,"Kendeigh, 1982",,298
-Breeding Bird Populations wintering in  William Trelease Woods,http://hdl.handle.net/2142/25182,Terrestrial,Bird,1,48,48,"Kendeigh, 1982",,299
-Breeding Bird Populations on Abandoned Farmland in Robert Allerton Park,http://hdl.handle.net/2142/25182,Terrestrial,Bird,1,6,34,"Kendeigh, 1982",,300
-Breeding Bird Populations on Abandoned Farmland in Robert Allerton Park,http://hdl.handle.net/2142/25182,Terrestrial,Bird,1,25,53,"Kendeigh, 1982",,301
-"Long-term sampling of a herpetofaunal assemblage on an isolated urban bushland remnant, Bold Park, Perth",http://www.rswa.org.au/publications/Journal/81%283%29/81%283%29how.pdf,Terrestrial,Reptile,1,6,29,"How, 1998",,304
-Effects of rangeland management on community dynamics of herpetofauna to the tallgrass prairie,http://www.bioone.org/doi/pdf/10.1655/0018-0831%282006%2962%5B378%3AEORMOC%5D2.0.CO%3B2,Terrestrial,Reptile,1,14,35,"Wilgers et. al, 2006",,305
-Temporal variation in richness and composition of recruits in a diverse cnidarian assemblage of subtropical Brazil,http://www.sciencedirect.com/science/article/pii/S0022098114001877,Marine,Invertebrate,1,8,34,"Fernandez et. al, 2014",,306
-Mountain Birdwatch,https://knb.ecoinformatics.org/#view/doi:10.5063/F1DN430G,Terrestrial,Bird,35,11,72,"Lambert and Hart, 2015",,308
-Arthropod Pitfall Traps at LTER II NPP sites. Jornada LTER,http://jornada.nmsu.edu/lter/project/49395/view,Terrestrial,Invertebrate,10,6,157,"Lightfoot et. al, 2008",,313
-Zooplankton survey of Oneida Lake,https://knb.ecoinformatics.org/#view/kgordon.17.56,Freshwater,Plankton,5,37,30,"Rudstam, 2008",,314
-Monitoring the Abundance of Butterflies 1976-1985,http://jncc.defra.gov.uk/page-2614,Terrestrial,Invertebrate,35,10,44,"Pollard et. al, 1986",,315
-Small Mammal Exclosure Study. Jornada LTER,http://jornada.nmsu.edu/lter/project/49356/view,Terrestrial,Mammal,1,7,15,"Lightfoot, 1995",,316
-Preston 1948 moths,https://www.jstor.org/stable/1930989,Terrestrial,Invertebrate,2,22,291,"Preston, 1948",,319
-Vegetation surveys in large-herbivore exclusion in an African savanna: five years of the UHURU experiment,http://www.esapubs.org/archive/ecol/E095/064/metadata.php,Terrestrial,Plant,7,6,90,"Kartzinel et. al, 2014",,322
-Maryland Biological Stream Survey Fish Data,http://dnr2.maryland.gov/streams/Pages/mbss.aspx,Freshwater,Fish,48,17,86,"XXXX, YYYY",acknowledgement request,323
-Maryland Biological Stream Survey Macroinvertebrate Data,http://dnr2.maryland.gov/streams/Pages/mbss.aspx,Freshwater,Invertebrate,52,17,364,"XXXX, YYYY",acknowledgement request,324
-"Lake Kasumigaura database , Table 10 Phytoplankton density",http://db.cger.nies.go.jp/gem/moni-e/inter/GEMS/database/kasumi/contents/datalist.html,Freshwater,Plankton,2,33,172,"Takamura and Nakagawa, 2012",,325
-"Lake Kasumigaura database , Table 12-1 Density of Rotifer, Cladocera and Copepoda",http://db.cger.nies.go.jp/gem/moni-e/inter/GEMS/database/kasumi/contents/datalist.html,Freshwater,Plankton,2,21,62,"Takamura et. al, 2015",,326
-"Lake Kasumigaura database , Table 14-1 Benthos data",http://db.cger.nies.go.jp/gem/moni-e/inter/GEMS/database/kasumi/contents/datalist.html,Freshwater,Benthos,4,22,10,"Iwakuma and Ueno, 2010",,327
-"Lake Kasumigaura database , Table 15-2 Fish density data",http://db.cger.nies.go.jp/gem/moni-e/inter/GEMS/database/kasumi/contents/datalist.html,Freshwater,Fish,1,9,45,"Matsuzaki and Nohara, 2017",,328
-"Lake Kasumigaura database , Ichthyoplankton data",personal communication,Freshwater,Plankton,3,6,137,"XXXX, YYYY",,329
-Central California Butterly Population Monitoring ,"personal communication, metadata at http://butterfly.ucdavis.edu/",Terrestrial,Invertebrate,8,41,148,"Thorne et. al, 2006",,330
+Dataset Name,Link,System,Taxa,Number of Sites,Years of Study,Number of Species,Multiscale,Citation,,Dataset ID
+ A multi-decade time series of kelp forest community structure at the California Channel Islands. Ecology 94:2655.,http://esapubs.org/archive/ecol/E094/245/,Marine,Benthos,33,30,28,N,Kushner et al. 2013,,244
+"2003 Prescribed Burn Effect on Chihuahuan Desert Grasses and Shrubs at the Sevilleta National Wildlife Refuge, New Mexico: Species Composition Study (2004- ) ",http://sev.lternet.edu/data/sev-166,Terrestrial,Plant,16,9,147,Y,"Muldavin and Collins, 2016", acknowledgement ,258
+A 12-year study on the scaling of vascular plant composition in an Oklahoma tallgrass prairie.,http://esapubs.org/Archive/ecol/E091/124/default.htm#data,Terrestrial,Plant,20,12,318,Y,McGlinn et al. 2010,,225
+A long-term bird population study in an Appalachian spruce forest,http://www.jstor.org/stable/4161914,Terrestrial,Bird,1,22,20,N,"Hall, 1984",,267
+"A multi-decade time series of kelp forest community structure at San Nicolas Island, California (USA). Ecology 94:2654.",http://esapubs.org/archive/ecol/E094/244/#data,Marine,Benthos,7,27,128,Y,Kenner et al. 2013,,241
+"A multi-decade time series of kelp forest community structure at San Nicolas Island, California (USA). Ecology 94:2654.",http://esapubs.org/archive/ecol/E094/244/#data,Marine,Fish,7,26,36,Y,Kenner et al. 2013,,242
+"A multi-decade time series of kelp forest community structure at San Nicolas Island, California (USA). Ecology 94:2654.",http://esapubs.org/archive/ecol/E094/244/#data,Marine,Fish,1,17,57,Y,Kenner et al. 2013,,243
+A multi-decade time series of kelp forest community structure at the California Channel Islands. Ecology 94:2655.,http://esapubs.org/archive/ecol/E094/245/,Marine,Fish,32,16,86,N,Kushner et al. 2013,,246
+"Above ground plant biomass in a mesic acidic tussock tundra experimental site from 1982 to 2000 Arctic LTER, Toolik Lake, Alaska",http://arc-lter.ecosystems.mbl.edu/19822000gs81tusbm,Terrestrial,Plant,4,6,24,Y,"Shaver, 2006",,207
+An efficient light-trap for catching insects. Acta Entomologica,http://www3.imperial.ac.uk/cpb/databases/gpdd,Terrestrial,Invertebrate,1,26,133,N,"Novak, 1983",,285
+Arthropod Pitfall Traps at LTER II NPP sites. Jornada LTER,http://jornada.nmsu.edu/lter/project/49395/view,Terrestrial,Invertebrate,10,6,157,Y,Lightfoot et al. 2008,,313
+Belgian Migrating Lepidoptera Survey,https://web.archive.org/web/19990220041409/http://users.skynet.be/bs663526/,Terrestrial,Invertebrate,1,14,25,N,"Vanholder, 1997",,70
+Bialowieza National Park bird assemblage,http://www.bioone.org/doi/abs/10.3161/000164510X551354,Terrestrial,Bird,7,40,84,N,Weso?owski et al. 2010 ,,264
+Breeding Bird Populations at William Trelease Woods,http://hdl.handle.net/2142/25182,Terrestrial,Bird,1,44,60,N,"Kendeigh, 1982",,298
+Breeding Bird Populations on Abandoned Farmland in Robert Allerton Park,http://hdl.handle.net/2142/25182,Terrestrial,Bird,1,6,34,N,"Kendeigh, 1982",,300
+Breeding Bird Populations on Abandoned Farmland in Robert Allerton Park,http://hdl.handle.net/2142/25182,Terrestrial,Bird,1,25,53,N,"Kendeigh, 1982",,301
+Breeding Bird Populations wintering in  William Trelease Woods,http://hdl.handle.net/2142/25182,Terrestrial,Bird,1,48,48,N,"Kendeigh, 1982",,299
+Breeding Birds from Preston 1948,http://www.jstor.org/stable/1931793,Terrestrial,Bird,1,10,56,N,"Preston, 1960",,41
+Canadian duck censuses,http://ecologicaldata.org/wiki/redvers-waterfowl-census,Terrestrial,Bird,2,26,13,N,Vickery et al. 1984,,47
+Central California Butterly Population Monitoring ,"personal communication, metadata at http://butterfly.ucdavis.edu/",Terrestrial,Invertebrate,8,41,148,N,Thorne et al. 2006,,330
+Eastern Wood Breeding Bird Data,http://onlinelibrary.wiley.com/doi/10.1002/9780470999592.app2/pdf,Terrestrial,Bird,1,29,45,N,Gaston et al. 2000,,226
+Effects of rangeland management on community dynamics of herpetofauna to the tallgrass prairie,http://www.bioone.org/doi/pdf/10.1655/0018-0831%282006%2962%5B378%3AEORMOC%5D2.0.CO%3B2,Terrestrial,Reptile,1,14,35,N,Wilgers et al. 2006,,305
+El Verde Grid long-term invertebrate data,http://luq2.lternet.edu/data/luqmetadata107,Terrestrial,Invertebrate,33,22,19,Y,Willig et al.2007,,275
+Farne Island birds,http://www.jstor.org/stable/1744518,Terrestrial,Bird,1,29,16,N,"Diamond and May, 1977",,263
+Fish population on selected watersheds at Konza Prairie,http://onlinelibrary.wiley.com/doi/10.1111/fwb.12668/abstract,Freshwater,Fish,1,7,17,Y,Whitney et al. 2015,,288
+"Fourteen years of mapped, permanent quadrats in a northern mixed prairie, USA",http://esapubs.org/archive/ecol/E092/143/metadata.htm,Terrestrial,Plant,1,7,52,Y,Anderson et al. 2011,,291
+Hinkley Point fish,http://www.nature.com/nature/journal/v422/n6933/full/nature01547.html,Marine,Fish,1,21,80,N,"Magurran & Henderson, 2003",,255
+Hubbard Brook LTER,https://portal.lternet.edu/nis/mapbrowse?packageid=knb-lter-hbr.81.5,Terrestrial,Bird,4,14,37,N,"Holmes, 2016",,228
+Indiana stream fish assemblage,http://www.jstor.org/stable/2461070?seq=1#page_scan_tab_contents,Freshwater,Fish,1,12,49,N,Grossman et al. 1982,,261
+Insect Populations via Sticky Traps at KBS-LTER,http://lter.kbs.msu.edu/datatables/67,Terrestrial,Invertebrate,10,23,20,Y,"Landis and S. Gage, 2015",acknowledgement request,208
+Ireland amphipods,http://www.sciencedirect.com/science/article/pii/0022098196000305,Marine,Invertebrate,1,12*,27,N,"Costello & Myers,  1996",,257
+Konza LTER grasshopper monitoring,http://lter.konza.ksu.edu/content/cgr02-sweep-sampling-grasshoppers-konza-prairie-lter-watersheds-1982-present,Terrestrial,Invertebrate,16,24,37,Y,Rode et al. 2017,acknowledgement request,274
+Konza LTER small mammals,http://lter.konza.ksu.edu/content/csm01-seasonal-summary-numbers-small-mammals-14-lter-traplines-prairie-habitats-konza,Terrestrial,Mammal,14,33,15,Y,"Ricketts and Sandercock, 2016",acknowledgement request,231
+Lac Croche understory vegetation data set,http://www.esapubs.org/archive/ecol/E088/197/default.htm,Terrestrial,Plant,43,8,83,Y,Paquette et al. 2007,,218
+"Lake Kasumigaura database , Ichthyoplankton data",personal communication,Freshwater,Plankton,3,6,137,N,"XXXX, YYYY",,329
+"Lake Kasumigaura database , Table 10 Phytoplankton density",http://db.cger.nies.go.jp/gem/moni-e/inter/GEMS/database/kasumi/contents/datalist.html,Freshwater,Plankton,2,33,172,N,"Takamura and Nakagawa, 2012",,325
+"Lake Kasumigaura database , Table 12-1 Density of Rotifer, Cladocera and Copepoda",http://db.cger.nies.go.jp/gem/moni-e/inter/GEMS/database/kasumi/contents/datalist.html,Freshwater,Plankton,2,21,62,N,Takamura et al. 2015,,326
+"Lake Kasumigaura database , Table 14-1 Benthos data",http://db.cger.nies.go.jp/gem/moni-e/inter/GEMS/database/kasumi/contents/datalist.html,Freshwater,Benthos,4,22,10,N,"Iwakuma and Ueno, 2010",,327
+"Lake Kasumigaura database , Table 15-2 Fish density data",http://db.cger.nies.go.jp/gem/moni-e/inter/GEMS/database/kasumi/contents/datalist.html,Freshwater,Fish,1,9,45,N,"Matsuzaki and Nohara, 2017",,328
+Long-Term Community Dynamics of Small Landbirds with and Without Exposure to Extensive Disturbance from Military Training Activities - Konza prairie site,http://link.springer.com/article/10.1007%2Fs00267-009-9421-6,Terrestrial,Bird,1,11,62,N,Rivers et al. 2010,,270
+Long-term dynamics of breeding birds in broad-leaved deciduous forest on Hanikatsi Island in the West-Estonian archipelago,https://www.researchgate.net/publication/253704570_Long-term_dynamics_of_breeding_birds_in_broad-leaved_deciduous_forest_on_Hanikatsi_Island_in_the_West-Estonian_archipelago,Terrestrial,Bird,1,27,33,N,Leito et al. 2006,,268
+Long-term mapped quadrats from Kansas prairie: demographic information for herbaceaous Plant. Ecology 88:2673.,http://esapubs.org/archive/ecol/E088/161/,Terrestrial,Plant,51,41,137,Y,Adler et al. 2007,,213
+Long-term monitoring of Mammals in the face of biotic and abiotic influences at a semiarid site in north-central Chile. Ecology 94:977. shrub and herbaceous Plant.,http://esapubs.org/archive/ecol/E094/084/metadata.php,Terrestrial,Plant,16,16,85,N,Kelt et al. 2013,,238
+Long-term monitoring of Mammals in the face of biotic and abiotic influences at a semiarid site in north-central Chile.Mammals-sjs.,http://esapubs.org/archive/ecol/E094/084/metadata.php,Terrestrial,Mammal,4,12,12,Y,Kelt et al. 2013,,237
+"Long-Term Nitrogen Deposition: Population, Community, and Ecosystem Consequences - Experiment 001",https://www.cedarcreek.umn.edu/research/data/dataset?ple001,Terrestrial,Plant,3,30,148,Y,"Tilman, 2012",acknowledgement request,210
+"Long-term sampling of a herpetofaunal assemblage on an isolated urban bushland remnant, Bold Park, Perth",http://www.rswa.org.au/publications/Journal/81%283%29/81%283%29how.pdf,Terrestrial,Reptile,1,6,29,N,"How, 1998",,304
+Long-term stem inventory data from tropical rain forest plots in Australia: trees >10cm dbh,http://esapubs.org/archive/ecol/E095/209/,Terrestrial,Plant,20,34,488,Y,Bradford et al. 2014,,289
+Luquillo LTER bird point counts,http://luq.lternet.edu/data/luqmetadata23,Terrestrial,Bird,1,19,39,Y,Willig et al.2007,,276
+Mapped quadrats in sagebrush steppe: long-term data for analyzing demographic rates and plant–plant interactions,http://onlinelibrary.wiley.com/doi/10.1890/10-0404.1/abstract,Terrestrial,Plant,1,17,18,Y,Zachmann et al. 2016,,222
+Maryland Biological Stream Survey Fish Data,http://dnr2.maryland.gov/streams/Pages/mbss.aspx,Freshwater,Fish,48,17,86,Y,"XXXX, YYYY",acknowledgement request,323
+Maryland Biological Stream Survey Macroinvertebrate Data,http://dnr2.maryland.gov/streams/Pages/mbss.aspx,Freshwater,Invertebrate,52,17,364,Y,"XXXX, YYYY",acknowledgement request,324
+Mediterranean tintinnid ciliates,http://onlinelibrary.wiley.com/doi/10.1111/j.1365-2699.2008.02046.x/abstract,Marine,Plankton,1,18*,49,N,Dolan et al. 2009,,260
+Monitoring the Abundance of Butterflies 1976-1985,http://jncc.defra.gov.uk/page-2614,Terrestrial,Invertebrate,35,10,44,N,Pollard et al. 1986,,315
+Mosquitoes of North America with emphasis in the midwestern United States: long-term occurrence patterns. Ecology 94:1433.,http://esapubs.org/archive/ecol/E094/126/,Terrestrial,Invertebrate,13,37,28,N,Hellmann et al. 2013,,247
+Mountain Birdwatch,https://knb.ecoinformatics.org/#view/doi:10.5063/F1DN430G,Terrestrial,Bird,35,11,72,N,"Lambert and Hart, 2015",,308
+North American Breeding Bird Survey,https://www.pwrc.usgs.gov/bbs/,Terrestrial,Bird,850,15,405,Y,Pardieck et al. 2016,,1
+"North Temperate Lakes LTER: Fish Abundance 1981-current, ELECTRO FISH",https://portal.lternet.edu/nis/mapbrowse?packageid=knb-lter-ntl.7.10,Freshwater,Fish,8,21,61,N,De Stasio et al. 1996,,296
+"North Temperate Lakes LTER: Fish Abundance 1981-current, FYKE NET",https://portal.lternet.edu/nis/mapbrowse?packageid=knb-lter-ntl.7.10,Freshwater,Fish,9,31,53,N,De Stasio et al. 1996,,295
+"North Temperate Lakes LTER: Fish Abundance 1981-current, SEINE",https://portal.lternet.edu/nis/mapbrowse?packageid=knb-lter-ntl.7.10,Freshwater,Fish,9,15,57,N,De Stasio et al. 1996,,294
+North Temperate Lakes LTER: Macrophyte Species at Quadrat Level - Trout Lake 1993 - current,https://lter.limnology.wisc.edu/dataset/north-temperate-lakes-lter-macrophyte-species-quadrat-level-trout-lake-1993-current,Freshwater,Plant,2,20,28,Y,Magnuson et al. 2010,,282
+North Temperate Lakes LTER: Macrophyte Transects - Trout Lake 1982 - current,https://lter.limnology.wisc.edu/dataset/north-temperate-lakes-lter-macrophyte-transects-trout-lake-1982-current,Freshwater,Plant,2,22,29,Y,Magnuson et al. 2010,,281
+North Temperate Lakes LTER: Phytoplankton - Madison Lakes Area 1995 - current,https://lter.limnology.wisc.edu/dataset/north-temperate-lakes-lter-phytoplankton-madison-lakes-area-1995-current,Freshwater,Plankton,2,18,315,Y,Magnuson et al. 2011,,280
+North Temperate Lakes LTER: Phytoplankton - Trout Lake Area 1984 - current,https://lter.limnology.wisc.edu/dataset/north-temperate-lakes-lter-phytoplankton-trout-lake-area-1984-current,Freshwater,Plankton,2,10,135,N,Magnuson et al. 2007,,278
+North Temperate Lakes LTER: Zooplankton - Madison Lakes Area 1997 - current,https://lter.limnology.wisc.edu/dataset/north-temperate-lakes-lter-zooplankton-madison-lakes-area-1997-current,Freshwater,Plankton,2,19,26,Y,Magnuson et al. 2011,,279
+North Temperate Lakes LTER: Zooplankton - Trout Lake Area 1982 - current,https://lter.limnology.wisc.edu/dataset/north-temperate-lakes-lter-zooplankton-trout-lake-area-1982-current,Freshwater,Plankton,7,29,100,Y,Magnuson et al. 1983,,277
+One hundred and six years of population and community dynamics of Sonoran Desert Laboratory perennials. Ecology 94:976. http://dx.doi.org/10.1890/12-1164.1,http://esapubs.org/archive/ecol/E094/083/,Terrestrial,Plant,2,28,58,N,Rodriguez-Buritica et al. 2013,,224
+Plant species composition on selected watersheds at Konza Prairie,http://lter.konza.ksu.edu/content/pvc02-plant-species-composition-selected-watersheds-konza-prairie,Terrestrial,Plant,4,18,294,Y,Briggs et al. 2002,acknowledgement request,217
+"Portal Plants, summer",http://esapubs.org/archive/ecol/E090/118/metadata.htm,Terrestrial,Plant,24,14,105,Y,Ernest et al. 2009,,221
+"Portal Plants, winter",http://esapubs.org/archive/ecol/E090/118/metadata.htm,Terrestrial,Plant,1,14,95,Y,Ernest et al. 2009,,259
+Portal Rodents,http://esapubs.org/archive/ecol/E090/118/metadata.htm,Terrestrial,Mammal,1,15,21,Y,Ernest et al. 2009,,254
+Powdermill,http://ecologicaldata.org/wiki/powdermill-biological-station-small-mammal-database,Terrestrial,Mammal,1,11,16,N,"Merritt, 1999",,234
+Preston 1948 moths,https://www.jstor.org/stable/1930989,Terrestrial,Invertebrate,2,22,291,N,"Preston, 1948",,319
+SBC LTER: Reef: Kelp Forest Community Dynamics: Fish abundance,https://portal.lternet.edu/nis/mapbrowse?packageid=knb-lter-sbc.17.27,Marine,Fish,39,13,58,Y,"Reed, 2013",,248
+Sevilleta LTER arthropod data,https://portal.lternet.edu/nis/mapbrowse?packageid=knb-lter-sev.29.175390,Terrestrial,Invertebrate,42,12,365,Y,"Lightfoot, 2010", acknowledgement ,252
+Sevilleta LTER mammals,http://sev.lternet.edu/content/small-mammal-exclosure-study-smes-0,Terrestrial,Mammal,1,16,24,Y,Baéz et al. 2006,acknowledgement ,232
+Skokholm birds,http://ecologicaldata.org/wiki/skokholm-bird-observatory,Terrestrial,Bird,1,47,29,N,"Williamson, 1983",,46
+"Small Mammal Exclosure Study (SMES) Vegetation Data from the Chihuahuan Desert Grassland and Shrubland at the Sevilleta National Wildlife Refuge, New Mexico (2006-2009)",http://repository.unm.edu/handle/1928/29843,Terrestrial,Plant,7,15,101,Y,"Lightfoot, 2010",,223
+Small Mammal Exclosure Study. Jornada LTER,http://jornada.nmsu.edu/lter/project/49356/view,Terrestrial,Mammal,1,7,15,Y,"Lightfoot, 1995",,316
+Species composition and population fluctuations of alpine bird communities during 38 years in the Scandinavian mountain range,"http://www.luvre.org/data_o_pdf/Luvre-135,%202006%20Svensson,%20Heden%2038%20ar.pdf",Terrestrial,Bird,4,38,47,N,"Svensson, 2006",,269
+"Species trends, turnover and composition of a woodland bird community in southern Sweden during a period of 57 years",https://www.researchgate.net/profile/Soeren_Svensson/publication/283248722_Species_trends_turnover_and_composition_of_a_woodland_bird_community_in_southern_Sweden_during_a_period_of_fifty-seven_years/links/5742f71508aea45ee84a744b.pdf,Terrestrial,Bird,1,57,41,N,Svensson et al. 2010,,265
+Stream fish assemblage stability in a southern Appalachian stream at the Coweeta Hydrologic Laboratory from 1984 to 1995,https://portal.lternet.edu/nis/mapbrowse?packageid=knb-lter-cwt.3047.13,Freshwater,Fish,2,10,14,N,"Grossman,  2007",,250
+Structure and dynamics of a passerine bird community in a spruce-dominated boreal forest,http://www.sekj.org/PDF/anzf30/anz30-043-054.pdf,Terrestrial,Bird,1,12,33,N,"Hogstad, 1993",,272
+Temporal variation in richness and composition of recruits in a diverse cnidarian assemblage of subtropical Brazil,http://www.sciencedirect.com/science/article/pii/S0022098114001877,Marine,Invertebrate,1,8,34,N,Fernandez et al. 2014,,306
+"The 37-year dynamics of a subalpine passerine bird community, with special emphasis on the influence of environmental temperature and Epirrita autumnata cycles","http://www.luvre.org/data_o_pdf/Luvre-130,%202004%20Enemar%20mfl,%2037%20ar%20skogen.pdf",Terrestrial,Bird,1,37,35,N,Enemar et al. 2004,,266
+Vegetation surveys in large-herbivore exclusion in an African savanna: five years of the UHURU experiment,http://www.esapubs.org/archive/ecol/E095/064/metadata.php,Terrestrial,Plant,7,6,90,Y,Kartzinel et al. 2014,,322
+Weekly record of bird species observed on Konza Prairie,http://lter.konza.ksu.edu/content/cbp01-variable-distance-line-transect-sampling-bird-population-numbers-different-habitats,Terrestrial,Bird,16,26,221,Y,Verheijen et al. 2017," no citation, but specific acknowledgement request",287
+Western English Channel phytoplankton,http://plankt.oxfordjournals.org/content/32/5/643.full#sec-5,Marine,Plankton,1,18,157,N,Widdicombe et al. 2010,,33
+Zooplankton survey of Oneida Lake,https://knb.ecoinformatics.org/#view/kgordon.17.56,Freshwater,Plankton,5,37,30,Y,"Rudstam, 2008",,314
+,,,,,,,,,,
