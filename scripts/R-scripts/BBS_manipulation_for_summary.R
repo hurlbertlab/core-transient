@@ -26,15 +26,15 @@ datasetIDs = dataformattingtable$dataset_ID[dataformattingtable$format_flag == 1
 #### BBS prep to replace dataset 1 #####
 bbs_all_years = read.csv("data/BBS/bbs_all_raw.csv", header = TRUE)
 bbs_all_years$datasetID = 1
-bbs_all_years2 = bbs_all_years %>% filter(Year > 1999 & Year <2015) %>%  filter(Aou > 2880 & !(Aou >= 3650 & Aou <= 3810) & !(Aou >= 3900 & Aou <= 3910) & !(Aou >= 4160 & Aou <= 4210) & Aou != 7010) %>% dplyr::select(stateroute, Aou, SpeciesTotal, Year, datasetID)
+bbs_all_years2 = bbs_all_years %>% 
+  filter(Year > 1999 & Year <2015) %>%  
+  filter(Aou > 2880 & !(Aou >= 3650 & Aou <= 3810) & !(Aou >= 3900 & Aou <= 3910) & 
+           !(Aou >= 4160 & Aou <= 4210) & Aou != 7010) %>% 
+  select(stateroute, Aou, SpeciesTotal, Year, datasetID) %>%
+  rename(site = stateroute, species = Aou, count = SpeciesTotal, date = Year)
 
-bbs_all_years2$site = bbs_all_years2$stateroute
-bbs_all_years2$species = bbs_all_years2$Aou
-bbs_all_years2$count = bbs_all_years2$SpeciesTotal
-bbs_all_years2$date = bbs_all_years2$Year
-
-bbs_all_years2 = bbs_all_years2 %>% dplyr::select(site, species, count, date, datasetID)
 write.csv(bbs_all_years2, "data/BBS/bbs_2000_2014.csv", row.names = FALSE)
+
 #### BBS prep to merge with summ2 dataset #####
 # need datasetID, site, system, taxa, propCore, propTrans, and meanAbundance
 # read in below-scale bbs dataset 
