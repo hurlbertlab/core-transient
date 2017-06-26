@@ -385,7 +385,7 @@ z <- plot_grid(four_c+ theme(legend.position="none"),
 p2 = plot_grid(z,legendc, ncol = 2) 
 # ggsave(file="C:/Git/core-transient/output/plots/4c_4d.pdf", height = 12, width = 16,p2)
 
-all4 = plot_grid(pt1, NULL, z, align = "hv", nrow = 2,rel_heights = c(1,1), rel_widths = c(1, 0.05, 1))
+all4 = plot_grid(pt1, NULL, z, align = "hv", nrow = 2,rel_heights = c(1,1), rel_widths = c(1, 0.05,1))
 ggsave(file="C:/Git/core-transient/output/plots/4a_4d.pdf", height = 16, width = 22,all4)
 
 

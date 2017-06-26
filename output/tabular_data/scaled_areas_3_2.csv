@@ -3173,132 +3173,132 @@ datasetID,site,spRich,nTime,meanAbundance,scale,taxa,area,Raw_spatial_grain,Raw_
 323,maxgrain_Patuxent River_Rocky Gorge Dam_PATUXENT RIVER UT5_RKGR-119-S,14,7,293.5714286,5,Fish,450,450,m2
 323,maxgrain_Pocomoke River_Nassawango Creek_NASSAWANGO CREEK_NASS-302-S,25,12,348.8333333,5,Fish,450,450,m2
 323,maxgrain_Upper Potomac River_Fifteen Mile Creek_FIFTEENMILE CREEK_FIMI-207-S,20,9,611.3333333,5,Fish,450,450,m2
-324,maxgrain,347,9,8016.444444,1,Invertebrate,1200,2,m2
-324,maxgrain_Bush River,134,7,489.2857143,2,Invertebrate,75,2,m2
-324,maxgrain_Chester River,197,11,637.8181818,2,Invertebrate,75,2,m2
-324,maxgrain_Choptank River,137,6,454.3333333,2,Invertebrate,75,2,m2
-324,maxgrain_Elk River,181,5,624.2,2,Invertebrate,75,2,m2
-324,maxgrain_Gunpowder River,165,8,606.125,2,Invertebrate,75,2,m2
-324,maxgrain_Lower Potomac River,238,15,575,2,Invertebrate,75,2,m2
-324,maxgrain_Middle Potomac River,174,8,577.875,2,Invertebrate,75,2,m2
-324,maxgrain_Nanticoke River,121,6,484.8333333,2,Invertebrate,75,2,m2
-324,maxgrain_North Branch Potomac River,153,8,677,2,Invertebrate,75,2,m2
-324,maxgrain_Patapsco River,219,12,688.8333333,2,Invertebrate,75,2,m2
-324,maxgrain_Patuxent River,160,9,441,2,Invertebrate,75,2,m2
-324,maxgrain_Susquehanna River,167,5,784,2,Invertebrate,75,2,m2
-324,maxgrain_Upper Potomac River,175,12,531.4166667,2,Invertebrate,75,2,m2
-324,maxgrain_Washington Metro Potomac River,157,7,644,2,Invertebrate,75,2,m2
-324,maxgrain_Youghiogheny River,194,10,567.2,2,Invertebrate,75,2,m2
-324,maxgrain_Bush River_Atkisson Reservoir,74,9,105.1111111,3,Invertebrate,75,2,m2
-324,maxgrain_Bush River_Lower Winters Run,81,9,102.3333333,3,Invertebrate,75,2,m2
-324,maxgrain_Bush River_Swan Creek,68,6,113.5,3,Invertebrate,75,2,m2
-324,maxgrain_Chester River_Corsica River,120,15,111.2666667,3,Invertebrate,75,2,m2
-324,maxgrain_Chester River_Lower Chester River,95,15,106.9333333,3,Invertebrate,75,2,m2
-324,maxgrain_Chester River_Southeast Creek,99,9,106,3,Invertebrate,75,2,m2
-324,maxgrain_Chester River_Upper Chester River,93,9,107.6666667,3,Invertebrate,75,2,m2
-324,maxgrain_Choptank River_Tuckahoe Creek,103,9,105.2222222,3,Invertebrate,75,2,m2
-324,maxgrain_Choptank River_Upper Choptank,118,16,105.5,3,Invertebrate,75,2,m2
-324,maxgrain_Elk River_Furnace Bay,111,15,112.4666667,3,Invertebrate,75,2,m2
-324,maxgrain_Gunpowder River_Little Gunpowder Falls,78,6,104.1666667,3,Invertebrate,75,2,m2
-324,maxgrain_Gunpowder River_Loch Raven Reservoir,102,15,106.1333333,3,Invertebrate,75,2,m2
-324,maxgrain_Gunpowder River_Prettyboy Reservoir,68,6,89.83333333,3,Invertebrate,75,2,m2
-324,maxgrain_Lower Potomac River_Breton Bay,94,8,110.5,3,Invertebrate,75,2,m2
-324,maxgrain_Lower Potomac River_Mattawoman Creek,127,15,107.4666667,3,Invertebrate,75,2,m2
-324,maxgrain_Lower Potomac River_Nanjemoy Creek,129,15,103.6,3,Invertebrate,75,2,m2
-324,maxgrain_Lower Potomac River_Port Tobacco River,113,15,102.2666667,3,Invertebrate,75,2,m2
-324,maxgrain_Lower Potomac River_Potomac River M tidal,96,7,109.4285714,3,Invertebrate,75,2,m2
-324,maxgrain_Lower Potomac River_St. Clements Bay,123,15,107.0666667,3,Invertebrate,75,2,m2
-324,maxgrain_Lower Potomac River_St. Mary's River,107,8,111,3,Invertebrate,75,2,m2
-324,maxgrain_Lower Potomac River_Wicomico River,84,6,116.5,3,Invertebrate,75,2,m2
-324,maxgrain_Lower Potomac River_Zekiah Swamp,131,15,109.8,3,Invertebrate,75,2,m2
-324,maxgrain_Middle Potomac River_Catoctin Creek,83,6,109.8333333,3,Invertebrate,75,2,m2
-324,maxgrain_Middle Potomac River_Lower Monocacy River,92,8,101.375,3,Invertebrate,75,2,m2
-324,maxgrain_Middle Potomac River_Upper Monocacy River,108,15,99.33333333,3,Invertebrate,75,2,m2
-324,maxgrain_Nanticoke River_Wicomico River Head,94,15,97.26666667,3,Invertebrate,75,2,m2
-324,maxgrain_North Branch Potomac River_Potomac River L N Branch,94,15,100.2,3,Invertebrate,75,2,m2
-324,maxgrain_North Branch Potomac River_Potomac River U N Branch,68,6,72.5,3,Invertebrate,75,2,m2
-324,maxgrain_North Branch Potomac River_Savage River,88,15,94.66666667,3,Invertebrate,75,2,m2
-324,maxgrain_North Branch Potomac River_Wills Creek,53,6,80.66666667,3,Invertebrate,75,2,m2
-324,maxgrain_Patapsco River_Back River,32,6,69.83333333,3,Invertebrate,75,2,m2
-324,maxgrain_Patapsco River_Gwynns Falls,74,7,54.85714286,3,Invertebrate,75,2,m2
-324,maxgrain_Patapsco River_Jones Falls,102,16,107.3125,3,Invertebrate,75,2,m2
-324,maxgrain_Patapsco River_Liberty Reservoir,115,17,107.3529412,3,Invertebrate,75,2,m2
-324,maxgrain_Patapsco River_Patapsco River L N Br,87,8,104.5,3,Invertebrate,75,2,m2
-324,maxgrain_Patapsco River_S Branch Patapsco,86,8,111.25,3,Invertebrate,75,2,m2
-324,maxgrain_Patuxent River_Little Patuxent River,62,6,101.6666667,3,Invertebrate,75,2,m2
-324,maxgrain_Patuxent River_Patuxent River lower,110,15,111,3,Invertebrate,75,2,m2
-324,maxgrain_Patuxent River_Patuxent River middle,67,6,107.5,3,Invertebrate,75,2,m2
-324,maxgrain_Patuxent River_Rocky Gorge Dam,114,15,109.2666667,3,Invertebrate,75,2,m2
-324,maxgrain_Patuxent River_Western Branch,64,6,91.66666667,3,Invertebrate,75,2,m2
-324,maxgrain_Pocomoke River_Nassawango Creek,65,15,100,3,Invertebrate,75,2,m2
-324,maxgrain_Susquehanna River_Deer Creek,92,8,111.5,3,Invertebrate,75,2,m2
-324,maxgrain_Susquehanna River_Octoraro Creek,74,7,121.4285714,3,Invertebrate,75,2,m2
-324,maxgrain_Upper Potomac River_Antietam Creek,79,10,109.6,3,Invertebrate,75,2,m2
-324,maxgrain_Upper Potomac River_Fifteen Mile Creek,88,15,99.33333333,3,Invertebrate,75,2,m2
-324,maxgrain_Upper Potomac River_Sideling Hill Creek,84,7,111,3,Invertebrate,75,2,m2
-324,maxgrain_West Chesapeake Bay_West Chesapeake Bay,74,6,104,3,Invertebrate,75,2,m2
-324,maxgrain_Youghiogheny River_Casselman River,106,9,108,3,Invertebrate,75,2,m2
-324,maxgrain_Youghiogheny River_Little Youghiogheny R,75,6,108.1666667,3,Invertebrate,75,2,m2
-324,maxgrain_Youghiogheny River_Youghiogheny River,113,16,107.4375,3,Invertebrate,75,2,m2
-324,maxgrain_Chester River_Corsica River_EMORY CREEK UT1,86,11,99.45454545,4,Invertebrate,75,2,m2
-324,maxgrain_Chester River_Corsica River_THREE BRIDGES BRANCH,81,9,104.4444444,4,Invertebrate,75,2,m2
-324,maxgrain_Chester River_Lower Chester River_SWAN CREEK,83,12,107.75,4,Invertebrate,75,2,m2
-324,maxgrain_Chester River_Upper Chester River_CYPRESS BRANCH,65,7,110.5714286,4,Invertebrate,75,2,m2
-324,maxgrain_Choptank River_Tuckahoe Creek_TUCKAHOE CREEK,94,6,106.6666667,4,Invertebrate,75,2,m2
-324,maxgrain_Choptank River_Upper Choptank_SKELETON CREEK UT1,78,9,103,4,Invertebrate,75,2,m2
-324,maxgrain_Elk River_Furnace Bay_PRINCIPIO CREEK UT,64,6,117.1666667,4,Invertebrate,75,2,m2
-324,maxgrain_Elk River_Furnace Bay_PRINCIPIO CREEK UT1,74,8,113.125,4,Invertebrate,75,2,m2
-324,maxgrain_Gunpowder River_Loch Raven Reservoir_BAISMAN RUN,94,15,110.0666667,4,Invertebrate,75,2,m2
-324,maxgrain_Lower Potomac River_Mattawoman Creek_MATTAWOMAN CREEK,107,15,110.4,4,Invertebrate,75,2,m2
-324,maxgrain_Lower Potomac River_Nanjemoy Creek_MILL RUN,126,14,104.7857143,4,Invertebrate,75,2,m2
-324,maxgrain_Lower Potomac River_Nanjemoy Creek_NANJEMOY CREEK,95,7,104,4,Invertebrate,75,2,m2
-324,maxgrain_Lower Potomac River_Port Tobacco River_HOGHOLE RUN,111,15,106,4,Invertebrate,75,2,m2
-324,maxgrain_Lower Potomac River_St. Clements Bay_ST CLEMENTS CREEK UT1,90,9,101.3333333,4,Invertebrate,75,2,m2
-324,maxgrain_Lower Potomac River_Zekiah Swamp_ZEKIAH SWAMP RUN UT2,78,9,104.2222222,4,Invertebrate,75,2,m2
-324,maxgrain_Middle Potomac River_Upper Monocacy River_BUZZARD BRANCH,88,13,102.2307692,4,Invertebrate,75,2,m2
-324,maxgrain_Middle Potomac River_Upper Monocacy River_HIGH RUN,78,13,100.6153846,4,Invertebrate,75,2,m2
-324,maxgrain_Nanticoke River_Wicomico River Head_LEONARD POND RUN,98,14,103.3571429,4,Invertebrate,75,2,m2
-324,maxgrain_North Branch Potomac River_Potomac River L N Branch_MILL RUN,87,15,99.2,4,Invertebrate,75,2,m2
-324,maxgrain_North Branch Potomac River_Savage River_CRABTREE CREEK,81,12,93.33333333,4,Invertebrate,75,2,m2
-324,maxgrain_North Branch Potomac River_Savage River_DOUBLE LICK RUN,71,15,104.3333333,4,Invertebrate,75,2,m2
-324,maxgrain_North Branch Potomac River_Savage River_SAVAGE RIVER,92,15,104.1333333,4,Invertebrate,75,2,m2
-324,maxgrain_Patapsco River_Jones Falls_DIPPING POND RUN UT1,75,9,110.4444444,4,Invertebrate,75,2,m2
-324,maxgrain_Patapsco River_Jones Falls_NORTH BRANCH JONES FALLS,87,13,106.5384615,4,Invertebrate,75,2,m2
-324,maxgrain_Patapsco River_Liberty Reservoir_BEAVER RUN,68,6,98.33333333,4,Invertebrate,75,2,m2
-324,maxgrain_Patapsco River_Liberty Reservoir_MIDDLE RUN,70,6,106.6666667,4,Invertebrate,75,2,m2
-324,maxgrain_Patapsco River_Liberty Reservoir_TIMBER RUN,108,14,110.0714286,4,Invertebrate,75,2,m2
-324,maxgrain_Patapsco River_Patapsco River L N Br_DEEP RUN,62,7,78.85714286,4,Invertebrate,75,2,m2
-324,maxgrain_Patapsco River_S Branch Patapsco_GILLIS FALLS,68,6,101.8333333,4,Invertebrate,75,2,m2
-324,maxgrain_Patuxent River_Patuxent River lower_SWANSON CREEK,98,15,109.6666667,4,Invertebrate,75,2,m2
-324,maxgrain_Patuxent River_Rocky Gorge Dam_PATUXENT RIVER UT,80,6,113.3333333,4,Invertebrate,75,2,m2
-324,maxgrain_Patuxent River_Rocky Gorge Dam_PATUXENT RIVER UT5,68,9,105.6666667,4,Invertebrate,75,2,m2
-324,maxgrain_Pocomoke River_Nassawango Creek_MILLVILLE CREEK,52,14,100.2857143,4,Invertebrate,75,2,m2
-324,maxgrain_Pocomoke River_Nassawango Creek_NASSAWANGO CREEK,114,15,86.4,4,Invertebrate,75,2,m2
-324,maxgrain_Susquehanna River_Deer Creek_DEER CREEK,81,6,109,4,Invertebrate,75,2,m2
-324,maxgrain_Susquehanna River_Octoraro Creek_BASIN RUN,60,6,116.3333333,4,Invertebrate,75,2,m2
-324,maxgrain_Upper Potomac River_Fifteen Mile Creek_FIFTEENMILE CREEK,62,11,96.27272727,4,Invertebrate,75,2,m2
-324,maxgrain_Youghiogheny River_Youghiogheny River_BEAR CREEK,109,16,108.875,4,Invertebrate,75,2,m2
-324,maxgrain_Chester River_Corsica River_EMORY CREEK UT1_CORS-102-S,63,6,95.5,5,Invertebrate,2,2,m2
-324,maxgrain_Chester River_Corsica River_THREE BRIDGES BRANCH_CORS-250-H,65,6,103.6666667,5,Invertebrate,2,2,m2
-324,maxgrain_Chester River_Lower Chester River_SWAN CREEK_LOCR-102-S,54,6,109.1666667,5,Invertebrate,2,2,m2
-324,maxgrain_Chester River_Upper Chester River_CYPRESS BRANCH_UPCR-208-S,44,6,105.6666667,5,Invertebrate,2,2,m2
-324,maxgrain_Choptank River_Tuckahoe Creek_TUCKAHOE CREEK_TUCK-450-H,88,6,104.8333333,5,Invertebrate,2,2,m2
-324,maxgrain_Elk River_Furnace Bay_PRINCIPIO CREEK UT_FURN-101-S,64,6,117.1666667,5,Invertebrate,2,2,m2
-324,maxgrain_Gunpowder River_Loch Raven Reservoir_BAISMAN RUN_LOCH-120-S,82,9,106.4444444,5,Invertebrate,2,2,m2
-324,maxgrain_Lower Potomac River_Mattawoman Creek_MATTAWOMAN CREEK_MATT-033-S,86,9,105.7777778,5,Invertebrate,2,2,m2
-324,maxgrain_Lower Potomac River_Nanjemoy Creek_MILL RUN_NANJ-331-S,110,8,106.625,5,Invertebrate,2,2,m2
-324,maxgrain_Lower Potomac River_Port Tobacco River_HOGHOLE RUN_PTOB-002-S,87,9,108.7777778,5,Invertebrate,2,2,m2
-324,maxgrain_Middle Potomac River_Upper Monocacy River_BUZZARD BRANCH_UMON-119-S,76,9,101.5555556,5,Invertebrate,2,2,m2
-324,maxgrain_Middle Potomac River_Upper Monocacy River_HIGH RUN_UMON-288-S,59,7,104.4285714,5,Invertebrate,2,2,m2
-324,maxgrain_Nanticoke River_Wicomico River Head_LEONARD POND RUN_WIRH-220-S,81,8,108.25,5,Invertebrate,2,2,m2
-324,maxgrain_North Branch Potomac River_Potomac River L N Branch_MILL RUN_PRLN-626-S,71,9,98.77777778,5,Invertebrate,2,2,m2
-324,maxgrain_North Branch Potomac River_Savage River_CRABTREE CREEK_SAVA-204-S,65,7,99.14285714,5,Invertebrate,2,2,m2
-324,maxgrain_North Branch Potomac River_Savage River_DOUBLE LICK RUN_SAVA-276-S,60,9,103.6666667,5,Invertebrate,2,2,m2
-324,maxgrain_North Branch Potomac River_Savage River_SAVAGE RIVER_SAVA-225-S,79,9,105.2222222,5,Invertebrate,2,2,m2
-324,maxgrain_Patapsco River_Jones Falls_NORTH BRANCH JONES FALLS_JONE-315-S,65,6,111.1666667,5,Invertebrate,2,2,m2
-324,maxgrain_Patapsco River_Liberty Reservoir_TIMBER RUN_LIBE-102-S,84,9,106.5555556,5,Invertebrate,2,2,m2
-324,maxgrain_Patuxent River_Patuxent River lower_SWANSON CREEK_PAXL-294-S,83,9,107,5,Invertebrate,2,2,m2
-324,maxgrain_Patuxent River_Rocky Gorge Dam_PATUXENT RIVER UT_RKGR-119-S,71,6,107.6666667,5,Invertebrate,2,2,m2
-324,maxgrain_Pocomoke River_Nassawango Creek_MILLVILLE CREEK_NASS-108-S,43,8,104.375,5,Invertebrate,2,2,m2
-324,maxgrain_Pocomoke River_Nassawango Creek_NASSAWANGO CREEK_NASS-302-S,90,8,94.5,5,Invertebrate,2,2,m2
-324,maxgrain_Youghiogheny River_Youghiogheny River_BEAR CREEK_YOUG-432-S,84,9,106.4444444,5,Invertebrate,2,2,m2
+324,maxgrain,347,9,8016.444444,1,Benthos,1200,2,m2
+324,maxgrain_Bush River,134,7,489.2857143,2,Benthos,75,2,m2
+324,maxgrain_Chester River,197,11,637.8181818,2,Benthos,75,2,m2
+324,maxgrain_Choptank River,137,6,454.3333333,2,Benthos,75,2,m2
+324,maxgrain_Elk River,181,5,624.2,2,Benthos,75,2,m2
+324,maxgrain_Gunpowder River,165,8,606.125,2,Benthos,75,2,m2
+324,maxgrain_Lower Potomac River,238,15,575,2,Benthos,75,2,m2
+324,maxgrain_Middle Potomac River,174,8,577.875,2,Benthos,75,2,m2
+324,maxgrain_Nanticoke River,121,6,484.8333333,2,Benthos,75,2,m2
+324,maxgrain_North Branch Potomac River,153,8,677,2,Benthos,75,2,m2
+324,maxgrain_Patapsco River,219,12,688.8333333,2,Benthos,75,2,m2
+324,maxgrain_Patuxent River,160,9,441,2,Benthos,75,2,m2
+324,maxgrain_Susquehanna River,167,5,784,2,Benthos,75,2,m2
+324,maxgrain_Upper Potomac River,175,12,531.4166667,2,Benthos,75,2,m2
+324,maxgrain_Washington Metro Potomac River,157,7,644,2,Benthos,75,2,m2
+324,maxgrain_Youghiogheny River,194,10,567.2,2,Benthos,75,2,m2
+324,maxgrain_Bush River_Atkisson Reservoir,74,9,105.1111111,3,Benthos,75,2,m2
+324,maxgrain_Bush River_Lower Winters Run,81,9,102.3333333,3,Benthos,75,2,m2
+324,maxgrain_Bush River_Swan Creek,68,6,113.5,3,Benthos,75,2,m2
+324,maxgrain_Chester River_Corsica River,120,15,111.2666667,3,Benthos,75,2,m2
+324,maxgrain_Chester River_Lower Chester River,95,15,106.9333333,3,Benthos,75,2,m2
+324,maxgrain_Chester River_Southeast Creek,99,9,106,3,Benthos,75,2,m2
+324,maxgrain_Chester River_Upper Chester River,93,9,107.6666667,3,Benthos,75,2,m2
+324,maxgrain_Choptank River_Tuckahoe Creek,103,9,105.2222222,3,Benthos,75,2,m2
+324,maxgrain_Choptank River_Upper Choptank,118,16,105.5,3,Benthos,75,2,m2
+324,maxgrain_Elk River_Furnace Bay,111,15,112.4666667,3,Benthos,75,2,m2
+324,maxgrain_Gunpowder River_Little Gunpowder Falls,78,6,104.1666667,3,Benthos,75,2,m2
+324,maxgrain_Gunpowder River_Loch Raven Reservoir,102,15,106.1333333,3,Benthos,75,2,m2
+324,maxgrain_Gunpowder River_Prettyboy Reservoir,68,6,89.83333333,3,Benthos,75,2,m2
+324,maxgrain_Lower Potomac River_Breton Bay,94,8,110.5,3,Benthos,75,2,m2
+324,maxgrain_Lower Potomac River_Mattawoman Creek,127,15,107.4666667,3,Benthos,75,2,m2
+324,maxgrain_Lower Potomac River_Nanjemoy Creek,129,15,103.6,3,Benthos,75,2,m2
+324,maxgrain_Lower Potomac River_Port Tobacco River,113,15,102.2666667,3,Benthos,75,2,m2
+324,maxgrain_Lower Potomac River_Potomac River M tidal,96,7,109.4285714,3,Benthos,75,2,m2
+324,maxgrain_Lower Potomac River_St. Clements Bay,123,15,107.0666667,3,Benthos,75,2,m2
+324,maxgrain_Lower Potomac River_St. Mary's River,107,8,111,3,Benthos,75,2,m2
+324,maxgrain_Lower Potomac River_Wicomico River,84,6,116.5,3,Benthos,75,2,m2
+324,maxgrain_Lower Potomac River_Zekiah Swamp,131,15,109.8,3,Benthos,75,2,m2
+324,maxgrain_Middle Potomac River_Catoctin Creek,83,6,109.8333333,3,Benthos,75,2,m2
+324,maxgrain_Middle Potomac River_Lower Monocacy River,92,8,101.375,3,Benthos,75,2,m2
+324,maxgrain_Middle Potomac River_Upper Monocacy River,108,15,99.33333333,3,Benthos,75,2,m2
+324,maxgrain_Nanticoke River_Wicomico River Head,94,15,97.26666667,3,Benthos,75,2,m2
+324,maxgrain_North Branch Potomac River_Potomac River L N Branch,94,15,100.2,3,Benthos,75,2,m2
+324,maxgrain_North Branch Potomac River_Potomac River U N Branch,68,6,72.5,3,Benthos,75,2,m2
+324,maxgrain_North Branch Potomac River_Savage River,88,15,94.66666667,3,Benthos,75,2,m2
+324,maxgrain_North Branch Potomac River_Wills Creek,53,6,80.66666667,3,Benthos,75,2,m2
+324,maxgrain_Patapsco River_Back River,32,6,69.83333333,3,Benthos,75,2,m2
+324,maxgrain_Patapsco River_Gwynns Falls,74,7,54.85714286,3,Benthos,75,2,m2
+324,maxgrain_Patapsco River_Jones Falls,102,16,107.3125,3,Benthos,75,2,m2
+324,maxgrain_Patapsco River_Liberty Reservoir,115,17,107.3529412,3,Benthos,75,2,m2
+324,maxgrain_Patapsco River_Patapsco River L N Br,87,8,104.5,3,Benthos,75,2,m2
+324,maxgrain_Patapsco River_S Branch Patapsco,86,8,111.25,3,Benthos,75,2,m2
+324,maxgrain_Patuxent River_Little Patuxent River,62,6,101.6666667,3,Benthos,75,2,m2
+324,maxgrain_Patuxent River_Patuxent River lower,110,15,111,3,Benthos,75,2,m2
+324,maxgrain_Patuxent River_Patuxent River middle,67,6,107.5,3,Benthos,75,2,m2
+324,maxgrain_Patuxent River_Rocky Gorge Dam,114,15,109.2666667,3,Benthos,75,2,m2
+324,maxgrain_Patuxent River_Western Branch,64,6,91.66666667,3,Benthos,75,2,m2
+324,maxgrain_Pocomoke River_Nassawango Creek,65,15,100,3,Benthos,75,2,m2
+324,maxgrain_Susquehanna River_Deer Creek,92,8,111.5,3,Benthos,75,2,m2
+324,maxgrain_Susquehanna River_Octoraro Creek,74,7,121.4285714,3,Benthos,75,2,m2
+324,maxgrain_Upper Potomac River_Antietam Creek,79,10,109.6,3,Benthos,75,2,m2
+324,maxgrain_Upper Potomac River_Fifteen Mile Creek,88,15,99.33333333,3,Benthos,75,2,m2
+324,maxgrain_Upper Potomac River_Sideling Hill Creek,84,7,111,3,Benthos,75,2,m2
+324,maxgrain_West Chesapeake Bay_West Chesapeake Bay,74,6,104,3,Benthos,75,2,m2
+324,maxgrain_Youghiogheny River_Casselman River,106,9,108,3,Benthos,75,2,m2
+324,maxgrain_Youghiogheny River_Little Youghiogheny R,75,6,108.1666667,3,Benthos,75,2,m2
+324,maxgrain_Youghiogheny River_Youghiogheny River,113,16,107.4375,3,Benthos,75,2,m2
+324,maxgrain_Chester River_Corsica River_EMORY CREEK UT1,86,11,99.45454545,4,Benthos,75,2,m2
+324,maxgrain_Chester River_Corsica River_THREE BRIDGES BRANCH,81,9,104.4444444,4,Benthos,75,2,m2
+324,maxgrain_Chester River_Lower Chester River_SWAN CREEK,83,12,107.75,4,Benthos,75,2,m2
+324,maxgrain_Chester River_Upper Chester River_CYPRESS BRANCH,65,7,110.5714286,4,Benthos,75,2,m2
+324,maxgrain_Choptank River_Tuckahoe Creek_TUCKAHOE CREEK,94,6,106.6666667,4,Benthos,75,2,m2
+324,maxgrain_Choptank River_Upper Choptank_SKELETON CREEK UT1,78,9,103,4,Benthos,75,2,m2
+324,maxgrain_Elk River_Furnace Bay_PRINCIPIO CREEK UT,64,6,117.1666667,4,Benthos,75,2,m2
+324,maxgrain_Elk River_Furnace Bay_PRINCIPIO CREEK UT1,74,8,113.125,4,Benthos,75,2,m2
+324,maxgrain_Gunpowder River_Loch Raven Reservoir_BAISMAN RUN,94,15,110.0666667,4,Benthos,75,2,m2
+324,maxgrain_Lower Potomac River_Mattawoman Creek_MATTAWOMAN CREEK,107,15,110.4,4,Benthos,75,2,m2
+324,maxgrain_Lower Potomac River_Nanjemoy Creek_MILL RUN,126,14,104.7857143,4,Benthos,75,2,m2
+324,maxgrain_Lower Potomac River_Nanjemoy Creek_NANJEMOY CREEK,95,7,104,4,Benthos,75,2,m2
+324,maxgrain_Lower Potomac River_Port Tobacco River_HOGHOLE RUN,111,15,106,4,Benthos,75,2,m2
+324,maxgrain_Lower Potomac River_St. Clements Bay_ST CLEMENTS CREEK UT1,90,9,101.3333333,4,Benthos,75,2,m2
+324,maxgrain_Lower Potomac River_Zekiah Swamp_ZEKIAH SWAMP RUN UT2,78,9,104.2222222,4,Benthos,75,2,m2
+324,maxgrain_Middle Potomac River_Upper Monocacy River_BUZZARD BRANCH,88,13,102.2307692,4,Benthos,75,2,m2
+324,maxgrain_Middle Potomac River_Upper Monocacy River_HIGH RUN,78,13,100.6153846,4,Benthos,75,2,m2
+324,maxgrain_Nanticoke River_Wicomico River Head_LEONARD POND RUN,98,14,103.3571429,4,Benthos,75,2,m2
+324,maxgrain_North Branch Potomac River_Potomac River L N Branch_MILL RUN,87,15,99.2,4,Benthos,75,2,m2
+324,maxgrain_North Branch Potomac River_Savage River_CRABTREE CREEK,81,12,93.33333333,4,Benthos,75,2,m2
+324,maxgrain_North Branch Potomac River_Savage River_DOUBLE LICK RUN,71,15,104.3333333,4,Benthos,75,2,m2
+324,maxgrain_North Branch Potomac River_Savage River_SAVAGE RIVER,92,15,104.1333333,4,Benthos,75,2,m2
+324,maxgrain_Patapsco River_Jones Falls_DIPPING POND RUN UT1,75,9,110.4444444,4,Benthos,75,2,m2
+324,maxgrain_Patapsco River_Jones Falls_NORTH BRANCH JONES FALLS,87,13,106.5384615,4,Benthos,75,2,m2
+324,maxgrain_Patapsco River_Liberty Reservoir_BEAVER RUN,68,6,98.33333333,4,Benthos,75,2,m2
+324,maxgrain_Patapsco River_Liberty Reservoir_MIDDLE RUN,70,6,106.6666667,4,Benthos,75,2,m2
+324,maxgrain_Patapsco River_Liberty Reservoir_TIMBER RUN,108,14,110.0714286,4,Benthos,75,2,m2
+324,maxgrain_Patapsco River_Patapsco River L N Br_DEEP RUN,62,7,78.85714286,4,Benthos,75,2,m2
+324,maxgrain_Patapsco River_S Branch Patapsco_GILLIS FALLS,68,6,101.8333333,4,Benthos,75,2,m2
+324,maxgrain_Patuxent River_Patuxent River lower_SWANSON CREEK,98,15,109.6666667,4,Benthos,75,2,m2
+324,maxgrain_Patuxent River_Rocky Gorge Dam_PATUXENT RIVER UT,80,6,113.3333333,4,Benthos,75,2,m2
+324,maxgrain_Patuxent River_Rocky Gorge Dam_PATUXENT RIVER UT5,68,9,105.6666667,4,Benthos,75,2,m2
+324,maxgrain_Pocomoke River_Nassawango Creek_MILLVILLE CREEK,52,14,100.2857143,4,Benthos,75,2,m2
+324,maxgrain_Pocomoke River_Nassawango Creek_NASSAWANGO CREEK,114,15,86.4,4,Benthos,75,2,m2
+324,maxgrain_Susquehanna River_Deer Creek_DEER CREEK,81,6,109,4,Benthos,75,2,m2
+324,maxgrain_Susquehanna River_Octoraro Creek_BASIN RUN,60,6,116.3333333,4,Benthos,75,2,m2
+324,maxgrain_Upper Potomac River_Fifteen Mile Creek_FIFTEENMILE CREEK,62,11,96.27272727,4,Benthos,75,2,m2
+324,maxgrain_Youghiogheny River_Youghiogheny River_BEAR CREEK,109,16,108.875,4,Benthos,75,2,m2
+324,maxgrain_Chester River_Corsica River_EMORY CREEK UT1_CORS-102-S,63,6,95.5,5,Benthos,2,2,m2
+324,maxgrain_Chester River_Corsica River_THREE BRIDGES BRANCH_CORS-250-H,65,6,103.6666667,5,Benthos,2,2,m2
+324,maxgrain_Chester River_Lower Chester River_SWAN CREEK_LOCR-102-S,54,6,109.1666667,5,Benthos,2,2,m2
+324,maxgrain_Chester River_Upper Chester River_CYPRESS BRANCH_UPCR-208-S,44,6,105.6666667,5,Benthos,2,2,m2
+324,maxgrain_Choptank River_Tuckahoe Creek_TUCKAHOE CREEK_TUCK-450-H,88,6,104.8333333,5,Benthos,2,2,m2
+324,maxgrain_Elk River_Furnace Bay_PRINCIPIO CREEK UT_FURN-101-S,64,6,117.1666667,5,Benthos,2,2,m2
+324,maxgrain_Gunpowder River_Loch Raven Reservoir_BAISMAN RUN_LOCH-120-S,82,9,106.4444444,5,Benthos,2,2,m2
+324,maxgrain_Lower Potomac River_Mattawoman Creek_MATTAWOMAN CREEK_MATT-033-S,86,9,105.7777778,5,Benthos,2,2,m2
+324,maxgrain_Lower Potomac River_Nanjemoy Creek_MILL RUN_NANJ-331-S,110,8,106.625,5,Benthos,2,2,m2
+324,maxgrain_Lower Potomac River_Port Tobacco River_HOGHOLE RUN_PTOB-002-S,87,9,108.7777778,5,Benthos,2,2,m2
+324,maxgrain_Middle Potomac River_Upper Monocacy River_BUZZARD BRANCH_UMON-119-S,76,9,101.5555556,5,Benthos,2,2,m2
+324,maxgrain_Middle Potomac River_Upper Monocacy River_HIGH RUN_UMON-288-S,59,7,104.4285714,5,Benthos,2,2,m2
+324,maxgrain_Nanticoke River_Wicomico River Head_LEONARD POND RUN_WIRH-220-S,81,8,108.25,5,Benthos,2,2,m2
+324,maxgrain_North Branch Potomac River_Potomac River L N Branch_MILL RUN_PRLN-626-S,71,9,98.77777778,5,Benthos,2,2,m2
+324,maxgrain_North Branch Potomac River_Savage River_CRABTREE CREEK_SAVA-204-S,65,7,99.14285714,5,Benthos,2,2,m2
+324,maxgrain_North Branch Potomac River_Savage River_DOUBLE LICK RUN_SAVA-276-S,60,9,103.6666667,5,Benthos,2,2,m2
+324,maxgrain_North Branch Potomac River_Savage River_SAVAGE RIVER_SAVA-225-S,79,9,105.2222222,5,Benthos,2,2,m2
+324,maxgrain_Patapsco River_Jones Falls_NORTH BRANCH JONES FALLS_JONE-315-S,65,6,111.1666667,5,Benthos,2,2,m2
+324,maxgrain_Patapsco River_Liberty Reservoir_TIMBER RUN_LIBE-102-S,84,9,106.5555556,5,Benthos,2,2,m2
+324,maxgrain_Patuxent River_Patuxent River lower_SWANSON CREEK_PAXL-294-S,83,9,107,5,Benthos,2,2,m2
+324,maxgrain_Patuxent River_Rocky Gorge Dam_PATUXENT RIVER UT_RKGR-119-S,71,6,107.6666667,5,Benthos,2,2,m2
+324,maxgrain_Pocomoke River_Nassawango Creek_MILLVILLE CREEK_NASS-108-S,43,8,104.375,5,Benthos,2,2,m2
+324,maxgrain_Pocomoke River_Nassawango Creek_NASSAWANGO CREEK_NASS-302-S,90,8,94.5,5,Benthos,2,2,m2
+324,maxgrain_Youghiogheny River_Youghiogheny River_BEAR CREEK_YOUG-432-S,84,9,106.4444444,5,Benthos,2,2,m2

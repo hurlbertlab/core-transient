@@ -62,7 +62,7 @@ propCT_long = gather(propCT, "class","value", c(mean.propCore.:mean.propNeither.
 propCT_long = arrange(propCT_long, desc(class))
 propCT_long$taxa = as.factor(propCT_long$taxa)
 propCT_long$taxa = factor(propCT_long$taxa,
-                          levels = c('Invertebrate','Fish','Plankton','Mammal','Plant','Bird','Benthos'),ordered = TRUE)
+                          levels = c('Benthos','Invertebrate','Fish','Plankton','Mammal','Plant','Bird'),ordered = TRUE)
 colscale = c("#c51b8a", "#fdd49e", "#225ea8")
 
 ### Fig 2b
@@ -153,7 +153,7 @@ propCT_long$abbrev = gsub("Mammal", 'M', propCT_long$abbrev)
 propCT_long$abbrev = gsub("Plankton", 'Pn', propCT_long$abbrev)
 propCT_long$abbrev = gsub("Plant", 'Pt', propCT_long$abbrev)
 propCT_long$abbrev = factor(propCT_long$abbrev,
-                            levels = c('I','F','Pn','Pt','M','Bi','Be'),ordered = TRUE)
+                            levels = c('Be','I','F','Pn','Pt','M','Bi'),ordered = TRUE)
 
 colscale = c("#225ea8","#fdd49e", "#c51b8a")
 m = ggplot(data=propCT_long, aes(factor(abbrev), y=value, fill=factor(class))) + geom_bar(stat = "identity")  + xlab("") + ylab("Proportion of Species") + scale_fill_manual(labels = c("Core", "Intermediate", "Transient"),values = colscale)+theme(axis.ticks.x=element_blank(),axis.text.x=element_text(size=6),axis.text.y=element_text(size=20),axis.title.y=element_text(size=24,angle=90,vjust = 4),axis.line.x = element_blank(),axis.line.y = element_blank())+ theme(legend.text=element_text(size=24),legend.key.size = unit(2, 'lines'))+theme(legend.position="right", legend.key.width=unit(1, "lines"))+ guides(fill = guide_legend(keywidth = 3, keyheight = 2,title="", reverse=TRUE))+ coord_fixed(ratio = 4)
@@ -197,7 +197,7 @@ CT_long$abbrev = gsub("Mammal", 'M', CT_long$abbrev)
 CT_long$abbrev = gsub("Plankton", 'Pn', CT_long$abbrev)
 CT_long$abbrev = gsub("Plant", 'Pt', CT_long$abbrev)
 CT_long$abbrev = factor(CT_long$abbrev,
-                        levels = c('I','F','Pn','Pt','M','Bi','Be'),ordered = TRUE)
+                        levels = c('Be','I','F','Pn','Pt','M','Bi'),ordered = TRUE)
 
 
 p <- ggplot(CT_long, aes(x = reorder(abbrev, -pTrans), y = pTrans))+theme_classic()

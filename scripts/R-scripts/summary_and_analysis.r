@@ -63,7 +63,7 @@ for (d in datasetIDs) {
   print(d)
 }
 
-write.csv(summaries, 'output/tabular_data/core-transient_summary_10.csv', 
+write.csv(summaries, 'output/tabular_data/core-transient_summary.csv', 
           row.names = T)
 
 ##################################################################
@@ -328,14 +328,18 @@ lat_scale_elev = data.frame(lat_scale_elev)
 # lat_scale_elev$stateroute = unlist(lat_scale_elev$stateroute)
 # lat_scale_elev$stateroute = as.numeric(lat_scale_elev$stateroute)
 
-lat_scale_rich = merge(lat_scale_elev, summ10[,c("datasetID","site", "meanAbundance")], by = c("datasetID", "site"), all.x = TRUE)
+lat_scale_rich = merge(lat_scale_elev, summ[,c("datasetID","site", "meanAbundance")], by = c("datasetID", "site"), all.x = TRUE)
 #  "spRichTrans", 
-write.csv(lat_scale_rich, "output/tabular_data/lat_scale_rich_10.csv", row.names = F)
+write.csv(lat_scale_rich, "output/tabular_data/lat_scale_rich.csv", row.names = F)
 # lat_scale_rich = read.csv("output/tabular_data/lat_scale_rich.csv", header = TRUE)
+
 
 # Model -  want 5 km radius here!!!!
 mod1 = lmer(propTrans ~ (1|taxa) * log10(meanAbundance) * log10(elev.var), data=lat_scale_rich) 
 summary(mod1)
+coefs <- data.frame(coef(summary(mod1)))
+coefs$p.z <- 2 * (1 - pnorm(abs(coefs$t.value)))
+
 
 ggplot(data=lat_scale_rich, aes(elev.var,propTrans)) +geom_point(aes(color = as.factor(lat_scale_rich$taxa)), size = 3) + xlab("Elevation Variance")+ ylab("% Transient")+ theme_classic()
 
