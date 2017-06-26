@@ -252,8 +252,8 @@ title(outer=FALSE,adj=0.02,main="B",cex.main=2,col="black",font=2,line=-1)
 legend('topright', legend = as.character(taxcolors$taxa), lty=1,lwd=3,col = as.character(taxcolors$color), cex = 1.25, bty = "n")
 par(new = FALSE)
 
-b3 = barplot(predmod$fit[predmod$taxorder], cex.names = 2,col = c("gold2", "turquoise2","red","purple4","forestgreen","#1D6A9B"), ylim = c(0, 1))
-Hmisc::errbar(c(0.7, 1.9, 3.1, 4.3, 5.5, 6.7), predmod$fit[predmod$taxorder], predmod$upr[predmod$taxorder], predmod$lwr[predmod$taxorder], add= TRUE, lwd = 1.25, pch = 3)
+b3 = barplot(predmod$fit[predmod$taxorder], cex.names = 2,col = c(colors()[17],"gold2", "turquoise2","red","forestgreen","purple4","#1D6A9B"), ylim = c(0, 1))
+Hmisc::errbar(c(0.7, 1.9, 3.1, 4.3, 5.5, 6.7, 7.9), predmod$fit[predmod$taxorder], predmod$upr[predmod$taxorder], predmod$lwr[predmod$taxorder], add= TRUE, lwd = 1.25, pch = 3)
 mtext("10% Transients", 2, cex = 2, las = 0, line = 2.5)
 title(outer=FALSE,adj=0.02,main="C",cex.main=2,col="black",font=2,line=-1)
 
