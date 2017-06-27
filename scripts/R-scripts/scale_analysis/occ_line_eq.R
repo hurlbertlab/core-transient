@@ -123,7 +123,7 @@ for (r in uniqrtes) {
                       numrtes = nu+1,                           #total # routes being aggregated
                       meanOcc = sum(bbssub$meanOcc)/numrtes,       #mean occupancy of aggregated routes
                       pctCore = sum(bbssub$meanOcc >= 2/3)/nrow(bbssub),
-                      pctTrans = sum(bbssub$meanOcc <= 1/3)/nrow(bbssub), #fraction of species that are transient
+                      pctTrans = sum(bbssub$meanOcc <= 1/3)/nrow(bbssub), #fraction of POOLED SITES that lean transient - since avg occ already calc'd across species + year
                       totalAbun = sum(bbssub$aveN),  #total community size (per year) - not an average, but the total community size (should increase w/numrtes aggregated!)
                       maxRadius = tmp$dist[nu])                 #radius including rtes aggregated
     output = rbind(output, temp)
@@ -136,7 +136,8 @@ for (r in uniqrtes) {
 bbs_focal_occs = as.data.frame(output)
 #Calc area for above route scale
 bbs_focal_occs$area = bbs_focal_occs$numrtes*50*(pi*(0.4^2)) #number of routes * fifty stops * area in sq km of a stop 
-# write.csv(bbs_focal_occs, "/scripts/R-scripts/scale_analysis/bbs_focal_occs.csv", row.names = FALSE)
+#write.csv(bbs_focal_occs, "data/BBS/bbs_above_v2.csv", row.names = FALSE) #updated 06/27, saved locally 
+#& on bioark: \\bioark\HurlbertLab\Jenkins\BBS scaled
 
 
 ####Plotting BBS occupancy at scales above a BBS route####
