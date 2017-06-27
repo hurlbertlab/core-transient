@@ -179,11 +179,13 @@ prow <- plot_grid( m + theme(legend.position="none"),
                    e + theme(legend.position="none"),
                    align = 'vh',
                    labels = c("A", "B"),
-                   label_size = 20,
-                   hjust = 0,
+                   label_size = 26,
+                   vjust = 5,
+                   hjust = -4,
                    nrow = 1
 )
 p2 = plot_grid(prow,legend, rel_widths = c(3, 0.7)) 
+p2
 ggsave(file="C:/Git/core-transient/output/plots/2a_2b.pdf", height = 10, width = 15,p2)
 
 #### barplot of percent transients by taxa ---SUPP FIG
