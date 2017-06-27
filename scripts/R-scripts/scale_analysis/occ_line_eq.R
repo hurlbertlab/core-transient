@@ -73,7 +73,7 @@ occ_counts = function(countData, countColumns, scale) {
 b_scales = c(5, 10, 25, 50)
 
 output = c()
-for (scale in bscales) {
+for (scale in b_scales) {
   numGroups = floor(50/scale)
   for (g in 1:numGroups) {
     groupedCols = paste("Stop", ((g-1)*scale + 1):(g*scale), sep = "")
@@ -87,20 +87,9 @@ bbs_below<-data.frame(output)
 
 ####Calculations for Occupancy above the scale of a BBS route####
 #Revised calcs workspace 
-a_scales = seq(0,3250, by = 50)
+#sort out bbs_below to ONLY those routes at 50-stop scale (occ calc'd for a single route)
 
-output = c()
-for (scale in ascales) {
-  numGroups = floor(50/scale)
-  for (g in 1:numGroups) {
-    groupedCols = paste("Stop", ((g-1)*scale + 1):(g*scale), sep = "")
-    temp = occ_counts(fifty_bestAous, groupedCols, scale)
-    output = rbind(output, temp) 
-  }
-}
-
-#end of revised calcs workspace, old code below
-
+#use to aggregate 
 good_rtes2 = read.csv(paste(BBS, "good_rtes2.csv", sep = ""), header = TRUE) 
 require(fields)
 #Distance calculation between all combination of routes to pair them by min dist for aggregation
@@ -112,32 +101,30 @@ dist.df = data.frame(rte1 = rep(good_rtes2$stateroute, each = nrow(good_rtes2)),
                      dist = as.vector(distances))
 #write.csv(dist.df, "C:/git/core-transient/scripts/R-scripts/scale_analysis/dist_df.csv", row.names = FALSE) for later calcs
 
-
-bbs_allyears = read.csv(paste(BBS, "bbs_allyears.csv", sep = ""), header = TRUE)
-bbs_bestAous = bbs_allyears %>% 
-  filter(Aou > 2880 & !(Aou >= 3650 & Aou <= 3810) & !(Aou >= 3900 & Aou <= 3910) & 
-           !(Aou >= 4160 & Aou <= 4210) & Aou != 7010)  #excluding shorebirds and owls, data less reliable
+bbs_fullrte = bbs_below %>%
+  filter(scale == "50-1") #953 routes at scale of a single route
 
 
 numrtes = 1:65 # based on min common number in top 6 grid cells, see grid_sampling_justification script 
+uniqrtes = unique(bbs_fullrte$stateroute) #all routes present are unique, still 953 which is great
 output = data.frame(r = NULL, nu = NULL, AOU = NULL, occ = NULL)
 for (r in uniqrtes) {
   for (nu in numrtes) {
-    tmp = filter(dist.df2, rte1 == r) %>%
+    tmp = filter(dist.df, rte1 == r) %>%
       arrange(dist)
     tmprtes = tmp$rte2[1:nu]   
     #Aggregate routes together based on distance, calc occupancy, etc
     
-    bbssub = filter(bbs_bestAous, stateroute %in% c(r, tmprtes)) 
-    bbsuniq = unique(bbssub[, c('Aou', 'Year')])
-    occs = bbsuniq %>% dplyr::count(Aou) %>% dplyr::mutate(occ = n/15)
+    bbssub = filter(bbs_fullrte, stateroute %in% c(r, tmprtes)) 
+    # bbsuniq = unique(bbssub[, c('Aou', 'Year')])
+    # occs = bbsuniq %>% dplyr::count(Aou) %>% dplyr::mutate(occ = n/15)
     
     temp = data.frame(focalrte = r,
                       numrtes = nu+1,                           #total # routes being aggregated
-                      meanOcc = mean(occs$occ, na.rm =T),       #mean occupancy
-                      pctCore = sum(occs$occ > 2/3)/nrow(occs),
-                      pctTrans = sum(occs$occ <= 1/3)/nrow(occs), #fraction of species that are transient
-                      totalAbun = sum(bbssub$SpeciesTotal)/15,  #total community size (per year)
+                      meanOcc = sum(bbssub$meanOcc)/numrtes,       #mean occupancy of aggregated routes
+                      pctCore = sum(bbssub$meanOcc >= 2/3)/nrow(bbssub),
+                      pctTrans = sum(bbssub$meanOcc <= 1/3)/nrow(bbssub), #fraction of species that are transient
+                      totalAbun = sum(bbssub$aveN),  #total community size (per year) - not an average, but the total community size (should increase w/numrtes aggregated!)
                       maxRadius = tmp$dist[nu])                 #radius including rtes aggregated
     output = rbind(output, temp)
     print(paste("Focal rte", r, "#' rtes sampled", nu))
