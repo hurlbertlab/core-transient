@@ -32,66 +32,10 @@ ndvidata = "//bioark.ad.unc.edu/HurlbertLab/GIS/MODIS NDVI/"
 BBS = '//bioark.ad.unc.edu/HurlbertLab/Jenkins/BBS scaled/'
 
 
-####Calculations for Occupancy above the scale of a BBS route####
-good_rtes2 = read.csv(paste(BBS, "good_rtes2.csv", sep = ""), header = TRUE) 
-require(fields)
-#Distance calculation between all combination of routes to pair them by min dist for aggregation
-distances = rdist.earth(matrix(c(good_rtes2$Longi, good_rtes2$Lati), ncol=2),
-                        matrix(c(good_rtes2$Longi, good_rtes2$Lati), ncol=2),
-                        miles=FALSE, R=6371)
-dist.df = data.frame(rte1 = rep(good_rtes2$stateroute, each = nrow(good_rtes2)),
-                     rte2 = rep(good_rtes2$stateroute, times = nrow(good_rtes2)),
-                     dist = as.vector(distances))
-#write.csv(dist.df, "C:/git/core-transient/scripts/R-scripts/scale_analysis/dist_df.csv", row.names = FALSE) for later calcs
-
-#bring in NON-50 stop data for above-route scale res
-bbs_allyears = read.csv(paste(BBS, "bbs_allyears.csv", sep = ""), header = TRUE)
-bbs_bestAous = bbs_allyears %>% 
-  filter(Aou > 2880 & !(Aou >= 3650 & Aou <= 3810) & !(Aou >= 3900 & Aou <= 3910) & 
-           !(Aou >= 4160 & Aou <= 4210) & Aou != 7010)  #excluding shorebirds and owls, data less reliable
-
-
-numrtes = 1:65 # based on min common number in top 6 grid cells, see grid_sampling_justification script 
-output = data.frame(r = NULL, nu = NULL, AOU = NULL, occ = NULL)
-for (r in uniqrtes) {
-  for (nu in numrtes) {
-    tmp = filter(dist.df2, rte1 == r) %>%
-      arrange(dist)
-    tmprtes = tmp$rte2[1:nu]   
-    #Aggregate routes together based on distance, calc occupancy, etc
-    
-    bbssub = filter(bbs_bestAous, stateroute %in% c(r, tmprtes)) 
-    bbsuniq = unique(bbssub[, c('Aou', 'Year')])
-    occs = bbsuniq %>% dplyr::count(Aou) %>% dplyr::mutate(occ = n/15)
-    
-    temp = data.frame(focalrte = r,
-                      numrtes = nu+1,                           #total # routes being aggregated
-                      meanOcc = mean(occs$occ, na.rm =T),       #mean occupancy
-                      pctCore = sum(occs$occ > 2/3)/nrow(occs),
-                      pctTrans = sum(occs$occ <= 1/3)/nrow(occs), #fraction of species that are transient
-                      totalAbun = sum(bbssub$SpeciesTotal)/15,  #total community size (per year)
-                      maxRadius = tmp$dist[nu])                 #radius including rtes aggregated
-    output = rbind(output, temp)
-    print(paste("Focal rte", r, "#' rtes sampled", nu))
-    
-  } #n loop
-  
-} #r loop
-
-bbs_focal_occs = as.data.frame(output)
-#Calc area for above route scale
-bbs_focal_occs$area = bbs_focal_occs$numrtes*50*(pi*(0.4^2)) #number of routes * fifty stops * area in sq km of a stop 
-# write.csv(bbs_focal_occs, "/scripts/R-scripts/scale_analysis/bbs_focal_occs.csv", row.names = FALSE)
-
-
-####Plotting BBS occupancy at scales above a BBS route####
-plot(bbs_focal_occs$numrtes, bbs_focal_occs$meanOcc, xlab = "#' routes", ylab = "mean occupancy")
-par(mfrow = c(2, 1))
-plot(bbs_focal_occs$numrtes, bbs_focal_occs$pctTran, xlab = "#' routes", ylab = "% Trans")
-plot(bbs_focal_occs$numrtes, bbs_focal_occs$pctCore, xlab = "#' routes", ylab = "% Core")
-
-
 ####Below-route occupancy calculations####
+#need to happen first so can use the 50-scale occ 
+#calculated for each route as the base to aggregate for the above-scale calcs
+
 fifty_allyears = read.csv(paste(BBS, "fifty_allyears.csv", sep = ""), header = TRUE)
 fifty_bestAous = fifty_allyears %>% 
   filter(AOU > 2880 & !(AOU >= 3650 & AOU <= 3810) & !(AOU >= 3900 & AOU <= 3910) & 
@@ -139,9 +83,10 @@ for (scale in bscales) {
 }
 bbs_below<-data.frame(output)
 
-#should be able to use the 50 stop info (1 rte) from this output to aggregate routes AFTER below scale, because currently pulling from sep 
+#should be able to use the 50 stop info (1 rte) from this output to aggregate routes AFTER below scale
 
-####Revised above-route scale occ calcs####
+####Calculations for Occupancy above the scale of a BBS route####
+#Revised calcs workspace 
 a_scales = seq(0,3250, by = 50)
 
 output = c()
@@ -154,7 +99,7 @@ for (scale in ascales) {
   }
 }
 
-
+#end of revised calcs workspace, old code below
 
 good_rtes2 = read.csv(paste(BBS, "good_rtes2.csv", sep = ""), header = TRUE) 
 require(fields)
@@ -167,7 +112,7 @@ dist.df = data.frame(rte1 = rep(good_rtes2$stateroute, each = nrow(good_rtes2)),
                      dist = as.vector(distances))
 #write.csv(dist.df, "C:/git/core-transient/scripts/R-scripts/scale_analysis/dist_df.csv", row.names = FALSE) for later calcs
 
-#bring in NON-50 stop data for above-route scale res
+
 bbs_allyears = read.csv(paste(BBS, "bbs_allyears.csv", sep = ""), header = TRUE)
 bbs_bestAous = bbs_allyears %>% 
   filter(Aou > 2880 & !(Aou >= 3650 & Aou <= 3810) & !(Aou >= 3900 & Aou <= 3910) & 
@@ -207,6 +152,11 @@ bbs_focal_occs$area = bbs_focal_occs$numrtes*50*(pi*(0.4^2)) #number of routes *
 # write.csv(bbs_focal_occs, "/scripts/R-scripts/scale_analysis/bbs_focal_occs.csv", row.names = FALSE)
 
 
+####Plotting BBS occupancy at scales above a BBS route####
+plot(bbs_focal_occs$numrtes, bbs_focal_occs$meanOcc, xlab = "#' routes", ylab = "mean occupancy")
+par(mfrow = c(2, 1))
+plot(bbs_focal_occs$numrtes, bbs_focal_occs$pctTran, xlab = "#' routes", ylab = "% Trans")
+plot(bbs_focal_occs$numrtes, bbs_focal_occs$pctCore, xlab = "#' routes", ylab = "% Core")
 
 
 
