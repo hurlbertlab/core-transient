@@ -120,4 +120,8 @@ for (r in uniqrtes) { #for each focal route
       top_n(66, desc(dist)) %>% #fixed ordering by including arrange parm
       arrange(dist)
     
+    nu_group = tmp_rte_group %>% 
+      top_n(nu, desc(dist)) #narrow to how many routes to aggregate occ across 
+    
+    
     
