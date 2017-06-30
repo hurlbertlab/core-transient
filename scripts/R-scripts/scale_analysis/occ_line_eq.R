@@ -121,7 +121,13 @@ for (r in uniqrtes) { #for each focal route
       arrange(dist)
     
     nu_group = tmp_rte_group %>% 
-      top_n(nu, desc(dist)) #narrow to how many routes to aggregate occ across 
+      top_n(nu, desc(dist)) %>% #narrow to how many routes to aggregate occ across
+      select(rte2) %>% as.vector()
+    
+    bbssub = bbs_fullrte %>%
+      filter(stateroute %in% nu_group$rte2) #stateroute = rte2 group in nu_group (routes to agg across!!!) should be nu rows 
     
     
+    #bbsuniq = unique(bbssub[, c('Aou', 'Year')])
+    #occs = bbssub %>% dplyr::count(Aou) %>% dplyr::mutate(occ = n/15)
     
