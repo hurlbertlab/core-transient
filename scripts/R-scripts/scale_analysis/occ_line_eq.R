@@ -117,7 +117,7 @@ for (r in uniqrtes) { #for each focal route
     
     tmp_rte_group = dist.df %>% 
       filter(rte1 == r) %>% 
-      top_n(66, desc(dist)) %>% #want to order by mindist first, rte2 second 
-      select(rte2) %>% as.vector()
+      top_n(66, desc(dist)) %>% #fixed ordering by including arrange parm
+      arrange(dist)
     
     
