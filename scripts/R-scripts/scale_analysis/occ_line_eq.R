@@ -82,7 +82,7 @@ for (scale in b_scales) {
   }
 }
 bbs_below<-data.frame(output)
-#write.csv(bbs_below, "data/BBS/bbs_below.csv", row.names = FALSE) #updated 06/30
+#write.csv(bbs_below, paste(BBS, "bbs_below.csv", sep = ""), row.names = FALSE) #updated 06/30, on BioArk
 #should be able to use the 50 stop info (1 rte) from this output to aggregate routes AFTER below scale
 
 ####Calculations for Occupancy above the scale of a BBS route####
@@ -156,7 +156,6 @@ for (r in uniqrtes) { #for each focal route
 bbs_above_v2 = as.data.frame(output)
 #Calc area for above route scale
 bbs_above_v2$area = bbs_above_v2$numrtes*50*(pi*(0.4^2)) #number of routes * fifty stops * area in sq km of a stop 
-#write.csv(bbs_above_v2, "data/BBS/bbs_above_v2.csv", row.names = FALSE)
 #write.csv(bbs_above_v2, paste(BBS, "bbs_above_v2.csv", sep = ""), row.names = FALSE)
-#updated 06/30 evening locally and on BioArk; not sure why data folder rejected bc not THAT big
+#updated 06/30 evening locally and on BioArk; not sure why data folder rejected bc not THAT big but not on github
     
