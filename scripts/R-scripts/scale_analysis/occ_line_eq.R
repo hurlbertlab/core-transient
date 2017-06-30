@@ -109,7 +109,13 @@ bbs_fullrte = bbs_below %>%
 #need to make sure NOT running thru 66 times on the same site and scale 
 uniqrtes = unique(bbs_fullrte$stateroute) #all routes present are unique, still 953 which is great
 numrtes = 1:65 # based on min common number in top 6 grid cells, see grid_sampling_justification script 
-output = data.frame(r = NULL, nu = NULL, AOU = NULL, occ = NULL)
+output = data.frame(focalrte2 = NULL,
+                    numrtes2 = NULL, 
+                    meanOcc2 = NULL,       
+                    pctCore2 = NULL,  
+                    pctTran2 = NULL, 
+                    totalAbun2 = NULL,  
+                    maxRadius2 = NULL)
 
 
 for (r in uniqrtes) { #for each focal route
@@ -135,8 +141,21 @@ for (r in uniqrtes) { #for each focal route
     temp = data.frame(focalrte2 = r,
                       numrtes2 = nu, #total # routes being aggregated -> do I really need the +1 if it's already inclusive of the 1st?
                       meanOcc2 = mean(bbssub$meanOcc, na.rm =T),       #mean occupancy
-                      pctCore2 = sum(bbssub$meanOcc > 2/3)/nrow(bbssub),
-                      pctTrans2 = sum(bbssub$meanOcc <= 1/3)/nrow(bbssub), #fraction of species that are transient
+                      pctCore2 = mean(bbssub$pctCore, na.rm = T), #how do I want to do this? avg of routes aggregated, or recalc? 
+                      pctTran2 = mean(bbssub$pctTran, na.rm = T), #fraction of species that are transient
                       totalAbun2 = sum(bbssub$aveN),  #total community size (per year) already calc'd per route....so just add across routes?
                       maxRadius2 = tmp_rte_group$dist[nu])   
+    
+    output = rbind(output, temp)
+    print(paste("Focal rte", r, "#' rtes sampled", nu)) #for viewing progress
+    
+  } #n loop
+  
+} #r loop
+
+bbs_above_v2 = as.data.frame(output)
+#Calc area for above route scale
+bbs_above_v2$area = bbs_above_v2$numrtes*50*(pi*(0.4^2)) #number of routes * fifty stops * area in sq km of a stop 
+write.csv(bbs_above_v2, "data/BBS/bbs_above_v2.csv", row.names = FALSE)
+#updated 06/30 evening locally
     
