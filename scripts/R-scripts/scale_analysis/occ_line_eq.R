@@ -129,5 +129,14 @@ for (r in uniqrtes) { #for each focal route
     
     
     #bbsuniq = unique(bbssub[, c('Aou', 'Year')])
-    #occs = bbssub %>% dplyr::count(Aou) %>% dplyr::mutate(occ = n/15)
+    #occs = bbssub %>% dplyr::count(Aou) %>% dplyr::mutate(occ = n/15) #already have occs! just need to accumulate and avg them 
+    
+    #adding 2 to end since using an input df with all of the exact same column names -> can change back b4 merging, after loop
+    temp = data.frame(focalrte2 = r,
+                      numrtes2 = nu, #total # routes being aggregated -> do I really need the +1 if it's already inclusive of the 1st?
+                      meanOcc2 = mean(bbssub$meanOcc, na.rm =T),       #mean occupancy
+                      pctCore2 = sum(bbssub$meanOcc > 2/3)/nrow(bbssub),
+                      pctTrans2 = sum(bbssub$meanOcc <= 1/3)/nrow(bbssub), #fraction of species that are transient
+                      totalAbun2 = sum(bbssub$aveN),  #total community size (per year) already calc'd per route....so just add across routes?
+                      maxRadius2 = tmp_rte_group$dist[nu])   
     
