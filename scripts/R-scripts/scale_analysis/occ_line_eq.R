@@ -158,4 +158,31 @@ bbs_above_v2 = as.data.frame(output)
 bbs_above_v2$area = bbs_above_v2$numrtes*50*(pi*(0.4^2)) #number of routes * fifty stops * area in sq km of a stop 
 #write.csv(bbs_above_v2, paste(BBS, "bbs_above_v2.csv", sep = ""), row.names = FALSE)
 #updated 06/30 evening locally and on BioArk; not sure why data folder rejected bc not THAT big but not on github
-    
+
+####scale-joining####
+bbs_above = read.csv(paste(BBS, "bbs_above_v2.csv", sep = ""), header = TRUE)
+bbs_below = read.csv(paste(BBS, "bbs_below.csv", sep = ""), header = TRUE)
+
+#adding maxRadius column to bbs_below w/NA's + renaming and rearranging columns accordingly, creating area cols
+bbs_below = bbs_below %>% 
+  mutate(maxRadius = c("NA")) %>%
+  dplyr::rename(focalrte = stateroute) %>%
+  select(focalrte, scale, everything()) %>%
+  mutate(area = (as.integer(lapply(strsplit(as.character(bbs_below$scale), 
+                                            split="-"), "[", 1)))*(pi*(0.4^2))) 
+#modify and split scale so that it's just the # of stops in each seg; not the seg order # preceded by a "-"
+
+
+bbs_above = bbs_above %>% 
+  dplyr::rename(scale = numrtes2, aveN = totalAbun2, focalrte = focalrte2, meanOcc = meanOcc2, 
+                pctCore = pctCore2, pctTran = pctTran2, maxRadius = maxRadius2) #%>%
+#this already done above  
+#mutate(area = scale*50*(pi*(0.4^2))) #area in km by # of routes * 50 stops in each rte * area of a stop (for above-route scale later)
+bbs_above$scale = as.factor(bbs_above$scale)
+
+
+bbs_allscales = rbind(bbs_below, bbs_above) #rbind ok since all share column names
+#write.csv(bbs_allscales, "C:/git/core-transient/scripts/R-scripts/scale_analysis/bbs_allscales.csv", row.names = FALSE)
+#updated 07/02/2017
+
+####Occ-scale analysis####
