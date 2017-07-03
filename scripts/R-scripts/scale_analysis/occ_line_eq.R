@@ -10,7 +10,7 @@ warnings = data.frame(stateroute = numeric(), warning = character())
 
 
 #read in data for processing
-
+bbs_allscales = read.csv("data/BBS/bbs_allscales.csv", header = TRUE)
 stateroutes = unique(bbs_allscales$focalrte) #this stuff is the same, looks normal ^
 
 
