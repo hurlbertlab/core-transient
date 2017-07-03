@@ -24,9 +24,9 @@ for(s in stateroutes){
     OAlog = lm(meanOcc ~ logA, data = logsub) #lm instead of nls, reg linear model
     OApred = predict(OAlog) #get preds
     OAlm.r2 = lm(logsub$meanOcc ~ OApred) #get r2 from model 
-    #OA.alt_xmid_dev = OApred - meanOcc # @ scale == 3
-    #OA.max = max(OApred) # @ max scale - what point is at the "end of the line"?
-    #OA.min = min(OApred) # @ min scale - what point is at the beginning of the line?
+    #OA.alt_xmid_dev = OApred - meanOcc # @ scale == 3, for a given focal rte s
+    #OA.max = max(OApred) # @ max scale - what point is at the "end of the line", for a given focal rte s?
+    #OA.min = min(OApred) # @ min scale - what point is at the beginning of the line, for a given focal rte s?
     
     #instead of coefficients, extract points from eq of line ^
     # OA.i <- summary(OAlog)$coefficients["xmid","Estimate"]
