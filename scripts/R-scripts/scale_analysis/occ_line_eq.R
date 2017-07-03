@@ -21,12 +21,16 @@ for(s in stateroutes){
   
   #OA 
   OAmodel = tryCatch({
-    OAlog = nls(meanOcc ~ SSlogis(logA, Asym, xmid, scal), data = logsub)
-    OApred = predict(OAlog)
-    OAlm.r2 = lm(logsub$meanOcc ~ OApred)
-    OA.i <- summary(OAlog)$coefficients["xmid","Estimate"]
-    OA.A <- summary(OAlog)$coefficients["Asym","Estimate"]
-    OA.k <- summary(OAlog)$coefficients["scal","Estimate"]
+    OAlog = lm(meanOcc ~ logA, data = logsub) #lm instead of nls, reg linear model
+    OApred = predict(OAlog) #get preds
+    OAlm.r2 = lm(logsub$meanOcc ~ OApred) #get r2 from model 
+    #OA.alt_xmid_dev = OApred - meanOcc # @ scale == 3
+    
+    
+    #instead of coefficients, extract points from eq of line ^
+    # OA.i <- summary(OAlog)$coefficients["xmid","Estimate"]
+    # OA.A <- summary(OAlog)$coefficients["Asym","Estimate"]
+    # OA.k <- summary(OAlog)$coefficients["scal","Estimate"]
     OA.r2 <- summary(OAlm.r2)$r.squared
     data.frame(stateroute = s, OA.A, OA.i, OA.k, OA.r2)
     
