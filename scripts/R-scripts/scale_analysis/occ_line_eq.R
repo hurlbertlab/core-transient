@@ -25,7 +25,8 @@ for(s in stateroutes){
     OApred = predict(OAlog) #get preds
     OAlm.r2 = lm(logsub$meanOcc ~ OApred) #get r2 from model 
     #OA.alt_xmid_dev = OApred - meanOcc # @ scale == 3
-    
+    #OA.max = max(OApred) # @ max scale - what point is at the "end of the line"?
+    #OA.min = min(OApred) # @ min scale - what point is at the beginning of the line?
     
     #instead of coefficients, extract points from eq of line ^
     # OA.i <- summary(OAlog)$coefficients["xmid","Estimate"]
