@@ -1,198 +1,3 @@
-#Occupancy-scale analysis
-
-##feat. alternative to curve-fitting parameters: slope, intercept, and x value @ scale of 3 aggregated routes.
-# author: Molly F. Jenkins
-# date: 06/27/2017
-
-# setwd("C:/git/core-transient")
-#'#' Please download and install the following packages:
-library(raster)
-library(maps)
-library(sp)
-library(rgdal)
-library(maptools)
-library(rgeos)
-library(dplyr)
-library(fields)
-library(tidyr)
-library(ggplot2)
-library(nlme)
-library(gridExtra)
-library(wesanderson)
-library(stats)
-
-
-# To run this script, you need temperature, precip, etc data, 
-# which are currently stored in the following directories off of github: 
-
-# Data directories
-tempdatadir = '//bioark.ad.unc.edu/HurlbertLab/GIS/ClimateData/BIOCLIM_meanTemp/'
-precipdata = '//bioark.ad.unc.edu/HurlbertLab/GIS/ClimateData/2-25-2011/prec/'
-ndvidata = "//bioark.ad.unc.edu/HurlbertLab/GIS/MODIS NDVI/"
-BBS = '//bioark.ad.unc.edu/HurlbertLab/Jenkins/BBS scaled/'
-
-
-####Below-route occupancy calculations####
-#need to happen first so can use the 50-scale occ 
-#calculated for each route as the base to aggregate for the above-scale calcs
-
-fifty_allyears = read.csv(paste(BBS, "fifty_allyears.csv", sep = ""), header = TRUE)
-fifty_bestAous = fifty_allyears %>% 
-  filter(AOU > 2880 & !(AOU >= 3650 & AOU <= 3810) & !(AOU >= 3900 & AOU <= 3910) & 
-           !(AOU >= 4160 & AOU <= 4210) & AOU != 7010) #leaving out owls, waterbirds as less reliable data
-
-#occ_counts function for calculating occupancy at any scale
-occ_counts = function(countData, countColumns, scale) {
-  bbssub = countData[, c("stateroute", "year", "AOU", countColumns)]
-  bbssub$groupCount = rowSums(bbssub[, countColumns])
-  bbsu = unique(bbssub[bbssub[, "groupCount"]!= 0, c("stateroute", "year", "AOU")]) 
-  
-  abun.summ = bbssub %>% #abundance
-    group_by(stateroute, year) %>%  
-    summarize(totalN = sum(groupCount)) %>%
-    group_by(stateroute) %>%
-    summarize(aveN = mean(totalN))
-  
-  occ.summ = bbsu %>% #occupancy
-    count(stateroute, AOU) %>%
-    mutate(occ = n/15, scale = scale, subrouteID = countColumns[1]) %>%
-    group_by(stateroute) %>%
-    summarize(meanOcc = mean(occ), 
-              pctCore = sum(occ > 2/3)/length(occ),
-              pctTran = sum(occ <= 1/3)/length(occ)) %>%
-    #spRichTrans33  
-    # spRichTrans25 = sum(occ <= 1/4)/length(occ),
-    # spRichTrans10 = sum(occ <= 0.1)/length(occ)) %>%
-    mutate(scale = paste(scale, g, sep = "-")) %>%
-    left_join(abun.summ, by = 'stateroute')
-  return(occ.summ)
-}
-
-
-# Generic calculation of occupancy for a specified scale
-b_scales = c(5, 10, 25, 50)
-
-output = c()
-for (scale in b_scales) {
-  numGroups = floor(50/scale)
-  for (g in 1:numGroups) {
-    groupedCols = paste("Stop", ((g-1)*scale + 1):(g*scale), sep = "")
-    temp = occ_counts(fifty_bestAous, groupedCols, scale)
-    output = rbind(output, temp) 
-  }
-}
-bbs_below<-data.frame(output)
-
-#should be able to use the 50 stop info (1 rte) from this output to aggregate routes AFTER below scale
-
-####Calculations for Occupancy above the scale of a BBS route####
-#Revised calcs workspace 
-#sort out bbs_below to ONLY those routes at 50-stop scale (occ calc'd for a single route)
-
-#use to aggregate 
-good_rtes2 = read.csv(paste(BBS, "good_rtes2.csv", sep = ""), header = TRUE) 
-require(fields)
-#Distance calculation between all combination of routes to pair them by min dist for aggregation
-distances = rdist.earth(matrix(c(good_rtes2$Longi, good_rtes2$Lati), ncol=2),
-                        matrix(c(good_rtes2$Longi, good_rtes2$Lati), ncol=2),
-                        miles=FALSE, R=6371)
-dist.df = data.frame(rte1 = rep(good_rtes2$stateroute, each = nrow(good_rtes2)),
-                     rte2 = rep(good_rtes2$stateroute, times = nrow(good_rtes2)),
-                     dist = as.vector(distances))
-#write.csv(dist.df, "C:/git/core-transient/scripts/R-scripts/scale_analysis/dist_df.csv", row.names = FALSE) for later calcs
-
-bbs_fullrte = bbs_below %>%
-  filter(scale == "50-1") #953 routes at scale of a single route
-
-
-numrtes = 1:65 # based on min common number in top 6 grid cells, see grid_sampling_justification script 
-uniqrtes = unique(bbs_fullrte$stateroute) #all routes present are unique, still 953 which is great
-output = data.frame(r = NULL, nu = NULL, AOU = NULL, occ = NULL)
-for (r in uniqrtes) {
-  for (nu in numrtes) {
-    tmp = filter(dist.df, rte1 == r) %>%
-      arrange(dist)
-    tmprtes = tmp$rte2[1:nu]   
-    #Aggregate routes together based on distance, calc occupancy, etc
-    
-    bbssub = filter(bbs_fullrte, stateroute %in% c(r, tmprtes)) 
-    # bbsuniq = unique(bbssub[, c('Aou', 'Year')])
-    # occs = bbsuniq %>% dplyr::count(Aou) %>% dplyr::mutate(occ = n/15)
-    
-    temp = data.frame(focalrte = r,
-                      numrtes = nu+1,                           #total # routes being aggregated
-                      meanOcc = sum(bbssub$meanOcc)/numrtes,       #mean occupancy of aggregated routes
-                      pctCore = sum(bbssub$meanOcc >= 2/3)/nrow(bbssub),
-                      pctTrans = sum(bbssub$meanOcc <= 1/3)/nrow(bbssub), #fraction of species that are transient
-                      totalAbun = sum(bbssub$aveN),  #total community size (per year) - not an average, but the total community size (should increase w/numrtes aggregated!)
-                      maxRadius = tmp$dist[nu])                 #radius including rtes aggregated
-    output = rbind(output, temp)
-    print(paste("Focal rte", r, "#' rtes sampled", nu))
-    
-  } #n loop
-  
-} #r loop
-
-bbs_focal_occs = as.data.frame(output)
-#Calc area for above route scale
-bbs_focal_occs$area = bbs_focal_occs$numrtes*50*(pi*(0.4^2)) #number of routes * fifty stops * area in sq km of a stop 
-# write.csv(bbs_focal_occs, "/scripts/R-scripts/scale_analysis/bbs_focal_occs.csv", row.names = FALSE)
-
-
-####Plotting BBS occupancy at scales above a BBS route####
-plot(bbs_focal_occs$numrtes, bbs_focal_occs$meanOcc, xlab = "#' routes", ylab = "mean occupancy")
-par(mfrow = c(2, 1))
-plot(bbs_focal_occs$numrtes, bbs_focal_occs$pctTran, xlab = "#' routes", ylab = "% Trans")
-plot(bbs_focal_occs$numrtes, bbs_focal_occs$pctCore, xlab = "#' routes", ylab = "% Core")
-
-
-
-####Binding above and below route scales, calc area####
-bbs_focal_occs = read.csv(paste(BBS, "bbs_focal_occs.csv", sep = ""), header = TRUE) 
-bbs_below = read.csv(paste(BBS, "bbs_below.csv", sep = ""), header = T)
-
-
-#adding maxRadius column to bbs_below w/NA's + renaming and rearranging columns accordingly, creating area cols
-bbs_below= bbs_below %>% 
-  mutate(maxRadius = c("NA")) %>%
-  dplyr::rename(focalrte = stateroute) %>%
-  select(focalrte, scale, everything()) %>%
-  mutate(area = (as.integer(lapply(strsplit(as.character(bbs_below$scale), 
-                                            split="-"), "[", 1)))*(pi*(0.4^2))) 
-#modify and split scale so that it's just the # of stops in each seg; not the seg order # preceded by a "-"
-
-
-bbs_focal_occs = bbs_focal_occs %>% 
-  dplyr::rename(scale = numrtes, aveN = totalAbun) %>%
-  mutate(area = scale*50*(pi*(0.4^2))) #area in km by # of routes * 50 stops in each rte * area of a stop (for above-route scale later)
-bbs_focal_occs$scale = as.factor(bbs_focal_occs$scale)
-
-
-bbs_allscales = rbind(bbs_below, bbs_focal_occs) #rbind ok since all share column names
-#write.csv(bbs_allscales, "C:/git/core-transient/scripts/R-scripts/scale_analysis/bbs_allscales.csv", row.names = FALSE)
-
-
-####Cross-scale analysis and visualization####
-bbs_allscales = read.csv("data/BBS/bbs_allscales.csv", header = TRUE)
-bbs_allscales$logA = log10(bbs_allscales$area)
-bbs_allscales$logN = log10(bbs_allscales$aveN)
-bbs_allscales$lnA = log(bbs_allscales$area) #log is the natural log 
-bbs_allscales$lnN = log(bbs_allscales$aveN) #rerun plots with this?
-
-####filter out stateroutes that are one-sided in scale####
-#in terms of their representation of below vs above scale (should have both, not one alone)
-bbs_allscales2 = bbs_allscales %>% count(focalrte) %>% filter(n == 83) %>% data.frame() 
-bbs_allscales3 = filter(bbs_allscales, focalrte %in% bbs_allscales2$focalrte)
-
-
-mod1 = lm(meanOcc~logA, data = bbs_allscales3) #explains ~50% of the variation in occ
-mod2 = lm(meanOcc~logN, data = bbs_allscales3)
-summary(mod1)
-
-plot(meanOcc~logA, data = bbs_allscales3, xlab = "Log Area" , ylab = "Mean Temporal Occupancy")
-plot(meanOcc~logN, data = bbs_allscales3, xlab = "Average Abundance" , ylab = "Mean Temporal Occupancy")
-#^^same pattern roughly; abundance describes ~same amt of variance as area so serves as a good proxy 
-
 
 ####Extract coefficients from scale-occupancy relationships for analysis####
 OA.df = data.frame(stateroute = numeric(), OA.A= numeric(), OA.i = numeric(), OA.k = numeric(), OA.r2 = numeric())
@@ -201,24 +6,33 @@ CA.df = data.frame(stateroute = numeric(), CA.A= numeric(), CA.i = numeric(), CA
 CN.df = data.frame(stateroute = numeric(), CN.A= numeric(), CN.i = numeric(), CN.k = numeric(), CN.r2 = numeric())
 TA.df = data.frame(stateroute = numeric(), TAexp= numeric(), TApow = numeric(), TAexp.r2 = numeric(), TApow.r2 = numeric())
 TN.df = data.frame(stateroute = numeric(), TNexp= numeric(), TNpow = numeric(), TNexp.r2 = numeric(), TNpow.r2 = numeric())
-
 warnings = data.frame(stateroute = numeric(), warning = character())
-stateroutes = unique(bbs_allscales3$focalrte) #this stuff is the same, looks normal ^
+
+
+#read in data for processing
+bbs_allscales = read.csv("data/BBS/bbs_allscales.csv", header = TRUE)
+stateroutes = unique(bbs_allscales$focalrte) #this stuff is the same, looks normal ^
 
 
 #06/19 version of tryCatch
 for(s in stateroutes){
-  logsub = subset(bbs_allscales3, bbs_allscales3$focalrte == s)  
+  logsub = subset(bbs_allscales, bbs_allscales$focalrte == s)  
   #fitting the log curve for area (for each route)
   
   #OA 
   OAmodel = tryCatch({
-    OAlog = nls(meanOcc ~ SSlogis(logA, Asym, xmid, scal), data = logsub)
-    OApred = predict(OAlog)
-    OAlm.r2 = lm(logsub$meanOcc ~ OApred)
-    OA.i <- summary(OAlog)$coefficients["xmid","Estimate"]
-    OA.A <- summary(OAlog)$coefficients["Asym","Estimate"]
-    OA.k <- summary(OAlog)$coefficients["scal","Estimate"]
+    OAlog = lm(meanOcc ~ logA, data = logsub) #lm instead of nls, reg linear model
+    OApred = predict(OAlog) #get preds
+    OAlm.r2 = lm(logsub$meanOcc ~ OApred) #get r2 from model 
+    #OA.alt_xmid = OApred #@ scale == 3, for a given focal rte s
+    #OA.alt_xmid_dev = OApred - meanOcc # @ scale == 3, for a given focal rte s
+    #OA.max = max(OApred) # @ max scale - what point is at the "end of the line", for a given focal rte s?
+    #OA.min = min(OApred) # @ min scale - what point is at the beginning of the line, for a given focal rte s?
+    
+    #instead of coefficients, extract points from eq of line ^
+    # OA.i <- summary(OAlog)$coefficients["xmid","Estimate"]
+    # OA.A <- summary(OAlog)$coefficients["Asym","Estimate"]
+    # OA.k <- summary(OAlog)$coefficients["scal","Estimate"]
     OA.r2 <- summary(OAlm.r2)$r.squared
     data.frame(stateroute = s, OA.A, OA.i, OA.k, OA.r2)
     
