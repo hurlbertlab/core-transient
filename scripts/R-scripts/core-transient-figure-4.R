@@ -197,7 +197,7 @@ empty <- ggplot()+geom_point(aes(1,1), colour="white")+ theme(axis.ticks=element
         line = element_blank(),
         axis.text.x=element_blank(), axis.text.y=element_blank(),           
         axis.title.x=element_blank(), axis.title.y=element_blank())
-hist_right <- ggplot(fourataxa, aes(excl_weight))+geom_histogram(binwidth = 0.05, fill = "yellow")+coord_flip() + theme(axis.ticks=element_blank(), panel.background=element_blank(),line = element_blank(),axis.text.x=element_blank(), axis.text.y=element_blank(), axis.title.x=element_blank(), axis.title.y=element_blank(), plot.margin = unit(c(-1.6,1,2,1), "cm"))
+hist_right <- ggplot(fourataxa, aes(excl_weight))+geom_histogram(binwidth = 0.05, fill = "yellow")+coord_flip() + theme(axis.ticks=element_blank(), panel.background=element_blank(),line = element_blank(),axis.text.x=element_blank(), axis.text.y=element_blank(), axis.title.x=element_blank(), axis.title.y=element_blank(), plot.margin = unit(c(-1,1,2,.5), "cm"))
 grid.arrange(hist_top, empty, k, hist_right, ncol=2, nrow=2, widths=c(5, 1), heights=c(1, 5))
 
 
