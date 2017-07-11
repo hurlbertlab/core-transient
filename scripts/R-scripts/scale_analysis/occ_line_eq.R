@@ -22,7 +22,8 @@ library(wesanderson)
 library(stats)
 
 ####Extract coefficients from scale-occupancy relationships for analysis####
-OA.df = data.frame(stateroute = numeric(), OA.A= numeric(), OA.i = numeric(), OA.k = numeric(), OA.r2 = numeric())
+OA.df = data.frame(stateroute = numeric(), OA.alt_xmid_pred = numeric(), OA.alt_xmid_dev= numeric(), OA.max= numeric(), OA.min= numeric(), OA.r2= numeric())
+
 ON.df = data.frame(stateroute = numeric(), ON.A= numeric(), ON.i = numeric(), ON.k = numeric(), ON.r2 = numeric())
 CA.df = data.frame(stateroute = numeric(), CA.A= numeric(), CA.i = numeric(), CA.k = numeric(), CA.r2 = numeric())
 CN.df = data.frame(stateroute = numeric(), CN.A= numeric(), CN.i = numeric(), CN.k = numeric(), CN.r2 = numeric())
@@ -46,14 +47,22 @@ for(s in stateroutes){
     OAlog = lm(meanOcc ~ logA, data = logsub) #lm instead of nls, reg linear model
     OApred = predict(OAlog) #get preds -> is predicting unique per scale, all clear
     #need to link back to df tho so can filter out by scale? 
+    #summary(OAlog)$coefficients["xmid","Estimate"] 
+    
     OAlm.r2 = lm(logsub$meanOcc ~ OApred) #get r2 from model 
     OA.alt_xmid = logsub$meanOcc[logsub$scale == 3] #@ scale == 3, for a given focal rte s, actual value
-    OA.alt_xmid_dev = (OApred - OA.alt_xmid) #deviance of pred from actual val #need pred AT SCALE = 3 THO
+    #logsub[21,3] achieves same thing
+    
+    OA.alt_xmid_pred = OApred[21]
+    OA.alt_xmid_dev = (OApred[21] - OA.alt_xmid)^2 #squared deviance of pred from actual val #need pred AT SCALE = 3 THO
+    #know that it hs to be the nth item if 83 scales consistent in order in logsub,
+    #so can I just extract it at OApred[n]? 18 below-route scales, then 1+ aggregated so 3 -> 21
+    #find better way but so far, workable
+    
     OA.max = max(OApred) # @ max scale - what point is at the "end of the line", for a given focal rte s?
     OA.min = min(OApred) # @ min scale - what point is at the beginning of the line, for a given focal rte s?
-    
     OA.r2 <- summary(OAlm.r2)$r.squared
-    data.frame(stateroute = s, OA.A, OA.i, OA.k, OA.r2)
+    data.frame(stateroute = s, OA.alt_xmid_pred, OA.alt_xmid_dev, OA.max, OA.min, OA.r2)
     
   }, warning = function(w) {
     warnings = rbind(warnings, data.frame(stateroute = s, warning = w))
@@ -62,7 +71,7 @@ for(s in stateroutes){
     OA.A <- NA
     OA.k <- NA
     OA.r2 <- NA
-    temp = data.frame(stateroute = s, OA.A, OA.i, OA.k, OA.r2)
+    temp = data.frame(stateroute = s, OA.alt_xmid_pred, OA.alt_xmid_dev, OA.max, OA.min, OA.r2)
     return(temp)
     
   })
