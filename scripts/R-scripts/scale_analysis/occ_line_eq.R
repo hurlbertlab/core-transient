@@ -22,12 +22,12 @@ library(wesanderson)
 library(stats)
 
 ####Extract coefficients from scale-occupancy relationships for analysis####
-OA.df = data.frame(stateroute = numeric(), OA.A= numeric(), OA.i = numeric(), OA.k = numeric(), OA.r2 = numeric())
-ON.df = data.frame(stateroute = numeric(), ON.A= numeric(), ON.i = numeric(), ON.k = numeric(), ON.r2 = numeric())
-CA.df = data.frame(stateroute = numeric(), CA.A= numeric(), CA.i = numeric(), CA.k = numeric(), CA.r2 = numeric())
-CN.df = data.frame(stateroute = numeric(), CN.A= numeric(), CN.i = numeric(), CN.k = numeric(), CN.r2 = numeric())
-TA.df = data.frame(stateroute = numeric(), TAexp= numeric(), TApow = numeric(), TAexp.r2 = numeric(), TApow.r2 = numeric())
-TN.df = data.frame(stateroute = numeric(), TNexp= numeric(), TNpow = numeric(), TNexp.r2 = numeric(), TNpow.r2 = numeric())
+OA.df = data.frame(stateroute = numeric(), OA.alt_xmid_pred = numeric(), OA.alt_xmid_dev= numeric(), OA.max= numeric(), OA.min= numeric(), OA.r2= numeric())
+ON.df = data.frame(stateroute = numeric(), ON.alt_xmid_pred = numeric(), ON.alt_xmid_dev= numeric(), ON.max= numeric(), ON.min= numeric(), ON.r2= numeric())
+CA.df = data.frame(stateroute = numeric(), CA.alt_xmid_pred = numeric(), CA.alt_xmid_dev= numeric(), CA.max= numeric(), CA.min= numeric(), CA.r2= numeric())
+CN.df = data.frame(stateroute = numeric(), CN.alt_xmid_pred = numeric(), CN.alt_xmid_dev= numeric(), CN.max= numeric(), CN.min= numeric(), CN.r2= numeric())
+# TA.df = data.frame(stateroute = numeric(), TAexp= numeric(), TApow = numeric(), TAexp.r2 = numeric(), TApow.r2 = numeric())
+# TN.df = data.frame(stateroute = numeric(), TNexp= numeric(), TNpow = numeric(), TNexp.r2 = numeric(), TNpow.r2 = numeric())
 warnings = data.frame(stateroute = numeric(), warning = character())
 
 
@@ -36,7 +36,7 @@ bbs_allscales = read.csv("data/BBS/bbs_allscales.csv", header = TRUE)
 stateroutes = unique(bbs_allscales$focalrte) #this stuff is the same, looks normal ^
 
 
-#06/19 version of tryCatch
+#07/11 version of tryCatch
 for(s in stateroutes){
   logsub = subset(bbs_allscales, bbs_allscales$focalrte == s)  
   #fitting the log curve for area (for each route)
@@ -48,21 +48,28 @@ for(s in stateroutes){
     #need to link back to df tho so can filter out by scale? 
     OAlm.r2 = lm(logsub$meanOcc ~ OApred) #get r2 from model 
     OA.alt_xmid = logsub$meanOcc[logsub$scale == 3] #@ scale == 3, for a given focal rte s, actual value
-    OA.alt_xmid_dev = (OApred - OA.alt_xmid) #deviance of pred from actual val #need pred AT SCALE = 3 THO
+    #logsub[21,3] achieves same thing
+    
+    OA.alt_xmid_pred = OApred[21]
+    OA.alt_xmid_dev = (OApred[21] - OA.alt_xmid)^2 #squared deviance of pred from actual val #need pred AT SCALE = 3 THO
+    #know that it hs to be the nth item if 83 scales consistent in order in logsub,
+    #so can I just extract it at OApred[n]? 18 below-route scales, then 1+ aggregated so 3 -> 21
+    #find better way but so far, workable, and doesn't involve tacking the preds onto the logsub df
+    
     OA.max = max(OApred) # @ max scale - what point is at the "end of the line", for a given focal rte s?
     OA.min = min(OApred) # @ min scale - what point is at the beginning of the line, for a given focal rte s?
-    
     OA.r2 <- summary(OAlm.r2)$r.squared
-    data.frame(stateroute = s, OA.A, OA.i, OA.k, OA.r2)
+    data.frame(stateroute = s, OA.alt_xmid_pred, OA.alt_xmid_dev, OA.max, OA.min, OA.r2)
     
   }, warning = function(w) {
     warnings = rbind(warnings, data.frame(stateroute = s, warning = w))
   }, error = function(e) {
-    OA.i <- NA
-    OA.A <- NA
-    OA.k <- NA
-    OA.r2 <- NA
-    temp = data.frame(stateroute = s, OA.A, OA.i, OA.k, OA.r2)
+    OA.alt_xmid_pred = NA
+    OA.alt_xmid_dev = NA 
+    OA.max = NA
+    OA.min = NA
+    OA.r2 = NA
+    temp = data.frame(stateroute = s, OA.alt_xmid_pred, OA.alt_xmid_dev, OA.max, OA.min, OA.r2)
     return(temp)
     
   })
@@ -70,108 +77,143 @@ for(s in stateroutes){
   
   #ON 
   ONmodel = tryCatch({
-    ONlog = nls(meanOcc ~ SSlogis(logN, Asym, xmid, scal), data = logsub)
-    ONpred = predict(ONlog)
-    ONlm.r2 = lm(logsub$meanOcc ~ ONpred)
+    ONlog = lm(meanOcc ~ logN, data = logsub) #lm instead of nls, reg linear model
+    ONpred = predict(ONlog) #get preds -> is predicting unique per scale, all clear
+    #need to link back to df tho so can filter out by scale? 
+    ONlm.r2 = lm(logsub$meanOcc ~ ONpred) #get r2 from model 
+    ON.alt_xmid = logsub$meanOcc[logsub$scale == 3] #@ scale == 3, for a given focal rte s, actual value
+    #logsub[21,3] achieves same thing
     
-    ON.i <- summary(ONlog)$coefficients["xmid","Estimate"]
-    ON.A <- summary(OAlog)$coefficients["Asym","Estimate"]
-    ON.k <- summary(ONlog)$coefficients["scal","Estimate"]
+    ON.alt_xmid_pred = ONpred[21]
+    ON.alt_xmid_dev = (ONpred[21] - ON.alt_xmid)^2 #squared deviance of pred from actual val #need pred AT SCALE = 3 THO
+    #know that it hs to be the nth item if 83 scales consistent in order in logsub,
+    #so can I just extract it at ONpred[n]? 18 below-route scales, then 1+ aggregated so 3 -> 21
+    #find better way but so far, workable, and doesn't involve tacking the preds onto the logsub df
+    
+    ON.max = max(ONpred) # @ max scale - what point is at the "end of the line", for a given focal rte s?
+    ON.min = min(ONpred) # @ min scale - what point is at the beginning of the line, for a given focal rte s?
     ON.r2 <- summary(ONlm.r2)$r.squared
-    data.frame(stateroute = s, ON.A, ON.i, ON.k, ON.r2)
+    data.frame(stateroute = s, ON.alt_xmid_pred, ON.alt_xmid_dev, ON.max, ON.min, ON.r2)
     
   }, warning = function(w) {
     warnings = rbind(warnings, data.frame(stateroute = s, warning = w))
   }, error = function(e) {
-    ON.i <- NA
-    ON.A <- NA
-    ON.k <- NA
-    ON.r2 <- NA
-    temp = data.frame(stateroute = s, ON.A, ON.i, ON.k, ON.r2)
+    ON.alt_xmid_pred = NA
+    ON.alt_xmid_dev = NA 
+    ON.max = NA
+    ON.min = NA
+    ON.r2 = NA
+    temp = data.frame(stateroute = s, ON.alt_xmid_pred, ON.alt_xmid_dev, ON.max, ON.min, ON.r2)
     return(temp)
     
   })
   ON.df = rbind(ON.df, ONmodel)
   
+  
+  
   #CA
   CAmodel = tryCatch({
-    CAlog = nls(pctCore ~ SSlogis(logA, Asym, xmid, scal), data = logsub)
-    CApred = predict(CAlog)
-    CAlm.r2 = lm(logsub$pctCore ~ CApred)
+    CAlog = lm(pctCore ~ logA, data = logsub) #lm instead of nls, reg linear model
+    CApred = predict(CAlog) #get preds -> is predicting unique per scale, all clear
+    #need to link back to df tho so can filter out by scale? 
+    CAlm.r2 = lm(logsub$pctCore ~ CApred) #get r2 from model 
+    CA.alt_xmid = logsub$pctCore[logsub$scale == 3] #@ scale == 3, for a given focal rte s, actual value
+    #logsub[21,3] achieves same thing
     
-    CA.i <- summary(CAlog)$coefficients["xmid","Estimate"]
-    CA.A <- summary(CAlog)$coefficients["Asym","Estimate"]
-    CA.k <- summary(CAlog)$coefficients["scal","Estimate"]
+    CA.alt_xmid_pred = CApred[21]
+    CA.alt_xmid_dev = (CApred[21] - CA.alt_xmid)^2 #squared deviance of pred from actual val #need pred AT SCALE = 3 THO
+    #know that it hs to be the nth item if 83 scales consistent in order in logsub,
+    #so can I just extract it at CApred[n]? 18 below-route scales, then 1+ aggregated so 3 -> 21
+    #find better way but so far, workable, and doesn't involve tacking the preds onto the logsub df
+    
+    CA.max = max(CApred) # @ max scale - what point is at the "end of the line", for a given focal rte s?
+    CA.min = min(CApred) # @ min scale - what point is at the beginning of the line, for a given focal rte s?
     CA.r2 <- summary(CAlm.r2)$r.squared
-    data.frame(stateroute = s, CA.A, CA.i, CA.k, CA.r2)
+    data.frame(stateroute = s, CA.alt_xmid_pred, CA.alt_xmid_dev, CA.max, CA.min, CA.r2)
+    
   }, warning = function(w) {
     warnings = rbind(warnings, data.frame(stateroute = s, warning = w))
   }, error = function(e) {
-    CA.i <- NA
-    CA.A <- NA
-    CA.k <- NA
-    CA.r2 <- NA
-    temp = data.frame(stateroute = s, CA.A, CA.i, CA.k, CA.r2)
+    CA.alt_xmid_pred = NA
+    CA.alt_xmid_dev = NA 
+    CA.max = NA
+    CA.min = NA
+    CA.r2 = NA
+    temp = data.frame(stateroute = s, CA.alt_xmid_pred, CA.alt_xmid_dev, CA.max, CA.min, CA.r2)
     return(temp)
     
   })
   CA.df = rbind(CA.df, CAmodel)
   
-  #CN
+  #CN 
   CNmodel = tryCatch({
-    CNlog = nls(pctCore ~ SSlogis(logN, Asym, xmid, scal), data = logsub)
-    CNpred = predict(CNlog)
-    CNlm.r2 = lm(logsub$pctCore ~ CNpred) #bootstraping r2 vals for CNlog since not in summary stats
+    CNlog = lm(pctCore ~ logN, data = logsub) #lm instead of nls, reg linear model
+    CNpred = predict(CNlog) #get preds -> is predicting unique per scale, all clear
+    #need to link back to df tho so can filter out by scale? 
+    CNlm.r2 = lm(logsub$pctCore ~ CNpred) #get r2 from model 
+    CN.alt_xmid = logsub$pctCore[logsub$scale == 3] #@ scale == 3, for a given focal rte s, actual value
+    #logsub[21,3] achieves same thing
     
-    CN.i <- summary(CNlog)$coefficients["xmid","Estimate"]
-    CN.A <- summary(CAlog)$coefficients["Asym","Estimate"]
-    CN.k <- summary(CNlog)$coefficients["scal","Estimate"]
+    CN.alt_xmid_pred = CNpred[21]
+    CN.alt_xmid_dev = (CNpred[21] - CN.alt_xmid)^2 #squared deviance of pred from actual val #need pred AT SCALE = 3 THO
+    #know that it hs to be the nth item if 83 scales consistent in order in logsub,
+    #so can I just extract it at CNpred[n]? 18 below-route scales, then 1+ aggregated so 3 -> 21
+    #find better way but so far, workable, and doesn't involve tacking the preds onto the logsub df
+    
+    CN.max = max(CNpred) # @ max scale - what point is at the "end of the line", for a given focal rte s?
+    CN.min = min(CNpred) # @ min scale - what point is at the beginning of the line, for a given focal rte s?
     CN.r2 <- summary(CNlm.r2)$r.squared
-    data.frame(stateroute = s, CN.A, CN.i, CN.k, CN.r2)
+    data.frame(stateroute = s, CN.alt_xmid_pred, CN.alt_xmid_dev, CN.max, CN.min, CN.r2)
     
   }, warning = function(w) {
     warnings = rbind(warnings, data.frame(stateroute = s, warning = w))
   }, error = function(e) {
-    CN.i <- NA
-    CN.A <- NA
-    CN.k <- NA
-    CN.r2 <- NA
-    temp = data.frame(stateroute = s, CN.A, CN.i, CN.k, CN.r2)
+    CN.alt_xmid_pred = NA
+    CN.alt_xmid_dev = NA 
+    CN.max = NA
+    CN.min = NA
+    CN.r2 = NA
+    temp = data.frame(stateroute = s, CN.alt_xmid_pred, CN.alt_xmid_dev, CN.max, CN.min, CN.r2)
     return(temp)
     
   })
   CN.df = rbind(CN.df, CNmodel)
   
-  
-  # Fitting % transient
-  #TA #revisit!!
-  TAlog = lm(log(pctTran) ~ lnA, data = logsub) #try with log10(pctTran), log(pctTran) ~ logA, and pctTran ~ logA since relationships wonky  
-  TA = lm(log(pctTran) ~ area, data = logsub)
-  TA.temp = data.frame(stateroute = s, 
-                       TAexp = TAlog$coefficients[2],
-                       TApow = TA$coefficients[2], 
-                       TAexp.r2 = summary(TAlog)$r.squared, 
-                       TApow.r2 = summary(TA)$r.squared) 
-  TA.df = rbind(TA.df, TA.temp)
-  
-  #TN  
-  TNlog = lm(log(pctTran) ~ lnN, data = logsub)
-  TN = lm(log(pctTran) ~ area, data = logsub)
-  TN.temp = data.frame(stateroute = s, 
-                       TNexp = TNlog$coefficients[2],
-                       TNpow = TN$coefficients[2], 
-                       TNexp.r2 = summary(TNlog)$r.squared, 
-                       TNpow.r2 = summary(TN)$r.squared)
-  TN.df = rbind(TN.df, TN.temp)
-}
+#   
+#   
+#   # Fitting % transient
+#   #TA #revisit!!
+#   TAlog = lm(log(pctTran) ~ lnA, data = logsub) #try with log10(pctTran), log(pctTran) ~ logA, and pctTran ~ logA since relationships wonky  
+#   TA = lm(log(pctTran) ~ area, data = logsub)
+#   TA.temp = data.frame(stateroute = s, 
+#                        TAexp = TAlog$coefficients[2],
+#                        TApow = TA$coefficients[2], 
+#                        TAexp.r2 = summary(TAlog)$r.squared, 
+#                        TApow.r2 = summary(TA)$r.squared) 
+#   TA.df = rbind(TA.df, TA.temp)
+#   
+#   #TN  
+#   TNlog = lm(log(pctTran) ~ lnN, data = logsub)
+#   TN = lm(log(pctTran) ~ area, data = logsub)
+#   TN.temp = data.frame(stateroute = s, 
+#                        TNexp = TNlog$coefficients[2],
+#                        TNpow = TN$coefficients[2], 
+#                        TNexp.r2 = summary(TNlog)$r.squared, 
+#                        TNpow.r2 = summary(TN)$r.squared)
+#   TN.df = rbind(TN.df, TN.temp)
+  }
 
 #join all together using inner_join by focal rte, not cbind 
 coefs = OA.df %>% 
   inner_join(ON.df, OA.df, by = "stateroute") %>% 
   inner_join(CA.df, OA.df, by = "stateroute") %>% 
-  inner_join(CN.df, OA.df, by = "stateroute") %>% 
-  inner_join(TA.df, OA.df, by = "stateroute") %>% 
-  inner_join(TN.df, OA.df, by = "stateroute")  
+  inner_join(CN.df, OA.df, by = "stateroute") 
+  
+coefs_2 = na.omit(coefs)
+  
+  
+  # inner_join(TA.df, OA.df, by = "stateroute") %>% 
+  # inner_join(TN.df, OA.df, by = "stateroute")  
 
 write.csv(coefs, "C:/git/core-transient/scripts/R-scripts/scale_analysis/coefs.csv", row.names = FALSE) #updated 06/19
 #exp mods have much better r2 vals for pctTran than power 
