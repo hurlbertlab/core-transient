@@ -57,15 +57,13 @@ allbbs = bbs_abun_occ %>% dplyr::count(stateroute, scale) %>% filter(scale == 50
 names(allbbs) = c("stateroute", "scale", "spRich")
 
 # create bbs files
-bbs_count$year = bbs_count$date
-bbs_count4a = bbs_count[, c("datasetID", "site","year", "species", "count")]
+bbs_count4a = dplyr::rename(bbs_count, year = Year, site = stateroute, species = Aou, count = SpeciesTotal)
 write.csv(bbs_count4a, "data/standardized_datasets/dataset_1.csv", row.names = FALSE)
 
-bbs_abun_occ$site = bbs_abun_occ$stateroute
-bbs_abun_occ$species = bbs_abun_occ$AOU
-bbs_abun_occ$propOcc = bbs_abun_occ$occupancy
-bbs_abun_occ$datasetID  = 1
-bbs_occ4a = bbs_abun_occ[, c("datasetID", "site", "species", "propOcc")]
+bbs_abun_occ1 = subset(bbs_abun_occ, scale ==  50)
+bbs_abun_occ1 = dplyr::rename(bbs_abun_occ1, site = stateroute, species = AOU, propOcc = occupancy)
+bbs_abun_occ1$datasetID  = 1
+bbs_occ4a = bbs_abun_occ1[, c("datasetID", "site", "species", "propOcc")]
 write.csv(bbs_occ4a, "data/propOcc_datasets/propOcc_1.csv", row.names = FALSE)
 
 #' Get list of dataset IDS for datasets that meet criteria for analysis including:

@@ -38,7 +38,7 @@ good_rtes = bbs_all_years %>%
 # Calculate occupancy for all species at subset of stateroutes above
 bbs_sub1 = bbs_all_years %>% 
   filter(Year > 1999, Year < 2015, stateroute %in% good_rtes$stateroute) %>% 
-  dplyr::select(datasetID, Year, stateroute, Aou) 
+  dplyr::select(datasetID, stateroute, Year, Aou, SpeciesTotal) 
 
 write.csv(bbs_sub1, "data/BBS/bbs_2000_2014.csv", row.names = FALSE)
 
