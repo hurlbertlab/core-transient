@@ -23,17 +23,24 @@ dataformattingtable = read.csv('data_formatting_table.csv', header = T)
 
 datasetIDs = dataformattingtable$dataset_ID[dataformattingtable$format_flag == 1]
 
+
 #### BBS prep to replace dataset 1 #####
 bbs_all_years = read.csv("data/BBS/bbs_all_raw.csv", header = TRUE)
 bbs_all_years$datasetID = 1
-bbs_all_years2 = bbs_all_years %>% 
-  filter(Year > 1999 & Year <2015) %>%  
-  filter(Aou > 2880 & !(Aou >= 3650 & Aou <= 3810) & !(Aou >= 3900 & Aou <= 3910) & 
-           !(Aou >= 4160 & Aou <= 4210) & Aou != 7010) %>% 
-  select(stateroute, Aou, SpeciesTotal, Year, datasetID) %>%
-  rename(site = stateroute, species = Aou, count = SpeciesTotal, date = Year)
+# Get subset of stateroutes that have been surveyed every year from 2001-2015
+good_rtes = bbs_all_years %>% 
+  filter(Year > 1999, Year < 2015) %>% 
+  dplyr::select(Year, stateroute) %>%
+  unique() %>%    
+  dplyr::count(stateroute) %>% 
+  filter(n == 15) # have to stay at 15 to keep # of years consistent
 
-write.csv(bbs_all_years2, "data/BBS/bbs_2000_2014.csv", row.names = FALSE)
+# Calculate occupancy for all species at subset of stateroutes above
+bbs_sub1 = bbs_all_years %>% 
+  filter(Year > 1999, Year < 2015, stateroute %in% good_rtes$stateroute) %>% 
+  dplyr::select(datasetID, Year, stateroute, Aou) 
+
+write.csv(bbs_sub1, "data/BBS/bbs_2000_2014.csv", row.names = FALSE)
 
 #### BBS prep to merge with summ2 dataset #####
 # need datasetID, site, system, taxa, propCore, propTrans, and meanAbundance

@@ -42,6 +42,7 @@ allrich = read.csv("output/tabular_data/allrich.csv", header = TRUE)
 notransrich = read.csv("output/tabular_data/notransrich.csv", header = TRUE)
 bbs_abun_occ = read.csv("data/BBS/bbs_abun_occ.csv", header = TRUE)
 bbs_occ = read.csv("data/BBS/bbs_abun4_spRich.csv", header = TRUE)
+bbs_count = read.csv("data/BBS/bbs_2000_2014.csv", header = TRUE)
 
 # addings symbols to taxcolors
 symbols = c(15, 16, 15, 17, 16, 15, 16) 
@@ -55,7 +56,18 @@ names(notransbbs) = c("stateroute", "scale", "spRichnotrans")
 allbbs = bbs_abun_occ %>% dplyr::count(stateroute, scale) %>% filter(scale == 50)
 names(allbbs) = c("stateroute", "scale", "spRich")
 
-# Figure 4a in sep script
+# create bbs files
+bbs_count$year = bbs_count$date
+bbs_count4a = bbs_count[, c("datasetID", "site","year", "species", "count")]
+write.csv(bbs_count4a, "data/standardized_datasets/dataset_1.csv", row.names = FALSE)
+
+bbs_abun_occ$site = bbs_abun_occ$stateroute
+bbs_abun_occ$species = bbs_abun_occ$AOU
+bbs_abun_occ$propOcc = bbs_abun_occ$occupancy
+bbs_abun_occ$datasetID  = 1
+bbs_occ4a = bbs_abun_occ[, c("datasetID", "site", "species", "propOcc")]
+write.csv(bbs_occ4a, "data/propOcc_datasets/propOcc_1.csv", row.names = FALSE)
+
 #' Get list of dataset IDS for datasets that meet criteria for analysis including:
 #' * Study wide criteria
 #' * Has raw abundance data (not cover or density)
@@ -66,9 +78,10 @@ get_valid_datasetIDs = function(){
     # Remove count datasets with decimal values
     filter(!dataset_ID %in% c(226, 228, 247, 264, 298, 299, 300, 301)) %>%
     # exclude BBS for now and analyze it separately
-    filter(dataset_ID !=1) %>% 
+    # filter(dataset_ID !=1) %>% 
     dplyr::select(dataset_ID)
 }
+
 
 #' Get table of species abundances
 #' 
@@ -152,21 +165,46 @@ sad_data = left_join(summed_abunds, propocc_data, by = c('datasetID', 'site', 's
 
 logseries_weights_incl = sad_data %>%
   group_by(datasetID, site) %>% 
-  dplyr::summarize(weights = get_logseries_weight(abunds), treatment = 'All species')
+  dplyr::summarize(weights = get_logseries_weight(abunds), treatment = 'All')
 
 logseries_weights_excl = sad_data %>%
   filter(propOcc > 1/3) %>%
   group_by(datasetID, site) %>% 
-  dplyr::summarize(weights = get_logseries_weight(abunds), treatment = 'Excluding transients')
+  dplyr::summarize(weights = get_logseries_weight(abunds), treatment = 'Excluding')
 
 logseries_weights = rbind(logseries_weights_incl, logseries_weights_excl)
 write.csv(logseries_weights, "output/tabular_data/logseries_weights.csv")
 logseries_weights = read.csv("output/tabular_data/logseries_weights.csv", header = TRUE)
 
-colscale = c("dark orange2","yellow")
-k = ggplot(logseries_weights, aes(x = treatment, y = weights, fill=factor(treatment))) +
-  geom_violin(linetype="blank") + xlab("Transient Status") + ylab("Proportion of Species") + scale_fill_manual(labels = c("All \n species","All species excluding transients"),values = colscale)+ theme_classic()+ ylim(0, 1) + theme(axis.text.x=element_text(size  =46, color = "black"), axis.ticks.x=element_blank(),axis.text.y=element_text(size=30, color = "black"),axis.title.x=element_text(size=46, color = "black"),axis.title.y=element_text(size=46,angle=90,vjust = 5))+ scale_x_discrete(breaks=c("All species","Excluding transients"),labels=c("All\n species","Excluding\n transients")) + xlab(NULL) + ylab("Akaike weight \n of logseries model") + theme(legend.position = "none")+ geom_text(x=1.4, y=0.8, size = 6, angle = 90, label="Log series")+ geom_text(x=1.4, y=0.2, size = 6,angle = 90, label="Log normal")+   geom_segment(aes(x = 1.5, y = 0.35, xend = 1.5, yend = 0.05), colour='black', size=0.5,arrow = arrow(length = unit(0.5, "cm")))+   geom_segment(aes(x = 1.5, y = 0.65, xend = 1.5, yend = 0.95), colour='black', size=0.5,arrow = arrow(length = unit(0.5, "cm")))
+d = merge(logseries_weights_incl, logseries_weights_excl, by = c("datasetID", "site"), all.x = TRUE)
+d$all_weight = d$weights.x 
+d$all = d$treatment.x 
+d$excl_weight = d$weights.y
+d$excl = d$treatment.y 
+d = d[, c("datasetID", "site","all_weight", "excl_weight")]
+fourataxa = merge(d, dataformattingtable[,c("dataset_ID", "taxa")],by.x = "datasetID", by.y = "dataset_ID")
+fourataxa = merge(fourataxa, taxcolors, by = "taxa")
+
+colscale = c("azure4","#1D6A9B","turquoise2","gold2","purple4","red", "forestgreen")  
+
+m <- ggplot(fourataxa, aes(x = all_weight, y = excl_weight))
+k <-m + geom_abline(intercept = 0,slope = 1, lwd =1.5,linetype="dashed")+geom_point(aes(colour = taxa), size = 5) + xlab("All Species") + ylab("Excluding Transients") + scale_colour_manual(breaks = fourataxa$taxa,values = colscale) + theme_classic() + theme(axis.text.x=element_text(size=30, color = "black"),axis.text.y=element_text(size=30, color = "black"),axis.ticks.x=element_blank(),axis.title.x=element_text(size=46, color = "black"),axis.title.y=element_text(size=46,angle=90,vjust = 5))+ theme(legend.position="none") +geom_rug(size = 0.1)
 k
+
+hist_top <- ggplot(fourataxa, aes(all_weight))+geom_histogram(binwidth = 0.05, fill = "dark orange2")+ theme(axis.ticks=element_blank(), panel.background=element_blank(),line = element_blank(),axis.text.x=element_blank(), axis.text.y=element_blank(), axis.title.x=element_blank(), axis.title.y=element_blank(), plot.margin = unit(c(1,-0.5,0,3), "cm"))
+empty <- ggplot()+geom_point(aes(1,1), colour="white")+ theme(axis.ticks=element_blank(), 
+        panel.background=element_blank(), 
+        line = element_blank(),
+        axis.text.x=element_blank(), axis.text.y=element_blank(),           
+        axis.title.x=element_blank(), axis.title.y=element_blank())
+hist_right <- ggplot(fourataxa, aes(excl_weight))+geom_histogram(binwidth = 0.05, fill = "yellow")+coord_flip() + theme(axis.ticks=element_blank(), panel.background=element_blank(),line = element_blank(),axis.text.x=element_blank(), axis.text.y=element_blank(), axis.title.x=element_blank(), axis.title.y=element_blank(), plot.margin = unit(c(-1.6,1,2,1), "cm"))
+grid.arrange(hist_top, empty, k, hist_right, ncol=2, nrow=2, widths=c(5, 1), heights=c(1, 5))
+
+
+# colscale = c("dark orange2","yellow")
+# k = ggplot(fourataxa, aes(x = treatment, y = weights, fill=factor(treatment))) +
+  geom_violin(linetype="blank") + xlab("Transient Status") + ylab("Proportion of Species") + scale_fill_manual(labels = c("All \n species","All species excluding transients"),values = colscale)+ theme_classic()+ ylim(0, 1) + theme(axis.text.x=element_text(size  =46, color = "black"), axis.ticks.x=element_blank(),axis.text.y=element_text(size=30, color = "black"),axis.title.x=element_text(size=46, color = "black"),axis.title.y=element_text(size=46,angle=90,vjust = 5))+ scale_x_discrete(breaks=c("All species","Excluding transients"),labels=c("All\n species","Excluding\n transients")) + xlab(NULL) + ylab("Akaike weight \n of logseries model") + theme(legend.position = "none")+ geom_text(x=1.4, y=0.8, size = 6, angle = 90, label="Log series")+ geom_text(x=1.4, y=0.2, size = 6,angle = 90, label="Log normal")+   geom_segment(aes(x = 1.5, y = 0.35, xend = 1.5, yend = 0.05), colour='black', size=0.5,arrow = arrow(length = unit(0.5, "cm")))+   geom_segment(aes(x = 1.5, y = 0.65, xend = 1.5, yend = 0.95), colour='black', size=0.5,arrow = arrow(length = unit(0.5, "cm")))
+# k
 ggsave(file="C:/Git/core-transient/output/plots/sad_fit_comparison.pdf", height = 5, width = 15)
 # + guides(fill=guide_legend(title=NULL))+ theme(legend.text = element_text(size = 16),legend.position="top", legend.justification=c(0, 1), legend.key.width=unit(1, "lines"))
 
