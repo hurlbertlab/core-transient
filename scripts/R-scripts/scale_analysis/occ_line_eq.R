@@ -1,3 +1,25 @@
+#Occupancy-scale analysis
+
+##feat. alternative to curve-fitting parameters: slope, intercept, and x value @ scale of 3 aggregated routes.
+# author: Molly F. Jenkins
+# date: 06/27/2017
+
+# setwd("C:/git/core-transient")
+#'#' Please download and install the following packages:
+library(raster)
+library(maps)
+library(sp)
+library(rgdal)
+library(maptools)
+library(rgeos)
+library(dplyr)
+library(fields)
+library(tidyr)
+library(ggplot2)
+library(nlme)
+library(gridExtra)
+library(wesanderson)
+library(stats)
 
 ####Extract coefficients from scale-occupancy relationships for analysis####
 OA.df = data.frame(stateroute = numeric(), OA.A= numeric(), OA.i = numeric(), OA.k = numeric(), OA.r2 = numeric())
@@ -22,17 +44,14 @@ for(s in stateroutes){
   #OA 
   OAmodel = tryCatch({
     OAlog = lm(meanOcc ~ logA, data = logsub) #lm instead of nls, reg linear model
-    OApred = predict(OAlog) #get preds
+    OApred = predict(OAlog) #get preds -> is predicting unique per scale, all clear
+    #need to link back to df tho so can filter out by scale? 
     OAlm.r2 = lm(logsub$meanOcc ~ OApred) #get r2 from model 
-    #OA.alt_xmid = OApred #@ scale == 3, for a given focal rte s
-    #OA.alt_xmid_dev = OApred - meanOcc # @ scale == 3, for a given focal rte s
-    #OA.max = max(OApred) # @ max scale - what point is at the "end of the line", for a given focal rte s?
-    #OA.min = min(OApred) # @ min scale - what point is at the beginning of the line, for a given focal rte s?
+    OA.alt_xmid = logsub$meanOcc[logsub$scale == 3] #@ scale == 3, for a given focal rte s, actual value
+    OA.alt_xmid_dev = (OApred - OA.alt_xmid) #deviance of pred from actual val #need pred AT SCALE = 3 THO
+    OA.max = max(OApred) # @ max scale - what point is at the "end of the line", for a given focal rte s?
+    OA.min = min(OApred) # @ min scale - what point is at the beginning of the line, for a given focal rte s?
     
-    #instead of coefficients, extract points from eq of line ^
-    # OA.i <- summary(OAlog)$coefficients["xmid","Estimate"]
-    # OA.A <- summary(OAlog)$coefficients["Asym","Estimate"]
-    # OA.k <- summary(OAlog)$coefficients["scal","Estimate"]
     OA.r2 <- summary(OAlm.r2)$r.squared
     data.frame(stateroute = s, OA.A, OA.i, OA.k, OA.r2)
     
