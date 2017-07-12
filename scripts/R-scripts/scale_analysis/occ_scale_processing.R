@@ -36,7 +36,7 @@ BBS = '//bioark.ad.unc.edu/HurlbertLab/Jenkins/BBS scaled/'
 #need to happen first so can use the 50-scale occ 
 #calculated for each route as the base to aggregate for the above-scale calcs
 
-fifty_allyears = read.csv(paste(BBS, "fifty_allyears.csv", sep = ""), header = TRUE)
+fifty_allyears = read.csv(paste(BBS, "fifty_allyears.csv", sep = ""), header = TRUE) #using updated version, 50 stop data, 07/12
 fifty_bestAous = fifty_allyears %>% 
   filter(AOU > 2880 & !(AOU >= 3650 & AOU <= 3810) & !(AOU >= 3900 & AOU <= 3910) & 
            !(AOU >= 4160 & AOU <= 4210) & AOU != 7010) #leaving out owls, waterbirds as less reliable data
@@ -82,15 +82,17 @@ for (scale in b_scales) {
   }
 }
 bbs_below<-data.frame(output)
-#write.csv(bbs_below, paste(BBS, "bbs_below.csv", sep = ""), row.names = FALSE) #updated 06/30, on BioArk
+write.csv(bbs_below, paste(BBS, "bbs_below.csv", sep = ""), row.names = FALSE) #updated 06/30, on BioArk
 #should be able to use the 50 stop info (1 rte) from this output to aggregate routes AFTER below scale
+write.csv(bbs_below, "data/BBS/bbs_below.csv", row.names = FALSE)
+
 
 ####Calculations for Occupancy above the scale of a BBS route####
 #Revised calcs workspace 
 #sort out bbs_below to ONLY those routes at 50-stop scale (occ calc'd for a single route)
 
 #use to aggregate 
-good_rtes2 = read.csv(paste(BBS, "good_rtes2.csv", sep = ""), header = TRUE) 
+good_rtes2 = read.csv(paste(BBS, "good_rtes2.csv", sep = ""), header = TRUE) #using updated version, 07/12
 require(fields)
 #Distance calculation between all combination of routes to pair them by min dist for aggregation
 distances = rdist.earth(matrix(c(good_rtes2$Longi, good_rtes2$Lati), ncol=2),
@@ -99,7 +101,9 @@ distances = rdist.earth(matrix(c(good_rtes2$Longi, good_rtes2$Lati), ncol=2),
 dist.df = data.frame(rte1 = rep(good_rtes2$stateroute, each = nrow(good_rtes2)),
                      rte2 = rep(good_rtes2$stateroute, times = nrow(good_rtes2)),
                      dist = as.vector(distances))
-#write.csv(dist.df, "C:/git/core-transient/scripts/R-scripts/scale_analysis/dist_df.csv", row.names = FALSE) for later calcs
+write.csv(dist.df, "scripts/R-scripts/scale_analysis/dist_df.csv", row.names = FALSE) #for later calcs
+
+
 bbs_below = read.csv(paste(BBS, "bbs_below.csv", sep = ""), header = TRUE)
 bbs_fullrte = bbs_below %>%
   filter(scale == "50-1") #953 routes at scale of a single route
@@ -153,14 +157,15 @@ for (r in uniqrtes) { #for each focal route
   
 } #r loop
 
-bbs_above_v2 = as.data.frame(output)
+bbs_above = as.data.frame(output)
 #Calc area for above route scale
-bbs_above_v2$area = bbs_above_v2$numrtes*50*(pi*(0.4^2)) #number of routes * fifty stops * area in sq km of a stop 
-#write.csv(bbs_above_v2, paste(BBS, "bbs_above_v2.csv", sep = ""), row.names = FALSE)
+bbs_above$area = bbs_above_v2$numrtes*50*(pi*(0.4^2)) #number of routes * fifty stops * area in sq km of a stop 
+#write.csv(bbs_above, paste(BBS, "bbs_above.csv", sep = ""), row.names = FALSE)
 #updated 06/30 evening locally and on BioArk; not sure why data folder rejected bc not THAT big but not on github
+write.csv(bbs_above, "data/BBS/bbs_above.csv", row.names = FALSE)
 
 ####scale-joining####
-bbs_above = read.csv(paste(BBS, "bbs_above_v2.csv", sep = ""), header = TRUE)
+bbs_above = read.csv(paste(BBS, "bbs_above.csv", sep = ""), header = TRUE)
 bbs_below = read.csv(paste(BBS, "bbs_below.csv", sep = ""), header = TRUE)
 
 #adding maxRadius column to bbs_below w/NA's + renaming and rearranging columns accordingly, creating area cols
@@ -182,9 +187,9 @@ bbs_above$scale = as.factor(bbs_above$scale)
 
 
 bbs_allscales = rbind(bbs_below, bbs_above) #rbind ok since all share column names
-#write.csv(bbs_allscales, "C:/git/core-transient/data/BBS/bbs_allscales.csv", row.names = FALSE)
-#updated 07/02/2017
-
+write.csv(bbs_allscales, "C:/git/core-transient/data/BBS/bbs_allscales.csv", row.names = FALSE)
+#updated 07/02/2017, also in BioArk since old copy ALSO there
+write.csv(bbs_allscales, paste(BBS, "bbs_allscales.csv", sep = ""), row.names = FALSE)
 
 ####filter out stateroutes that are one-sided in scale####
 #in terms of their representation of below vs above scale (should have both, not one alone)
@@ -198,7 +203,7 @@ bbs_allscales$lnN = log(bbs_allscales$aveN) #rerun plots with this?
 
 bbs_allscales2 = bbs_allscales %>% count(focalrte) %>% filter(n == 83) %>% data.frame() #fix error to exclude NAs
 bbs_allscales3 = filter(bbs_allscales, focalrte %in% bbs_allscales2$focalrte)
-#write.csv(bbs_allscales3, "C:/git/core-transient/data/BBS/bbs_allscales.csv", row.names = FALSE) #overwrote bbs all scales file 
+write.csv(bbs_allscales3, "C:/git/core-transient/data/BBS/bbs_allscales.csv", row.names = FALSE) #overwrote bbs all scales file 
 #updated 07/03/2017
 
 ####Occ-scale analysis####
@@ -213,5 +218,6 @@ plot(meanOcc~logN, data = bbs_allscales, xlab = "Average Abundance" , ylab = "Me
 #^^same pattern roughly; abundance describes ~same amt of variance as area so serves as a good proxy 
 
 
+#ALL files updated 07/12
 
 
