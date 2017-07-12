@@ -38,9 +38,18 @@ good_rtes = bbs_all_years %>%
 # Calculate occupancy for all species at subset of stateroutes above
 bbs_sub1 = bbs_all_years %>% 
   filter(Year > 1999, Year < 2015, stateroute %in% good_rtes$stateroute) %>% 
-  dplyr::select(datasetID, stateroute, Year, Aou, SpeciesTotal) 
+  dplyr::select(datasetID, stateroute, Year, Aou, SpeciesTotal) %>% filter(stateroute != 7008)
 
 write.csv(bbs_sub1, "data/BBS/bbs_2000_2014.csv", row.names = FALSE)
+
+
+#### creating new bbs_abun_occ from scratch #####
+bbs_occ = bbs_sub1 %>% 
+  dplyr::count(Aou, stateroute) %>% 
+  filter(n < 16) %>% 
+  dplyr::mutate(occ = n/15)
+
+write.csv(bbs_occ, "data/BBS/bbs_occ_2000_2014.csv", row.names = FALSE)
 
 #### BBS prep to merge with summ2 dataset #####
 # need datasetID, site, system, taxa, propCore, propTrans, and meanAbundance

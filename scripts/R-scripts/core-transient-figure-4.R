@@ -40,7 +40,7 @@ occ_taxa = read.csv("output/tabular_data/occ_taxa.csv", header = TRUE)
 areamerge = read.csv("output/tabular_data/areamerge.csv", header = TRUE)
 allrich = read.csv("output/tabular_data/allrich.csv", header = TRUE)
 notransrich = read.csv("output/tabular_data/notransrich.csv", header = TRUE)
-bbs_abun_occ = read.csv("data/BBS/bbs_abun_occ.csv", header = TRUE)
+bbs_abun_occ = read.csv("data/BBS/bbs_occ_2000_2014.csv", header = TRUE)
 bbs_occ = read.csv("data/BBS/bbs_abun4_spRich.csv", header = TRUE)
 bbs_count = read.csv("data/BBS/bbs_2000_2014.csv", header = TRUE)
 
@@ -50,18 +50,18 @@ Type = c("Invertebrate", "Vertebrate", "Invertebrate", "Plant", "Vertebrate", "I
 taxcolors = cbind(taxcolors, Type,symbols)
 
 # calc bbs with and without trans
-notransbbs = bbs_abun_occ %>% filter(occupancy > 1/3) %>% dplyr::count(stateroute, scale) %>% filter(scale == 50)
-names(notransbbs) = c("stateroute", "scale", "spRichnotrans")
+# notransbbs = bbs_abun_occ %>% filter(occupancy > 1/3) %>% dplyr::count(stateroute, scale) %>% filter(scale == 50)
+# names(notransbbs) = c("stateroute", "scale", "spRichnotrans")
 
-allbbs = bbs_abun_occ %>% dplyr::count(stateroute, scale) %>% filter(scale == 50)
-names(allbbs) = c("stateroute", "scale", "spRich")
+# allbbs = bbs_abun_occ %>% dplyr::count(stateroute, scale) %>% filter(scale == 50)
+# names(allbbs) = c("stateroute", "scale", "spRich")
 
 # create bbs files
 bbs_count4a = dplyr::rename(bbs_count, year = Year, site = stateroute, species = Aou, count = SpeciesTotal)
 write.csv(bbs_count4a, "data/standardized_datasets/dataset_1.csv", row.names = FALSE)
 
-bbs_abun_occ1 = subset(bbs_abun_occ, scale ==  50)
-bbs_abun_occ1 = dplyr::rename(bbs_abun_occ1, site = stateroute, species = AOU, propOcc = occupancy)
+# bbs_abun_occ1 = subset(bbs_abun_occ, scale ==  50)
+bbs_abun_occ1 = dplyr::rename(bbs_abun_occ, site = stateroute, species = Aou, propOcc = occ)
 bbs_abun_occ1$datasetID  = 1
 bbs_occ4a = bbs_abun_occ1[, c("datasetID", "site", "species", "propOcc")]
 write.csv(bbs_occ4a, "data/propOcc_datasets/propOcc_1.csv", row.names = FALSE)
@@ -186,7 +186,7 @@ fourataxa = merge(fourataxa, taxcolors, by = "taxa")
 colscale = c("azure4","#1D6A9B","turquoise2","gold2","purple4","red", "forestgreen")  
 
 m <- ggplot(fourataxa, aes(x = all_weight, y = excl_weight))
-k <-m + geom_abline(intercept = 0,slope = 1, lwd =1.5,linetype="dashed")+geom_point(aes(colour = taxa), size = 5) + xlab("All Species") + ylab("Excluding Transients") + scale_colour_manual(breaks = fourataxa$taxa,values = colscale) + theme_classic() + theme(axis.text.x=element_text(size=30, color = "black"),axis.text.y=element_text(size=30, color = "black"),axis.ticks.x=element_blank(),axis.title.x=element_text(size=46, color = "black"),axis.title.y=element_text(size=46,angle=90,vjust = 5))+ theme(legend.position="none") +geom_rug(size = 0.1)
+k <-m + geom_abline(intercept = 0,slope = 1, lwd =1.5,linetype="dashed")+geom_point(aes(colour = taxa), size = 5) + xlab("All Species") + ylab("Excluding Transients") + scale_colour_manual(breaks = fourataxa$taxa,values = colscale) + theme_classic() + theme(axis.text.x=element_text(size=30, color = "black"),axis.text.y=element_text(size=30, color = "black"),axis.ticks.x=element_blank(),axis.title.x=element_text(size=46, color = "black"),axis.title.y=element_text(size=46,angle=90,vjust = 5))+ theme(legend.position="none") #+geom_rug(size = 0.1)
 k
 
 hist_top <- ggplot(fourataxa, aes(all_weight))+geom_histogram(binwidth = 0.05, fill = "dark orange2")+ theme(axis.ticks=element_blank(), panel.background=element_blank(),line = element_blank(),axis.text.x=element_blank(), axis.text.y=element_blank(), axis.title.x=element_blank(), axis.title.y=element_blank(), plot.margin = unit(c(1,-0.5,0,3), "cm"))
@@ -199,10 +199,10 @@ hist_right <- ggplot(fourataxa, aes(excl_weight))+geom_histogram(binwidth = 0.05
 grid.arrange(hist_top, empty, k, hist_right, ncol=2, nrow=2, widths=c(5, 1), heights=c(1, 5))
 
 
-# colscale = c("dark orange2","yellow")
-# k = ggplot(fourataxa, aes(x = treatment, y = weights, fill=factor(treatment))) +
+colscale = c("dark orange2","yellow")
+k = ggplot(logseries_weights, aes(x = treatment, y = weights, fill=factor(treatment))) +
   geom_violin(linetype="blank") + xlab("Transient Status") + ylab("Proportion of Species") + scale_fill_manual(labels = c("All \n species","All species excluding transients"),values = colscale)+ theme_classic()+ ylim(0, 1) + theme(axis.text.x=element_text(size  =46, color = "black"), axis.ticks.x=element_blank(),axis.text.y=element_text(size=30, color = "black"),axis.title.x=element_text(size=46, color = "black"),axis.title.y=element_text(size=46,angle=90,vjust = 5))+ scale_x_discrete(breaks=c("All species","Excluding transients"),labels=c("All\n species","Excluding\n transients")) + xlab(NULL) + ylab("Akaike weight \n of logseries model") + theme(legend.position = "none")+ geom_text(x=1.4, y=0.8, size = 6, angle = 90, label="Log series")+ geom_text(x=1.4, y=0.2, size = 6,angle = 90, label="Log normal")+   geom_segment(aes(x = 1.5, y = 0.35, xend = 1.5, yend = 0.05), colour='black', size=0.5,arrow = arrow(length = unit(0.5, "cm")))+   geom_segment(aes(x = 1.5, y = 0.65, xend = 1.5, yend = 0.95), colour='black', size=0.5,arrow = arrow(length = unit(0.5, "cm")))
-# k
+k
 ggsave(file="C:/Git/core-transient/output/plots/sad_fit_comparison.pdf", height = 5, width = 15)
 # + guides(fill=guide_legend(title=NULL))+ theme(legend.text = element_text(size = 16),legend.position="top", legend.justification=c(0, 1), legend.key.width=unit(1, "lines"))
 
