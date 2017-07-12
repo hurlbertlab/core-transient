@@ -235,23 +235,9 @@ bbs_allscales$logA = log10(bbs_allscales$area)
 bbs_allscales$logN = log10(bbs_allscales$aveN)
 bbs_allscales$lnA = log(bbs_allscales$area) #log is the natural log 
 bbs_allscales$lnN = log(bbs_allscales$aveN) #rerun plots with this?
-####filter out stateroutes that are one-sided in scale####
-#in terms of their representation of below vs above scale (should have both, not one alone)
-bbs_allscales2 = bbs_allscales %>% count(focalrte) %>% filter(n == 83) %>% data.frame() 
-bbs_allscales3 = filter(bbs_allscales, focalrte %in% bbs_allscales2$focalrte)
-
 
 coefs = read.csv("scripts/R-scripts/scale_analysis/coefs.csv", header = TRUE)
 
-
-
-
-
-#function for extracting predicted values from models built with observed data
-logistic_fcn = function(x, Asym, xmid, scal) {
-  out = Asym/(1 + exp((xmid - x)/scal))
-  return(out)
-}
 
 preds.df = data.frame(stateroute = numeric(), logA = numeric(), 
                       OApreds= numeric(), ONpreds = numeric(), 
@@ -260,8 +246,8 @@ preds.df = data.frame(stateroute = numeric(), logA = numeric(),
 
 
 pdf("output/plots/Molly Plots/BBS_scaleplots.pdf", onefile = TRUE)
-coef_join = coefs %>% inner_join(bbs_allscales3, by = c("stateroute"="focalrte"))
-stateroutes = unique(bbs_allscales3$focalrte)
+coef_join = coefs %>% inner_join(bbs_allscales, by = c("stateroute"="focalrte"))
+stateroutes = unique(bbs_allscales$focalrte)
 
 #extracting predicted values and plotting in same loop
 for (s in stateroutes) {
