@@ -100,7 +100,7 @@ dist.df = data.frame(rte1 = rep(good_rtes2$stateroute, each = nrow(good_rtes2)),
                      rte2 = rep(good_rtes2$stateroute, times = nrow(good_rtes2)),
                      dist = as.vector(distances))
 #write.csv(dist.df, "C:/git/core-transient/scripts/R-scripts/scale_analysis/dist_df.csv", row.names = FALSE) for later calcs
-
+bbs_below = read.csv(paste(BBS, "bbs_below.csv", sep = ""), header = TRUE)
 bbs_fullrte = bbs_below %>%
   filter(scale == "50-1") #953 routes at scale of a single route
 
@@ -194,8 +194,9 @@ bbs_allscales$logN = log10(bbs_allscales$aveN)
 bbs_allscales$lnA = log(bbs_allscales$area) #log is the natural log 
 bbs_allscales$lnN = log(bbs_allscales$aveN) #rerun plots with this?
 
+#need to run na.omit first, THEN exclude based on count! 
 
-bbs_allscales2 = bbs_allscales %>% count(focalrte) %>% filter(n == 83) %>% data.frame() 
+bbs_allscales2 = bbs_allscales %>% count(focalrte) %>% filter(n == 83) %>% data.frame() #fix error to exclude NAs
 bbs_allscales3 = filter(bbs_allscales, focalrte %in% bbs_allscales2$focalrte)
 #write.csv(bbs_allscales3, "C:/git/core-transient/data/BBS/bbs_allscales.csv", row.names = FALSE) #overwrote bbs all scales file 
 #updated 07/03/2017
@@ -203,7 +204,7 @@ bbs_allscales3 = filter(bbs_allscales, focalrte %in% bbs_allscales2$focalrte)
 ####Occ-scale analysis####
 ####Cross-scale analysis and visualization####
 bbs_allscales = read.csv("data/BBS/bbs_allscales.csv", header = TRUE)
-mod1 = lm(meanOcc~logA, data = bbs_allscales) #explains ~50% of the variation in occ
+mod1 = lm(meanOcc~logA, data = bbs_allscales) #expljkains ~50% of the variation in occ
 mod2 = lm(meanOcc~logN, data = bbs_allscales)
 summary(mod1)
 
