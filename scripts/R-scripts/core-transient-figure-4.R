@@ -57,11 +57,12 @@ taxcolors = cbind(taxcolors, Type,symbols)
 # names(allbbs) = c("stateroute", "scale", "spRich")
 
 # create bbs files
-bbs_count4a = dplyr::rename(bbs_count, year = Year, site = stateroute, species = Aou, count = SpeciesTotal)
+bbs_count4a = dplyr::rename(bbs_count, year = Year, site = stateroute, species = aou, count = speciestotal)
+bbs_count4a$datasetID = 1
 write.csv(bbs_count4a, "data/standardized_datasets/dataset_1.csv", row.names = FALSE)
 
 # bbs_abun_occ1 = subset(bbs_abun_occ, scale ==  50)
-bbs_abun_occ1 = dplyr::rename(bbs_abun_occ, site = stateroute, species = Aou, propOcc = occ)
+bbs_abun_occ1 = dplyr::rename(bbs_abun_occ, site = stateroute, species = aou, propOcc = occ)
 bbs_abun_occ1$datasetID  = 1
 bbs_occ4a = bbs_abun_occ1[, c("datasetID", "site", "species", "propOcc")]
 write.csv(bbs_occ4a, "data/propOcc_datasets/propOcc_1.csv", row.names = FALSE)
@@ -204,7 +205,17 @@ k = ggplot(logseries_weights, aes(x = treatment, y = weights, fill=factor(treatm
   geom_violin(linetype="blank") + xlab("Transient Status") + ylab("Proportion of Species") + scale_fill_manual(labels = c("All \n species","All species excluding transients"),values = colscale)+ theme_classic()+ ylim(0, 1) + theme(axis.text.x=element_text(size  =46, color = "black"), axis.ticks.x=element_blank(),axis.text.y=element_text(size=30, color = "black"),axis.title.x=element_text(size=46, color = "black"),axis.title.y=element_text(size=46,angle=90,vjust = 5))+ scale_x_discrete(breaks=c("All species","Excluding transients"),labels=c("All\n species","Excluding\n transients")) + xlab(NULL) + ylab("Akaike weight \n of logseries model") + theme(legend.position = "none")+ geom_text(x=1.4, y=0.8, size = 6, angle = 90, label="Log series")+ geom_text(x=1.4, y=0.2, size = 6,angle = 90, label="Log normal")+   geom_segment(aes(x = 1.5, y = 0.35, xend = 1.5, yend = 0.05), colour='black', size=0.5,arrow = arrow(length = unit(0.5, "cm")))+   geom_segment(aes(x = 1.5, y = 0.65, xend = 1.5, yend = 0.95), colour='black', size=0.5,arrow = arrow(length = unit(0.5, "cm")))
 k
 ggsave(file="C:/Git/core-transient/output/plots/sad_fit_comparison.pdf", height = 5, width = 15)
-# + guides(fill=guide_legend(title=NULL))+ theme(legend.text = element_text(size = 16),legend.position="top", legend.justification=c(0, 1), legend.key.width=unit(1, "lines"))
+
+
+### base plot densities
+par(mar = c(5,5,5,5), cex = 1, oma = c(0,0,0,0), las = 1)
+hist(fourataxa$all_weight, 20, ylim = c(0,400), col = "dark orange", main = NULL, xlab = 'Akaike Weight', ylab = " Frequency (All Species)")
+par(new=T)
+hist(fourataxa$excl_weight, 20, col =rgb(1,1,0,alpha=0.5) , yaxt='n', xaxt = 'n', xlab = NULL, ylab = NULL, main = NULL)
+axis(4)
+p <- par('usr')
+text(p[2], mean(p[3:4]), labels = 'Frequency (Excluding Transients)', xpd = NA, srt = -90, adj=c(.5,1))
+# mtext("Frequency (Excluding Transients)", side = 4, line = 2, srt =90)
 
 #### Figure 4b ####
 # read in route level ndvi and elevation data (radius = 40 km)

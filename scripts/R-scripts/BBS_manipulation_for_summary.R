@@ -23,29 +23,34 @@ dataformattingtable = read.csv('data_formatting_table.csv', header = T)
 
 datasetIDs = dataformattingtable$dataset_ID[dataformattingtable$format_flag == 1]
 
+##### r data retriever to download bbs data and derive occupancy values #####
+# bbs_eco = rdataretriever::fetch("breed-bird-survey") 
+
+Years = (bbs_eco$counts$Year)
+bbs = bbs_eco$breed_bird_survey_counts
+bbs$Year = as.numeric(bbs$year)
+bbs$stateroute = bbs$statenum*1000 + bbs$route
 
 #### BBS prep to replace dataset 1 #####
-bbs_all_years = read.csv("data/BBS/bbs_all_raw.csv", header = TRUE)
-bbs_all_years$datasetID = 1
 # Get subset of stateroutes that have been surveyed every year from 2001-2015
-good_rtes = bbs_all_years %>% 
-  filter(Year > 1999, Year < 2015) %>% 
-  dplyr::select(Year, stateroute) %>%
+good_rtes = bbs %>% 
+  filter(year > 1999, year < 2015) %>% 
+  dplyr::select(year, stateroute) %>%
   unique() %>%    
   dplyr::count(stateroute) %>% 
   filter(n == 15) # have to stay at 15 to keep # of years consistent
 
 # Calculate occupancy for all species at subset of stateroutes above
-bbs_sub1 = bbs_all_years %>% 
+bbs_sub1 = bbs %>% 
   filter(Year > 1999, Year < 2015, stateroute %in% good_rtes$stateroute) %>% 
-  dplyr::select(datasetID, stateroute, Year, Aou, SpeciesTotal) %>% filter(stateroute != 7008)
+  dplyr::select(stateroute, Year, aou, speciestotal)# %>% filter(stateroute != 7008)
 
 write.csv(bbs_sub1, "data/BBS/bbs_2000_2014.csv", row.names = FALSE)
 
 
 #### creating new bbs_abun_occ from scratch #####
 bbs_occ = bbs_sub1 %>% 
-  dplyr::count(Aou, stateroute) %>% 
+  dplyr::count(aou, stateroute) %>% 
   filter(n < 16) %>% 
   dplyr::mutate(occ = n/15)
 
