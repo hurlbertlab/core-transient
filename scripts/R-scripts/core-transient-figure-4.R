@@ -40,7 +40,7 @@ occ_taxa = read.csv("output/tabular_data/occ_taxa.csv", header = TRUE)
 areamerge = read.csv("output/tabular_data/areamerge.csv", header = TRUE)
 allrich = read.csv("output/tabular_data/allrich.csv", header = TRUE)
 notransrich = read.csv("output/tabular_data/notransrich.csv", header = TRUE)
-bbs_abun_occ = read.csv("data/BBS/bbs_occ_2000_2014.csv", header = TRUE)
+bbs_abun_occ = read.csv("data/BBS/bbs_abun_occ.csv", header = TRUE)
 bbs_occ = read.csv("data/BBS/bbs_abun4_spRich.csv", header = TRUE)
 bbs_count = read.csv("data/BBS/bbs_2000_2014.csv", header = TRUE)
 
@@ -50,11 +50,11 @@ Type = c("Invertebrate", "Vertebrate", "Invertebrate", "Plant", "Vertebrate", "I
 taxcolors = cbind(taxcolors, Type,symbols)
 
 # calc bbs with and without trans
-# notransbbs = bbs_abun_occ %>% filter(occupancy > 1/3) %>% dplyr::count(stateroute, scale) %>% filter(scale == 50)
-# names(notransbbs) = c("stateroute", "scale", "spRichnotrans")
+notransbbs = bbs_abun_occ %>% filter(occupancy > 1/3) %>% dplyr::count(stateroute, scale) %>% filter(scale == 50)
+names(notransbbs) = c("stateroute", "scale", "spRichnotrans")
 
-# allbbs = bbs_abun_occ %>% dplyr::count(stateroute, scale) %>% filter(scale == 50)
-# names(allbbs) = c("stateroute", "scale", "spRich")
+allbbs = bbs_abun_occ %>% dplyr::count(stateroute, scale) %>% filter(scale == 50)
+names(allbbs) = c("stateroute", "scale", "spRich")
 
 # create bbs files
 bbs_count4a = dplyr::rename(bbs_count, year = Year, site = stateroute, species = aou, count = speciestotal)
@@ -187,8 +187,8 @@ fourataxa = merge(fourataxa, taxcolors, by = "taxa")
 colscale = c("azure4","#1D6A9B","turquoise2","gold2","purple4","red", "forestgreen")  
 
 m <- ggplot(fourataxa, aes(x = all_weight, y = excl_weight))
-k <-m + geom_abline(intercept = 0,slope = 1, lwd =1.5,linetype="dashed")+geom_point(aes(colour = taxa), size = 5) + xlab("All Species") + ylab("Excluding Transients") + scale_colour_manual(breaks = fourataxa$taxa,values = colscale) + theme_classic() + theme(axis.text.x=element_text(size=30, color = "black"),axis.text.y=element_text(size=30, color = "black"),axis.ticks.x=element_blank(),axis.title.x=element_text(size=46, color = "black"),axis.title.y=element_text(size=46,angle=90,vjust = 5))+ theme(legend.position="none") #+geom_rug(size = 0.1)
-k
+# k <-m + geom_abline(intercept = 0,slope = 1, lwd =1.5,linetype="dashed")+geom_point(aes(colour = taxa), size = 5) + xlab("All Species") + ylab("Excluding Transients") + scale_colour_manual(breaks = fourataxa$taxa,values = colscale) + theme_classic() + theme(axis.text.x=element_text(size=30, color = "black"),axis.text.y=element_text(size=30, color = "black"),axis.ticks.x=element_blank(),axis.title.x=element_text(size=46, color = "black"),axis.title.y=element_text(size=46,angle=90,vjust = 5))+ theme(legend.position="none") #+geom_rug(size = 0.1)
+
 
 hist_top <- ggplot(fourataxa, aes(all_weight))+geom_histogram(binwidth = 0.05, fill = "dark orange2")+ theme(axis.ticks=element_blank(), panel.background=element_blank(),line = element_blank(),axis.text.x=element_blank(), axis.text.y=element_blank(), axis.title.x=element_blank(), axis.title.y=element_blank(), plot.margin = unit(c(1,-0.5,0,3), "cm"))
 empty <- ggplot()+geom_point(aes(1,1), colour="white")+ theme(axis.ticks=element_blank(), 
@@ -203,19 +203,36 @@ grid.arrange(hist_top, empty, k, hist_right, ncol=2, nrow=2, widths=c(5, 1), hei
 colscale = c("dark orange2","yellow")
 k = ggplot(logseries_weights, aes(x = treatment, y = weights, fill=factor(treatment))) +
   geom_violin(linetype="blank") + xlab("Transient Status") + ylab("Proportion of Species") + scale_fill_manual(labels = c("All \n species","All species excluding transients"),values = colscale)+ theme_classic()+ ylim(0, 1) + theme(axis.text.x=element_text(size  =46, color = "black"), axis.ticks.x=element_blank(),axis.text.y=element_text(size=30, color = "black"),axis.title.x=element_text(size=46, color = "black"),axis.title.y=element_text(size=46,angle=90,vjust = 5))+ scale_x_discrete(breaks=c("All species","Excluding transients"),labels=c("All\n species","Excluding\n transients")) + xlab(NULL) + ylab("Akaike weight \n of logseries model") + theme(legend.position = "none")+ geom_text(x=1.4, y=0.8, size = 6, angle = 90, label="Log series")+ geom_text(x=1.4, y=0.2, size = 6,angle = 90, label="Log normal")+   geom_segment(aes(x = 1.5, y = 0.35, xend = 1.5, yend = 0.05), colour='black', size=0.5,arrow = arrow(length = unit(0.5, "cm")))+   geom_segment(aes(x = 1.5, y = 0.65, xend = 1.5, yend = 0.95), colour='black', size=0.5,arrow = arrow(length = unit(0.5, "cm")))
-k
+
 ggsave(file="C:/Git/core-transient/output/plots/sad_fit_comparison.pdf", height = 5, width = 15)
 
 
-### base plot densities
+### base plot densities 8x11
 par(mar = c(5,5,5,5), cex = 1, oma = c(0,0,0,0), las = 1)
 hist(fourataxa$all_weight, 20, ylim = c(0,400), col = "dark orange", main = NULL, xlab = 'Akaike Weight', ylab = " Frequency (All Species)")
 par(new=T)
 hist(fourataxa$excl_weight, 20, col =rgb(1,1,0,alpha=0.5) , yaxt='n', xaxt = 'n', xlab = NULL, ylab = NULL, main = NULL)
 axis(4)
-p <- par('usr')
-text(p[2], mean(p[3:4]), labels = 'Frequency (Excluding Transients)', xpd = NA, srt = -90, adj=c(.5,1))
+mtext("Frequency (Excluding transients)", 4, las = 0, line = 3)
 # mtext("Frequency (Excluding Transients)", side = 4, line = 2, srt =90)
+
+freq = hist(logseries_weights$weights)
+
+#### ggplot fig1a #####
+colscale = c("dark orange2","yellow")
+k = ggplot(logseries_weights,aes(x=weights,fill=treatment))+geom_histogram(bins = 20, position = "identity", alpha = 0.7)+ xlab("Transient Status") + ylab("Proportion of Species") + scale_fill_manual(labels = c("All species","All species excluding transients"),values = colscale)+ theme_classic() + theme(axis.text.x=element_blank(), axis.ticks.x=element_blank(),axis.text.y=element_text(size=30, color = "black"),axis.title.y=element_text(size=46,angle=90,vjust = 5),axis.title.x=element_text(size=46)) +ylim(c(0, 1500)) + ylab("Frequency") + xlab("Akaike Weight") + theme(legend.position = "none") + annotate("text", x = 0.5, y = 1000, label = "logseries", size = 8)+ annotate("text", x = 0.5, y = 1100, label = "lognormal", size = 8)
+
+mtext(size=46, color = "black")
+ggsave(file="C:/Git/core-transient/output/plots/1a_hists.pdf", height = 10, width = 16)
+
+library(grid)
+library(gridExtra)
+grid.newpage()
+footnote <- "Footnote1\nFootnote2"
+g <- arrangeGrob(p, bottom = textGrob(footnote, x = 0, hjust = -0.1, vjust=0.1, gp = gpar(fontface = "italic", fontsize = 12)))
+grid.draw(g)
+
+
 
 #### Figure 4b ####
 # read in route level ndvi and elevation data (radius = 40 km)
