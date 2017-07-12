@@ -21,6 +21,17 @@ library(gridExtra)
 library(wesanderson)
 library(stats)
 
+# To run this script, you need temperature, precip, etc data, 
+# which are currently stored in the following directories off of github: 
+
+# Data directories
+tempdatadir = '//bioark.ad.unc.edu/HurlbertLab/GIS/ClimateData/BIOCLIM_meanTemp/'
+precipdata = '//bioark.ad.unc.edu/HurlbertLab/GIS/ClimateData/2-25-2011/prec/'
+ndvidata = "//bioark.ad.unc.edu/HurlbertLab/GIS/MODIS NDVI/"
+BBS = '//bioark.ad.unc.edu/HurlbertLab/Jenkins/BBS scaled/'
+
+
+
 ####Extract coefficients from scale-occupancy relationships for analysis####
 OA.df = data.frame(stateroute = numeric(), OA.alt_xmid_pred = numeric(), OA.alt_xmid_dev= numeric(), OA.max= numeric(), OA.min= numeric(), OA.r2= numeric())
 ON.df = data.frame(stateroute = numeric(), ON.alt_xmid_pred = numeric(), ON.alt_xmid_dev= numeric(), ON.max= numeric(), ON.min= numeric(), ON.r2= numeric())
@@ -36,7 +47,7 @@ bbs_allscales = read.csv("data/BBS/bbs_allscales.csv", header = TRUE)
 stateroutes = unique(bbs_allscales$focalrte) #this stuff is the same, looks normal ^
 
 
-#07/11 version of tryCatch
+#07/12 version of tryCatch
 for(s in stateroutes){
   logsub = subset(bbs_allscales, bbs_allscales$focalrte == s)  
   #fitting the log curve for area (for each route)
@@ -215,7 +226,7 @@ coefs_2 = na.omit(coefs)
   # inner_join(TA.df, OA.df, by = "stateroute") %>% 
   # inner_join(TN.df, OA.df, by = "stateroute")  
 
-write.csv(coefs, "C:/git/core-transient/scripts/R-scripts/scale_analysis/coefs.csv", row.names = FALSE) #updated 06/19
+write.csv(coefs_2, "scripts/R-scripts/scale_analysis/coefs.csv", row.names = FALSE) #updated 07/12
 #exp mods have much better r2 vals for pctTran than power 
 
 ####Plotting occupancy-scale relationships with observed and predicted values####
@@ -231,6 +242,9 @@ bbs_allscales3 = filter(bbs_allscales, focalrte %in% bbs_allscales2$focalrte)
 
 
 coefs = read.csv("scripts/R-scripts/scale_analysis/coefs.csv", header = TRUE)
+
+
+
 
 
 #function for extracting predicted values from models built with observed data
