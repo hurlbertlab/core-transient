@@ -220,7 +220,7 @@ freq = hist(logseries_weights$weights)
 
 #### ggplot fig1a #####
 colscale = c("dark orange2","yellow")
-k = ggplot(logseries_weights,aes(x=weights,fill=treatment))+geom_histogram(bins = 20, position = "identity", alpha = 0.7)+ xlab("Transient Status") + ylab("Proportion of Species") + scale_fill_manual(labels = c("All species","All species excluding transients"),values = colscale)+ theme_classic() + theme(axis.text.x=element_blank(), axis.ticks.x=element_blank(),axis.text.y=element_text(size=30, color = "black"),axis.title.y=element_text(size=46,angle=90,vjust = 5),axis.title.x=element_text(size=46)) +ylim(c(0, 1500)) + ylab("Frequency") + xlab("Akaike Weight") + theme(legend.position = "none") + annotate("text", x = 0.5, y = 1000, label = "logseries", size = 8)+ annotate("text", x = 0.5, y = 1100, label = "lognormal", size = 8)
+k = ggplot(logseries_weights,aes(x=weights,fill=treatment))+geom_histogram(bins = 20, position = "identity", alpha = 0.7)+ xlab("Transient Status") + ylab("Proportion of Species") + scale_y_continuous(breaks=c(0,500,1000,1300)) + scale_fill_manual(labels = c("All species","All species excluding transients"),values = colscale)+ theme_classic() + theme(axis.text.x=element_blank(), axis.ticks.x=element_blank(),axis.text.y=element_text(size=30, color = "black"),axis.title.y=element_text(size=46,angle=90,vjust = 5),axis.title.x=element_text(size=46, vjust = -7)) + ylab("Frequency") + xlab("Akaike Weight") + theme(legend.position = "none")  + annotate("text", x = .05, y = 1, label = "logseries", size = 8, vjust = 1)+ annotate("text", x = 0.5, y = 1100, label = "lognormal", size = 8)
 
 mtext(size=46, color = "black")
 ggsave(file="C:/Git/core-transient/output/plots/1a_hists.pdf", height = 10, width = 16)
