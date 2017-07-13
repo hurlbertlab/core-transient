@@ -55,20 +55,24 @@ for(s in stateroutes){
   #OA 
   OAmodel = tryCatch({
     OAlog = lm(meanOcc ~ logA, data = logsub) #lm instead of nls, reg linear model
-    OApred = predict(OAlog) #get preds -> is predicting unique per scale, all clear
-    #need to link back to df tho so can filter out by scale? 
+    OApred_df = data.frame(preds = predict(OAlog), scale = logsub$scale)  #get preds -> is predicting unique per scale, all clear
     OAlm.r2 = lm(logsub$meanOcc ~ OApred) #get r2 from model 
+    
+    
     OA.alt_xmid = logsub$meanOcc[logsub$scale == 3] #@ scale == 3, for a given focal rte s, actual value
     #logsub[21,3] achieves same thing
+    OA.alt_xmid_pred = OApred_df$preds[OApred_df$scale == 3]
+    OA.alt_xmid_dev = (OA.alt_xmid - OA.alt_xmid_pred)^2 #squared deviance of pred from actual val #need pred AT SCALE = 3 THO
+    OA.mid_occ = min(logsub$scale[logsub$meanOcc > 0.49 & logsub$meanOcc < 0.60]) 
+    #want the FIRST instance where it hits this range -> how? minimum scale at which it does that
     
-    OA.alt_xmid_pred = OApred[21]
-    OA.alt_xmid_dev = (OApred[21] - OA.alt_xmid)^2 #squared deviance of pred from actual val #need pred AT SCALE = 3 THO
-    #know that it hs to be the nth item if 83 scales consistent in order in logsub,
-    #so can I just extract it at OApred[n]? 18 below-route scales, then 1+ aggregated so 3 -> 21
-    #find better way but so far, workable, and doesn't involve tacking the preds onto the logsub df
+    #eq of a line 
+    #((y2-y1)/(x2-x1)) 
+    #meanOcc vals are y, logA is the x 
+    #x and y are dictated by the original model 
+    OA_slope = ((max(logsub$meanOcc) - min(logsub$meanOcc))/(max(logsub$logA) - min(logsub$logA)))
     
-    OA.max = max(OApred) # @ max scale - what point is at the "end of the line", for a given focal rte s?
-    OA.min = min(OApred) # @ min scale - what point is at the beginning of the line, for a given focal rte s?
+    
     OA.r2 <- summary(OAlm.r2)$r.squared
     data.frame(stateroute = s, OA.alt_xmid_pred, OA.alt_xmid_dev, OA.max, OA.min, OA.r2)
     
