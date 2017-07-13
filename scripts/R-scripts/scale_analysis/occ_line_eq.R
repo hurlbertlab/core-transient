@@ -86,21 +86,26 @@ for(s in stateroutes){
     #((y2-y1)/(x2-x1)) 
     #meanOcc vals are y, logA is the x 
     #x and y are dictated by the original model 
-    OA_slope = ((max(logsub$meanOcc) - min(logsub$meanOcc))/(max(logsub$logA) - min(logsub$logA)))
+    OA.slope = ((max(logsub$meanOcc) - min(logsub$meanOcc))/(max(logsub$logA) - min(logsub$logA)))
+    #max in BOTH dimensions, x and y
+    OA.max = max(logsub$meanOcc[max(logsub$logA)]) #what point is at the "end of the line", for a given focal rte s? 
+    OA.min = min(logsub$meanOcc[min(logsub$logA)]) #what point is at the beginning of the line, for a given focal rte s?
     
     
     OA.r2 <- summary(OAlm.r2)$r.squared
-    data.frame(stateroute = s, OA.alt_xmid_pred, OA.alt_xmid_dev, OA.max, OA.min, OA.r2)
+    data.frame(stateroute = s, OA.alt_xmid_pred, OA.alt_xmid_dev, OA.mid_occ, OA.slope, OA.max, OA.min, OA.r2)
     
   }, warning = function(w) {
     warnings = rbind(warnings, data.frame(stateroute = s, warning = w))
   }, error = function(e) {
     OA.alt_xmid_pred = NA
     OA.alt_xmid_dev = NA 
+    OA.mid_occ = NA
+    OA.slope = NA
     OA.max = NA
     OA.min = NA
     OA.r2 = NA
-    temp = data.frame(stateroute = s, OA.alt_xmid_pred, OA.alt_xmid_dev, OA.max, OA.min, OA.r2)
+    temp = data.frame(stateroute = s, OA.alt_xmid_pred, OA.alt_xmid_dev, OA.mid_occ, OA.slope, OA.max, OA.min, OA.r2)
     return(temp)
     
   })
