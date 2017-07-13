@@ -45,16 +45,28 @@ bbs_sub1 = bbs %>%
   filter(Year > 1999, Year < 2015, stateroute %in% good_rtes$stateroute) %>% 
   dplyr::select(stateroute, Year, aou, speciestotal)# %>% filter(stateroute != 7008)
 
-write.csv(bbs_sub1, "data/BBS/bbs_2000_2014.csv", row.names = FALSE)
+# bbs_sub1 = read.csv("data/BBS/bbs_2000_2014.csv", header = TRUE)
+bbs_w_aou = bbs_sub1 %>% filter(aou > 2880) %>%
+  filter(aou < 3650 | aou > 3810) %>%
+  filter(aou < 3900 | aou > 3910) %>%
+  filter(aou < 4160 | aou > 4210) %>%
+  filter(aou != 7010)
 
-
+write.csv(bbs_w_aou, "data/BBS/bbs_2000_2014.csv", row.names = FALSE)
 #### creating new bbs_abun_occ from scratch #####
 bbs_occ = bbs_sub1 %>% 
   dplyr::count(aou, stateroute) %>% 
   filter(n < 16) %>% 
   dplyr::mutate(occ = n/15)
 
-write.csv(bbs_occ, "data/BBS/bbs_occ_2000_2014.csv", row.names = FALSE)
+bbs_occ = read.csv("data/BBS/bbs_occ_2000_2014.csv", header = TRUE)
+bbs_occ_aou = bbs_occ %>% filter(aou > 2880) %>%
+  filter(aou < 3650 | aou > 3810) %>%
+  filter(aou < 3900 | aou > 3910) %>%
+  filter(aou < 4160 | aou > 4210) %>%
+  filter(aou != 7010)
+
+write.csv(bbs_occ_aou, "data/BBS/bbs_occ_2000_2014.csv", row.names = FALSE)
 
 #### BBS prep to merge with summ2 dataset #####
 # need datasetID, site, system, taxa, propCore, propTrans, and meanAbundance
