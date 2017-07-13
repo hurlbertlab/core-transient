@@ -86,21 +86,26 @@ for(s in stateroutes){
     #((y2-y1)/(x2-x1)) 
     #meanOcc vals are y, logA is the x 
     #x and y are dictated by the original model 
-    OA_slope = ((max(logsub$meanOcc) - min(logsub$meanOcc))/(max(logsub$logA) - min(logsub$logA)))
+    OA.slope = ((max(logsub$meanOcc) - min(logsub$meanOcc))/(max(logsub$logA) - min(logsub$logA)))
+    #max in BOTH dimensions, x and y
+    OA.max = max(logsub$meanOcc[max(logsub$logA)]) #what point is at the "end of the line", for a given focal rte s? 
+    OA.min = min(logsub$meanOcc[min(logsub$logA)]) #what point is at the beginning of the line, for a given focal rte s?
     
     
     OA.r2 <- summary(OAlm.r2)$r.squared
-    data.frame(stateroute = s, OA.alt_xmid_pred, OA.alt_xmid_dev, OA.max, OA.min, OA.r2)
+    data.frame(stateroute = s, OA.alt_xmid_pred, OA.alt_xmid_dev, OA.mid_occ, OA.slope, OA.max, OA.min, OA.r2)
     
   }, warning = function(w) {
     warnings = rbind(warnings, data.frame(stateroute = s, warning = w))
   }, error = function(e) {
     OA.alt_xmid_pred = NA
     OA.alt_xmid_dev = NA 
+    OA.mid_occ = NA
+    OA.slope = NA
     OA.max = NA
     OA.min = NA
     OA.r2 = NA
-    temp = data.frame(stateroute = s, OA.alt_xmid_pred, OA.alt_xmid_dev, OA.max, OA.min, OA.r2)
+    temp = data.frame(stateroute = s, OA.alt_xmid_pred, OA.alt_xmid_dev, OA.mid_occ, OA.slope, OA.max, OA.min, OA.r2)
     return(temp)
     
   })
@@ -109,32 +114,43 @@ for(s in stateroutes){
   #ON 
   ONmodel = tryCatch({
     ONlog = lm(meanOcc ~ logN, data = logsub) #lm instead of nls, reg linear model
-    ONpred = predict(ONlog) #get preds -> is predicting unique per scale, all clear
-    #need to link back to df tho so can filter out by scale? 
+    ONpred_df = data.frame(preds = predict(ONlog), scale = logsub$scale)  #get preds -> is predicting unique per scale, all clear
     ONlm.r2 = lm(logsub$meanOcc ~ ONpred) #get r2 from model 
+    
+    
     ON.alt_xmid = logsub$meanOcc[logsub$scale == 3] #@ scale == 3, for a given focal rte s, actual value
     #logsub[21,3] achieves same thing
+    ON.alt_xmid_pred = ONpred_df$preds[ONpred_df$scale == 3]
+    ON.alt_xmid_dev = (ON.alt_xmid - ON.alt_xmid_pred)^2 #squared deviance of pred from actual val #need pred AT SCALE = 3 THO
+    ON.mid_occ = as.character(min(logsub$scale[logsub$meanOcc > 0.49 & logsub$meanOcc < 0.60])) 
+    #want the FIRST instance where it hits this range -> how? minimum scale at which it does that
+    #then save as a character so associated levels data doesn't stay stuck on the single data point
     
-    ON.alt_xmid_pred = ONpred[21]
-    ON.alt_xmid_dev = (ONpred[21] - ON.alt_xmid)^2 #squared deviance of pred from actual val #need pred AT SCALE = 3 THO
-    #know that it hs to be the nth item if 83 scales consistent in order in logsub,
-    #so can I just extract it at ONpred[n]? 18 below-route scales, then 1+ aggregated so 3 -> 21
-    #find better way but so far, workable, and doesn't involve tacking the preds onto the logsub df
     
-    ON.max = max(ONpred) # @ max scale - what point is at the "end of the line", for a given focal rte s?
-    ON.min = min(ONpred) # @ min scale - what point is at the beginning of the line, for a given focal rte s?
+    #eq of a line 
+    #((y2-y1)/(x2-x1)) 
+    #meanOcc vals are y, logN is the x 
+    #x and y are dictated by the original model 
+    ON.slope = ((max(logsub$meanOcc) - min(logsub$meanOcc))/(max(logsub$logN) - min(logsub$logN)))
+    #max in BOTH dimensions, x and y
+    ON.max = max(logsub$meanOcc[max(logsub$logN)]) #what point is at the "end of the line", for a given focal rte s? 
+    ON.min = min(logsub$meanOcc[min(logsub$logN)]) #what point is at the beginning of the line, for a given focal rte s?
+    
+    
     ON.r2 <- summary(ONlm.r2)$r.squared
-    data.frame(stateroute = s, ON.alt_xmid_pred, ON.alt_xmid_dev, ON.max, ON.min, ON.r2)
+    data.frame(stateroute = s, ON.alt_xmid_pred, ON.alt_xmid_dev, ON.mid_occ, ON.slope, ON.max, ON.min, ON.r2)
     
   }, warning = function(w) {
     warnings = rbind(warnings, data.frame(stateroute = s, warning = w))
   }, error = function(e) {
     ON.alt_xmid_pred = NA
     ON.alt_xmid_dev = NA 
+    ON.mid_occ = NA
+    ON.slope = NA
     ON.max = NA
     ON.min = NA
     ON.r2 = NA
-    temp = data.frame(stateroute = s, ON.alt_xmid_pred, ON.alt_xmid_dev, ON.max, ON.min, ON.r2)
+    temp = data.frame(stateroute = s, ON.alt_xmid_pred, ON.alt_xmid_dev, ON.mid_occ, ON.slope, ON.max, ON.min, ON.r2)
     return(temp)
     
   })
@@ -145,32 +161,43 @@ for(s in stateroutes){
   #CA
   CAmodel = tryCatch({
     CAlog = lm(pctCore ~ logA, data = logsub) #lm instead of nls, reg linear model
-    CApred = predict(CAlog) #get preds -> is predicting unique per scale, all clear
-    #need to link back to df tho so can filter out by scale? 
+    CApred_df = data.frame(preds = predict(CAlog), scale = logsub$scale)  #get preds -> is predicting unique per scale, all clear
     CAlm.r2 = lm(logsub$pctCore ~ CApred) #get r2 from model 
+    
+    
     CA.alt_xmid = logsub$pctCore[logsub$scale == 3] #@ scale == 3, for a given focal rte s, actual value
     #logsub[21,3] achieves same thing
+    CA.alt_xmid_pred = CApred_df$preds[CApred_df$scale == 3]
+    CA.alt_xmid_dev = (CA.alt_xmid - CA.alt_xmid_pred)^2 #squared deviance of pred from actual val #need pred AT SCALE = 3 THO
+    CA.mid_occ = as.character(min(logsub$scale[logsub$pctCore > 0.49 & logsub$pctCore < 0.60])) 
+    #want the FIRST instance where it hits this range -> how? minimum scale at which it does that
+    #then save as a character so associated levels data doesn't stay stuck on the single data point
     
-    CA.alt_xmid_pred = CApred[21]
-    CA.alt_xmid_dev = (CApred[21] - CA.alt_xmid)^2 #squared deviance of pred from actual val #need pred AT SCALE = 3 THO
-    #know that it hs to be the nth item if 83 scales consistent in order in logsub,
-    #so can I just extract it at CApred[n]? 18 below-route scales, then 1+ aggregated so 3 -> 21
-    #find better way but so far, workable, and doesn't involve tacking the preds onto the logsub df
     
-    CA.max = max(CApred) # @ max scale - what point is at the "end of the line", for a given focal rte s?
-    CA.min = min(CApred) # @ min scale - what point is at the beginning of the line, for a given focal rte s?
+    #eq of a line 
+    #((y2-y1)/(x2-x1)) 
+    #pctCore vals are y, logA is the x 
+    #x and y are dictated by the original model 
+    CA.slope = ((max(logsub$pctCore) - min(logsub$pctCore))/(max(logsub$logA) - min(logsub$logA)))
+    #max in BOTH dimensions, x and y
+    CA.max = max(logsub$pctCore[max(logsub$logA)]) #what point is at the "end of the line", for a given focal rte s? 
+    CA.min = min(logsub$pctCore[min(logsub$logA)]) #what point is at the beginning of the line, for a given focal rte s?
+    
+    
     CA.r2 <- summary(CAlm.r2)$r.squared
-    data.frame(stateroute = s, CA.alt_xmid_pred, CA.alt_xmid_dev, CA.max, CA.min, CA.r2)
+    data.frame(stateroute = s, CA.alt_xmid_pred, CA.alt_xmid_dev, CA.mid_occ, CA.slope, CA.max, CA.min, CA.r2)
     
   }, warning = function(w) {
     warnings = rbind(warnings, data.frame(stateroute = s, warning = w))
   }, error = function(e) {
     CA.alt_xmid_pred = NA
     CA.alt_xmid_dev = NA 
+    CA.mid_occ = NA
+    CA.slope = NA
     CA.max = NA
     CA.min = NA
     CA.r2 = NA
-    temp = data.frame(stateroute = s, CA.alt_xmid_pred, CA.alt_xmid_dev, CA.max, CA.min, CA.r2)
+    temp = data.frame(stateroute = s, CA.alt_xmid_pred, CA.alt_xmid_dev, CA.mid_occ, CA.slope, CA.max, CA.min, CA.r2)
     return(temp)
     
   })
@@ -179,61 +206,139 @@ for(s in stateroutes){
   #CN 
   CNmodel = tryCatch({
     CNlog = lm(pctCore ~ logN, data = logsub) #lm instead of nls, reg linear model
-    CNpred = predict(CNlog) #get preds -> is predicting unique per scale, all clear
-    #need to link back to df tho so can filter out by scale? 
+    CNpred_df = data.frame(preds = predict(CNlog), scale = logsub$scale)  #get preds -> is predicting unique per scale, all clear
     CNlm.r2 = lm(logsub$pctCore ~ CNpred) #get r2 from model 
+    
+    
     CN.alt_xmid = logsub$pctCore[logsub$scale == 3] #@ scale == 3, for a given focal rte s, actual value
     #logsub[21,3] achieves same thing
+    CN.alt_xmid_pred = CNpred_df$preds[CNpred_df$scale == 3]
+    CN.alt_xmid_dev = (CN.alt_xmid - CN.alt_xmid_pred)^2 #squared deviance of pred from actual val #need pred AT SCALE = 3 THO
+    CN.mid_occ = as.character(min(logsub$scale[logsub$pctCore > 0.49 & logsub$pctCore < 0.60])) 
+    #want the FIRST instance where it hits this range -> how? minimum scale at which it does that
+    #then save as a character so associated levels data doesn't stay stuck on the single data point
     
-    CN.alt_xmid_pred = CNpred[21]
-    CN.alt_xmid_dev = (CNpred[21] - CN.alt_xmid)^2 #squared deviance of pred from actual val #need pred AT SCALE = 3 THO
-    #know that it hs to be the nth item if 83 scales consistent in order in logsub,
-    #so can I just extract it at CNpred[n]? 18 below-route scales, then 1+ aggregated so 3 -> 21
-    #find better way but so far, workable, and doesn't involve tacking the preds onto the logsub df
     
-    CN.max = max(CNpred) # @ max scale - what point is at the "end of the line", for a given focal rte s?
-    CN.min = min(CNpred) # @ min scale - what point is at the beginning of the line, for a given focal rte s?
+    #eq of a line 
+    #((y2-y1)/(x2-x1)) 
+    #pctCore vals are y, logN is the x 
+    #x and y are dictated by the original model 
+    CN.slope = ((max(logsub$pctCore) - min(logsub$pctCore))/(max(logsub$logN) - min(logsub$logN)))
+    #max in BOTH dimensions, x and y
+    CN.max = max(logsub$pctCore[max(logsub$logN)]) #what point is at the "end of the line", for a given focal rte s? 
+    CN.min = min(logsub$pctCore[min(logsub$logN)]) #what point is at the beginning of the line, for a given focal rte s?
+    
+    
     CN.r2 <- summary(CNlm.r2)$r.squared
-    data.frame(stateroute = s, CN.alt_xmid_pred, CN.alt_xmid_dev, CN.max, CN.min, CN.r2)
+    data.frame(stateroute = s, CN.alt_xmid_pred, CN.alt_xmid_dev, CN.mid_occ, CN.slope, CN.max, CN.min, CN.r2)
     
   }, warning = function(w) {
     warnings = rbind(warnings, data.frame(stateroute = s, warning = w))
   }, error = function(e) {
     CN.alt_xmid_pred = NA
     CN.alt_xmid_dev = NA 
+    CN.mid_occ = NA
+    CN.slope = NA
     CN.max = NA
     CN.min = NA
     CN.r2 = NA
-    temp = data.frame(stateroute = s, CN.alt_xmid_pred, CN.alt_xmid_dev, CN.max, CN.min, CN.r2)
+    temp = data.frame(stateroute = s, CN.alt_xmid_pred, CN.alt_xmid_dev, CN.mid_occ, CN.slope, CN.max, CN.min, CN.r2)
     return(temp)
     
   })
   CN.df = rbind(CN.df, CNmodel)
   
-#   
-#   
+
+
 #   # Fitting % transient
 #   #TA #revisit!!
-#   TAlog = lm(log(pctTran) ~ lnA, data = logsub) #try with log10(pctTran), log(pctTran) ~ logA, and pctTran ~ logA since relationships wonky  
+#   TAlog = lm(log(pctTran) ~ lnA, data = logsub) #try with log10(pctTran), log(pctTran) ~ logA, and pctTran ~ logA since relationships wonky
 #   TA = lm(log(pctTran) ~ area, data = logsub)
-#   TA.temp = data.frame(stateroute = s, 
-#                        TAexp = TAlog$coefficients[2],
-#                        TApow = TA$coefficients[2], 
-#                        TAexp.r2 = summary(TAlog)$r.squared, 
-#                        TApow.r2 = summary(TA)$r.squared) 
-#   TA.df = rbind(TA.df, TA.temp)
+#   OApred_df = data.frame(preds = predict(OAlog), scale = logsub$scale)  #get preds -> is predicting unique per scale, all clear
+#   OAlm.r2 = lm(logsub$meanOcc ~ OApred) #get r2 from model 
 #   
-#   #TN  
-#   TNlog = lm(log(pctTran) ~ lnN, data = logsub)
-#   TN = lm(log(pctTran) ~ area, data = logsub)
-#   TN.temp = data.frame(stateroute = s, 
-#                        TNexp = TNlog$coefficients[2],
-#                        TNpow = TN$coefficients[2], 
-#                        TNexp.r2 = summary(TNlog)$r.squared, 
-#                        TNpow.r2 = summary(TN)$r.squared)
-#   TN.df = rbind(TN.df, TN.temp)
-  }
+#   
+#   OA.alt_xmid = logsub$meanOcc[logsub$scale == 3] #@ scale == 3, for a given focal rte s, actual value
+#   #logsub[21,3] achieves same thing
+#   OA.alt_xmid_pred = OApred_df$preds[OApred_df$scale == 3]
+#   OA.alt_xmid_dev = (OA.alt_xmid - OA.alt_xmid_pred)^2 #squared deviance of pred from actual val #need pred AT SCALE = 3 THO
+#   OA.mid_occ = as.character(min(logsub$scale[logsub$meanOcc > 0.49 & logsub$meanOcc < 0.60])) 
+#   #want the FIRST instance where it hits this range -> how? minimum scale at which it does that
+#   #then save as a character so associated levels data doesn't stay stuck on the single data point
+#   
+#   
+#   #eq of a line 
+#   #((y2-y1)/(x2-x1)) 
+#   #meanOcc vals are y, logA is the x 
+#   #x and y are dictated by the original model 
+#   OA.slope = ((max(logsub$meanOcc) - min(logsub$meanOcc))/(max(logsub$logA) - min(logsub$logA)))
+#   #max in BOTH dimensions, x and y
+#   OA.max = max(logsub$meanOcc[max(logsub$logA)]) #what point is at the "end of the line", for a given focal rte s? 
+#   OA.min = min(logsub$meanOcc[min(logsub$logA)]) #what point is at the beginning of the line, for a given focal rte s?
+#   
+#   
+#   OA.r2 <- summary(OAlm.r2)$r.squared
+#   data.frame(stateroute = s, OA.alt_xmid_pred, OA.alt_xmid_dev, OA.mid_occ, OA.slope, OA.max, OA.min, OA.r2)
+#   
+# }, warning = function(w) {
+#   warnings = rbind(warnings, data.frame(stateroute = s, warning = w))
+# }, error = function(e) {
+#   OA.alt_xmid_pred = NA
+#   OA.alt_xmid_dev = NA 
+#   OA.mid_occ = NA
+#   OA.slope = NA
+#   OA.max = NA
+#   OA.min = NA
+#   OA.r2 = NA
+#   temp = data.frame(stateroute = s, OA.alt_xmid_pred, OA.alt_xmid_dev, OA.mid_occ, OA.slope, OA.max, OA.min, OA.r2)
+#   return(temp)
+#   }
 
+# TN 
+  #   TNlog = lm(log(pctTran) ~ lnA, data = logsub) #try with log10(pctTran), log(pctTran) ~ logA, and pctTran ~ logA since relationships wonky
+  #   TN = lm(log(pctTran) ~ area, data = logsub)
+  #   OApred_df = data.frame(preds = predict(OAlog), scale = logsub$scale)  #get preds -> is predicting unique per scale, all clear
+  #   OAlm.r2 = lm(logsub$meanOcc ~ OApred) #get r2 from model 
+  #   
+  #   
+  #   OA.alt_xmid = logsub$meanOcc[logsub$scale == 3] #@ scale == 3, for a given focal rte s, actual value
+  #   #logsub[21,3] achieves same thing
+  #   OA.alt_xmid_pred = OApred_df$preds[OApred_df$scale == 3]
+  #   OA.alt_xmid_dev = (OA.alt_xmid - OA.alt_xmid_pred)^2 #squared deviance of pred from actual val #need pred AT SCALE = 3 THO
+  #   OA.mid_occ = as.character(min(logsub$scale[logsub$meanOcc > 0.49 & logsub$meanOcc < 0.60])) 
+  #   #want the FIRST instance where it hits this range -> how? minimum scale at which it does that
+  #   #then save as a character so associated levels data doesn't stay stuck on the single data point
+  #   
+  #   
+  #   #eq of a line 
+  #   #((y2-y1)/(x2-x1)) 
+  #   #meanOcc vals are y, logA is the x 
+  #   #x and y are dictated by the original model 
+  #   OA.slope = ((max(logsub$meanOcc) - min(logsub$meanOcc))/(max(logsub$logA) - min(logsub$logA)))
+  #   #max in BOTH dimensions, x and y
+  #   OA.max = max(logsub$meanOcc[max(logsub$logA)]) #what point is at the "end of the line", for a given focal rte s? 
+  #   OA.min = min(logsub$meanOcc[min(logsub$logA)]) #what point is at the beginning of the line, for a given focal rte s?
+  #   
+  #   
+  #   OA.r2 <- summary(OAlm.r2)$r.squared
+  #   data.frame(stateroute = s, OA.alt_xmid_pred, OA.alt_xmid_dev, OA.mid_occ, OA.slope, OA.max, OA.min, OA.r2)
+  #   
+  # }, warning = function(w) {
+  #   warnings = rbind(warnings, data.frame(stateroute = s, warning = w))
+  # }, error = function(e) {
+  #   OA.alt_xmid_pred = NA
+  #   OA.alt_xmid_dev = NA 
+  #   OA.mid_occ = NA
+  #   OA.slope = NA
+  #   OA.max = NA
+  #   OA.min = NA
+  #   OA.r2 = NA
+  #   temp = data.frame(stateroute = s, OA.alt_xmid_pred, OA.alt_xmid_dev, OA.mid_occ, OA.slope, OA.max, OA.min, OA.r2)
+  #   return(temp)
+  #   }
+  
+  
+  
 #join all together using inner_join by focal rte, not cbind 
 coefs = OA.df %>% 
   inner_join(ON.df, OA.df, by = "stateroute") %>% 
