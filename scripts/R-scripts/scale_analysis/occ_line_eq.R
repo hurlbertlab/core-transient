@@ -46,6 +46,20 @@ warnings = data.frame(stateroute = numeric(), warning = character())
 bbs_allscales = read.csv("data/BBS/bbs_allscales.csv", header = TRUE)
 stateroutes = unique(bbs_allscales$focalrte) #this stuff is the same, looks normal ^
 
+#make sure scale is leveled in order: 
+bbs_allscales$scale = factor(bbs_allscales$scale, 
+                             levels = c('5-1', '5-2', '5-3', '5-4', '5-5', '5-6', '5-7', '5-8', '5-9', '5-10',
+                                        '10-1', '10-2', '10-3', '10-4', '10-5', '25-1', '25-2', '50-1',
+                                        '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12',
+                                        '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24',
+                                        '25', '26', '27', '28', '29', '30', '31', '32', '33', '34', '35', '36',
+                                        '37', '38', '39', '40', '41', '42', '43', '44', '45', '46', '47', '48',
+                                        '49', '50', '51', '52', '53', '54', '55', '56', '57', '58', '59', '60',
+                                        '61', '62', '63', '64', '65'), ordered=TRUE)
+
+
+levels(bbs_allscales$scale)
+#NEED to do or it won't be in order
 
 #07/12 version of tryCatch
 for(s in stateroutes){
@@ -63,11 +77,9 @@ for(s in stateroutes){
     #logsub[21,3] achieves same thing
     OA.alt_xmid_pred = OApred_df$preds[OApred_df$scale == 3]
     OA.alt_xmid_dev = (OA.alt_xmid - OA.alt_xmid_pred)^2 #squared deviance of pred from actual val #need pred AT SCALE = 3 THO
-    OA.mid_occ = min(logsub$scale[logsub$meanOcc > 0.49 & logsub$meanOcc < 0.60]) 
+    OA.mid_occ = as.character(min(logsub$scale[logsub$meanOcc > 0.49 & logsub$meanOcc < 0.60])) 
     #want the FIRST instance where it hits this range -> how? minimum scale at which it does that
-    #but scale is a factor variable! need to assign order to levels so that R doesn't think the order is
-    #"1, 10, 10-1, 11, 12-19, 2, 25-1, 25-2, 3" etc.
-    #fix outside of loop, right after scale first created  
+    #then save as a character so associated levels data doesn't stay stuck on the single data point
     
     
     #eq of a line 
