@@ -114,43 +114,43 @@ for(s in stateroutes){
   #ON 
   ONmodel = tryCatch({
     ONlog = lm(meanOcc ~ logN, data = logsub) #lm instead of nls, reg linear model
-    OApred_df = data.frame(preds = predict(OAlog), scale = logsub$scale)  #get preds -> is predicting unique per scale, all clear
-    OAlm.r2 = lm(logsub$meanOcc ~ OApred) #get r2 from model 
+    ONpred_df = data.frame(preds = predict(ONlog), scale = logsub$scale)  #get preds -> is predicting unique per scale, all clear
+    ONlm.r2 = lm(logsub$meanOcc ~ ONpred) #get r2 from model 
     
     
-    OA.alt_xmid = logsub$meanOcc[logsub$scale == 3] #@ scale == 3, for a given focal rte s, actual value
+    ON.alt_xmid = logsub$meanOcc[logsub$scale == 3] #@ scale == 3, for a given focal rte s, actual value
     #logsub[21,3] achieves same thing
-    OA.alt_xmid_pred = OApred_df$preds[OApred_df$scale == 3]
-    OA.alt_xmid_dev = (OA.alt_xmid - OA.alt_xmid_pred)^2 #squared deviance of pred from actual val #need pred AT SCALE = 3 THO
-    OA.mid_occ = as.character(min(logsub$scale[logsub$meanOcc > 0.49 & logsub$meanOcc < 0.60])) 
+    ON.alt_xmid_pred = ONpred_df$preds[ONpred_df$scale == 3]
+    ON.alt_xmid_dev = (ON.alt_xmid - ON.alt_xmid_pred)^2 #squared deviance of pred from actual val #need pred AT SCALE = 3 THO
+    ON.mid_occ = as.character(min(logsub$scale[logsub$meanOcc > 0.49 & logsub$meanOcc < 0.60])) 
     #want the FIRST instance where it hits this range -> how? minimum scale at which it does that
     #then save as a character so associated levels data doesn't stay stuck on the single data point
     
     
     #eq of a line 
     #((y2-y1)/(x2-x1)) 
-    #meanOcc vals are y, logA is the x 
+    #meanOcc vals are y, logN is the x 
     #x and y are dictated by the original model 
-    OA.slope = ((max(logsub$meanOcc) - min(logsub$meanOcc))/(max(logsub$logA) - min(logsub$logA)))
+    ON.slope = ((max(logsub$meanOcc) - min(logsub$meanOcc))/(max(logsub$logN) - min(logsub$logN)))
     #max in BOTH dimensions, x and y
-    OA.max = max(logsub$meanOcc[max(logsub$logA)]) #what point is at the "end of the line", for a given focal rte s? 
-    OA.min = min(logsub$meanOcc[min(logsub$logA)]) #what point is at the beginning of the line, for a given focal rte s?
+    ON.max = max(logsub$meanOcc[max(logsub$logN)]) #what point is at the "end of the line", for a given focal rte s? 
+    ON.min = min(logsub$meanOcc[min(logsub$logN)]) #what point is at the beginning of the line, for a given focal rte s?
     
     
-    OA.r2 <- summary(OAlm.r2)$r.squared
-    data.frame(stateroute = s, OA.alt_xmid_pred, OA.alt_xmid_dev, OA.mid_occ, OA.slope, OA.max, OA.min, OA.r2)
+    ON.r2 <- summary(ONlm.r2)$r.squared
+    data.frame(stateroute = s, ON.alt_xmid_pred, ON.alt_xmid_dev, ON.mid_occ, ON.slope, ON.max, ON.min, ON.r2)
     
   }, warning = function(w) {
     warnings = rbind(warnings, data.frame(stateroute = s, warning = w))
   }, error = function(e) {
-    OA.alt_xmid_pred = NA
-    OA.alt_xmid_dev = NA 
-    OA.mid_occ = NA
-    OA.slope = NA
-    OA.max = NA
-    OA.min = NA
-    OA.r2 = NA
-    temp = data.frame(stateroute = s, OA.alt_xmid_pred, OA.alt_xmid_dev, OA.mid_occ, OA.slope, OA.max, OA.min, OA.r2)
+    ON.alt_xmid_pred = NA
+    ON.alt_xmid_dev = NA 
+    ON.mid_occ = NA
+    ON.slope = NA
+    ON.max = NA
+    ON.min = NA
+    ON.r2 = NA
+    temp = data.frame(stateroute = s, ON.alt_xmid_pred, ON.alt_xmid_dev, ON.mid_occ, ON.slope, ON.max, ON.min, ON.r2)
     return(temp)
     
   })
