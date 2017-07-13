@@ -65,6 +65,10 @@ for(s in stateroutes){
     OA.alt_xmid_dev = (OA.alt_xmid - OA.alt_xmid_pred)^2 #squared deviance of pred from actual val #need pred AT SCALE = 3 THO
     OA.mid_occ = min(logsub$scale[logsub$meanOcc > 0.49 & logsub$meanOcc < 0.60]) 
     #want the FIRST instance where it hits this range -> how? minimum scale at which it does that
+    #but scale is a factor variable! need to assign order to levels so that R doesn't think the order is
+    #"1, 10, 10-1, 11, 12-19, 2, 25-1, 25-2, 3" etc.
+    #fix outside of loop, right after scale first created  
+    
     
     #eq of a line 
     #((y2-y1)/(x2-x1)) 
