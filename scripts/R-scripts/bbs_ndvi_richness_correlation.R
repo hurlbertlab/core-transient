@@ -39,9 +39,23 @@ rich = bbs_sub1 %>%
   count(stateroute)
 
 
-gimms_ndvi = read.csv("output/tabular_data/gimms_ndvi_bbs_data.csv", header = TRUE)
-gimms_agg = gimms_ndvi %>% filter(month == c("may", "jun", "jul")) %>% 
-  group_by(site_id)  %>%  summarise(ndvi=mean(ndvi))
+
+#ndvi_data_raw <- get_bbs_gimms_ndvi()
+ndvi_data_raw = read.csv("output/tabular_data/gimms_ndvi_bbs_data.csv", header = TRUE)
+
+ndvi_data_summer <- ndvi_data_raw %>%
+  filter(!is.na(ndvi), month %in% c('may', 'jun', 'jul'), year > 1981) %>%
+  group_by(site_id, year) %>%
+  summarise(ndvi_sum = mean(ndvi)) %>%
+  ungroup()
+
+ndvi_smr_mean = ndvi_data_summer %>% 
+  group_by(site_id) %>%
+  summarize(ndvi_sum = mean(ndvi_sum))
+
+# Sara/Molly code:
+#gimms_agg = gimms_ndvi %>% filter(month == c("may", "jun", "jul")) %>% 
+#  group_by(site_id)  %>%  summarise(ndvi=mean(ndvi))
 
 
 
@@ -49,32 +63,34 @@ gimms_agg = gimms_ndvi %>% filter(month == c("may", "jun", "jul")) %>%
 
 # Richness based on 15 year window, 1009 sites with complete sampling during window
 ndvirich = rich %>%
-  left_join(gimms_agg, by = c('stateroute' = 'site_id'))
+  left_join(ndvi_smr_mean, by = c('stateroute' = 'site_id'))
 
-cor(ndvirich$ndvi, ndvirich$n, use='pairwise.complete.obs')
-#0.502
+cor(ndvirich$ndvi_sum, ndvirich$n, use='pairwise.complete.obs')
+#0.523
 
 
 # Richness of 1009 sites from above window, but only from 2014
 ndvirich14 = bbs_sub1 %>%
   filter(Year==2014) %>%
   count(stateroute) %>% 
-  left_join(gimms_agg, by = c('stateroute' = 'site_id'))
+  left_join(ndvi_smr_mean, by = c('stateroute' = 'site_id'))
 
-cor(ndvirich14$ndvi, ndvirich14$n, use='pairwise.complete.obs')
-#0.540
+cor(ndvirich14$ndvi_sum, ndvirich14$n, use='pairwise.complete.obs')
+#0.596
 
+ndvi2013 = ndvi_data_summer %>%
+  filter(year == 2013)
 
-# Richness from all sites in 2014 (3171 routes)
-allndvirich14 = bbs %>%
-  filter(Year==2014) %>%
+# Richness from all sites in 2013 (3184 routes)
+allndvirich13 = bbs %>%
+  filter(Year==2013) %>%
   filter(aou > 2880) %>%
   filter(aou < 3650 | aou > 3810) %>%
   filter(aou < 3900 | aou > 3910) %>%
   filter(aou < 4160 | aou > 4210) %>%
   filter(aou != 7010) %>%
   count(stateroute) %>% 
-  left_join(gimms_agg, by = c('stateroute' = 'site_id'))
+  left_join(ndvi2013, by = c('stateroute' = 'site_id'))
 
-cor(allndvirich14$ndvi, allndvirich14$n, use='pairwise.complete.obs')
-#0.528
+cor(allndvirich13$ndvi_sum, allndvirich13$n, use='pairwise.complete.obs')
+#0.589
