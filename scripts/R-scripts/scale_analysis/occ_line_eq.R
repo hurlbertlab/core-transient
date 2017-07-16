@@ -77,7 +77,7 @@ for(s in stateroutes){
   OAmodel = tryCatch({
     OAlog = lm(meanOcc ~ logA, data = logsub) #lm instead of nls, reg linear model
     OApred_df = data.frame(preds = predict(OAlog), scale = logsub$scale)  #get preds -> is predicting unique per scale, all clear
-    OAlm.r2 = lm(logsub$meanOcc ~ OApred) #get r2 from model 
+    OAlm.r2 = lm(logsub$meanOcc ~ OApred_df$preds) #get r2 from model 
     
     
     OA.alt_xmid = logsub$meanOcc[logsub$scale == 3] #@ scale == 3, for a given focal rte s, actual value
@@ -93,11 +93,10 @@ for(s in stateroutes){
     #((y2-y1)/(x2-x1)) 
     #meanOcc vals are y, logA is the x 
     #x and y are dictated by the original model 
-    OA.slope = ((max(logsub$meanOcc) - min(logsub$meanOcc))/(max(logsub$logA) - min(logsub$logA)))
+    OA.slope = ((max(logsub$logA) - min(logsub$logA))/(max(logsub$logA) - min(logsub$logA)))
     #max in BOTH dimensions, x and y
-    OA.max = max(logsub$meanOcc[max(logsub$logA)]) #what point is at the "end of the line", for a given focal rte s? 
-    OA.min = min(logsub$meanOcc[min(logsub$logA)]) #what point is at the beginning of the line, for a given focal rte s?
-    
+    OA.max = max(logsub$meanOcc[logsub$logA == max(logsub$logA)]) #what point is at the beginning of the line, for a given focal rte s?
+    OA.min = min(logsub$meanOcc[logsub$logA == min(logsub$logA)])
     
     OA.r2 <- summary(OAlm.r2)$r.squared
     data.frame(stateroute = s, OA.alt_xmid_pred, OA.alt_xmid_dev, OA.mid_occ, OA.slope, OA.max, OA.min, OA.r2)
@@ -105,13 +104,15 @@ for(s in stateroutes){
   }, warning = function(w) {
     warnings = rbind(warnings, data.frame(stateroute = s, warning = w))
   }, error = function(e) {
-    OA.alt_xmid_pred = NA
-    OA.alt_xmid_dev = NA 
-    OA.mid_occ = NA
-    OA.slope = NA
-    OA.max = NA
-    OA.min = NA
-    OA.r2 = NA
+    OA.alt_xmid_pred <- NA
+    OA.alt_xmid_dev <- NA 
+    OA.mid_occ <- NA
+    OA.slope <- NA
+    OA.max <- NA
+    OA.min <- NA
+    OA.r2 <- NA
+    
+    
     temp = data.frame(stateroute = s, OA.alt_xmid_pred, OA.alt_xmid_dev, OA.mid_occ, OA.slope, OA.max, OA.min, OA.r2)
     return(temp)
     
@@ -122,7 +123,7 @@ for(s in stateroutes){
   ONmodel = tryCatch({
     ONlog = lm(meanOcc ~ logN, data = logsub) #lm instead of nls, reg linear model
     ONpred_df = data.frame(preds = predict(ONlog), scale = logsub$scale)  #get preds -> is predicting unique per scale, all clear
-    ONlm.r2 = lm(logsub$meanOcc ~ ONpred) #get r2 from model 
+    ONlm.r2 = lm(logsub$meanOcc ~ ONpred_df$preds) #get r2 from model 
     
     
     ON.alt_xmid = logsub$meanOcc[logsub$scale == 3] #@ scale == 3, for a given focal rte s, actual value
@@ -169,7 +170,7 @@ for(s in stateroutes){
   CAmodel = tryCatch({
     CAlog = lm(pctCore ~ logA, data = logsub) #lm instead of nls, reg linear model
     CApred_df = data.frame(preds = predict(CAlog), scale = logsub$scale)  #get preds -> is predicting unique per scale, all clear
-    CAlm.r2 = lm(logsub$pctCore ~ CApred) #get r2 from model 
+    CAlm.r2 = lm(logsub$pctCore ~ CApred_df$preds) #get r2 from model 
     
     
     CA.alt_xmid = logsub$pctCore[logsub$scale == 3] #@ scale == 3, for a given focal rte s, actual value
@@ -214,7 +215,7 @@ for(s in stateroutes){
   CNmodel = tryCatch({
     CNlog = lm(pctCore ~ logN, data = logsub) #lm instead of nls, reg linear model
     CNpred_df = data.frame(preds = predict(CNlog), scale = logsub$scale)  #get preds -> is predicting unique per scale, all clear
-    CNlm.r2 = lm(logsub$pctCore ~ CNpred) #get r2 from model 
+    CNlm.r2 = lm(logsub$pctCore ~ CNpred_df$preds) #get r2 from model 
     
     
     CN.alt_xmid = logsub$pctCore[logsub$scale == 3] #@ scale == 3, for a given focal rte s, actual value
@@ -262,7 +263,7 @@ TAmodel = tryCatch({
   TAlog = lm(log(pctTran) ~ lnA, data = logsub) #try with log10(pctTran), log(pctTran) ~ logA, and pctTran ~ logA since relationships wonky
   TA = lm(log(pctTran) ~ area, data = logsub)
   TApred_df = data.frame(preds = predict(TAlog), scale = logsub$scale)  #get preds -> is predicting unique per scale, all clear
-  TAlm.r2 = lm(logsub$pctTran ~ TApred) #get r2 from model
+  TAlm.r2 = lm(logsub$pctTran ~ TApred_df$preds) #get r2 from model
 
 
   TA.alt_xmid = logsub$pctTran[logsub$scale == 3] #@ scale == 3, for a given focal rte s, actual value
@@ -308,7 +309,7 @@ TNmodel = tryCatch({
     TNlog = lm(log(pctTran) ~ lnN, data = logsub) #try with log10(pctTran), log(pctTran) ~ logA, and pctTran ~ logA since relationships wonky
     TN = lm(log(pctTran) ~ aveN, data = logsub)
     TNpred_df = data.frame(preds = predict(TNlog), scale = logsub$scale)  #get preds -> is predicting unique per scale, all clear
-    TNlm.r2 = lm(logsub$pctTran ~ TNpred) #get r2 from model
+    TNlm.r2 = lm(logsub$pctTran ~ TNpred_df$preds) #get r2 from model
 
 
     TN.alt_xmid = logsub$pctTran[logsub$scale == 3] #@ scale == 3, for a given focal rte s, actual value
