@@ -41,9 +41,10 @@ CA.df = data.frame(stateroute = numeric(), CA.alt_xmid_pred = numeric(), CA.alt_
                    CA.mid_occ = numeric(), CA.slope = numeric(), CA.max= numeric(), CA.min= numeric(), CA.r2= numeric())
 CN.df = data.frame(stateroute = numeric(), CN.alt_xmid_pred = numeric(), CN.alt_xmid_dev = numeric(), 
                    CN.mid_occ = numeric(), CN.slope = numeric(), CN.max = numeric(), CN.min = numeric(), CN.r2 = numeric())
-
-# TA.df = data.frame(stateroute = numeric(), TAexp= numeric(), TApow = numeric(), TAexp.r2 = numeric(), TApow.r2 = numeric())
-# TN.df = data.frame(stateroute = numeric(), TNexp= numeric(), TNpow = numeric(), TNexp.r2 = numeric(), TNpow.r2 = numeric())
+TA.df = data.frame(stateroute = numeric(), TA.alt_xmid_pred = numeric(), TA.alt_xmid_dev= numeric(), 
+                   TA.mid_occ = numeric(), TA.slope = numeric(), TA.max= numeric(), TA.min= numeric(), TA.r2= numeric())
+TN.df = data.frame(stateroute = numeric(), TN.alt_xmid_pred = numeric(), TN.alt_xmid_dev = numeric(), 
+                   TN.mid_occ = numeric(), TN.slope = numeric(), TN.max = numeric(), TN.min = numeric(), TN.r2 = numeric())
 
 warnings = data.frame(stateroute = numeric(), warning = character())
 
@@ -299,7 +300,9 @@ for(s in stateroutes){
 #   TA.r2 = NA
 #   temp = data.frame(stateroute = s, TA.alt_xmid_pred, TA.alt_xmid_dev, TA.mid_occ, TA.slope, TA.max, TA.min, TA.r2)
 #   return(temp)
-#   }
+#   })
+  
+  #TA.df
 
 # TN 
   #   TNlog = lm(log(pctTran) ~ lnN, data = logsub) #try with log10(pctTran), log(pctTran) ~ logA, and pctTran ~ logA since relationships wonky
@@ -342,8 +345,10 @@ for(s in stateroutes){
   #   TN.r2 = NA
   #   temp = data.frame(stateroute = s, TN.alt_xmid_pred, TN.alt_xmid_dev, TN.mid_occ, TN.slope, TN.max, TN.min, TN.r2)
   #   return(temp)
-  #   }
+  #   })
   
+  #TN.df
+}  
   
   
 #join all together using inner_join by focal rte, not cbind 
