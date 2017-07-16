@@ -33,12 +33,18 @@ BBS = '//bioark.ad.unc.edu/HurlbertLab/Jenkins/BBS scaled/'
 
 
 ####Extract coefficients from scale-occupancy relationships for analysis####
-OA.df = data.frame(stateroute = numeric(), OA.alt_xmid_pred = numeric(), OA.alt_xmid_dev= numeric(), OA.max= numeric(), OA.min= numeric(), OA.r2= numeric())
-ON.df = data.frame(stateroute = numeric(), ON.alt_xmid_pred = numeric(), ON.alt_xmid_dev= numeric(), ON.max= numeric(), ON.min= numeric(), ON.r2= numeric())
-CA.df = data.frame(stateroute = numeric(), CA.alt_xmid_pred = numeric(), CA.alt_xmid_dev= numeric(), CA.max= numeric(), CA.min= numeric(), CA.r2= numeric())
-CN.df = data.frame(stateroute = numeric(), CN.alt_xmid_pred = numeric(), CN.alt_xmid_dev= numeric(), CN.max= numeric(), CN.min= numeric(), CN.r2= numeric())
+OA.df = data.frame(stateroute = numeric(), OA.alt_xmid_pred = numeric(), OA.alt_xmid_dev= numeric(), 
+                   OA.mid_occ = numeric(), OA.slope = numeric(), OA.max= numeric(), OA.min= numeric(), OA.r2= numeric())
+ON.df = data.frame(stateroute = numeric(), ON.alt_xmid_pred = numeric(), ON.alt_xmid_dev= numeric(), 
+                   ON.mid_occ = numeric(), ON.slope = numeric(), ON.max= numeric(), ON.min= numeric(), ON.r2= numeric())
+CA.df = data.frame(stateroute = numeric(), CA.alt_xmid_pred = numeric(), CA.alt_xmid_dev= numeric(), 
+                   CA.mid_occ = numeric(), CA.slope = numeric(), CA.max= numeric(), CA.min= numeric(), CA.r2= numeric())
+CN.df = data.frame(stateroute = numeric(), CN.alt_xmid_pred = numeric(), CN.alt_xmid_dev = numeric(), 
+                   CN.mid_occ = numeric(), CN.slope = numeric(), CN.max = numeric(), CN.min = numeric(), CN.r2 = numeric())
+
 # TA.df = data.frame(stateroute = numeric(), TAexp= numeric(), TApow = numeric(), TAexp.r2 = numeric(), TApow.r2 = numeric())
 # TN.df = data.frame(stateroute = numeric(), TNexp= numeric(), TNpow = numeric(), TNexp.r2 = numeric(), TNpow.r2 = numeric())
+
 warnings = data.frame(stateroute = numeric(), warning = character())
 
 
@@ -254,15 +260,15 @@ for(s in stateroutes){
 #   #TA #revisit!!
 #   TAlog = lm(log(pctTran) ~ lnA, data = logsub) #try with log10(pctTran), log(pctTran) ~ logA, and pctTran ~ logA since relationships wonky
 #   TA = lm(log(pctTran) ~ area, data = logsub)
-#   OApred_df = data.frame(preds = predict(OAlog), scale = logsub$scale)  #get preds -> is predicting unique per scale, all clear
-#   OAlm.r2 = lm(logsub$meanOcc ~ OApred) #get r2 from model 
+#   TApred_df = data.frame(preds = predict(TAlog), scale = logsub$scale)  #get preds -> is predicting unique per scale, all clear
+#   TAlm.r2 = lm(logsub$meanOcc ~ TApred) #get r2 from model 
 #   
 #   
-#   OA.alt_xmid = logsub$meanOcc[logsub$scale == 3] #@ scale == 3, for a given focal rte s, actual value
+#   TA.alt_xmid = logsub$meanOcc[logsub$scale == 3] #@ scale == 3, for a given focal rte s, actual value
 #   #logsub[21,3] achieves same thing
-#   OA.alt_xmid_pred = OApred_df$preds[OApred_df$scale == 3]
-#   OA.alt_xmid_dev = (OA.alt_xmid - OA.alt_xmid_pred)^2 #squared deviance of pred from actual val #need pred AT SCALE = 3 THO
-#   OA.mid_occ = as.character(min(logsub$scale[logsub$meanOcc > 0.49 & logsub$meanOcc < 0.60])) 
+#   TA.alt_xmid_pred = TApred_df$preds[TApred_df$scale == 3]
+#   TA.alt_xmid_dev = (TA.alt_xmid - TA.alt_xmid_pred)^2 #squared deviance of pred from actual val #need pred AT SCALE = 3 THO
+#   TA.mid_occ = as.character(min(logsub$scale[logsub$meanOcc > 0.49 & logsub$meanOcc < 0.60])) 
 #   #want the FIRST instance where it hits this range -> how? minimum scale at which it does that
 #   #then save as a character so associated levels data doesn't stay stuck on the single data point
 #   
@@ -271,41 +277,41 @@ for(s in stateroutes){
 #   #((y2-y1)/(x2-x1)) 
 #   #meanOcc vals are y, logA is the x 
 #   #x and y are dictated by the original model 
-#   OA.slope = ((max(logsub$meanOcc) - min(logsub$meanOcc))/(max(logsub$logA) - min(logsub$logA)))
+#   TA.slope = ((max(logsub$meanOcc) - min(logsub$meanOcc))/(max(logsub$logA) - min(logsub$logA)))
 #   #max in BOTH dimensions, x and y
-#   OA.max = max(logsub$meanOcc[max(logsub$logA)]) #what point is at the "end of the line", for a given focal rte s? 
-#   OA.min = min(logsub$meanOcc[min(logsub$logA)]) #what point is at the beginning of the line, for a given focal rte s?
+#   TA.max = max(logsub$meanOcc[max(logsub$logA)]) #what point is at the "end of the line", for a given focal rte s? 
+#   TA.min = min(logsub$meanOcc[min(logsub$logA)]) #what point is at the beginning of the line, for a given focal rte s?
 #   
 #   
-#   OA.r2 <- summary(OAlm.r2)$r.squared
-#   data.frame(stateroute = s, OA.alt_xmid_pred, OA.alt_xmid_dev, OA.mid_occ, OA.slope, OA.max, OA.min, OA.r2)
+#   TA.r2 <- summary(TAlm.r2)$r.squared
+#   data.frame(stateroute = s, TA.alt_xmid_pred, TA.alt_xmid_dev, TA.mid_occ, TA.slope, TA.max, TA.min, TA.r2)
 #   
 # }, warning = function(w) {
 #   warnings = rbind(warnings, data.frame(stateroute = s, warning = w))
 # }, error = function(e) {
-#   OA.alt_xmid_pred = NA
-#   OA.alt_xmid_dev = NA 
-#   OA.mid_occ = NA
-#   OA.slope = NA
-#   OA.max = NA
-#   OA.min = NA
-#   OA.r2 = NA
-#   temp = data.frame(stateroute = s, OA.alt_xmid_pred, OA.alt_xmid_dev, OA.mid_occ, OA.slope, OA.max, OA.min, OA.r2)
+#   TA.alt_xmid_pred = NA
+#   TA.alt_xmid_dev = NA 
+#   TA.mid_occ = NA
+#   TA.slope = NA
+#   TA.max = NA
+#   TA.min = NA
+#   TA.r2 = NA
+#   temp = data.frame(stateroute = s, TA.alt_xmid_pred, TA.alt_xmid_dev, TA.mid_occ, TA.slope, TA.max, TA.min, TA.r2)
 #   return(temp)
 #   }
 
 # TN 
   #   TNlog = lm(log(pctTran) ~ lnA, data = logsub) #try with log10(pctTran), log(pctTran) ~ logA, and pctTran ~ logA since relationships wonky
   #   TN = lm(log(pctTran) ~ area, data = logsub)
-  #   OApred_df = data.frame(preds = predict(OAlog), scale = logsub$scale)  #get preds -> is predicting unique per scale, all clear
-  #   OAlm.r2 = lm(logsub$meanOcc ~ OApred) #get r2 from model 
+  #   TNpred_df = data.frame(preds = predict(TNlog), scale = logsub$scale)  #get preds -> is predicting unique per scale, all clear
+  #   TNlm.r2 = lm(logsub$meanOcc ~ TNpred) #get r2 from model 
   #   
   #   
-  #   OA.alt_xmid = logsub$meanOcc[logsub$scale == 3] #@ scale == 3, for a given focal rte s, actual value
+  #   TN.alt_xmid = logsub$meanOcc[logsub$scale == 3] #@ scale == 3, for a given focal rte s, actual value
   #   #logsub[21,3] achieves same thing
-  #   OA.alt_xmid_pred = OApred_df$preds[OApred_df$scale == 3]
-  #   OA.alt_xmid_dev = (OA.alt_xmid - OA.alt_xmid_pred)^2 #squared deviance of pred from actual val #need pred AT SCALE = 3 THO
-  #   OA.mid_occ = as.character(min(logsub$scale[logsub$meanOcc > 0.49 & logsub$meanOcc < 0.60])) 
+  #   TN.alt_xmid_pred = TNpred_df$preds[TNpred_df$scale == 3]
+  #   TN.alt_xmid_dev = (TN.alt_xmid - TN.alt_xmid_pred)^2 #squared deviance of pred from actual val #need pred AT SCALE = 3 THO
+  #   TN.mid_occ = as.character(min(logsub$scale[logsub$meanOcc > 0.49 & logsub$meanOcc < 0.60])) 
   #   #want the FIRST instance where it hits this range -> how? minimum scale at which it does that
   #   #then save as a character so associated levels data doesn't stay stuck on the single data point
   #   
@@ -314,26 +320,26 @@ for(s in stateroutes){
   #   #((y2-y1)/(x2-x1)) 
   #   #meanOcc vals are y, logA is the x 
   #   #x and y are dictated by the original model 
-  #   OA.slope = ((max(logsub$meanOcc) - min(logsub$meanOcc))/(max(logsub$logA) - min(logsub$logA)))
+  #   TN.slope = ((max(logsub$meanOcc) - min(logsub$meanOcc))/(max(logsub$logA) - min(logsub$logA)))
   #   #max in BOTH dimensions, x and y
-  #   OA.max = max(logsub$meanOcc[max(logsub$logA)]) #what point is at the "end of the line", for a given focal rte s? 
-  #   OA.min = min(logsub$meanOcc[min(logsub$logA)]) #what point is at the beginning of the line, for a given focal rte s?
+  #   TN.max = max(logsub$meanOcc[max(logsub$logA)]) #what point is at the "end of the line", for a given focal rte s? 
+  #   TN.min = min(logsub$meanOcc[min(logsub$logA)]) #what point is at the beginning of the line, for a given focal rte s?
   #   
   #   
-  #   OA.r2 <- summary(OAlm.r2)$r.squared
-  #   data.frame(stateroute = s, OA.alt_xmid_pred, OA.alt_xmid_dev, OA.mid_occ, OA.slope, OA.max, OA.min, OA.r2)
+  #   TN.r2 <- summary(TNlm.r2)$r.squared
+  #   data.frame(stateroute = s, TN.alt_xmid_pred, TN.alt_xmid_dev, TN.mid_occ, TN.slope, TN.max, TN.min, TN.r2)
   #   
   # }, warning = function(w) {
   #   warnings = rbind(warnings, data.frame(stateroute = s, warning = w))
   # }, error = function(e) {
-  #   OA.alt_xmid_pred = NA
-  #   OA.alt_xmid_dev = NA 
-  #   OA.mid_occ = NA
-  #   OA.slope = NA
-  #   OA.max = NA
-  #   OA.min = NA
-  #   OA.r2 = NA
-  #   temp = data.frame(stateroute = s, OA.alt_xmid_pred, OA.alt_xmid_dev, OA.mid_occ, OA.slope, OA.max, OA.min, OA.r2)
+  #   TN.alt_xmid_pred = NA
+  #   TN.alt_xmid_dev = NA 
+  #   TN.mid_occ = NA
+  #   TN.slope = NA
+  #   TN.max = NA
+  #   TN.min = NA
+  #   TN.r2 = NA
+  #   temp = data.frame(stateroute = s, TN.alt_xmid_pred, TN.alt_xmid_dev, TN.mid_occ, TN.slope, TN.max, TN.min, TN.r2)
   #   return(temp)
   #   }
   
