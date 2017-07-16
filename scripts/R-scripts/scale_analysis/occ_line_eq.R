@@ -182,7 +182,27 @@ bbs_above$scale = as.factor(bbs_above$scale)
 
 
 bbs_allscales = rbind(bbs_below, bbs_above) #rbind ok since all share column names
-#write.csv(bbs_allscales, "C:/git/core-transient/scripts/R-scripts/scale_analysis/bbs_allscales.csv", row.names = FALSE)
+write.csv(bbs_allscales, "C:/git/core-transient/data/BBS/bbs_allscales.csv", row.names = FALSE)
 #updated 07/02/2017
 
 ####Occ-scale analysis####
+bbs_allscales = read.csv("data/BBS/bbs_allscales.csv", header = TRUE)
+bbs_allscales$logA = log10(bbs_allscales$area)
+bbs_allscales$logN = log10(bbs_allscales$aveN)
+bbs_allscales$lnA = log(bbs_allscales$area) #log is the natural log 
+bbs_allscales$lnN = log(bbs_allscales$aveN) #rerun plots with this?
+
+####filter out stateroutes that are one-sided in scale####
+#in terms of their representation of below vs above scale (should have both, not one alone)
+bbs_allscales2 = bbs_allscales %>% count(focalrte) %>% filter(n == 83) %>% data.frame() 
+bbs_allscales3 = filter(bbs_allscales, focalrte %in% bbs_allscales2$focalrte)
+#still losing some, which I shouldn't be...???? troubleshoot 
+
+mod1 = lm(meanOcc~logA, data = bbs_allscales3) #explains ~50% of the variation in occ
+mod2 = lm(meanOcc~logN, data = bbs_allscales3)
+summary(mod1)
+
+plot(meanOcc~logA, data = bbs_allscales3, xlab = "Log Area" , ylab = "Mean Temporal Occupancy")
+plot(meanOcc~logN, data = bbs_allscales3, xlab = "Average Abundance" , ylab = "Mean Temporal Occupancy")
+#^^same pattern roughly; abundance describes ~same amt of variance as area so serves as a good proxy 
+#plataeu more evident now, stronger asymptotic constraint 
