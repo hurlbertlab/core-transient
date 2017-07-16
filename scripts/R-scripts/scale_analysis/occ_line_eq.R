@@ -176,7 +176,7 @@ for(s in stateroutes){
     #logsub[21,3] achieves same thing
     CA.alt_xmid_pred = CApred_df$preds[CApred_df$scale == 3]
     CA.alt_xmid_dev = (CA.alt_xmid - CA.alt_xmid_pred)^2 #squared deviance of pred from actual val #need pred AT SCALE = 3 THO
-    CA.mid_occ = as.character(min(logsub$scale[logsub$pctCore > 0.49 & logsub$pctCore < 0.60])) 
+    CA.mid_occ = as.character(min(logsub$scale[logsub$meanOcc > 0.49 & logsub$meanOcc < 0.60])) 
     #want the FIRST instance where it hits this range -> how? minimum scale at which it does that
     #then save as a character so associated levels data doesn't stay stuck on the single data point
     
@@ -221,7 +221,7 @@ for(s in stateroutes){
     #logsub[21,3] achieves same thing
     CN.alt_xmid_pred = CNpred_df$preds[CNpred_df$scale == 3]
     CN.alt_xmid_dev = (CN.alt_xmid - CN.alt_xmid_pred)^2 #squared deviance of pred from actual val #need pred AT SCALE = 3 THO
-    CN.mid_occ = as.character(min(logsub$scale[logsub$pctCore > 0.49 & logsub$pctCore < 0.60])) 
+    CN.mid_occ = as.character(min(logsub$scale[logsub$meanOcc > 0.49 & logsub$meanOcc < 0.60])) 
     #want the FIRST instance where it hits this range -> how? minimum scale at which it does that
     #then save as a character so associated levels data doesn't stay stuck on the single data point
     
