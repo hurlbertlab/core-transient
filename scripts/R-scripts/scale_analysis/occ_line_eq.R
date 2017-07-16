@@ -261,26 +261,27 @@ for(s in stateroutes){
 #   TAlog = lm(log(pctTran) ~ lnA, data = logsub) #try with log10(pctTran), log(pctTran) ~ logA, and pctTran ~ logA since relationships wonky
 #   TA = lm(log(pctTran) ~ area, data = logsub)
 #   TApred_df = data.frame(preds = predict(TAlog), scale = logsub$scale)  #get preds -> is predicting unique per scale, all clear
-#   TAlm.r2 = lm(logsub$meanOcc ~ TApred) #get r2 from model 
+#   TAlm.r2 = lm(logsub$pctTran ~ TApred) #get r2 from model 
 #   
 #   
-#   TA.alt_xmid = logsub$meanOcc[logsub$scale == 3] #@ scale == 3, for a given focal rte s, actual value
+#   TA.alt_xmid = logsub$pctTran[logsub$scale == 3] #@ scale == 3, for a given focal rte s, actual value
 #   #logsub[21,3] achieves same thing
 #   TA.alt_xmid_pred = TApred_df$preds[TApred_df$scale == 3]
 #   TA.alt_xmid_dev = (TA.alt_xmid - TA.alt_xmid_pred)^2 #squared deviance of pred from actual val #need pred AT SCALE = 3 THO
 #   TA.mid_occ = as.character(min(logsub$scale[logsub$meanOcc > 0.49 & logsub$meanOcc < 0.60])) 
+       #for trans and % core, adapt or same? meanocc overall?
 #   #want the FIRST instance where it hits this range -> how? minimum scale at which it does that
 #   #then save as a character so associated levels data doesn't stay stuck on the single data point
 #   
 #   
 #   #eq of a line 
 #   #((y2-y1)/(x2-x1)) 
-#   #meanOcc vals are y, logA is the x 
+#   #pctTran vals are y, lnA is the x 
 #   #x and y are dictated by the original model 
-#   TA.slope = ((max(logsub$meanOcc) - min(logsub$meanOcc))/(max(logsub$logA) - min(logsub$logA)))
+#   TA.slope = ((max(logsub$pctTran) - min(logsub$pctTran))/(max(logsub$lnA) - min(logsub$lnA)))
 #   #max in BOTH dimensions, x and y
-#   TA.max = max(logsub$meanOcc[max(logsub$logA)]) #what point is at the "end of the line", for a given focal rte s? 
-#   TA.min = min(logsub$meanOcc[min(logsub$logA)]) #what point is at the beginning of the line, for a given focal rte s?
+#   TA.max = max(logsub$pctTran[max(logsub$lnA)]) #what point is at the "end of the line", for a given focal rte s? 
+#   TA.min = min(logsub$pctTran[min(logsub$lnA)]) #what point is at the beginning of the line, for a given focal rte s?
 #   
 #   
 #   TA.r2 <- summary(TAlm.r2)$r.squared
@@ -301,13 +302,13 @@ for(s in stateroutes){
 #   }
 
 # TN 
-  #   TNlog = lm(log(pctTran) ~ lnA, data = logsub) #try with log10(pctTran), log(pctTran) ~ logA, and pctTran ~ logA since relationships wonky
-  #   TN = lm(log(pctTran) ~ area, data = logsub)
+  #   TNlog = lm(log(pctTran) ~ lnN, data = logsub) #try with log10(pctTran), log(pctTran) ~ logA, and pctTran ~ logA since relationships wonky
+  #   TN = lm(log(pctTran) ~ aveN, data = logsub)
   #   TNpred_df = data.frame(preds = predict(TNlog), scale = logsub$scale)  #get preds -> is predicting unique per scale, all clear
-  #   TNlm.r2 = lm(logsub$meanOcc ~ TNpred) #get r2 from model 
+  #   TNlm.r2 = lm(logsub$pctTran ~ TNpred) #get r2 from model 
   #   
   #   
-  #   TN.alt_xmid = logsub$meanOcc[logsub$scale == 3] #@ scale == 3, for a given focal rte s, actual value
+  #   TN.alt_xmid = logsub$pctTran[logsub$scale == 3] #@ scale == 3, for a given focal rte s, actual value
   #   #logsub[21,3] achieves same thing
   #   TN.alt_xmid_pred = TNpred_df$preds[TNpred_df$scale == 3]
   #   TN.alt_xmid_dev = (TN.alt_xmid - TN.alt_xmid_pred)^2 #squared deviance of pred from actual val #need pred AT SCALE = 3 THO
@@ -318,12 +319,12 @@ for(s in stateroutes){
   #   
   #   #eq of a line 
   #   #((y2-y1)/(x2-x1)) 
-  #   #meanOcc vals are y, logA is the x 
+  #   #pctTran vals are y, lnN is the x 
   #   #x and y are dictated by the original model 
-  #   TN.slope = ((max(logsub$meanOcc) - min(logsub$meanOcc))/(max(logsub$logA) - min(logsub$logA)))
+  #   TN.slope = ((max(logsub$pctTran) - min(logsub$pctTran))/(max(logsub$lnN) - min(logsub$lnN)))
   #   #max in BOTH dimensions, x and y
-  #   TN.max = max(logsub$meanOcc[max(logsub$logA)]) #what point is at the "end of the line", for a given focal rte s? 
-  #   TN.min = min(logsub$meanOcc[min(logsub$logA)]) #what point is at the beginning of the line, for a given focal rte s?
+  #   TN.max = max(logsub$pctTran[max(logsub$lnN)]) #what point is at the "end of the line", for a given focal rte s? 
+  #   TN.min = min(logsub$pctTran[min(logsub$lnN)]) #what point is at the beginning of the line, for a given focal rte s?
   #   
   #   
   #   TN.r2 <- summary(TNlm.r2)$r.squared
@@ -350,13 +351,14 @@ coefs = OA.df %>%
   inner_join(ON.df, OA.df, by = "stateroute") %>% 
   inner_join(CA.df, OA.df, by = "stateroute") %>% 
   inner_join(CN.df, OA.df, by = "stateroute") 
+
+# inner_join(TA.df, OA.df, by = "stateroute") %>% 
+# inner_join(TN.df, OA.df, by = "stateroute")  
+
   
 coefs_2 = na.omit(coefs)
   
   
-  # inner_join(TA.df, OA.df, by = "stateroute") %>% 
-  # inner_join(TN.df, OA.df, by = "stateroute")  
-
 write.csv(coefs_2, "scripts/R-scripts/scale_analysis/coefs.csv", row.names = FALSE) #updated 07/12
 #exp mods have much better r2 vals for pctTran than power 
 
