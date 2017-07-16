@@ -21,7 +21,6 @@ library(gridExtra)
 library(wesanderson)
 library(stats)
 
-
 # To run this script, you need temperature, precip, etc data, 
 # which are currently stored in the following directories off of github: 
 
@@ -32,177 +31,406 @@ ndvidata = "//bioark.ad.unc.edu/HurlbertLab/GIS/MODIS NDVI/"
 BBS = '//bioark.ad.unc.edu/HurlbertLab/Jenkins/BBS scaled/'
 
 
-####Below-route occupancy calculations####
-#need to happen first so can use the 50-scale occ 
-#calculated for each route as the base to aggregate for the above-scale calcs
 
-fifty_allyears = read.csv(paste(BBS, "fifty_allyears.csv", sep = ""), header = TRUE)
-fifty_bestAous = fifty_allyears %>% 
-  filter(AOU > 2880 & !(AOU >= 3650 & AOU <= 3810) & !(AOU >= 3900 & AOU <= 3910) & 
-           !(AOU >= 4160 & AOU <= 4210) & AOU != 7010) #leaving out owls, waterbirds as less reliable data
+####Extract coefficients from scale-occupancy relationships for analysis####
+OA.df = data.frame(stateroute = numeric(), OA.alt_xmid_pred = numeric(), OA.alt_xmid_dev= numeric(), OA.max= numeric(), OA.min= numeric(), OA.r2= numeric())
+ON.df = data.frame(stateroute = numeric(), ON.alt_xmid_pred = numeric(), ON.alt_xmid_dev= numeric(), ON.max= numeric(), ON.min= numeric(), ON.r2= numeric())
+CA.df = data.frame(stateroute = numeric(), CA.alt_xmid_pred = numeric(), CA.alt_xmid_dev= numeric(), CA.max= numeric(), CA.min= numeric(), CA.r2= numeric())
+CN.df = data.frame(stateroute = numeric(), CN.alt_xmid_pred = numeric(), CN.alt_xmid_dev= numeric(), CN.max= numeric(), CN.min= numeric(), CN.r2= numeric())
+# TA.df = data.frame(stateroute = numeric(), TAexp= numeric(), TApow = numeric(), TAexp.r2 = numeric(), TApow.r2 = numeric())
+# TN.df = data.frame(stateroute = numeric(), TNexp= numeric(), TNpow = numeric(), TNexp.r2 = numeric(), TNpow.r2 = numeric())
+warnings = data.frame(stateroute = numeric(), warning = character())
 
-#occ_counts function for calculating occupancy at any scale
-occ_counts = function(countData, countColumns, scale) {
-  bbssub = countData[, c("stateroute", "year", "AOU", countColumns)]
-  bbssub$groupCount = rowSums(bbssub[, countColumns])
-  bbsu = unique(bbssub[bbssub[, "groupCount"]!= 0, c("stateroute", "year", "AOU")]) 
+
+#read in data for processing
+bbs_allscales = read.csv("data/BBS/bbs_allscales.csv", header = TRUE)
+stateroutes = unique(bbs_allscales$focalrte) #this stuff is the same, looks normal ^
+
+#make sure scale is leveled in order: 
+bbs_allscales$scale = factor(bbs_allscales$scale, 
+                             levels = c('5-1', '5-2', '5-3', '5-4', '5-5', '5-6', '5-7', '5-8', '5-9', '5-10',
+                                        '10-1', '10-2', '10-3', '10-4', '10-5', '25-1', '25-2', '50-1',
+                                        '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12',
+                                        '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24',
+                                        '25', '26', '27', '28', '29', '30', '31', '32', '33', '34', '35', '36',
+                                        '37', '38', '39', '40', '41', '42', '43', '44', '45', '46', '47', '48',
+                                        '49', '50', '51', '52', '53', '54', '55', '56', '57', '58', '59', '60',
+                                        '61', '62', '63', '64', '65'), ordered=TRUE)
+
+
+levels(bbs_allscales$scale)
+#NEED to do or it won't be in order
+
+#07/12 version of tryCatch
+for(s in stateroutes){
+  logsub = subset(bbs_allscales, bbs_allscales$focalrte == s)  
+  #fitting the log curve for area (for each route)
   
-  abun.summ = bbssub %>% #abundance
-    group_by(stateroute, year) %>%  
-    summarize(totalN = sum(groupCount)) %>%
-    group_by(stateroute) %>%
-    summarize(aveN = mean(totalN))
+  #OA 
+  OAmodel = tryCatch({
+    OAlog = lm(meanOcc ~ logA, data = logsub) #lm instead of nls, reg linear model
+    OApred_df = data.frame(preds = predict(OAlog), scale = logsub$scale)  #get preds -> is predicting unique per scale, all clear
+    OAlm.r2 = lm(logsub$meanOcc ~ OApred) #get r2 from model 
+    
+    
+    OA.alt_xmid = logsub$meanOcc[logsub$scale == 3] #@ scale == 3, for a given focal rte s, actual value
+    #logsub[21,3] achieves same thing
+    OA.alt_xmid_pred = OApred_df$preds[OApred_df$scale == 3]
+    OA.alt_xmid_dev = (OA.alt_xmid - OA.alt_xmid_pred)^2 #squared deviance of pred from actual val #need pred AT SCALE = 3 THO
+    OA.mid_occ = as.character(min(logsub$scale[logsub$meanOcc > 0.49 & logsub$meanOcc < 0.60])) 
+    #want the FIRST instance where it hits this range -> how? minimum scale at which it does that
+    #then save as a character so associated levels data doesn't stay stuck on the single data point
+    
+    
+    #eq of a line 
+    #((y2-y1)/(x2-x1)) 
+    #meanOcc vals are y, logA is the x 
+    #x and y are dictated by the original model 
+    OA.slope = ((max(logsub$meanOcc) - min(logsub$meanOcc))/(max(logsub$logA) - min(logsub$logA)))
+    #max in BOTH dimensions, x and y
+    OA.max = max(logsub$meanOcc[max(logsub$logA)]) #what point is at the "end of the line", for a given focal rte s? 
+    OA.min = min(logsub$meanOcc[min(logsub$logA)]) #what point is at the beginning of the line, for a given focal rte s?
+    
+    
+    OA.r2 <- summary(OAlm.r2)$r.squared
+    data.frame(stateroute = s, OA.alt_xmid_pred, OA.alt_xmid_dev, OA.mid_occ, OA.slope, OA.max, OA.min, OA.r2)
+    
+  }, warning = function(w) {
+    warnings = rbind(warnings, data.frame(stateroute = s, warning = w))
+  }, error = function(e) {
+    OA.alt_xmid_pred = NA
+    OA.alt_xmid_dev = NA 
+    OA.mid_occ = NA
+    OA.slope = NA
+    OA.max = NA
+    OA.min = NA
+    OA.r2 = NA
+    temp = data.frame(stateroute = s, OA.alt_xmid_pred, OA.alt_xmid_dev, OA.mid_occ, OA.slope, OA.max, OA.min, OA.r2)
+    return(temp)
+    
+  })
+  OA.df = rbind(OA.df, OAmodel)
   
-  occ.summ = bbsu %>% #occupancy
-    count(stateroute, AOU) %>%
-    mutate(occ = n/15, scale = scale, subrouteID = countColumns[1]) %>%
-    group_by(stateroute) %>%
-    summarize(meanOcc = mean(occ), 
-              pctCore = sum(occ > 2/3)/length(occ),
-              pctTran = sum(occ <= 1/3)/length(occ)) %>%
-    #spRichTrans33  
-    # spRichTrans25 = sum(occ <= 1/4)/length(occ),
-    # spRichTrans10 = sum(occ <= 0.1)/length(occ)) %>%
-    mutate(scale = paste(scale, g, sep = "-")) %>%
-    left_join(abun.summ, by = 'stateroute')
-  return(occ.summ)
-}
-
-
-# Generic calculation of occupancy for a specified scale
-b_scales = c(5, 10, 25, 50)
-
-output = c()
-for (scale in b_scales) {
-  numGroups = floor(50/scale)
-  for (g in 1:numGroups) {
-    groupedCols = paste("Stop", ((g-1)*scale + 1):(g*scale), sep = "")
-    temp = occ_counts(fifty_bestAous, groupedCols, scale)
-    output = rbind(output, temp) 
-  }
-}
-bbs_below<-data.frame(output)
-#write.csv(bbs_below, paste(BBS, "bbs_below.csv", sep = ""), row.names = FALSE) #updated 06/30, on BioArk
-#should be able to use the 50 stop info (1 rte) from this output to aggregate routes AFTER below scale
-
-####Calculations for Occupancy above the scale of a BBS route####
-#Revised calcs workspace 
-#sort out bbs_below to ONLY those routes at 50-stop scale (occ calc'd for a single route)
-
-#use to aggregate 
-good_rtes2 = read.csv(paste(BBS, "good_rtes2.csv", sep = ""), header = TRUE) 
-require(fields)
-#Distance calculation between all combination of routes to pair them by min dist for aggregation
-distances = rdist.earth(matrix(c(good_rtes2$Longi, good_rtes2$Lati), ncol=2),
-                        matrix(c(good_rtes2$Longi, good_rtes2$Lati), ncol=2),
-                        miles=FALSE, R=6371)
-dist.df = data.frame(rte1 = rep(good_rtes2$stateroute, each = nrow(good_rtes2)),
-                     rte2 = rep(good_rtes2$stateroute, times = nrow(good_rtes2)),
-                     dist = as.vector(distances))
-#write.csv(dist.df, "C:/git/core-transient/scripts/R-scripts/scale_analysis/dist_df.csv", row.names = FALSE) for later calcs
-
-bbs_fullrte = bbs_below %>%
-  filter(scale == "50-1") #953 routes at scale of a single route
-
-#go one step at a time, logically -> don't rush thru recreating the loop 
-
-#need to make sure NOT running thru 66 times on the same site and scale 
-uniqrtes = unique(bbs_fullrte$stateroute) #all routes present are unique, still 953 which is great
-numrtes = 1:65 # based on min common number in top 6 grid cells, see grid_sampling_justification script 
-output = data.frame(focalrte2 = NULL,
-                    numrtes2 = NULL, 
-                    meanOcc2 = NULL,       
-                    pctCore2 = NULL,  
-                    pctTran2 = NULL, 
-                    totalAbun2 = NULL,  
-                    maxRadius2 = NULL)
-
-
-for (r in uniqrtes) { #for each focal route
-  for (nu in numrtes) { #for each level of scale aggregated to each focal route
-    
-    tmp_rte_group = dist.df %>% 
-      filter(rte1 == r) %>% 
-      top_n(66, desc(dist)) %>% #fixed ordering by including arrange parm
-      arrange(dist)
-    
-    nu_group = tmp_rte_group %>% 
-      top_n(nu, desc(dist)) %>% #narrow to how many routes to aggregate occ across
-      select(rte2) %>% as.vector()
-    
-    bbssub = bbs_fullrte %>%
-      filter(stateroute %in% nu_group$rte2) #stateroute = rte2 group in nu_group (routes to agg across!!!) should be nu rows 
+  #ON 
+  ONmodel = tryCatch({
+    ONlog = lm(meanOcc ~ logN, data = logsub) #lm instead of nls, reg linear model
+    ONpred_df = data.frame(preds = predict(ONlog), scale = logsub$scale)  #get preds -> is predicting unique per scale, all clear
+    ONlm.r2 = lm(logsub$meanOcc ~ ONpred) #get r2 from model 
     
     
-    #bbsuniq = unique(bbssub[, c('Aou', 'Year')])
-    #occs = bbssub %>% dplyr::count(Aou) %>% dplyr::mutate(occ = n/15) #already have occs! just need to accumulate and avg them 
+    ON.alt_xmid = logsub$meanOcc[logsub$scale == 3] #@ scale == 3, for a given focal rte s, actual value
+    #logsub[21,3] achieves same thing
+    ON.alt_xmid_pred = ONpred_df$preds[ONpred_df$scale == 3]
+    ON.alt_xmid_dev = (ON.alt_xmid - ON.alt_xmid_pred)^2 #squared deviance of pred from actual val #need pred AT SCALE = 3 THO
+    ON.mid_occ = as.character(min(logsub$scale[logsub$meanOcc > 0.49 & logsub$meanOcc < 0.60])) 
+    #want the FIRST instance where it hits this range -> how? minimum scale at which it does that
+    #then save as a character so associated levels data doesn't stay stuck on the single data point
     
-    #adding 2 to end since using an input df with all of the exact same column names -> can change back b4 merging, after loop
-    temp = data.frame(focalrte2 = r,
-                      numrtes2 = nu, #total # routes being aggregated -> do I really need the +1 if it's already inclusive of the 1st?
-                      meanOcc2 = mean(bbssub$meanOcc, na.rm =T),       #mean occupancy
-                      pctCore2 = mean(bbssub$pctCore, na.rm = T), #how do I want to do this? avg of routes aggregated, or recalc? 
-                      pctTran2 = mean(bbssub$pctTran, na.rm = T), #fraction of species that are transient
-                      totalAbun2 = sum(bbssub$aveN),  #total community size (per year) already calc'd per route....so just add across routes?
-                      maxRadius2 = tmp_rte_group$dist[nu])   
     
-    output = rbind(output, temp)
-    print(paste("Focal rte", r, "#' rtes sampled", nu)) #for viewing progress
+    #eq of a line 
+    #((y2-y1)/(x2-x1)) 
+    #meanOcc vals are y, logN is the x 
+    #x and y are dictated by the original model 
+    ON.slope = ((max(logsub$meanOcc) - min(logsub$meanOcc))/(max(logsub$logN) - min(logsub$logN)))
+    #max in BOTH dimensions, x and y
+    ON.max = max(logsub$meanOcc[max(logsub$logN)]) #what point is at the "end of the line", for a given focal rte s? 
+    ON.min = min(logsub$meanOcc[min(logsub$logN)]) #what point is at the beginning of the line, for a given focal rte s?
     
-  } #n loop
+    
+    ON.r2 <- summary(ONlm.r2)$r.squared
+    data.frame(stateroute = s, ON.alt_xmid_pred, ON.alt_xmid_dev, ON.mid_occ, ON.slope, ON.max, ON.min, ON.r2)
+    
+  }, warning = function(w) {
+    warnings = rbind(warnings, data.frame(stateroute = s, warning = w))
+  }, error = function(e) {
+    ON.alt_xmid_pred = NA
+    ON.alt_xmid_dev = NA 
+    ON.mid_occ = NA
+    ON.slope = NA
+    ON.max = NA
+    ON.min = NA
+    ON.r2 = NA
+    temp = data.frame(stateroute = s, ON.alt_xmid_pred, ON.alt_xmid_dev, ON.mid_occ, ON.slope, ON.max, ON.min, ON.r2)
+    return(temp)
+    
+  })
+  ON.df = rbind(ON.df, ONmodel)
   
-} #r loop
+  
+  
+  #CA
+  CAmodel = tryCatch({
+    CAlog = lm(pctCore ~ logA, data = logsub) #lm instead of nls, reg linear model
+    CApred_df = data.frame(preds = predict(CAlog), scale = logsub$scale)  #get preds -> is predicting unique per scale, all clear
+    CAlm.r2 = lm(logsub$pctCore ~ CApred) #get r2 from model 
+    
+    
+    CA.alt_xmid = logsub$pctCore[logsub$scale == 3] #@ scale == 3, for a given focal rte s, actual value
+    #logsub[21,3] achieves same thing
+    CA.alt_xmid_pred = CApred_df$preds[CApred_df$scale == 3]
+    CA.alt_xmid_dev = (CA.alt_xmid - CA.alt_xmid_pred)^2 #squared deviance of pred from actual val #need pred AT SCALE = 3 THO
+    CA.mid_occ = as.character(min(logsub$scale[logsub$pctCore > 0.49 & logsub$pctCore < 0.60])) 
+    #want the FIRST instance where it hits this range -> how? minimum scale at which it does that
+    #then save as a character so associated levels data doesn't stay stuck on the single data point
+    
+    
+    #eq of a line 
+    #((y2-y1)/(x2-x1)) 
+    #pctCore vals are y, logA is the x 
+    #x and y are dictated by the original model 
+    CA.slope = ((max(logsub$pctCore) - min(logsub$pctCore))/(max(logsub$logA) - min(logsub$logA)))
+    #max in BOTH dimensions, x and y
+    CA.max = max(logsub$pctCore[max(logsub$logA)]) #what point is at the "end of the line", for a given focal rte s? 
+    CA.min = min(logsub$pctCore[min(logsub$logA)]) #what point is at the beginning of the line, for a given focal rte s?
+    
+    
+    CA.r2 <- summary(CAlm.r2)$r.squared
+    data.frame(stateroute = s, CA.alt_xmid_pred, CA.alt_xmid_dev, CA.mid_occ, CA.slope, CA.max, CA.min, CA.r2)
+    
+  }, warning = function(w) {
+    warnings = rbind(warnings, data.frame(stateroute = s, warning = w))
+  }, error = function(e) {
+    CA.alt_xmid_pred = NA
+    CA.alt_xmid_dev = NA 
+    CA.mid_occ = NA
+    CA.slope = NA
+    CA.max = NA
+    CA.min = NA
+    CA.r2 = NA
+    temp = data.frame(stateroute = s, CA.alt_xmid_pred, CA.alt_xmid_dev, CA.mid_occ, CA.slope, CA.max, CA.min, CA.r2)
+    return(temp)
+    
+  })
+  CA.df = rbind(CA.df, CAmodel)
+  
+  #CN 
+  CNmodel = tryCatch({
+    CNlog = lm(pctCore ~ logN, data = logsub) #lm instead of nls, reg linear model
+    CNpred_df = data.frame(preds = predict(CNlog), scale = logsub$scale)  #get preds -> is predicting unique per scale, all clear
+    CNlm.r2 = lm(logsub$pctCore ~ CNpred) #get r2 from model 
+    
+    
+    CN.alt_xmid = logsub$pctCore[logsub$scale == 3] #@ scale == 3, for a given focal rte s, actual value
+    #logsub[21,3] achieves same thing
+    CN.alt_xmid_pred = CNpred_df$preds[CNpred_df$scale == 3]
+    CN.alt_xmid_dev = (CN.alt_xmid - CN.alt_xmid_pred)^2 #squared deviance of pred from actual val #need pred AT SCALE = 3 THO
+    CN.mid_occ = as.character(min(logsub$scale[logsub$pctCore > 0.49 & logsub$pctCore < 0.60])) 
+    #want the FIRST instance where it hits this range -> how? minimum scale at which it does that
+    #then save as a character so associated levels data doesn't stay stuck on the single data point
+    
+    
+    #eq of a line 
+    #((y2-y1)/(x2-x1)) 
+    #pctCore vals are y, logN is the x 
+    #x and y are dictated by the original model 
+    CN.slope = ((max(logsub$pctCore) - min(logsub$pctCore))/(max(logsub$logN) - min(logsub$logN)))
+    #max in BOTH dimensions, x and y
+    CN.max = max(logsub$pctCore[max(logsub$logN)]) #what point is at the "end of the line", for a given focal rte s? 
+    CN.min = min(logsub$pctCore[min(logsub$logN)]) #what point is at the beginning of the line, for a given focal rte s?
+    
+    
+    CN.r2 <- summary(CNlm.r2)$r.squared
+    data.frame(stateroute = s, CN.alt_xmid_pred, CN.alt_xmid_dev, CN.mid_occ, CN.slope, CN.max, CN.min, CN.r2)
+    
+  }, warning = function(w) {
+    warnings = rbind(warnings, data.frame(stateroute = s, warning = w))
+  }, error = function(e) {
+    CN.alt_xmid_pred = NA
+    CN.alt_xmid_dev = NA 
+    CN.mid_occ = NA
+    CN.slope = NA
+    CN.max = NA
+    CN.min = NA
+    CN.r2 = NA
+    temp = data.frame(stateroute = s, CN.alt_xmid_pred, CN.alt_xmid_dev, CN.mid_occ, CN.slope, CN.max, CN.min, CN.r2)
+    return(temp)
+    
+  })
+  CN.df = rbind(CN.df, CNmodel)
+  
 
-bbs_above_v2 = as.data.frame(output)
-#Calc area for above route scale
-bbs_above_v2$area = bbs_above_v2$numrtes*50*(pi*(0.4^2)) #number of routes * fifty stops * area in sq km of a stop 
-#write.csv(bbs_above_v2, paste(BBS, "bbs_above_v2.csv", sep = ""), row.names = FALSE)
-#updated 06/30 evening locally and on BioArk; not sure why data folder rejected bc not THAT big but not on github
 
-####scale-joining####
-bbs_above = read.csv(paste(BBS, "bbs_above_v2.csv", sep = ""), header = TRUE)
-bbs_below = read.csv(paste(BBS, "bbs_below.csv", sep = ""), header = TRUE)
+#   # Fitting % transient
+#   #TA #revisit!!
+#   TAlog = lm(log(pctTran) ~ lnA, data = logsub) #try with log10(pctTran), log(pctTran) ~ logA, and pctTran ~ logA since relationships wonky
+#   TA = lm(log(pctTran) ~ area, data = logsub)
+#   OApred_df = data.frame(preds = predict(OAlog), scale = logsub$scale)  #get preds -> is predicting unique per scale, all clear
+#   OAlm.r2 = lm(logsub$meanOcc ~ OApred) #get r2 from model 
+#   
+#   
+#   OA.alt_xmid = logsub$meanOcc[logsub$scale == 3] #@ scale == 3, for a given focal rte s, actual value
+#   #logsub[21,3] achieves same thing
+#   OA.alt_xmid_pred = OApred_df$preds[OApred_df$scale == 3]
+#   OA.alt_xmid_dev = (OA.alt_xmid - OA.alt_xmid_pred)^2 #squared deviance of pred from actual val #need pred AT SCALE = 3 THO
+#   OA.mid_occ = as.character(min(logsub$scale[logsub$meanOcc > 0.49 & logsub$meanOcc < 0.60])) 
+#   #want the FIRST instance where it hits this range -> how? minimum scale at which it does that
+#   #then save as a character so associated levels data doesn't stay stuck on the single data point
+#   
+#   
+#   #eq of a line 
+#   #((y2-y1)/(x2-x1)) 
+#   #meanOcc vals are y, logA is the x 
+#   #x and y are dictated by the original model 
+#   OA.slope = ((max(logsub$meanOcc) - min(logsub$meanOcc))/(max(logsub$logA) - min(logsub$logA)))
+#   #max in BOTH dimensions, x and y
+#   OA.max = max(logsub$meanOcc[max(logsub$logA)]) #what point is at the "end of the line", for a given focal rte s? 
+#   OA.min = min(logsub$meanOcc[min(logsub$logA)]) #what point is at the beginning of the line, for a given focal rte s?
+#   
+#   
+#   OA.r2 <- summary(OAlm.r2)$r.squared
+#   data.frame(stateroute = s, OA.alt_xmid_pred, OA.alt_xmid_dev, OA.mid_occ, OA.slope, OA.max, OA.min, OA.r2)
+#   
+# }, warning = function(w) {
+#   warnings = rbind(warnings, data.frame(stateroute = s, warning = w))
+# }, error = function(e) {
+#   OA.alt_xmid_pred = NA
+#   OA.alt_xmid_dev = NA 
+#   OA.mid_occ = NA
+#   OA.slope = NA
+#   OA.max = NA
+#   OA.min = NA
+#   OA.r2 = NA
+#   temp = data.frame(stateroute = s, OA.alt_xmid_pred, OA.alt_xmid_dev, OA.mid_occ, OA.slope, OA.max, OA.min, OA.r2)
+#   return(temp)
+#   }
 
-#adding maxRadius column to bbs_below w/NA's + renaming and rearranging columns accordingly, creating area cols
-bbs_below = bbs_below %>% 
-  mutate(maxRadius = c("NA")) %>%
-  dplyr::rename(focalrte = stateroute) %>%
-  select(focalrte, scale, everything()) %>%
-  mutate(area = (as.integer(lapply(strsplit(as.character(bbs_below$scale), 
-                                            split="-"), "[", 1)))*(pi*(0.4^2))) 
-#modify and split scale so that it's just the # of stops in each seg; not the seg order # preceded by a "-"
+# TN 
+  #   TNlog = lm(log(pctTran) ~ lnA, data = logsub) #try with log10(pctTran), log(pctTran) ~ logA, and pctTran ~ logA since relationships wonky
+  #   TN = lm(log(pctTran) ~ area, data = logsub)
+  #   OApred_df = data.frame(preds = predict(OAlog), scale = logsub$scale)  #get preds -> is predicting unique per scale, all clear
+  #   OAlm.r2 = lm(logsub$meanOcc ~ OApred) #get r2 from model 
+  #   
+  #   
+  #   OA.alt_xmid = logsub$meanOcc[logsub$scale == 3] #@ scale == 3, for a given focal rte s, actual value
+  #   #logsub[21,3] achieves same thing
+  #   OA.alt_xmid_pred = OApred_df$preds[OApred_df$scale == 3]
+  #   OA.alt_xmid_dev = (OA.alt_xmid - OA.alt_xmid_pred)^2 #squared deviance of pred from actual val #need pred AT SCALE = 3 THO
+  #   OA.mid_occ = as.character(min(logsub$scale[logsub$meanOcc > 0.49 & logsub$meanOcc < 0.60])) 
+  #   #want the FIRST instance where it hits this range -> how? minimum scale at which it does that
+  #   #then save as a character so associated levels data doesn't stay stuck on the single data point
+  #   
+  #   
+  #   #eq of a line 
+  #   #((y2-y1)/(x2-x1)) 
+  #   #meanOcc vals are y, logA is the x 
+  #   #x and y are dictated by the original model 
+  #   OA.slope = ((max(logsub$meanOcc) - min(logsub$meanOcc))/(max(logsub$logA) - min(logsub$logA)))
+  #   #max in BOTH dimensions, x and y
+  #   OA.max = max(logsub$meanOcc[max(logsub$logA)]) #what point is at the "end of the line", for a given focal rte s? 
+  #   OA.min = min(logsub$meanOcc[min(logsub$logA)]) #what point is at the beginning of the line, for a given focal rte s?
+  #   
+  #   
+  #   OA.r2 <- summary(OAlm.r2)$r.squared
+  #   data.frame(stateroute = s, OA.alt_xmid_pred, OA.alt_xmid_dev, OA.mid_occ, OA.slope, OA.max, OA.min, OA.r2)
+  #   
+  # }, warning = function(w) {
+  #   warnings = rbind(warnings, data.frame(stateroute = s, warning = w))
+  # }, error = function(e) {
+  #   OA.alt_xmid_pred = NA
+  #   OA.alt_xmid_dev = NA 
+  #   OA.mid_occ = NA
+  #   OA.slope = NA
+  #   OA.max = NA
+  #   OA.min = NA
+  #   OA.r2 = NA
+  #   temp = data.frame(stateroute = s, OA.alt_xmid_pred, OA.alt_xmid_dev, OA.mid_occ, OA.slope, OA.max, OA.min, OA.r2)
+  #   return(temp)
+  #   }
+  
+  
+  
+#join all together using inner_join by focal rte, not cbind 
+coefs = OA.df %>% 
+  inner_join(ON.df, OA.df, by = "stateroute") %>% 
+  inner_join(CA.df, OA.df, by = "stateroute") %>% 
+  inner_join(CN.df, OA.df, by = "stateroute") 
+  
+coefs_2 = na.omit(coefs)
+  
+  
+  # inner_join(TA.df, OA.df, by = "stateroute") %>% 
+  # inner_join(TN.df, OA.df, by = "stateroute")  
 
+write.csv(coefs_2, "scripts/R-scripts/scale_analysis/coefs.csv", row.names = FALSE) #updated 07/12
+#exp mods have much better r2 vals for pctTran than power 
 
-bbs_above = bbs_above %>% 
-  dplyr::rename(scale = numrtes2, aveN = totalAbun2, focalrte = focalrte2, meanOcc = meanOcc2, 
-                pctCore = pctCore2, pctTran = pctTran2, maxRadius = maxRadius2) #%>%
-#this already done above  
-#mutate(area = scale*50*(pi*(0.4^2))) #area in km by # of routes * 50 stops in each rte * area of a stop (for above-route scale later)
-bbs_above$scale = as.factor(bbs_above$scale)
-
-
-bbs_allscales = rbind(bbs_below, bbs_above) #rbind ok since all share column names
-write.csv(bbs_allscales, "C:/git/core-transient/data/BBS/bbs_allscales.csv", row.names = FALSE)
-#updated 07/02/2017
-
-####Occ-scale analysis####
+####Plotting occupancy-scale relationships with observed and predicted values####
 bbs_allscales = read.csv("data/BBS/bbs_allscales.csv", header = TRUE)
 bbs_allscales$logA = log10(bbs_allscales$area)
 bbs_allscales$logN = log10(bbs_allscales$aveN)
 bbs_allscales$lnA = log(bbs_allscales$area) #log is the natural log 
 bbs_allscales$lnN = log(bbs_allscales$aveN) #rerun plots with this?
 
-####filter out stateroutes that are one-sided in scale####
-#in terms of their representation of below vs above scale (should have both, not one alone)
-bbs_allscales2 = bbs_allscales %>% count(focalrte) %>% filter(n == 83) %>% data.frame() 
-bbs_allscales3 = filter(bbs_allscales, focalrte %in% bbs_allscales2$focalrte)
-#still losing some, which I shouldn't be...???? troubleshoot 
+coefs = read.csv("scripts/R-scripts/scale_analysis/coefs.csv", header = TRUE)
 
-mod1 = lm(meanOcc~logA, data = bbs_allscales3) #explains ~50% of the variation in occ
-mod2 = lm(meanOcc~logN, data = bbs_allscales3)
-summary(mod1)
 
-plot(meanOcc~logA, data = bbs_allscales3, xlab = "Log Area" , ylab = "Mean Temporal Occupancy")
-plot(meanOcc~logN, data = bbs_allscales3, xlab = "Average Abundance" , ylab = "Mean Temporal Occupancy")
-#^^same pattern roughly; abundance describes ~same amt of variance as area so serves as a good proxy 
-#plataeu more evident now, stronger asymptotic constraint 
+preds.df = data.frame(stateroute = numeric(), logA = numeric(), 
+                      OApreds= numeric(), ONpreds = numeric(), 
+                      CApreds = numeric(), CNpreds = numeric(),
+                      TApreds = numeric(), TNpreds = numeric())
+
+
+pdf("output/plots/Molly Plots/BBS_scaleplots.pdf", onefile = TRUE)
+coef_join = coefs %>% inner_join(bbs_allscales, by = c("stateroute"="focalrte"))
+stateroutes = unique(bbs_allscales$focalrte)
+
+#extracting predicted values and plotting in same loop
+for (s in stateroutes) {
+  theme_set(theme_bw()+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()))
+  coef_sub = subset(coef_join, coef_join$stateroute == s)
+  logA = coef_sub$logA
+  
+  #OA
+  OApreds = logistic_fcn(coef_sub[,33], coef_sub[,2], coef_sub[,3], coef_sub[,4]) 
+  plot1 = ggplot(coef_sub, aes(x = logA, y = meanOcc))+geom_point(colour = "firebrick")+
+    geom_line(aes(x = logA, y = OApreds), color = "navy") +labs(x = "Log area", y = "Mean % Occupancy")+
+    coord_cartesian(ylim = c(0, 1))
+  
+  
+  #ON
+  ONpreds = logistic_fcn(coef_sub[,34], coef_sub[,6], coef_sub[,7], coef_sub[,8])
+  plot2 = ggplot(coef_sub, aes(x = logN, y = meanOcc))+geom_point(colour = "firebrick")+
+    geom_line(aes(x = logN, y = ONpreds), color = "navy") +labs(x = "Log abundance", y = "Mean % Occupancy")+
+    coord_cartesian(ylim = c(0, 1))
+  
+  
+  #CA
+  CApreds = logistic_fcn(coef_sub[,33], coef_sub[,10], coef_sub[,11], coef_sub[,12])
+  plot1_2= ggplot(coef_sub, aes(x = logA, y = pctCore))+geom_point(colour = "turquoise")+
+    geom_line(aes(x = logA, y = CApreds), color = "navy")+labs(x = "Log area", y = "% Core Occupancy")+
+    coord_cartesian(ylim = c(0, 1))
+  
+  #aveN
+  #CN
+  CNpreds = logistic_fcn(coef_sub[,34], coef_sub[,14], coef_sub[,15], coef_sub[,16])
+  plot2_2= ggplot(coef_sub, aes(x = logN, y = pctCore))+geom_point(colour = "turquoise")+
+    geom_line(aes(x = logN, y = CNpreds), color = "navy")+labs(x = "Log abundance", y = "% Core Occupancy")+
+    coord_cartesian(ylim = c(0, 1))
+  
+  #using exponential function since higher explanatory power than pwr function
+  #TA
+  TApreds =  coef_sub[,35]*(coef_sub[,18]) #35 = optimum; replacing ^ with * bc natural log, removing -1
+  plot1_3 = ggplot(coef_sub, aes(x = lnA, y = log(pctTran)))+geom_point(colour = "olivedrab")+
+    geom_line(aes(x = lnA, y = log(TApreds)), color = "navy") +labs(x = "Log area", y = "% Transient Occupancy")+
+    coord_cartesian(ylim = c(-4, 1)) #FIX
+  
+  #TN
+  TNpreds = coef_sub[,36]*(coef_sub[,22])
+  plot2_3 = ggplot(coef_sub, aes(x = lnN, y = log(pctTran)))+geom_point(colour = "olivedrab")+
+    geom_line(aes(x = lnN, y = TNpreds), color = "navy")+labs(x = "Log abundance", y = "% Transient Occupancy")+
+    coord_cartesian(ylim = c(-4, 1))
+  
+  #storing plots
+  predplot = grid.arrange(plot1, plot2, plot1_2, plot2_2, plot1_3, plot2_3,
+                          ncol=2, top = paste("predplot_", s, sep = ""))
+  #storing preds:
+  temp.df = data.frame(stateroute = s, logA = logA, 
+                       OApreds= OApreds , ONpreds = ONpreds, 
+                       CApreds = CApreds, CNpreds = CNpreds,
+                       TApreds = TApreds, TNpreds = TNpreds)
+  preds.df = rbind(preds.df, temp.df)
+  
+}
+dev.off()
+write.csv(preds.df, "C:/git/core-transient/scripts/R-scripts/scale_analysis/preds.csv", row.names = FALSE)
+

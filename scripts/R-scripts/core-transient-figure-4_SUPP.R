@@ -43,6 +43,33 @@ notransrich = read.csv("output/tabular_data/notransrich_25.csv", header = TRUE)
 bbs_abun_occ = read.csv("data/BBS/bbs_abun_occ.csv", header = TRUE)
 bbs_occ = read.csv("data/BBS/bbs_abun4_spRich.csv", header = TRUE)
 summ25 = read.csv('output/tabular_data/core-transient_summary_25.csv', header=T)
+
+
+bbs_count = read.csv("data/BBS/bbs_2000_2014.csv", header = TRUE)
+bbs_occ_aou = read.csv("data/BBS/bbs_occ_2000_2014.csv", header = TRUE)
+
+# addings symbols to taxcolors
+symbols = c(15, 16, 15, 17, 16, 15, 16) 
+Type = c("Invertebrate", "Vertebrate", "Invertebrate", "Plant", "Vertebrate", "Invertebrate", "Vertebrate") 
+taxcolors = cbind(taxcolors, Type,symbols)
+
+# calc bbs with and without trans
+notransbbs = bbs_abun_occ %>% filter(occupancy > 1/4) %>% dplyr::count(stateroute, scale) %>% filter(scale == 50)
+names(notransbbs) = c("stateroute", "scale", "spRichnotrans")
+
+allbbs = bbs_abun_occ %>% dplyr::count(stateroute, scale) %>% filter(scale == 50)
+names(allbbs) = c("stateroute", "scale", "spRich")
+
+# create bbs files
+bbs_count4a = dplyr::rename(bbs_count, year = Year, site = stateroute, species = aou, count = speciestotal)
+bbs_count4a$datasetID = 1
+
+# bbs_abun_occ1 = subset(bbs_abun_occ, scale ==  50)
+bbs_occ_aou = dplyr::rename(bbs_occ_aou, site = stateroute, species = aou, propOcc = occ)
+bbs_occ_aou$datasetID  = 1
+bbs_occ4a = bbs_occ_aou[, c("datasetID", "site", "species", "propOcc")]
+
+
 # addings symbols to taxcolors
 symbols = c(15, 16, 15, 17, 16, 15, 16) 
 Type = c("Invertebrate", "Vertebrate", "Invertebrate", "Plant", "Vertebrate", "Invertebrate", "Vertebrate") 
@@ -164,9 +191,17 @@ logseries_weights = rbind(logseries_weights_incl, logseries_weights_excl)
 # logseries_weights = read.csv("output/tabular_data/logseries_weights.csv", header = TRUE)
 
 colscale = c("dark orange2","yellow")
-k = ggplot(logseries_weights, aes(x = treatment, y = weights, fill=factor(treatment))) +
-  geom_violin(linetype="blank") + xlab("Transient Status") + ylab("Proportion of Species") + scale_fill_manual(labels = c("All\nspecies","All species\nexcluding transients"),values = colscale)+ theme_classic()+ ylim(0, 1) + theme(axis.text.x=element_text(size=30, color = "black"), axis.ticks.x=element_blank(),axis.text.y=element_text(size=30, color = "black"),axis.title.x=element_text(size=40),axis.title.y=element_text(size=40,angle=90,vjust = 2))+ xlab(NULL) + ylab("Akaike weight \n of logseries model") + theme(legend.position = "none")
+k = ggplot(logseries_weights,aes(x=weights,fill=treatment))+geom_histogram(bins = 20, position = "identity", alpha = 0.7)+ xlab("Transient Status") + ylab("Proportion of Species") + scale_y_continuous(breaks=c(0,500,1000,1300)) + scale_fill_manual(labels = c("All species","All species excluding transients"),values = colscale)+ theme_classic() + theme(axis.text.x=element_blank(), axis.ticks.x=element_blank(),axis.text.y=element_text(size=30, color = "black"),axis.title.y=element_text(size=40,angle=90,vjust = 5),axis.title.x=element_text(size=40, vjust = -7))  + ylab("Frequency") + xlab("Akaike Weight") + theme(legend.position = "none") +theme(plot.margin=unit(c(0.35,1,2,1.7),"cm")) 
+pdf("output/plots/fig1a.pdf", height = 8, width = 10)
 k
+grid.text("lognormal",
+          x = unit(.24, "npc"), y = unit(0.2, "npc"), just = c("left", "bottom"), 
+          gp = gpar(fontface = "bold", fontsize = 18, col = "black"))
+grid.text("logseries",
+          x = unit(.95, "npc"), y = unit(0.2, "npc"), just = c("right", "bottom"), 
+          gp = gpar(fontface = "bold", fontsize = 18, col = "black"))
+dev.off()
+
 
 
 #### Figure 4b ####
@@ -222,7 +257,7 @@ corr_elev = filter(corr_res_long, env == "Elevation")
 colscale = c("dark orange2","yellow","#c51b8a")
 limits = aes(ymax = corr_res_long$CIupper, ymin=corr_res_long$CIlower)
 # no variation - add in CIS?
-l = ggplot(data=corr_res_long, aes(factor(env), value, fill = class))+ geom_bar(width = 0.8, position = position_dodge(width = 0.9), stat="identity")+ scale_fill_manual(values = c("All" = "dark orange2","Trans" = "#c51b8a","Ntrans" = "yellow"), labels = c("All species","Excluding transients", "Transients only"))+ geom_bar(data=corr_res_long, aes(factor(env), value, fill = class), width = 0.8, position = position_dodge(width = 0.9), stat="identity")+ geom_errorbar(aes(ymin = corr_res_long$CIlower, ymax = corr_res_long$CIupper), width =.1, position = position_dodge(.9))+ theme_classic() + theme(axis.text.x=element_text(size=30, color = "black"), axis.ticks.x=element_blank(),axis.text.y=element_text(size=30, color = "black"),axis.title.x=element_text(size=40),axis.title.y=element_text(size=40,angle=90,vjust = 2))+ xlab(NULL) + ylab(expression(paste(italic("r")))) + scale_y_continuous(breaks=c(-0.5,-0.3,-0.1,.1,.3,.5))+ guides(fill=guide_legend(title=NULL)) + theme(legend.text = element_text(size = 16)) + geom_hline(yintercept=0, lty = "dashed", lwd = 1.25)
+l = ggplot(data=corr_res_long, aes(factor(env), value, fill = class, alpha = 0.7))+ geom_bar(width = 0.8, position = position_dodge(width = 0.9), stat="identity")+ scale_fill_manual(values = c("All" = "dark orange2","Trans" = "#c51b8a","Ntrans" = "yellow"), labels = c("All species","Excluding transients", "Transients only"))+ geom_bar(data=corr_res_long, aes(factor(env), value, fill = class), width = 0.8, position = position_dodge(width = 0.9), stat="identity")+ geom_errorbar(aes(ymin = corr_res_long$CIlower, ymax = corr_res_long$CIupper), width =.1, position = position_dodge(.9))+ theme_classic() + theme(axis.text.x=element_text(size=30, color = "black"), axis.ticks.x=element_blank(),axis.text.y=element_text(size=30, color = "black"),axis.title.x=element_text(size=40),axis.title.y=element_text(size=40,angle=90,vjust = 2))+ xlab(NULL) + ylab(expression(paste(italic("r")))) + scale_y_continuous(breaks=c(-0.5,-0.3,-0.1,.1,.3,.5))+ guides(fill=guide_legend(title=NULL)) + theme(legend.text = element_text(size = 16)) + geom_hline(yintercept=0, lty = "dashed", lwd = 1.25)
 four_b <- l
 
 #### Figure 4c ####
@@ -350,7 +385,7 @@ pt1 <- plot_grid(k + theme(legend.position="none"),
                  align = 'hv',
                  labels = c("A","", "B"),
                  label_size = 25,
-                 hjust = -9,
+                 hjust = -11,
                  rel_widths = c(1, 0.05, 1),
                  nrow = 1
 )
@@ -365,7 +400,7 @@ z <- plot_grid(four_c+ theme(legend.position="none"),
                align = 'hv',
                labels = c("C","", "D"),
                label_size = 25,
-               hjust = -9,
+               hjust = -11,
                rel_widths = c(1, 0.05, 1),
                nrow = 1)
 p2 = plot_grid(z,legendc, ncol = 2) 
@@ -504,12 +539,17 @@ logseries_weights_excl = sad_data %>%
 logseries_weights = rbind(logseries_weights_incl, logseries_weights_excl)
 # write.csv(logseries_weights, "output/tabular_data/logseries_weights.csv")
 # logseries_weights = read.csv("output/tabular_data/logseries_weights.csv", header = TRUE)
-
 colscale = c("dark orange2","yellow")
-k = ggplot(logseries_weights, aes(x = treatment, y = weights, fill=factor(treatment))) +
-  geom_violin(linetype="blank") + xlab("Transient Status") + ylab("Proportion of Species") + scale_fill_manual(labels = c("All\nspecies","All species\nexcluding transients"),values = colscale)+ theme_classic()+ ylim(0, 1) + theme(axis.text.x=element_text(size=30, color = "black"), axis.ticks.x=element_blank(),axis.text.y=element_text(size=30, color = "black"),axis.title.x=element_text(size=40),axis.title.y=element_text(size=40,angle=90,vjust = 2))+ xlab(NULL) + ylab("Akaike weight \n of logseries model") + theme(legend.position = "none")
+k = ggplot(logseries_weights,aes(x=weights,fill=treatment))+geom_histogram(bins = 20, position = "identity", alpha = 0.7)+ xlab("Transient Status") + ylab("Proportion of Species") + scale_y_continuous(breaks=c(0,50,100, 1000)) + scale_fill_manual(labels = c("All species","All species excluding transients"),values = colscale)+ theme_classic() + theme(axis.text.x=element_blank(), axis.ticks.x=element_blank(),axis.text.y=element_text(size=30, color = "black"),axis.title.y=element_text(size=40,angle=90,vjust = 5),axis.title.x=element_text(size=40, vjust = -7))  + ylab("Frequency") + xlab("Akaike Weight") + theme(legend.position = "none") +theme(plot.margin=unit(c(0.35,1,2,1.7),"cm")) 
+pdf("output/plots/fig1a.pdf", height = 8, width = 10)
 k
-
+grid.text("lognormal",
+          x = unit(.24, "npc"), y = unit(0.2, "npc"), just = c("left", "bottom"), 
+          gp = gpar(fontface = "bold", fontsize = 18, col = "black"))
+grid.text("logseries",
+          x = unit(.95, "npc"), y = unit(0.2, "npc"), just = c("right", "bottom"), 
+          gp = gpar(fontface = "bold", fontsize = 18, col = "black"))
+dev.off()
 
 #### Figure 4b ####
 # read in route level ndvi and elevation data (radius = 40 km)
@@ -564,7 +604,7 @@ corr_elev = filter(corr_res_long, env == "Elevation")
 colscale = c("dark orange2","yellow","#c51b8a")
 limits = aes(ymax = corr_res_long$CIupper, ymin=corr_res_long$CIlower)
 # no variation - add in CIS?
-l = ggplot(data=corr_res_long, aes(factor(env), value, fill = class))+ geom_bar(width = 0.8, position = position_dodge(width = 0.9), stat="identity")+ scale_fill_manual(values = c("All" = "dark orange2","Trans" = "#c51b8a","Ntrans" = "yellow"), labels = c("All species","Excluding transients", "Transients only"))+ geom_bar(data=corr_res_long, aes(factor(env), value, fill = class), width = 0.8, position = position_dodge(width = 0.9), stat="identity")+ geom_errorbar(aes(ymin = corr_res_long$CIlower, ymax = corr_res_long$CIupper), width =.1, position = position_dodge(.9))+ theme_classic() + theme(axis.text.x=element_text(size=30, color = "black"), axis.ticks.x=element_blank(),axis.text.y=element_text(size=30, color = "black"),axis.title.x=element_text(size=40),axis.title.y=element_text(size=40,angle=90,vjust = 2))+ xlab(NULL) + ylab(expression(paste(italic("r")))) + scale_y_continuous(breaks=c(-0.5,-0.3,-0.1,.1,.3,.5))+ guides(fill=guide_legend(title=NULL)) + theme(legend.text = element_text(size = 16)) + geom_hline(yintercept=0, lty = "dashed", lwd = 1.25)
+l = ggplot(data=corr_res_long, aes(factor(env), value, fill = class, alpha = 0.7))+ geom_bar(width = 0.8, position = position_dodge(width = 0.9), stat="identity")+ scale_fill_manual(values = c("All" = "dark orange2","Trans" = "#c51b8a","Ntrans" = "yellow"), labels = c("All species","Excluding transients", "Transients only"))+ geom_bar(data=corr_res_long, aes(factor(env), value, fill = class), width = 0.8, position = position_dodge(width = 0.9), stat="identity")+ geom_errorbar(aes(ymin = corr_res_long$CIlower, ymax = corr_res_long$CIupper), width =.1, position = position_dodge(.9))+ theme_classic() + theme(axis.text.x=element_text(size=30, color = "black"), axis.ticks.x=element_blank(),axis.text.y=element_text(size=30, color = "black"),axis.title.x=element_text(size=40),axis.title.y=element_text(size=40,angle=90,vjust = 2))+ xlab(NULL) + ylab(expression(paste(italic("r")))) + scale_y_continuous(breaks=c(-0.5,-0.3,-0.1,.1,.3,.5))+ guides(fill=guide_legend(title=NULL)) + theme(legend.text = element_text(size = 16)) + geom_hline(yintercept=0, lty = "dashed", lwd = 1.25)
 four_b <- l
 
 #### Figure 4c ####
@@ -692,7 +732,7 @@ pt1 <- plot_grid(k + theme(legend.position="none"),
                  align = 'hv',
                  labels = c("A","", "B"),
                  label_size = 25,
-                 hjust = -9,
+                 hjust = -11,
                  rel_widths = c(1, 0.05, 1),
                  nrow = 1
 )
@@ -707,7 +747,7 @@ z <- plot_grid(four_c+ theme(legend.position="none"),
                align = 'hv',
                labels = c("C","", "D"),
                label_size = 25,
-               hjust = -9,
+               hjust = -11,
                rel_widths = c(1, 0.05, 1),
                nrow = 1)
 p2 = plot_grid(z,legendc, ncol = 2) 
