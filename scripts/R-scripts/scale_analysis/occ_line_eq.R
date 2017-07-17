@@ -87,7 +87,7 @@ for(s in stateroutes){
                                    
                                    
     OA.alt_xmid_pred = OApred_df$preds[OApred_df$scale == '3']
-    OA.alt_xmid_dev = (OA.alt_xmid - OA.alt_xmid_pred)^2 #squared deviance of pred from actual val #need pred AT SCALE = 3 THO
+    OA.alt_xmid_dev = (OA.alt_xmid - OA.alt_xmid_pred) #squared deviance of pred from actual val #need pred AT SCALE = 3 THO
     OA.mid_occ = as.character(min(logsub$scale[logsub$meanOcc > 0.49 & logsub$meanOcc < 0.60])) 
     #want the FIRST instance where it hits this range -> how? minimum scale at which it does that
     #then save as a character so associated levels data doesn't stay stuck on the single data point
@@ -140,7 +140,7 @@ for(s in stateroutes){
     ON.alt_xmid = logsub$meanOcc[logsub$scale == '3'] #@ scale == 3, for a given focal rte s, actual value
     #logsub[21,3] achieves same thing
     ON.alt_xmid_pred = ONpred_df$preds[ONpred_df$scale == '3']
-    ON.alt_xmid_dev = (ON.alt_xmid - ON.alt_xmid_pred)^2 #squared deviance of pred from actual val #need pred AT SCALE = 3 THO
+    ON.alt_xmid_dev = (ON.alt_xmid - ON.alt_xmid_pred) #squared deviance of pred from actual val #need pred AT SCALE = 3 THO
     ON.mid_occ = as.character(min(logsub$scale[logsub$meanOcc > 0.49 & logsub$meanOcc < 0.60])) 
     #want the FIRST instance where it hits this range -> how? minimum scale at which it does that
     #then save as a character so associated levels data doesn't stay stuck on the single data point
@@ -189,7 +189,7 @@ for(s in stateroutes){
     CA.alt_xmid = logsub$pctCore[logsub$scale == '3'] #@ scale == 3, for a given focal rte s, actual value
     #logsub[21,3] achieves same thing
     CA.alt_xmid_pred = CApred_df$preds[CApred_df$scale == '3']
-    CA.alt_xmid_dev = (CA.alt_xmid - CA.alt_xmid_pred)^2 #squared deviance of pred from actual val #need pred AT SCALE = 3 THO
+    CA.alt_xmid_dev = (CA.alt_xmid - CA.alt_xmid_pred) #squared deviance of pred from actual val #need pred AT SCALE = 3 THO
     CA.mid_occ = as.character(min(logsub$scale[logsub$meanOcc > 0.49 & logsub$meanOcc < 0.60])) 
     #want the FIRST instance where it hits this range -> how? minimum scale at which it does that
     #then save as a character so associated levels data doesn't stay stuck on the single data point
@@ -236,7 +236,7 @@ for(s in stateroutes){
     CN.alt_xmid = logsub$pctCore[logsub$scale == '3'] #@ scale == 3, for a given focal rte s, actual value
     #logsub[21,3] achieves same thing
     CN.alt_xmid_pred = CNpred_df$preds[CNpred_df$scale == '3']
-    CN.alt_xmid_dev = (CN.alt_xmid - CN.alt_xmid_pred)^2 #squared deviance of pred from actual val #need pred AT SCALE = 3 THO
+    CN.alt_xmid_dev = (CN.alt_xmid - CN.alt_xmid_pred) #squared deviance of pred from actual val #need pred AT SCALE = 3 THO
     CN.mid_occ = as.character(min(logsub$scale[logsub$meanOcc > 0.49 & logsub$meanOcc < 0.60])) 
     #want the FIRST instance where it hits this range -> how? minimum scale at which it does that
     #then save as a character so associated levels data doesn't stay stuck on the single data point
@@ -277,8 +277,8 @@ for(s in stateroutes){
 
   # Fitting % transient
 TAmodel = tryCatch({
-  TAlog = lm(log(pctTran) ~ lnA, data = logsub) #try with log10(pctTran), log(pctTran) ~ logA, and pctTran ~ logA since relationships wonky
-  TA = lm(log(pctTran) ~ area, data = logsub)
+  TAlog = lm(-log(pctTran) ~ lnA, data = logsub) #try with log10(pctTran), log(pctTran) ~ logA, and pctTran ~ logA since relationships wonky
+  TA = lm(-log(pctTran) ~ area, data = logsub)
   TApred_df = data.frame(preds = predict(TAlog), scale = logsub$scale)  #get preds -> is predicting unique per scale, all clear
   TAlm.r2 = lm(logsub$pctTran ~ TApred_df$preds) #get r2 from model
 
@@ -286,7 +286,7 @@ TAmodel = tryCatch({
   TA.alt_xmid = logsub$pctTran[logsub$scale == '3'] #@ scale == 3, for a given focal rte s, actual value
   #logsub[21,3] achieves same thing
   TA.alt_xmid_pred = TApred_df$preds[TApred_df$scale == '3']
-  TA.alt_xmid_dev = (TA.alt_xmid - TA.alt_xmid_pred)^2 #squared deviance of pred from actual val #need pred AT SCALE = 3 THO
+  TA.alt_xmid_dev = (TA.alt_xmid - TA.alt_xmid_pred) #squared deviance of pred from actual val #need pred AT SCALE = 3 THO
   TA.mid_occ = as.character(min(logsub$scale[logsub$meanOcc > 0.49 & logsub$meanOcc < 0.60]))
  #for trans and % core, adapt or same? meanocc overall?
   #want the FIRST instance where it hits this range -> how? minimum scale at which it does that
@@ -323,8 +323,8 @@ TAmodel = tryCatch({
 TA.df = rbind(TA.df, TAmodel)
 
 TNmodel = tryCatch({
-    TNlog = lm(log(pctTran) ~ lnN, data = logsub) #try with log10(pctTran), log(pctTran) ~ logA, and pctTran ~ logA since relationships wonky
-    TN = lm(log(pctTran) ~ aveN, data = logsub)
+    TNlog = lm(-log(pctTran) ~ lnN, data = logsub) #try with log10(pctTran), log(pctTran) ~ logA, and pctTran ~ logA since relationships wonky
+    TN = lm(-log(pctTran) ~ aveN, data = logsub)
     TNpred_df = data.frame(preds = predict(TNlog), scale = logsub$scale)  #get preds -> is predicting unique per scale, all clear
     TNlm.r2 = lm(logsub$pctTran ~ TNpred_df$preds) #get r2 from model
 
@@ -332,7 +332,7 @@ TNmodel = tryCatch({
     TN.alt_xmid = logsub$pctTran[logsub$scale == '3'] #@ scale == 3, for a given focal rte s, actual value
     #logsub[21,3] achieves same thing
     TN.alt_xmid_pred = TNpred_df$preds[TNpred_df$scale == '3']
-    TN.alt_xmid_dev = (TN.alt_xmid - TN.alt_xmid_pred)^2 #squared deviance of pred from actual val #need pred AT SCALE = 3 THO
+    TN.alt_xmid_dev = (TN.alt_xmid - TN.alt_xmid_pred) #squared deviance of pred from actual val #need pred AT SCALE = 3 THO
     TN.mid_occ = as.character(min(logsub$scale[logsub$meanOcc > 0.49 & logsub$meanOcc < 0.60]))
     #want the FIRST instance where it hits this range -> how? minimum scale at which it does that
     #then save as a character so associated levels data doesn't stay stuck on the single data point
