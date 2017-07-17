@@ -80,18 +80,13 @@ for(s in stateroutes){
     OAlm.r2 = lm(logsub$meanOcc ~ OApred_df$preds) #get r2 from model, so far this is just predmod tho 
     # FIX: could be where problem is, in creation of pred df ^^^
     
-    
+    #ACTUAL stats (for plotting data pts): 
     OA.alt_xmid = logsub$meanOcc[logsub$scale == '3'] #@ scale == 3, for a given focal rte s, actual value
     #logsub[21,3] achieves same thing
     #try adding '' around the 3 since actually a factor? not a character vector until below code 
-                                   
-                                   
-    OA.alt_xmid_pred = OApred_df$preds[OApred_df$scale == '3']
-    OA.alt_xmid_dev = (OA.alt_xmid - OA.alt_xmid_pred) #squared deviance of pred from actual val #need pred AT SCALE = 3 THO
     OA.mid_occ = as.character(min(logsub$scale[logsub$meanOcc > 0.49 & logsub$meanOcc < 0.60])) 
     #want the FIRST instance where it hits this range -> how? minimum scale at which it does that
     #then save as a character so associated levels data doesn't stay stuck on the single data point
-    
     
     #eq of a line 
     #((y2-y1)/(x2-x1)) 
@@ -103,7 +98,21 @@ for(s in stateroutes){
     OA.min = min(logsub$meanOcc[logsub$logA == min(logsub$logA)])
     #I want the minimum value for mean occupancy where log area is also at its minimum 
     
+    
+    #PREDICTED stats (for fitting line): 
+    OA.alt_xmid_pred = OApred_df$preds[OApred_df$scale == '3']
+    OA.alt_xmid_dev = (OA.alt_xmid - OA.alt_xmid_pred) #squared deviance of pred from actual val #need pred AT SCALE = 3 THO
     OA.r2 <- summary(OAlm.r2)$r.squared
+    
+    
+    #eq of a line
+    OA.pmax = max(OApred_df$preds[logsub$logA == max(logsub$logA)]) #what point is at the beginning of the line, for a given focal rte s?
+    OA.pmin = min(OApred_df$preds[logsub$logA == min(logsub$logA)])
+    #I want the minimum value for mean occupancy where log area is also at its minimum 
+    #FIX, use OA.max and OA.min to save space 
+    OA.pslope = ((max(OApred_df$preds) - min(OApred_df$preds))/(max(logsub$logA) - min(logsub$logA)))
+    #max in BOTH dimensions, x and y
+    
     
     data.frame(stateroute = s, OA.alt_xmid_pred, OA.alt_xmid_dev, OA.mid_occ, 
                OA.slope, OA.max, OA.min, OA.r2)
