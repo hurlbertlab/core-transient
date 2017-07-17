@@ -400,28 +400,37 @@ write.csv(coefs_2, "scripts/R-scripts/scale_analysis/coefs.csv", row.names = FAL
 
 ####Plotting occupancy-scale relationships with observed and predicted values####
 #work in progress
+#do I want to plot slope and line of predicted values over the top of actual? should be an easy sub 
+
 bbs_allscales = read.csv("data/BBS/bbs_allscales.csv", header = TRUE)
 bbs_allscales$logA = log10(bbs_allscales$area)
 bbs_allscales$logN = log10(bbs_allscales$aveN)
 bbs_allscales$lnA = log(bbs_allscales$area) #log is the natural log 
 bbs_allscales$lnN = log(bbs_allscales$aveN) #rerun plots with this?
-
 coefs = read.csv("scripts/R-scripts/scale_analysis/coefs.csv", header = TRUE)
 
 
-#pdf("output/plots/Molly Plots/BBS_scaleplots.pdf", onefile = TRUE)
-
+#will go inside plotting forloop 
 coef_join = coefs %>% inner_join(bbs_allscales, by = c("stateroute"="focalrte"))
 #stateroutes = unique(bbs_allscales$focalrte)
 s = 2001
+coef_sub = subset(coef_join, coef_join$stateroute == s)
 
 
 theme_set(theme_bw()+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()))
-coef_sub = subset(coef_join, coef_join$stateroute == s)
-logA = coef_sub$logA
-
 #OA
-OApreds = logistic_fcn(coef_sub[,33], coef_sub[,2], coef_sub[,3], coef_sub[,4]) 
+OAlog = lm(meanOcc ~ logA, data = coef_sub) #lm instead of nls, reg linear model
+OApreds = data.frame(preds = predict(OAlog), scale = coef_sub$scale, logA = coef_sub$logA) 
+
+
 plot1 = ggplot(coef_sub, aes(x = logA, y = meanOcc))+geom_point(colour = "firebrick")+
-  geom_line(aes(x = logA, y = OApreds), color = "navy") +labs(x = "Log area", y = "Mean % Occupancy")+
+  geom_abline(yintercept = , slope = OA.slope) +labs(x = "Log area", y = "Mean % Occupancy")+
   coord_cartesian(ylim = c(0, 1))
+
+#ref from abline help: 
+
+# Calculate slope and intercept of line of best fit
+coef(lm(mpg ~ wt, data = mtcars))
+p + geom_abline(intercept = 37, slope = -5)
+# But this is easier to do with geom_smooth:
+p + geom_smooth(method = "lm", se = FALSE)
