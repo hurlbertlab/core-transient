@@ -25,25 +25,22 @@ library(stats)
 # which are currently stored in the following directories off of github: 
 
 # Data directories
-tempdatadir = '//bioark.ad.unc.edu/HurlbertLab/GIS/ClimateData/BIOCLIM_meanTemp/'
-precipdata = '//bioark.ad.unc.edu/HurlbertLab/GIS/ClimateData/2-25-2011/prec/'
-ndvidata = "//bioark.ad.unc.edu/HurlbertLab/GIS/MODIS NDVI/"
 BBS = '//bioark.ad.unc.edu/HurlbertLab/Jenkins/BBS scaled/'
 
 
 
 ####Extract coefficients from scale-occupancy relationships for analysis####
-OA.df = data.frame(stateroute = numeric(), OA.alt_xmid_pred = numeric(), OA.alt_xmid_dev= numeric(), 
+OA.df = data.frame(stateroute = numeric(), OA.alt_xmid = numeric(), OA.alt_xmid_pred = numeric(), OA.alt_xmid_dev= numeric(), 
                    OA.mid_occ = numeric(), OA.slope = numeric(), OA.max= numeric(), OA.min= numeric(), OA.r2= numeric())
-ON.df = data.frame(stateroute = numeric(), ON.alt_xmid_pred = numeric(), ON.alt_xmid_dev= numeric(), 
+ON.df = data.frame(stateroute = numeric(), ON.alt_xmid = numeric(), ON.alt_xmid_pred = numeric(), ON.alt_xmid_dev= numeric(), 
                    ON.mid_occ = numeric(), ON.slope = numeric(), ON.max= numeric(), ON.min= numeric(), ON.r2= numeric())
-CA.df = data.frame(stateroute = numeric(), CA.alt_xmid_pred = numeric(), CA.alt_xmid_dev= numeric(), 
+CA.df = data.frame(stateroute = numeric(), CA.alt_xmid = numeric(), CA.alt_xmid_pred = numeric(), CA.alt_xmid_dev= numeric(), 
                    CA.mid_occ = numeric(), CA.slope = numeric(), CA.max= numeric(), CA.min= numeric(), CA.r2= numeric())
-CN.df = data.frame(stateroute = numeric(), CN.alt_xmid_pred = numeric(), CN.alt_xmid_dev = numeric(), 
+CN.df = data.frame(stateroute = numeric(), CN.alt_xmid = numeric(), CN.alt_xmid_pred = numeric(), CN.alt_xmid_dev = numeric(), 
                    CN.mid_occ = numeric(), CN.slope = numeric(), CN.max = numeric(), CN.min = numeric(), CN.r2 = numeric())
-TA.df = data.frame(stateroute = numeric(), TA.alt_xmid_pred = numeric(), TA.alt_xmid_dev= numeric(), 
+TA.df = data.frame(stateroute = numeric(), TA.alt_xmid = numeric(), TA.alt_xmid_pred = numeric(), TA.alt_xmid_dev= numeric(), 
                    TA.mid_occ = numeric(), TA.slope = numeric(), TA.max= numeric(), TA.min= numeric(), TA.r2= numeric())
-TN.df = data.frame(stateroute = numeric(), TN.alt_xmid_pred = numeric(), TN.alt_xmid_dev = numeric(), 
+TN.df = data.frame(stateroute = numeric(), TN.alt_xmid = numeric(), TN.alt_xmid_pred = numeric(), TN.alt_xmid_dev = numeric(), 
                    TN.mid_occ = numeric(), TN.slope = numeric(), TN.max = numeric(), TN.min = numeric(), TN.r2 = numeric())
 
 warnings = data.frame(stateroute = numeric(), warning = character())
@@ -104,22 +101,23 @@ for(s in stateroutes){
     OA.alt_xmid_dev = (OA.alt_xmid - OA.alt_xmid_pred) #squared deviance of pred from actual val #need pred AT SCALE = 3 THO
     OA.r2 <- summary(OAlm.r2)$r.squared
     
+    # 
+    # #eq of a line
+    # OA.pmax = max(OApred_df$preds[logsub$logA == max(logsub$logA)]) #what point is at the beginning of the line, for a given focal rte s?
+    # OA.pmin = min(OApred_df$preds[logsub$logA == min(logsub$logA)])
+    # #I want the minimum value for mean occupancy where log area is also at its minimum 
+    # #FIX, use OA.max and OA.min to save space 
+    # OA.pslope = ((max(OApred_df$preds) - min(OApred_df$preds))/(max(logsub$logA) - min(logsub$logA)))
+    # #max in BOTH dimensions, x and y
+    # 
     
-    #eq of a line
-    OA.pmax = max(OApred_df$preds[logsub$logA == max(logsub$logA)]) #what point is at the beginning of the line, for a given focal rte s?
-    OA.pmin = min(OApred_df$preds[logsub$logA == min(logsub$logA)])
-    #I want the minimum value for mean occupancy where log area is also at its minimum 
-    #FIX, use OA.max and OA.min to save space 
-    OA.pslope = ((max(OApred_df$preds) - min(OApred_df$preds))/(max(logsub$logA) - min(logsub$logA)))
-    #max in BOTH dimensions, x and y
-    
-    
-    data.frame(stateroute = s, OA.alt_xmid_pred, OA.alt_xmid_dev, OA.mid_occ, 
+    data.frame(stateroute = s, OA.alt_xmid, OA.alt_xmid_pred, OA.alt_xmid_dev, OA.mid_occ, 
                OA.slope, OA.max, OA.min, OA.r2)
     
   }, warning = function(w) {
     warnings = rbind(warnings, data.frame(stateroute = s, warning = w))
   }, error = function(e) {
+    OA.alt_xmid <- NA
     OA.alt_xmid_pred <- NA
     OA.alt_xmid_dev <- NA 
     OA.mid_occ <- NA
@@ -129,7 +127,7 @@ for(s in stateroutes){
     OA.r2 <- NA
   
     
-    temp = data.frame(stateroute = s, OA.alt_xmid_pred, OA.alt_xmid_dev, OA.mid_occ, 
+    temp = data.frame(stateroute = s, OA.alt_xmid, OA.alt_xmid_pred, OA.alt_xmid_dev, OA.mid_occ, 
                       OA.slope, OA.max, OA.min, OA.r2)
     return(temp)
     
@@ -166,12 +164,13 @@ for(s in stateroutes){
     
     
     ON.r2 <- summary(ONlm.r2)$r.squared
-    data.frame(stateroute = s, ON.alt_xmid_pred, ON.alt_xmid_dev, ON.mid_occ, 
+    data.frame(stateroute = s, ON.alt_xmid, ON.alt_xmid_pred, ON.alt_xmid_dev, ON.mid_occ, 
                ON.slope, ON.max, ON.min, ON.r2)
     
   }, warning = function(w) {
     warnings = rbind(warnings, data.frame(stateroute = s, warning = w))
   }, error = function(e) {
+    ON.alt_xmid = NA
     ON.alt_xmid_pred = NA
     ON.alt_xmid_dev = NA 
     ON.mid_occ = NA
@@ -179,7 +178,7 @@ for(s in stateroutes){
     ON.max = NA
     ON.min = NA
     ON.r2 = NA
-    temp = data.frame(stateroute = s, ON.alt_xmid_pred, ON.alt_xmid_dev, ON.mid_occ, 
+    temp = data.frame(stateroute = s, ON.alt_xmid, ON.alt_xmid_pred, ON.alt_xmid_dev, ON.mid_occ, 
                       ON.slope, ON.max, ON.min, ON.r2)
     return(temp)
     
@@ -215,12 +214,13 @@ for(s in stateroutes){
     
     
     CA.r2 <- summary(CAlm.r2)$r.squared
-    data.frame(stateroute = s, CA.alt_xmid_pred, CA.alt_xmid_dev, CA.mid_occ, 
+    data.frame(stateroute = s, CA.alt_xmid, CA.alt_xmid_pred, CA.alt_xmid_dev, CA.mid_occ, 
                CA.slope, CA.max, CA.min, CA.r2)
     
   }, warning = function(w) {
     warnings = rbind(warnings, data.frame(stateroute = s, warning = w))
   }, error = function(e) {
+    CA.alt_xmid = NA
     CA.alt_xmid_pred = NA
     CA.alt_xmid_dev = NA 
     CA.mid_occ = NA
@@ -228,7 +228,7 @@ for(s in stateroutes){
     CA.max = NA
     CA.min = NA
     CA.r2 = NA
-    temp = data.frame(stateroute = s, CA.alt_xmid_pred, CA.alt_xmid_dev, CA.mid_occ, 
+    temp = data.frame(stateroute = s, CA.alt_xmid, CA.alt_xmid_pred, CA.alt_xmid_dev, CA.mid_occ, 
                       CA.slope, CA.max, CA.min, CA.r2)
     return(temp)
     
@@ -262,12 +262,13 @@ for(s in stateroutes){
     
     
     CN.r2 <- summary(CNlm.r2)$r.squared
-    data.frame(stateroute = s, CN.alt_xmid_pred, CN.alt_xmid_dev, CN.mid_occ, 
+    data.frame(stateroute = s, CN.alt_xmid, CN.alt_xmid_pred, CN.alt_xmid_dev, CN.mid_occ, 
                CN.slope, CN.max, CN.min, CN.r2)
     
   }, warning = function(w) {
     warnings = rbind(warnings, data.frame(stateroute = s, warning = w))
   }, error = function(e) {
+    CN.alt_xmid = NA
     CN.alt_xmid_pred = NA
     CN.alt_xmid_dev = NA 
     CN.mid_occ = NA
@@ -275,7 +276,7 @@ for(s in stateroutes){
     CN.max = NA
     CN.min = NA
     CN.r2 = NA
-    temp = data.frame(stateroute = s, CN.alt_xmid_pred, CN.alt_xmid_dev, CN.mid_occ, 
+    temp = data.frame(stateroute = s, CN.alt_xmid, CN.alt_xmid_pred, CN.alt_xmid_dev, CN.mid_occ, 
                       CN.slope, CN.max, CN.min, CN.r2)
     return(temp)
     
@@ -313,11 +314,12 @@ TAmodel = tryCatch({
 
 
   TA.r2 <- summary(TAlm.r2)$r.squared
-  data.frame(stateroute = s, TA.alt_xmid_pred, TA.alt_xmid_dev, TA.mid_occ, TA.slope, TA.max, TA.min, TA.r2)
+  data.frame(stateroute = s, TA.alt_xmid, TA.alt_xmid_pred, TA.alt_xmid_dev, TA.mid_occ, TA.slope, TA.max, TA.min, TA.r2)
 
 }, warning = function(w) {
   warnings = rbind(warnings, data.frame(stateroute = s, warning = w))
 }, error = function(e) {
+  TA.alt_xmid = NA
   TA.alt_xmid_pred = NA
   TA.alt_xmid_dev = NA
   TA.mid_occ = NA
@@ -325,7 +327,7 @@ TAmodel = tryCatch({
   TA.max = NA
   TA.min = NA
   TA.r2 = NA
-  temp = data.frame(stateroute = s, TA.alt_xmid_pred, TA.alt_xmid_dev, TA.mid_occ, TA.slope, TA.max, TA.min, TA.r2)
+  temp = data.frame(stateroute = s, TA.alt_xmid, TA.alt_xmid_pred, TA.alt_xmid_dev, TA.mid_occ, TA.slope, TA.max, TA.min, TA.r2)
   return(temp)
   })
 
@@ -358,11 +360,12 @@ TNmodel = tryCatch({
 
 
     TN.r2 <- summary(TNlm.r2)$r.squared
-    data.frame(stateroute = s, TN.alt_xmid_pred, TN.alt_xmid_dev, TN.mid_occ, TN.slope, TN.max, TN.min, TN.r2)
+    data.frame(stateroute = s, TN.alt_xmid, TN.alt_xmid_pred, TN.alt_xmid_dev, TN.mid_occ, TN.slope, TN.max, TN.min, TN.r2)
 
   }, warning = function(w) {
     warnings = rbind(warnings, data.frame(stateroute = s, warning = w))
   }, error = function(e) {
+    TN.alt_xmid = NA
     TN.alt_xmid_pred = NA
     TN.alt_xmid_dev = NA
     TN.mid_occ = NA
@@ -370,7 +373,7 @@ TNmodel = tryCatch({
     TN.max = NA
     TN.min = NA
     TN.r2 = NA
-    temp = data.frame(stateroute = s, TN.alt_xmid_pred, TN.alt_xmid_dev, TN.mid_occ, TN.slope, TN.max, TN.min, TN.r2)
+    temp = data.frame(stateroute = s, TN.alt_xmid, TN.alt_xmid_pred, TN.alt_xmid_dev, TN.mid_occ, TN.slope, TN.max, TN.min, TN.r2)
     return(temp)
     })
 
