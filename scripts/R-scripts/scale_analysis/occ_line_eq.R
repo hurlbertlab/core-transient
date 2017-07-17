@@ -383,7 +383,7 @@ coefs = OA.df %>%
 coefs_2 = na.omit(coefs)
   
   
-write.csv(coefs_2, "scripts/R-scripts/scale_analysis/coefs.csv", row.names = FALSE) #updated 07/12
+write.csv(coefs_2, "scripts/R-scripts/scale_analysis/coefs.csv", row.names = FALSE) #updated 07/17
 #exp mods have much better r2 vals for pctTran than power 
 
 ####Plotting occupancy-scale relationships with observed and predicted values####
