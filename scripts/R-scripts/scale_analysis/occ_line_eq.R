@@ -77,12 +77,16 @@ for(s in stateroutes){
   OAmodel = tryCatch({
     OAlog = lm(meanOcc ~ logA, data = logsub) #lm instead of nls, reg linear model
     OApred_df = data.frame(preds = predict(OAlog), scale = logsub$scale)  #get preds -> is predicting unique per scale, all clear
-    OAlm.r2 = lm(logsub$meanOcc ~ OApred_df$preds) #get r2 from model 
+    OAlm.r2 = lm(logsub$meanOcc ~ OApred_df$preds) #get r2 from model, so far this is just predmod tho 
+    # FIX: could be where problem is, in creation of pred df ^^^
     
     
-    OA.alt_xmid = logsub$meanOcc[logsub$scale == 3] #@ scale == 3, for a given focal rte s, actual value
+    OA.alt_xmid = logsub$meanOcc[logsub$scale == '3'] #@ scale == 3, for a given focal rte s, actual value
     #logsub[21,3] achieves same thing
-    OA.alt_xmid_pred = OApred_df$preds[OApred_df$scale == 3]
+    #try adding '' around the 3 since actually a factor? not a character vector until below code 
+                                   
+                                   
+    OA.alt_xmid_pred = OApred_df$preds[OApred_df$scale == '3']
     OA.alt_xmid_dev = (OA.alt_xmid - OA.alt_xmid_pred)^2 #squared deviance of pred from actual val #need pred AT SCALE = 3 THO
     OA.mid_occ = as.character(min(logsub$scale[logsub$meanOcc > 0.49 & logsub$meanOcc < 0.60])) 
     #want the FIRST instance where it hits this range -> how? minimum scale at which it does that
@@ -93,13 +97,16 @@ for(s in stateroutes){
     #((y2-y1)/(x2-x1)) 
     #meanOcc vals are y, logA is the x 
     #x and y are dictated by the original model 
-    OA.slope = ((max(logsub$logA) - min(logsub$logA))/(max(logsub$logA) - min(logsub$logA)))
+    OA.slope = ((max(logsub$meanOcc) - min(logsub$meanOcc))/(max(logsub$logA) - min(logsub$logA)))
     #max in BOTH dimensions, x and y
     OA.max = max(logsub$meanOcc[logsub$logA == max(logsub$logA)]) #what point is at the beginning of the line, for a given focal rte s?
     OA.min = min(logsub$meanOcc[logsub$logA == min(logsub$logA)])
+    #I want the minimum value for mean occupancy where log area is also at its minimum 
     
     OA.r2 <- summary(OAlm.r2)$r.squared
-    data.frame(stateroute = s, OA.alt_xmid_pred, OA.alt_xmid_dev, OA.mid_occ, OA.slope, OA.max, OA.min, OA.r2)
+    
+    data.frame(stateroute = s, OA.alt_xmid_pred, OA.alt_xmid_dev, OA.mid_occ, 
+               OA.slope, OA.max, OA.min, OA.r2)
     
   }, warning = function(w) {
     warnings = rbind(warnings, data.frame(stateroute = s, warning = w))
@@ -111,13 +118,17 @@ for(s in stateroutes){
     OA.max <- NA
     OA.min <- NA
     OA.r2 <- NA
+  
     
-    
-    temp = data.frame(stateroute = s, OA.alt_xmid_pred, OA.alt_xmid_dev, OA.mid_occ, OA.slope, OA.max, OA.min, OA.r2)
+    temp = data.frame(stateroute = s, OA.alt_xmid_pred, OA.alt_xmid_dev, OA.mid_occ, 
+                      OA.slope, OA.max, OA.min, OA.r2)
     return(temp)
     
   })
   OA.df = rbind(OA.df, OAmodel)
+  #OA model works now on one run, trycatch works, does loop work is question? 
+  
+  
   
   #ON 
   ONmodel = tryCatch({
@@ -126,9 +137,9 @@ for(s in stateroutes){
     ONlm.r2 = lm(logsub$meanOcc ~ ONpred_df$preds) #get r2 from model 
     
     
-    ON.alt_xmid = logsub$meanOcc[logsub$scale == 3] #@ scale == 3, for a given focal rte s, actual value
+    ON.alt_xmid = logsub$meanOcc[logsub$scale == '3'] #@ scale == 3, for a given focal rte s, actual value
     #logsub[21,3] achieves same thing
-    ON.alt_xmid_pred = ONpred_df$preds[ONpred_df$scale == 3]
+    ON.alt_xmid_pred = ONpred_df$preds[ONpred_df$scale == '3']
     ON.alt_xmid_dev = (ON.alt_xmid - ON.alt_xmid_pred)^2 #squared deviance of pred from actual val #need pred AT SCALE = 3 THO
     ON.mid_occ = as.character(min(logsub$scale[logsub$meanOcc > 0.49 & logsub$meanOcc < 0.60])) 
     #want the FIRST instance where it hits this range -> how? minimum scale at which it does that
@@ -141,12 +152,13 @@ for(s in stateroutes){
     #x and y are dictated by the original model 
     ON.slope = ((max(logsub$meanOcc) - min(logsub$meanOcc))/(max(logsub$logN) - min(logsub$logN)))
     #max in BOTH dimensions, x and y
-    ON.max = max(logsub$meanOcc[max(logsub$logN)]) #what point is at the "end of the line", for a given focal rte s? 
-    ON.min = min(logsub$meanOcc[min(logsub$logN)]) #what point is at the beginning of the line, for a given focal rte s?
+    ON.max = max(logsub$meanOcc[logsub$logN == max(logsub$logN)]) #what point is at the "end of the line", for a given focal rte s? 
+    ON.min = min(logsub$meanOcc[logsub$logN == min(logsub$logN)]) #what point is at the beginning of the line, for a given focal rte s?
     
     
     ON.r2 <- summary(ONlm.r2)$r.squared
-    data.frame(stateroute = s, ON.alt_xmid_pred, ON.alt_xmid_dev, ON.mid_occ, ON.slope, ON.max, ON.min, ON.r2)
+    data.frame(stateroute = s, ON.alt_xmid_pred, ON.alt_xmid_dev, ON.mid_occ, 
+               ON.slope, ON.max, ON.min, ON.r2)
     
   }, warning = function(w) {
     warnings = rbind(warnings, data.frame(stateroute = s, warning = w))
@@ -158,7 +170,8 @@ for(s in stateroutes){
     ON.max = NA
     ON.min = NA
     ON.r2 = NA
-    temp = data.frame(stateroute = s, ON.alt_xmid_pred, ON.alt_xmid_dev, ON.mid_occ, ON.slope, ON.max, ON.min, ON.r2)
+    temp = data.frame(stateroute = s, ON.alt_xmid_pred, ON.alt_xmid_dev, ON.mid_occ, 
+                      ON.slope, ON.max, ON.min, ON.r2)
     return(temp)
     
   })
