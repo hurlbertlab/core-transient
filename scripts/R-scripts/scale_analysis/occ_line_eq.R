@@ -399,6 +399,7 @@ write.csv(coefs_2, "scripts/R-scripts/scale_analysis/coefs.csv", row.names = FAL
 #exp mods have much better r2 vals for pctTran than power 
 
 ####Plotting occupancy-scale relationships with observed and predicted values####
+#work in progress
 bbs_allscales = read.csv("data/BBS/bbs_allscales.csv", header = TRUE)
 bbs_allscales$logA = log10(bbs_allscales$area)
 bbs_allscales$logN = log10(bbs_allscales$aveN)
@@ -408,73 +409,19 @@ bbs_allscales$lnN = log(bbs_allscales$aveN) #rerun plots with this?
 coefs = read.csv("scripts/R-scripts/scale_analysis/coefs.csv", header = TRUE)
 
 
-preds.df = data.frame(stateroute = numeric(), logA = numeric(), 
-                      OApreds= numeric(), ONpreds = numeric(), 
-                      CApreds = numeric(), CNpreds = numeric(),
-                      TApreds = numeric(), TNpreds = numeric())
+#pdf("output/plots/Molly Plots/BBS_scaleplots.pdf", onefile = TRUE)
 
-
-pdf("output/plots/Molly Plots/BBS_scaleplots.pdf", onefile = TRUE)
 coef_join = coefs %>% inner_join(bbs_allscales, by = c("stateroute"="focalrte"))
-stateroutes = unique(bbs_allscales$focalrte)
+#stateroutes = unique(bbs_allscales$focalrte)
+s = 2001
 
-#extracting predicted values and plotting in same loop
-for (s in stateroutes) {
-  theme_set(theme_bw()+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()))
-  coef_sub = subset(coef_join, coef_join$stateroute == s)
-  logA = coef_sub$logA
-  
-  #OA
-  OApreds = logistic_fcn(coef_sub[,33], coef_sub[,2], coef_sub[,3], coef_sub[,4]) 
-  plot1 = ggplot(coef_sub, aes(x = logA, y = meanOcc))+geom_point(colour = "firebrick")+
-    geom_line(aes(x = logA, y = OApreds), color = "navy") +labs(x = "Log area", y = "Mean % Occupancy")+
-    coord_cartesian(ylim = c(0, 1))
-  
-  
-  #ON
-  ONpreds = logistic_fcn(coef_sub[,34], coef_sub[,6], coef_sub[,7], coef_sub[,8])
-  plot2 = ggplot(coef_sub, aes(x = logN, y = meanOcc))+geom_point(colour = "firebrick")+
-    geom_line(aes(x = logN, y = ONpreds), color = "navy") +labs(x = "Log abundance", y = "Mean % Occupancy")+
-    coord_cartesian(ylim = c(0, 1))
-  
-  
-  #CA
-  CApreds = logistic_fcn(coef_sub[,33], coef_sub[,10], coef_sub[,11], coef_sub[,12])
-  plot1_2= ggplot(coef_sub, aes(x = logA, y = pctCore))+geom_point(colour = "turquoise")+
-    geom_line(aes(x = logA, y = CApreds), color = "navy")+labs(x = "Log area", y = "% Core Occupancy")+
-    coord_cartesian(ylim = c(0, 1))
-  
-  #aveN
-  #CN
-  CNpreds = logistic_fcn(coef_sub[,34], coef_sub[,14], coef_sub[,15], coef_sub[,16])
-  plot2_2= ggplot(coef_sub, aes(x = logN, y = pctCore))+geom_point(colour = "turquoise")+
-    geom_line(aes(x = logN, y = CNpreds), color = "navy")+labs(x = "Log abundance", y = "% Core Occupancy")+
-    coord_cartesian(ylim = c(0, 1))
-  
-  #using exponential function since higher explanatory power than pwr function
-  #TA
-  TApreds =  coef_sub[,35]*(coef_sub[,18]) #35 = optimum; replacing ^ with * bc natural log, removing -1
-  plot1_3 = ggplot(coef_sub, aes(x = lnA, y = log(pctTran)))+geom_point(colour = "olivedrab")+
-    geom_line(aes(x = lnA, y = log(TApreds)), color = "navy") +labs(x = "Log area", y = "% Transient Occupancy")+
-    coord_cartesian(ylim = c(-4, 1)) #FIX
-  
-  #TN
-  TNpreds = coef_sub[,36]*(coef_sub[,22])
-  plot2_3 = ggplot(coef_sub, aes(x = lnN, y = log(pctTran)))+geom_point(colour = "olivedrab")+
-    geom_line(aes(x = lnN, y = TNpreds), color = "navy")+labs(x = "Log abundance", y = "% Transient Occupancy")+
-    coord_cartesian(ylim = c(-4, 1))
-  
-  #storing plots
-  predplot = grid.arrange(plot1, plot2, plot1_2, plot2_2, plot1_3, plot2_3,
-                          ncol=2, top = paste("predplot_", s, sep = ""))
-  #storing preds:
-  temp.df = data.frame(stateroute = s, logA = logA, 
-                       OApreds= OApreds , ONpreds = ONpreds, 
-                       CApreds = CApreds, CNpreds = CNpreds,
-                       TApreds = TApreds, TNpreds = TNpreds)
-  preds.df = rbind(preds.df, temp.df)
-  
-}
-dev.off()
-write.csv(preds.df, "C:/git/core-transient/scripts/R-scripts/scale_analysis/preds.csv", row.names = FALSE)
 
+theme_set(theme_bw()+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()))
+coef_sub = subset(coef_join, coef_join$stateroute == s)
+logA = coef_sub$logA
+
+#OA
+OApreds = logistic_fcn(coef_sub[,33], coef_sub[,2], coef_sub[,3], coef_sub[,4]) 
+plot1 = ggplot(coef_sub, aes(x = logA, y = meanOcc))+geom_point(colour = "firebrick")+
+  geom_line(aes(x = logA, y = OApreds), color = "navy") +labs(x = "Log area", y = "Mean % Occupancy")+
+  coord_cartesian(ylim = c(0, 1))
