@@ -93,6 +93,22 @@ write.csv(bbs_below, "data/BBS/bbs_below.csv", row.names = FALSE)
 #Revised calcs workspace 
 #sort out bbs_below to ONLY those routes at 50-stop scale (occ calc'd for a single route)
 
+a_scales = seq(0,3250, by = 50)		#"stops" in 1:65 aggregated routes 
+#check to ensure the 'by' input (i.e. currently fixed @ 50) compounds every stop? 
+#so like: 50, 100, 150 -> amt of stops inclusive 
+
+
+for (scale in ascales) {		
+  numGroups = floor(50/scale)		
+  for (g in 1:numGroups) {		
+    groupedCols = paste("Stop", ((g-1)*scale + 1):(g*scale), sep = "")		
+    temp = occ_counts(fifty_bestAous, groupedCols, scale)		
+    output = rbind(output, temp) 		
+  }		
+}		
+
+#end of revised calcs workspace, old code below
+
 #use to aggregate 
 good_rtes2 = read.csv(paste(BBS, "good_rtes2.csv", sep = ""), header = TRUE) #using updated version, 07/12
 require(fields)
