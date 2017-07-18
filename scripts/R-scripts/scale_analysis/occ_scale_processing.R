@@ -70,6 +70,8 @@ occ_counts = function(countData, countColumns, scale) {
 
 
 # Generic calculation of occupancy for a specified scale
+#fix to run all at once, so no sep run for above-scale, USE occ-counts for both 
+
 b_scales = c(5, 10, 25, 50)
 
 output = c()
@@ -144,9 +146,9 @@ for (r in uniqrtes) { #for each focal route
     #adding 2 to end since using an input df with all of the exact same column names -> can change back b4 merging, after loop
     temp = data.frame(focalrte2 = r,
                       numrtes2 = nu, #total # routes being aggregated -> do I really need the +1 if it's already inclusive of the 1st?
-                      meanOcc2 = mean(bbssub$meanOcc, na.rm =T),       #mean occupancy
-                      pctCore2 = mean(bbssub$pctCore, na.rm = T), #how do I want to do this? avg of routes aggregated, or recalc? 
-                      pctTran2 = mean(bbssub$pctTran, na.rm = T), #fraction of species that are transient
+                      #meanOcc2 = mean(bbssub$meanOcc, na.rm =T),       #FIX
+     #FIX             #pctCore2 = mean(bbssub$pctCore, na.rm = T), #how do I want to do this? avg of routes aggregated, or recalc? 
+                      #pctTran2 = mean(bbssub$pctTran, na.rm = T), #fraction of species that are transient
                       totalAbun2 = sum(bbssub$aveN),  #total community size (per year) already calc'd per route....so just add across routes?
                       maxRadius2 = tmp_rte_group$dist[nu])   
     
