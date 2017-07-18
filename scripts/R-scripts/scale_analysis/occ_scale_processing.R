@@ -92,20 +92,24 @@ write.csv(bbs_below, "data/BBS/bbs_below.csv", row.names = FALSE)
 ####Calculations for Occupancy above the scale of a BBS route####
 #Revised calcs workspace 
 #sort out bbs_below to ONLY those routes at 50-stop scale (occ calc'd for a single route)
+#06/27 proto-code
 
-a_scales = seq(0,3250, by = 50)		#"stops" in 1:65 aggregated routes 
+
+ascales = seq(50,3250, by = 50)		#"stops" in 1:65 aggregated routes 
 #check to ensure the 'by' input (i.e. currently fixed @ 50) compounds every stop? 
 #so like: 50, 100, 150 -> amt of stops inclusive 
 
-
-for (scale in ascales) {		
-  numGroups = floor(50/scale)		
-  for (g in 1:numGroups) {		
-    groupedCols = paste("Stop", ((g-1)*scale + 1):(g*scale), sep = "")		
+output = c()
+for (scale in ascales) {		#for 50, then for 100, then for 150....
+  numGroups = floor(scale/50)	#how many groups are created: 1, then 2, then 3	
+  for (g in 1:numGroups) {		#for group g in the total number of groups (number of routes!)
+    groupedCols = paste("Stop", ((g-1)*scale + 1):(g*scale), sep = "")	#this is where trouble starts, FIX	
     temp = occ_counts(fifty_bestAous, groupedCols, scale)		
     output = rbind(output, temp) 		
   }		
-}		
+}		#error undefined columns 
+
+#step carefully thru 
 
 #end of revised calcs workspace, old code below
 
