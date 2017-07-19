@@ -43,15 +43,15 @@ fifty_bestAous = fifty_allyears %>%
 
 #occ_counts function for calculating occupancy at any scale
 occ_counts = function(countData, countColumns, scale) {
-  bbssub = countData[, c("stateroute", "year", "AOU", countColumns)]
-  bbssub$groupCount = rowSums(bbssub[, countColumns])
+  bbssub = countData[, c("stateroute", "year", "AOU", countColumns)] #these are our grouping vars
+  bbssub$groupCount = rowSums(bbssub[, countColumns]) 
   bbsu = unique(bbssub[bbssub[, "groupCount"]!= 0, c("stateroute", "year", "AOU")]) 
   
   abun.summ = bbssub %>% #abundance
     group_by(stateroute, year) %>%  
     summarize(totalN = sum(groupCount)) %>%
     group_by(stateroute) %>%
-    summarize(aveN = mean(totalN))
+    summarize(aveN = mean(totalN)) #we want to go further and summarize across focal + secondary rtes tho
   
   occ.summ = bbsu %>% #occupancy
     count(stateroute, AOU) %>%
@@ -60,6 +60,10 @@ occ_counts = function(countData, countColumns, scale) {
     summarize(meanOcc = mean(occ), 
               pctCore = sum(occ > 2/3)/length(occ),
               pctTran = sum(occ <= 1/3)/length(occ)) %>%
+    
+    
+    
+    
     #spRichTrans33  
     # spRichTrans25 = sum(occ <= 1/4)/length(occ),
     # spRichTrans10 = sum(occ <= 0.1)/length(occ)) %>%
@@ -101,9 +105,11 @@ ascales = seq(50,3250, by = 50)		#"stops" in 1:65 aggregated routes
 
 output = c()
 for (scale in ascales) {		#for 50, then for 100, then for 150....
-  numGroups = floor(scale/50)	#how many groups are created: 1, then 2, then 3	
+  numGroups = floor(scale/50)	#how many groups are created: 1, then 2, then 3, 4, etc. up to 65.	
+  
+  #
   for (g in 1:numGroups) {		#for group g in the total number of groups (number of routes!)
-    groupedCols = paste("Stop", ((g-1)*scale + 1):(g*scale), sep = "")	#this is where trouble starts, FIX	
+    groupedCols = paste("Route", ((g-1)*numGroups + 1):(g*numGroups), sep = "")	#this is where trouble starts, FIX	
     temp = occ_counts(fifty_bestAous, groupedCols, scale)		
     output = rbind(output, temp) 		
   }		
@@ -137,10 +143,10 @@ uniqrtes = unique(bbs_fullrte$stateroute) #all routes present are unique, still 
 numrtes = 1:65 # based on min common number in top 6 grid cells, see grid_sampling_justification script 
 output = data.frame(focalrte2 = NULL,
                     numrtes2 = NULL, 
-                    meanOcc2 = NULL,       
-                    pctCore2 = NULL,  
-                    pctTran2 = NULL, 
-                    totalAbun2 = NULL,  
+                    #meanOcc2 = NULL,       
+                    #pctCore2 = NULL,  
+                    #pctTran2 = NULL, 
+                    #totalAbun2 = NULL,  
                     maxRadius2 = NULL)
 
 
@@ -159,17 +165,13 @@ for (r in uniqrtes) { #for each focal route
     bbssub = bbs_fullrte %>%
       filter(stateroute %in% nu_group$rte2) #stateroute = rte2 group in nu_group (routes to agg across!!!) should be nu rows 
     
-    
-    #bbsuniq = unique(bbssub[, c('Aou', 'Year')])
-    #occs = bbssub %>% dplyr::count(Aou) %>% dplyr::mutate(occ = n/15) #already have occs! just need to accumulate and avg them 
-    
     #adding 2 to end since using an input df with all of the exact same column names -> can change back b4 merging, after loop
     temp = data.frame(focalrte2 = r,
                       numrtes2 = nu, #total # routes being aggregated -> do I really need the +1 if it's already inclusive of the 1st?
                       #meanOcc2 = mean(bbssub$meanOcc, na.rm =T),       #FIX
      #FIX             #pctCore2 = mean(bbssub$pctCore, na.rm = T), #how do I want to do this? avg of routes aggregated, or recalc? 
                       #pctTran2 = mean(bbssub$pctTran, na.rm = T), #fraction of species that are transient
-                      totalAbun2 = sum(bbssub$aveN),  #total community size (per year) already calc'd per route....so just add across routes?
+                      #totalAbun2 = sum(bbssub$aveN),  #total community size (per year) already calc'd per route....so just add across routes?
                       maxRadius2 = tmp_rte_group$dist[nu])   
     
     output = rbind(output, temp)
@@ -178,6 +180,12 @@ for (r in uniqrtes) { #for each focal route
   } #n loop
   
 } #r loop
+# I can then feed the above into my occ_counts function 
+# may need to transpose rows to columns 
+
+
+
+
 
 bbs_above = as.data.frame(output)
 #Calc area for above route scale
