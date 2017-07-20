@@ -132,6 +132,7 @@ dist.df = data.frame(rte1 = rep(good_rtes2$stateroute, each = nrow(good_rtes2)),
 write.csv(dist.df, "scripts/R-scripts/scale_analysis/dist_df.csv", row.names = FALSE) #for later calcs
 
 
+dist.df = read.csv("scripts/R-scripts/scale_analysis/dist_df.csv", header = TRUE)
 bbs_below = read.csv(paste(BBS, "bbs_below.csv", sep = ""), header = TRUE)
 bbs_fullrte = bbs_below %>%
   filter(scale == "50-1") #953 routes at scale of a single route
@@ -140,13 +141,10 @@ bbs_fullrte = bbs_below %>%
 
 #need to make sure NOT running thru 66 times on the same site and scale 
 uniqrtes = unique(bbs_fullrte$stateroute) #all routes present are unique, still 953 which is great
-numrtes = 1:65 # based on min common number in top 6 grid cells, see grid_sampling_justification script 
-output = data.frame(focalrte2 = NULL,
-                    numrtes2 = NULL, 
-                    #meanOcc2 = NULL,       
-                    #pctCore2 = NULL,  
-                    #pctTran2 = NULL, 
-                    #totalAbun2 = NULL,  
+numrtes = 2:66 # based on min common number in top 6 grid cells, see grid_sampling_justification script 
+output = data.frame(focalrte = NULL,
+                    rtegroup = NULL, 
+                    secndrtes = NULL,  
                     maxRadius2 = NULL)
 
 
@@ -158,21 +156,25 @@ for (r in uniqrtes) { #for each focal route
       top_n(66, desc(dist)) %>% #fixed ordering by including arrange parm
       arrange(dist)
     
-    nu_group = tmp_rte_group %>% 
+    nu_rte_group = tmp_rte_group %>% 
       top_n(nu, desc(dist)) %>% #narrow to how many routes to aggregate occ across
       select(rte2) %>% as.vector()
     
-    bbssub = bbs_fullrte %>%
-      filter(stateroute %in% nu_group$rte2) #stateroute = rte2 group in nu_group (routes to agg across!!!) should be nu rows 
+    #with r = 2001, nu = 2, ^this is 2001 and 2057 
+    #how to get to repeat and include  
+    
+    
+    # bbssub = bbs_fullrte %>%
+    #   filter(stateroute %in% nu_rte_group$rte2) #stateroute = rte2 group in nu_group (routes to agg across!!!) should be nu rows 
+    #instead of pulling from bbs_below, pull in from 50 stop data <- remove this part and do a second loop
+    #using occ_counts, instead of subsetting here -> for now, pulling in bbs_fullrte is unnecessary 
+    #let this loop purely be about creating guide for second loop and occ_counts
     
     #adding 2 to end since using an input df with all of the exact same column names -> can change back b4 merging, after loop
-    temp = data.frame(focalrte2 = r,
-                      numrtes2 = nu, #total # routes being aggregated -> do I really need the +1 if it's already inclusive of the 1st?
-                      #meanOcc2 = mean(bbssub$meanOcc, na.rm =T),       #FIX
-     #FIX             #pctCore2 = mean(bbssub$pctCore, na.rm = T), #how do I want to do this? avg of routes aggregated, or recalc? 
-                      #pctTran2 = mean(bbssub$pctTran, na.rm = T), #fraction of species that are transient
-                      #totalAbun2 = sum(bbssub$aveN),  #total community size (per year) already calc'd per route....so just add across routes?
-                      maxRadius2 = tmp_rte_group$dist[nu])   
+    temp = data.frame(focalrte = r,
+                      rtegroup = nu, #total # routes being aggregated -> do I really need the +1 if it's already inclusive of the 1st?
+                      secndrte = rte2,
+                      maxRadius = tmp_rte_group$dist[nu])   
     
     output = rbind(output, temp)
     print(paste("Focal rte", r, "#' rtes sampled", nu)) #for viewing progress
@@ -193,6 +195,18 @@ bbs_rte_groups = as.data.frame(output)
 #write.csv(bbs_above, paste(BBS, "bbs_above.csv", sep = ""), row.names = FALSE)
 #updated 06/30 evening locally and on BioArk; not sure why data folder rejected bc not THAT big but not on github
 write.csv(bbs_rte_groups, "data/BBS/bbs_rte_groups.csv", row.names = FALSE)
+
+
+
+####New above-scale workspace####
+bbs_rte_groups = read.csv("data/BBS/bbs_rte_groups.csv", header = TRUE)
+
+
+
+
+
+
+
 
 ####scale-joining####
 bbs_above = read.csv(paste(BBS, "bbs_above.csv", sep = ""), header = TRUE)
