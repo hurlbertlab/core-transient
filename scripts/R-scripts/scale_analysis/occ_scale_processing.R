@@ -153,22 +153,22 @@ for (r in uniqrtes) { #for each focal route
     
     tmp_rte_group = dist.df %>% 
       filter(rte1 == r) %>% 
-      top_n(66, desc(dist)) %>% #fixed ordering by including arrange parm
+      top_n(66, desc(dist)) %>% #fixed ordering by including arrange parm, 
+      #remove/skip top row 
       arrange(dist)
     
-    nu_rte_group = tmp_rte_group %>% 
-      top_n(nu, desc(dist)) %>% #narrow to how many routes to aggregate occ across
-      select(rte2) %>% as.vector()
+    #add a column that assigns the rte_group (i.e. 2, 3, 4...66) AND repeats and includes rtes prior 
+    #i.e. group 3 will have everything from group 2 AND a new rte, group 4 will have
+    #everything from group 3 AND a new rte, etc -> cumulative 
+    #will make for a LONG dataset
+    
+    
+    # nu_rte_group = tmp_rte_group %>% 
+    #   top_n(nu, desc(dist)) %>% #narrow to how many routes to aggregate occ across
+    #   select(rte2) %>% as.vector() #mod to achieve the above
     
     #with r = 2001, nu = 2, ^this is 2001 and 2057 
     #how to get to repeat and include  
-    
-    
-    # bbssub = bbs_fullrte %>%
-    #   filter(stateroute %in% nu_rte_group$rte2) #stateroute = rte2 group in nu_group (routes to agg across!!!) should be nu rows 
-    #instead of pulling from bbs_below, pull in from 50 stop data <- remove this part and do a second loop
-    #using occ_counts, instead of subsetting here -> for now, pulling in bbs_fullrte is unnecessary 
-    #let this loop purely be about creating guide for second loop and occ_counts
     
     #adding 2 to end since using an input df with all of the exact same column names -> can change back b4 merging, after loop
     temp = data.frame(focalrte = r,
