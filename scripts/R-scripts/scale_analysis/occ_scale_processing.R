@@ -144,8 +144,8 @@ uniqrtes = unique(bbs_fullrte$stateroute) #all routes present are unique, still 
 numrtes = 2:66 # based on min common number in top 6 grid cells, see grid_sampling_justification script 
 output = data.frame(focalrte = NULL,
                     rtegroup = NULL, 
-                    secndrtes = NULL,  
-                    maxRadius2 = NULL)
+                    secndrte = NULL,  
+                    maxRadius = NULL)
 
 
 for (r in uniqrtes) { #for each focal route
@@ -155,7 +155,9 @@ for (r in uniqrtes) { #for each focal route
       filter(rte1 == r) %>% 
       top_n(66, desc(dist)) %>% #fixed ordering by including arrange parm, 
       #remove/skip top row 
-      arrange(dist)
+      arrange(dist) %>%
+      slice(2:nu) %>% 
+      select(everything()) %>% data.frame()
     
     #add a column that assigns the rte_group (i.e. 2, 3, 4...66) AND repeats and includes rtes prior 
     #i.e. group 3 will have everything from group 2 AND a new rte, group 4 will have
@@ -163,18 +165,14 @@ for (r in uniqrtes) { #for each focal route
     #will make for a LONG dataset
     
     
-    # nu_rte_group = tmp_rte_group %>% 
-    #   top_n(nu, desc(dist)) %>% #narrow to how many routes to aggregate occ across
-    #   select(rte2) %>% as.vector() #mod to achieve the above
-    
     #with r = 2001, nu = 2, ^this is 2001 and 2057 
     #how to get to repeat and include  
     
     #adding 2 to end since using an input df with all of the exact same column names -> can change back b4 merging, after loop
     temp = data.frame(focalrte = r,
                       rtegroup = nu, #total # routes being aggregated -> do I really need the +1 if it's already inclusive of the 1st?
-                      secndrte = rte2,
-                      maxRadius = tmp_rte_group$dist[nu])   
+                      secndrte = tmp_rte_group$rte2,
+                      maxRadius = tmp_rte_group$dist)   
     
     output = rbind(output, temp)
     print(paste("Focal rte", r, "#' rtes sampled", nu)) #for viewing progress
