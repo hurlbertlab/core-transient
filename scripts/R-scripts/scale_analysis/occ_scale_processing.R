@@ -165,8 +165,8 @@ for (r in uniqrtes) { #for each focal route
 bbs_rte_groups = as.data.frame(output)
 #Calc area for above route scale
 #bbs_above$area = bbs_above_v2$numrtes*50*(pi*(0.4^2)) #number of routes * fifty stops * area in sq km of a stop 
-#write.csv(bbs_above, paste(BBS, "bbs_above.csv", sep = ""), row.names = FALSE)
-#updated 06/30 evening locally and on BioArk; not sure why data folder rejected bc not THAT big but not on github
+write.csv(bbs_rte_groups, paste(BBS, "bbs_rte_groups.csv", sep = ""), row.names = FALSE)
+#updated 07/20 evening locally and on BioArk; not sure if data folder will reject on git
 write.csv(bbs_rte_groups, "data/BBS/bbs_rte_groups.csv", row.names = FALSE)
 
 
