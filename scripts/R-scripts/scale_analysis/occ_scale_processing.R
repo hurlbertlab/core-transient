@@ -93,32 +93,10 @@ write.csv(bbs_below, paste(BBS, "bbs_below.csv", sep = ""), row.names = FALSE) #
 write.csv(bbs_below, "data/BBS/bbs_below.csv", row.names = FALSE)
 
 
+
 ####Calculations for Occupancy above the scale of a BBS route####
 #Revised calcs workspace 
 #sort out bbs_below to ONLY those routes at 50-stop scale (occ calc'd for a single route)
-#06/27 proto-code
-
-
-ascales = seq(50,3250, by = 50)		#"stops" in 1:65 aggregated routes 
-#check to ensure the 'by' input (i.e. currently fixed @ 50) compounds every stop? 
-#so like: 50, 100, 150 -> amt of stops inclusive 
-
-output = c()
-for (scale in ascales) {		#for 50, then for 100, then for 150....
-  numGroups = floor(scale/50)	#how many groups are created: 1, then 2, then 3, 4, etc. up to 65.	
-  
-  #
-  for (g in 1:numGroups) {		#for group g in the total number of groups (number of routes!)
-    groupedCols = paste("Route", ((g-1)*numGroups + 1):(g*numGroups), sep = "")	#this is where trouble starts, FIX	
-    temp = occ_counts(fifty_bestAous, groupedCols, scale)		
-    output = rbind(output, temp) 		
-  }		
-}		#error undefined columns 
-
-#step carefully thru 
-
-#end of revised calcs workspace, old code below
-
 #use to aggregate 
 good_rtes2 = read.csv(paste(BBS, "good_rtes2.csv", sep = ""), header = TRUE) #using updated version, 07/12
 require(fields)
@@ -184,9 +162,6 @@ for (r in uniqrtes) { #for each focal route
 # may need to transpose rows to columns 
 
 
-
-
-
 bbs_rte_groups = as.data.frame(output)
 #Calc area for above route scale
 #bbs_above$area = bbs_above_v2$numrtes*50*(pi*(0.4^2)) #number of routes * fifty stops * area in sq km of a stop 
@@ -194,6 +169,26 @@ bbs_rte_groups = as.data.frame(output)
 #updated 06/30 evening locally and on BioArk; not sure why data folder rejected bc not THAT big but not on github
 write.csv(bbs_rte_groups, "data/BBS/bbs_rte_groups.csv", row.names = FALSE)
 
+
+####Occ_counts for above-scale####
+#06/27 proto-code
+ascales = seq(50,3250, by = 50)		#"stops" in 1:65 aggregated routes 
+#check to ensure the 'by' input (i.e. currently fixed @ 50) compounds every stop? 
+#so like: 50, 100, 150 -> amt of stops inclusive 
+
+output = c()
+for (scale in ascales) {		#for 50, then for 100, then for 150....
+  numGroups = floor(scale/50)	#how many groups are created: 1, then 2, then 3, 4, etc. up to 65.	
+  
+  #
+  for (g in 1:numGroups) {		#for group g in the total number of groups (number of routes!)
+    groupedCols = paste("Route", ((g-1)*numGroups + 1):(g*numGroups), sep = "")	#this is where trouble starts, FIX	
+    temp = occ_counts(fifty_bestAous, groupedCols, scale)		
+    output = rbind(output, temp) 		
+  }		
+}		#error undefined columns 
+
+#step carefully thru 
 
 
 ####New above-scale workspace####
