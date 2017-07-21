@@ -205,8 +205,8 @@ bbs_above$scale = as.factor(bbs_above$scale)
 
 
 bbs_allscales = rbind(bbs_below, bbs_above) #rbind ok since all share column names
-write.csv(bbs_allscales, "C:/git/core-transient/data/BBS/bbs_allscales.csv", row.names = FALSE)
-#updated 07/02/2017, also in BioArk since old copy ALSO there
+write.csv(bbs_allscales, "data/BBS/bbs_allscales.csv", row.names = FALSE)
+#updated 07/20/2017, also in BioArk since old copy ALSO there
 write.csv(bbs_allscales, paste(BBS, "bbs_allscales.csv", sep = ""), row.names = FALSE)
 
 ####filter out stateroutes that are one-sided in scale####
@@ -222,7 +222,7 @@ bbs_allscales$lnN = log(bbs_allscales$aveN) #rerun plots with this?
 bbs_allscales2 = bbs_allscales %>% count(focalrte) %>% filter(n == 83) %>% data.frame() #fix error to exclude NAs
 bbs_allscales3 = filter(bbs_allscales, focalrte %in% bbs_allscales2$focalrte)
 write.csv(bbs_allscales3, "C:/git/core-transient/data/BBS/bbs_allscales.csv", row.names = FALSE) #overwrote bbs all scales file 
-#updated 07/12/2017
+#updated 07/20/2017
 
 ####Order levels of scale factor post-join####
 bbs_allscales = read.csv("data/BBS/bbs_allscales.csv", header = TRUE)
@@ -254,6 +254,6 @@ plot(meanOcc~logN, data = bbs_allscales, xlab = "Average Abundance" , ylab = "Me
 #^^same pattern roughly; abundance describes ~same amt of variance as area so serves as a good proxy 
 
 
-#ALL files updated 07/12 ~3pm 
+#ALL files updated 07/20 ~4pm 
 
 
