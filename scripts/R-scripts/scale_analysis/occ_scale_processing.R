@@ -122,8 +122,12 @@ bbs_fullrte = bbs_below %>%
 uniqrtes = unique(bbs_fullrte$stateroute) #all routes present are unique, still 953 which is great
 numrtes = 2:66 # based on min common number in top 6 grid cells, see grid_sampling_justification script 
 output = data.frame(focalrte = NULL,
-                    rtegroup = NULL, 
-                    secndrte = NULL)
+                    scale = NULL, 
+                    aveN = NULL,
+                    meanOcc = NULL, 
+                    pctCore = NULL,
+                    pctTran = NULL,
+                    maxRadius = NULL)
 
 
 for (r in uniqrtes) { #for each focal route
@@ -155,10 +159,10 @@ for (r in uniqrtes) { #for each focal route
     #START with a community occ and abun already calc'd for each individual rte
         temp = data.frame(focalrte = r,
                           scale = nu, #total # routes being aggregated -> do I really need the +1 if it's already inclusive of the 1st?
-                          aveN = occ.summ$aveN2, 
                           meanOcc = occ.summ$meanOcc2, 
                           pctCore = occ.summ$pctCore2,
                           pctTran = occ.summ$pctTran2,
+                          aveN = occ.summ$aveN2, 
                           maxRadius = occ.summ$maxRadius)   
         
         output = rbind(output, temp)
@@ -173,44 +177,13 @@ for (r in uniqrtes) { #for each focal route
 # may need to transpose rows to columns 
 
 
-bbs_rte_groups = as.data.frame(output)
+bbs_above = as.data.frame(output)
 #Calc area for above route scale
 #bbs_above$area = bbs_above_v2$numrtes*50*(pi*(0.4^2)) #number of routes * fifty stops * area in sq km of a stop 
-write.csv(bbs_rte_groups, paste(BBS, "bbs_rte_groups.csv", sep = ""), row.names = FALSE)
+write.csv(bbs_above, paste(BBS, "bbs_above.csv", sep = ""), row.names = FALSE)
 #updated 07/20 evening locally and on BioArk; not sure if data folder will reject on git
-write.csv(bbs_rte_groups, "data/BBS/bbs_rte_groups.csv", row.names = FALSE)
-# error stopped at rte 53087
-
-####Occ_counts for above-scale####
-#06/27 proto-code
-ascales = seq(50,3250, by = 50)		#"stops" in 1:65 aggregated routes 
-#check to ensure the 'by' input (i.e. currently fixed @ 50) compounds every stop? 
-#so like: 50, 100, 150 -> amt of stops inclusive 
-
-output = c()
-for (scale in ascales) {		#for 50, then for 100, then for 150....
-  numGroups = floor(scale/50)	#how many groups are created: 1, then 2, then 3, 4, etc. up to 65.	
-  
-  #
-  for (g in 1:numGroups) {		#for group g in the total number of groups (number of routes!)
-    groupedCols = paste("Route", ((g-1)*numGroups + 1):(g*numGroups), sep = "")	#this is where trouble starts, FIX	
-    temp = occ_counts(fifty_bestAous, groupedCols, scale)		
-    output = rbind(output, temp) 		
-  }		
-}		#error undefined columns 
-
-#step carefully thru 
-
-
-####New above-scale workspace####
-bbs_rte_groups = read.csv("data/BBS/bbs_rte_groups.csv", header = TRUE)
-
-
-
-
-
-
-
+write.csv(bbs_above, "data/BBS/bbs_above.csv", row.names = FALSE)
+#updated 07/20
 
 ####scale-joining####
 bbs_above = read.csv(paste(BBS, "bbs_above.csv", sep = ""), header = TRUE)
@@ -227,10 +200,7 @@ bbs_below = bbs_below %>%
 
 
 bbs_above = bbs_above %>% 
-  dplyr::rename(scale = numrtes2, aveN = totalAbun2, focalrte = focalrte2, meanOcc = meanOcc2, 
-                pctCore = pctCore2, pctTran = pctTran2, maxRadius = maxRadius2) #%>%
-#this already done above  
-#mutate(area = scale*50*(pi*(0.4^2))) #area in km by # of routes * 50 stops in each rte * area of a stop (for above-route scale later)
+  dplyr::mutate(area = scale*50*(pi*(0.4^2))) #area in km by # of routes * 50 stops in each rte * area of a stop (for above-route scale later)
 bbs_above$scale = as.factor(bbs_above$scale)
 
 
