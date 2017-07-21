@@ -134,7 +134,7 @@ for (r in uniqrtes) { #for each focal route
       top_n(66, desc(dist)) %>% #fixed ordering by including arrange parm, 
       #remove/skip top row 
       arrange(dist) %>%
-      slice(2:nu) %>% 
+      slice(1:nu) %>% 
       select(everything()) %>% data.frame()
     
     focal_clustr = bbs_fullrte %>% 
@@ -142,34 +142,30 @@ for (r in uniqrtes) { #for each focal route
       arrange(dist)
       #(for a given focal rte, narrow input data to those 66 secondary routes in focal cluster)
     
+    occ.summ = focal_clustr %>% 
+      summarize(aveN2 = sum(aveN), 
+                meanOcc2 = mean(meanOcc), 
+                pctCore2 = sum(meanOcc > 2/3)/length(meanOcc),
+                pctTran2 = sum(meanOcc <= 1/3)/length(meanOcc), 
+                maxRadius = max(dist)) 
     
     #now - how to cycle thru agg occ calcs from 2-66? w/in list? 
     #create scale variable corresponding to num rows/routes pulled into occ calc
-    for (f in fclustr){
-      occ.summ = focal_clustr %>% 
-        slice(1:f) %>%
-        summarize(aveN = sum(aveN), 
-                  meanOcc = mean(meanOcc), 
-                  pctCore = sum(meanOcc > 2/3)/length(meanOcc),
-                  pctTran = sum(meanOcc <= 1/3)/length(meanOcc)) 
-    
-        #tmp_rte_group is effectively our sub for "count columns" at the above-rte scale 
-        #START with a community occ and abun already calc'd for each individual rte
+    #tmp_rte_group is effectively our sub for "count columns" at the above-rte scale 
+    #START with a community occ and abun already calc'd for each individual rte
         temp = data.frame(focalrte = r,
-                          rtegroup = nu, #total # routes being aggregated -> do I really need the +1 if it's already inclusive of the 1st?
-                          secndrte = tmp_rte_group$rte2, 
-                          scale = f, 
-                          aveN = occ.summ$aveN, 
-                          meanOcc = occ.summ$meanOcc, 
-                          pctCore = occ.summ$pctCore,
-                          pctTran = occ.summ$pctTran)
-        #maxRadius = tmp_rte_group$dist)   
+                          scale = nu, #total # routes being aggregated -> do I really need the +1 if it's already inclusive of the 1st?
+                          aveN = occ.summ$aveN2, 
+                          meanOcc = occ.summ$meanOcc2, 
+                          pctCore = occ.summ$pctCore2,
+                          pctTran = occ.summ$pctTran2,
+                          maxRadius = occ.summ$maxRadius)   
         
         output = rbind(output, temp)
         print(paste("Focal rte", r, "#' rtes sampled", nu)) #for viewing progress
     
     #adding 2 to end since using an input df with all of the exact same column names -> can change back b4 merging, after loop
-  } #innermost occ loop
+   
   } #n loop
   
 } #r loop
