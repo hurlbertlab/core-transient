@@ -145,40 +145,31 @@ for (r in uniqrtes) { #for each focal route
     
     #now - how to cycle thru agg occ calcs from 2-66? w/in list? 
     #create scale variable corresponding to num rows/routes pulled into occ calc
+    for (f in fclustr){
+      occ.summ = focal_clustr %>% 
+        slice(1:f) %>%
+        summarize(aveN = sum(aveN), 
+                  meanOcc = mean(meanOcc), 
+                  pctCore = sum(meanOcc > 2/3)/length(meanOcc),
+                  pctTran = sum(meanOcc <= 1/3)/length(meanOcc)) 
     
-    
-    #tmp_rte_group is effectively our sub for "count columns" at the above-rte scale 
-    #START with a community occ and abun already calc'd for each individual rte
-    
-    abun.summ = bbssub %>% #abundance
-      group_by(stateroute, year) %>%  
-      summarize(totalN = sum(groupCount)) %>%
-      group_by(stateroute) %>%
-      summarize(aveN = mean(totalN))
-    
-    occ.summ = bbsu %>% #occupancy
-      count(stateroute, AOU) %>%
-      mutate(occ = n/15, scale = scale, subrouteID = countColumns[1]) %>%
-      group_by(stateroute) %>%
-      summarize(meanOcc = mean(occ), 
-                pctCore = sum(occ > 2/3)/length(occ),
-                pctTran = sum(occ <= 1/3)/length(occ)) %>%
-      #spRichTrans33  
-      # spRichTrans25 = sum(occ <= 1/4)/length(occ),
-      # spRichTrans10 = sum(occ <= 0.1)/length(occ)) %>%
-      mutate(scale = paste(scale, g, sep = "-")) %>%
-      left_join(abun.summ, by = 'stateroute')
-      
+        #tmp_rte_group is effectively our sub for "count columns" at the above-rte scale 
+        #START with a community occ and abun already calc'd for each individual rte
+        temp = data.frame(focalrte = r,
+                          rtegroup = nu, #total # routes being aggregated -> do I really need the +1 if it's already inclusive of the 1st?
+                          secndrte = tmp_rte_group$rte2, 
+                          scale = f, 
+                          aveN = occ.summ$aveN, 
+                          meanOcc = occ.summ$meanOcc, 
+                          pctCore = occ.summ$pctCore,
+                          pctTran = occ.summ$pctTran)
+        #maxRadius = tmp_rte_group$dist)   
+        
+        output = rbind(output, temp)
+        print(paste("Focal rte", r, "#' rtes sampled", nu)) #for viewing progress
     
     #adding 2 to end since using an input df with all of the exact same column names -> can change back b4 merging, after loop
-    temp = data.frame(focalrte = r,
-                      rtegroup = nu, #total # routes being aggregated -> do I really need the +1 if it's already inclusive of the 1st?
-                      secndrte = tmp_rte_group$rte2)
-                      #maxRadius = tmp_rte_group$dist)   
-    
-    output = rbind(output, temp)
-    print(paste("Focal rte", r, "#' rtes sampled", nu)) #for viewing progress
-    
+  } #innermost occ loop
   } #n loop
   
 } #r loop
