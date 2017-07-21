@@ -113,7 +113,8 @@ write.csv(dist.df, "scripts/R-scripts/scale_analysis/dist_df.csv", row.names = F
 dist.df = read.csv("scripts/R-scripts/scale_analysis/dist_df.csv", header = TRUE)
 bbs_below = read.csv(paste(BBS, "bbs_below.csv", sep = ""), header = TRUE)
 bbs_fullrte = bbs_below %>%
-  filter(scale == "50-1") #953 routes at scale of a single route
+  filter(scale == "50-1") %>%
+  select(stateroute, meanOcc, aveN) #953 routes at scale of a single route
 
 #go one step at a time, logically -> don't rush thru recreating the loop 
 
@@ -122,8 +123,7 @@ uniqrtes = unique(bbs_fullrte$stateroute) #all routes present are unique, still 
 numrtes = 2:66 # based on min common number in top 6 grid cells, see grid_sampling_justification script 
 output = data.frame(focalrte = NULL,
                     rtegroup = NULL, 
-                    secndrte = NULL,  
-                    maxRadius = NULL)
+                    secndrte = NULL)
 
 
 for (r in uniqrtes) { #for each focal route
@@ -137,20 +137,44 @@ for (r in uniqrtes) { #for each focal route
       slice(2:nu) %>% 
       select(everything()) %>% data.frame()
     
-    #add a column that assigns the rte_group (i.e. 2, 3, 4...66) AND repeats and includes rtes prior 
-    #i.e. group 3 will have everything from group 2 AND a new rte, group 4 will have
-    #everything from group 3 AND a new rte, etc -> cumulative 
-    #will make for a LONG dataset
+    focal_clustr = bbs_fullrte %>% 
+      inner_join(tmp_rte_group, by = c("stateroute" = "rte2"))%>%
+      arrange(dist)
+      #(for a given focal rte, narrow input data to those 66 secondary routes in focal cluster)
     
     
-    #with r = 2001, nu = 2, ^this is 2001 and 2057 
-    #how to get to repeat and include  
+    #now - how to cycle thru agg occ calcs from 2-66? w/in list? 
+    #create scale variable corresponding to num rows/routes pulled into occ calc
+    
+    
+    #tmp_rte_group is effectively our sub for "count columns" at the above-rte scale 
+    #START with a community occ and abun already calc'd for each individual rte
+    
+    abun.summ = bbssub %>% #abundance
+      group_by(stateroute, year) %>%  
+      summarize(totalN = sum(groupCount)) %>%
+      group_by(stateroute) %>%
+      summarize(aveN = mean(totalN))
+    
+    occ.summ = bbsu %>% #occupancy
+      count(stateroute, AOU) %>%
+      mutate(occ = n/15, scale = scale, subrouteID = countColumns[1]) %>%
+      group_by(stateroute) %>%
+      summarize(meanOcc = mean(occ), 
+                pctCore = sum(occ > 2/3)/length(occ),
+                pctTran = sum(occ <= 1/3)/length(occ)) %>%
+      #spRichTrans33  
+      # spRichTrans25 = sum(occ <= 1/4)/length(occ),
+      # spRichTrans10 = sum(occ <= 0.1)/length(occ)) %>%
+      mutate(scale = paste(scale, g, sep = "-")) %>%
+      left_join(abun.summ, by = 'stateroute')
+      
     
     #adding 2 to end since using an input df with all of the exact same column names -> can change back b4 merging, after loop
     temp = data.frame(focalrte = r,
                       rtegroup = nu, #total # routes being aggregated -> do I really need the +1 if it's already inclusive of the 1st?
-                      secndrte = tmp_rte_group$rte2,
-                      maxRadius = tmp_rte_group$dist)   
+                      secndrte = tmp_rte_group$rte2)
+                      #maxRadius = tmp_rte_group$dist)   
     
     output = rbind(output, temp)
     print(paste("Focal rte", r, "#' rtes sampled", nu)) #for viewing progress
@@ -168,7 +192,7 @@ bbs_rte_groups = as.data.frame(output)
 write.csv(bbs_rte_groups, paste(BBS, "bbs_rte_groups.csv", sep = ""), row.names = FALSE)
 #updated 07/20 evening locally and on BioArk; not sure if data folder will reject on git
 write.csv(bbs_rte_groups, "data/BBS/bbs_rte_groups.csv", row.names = FALSE)
-
+# error stopped at rte 53087
 
 ####Occ_counts for above-scale####
 #06/27 proto-code
