@@ -221,25 +221,22 @@ bbs_allscales$lnN = log(bbs_allscales$aveN) #rerun plots with this?
 
 bbs_allscales2 = bbs_allscales %>% count(focalrte) %>% filter(n == 83) %>% data.frame() #fix error to exclude NAs
 bbs_allscales3 = filter(bbs_allscales, focalrte %in% bbs_allscales2$focalrte)
-write.csv(bbs_allscales3, "C:/git/core-transient/data/BBS/bbs_allscales.csv", row.names = FALSE) #overwrote bbs all scales file 
-#updated 07/20/2017
 
-####Order levels of scale factor post-join####
-bbs_allscales = read.csv("data/BBS/bbs_allscales.csv", header = TRUE)
+#Order levels of scale factor post-join####
 #fix duplication of scale (50-1, 1 -> check up)
 
-bbs_allscales$scale = factor(bbs_allscales$scale, 
+bbs_allscales3$scale = factor(bbs_allscales3$scale, 
                              levels = c('5-1', '5-2', '5-3', '5-4', '5-5', '5-6', '5-7', '5-8', '5-9', '5-10',
-                                        '10-1', '10-2', '10-3', '10-4', '10-5', '25-1', '25-2', '50-1',
-                                        '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12',
+                                        '10-1', '10-2', '10-3', '10-4', '10-5', '25-1', '25-2', '50-1', 
+                                        '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12',
                                         '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24',
                                         '25', '26', '27', '28', '29', '30', '31', '32', '33', '34', '35', '36',
                                         '37', '38', '39', '40', '41', '42', '43', '44', '45', '46', '47', '48',
                                         '49', '50', '51', '52', '53', '54', '55', '56', '57', '58', '59', '60',
                                         '61', '62', '63', '64', '65'), ordered=TRUE)
 
-write.csv(bbs_allscales, "C:/git/core-transient/data/BBS/bbs_allscales.csv", row.names = FALSE)
-#updated 07/13 
+write.csv(bbs_allscales3, "data/BBS/bbs_allscales.csv", row.names = FALSE) #overwrote bbs all scales file 
+#updated 07/20/2017
 
 
 ####Occ-scale analysis####
