@@ -36,35 +36,35 @@ OA.df = data.frame(stateroute = numeric(), OA.min = numeric(), OA.max = numeric(
                    OA.pxmid = numeric(), OA.thresh = numeric(), 
                    OA.r2 = numeric(), OA.curvy = numeric()) 
 
-ON.df = data.frame(stateroute = numeric(), OA.min = numeric(), OA.max = numeric(), OA.slope = numeric(), 
-                   OA.xmid = numeric(), OA.thresh = numeric(), 
-                   OA.pmin = numeric(), OA.pmax = numeric(), OA.pslope = numeric(), 
-                   OA.pxmid = numeric(), OA.thresh = numeric(), 
-                   OA.r2 = numeric(), OA.curvy = numeric())
+ON.df = data.frame(stateroute = numeric(), ON.min = numeric(), ON.max = numeric(), ON.slope = numeric(), 
+                   ON.xmid = numeric(), ON.thresh = numeric(), 
+                   ON.pmin = numeric(), ON.pmax = numeric(), ON.pslope = numeric(), 
+                   ON.pxmid = numeric(), ON.thresh = numeric(), 
+                   ON.r2 = numeric(), ON.curvy = numeric())
 
-CA.df = data.frame(stateroute = numeric(), OA.min = numeric(), OA.max = numeric(), OA.slope = numeric(), 
-                   OA.xmid = numeric(), OA.thresh = numeric(), 
-                   OA.pmin = numeric(), OA.pmax = numeric(), OA.pslope = numeric(), 
-                   OA.pxmid = numeric(), OA.thresh = numeric(), 
-                   OA.r2 = numeric(), OA.curvy = numeric())
+CA.df = data.frame(stateroute = numeric(), CA.min = numeric(), CA.max = numeric(), CA.slope = numeric(), 
+                   CA.xmid = numeric(), CA.thresh = numeric(), 
+                   CA.pmin = numeric(), CA.pmax = numeric(), CA.pslope = numeric(), 
+                   CA.pxmid = numeric(), CA.thresh = numeric(), 
+                   CA.r2 = numeric(), CA.curvy = numeric())
 
-CN.df = data.frame(stateroute = numeric(), OA.min = numeric(), OA.max = numeric(), OA.slope = numeric(), 
-                   OA.xmid = numeric(), OA.thresh = numeric(), 
-                   OA.pmin = numeric(), OA.pmax = numeric(), OA.pslope = numeric(), 
-                   OA.pxmid = numeric(), OA.thresh = numeric(), 
-                   OA.r2 = numeric(), OA.curvy = numeric())
+CN.df = data.frame(stateroute = numeric(), CN.min = numeric(), CN.max = numeric(), CN.slope = numeric(), 
+                   CN.xmid = numeric(), CN.thresh = numeric(), 
+                   CN.pmin = numeric(), CN.pmax = numeric(), CN.pslope = numeric(), 
+                   CN.pxmid = numeric(), CN.thresh = numeric(), 
+                   CN.r2 = numeric(), CN.curvy = numeric())
 
-TA.df = data.frame(stateroute = numeric(), OA.min = numeric(), OA.max = numeric(), OA.slope = numeric(), 
-                   OA.xmid = numeric(), OA.thresh = numeric(), 
-                   OA.pmin = numeric(), OA.pmax = numeric(), OA.pslope = numeric(), 
-                   OA.pxmid = numeric(), OA.thresh = numeric(), 
-                   OA.r2 = numeric(), OA.curvy = numeric())
+TA.df = data.frame(stateroute = numeric(), TA.min = numeric(), TA.max = numeric(), TA.slope = numeric(), 
+                   TA.xmid = numeric(), TA.thresh = numeric(), 
+                   TA.pmin = numeric(), TA.pmax = numeric(), TA.pslope = numeric(), 
+                   TA.pxmid = numeric(), TA.thresh = numeric(), 
+                   TA.r2 = numeric(), TA.curvy = numeric())
 
-TN.df = data.frame(stateroute = numeric(), OA.min = numeric(), OA.max = numeric(), OA.slope = numeric(), 
-                   OA.xmid = numeric(), OA.thresh = numeric(), 
-                   OA.pmin = numeric(), OA.pmax = numeric(), OA.pslope = numeric(), 
-                   OA.pxmid = numeric(), OA.thresh = numeric(), 
-                   OA.r2 = numeric(), OA.curvy = numeric())
+TN.df = data.frame(stateroute = numeric(), TN.min = numeric(), TN.max = numeric(), TN.slope = numeric(), 
+                   TN.xmid = numeric(), TN.thresh = numeric(), 
+                   TN.pmin = numeric(), TN.pmax = numeric(), TN.pslope = numeric(), 
+                   TN.pxmid = numeric(), TN.thresh = numeric(), 
+                   TN.r2 = numeric(), TN.curvy = numeric())
 
 warnings = data.frame(stateroute = numeric(), warning = character())
 
