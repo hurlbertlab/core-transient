@@ -33,37 +33,37 @@ BBS = '//bioark.ad.unc.edu/HurlbertLab/Jenkins/BBS scaled/'
 OA.df = data.frame(stateroute = numeric(), OA.min = numeric(), OA.max = numeric(), OA.slope = numeric(), 
                    OA.xmid = numeric(), OA.thresh = numeric(), 
                    OA.pmin = numeric(), OA.pmax = numeric(), OA.pslope = numeric(), 
-                   OA.pxmid = numeric(), OA.thresh = numeric(), 
+                   OA.pxmid = numeric(), OA.pthresh = numeric(), 
                    OA.r2 = numeric(), OA.curvy = numeric()) 
 
 ON.df = data.frame(stateroute = numeric(), ON.min = numeric(), ON.max = numeric(), ON.slope = numeric(), 
                    ON.xmid = numeric(), ON.thresh = numeric(), 
                    ON.pmin = numeric(), ON.pmax = numeric(), ON.pslope = numeric(), 
-                   ON.pxmid = numeric(), ON.thresh = numeric(), 
+                   ON.pxmid = numeric(), ON.pthresh = numeric(), 
                    ON.r2 = numeric(), ON.curvy = numeric())
 
 CA.df = data.frame(stateroute = numeric(), CA.min = numeric(), CA.max = numeric(), CA.slope = numeric(), 
                    CA.xmid = numeric(), CA.thresh = numeric(), 
                    CA.pmin = numeric(), CA.pmax = numeric(), CA.pslope = numeric(), 
-                   CA.pxmid = numeric(), CA.thresh = numeric(), 
+                   CA.pxmid = numeric(), CA.pthresh = numeric(), 
                    CA.r2 = numeric(), CA.curvy = numeric())
 
 CN.df = data.frame(stateroute = numeric(), CN.min = numeric(), CN.max = numeric(), CN.slope = numeric(), 
                    CN.xmid = numeric(), CN.thresh = numeric(), 
                    CN.pmin = numeric(), CN.pmax = numeric(), CN.pslope = numeric(), 
-                   CN.pxmid = numeric(), CN.thresh = numeric(), 
+                   CN.pxmid = numeric(), CN.pthresh = numeric(), 
                    CN.r2 = numeric(), CN.curvy = numeric())
 
 TA.df = data.frame(stateroute = numeric(), TA.min = numeric(), TA.max = numeric(), TA.slope = numeric(), 
                    TA.xmid = numeric(), TA.thresh = numeric(), 
                    TA.pmin = numeric(), TA.pmax = numeric(), TA.pslope = numeric(), 
-                   TA.pxmid = numeric(), TA.thresh = numeric(), 
+                   TA.pxmid = numeric(), TA.pthresh = numeric(), 
                    TA.r2 = numeric(), TA.curvy = numeric())
 
 TN.df = data.frame(stateroute = numeric(), TN.min = numeric(), TN.max = numeric(), TN.slope = numeric(), 
                    TN.xmid = numeric(), TN.thresh = numeric(), 
                    TN.pmin = numeric(), TN.pmax = numeric(), TN.pslope = numeric(), 
-                   TN.pxmid = numeric(), TN.thresh = numeric(), 
+                   TN.pxmid = numeric(), TN.pthresh = numeric(), 
                    TN.r2 = numeric(), TN.curvy = numeric())
 
 warnings = data.frame(stateroute = numeric(), warning = character())
@@ -120,24 +120,34 @@ for(s in stateroutes){
     OA.r2 = summary(OAlm.r2)$r.squared
     OA.curvy =  OA.xmid - OA.pxmid 
 
-    data.frame(stateroute = s, OA.alt_xmid, OA.alt_xmid_pred, OA.alt_xmid_dev, OA.mid_occ, 
-               OA.slope, OA.max, OA.min, OA.r2)
+    data.frame(stateroute = s, OA.min, OA.max, OA.slope, 
+                                          OA.xmid, OA.thresh, 
+                                          OA.pmin, OA.pmax, OA.pslope, 
+                                          OA.pxmid, OA.pthresh, 
+                                          OA.r2, OA.curvy)
     
   }, warning = function(w) {
     warnings = rbind(warnings, data.frame(stateroute = s, warning = w))
   }, error = function(e) {
-    OA.alt_xmid <- NA
-    OA.alt_xmid_pred <- NA
-    OA.alt_xmid_dev <- NA 
-    OA.mid_occ <- NA
-    OA.slope <- NA
-    OA.max <- NA
-    OA.min <- NA
-    OA.r2 <- NA
+    OA.min = NA
+    OA.max = NA
+    OA.slope = NA 
+    OA.xmid = NA
+    OA.thresh = NA  
+    OA.pmin = NA
+    OA.pmax = NA
+    OA.pslope = NA 
+    OA.pxmid = NA
+    OA.pthresh = NA 
+    OA.r2 = NA
+    OA.curvy = NA
   
     
-    temp = data.frame(stateroute = s, OA.alt_xmid, OA.alt_xmid_pred, OA.alt_xmid_dev, OA.mid_occ, 
-                      OA.slope, OA.max, OA.min, OA.r2)
+    temp = data.frame(stateroute = s, OA.min, OA.max, OA.slope, 
+                      OA.xmid, OA.thresh, 
+                      OA.pmin, OA.pmax, OA.pslope, 
+                      OA.pxmid, OA.pthresh, 
+                      OA.r2, OA.curvy)
     return(temp)
     
   })
