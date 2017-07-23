@@ -30,18 +30,41 @@ BBS = '//bioark.ad.unc.edu/HurlbertLab/Jenkins/BBS scaled/'
 
 
 ####Extract coefficients from scale-occupancy relationships for analysis####
-OA.df = data.frame(stateroute = numeric(), OA.alt_xmid = numeric(), OA.alt_xmid_pred = numeric(), OA.alt_xmid_dev= numeric(), 
-                   OA.mid_occ = numeric(), OA.slope = numeric(), OA.max= numeric(), OA.min= numeric(), OA.r2= numeric())
-ON.df = data.frame(stateroute = numeric(), ON.alt_xmid = numeric(), ON.alt_xmid_pred = numeric(), ON.alt_xmid_dev= numeric(), 
-                   ON.mid_occ = numeric(), ON.slope = numeric(), ON.max= numeric(), ON.min= numeric(), ON.r2= numeric())
-CA.df = data.frame(stateroute = numeric(), CA.alt_xmid = numeric(), CA.alt_xmid_pred = numeric(), CA.alt_xmid_dev= numeric(), 
-                   CA.mid_occ = numeric(), CA.slope = numeric(), CA.max= numeric(), CA.min= numeric(), CA.r2= numeric())
-CN.df = data.frame(stateroute = numeric(), CN.alt_xmid = numeric(), CN.alt_xmid_pred = numeric(), CN.alt_xmid_dev = numeric(), 
-                   CN.mid_occ = numeric(), CN.slope = numeric(), CN.max = numeric(), CN.min = numeric(), CN.r2 = numeric())
-TA.df = data.frame(stateroute = numeric(), TA.alt_xmid = numeric(), TA.alt_xmid_pred = numeric(), TA.alt_xmid_dev= numeric(), 
-                   TA.mid_occ = numeric(), TA.slope = numeric(), TA.max= numeric(), TA.min= numeric(), TA.r2= numeric())
-TN.df = data.frame(stateroute = numeric(), TN.alt_xmid = numeric(), TN.alt_xmid_pred = numeric(), TN.alt_xmid_dev = numeric(), 
-                   TN.mid_occ = numeric(), TN.slope = numeric(), TN.max = numeric(), TN.min = numeric(), TN.r2 = numeric())
+OA.df = data.frame(stateroute = numeric(), OA.min = numeric(), OA.max = numeric(), OA.slope = numeric(), 
+                   OA.xmid = numeric(), OA.thresh = numeric(), 
+                   OA.pmin = numeric(), OA.pmax = numeric(), OA.pslope = numeric(), 
+                   OA.pxmid = numeric(), OA.thresh = numeric(), 
+                   OA.r2 = numeric(), OA.curvy = numeric()) 
+
+ON.df = data.frame(stateroute = numeric(), OA.min = numeric(), OA.max = numeric(), OA.slope = numeric(), 
+                   OA.xmid = numeric(), OA.thresh = numeric(), 
+                   OA.pmin = numeric(), OA.pmax = numeric(), OA.pslope = numeric(), 
+                   OA.pxmid = numeric(), OA.thresh = numeric(), 
+                   OA.r2 = numeric(), OA.curvy = numeric())
+
+CA.df = data.frame(stateroute = numeric(), OA.min = numeric(), OA.max = numeric(), OA.slope = numeric(), 
+                   OA.xmid = numeric(), OA.thresh = numeric(), 
+                   OA.pmin = numeric(), OA.pmax = numeric(), OA.pslope = numeric(), 
+                   OA.pxmid = numeric(), OA.thresh = numeric(), 
+                   OA.r2 = numeric(), OA.curvy = numeric())
+
+CN.df = data.frame(stateroute = numeric(), OA.min = numeric(), OA.max = numeric(), OA.slope = numeric(), 
+                   OA.xmid = numeric(), OA.thresh = numeric(), 
+                   OA.pmin = numeric(), OA.pmax = numeric(), OA.pslope = numeric(), 
+                   OA.pxmid = numeric(), OA.thresh = numeric(), 
+                   OA.r2 = numeric(), OA.curvy = numeric())
+
+TA.df = data.frame(stateroute = numeric(), OA.min = numeric(), OA.max = numeric(), OA.slope = numeric(), 
+                   OA.xmid = numeric(), OA.thresh = numeric(), 
+                   OA.pmin = numeric(), OA.pmax = numeric(), OA.pslope = numeric(), 
+                   OA.pxmid = numeric(), OA.thresh = numeric(), 
+                   OA.r2 = numeric(), OA.curvy = numeric())
+
+TN.df = data.frame(stateroute = numeric(), OA.min = numeric(), OA.max = numeric(), OA.slope = numeric(), 
+                   OA.xmid = numeric(), OA.thresh = numeric(), 
+                   OA.pmin = numeric(), OA.pmax = numeric(), OA.pslope = numeric(), 
+                   OA.pxmid = numeric(), OA.thresh = numeric(), 
+                   OA.r2 = numeric(), OA.curvy = numeric())
 
 warnings = data.frame(stateroute = numeric(), warning = character())
 
@@ -76,47 +99,27 @@ for(s in stateroutes){
     logsub$OApreds = predict(OAlog)
     #OApred_df = data.frame(preds = predict(OAlog), scale = logsub$scale, logA = logsub$logA)  #get preds -> is predicting unique per scale, all clear
     OAlm.r2 = lm(logsub$meanOcc ~ OApred_df$preds) #get r2 from model, so far this is just predmod tho 
-    # FIX: could be where problem is, in creation of pred df ^^^
+    
     
     #ACTUAL stats (for plotting data pts): 
     OA.min = min(logsub$meanOcc[logsub$logA == min(logsub$logA)])
     OA.max = max(logsub$meanOcc[logsub$logA == max(logsub$logA)])
     OA.slope = ((OA.max - OA.min)/(max(logsub$logA[logsub$meanOcc == max(logsub$meanOcc)]) - min(logsub$logA[logsub$meanOcc == min(logsub$meanOcc)])))
     OA.xmid = logsub$meanOcc[logsub$scale == '3'] #@ scale == 3, for a given focal rte s, actual value
-    #logsub[21,3] achieves same thing
-    #try adding '' around the 3 since actually a factor? not a character vector until below code 
-      #OA.mid_occ = as.character(min(logsub$scale[logsub$meanOcc > 0.49 & logsub$meanOcc < 0.60])) 
+    OA.thresh = as.character(min(logsub$scale[logsub$meanOcc > 0.49 & logsub$meanOcc < 0.60])) 
     #want the FIRST instance where it hits this range -> how? minimum scale at which it does that
     #then save as a character so associated levels data doesn't stay stuck on the single data point
-    
-    #eq of a line 
-    #((y2-y1)/(x2-x1)) 
-    #meanOcc vals are y, logA is the x 
-    #x and y are dictated by the original model 
     
     #PREDICTED stats (for fitting line): 
     OA.pmin =  min(logsub$OApreds[logsub$logA == min(logsub$logA)])
     OA.pmax = max(logsub$OApreds[logsub$logA == max(logsub$logA)])
     OA.pslope = ((OA.pmax - OA.pmin)/(max(logsub$logA[logsub$meanOcc == max(logsub$meanOcc)]) - min(logsub$logA[logsub$meanOcc == min(logsub$meanOcc)])))
     OA.pxmid = logsub$OApreds[logsub$scale == '3']
-    OA.preds =  
-    #OA.alt_xmid_pred = OApred_df$preds[OApred_df$scale == '3']
-    #OA.alt_xmid_dev = (OA.alt_xmid - OA.alt_xmid_pred) #squared deviance of pred from actual val #need pred AT SCALE = 3 THO
-    #OA.r2 <- summary(OAlm.r2)$r.squared
+    OA.pthresh = as.character(min(logsub$scale[logsub$OApreds > 0.49 & logsub$OApreds < 0.60])) 
     
-      
-    OA.curvy =   
-      
-    # 
-    # #eq of a line
-    # OA.pmax = max(OApred_df$preds[logsub$logA == max(logsub$logA)]) #what point is at the beginning of the line, for a given focal rte s?
-    # OA.pmin = min(OApred_df$preds[logsub$logA == min(logsub$logA)])
-    # #I want the minimum value for mean occupancy where log area is also at its minimum 
-    # #FIX, use OA.max and OA.min to save space 
-    # OA.pslope = ((max(OApred_df$preds) - min(OApred_df$preds))/(max(logsub$logA) - min(logsub$logA)))
-    # #max in BOTH dimensions, x and y
-    # 
-    
+    OA.r2 = summary(OAlm.r2)$r.squared
+    OA.curvy =  OA.xmid - OA.pxmid 
+
     data.frame(stateroute = s, OA.alt_xmid, OA.alt_xmid_pred, OA.alt_xmid_dev, OA.mid_occ, 
                OA.slope, OA.max, OA.min, OA.r2)
     
