@@ -59,7 +59,7 @@ bbs_allscales$scale = factor(bbs_allscales$scale,
                                         '25', '26', '27', '28', '29', '30', '31', '32', '33', '34', '35', '36',
                                         '37', '38', '39', '40', '41', '42', '43', '44', '45', '46', '47', '48',
                                         '49', '50', '51', '52', '53', '54', '55', '56', '57', '58', '59', '60',
-                                        '61', '62', '63', '64', '65'), ordered=TRUE)
+                                        '61', '62', '63', '64', '65', '66'), ordered=TRUE)
 
 
 levels(bbs_allscales$scale)
@@ -73,15 +73,19 @@ for(s in stateroutes){
   #OA 
   OAmodel = tryCatch({
     OAlog = lm(meanOcc ~ logA, data = logsub) #lm instead of nls, reg linear model
-    OApred_df = data.frame(preds = predict(OAlog), scale = logsub$scale)  #get preds -> is predicting unique per scale, all clear
+    logsub$OApreds = predict(OAlog)
+    #OApred_df = data.frame(preds = predict(OAlog), scale = logsub$scale, logA = logsub$logA)  #get preds -> is predicting unique per scale, all clear
     OAlm.r2 = lm(logsub$meanOcc ~ OApred_df$preds) #get r2 from model, so far this is just predmod tho 
     # FIX: could be where problem is, in creation of pred df ^^^
     
     #ACTUAL stats (for plotting data pts): 
-    OA.alt_xmid = logsub$meanOcc[logsub$scale == '3'] #@ scale == 3, for a given focal rte s, actual value
+    OA.min = min(logsub$meanOcc[logsub$logA == min(logsub$logA)])
+    OA.max = max(logsub$meanOcc[logsub$logA == max(logsub$logA)])
+    OA.slope = ((OA.max - OA.min)/(max(logsub$logA[logsub$meanOcc == max(logsub$meanOcc)]) - min(logsub$logA[logsub$meanOcc == min(logsub$meanOcc)])))
+    OA.xmid = logsub$meanOcc[logsub$scale == '3'] #@ scale == 3, for a given focal rte s, actual value
     #logsub[21,3] achieves same thing
     #try adding '' around the 3 since actually a factor? not a character vector until below code 
-    OA.mid_occ = as.character(min(logsub$scale[logsub$meanOcc > 0.49 & logsub$meanOcc < 0.60])) 
+      #OA.mid_occ = as.character(min(logsub$scale[logsub$meanOcc > 0.49 & logsub$meanOcc < 0.60])) 
     #want the FIRST instance where it hits this range -> how? minimum scale at which it does that
     #then save as a character so associated levels data doesn't stay stuck on the single data point
     
@@ -89,18 +93,20 @@ for(s in stateroutes){
     #((y2-y1)/(x2-x1)) 
     #meanOcc vals are y, logA is the x 
     #x and y are dictated by the original model 
-    OA.slope = ((max(logsub$meanOcc) - min(logsub$meanOcc))/(max(logsub$logA) - min(logsub$logA)))
-    #max in BOTH dimensions, x and y
-    OA.max = max(logsub$meanOcc[logsub$logA == max(logsub$logA)]) #what point is at the beginning of the line, for a given focal rte s?
-    OA.min = min(logsub$meanOcc[logsub$logA == min(logsub$logA)])
-    #I want the minimum value for mean occupancy where log area is also at its minimum 
-    
     
     #PREDICTED stats (for fitting line): 
-    OA.alt_xmid_pred = OApred_df$preds[OApred_df$scale == '3']
-    OA.alt_xmid_dev = (OA.alt_xmid - OA.alt_xmid_pred) #squared deviance of pred from actual val #need pred AT SCALE = 3 THO
-    OA.r2 <- summary(OAlm.r2)$r.squared
+    OA.pmin =  min(logsub$OApreds[logsub$logA == min(logsub$logA)])
+    OA.pmax = max(logsub$OApreds[logsub$logA == max(logsub$logA)])
+    OA.pslope = ((OA.pmax - OA.pmin)/(max(logsub$logA[logsub$meanOcc == max(logsub$meanOcc)]) - min(logsub$logA[logsub$meanOcc == min(logsub$meanOcc)])))
+    OA.pxmid = logsub$OApreds[logsub$scale == '3']
+    OA.preds =  
+    #OA.alt_xmid_pred = OApred_df$preds[OApred_df$scale == '3']
+    #OA.alt_xmid_dev = (OA.alt_xmid - OA.alt_xmid_pred) #squared deviance of pred from actual val #need pred AT SCALE = 3 THO
+    #OA.r2 <- summary(OAlm.r2)$r.squared
     
+      
+    OA.curvy =   
+      
     # 
     # #eq of a line
     # OA.pmax = max(OApred_df$preds[logsub$logA == max(logsub$logA)]) #what point is at the beginning of the line, for a given focal rte s?
