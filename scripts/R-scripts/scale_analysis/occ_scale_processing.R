@@ -220,7 +220,8 @@ bbs_allscales$lnA = log(bbs_allscales$area) #log is the natural log
 bbs_allscales$lnN = log(bbs_allscales$aveN) #rerun plots with this?
 
 #only want rtes w/all 83 scales rep'd, which at this point - there are! 
-bbs_allscales2 = bbs_allscales %>% count(focalrte) %>% filter(n == 83) %>% data.frame() #fix error to exclude NAs
+bbs_allscales2 = bbs_allscales %>% filter(meanOcc != 'NA') %>% 
+  count(focalrte) %>% filter(n == 83) %>% data.frame() #fix error to exclude NAs
 bbs_allscales3 = filter(bbs_allscales, focalrte %in% bbs_allscales2$focalrte)
 
 #Order levels of scale factor post-join####
@@ -237,7 +238,7 @@ bbs_allscales3$scale = factor(bbs_allscales3$scale,
                                         '61', '62', '63', '64', '65', '66'), ordered=TRUE)
 
 write.csv(bbs_allscales3, "data/BBS/bbs_allscales.csv", row.names = FALSE) #overwrote bbs all scales file 
-#updated 07/20/2017
+#updated 07/24/2017 from 1003 to 1001 routes
 
 
 ####Occ-scale analysis####
