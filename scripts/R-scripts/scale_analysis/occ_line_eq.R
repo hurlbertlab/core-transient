@@ -109,7 +109,7 @@ for(s in stateroutes){
     OAlog = lm(meanOcc ~ logA, data = logsub) #lm instead of nls, reg linear model
     logsub$OApreds = predict(OAlog)
     #OApred_df = data.frame(preds = predict(OAlog), scale = logsub$scale, logA = logsub$logA)  #get preds -> is predicting unique per scale, all clear
-    OAlm.r2 = lm(logsub$meanOcc ~ OApred_df$preds) #get r2 from model, so far this is just predmod tho 
+    OAlm.r2 = lm(meanOcc ~ OApreds, data = logsub) #get r2 from model, so far this is just predmod tho 
     
     
     #ACTUAL stats (for plotting data pts): 
@@ -124,7 +124,7 @@ for(s in stateroutes){
     #PREDICTED stats (for fitting line): 
     OA.pmin =  min(logsub$OApreds[logsub$logA == min(logsub$logA)])
     OA.pmax = max(logsub$OApreds[logsub$logA == max(logsub$logA)])
-    OA.pslope = ((OA.pmax - OA.pmin)/(max(logsub$logA[logsub$meanOcc == max(logsub$meanOcc)]) - min(logsub$logA[logsub$meanOcc == min(logsub$meanOcc)])))
+    OA.pslope = ((OA.pmax - OA.pmin)/(max(logsub$logA[logsub$OApreds == max(logsub$OApreds)]) - min(logsub$logA[logsub$OApreds == min(logsub$OApreds)])))
     OA.pxmid = logsub$OApreds[logsub$scale == '3']
     OA.pthresh = as.character(min(logsub$scale[logsub$OApreds > 0.49 & logsub$OApreds < 0.60])) 
     
@@ -165,7 +165,7 @@ for(s in stateroutes){
     
   })
   OA.df = rbind(OA.df, OAmodel)
-  #OA model works now on one run, trycatch works, does loop work is question? 
+  #
   
   
   
