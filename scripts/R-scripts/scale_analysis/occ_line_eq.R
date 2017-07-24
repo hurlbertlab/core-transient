@@ -494,7 +494,8 @@ coefs = OA.df %>%
   # inner_join(TN.df, OA.df, by = "stateroute")
 
   
-coefs_2 = na.omit(coefs)
+coefs_2 = na.omit(coefs) #down to 445 from 1001! Mostly from pctCore model tryCatch. 
+#why so many NA's in the pctCore coefs? 
   
   
 write.csv(coefs_2, "scripts/R-scripts/scale_analysis/coefs.csv", row.names = FALSE) #updated 07/17
@@ -505,10 +506,6 @@ write.csv(coefs_2, "scripts/R-scripts/scale_analysis/coefs.csv", row.names = FAL
 #do I want to plot slope and line of predicted values over the top of actual? should be an easy sub 
 
 bbs_allscales = read.csv("data/BBS/bbs_allscales.csv", header = TRUE)
-bbs_allscales$logA = log10(bbs_allscales$area)
-bbs_allscales$logN = log10(bbs_allscales$aveN)
-bbs_allscales$lnA = log(bbs_allscales$area) #log is the natural log 
-bbs_allscales$lnN = log(bbs_allscales$aveN) #rerun plots with this?
 coefs = read.csv("scripts/R-scripts/scale_analysis/coefs.csv", header = TRUE)
 
 
@@ -531,8 +528,4 @@ plot1 = ggplot(coef_sub, aes(x = logA, y = meanOcc))+geom_point(colour = "firebr
 
 #ref from abline help: 
 
-# Calculate slope and intercept of line of best fit
-coef(lm(mpg ~ wt, data = mtcars))
-p + geom_abline(intercept = 37, slope = -5)
-# But this is easier to do with geom_smooth:
-p + geom_smooth(method = "lm", se = FALSE)
+
