@@ -489,9 +489,9 @@ for(s in stateroutes){
 coefs = OA.df %>% 
   inner_join(ON.df, OA.df, by = "stateroute") %>% 
   inner_join(CA.df, OA.df, by = "stateroute") %>% 
-  inner_join(CN.df, OA.df, by = "stateroute") %>%
-  inner_join(TA.df, OA.df, by = "stateroute") %>%
-  inner_join(TN.df, OA.df, by = "stateroute")
+  inner_join(CN.df, OA.df, by = "stateroute") #%>%
+  # inner_join(TA.df, OA.df, by = "stateroute") %>%
+  # inner_join(TN.df, OA.df, by = "stateroute")
 
   
 coefs_2 = na.omit(coefs)
