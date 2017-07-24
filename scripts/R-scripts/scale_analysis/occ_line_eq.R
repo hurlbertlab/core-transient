@@ -99,7 +99,7 @@ unique(bbs_allscales$scale)
 
 ####coefs trycatch####
 stateroutes = unique(bbs_allscales$focalrte)
-#07/16 version of tryCatch
+#07/24 version of tryCatch
 for(s in stateroutes){
   logsub = subset(bbs_allscales, bbs_allscales$focalrte == s)  
   #fitting the log curve for area (for each route)
@@ -131,13 +131,13 @@ for(s in stateroutes){
     OA.r2 = summary(OAlm.r2)$r.squared
     OA.curvy =  OA.xmid - OA.pxmid 
 
-    temp = data.frame(stateroute = s, OA.min, OA.max, OA.slope, 
+    data.frame(stateroute = s, OA.min, OA.max, OA.slope, 
                                           OA.xmid, OA.thresh, 
                                           OA.pmin, OA.pmax, OA.pslope, 
                                           OA.pxmid, OA.pthresh, 
                                           OA.r2, OA.curvy)
     
-    return(temp)
+    
     
   }, warning = function(w) {
     warnings = rbind(warnings, data.frame(stateroute = s, warning = w))
@@ -174,7 +174,7 @@ for(s in stateroutes){
     ONlog = lm(meanOcc ~ logN, data = logsub) #lm instead of nls, reg linear model
     logsub$ONpreds = predict(ONlog)
     #ONpred_df = data.frame(preds = predict(ONlog), scale = logsub$scale, logA = logsub$logA)  #get preds -> is predicting unique per scale, all clear
-    ONlm.r2 = lm(logsub$meanOcc ~ ONpred_df$preds) #get r2 from model, so far this is just predmod tho 
+    OAlm.r2 = lm(meanOcc ~ ONpreds, data = logsub) #get r2 from model, so far this is just predmod tho 
     
     
     #ACTUAL stats (for plotting data pts): 
@@ -238,7 +238,7 @@ for(s in stateroutes){
     CAlog = lm(pctCore ~ logA, data = logsub) #lm instead of nls, reg linear model
     logsub$CApreds = predict(CAlog)
     #CApred_df = data.frame(preds = predict(CAlog), scale = logsub$scale, logA = logsub$logA)  #get preds -> is predicting unique per scale, all clear
-    CAlm.r2 = lm(logsub$pctCore ~ CApred_df$preds) #get r2 from model, so far this is just predmod tho 
+    CAlm.r2 = lm(pctCore ~ CApreds, data = logsub) #get r2 from model, so far this is just predmod tho 
     
     
     #ACTUAL stats (for plotting data pts): 
@@ -300,7 +300,7 @@ for(s in stateroutes){
     CNlog = lm(pctCore ~ logN, data = logsub) #lm instead of nls, reg linear model
     logsub$CNpreds = predict(CNlog)
     #CNpred_df = data.frame(preds = predict(CNlog), scale = logsub$scale, logN = logsub$logN)  #get preds -> is predicting unique per scale, all clear
-    CNlm.r2 = lm(logsub$pctCore ~ CNpred_df$preds) #get r2 from model, so far this is just predmod tho 
+    CNlm.r2 = lm(pctCore ~ CNpreds, data = logsub) #get r2 from model, so far this is just predmod tho 
     
     
     #ACTUAL stats (for plotting data pts): 
@@ -365,7 +365,7 @@ for(s in stateroutes){
   #   TAlog = lm(pctTran ~ lnA, data = logsub) #lm instead of nls, reg linear model
   #   logsub$TApreds = predict(TAlog)
   #   #TApred_df = data.frame(preds = predict(TAlog), scale = logsub$scale, lnA = logsub$lnA)  #get preds -> is predicting unique per scale, all clear
-  #   TAlm.r2 = lm(logsub$pctTran ~ TApred_df$preds) #get r2 from model, so far this is just predmod tho 
+  #   TAlm.r2 = lm(pctTran ~ TApreds, data = logsub) #get r2 from model, so far this is just predmod tho 
   #   
   #   
   #   #ACTUAL stats (for plotting data pts): 
@@ -426,7 +426,7 @@ for(s in stateroutes){
   #   TNlog = lm(pctTran ~ lnN, data = logsub) #lm instead of nls, reg linear model
   #   logsub$TNpreds = predict(TNlog)
   #   #TNpred_df = data.frame(preds = predict(TNlog), scale = logsub$scale, lnN = logsub$lnN)  #get preds -> is predicting unique per scale, all clear
-  #   TNlm.r2 = lm(logsub$pctTran ~ TNpred_df$preds) #get r2 from model, so far this is just predmod tho 
+  #   TNlm.r2 = lm(pctTran ~ TNpreds, data = logsub) #get r2 from model, so far this is just predmod tho 
   # 
   # 
   #   #ACTUAL stats (for plotting data pts): 
