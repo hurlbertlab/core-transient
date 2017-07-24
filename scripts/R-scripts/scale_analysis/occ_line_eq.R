@@ -92,17 +92,15 @@ levels(bbs_allscales$scale)
 unique(bbs_allscales$scale)
 #ALL clear 07/24
 
-
-#getting NA's in output even though test stateroutes (2001, etc) run fine, output fine 
-#recall previous tryCatch errors where error portion of tryCatch had been superimposing NA's bc of small bug
-
-
 ####coefs trycatch####
 stateroutes = unique(bbs_allscales$focalrte)
 #07/24 version of tryCatch
 for(s in stateroutes){
   logsub = subset(bbs_allscales, bbs_allscales$focalrte == s)  
-  #fitting the log curve for area (for each route)
+  #for each focalrte with 83 scales, what are the actual values 
+  #characterizing how temporal occupancy of communities shifts with scale? 
+  #using our model to generate predictions, how do those predictions compare? 
+  #how radically does our predicted line curve away from our data, how closely does it track our data?
   
   #OA 
   OAmodel = tryCatch({
