@@ -85,7 +85,6 @@ for(s in stateroutes){
   #how radically does our predicted line curve away from our data, how closely does it track our data?
   
   #OA 
-  OAmodel = tryCatch({
     OAlog = lm(meanOcc ~ logA, data = logsub) #lm instead of nls, reg linear model
     logsub$OApreds = predict(OAlog)
     #OApred_df = data.frame(preds = predict(OAlog), scale = logsub$scale, logA = logsub$logA)  #get preds -> is predicting unique per scale, all clear
@@ -97,7 +96,7 @@ for(s in stateroutes){
     OA.max = max(logsub$meanOcc[logsub$logA == max(logsub$logA)])
     OA.slope = ((OA.max - OA.min)/(max(logsub$logA[logsub$meanOcc == max(logsub$meanOcc)]) - min(logsub$logA[logsub$meanOcc == min(logsub$meanOcc)])))
     OA.xmid = logsub$meanOcc[logsub$scale == '3'] #@ scale == 3, for a given focal rte s, actual value
-    OA.thresh = as.character(min(logsub$scale[logsub$meanOcc > 0.49 & logsub$meanOcc < 0.60])) 
+    OA.thresh = min(logsub$logA[logsub$meanOcc >= 0.5]) 
     #want the FIRST instance where it hits this range -> how? minimum scale at which it does that
     #then save as a character so associated levels data doesn't stay stuck on the single data point
     
@@ -106,50 +105,22 @@ for(s in stateroutes){
     OA.pmax = max(logsub$OApreds[logsub$logA == max(logsub$logA)])
     OA.pslope = ((OA.pmax - OA.pmin)/(max(logsub$logA[logsub$OApreds == max(logsub$OApreds)]) - min(logsub$logA[logsub$OApreds == min(logsub$OApreds)])))
     OA.pxmid = logsub$OApreds[logsub$scale == '3']
-    OA.pthresh = as.character(min(logsub$scale[logsub$OApreds > 0.49 & logsub$OApreds < 0.60])) 
+    OA.pthresh = min(logsub$logA[logsub$OApreds >= 0.5]) 
     
     OA.r2 = summary(OAlm.r2)$r.squared
     OA.curvy =  OA.xmid - OA.pxmid 
 
-    data.frame(stateroute = s, OA.min, OA.max, OA.slope, 
+    OAmodel = data.frame(stateroute = s, OA.min, OA.max, OA.slope, 
                                           OA.xmid, OA.thresh, 
                                           OA.pmin, OA.pmax, OA.pslope, 
                                           OA.pxmid, OA.pthresh, 
                                           OA.r2, OA.curvy)
     
-    
-    
-  }, warning = function(w) {
-    warnings = rbind(warnings, data.frame(stateroute = s, warning = w))
-  }, error = function(e) {
-    OA.min = NA
-    OA.max = NA
-    OA.slope = NA 
-    OA.xmid = NA
-    OA.thresh = NA  
-    OA.pmin = NA
-    OA.pmax = NA
-    OA.pslope = NA 
-    OA.pxmid = NA
-    OA.pthresh = NA 
-    OA.r2 = NA
-    OA.curvy = NA
-  
-    
-    temp = data.frame(stateroute = s, OA.min, OA.max, OA.slope, 
-                      OA.xmid, OA.thresh, 
-                      OA.pmin, OA.pmax, OA.pslope, 
-                      OA.pxmid, OA.pthresh, 
-                      OA.r2, OA.curvy)
-    return(temp)
-    
-  })
   OA.df = rbind(OA.df, OAmodel)
   #
   
    #CA
-  CAmodel = tryCatch({
-    CAlog = lm(pctCore ~ logA, data = logsub) #lm instead of nls, reg linear model
+     CAlog = lm(pctCore ~ logA, data = logsub) #lm instead of nls, reg linear model
     logsub$CApreds = predict(CAlog)
     #CApred_df = data.frame(preds = predict(CAlog), scale = logsub$scale, logA = logsub$logA)  #get preds -> is predicting unique per scale, all clear
     CAlm.r2 = lm(pctCore ~ CApreds, data = logsub) #get r2 from model, so far this is just predmod tho 
@@ -160,7 +131,7 @@ for(s in stateroutes){
     CA.max = max(logsub$pctCore[logsub$logA == max(logsub$logA)])
     CA.slope = ((CA.max - CA.min)/(max(logsub$logA[logsub$pctCore == max(logsub$pctCore)]) - min(logsub$logA[logsub$pctCore == min(logsub$pctCore)])))
     CA.xmid = logsub$pctCore[logsub$scale == '3'] #@ scale == 3, for a given focal rte s, actual value
-    CA.thresh = as.character(min(logsub$scale[logsub$pctCore > 0.49 & logsub$pctCore < 0.60])) 
+    CA.thresh = min(logsub$logA[logsub$pctCore >= 0.5]) 
     #want the FIRST instance where it hits this range -> how? minimum scale at which it does that
     #then save as a character so associated levels data doesn't stay stuck on the single data point
     
@@ -169,44 +140,17 @@ for(s in stateroutes){
     CA.pmax = max(logsub$CApreds[logsub$logA == max(logsub$logA)])
     CA.pslope = ((CA.pmax - CA.pmin)/(max(logsub$logA[logsub$CApreds == max(logsub$CApreds)]) - min(logsub$logA[logsub$CApreds == min(logsub$CApreds)])))
     CA.pxmid = logsub$CApreds[logsub$scale == '3']
-    CA.pthresh = as.character(min(logsub$scale[logsub$CApreds > 0.49 & logsub$CApreds < 0.60])) 
+    CA.pthresh = min(logsub$logA[logsub$CApreds >= 0.5]) 
     
     CA.r2 = summary(CAlm.r2)$r.squared
     CA.curvy =  CA.xmid - CA.pxmid 
     
-    data.frame(stateroute = s, CA.min, CA.max, CA.slope, 
+    CAmodel = data.frame(stateroute = s, CA.min, CA.max, CA.slope, 
                CA.xmid, CA.thresh, 
                CA.pmin, CA.pmax, CA.pslope, 
                CA.pxmid, CA.pthresh, 
                CA.r2, CA.curvy)
     
-    
-    
-  }, warning = function(w) {
-    warnings = rbind(warnings, data.frame(stateroute = s, warning = w))
-  }, error = function(e) {
-    CA.min = NA
-    CA.max = NA
-    CA.slope = NA 
-    CA.xmid = NA
-    CA.thresh = NA  
-    CA.pmin = NA
-    CA.pmax = NA
-    CA.pslope = NA 
-    CA.pxmid = NA
-    CA.pthresh = NA 
-    CA.r2 = NA
-    CA.curvy = NA
-    
-    
-    temp = data.frame(stateroute = s, CA.min, CA.max, CA.slope, 
-                      CA.xmid, CA.thresh, 
-                      CA.pmin, CA.pmax, CA.pslope, 
-                      CA.pxmid, CA.pthresh, 
-                      CA.r2, CA.curvy)
-    return(temp)
-    
-  })
   CA.df = rbind(CA.df, CAmodel)
   
  
