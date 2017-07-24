@@ -131,11 +131,13 @@ for(s in stateroutes){
     OA.r2 = summary(OAlm.r2)$r.squared
     OA.curvy =  OA.xmid - OA.pxmid 
 
-    data.frame(stateroute = s, OA.min, OA.max, OA.slope, 
+    temp = data.frame(stateroute = s, OA.min, OA.max, OA.slope, 
                                           OA.xmid, OA.thresh, 
                                           OA.pmin, OA.pmax, OA.pslope, 
                                           OA.pxmid, OA.pthresh, 
                                           OA.r2, OA.curvy)
+    
+    return(temp)
     
   }, warning = function(w) {
     warnings = rbind(warnings, data.frame(stateroute = s, warning = w))
@@ -194,11 +196,13 @@ for(s in stateroutes){
     ON.r2 = summary(ONlm.r2)$r.squared
     ON.curvy =  ON.xmid - ON.pxmid 
     
-    data.frame(stateroute = s, ON.min, ON.max, ON.slope, 
+    temp = data.frame(stateroute = s, ON.min, ON.max, ON.slope, 
                ON.xmid, ON.thresh, 
                ON.pmin, ON.pmax, ON.pslope, 
                ON.pxmid, ON.pthresh, 
                ON.r2, ON.curvy)
+    
+    return(temp)
     
   }, warning = function(w) {
     warnings = rbind(warnings, data.frame(stateroute = s, warning = w))
@@ -256,11 +260,13 @@ for(s in stateroutes){
     CA.r2 = summary(CAlm.r2)$r.squared
     CA.curvy =  CA.xmid - CA.pxmid 
     
-    data.frame(stateroute = s, CA.min, CA.max, CA.slope, 
+    temp = data.frame(stateroute = s, CA.min, CA.max, CA.slope, 
                CA.xmid, CA.thresh, 
                CA.pmin, CA.pmax, CA.pslope, 
                CA.pxmid, CA.pthresh, 
                CA.r2, CA.curvy)
+    
+    return(temp)
     
   }, warning = function(w) {
     warnings = rbind(warnings, data.frame(stateroute = s, warning = w))
@@ -316,11 +322,13 @@ for(s in stateroutes){
     CN.r2 = summary(CNlm.r2)$r.squared
     CN.curvy =  CN.xmid - CN.pxmid 
     
-    data.frame(stateroute = s, CN.min, CN.max, CN.slope, 
+    temp = data.frame(stateroute = s, CN.min, CN.max, CN.slope, 
                CN.xmid, CN.thresh, 
                CN.pmin, CN.pmax, CN.pslope, 
                CN.pxmid, CN.pthresh, 
                CN.r2, CN.curvy)
+    
+    return(temp)
     
   }, warning = function(w) {
     warnings = rbind(warnings, data.frame(stateroute = s, warning = w))
