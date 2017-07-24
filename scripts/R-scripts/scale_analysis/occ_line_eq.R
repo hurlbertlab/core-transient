@@ -151,44 +151,44 @@ for(s in stateroutes){
   CA.df = rbind(CA.df, CAmodel)
   
  
-  # Fitting % transient
-  #TA
-  TAlog = lm(pctTran ~ lnA, data = logsub) #lm instead of nls, reg linear model
-    logsub$TApreds = predict(TAlog)
-    #TApred_df = data.frame(preds = predict(TAlog), scale = logsub$scale, lnA = logsub$lnA)  #get preds -> is predicting unique per scale, all clear
-    TAlm.r2 = lm(pctTran ~ TApreds, data = logsub) #get r2 from model, so far this is just predmod tho
-
-    #ACTUAL stats (for plotting data pts):
-    #LOOKS DIFFERENT because transient, negative slope should be what we get 
-    #the maximum %Tran val should occur at the minimum lnA value
-    #the minimum %Tran val should occur at the maximum lnA value 
-    
-    TA.min = min(logsub$pctTran[logsub$lnA == max(logsub$lnA)])
-    TA.max = max(logsub$pctTran[logsub$lnA == min(logsub$lnA)])
-    TA.slope = ((TA.min - TA.max)/(max(logsub$lnA[logsub$pctTran == max(logsub$pctTran)]) - min(logsub$lnA[logsub$pctTran == min(logsub$pctTran)])))
-    TA.xmid = logsub$pctTran[logsub$scale == '3'] #@ scale == 3, for a given focal rte s, actual value
-    TA.thresh = min(logsub$lnA[logsub$pctTran >= 0.50])
-    #want the FIRST instance where it hits this range -> how? minimum scale at which it does that
-    #then save as a character so associated levels data doesn't stay stuck on the single data point
-
-    #PREDICTED stats (for fitting line):
-    TA.pmin =  min(logsub$TApreds[logsub$lnA == min(logsub$lnA)])
-    TA.pmax = max(logsub$TApreds[logsub$lnA == max(logsub$lnA)])
-    TA.pslope = ((TA.pmin - TA.pmax)/(max(logsub$lnA[logsub$TApreds == max(logsub$TApreds)]) - min(logsub$lnA[logsub$TApreds == min(logsub$TApreds)])))
-    TA.pxmid = logsub$TApreds[logsub$scale == '3']
-    TA.pthresh = min(logsub$lnA[logsub$TApreds >= 0.50])
-
-    TA.r2 = summary(TAlm.r2)$r.squared
-    TA.curvy =  TA.xmid - TA.pxmid
-
-    TAmodel = data.frame(stateroute = s, TA.min, TA.max, TA.slope,
-               TA.xmid, TA.thresh,
-               TA.pmin, TA.pmax, TA.pslope,
-               TA.pxmid, TA.pthresh,
-               TA.r2, TA.curvy)
-
-
-  TA.df = rbind(TA.df, TAmodel)
+  # # Fitting % transient
+  # #TA
+  # TAlog = lm(pctTran ~ lnA, data = logsub) #lm instead of nls, reg linear model
+  #   logsub$TApreds = predict(TAlog)
+  #   #TApred_df = data.frame(preds = predict(TAlog), scale = logsub$scale, lnA = logsub$lnA)  #get preds -> is predicting unique per scale, all clear
+  #   TAlm.r2 = lm(pctTran ~ TApreds, data = logsub) #get r2 from model, so far this is just predmod tho
+  # 
+  #   #ACTUAL stats (for plotting data pts):
+  #   #LOOKS DIFFERENT because transient, negative slope should be what we get 
+  #   #the maximum %Tran val should occur at the minimum lnA value
+  #   #the minimum %Tran val should occur at the maximum lnA value 
+  #   
+  #   TA.min = min(logsub$pctTran[logsub$lnA == max(logsub$lnA)])
+  #   TA.max = max(logsub$pctTran[logsub$lnA == min(logsub$lnA)])
+  #   TA.slope = ((TA.min - TA.max)/(max(logsub$lnA[logsub$pctTran == max(logsub$pctTran)]) - min(logsub$lnA[logsub$pctTran == min(logsub$pctTran)])))
+  #   TA.xmid = logsub$pctTran[logsub$scale == '3'] #@ scale == 3, for a given focal rte s, actual value
+  #   TA.thresh = min(logsub$lnA[logsub$pctTran >= 0.50])
+  #   #want the FIRST instance where it hits this range -> how? minimum scale at which it does that
+  #   #then save as a character so associated levels data doesn't stay stuck on the single data point
+  # 
+  #   #PREDICTED stats (for fitting line):
+  #   TA.pmin =  min(logsub$TApreds[logsub$lnA == min(logsub$lnA)])
+  #   TA.pmax = max(logsub$TApreds[logsub$lnA == max(logsub$lnA)])
+  #   TA.pslope = ((TA.pmin - TA.pmax)/(max(logsub$lnA[logsub$TApreds == max(logsub$TApreds)]) - min(logsub$lnA[logsub$TApreds == min(logsub$TApreds)])))
+  #   TA.pxmid = logsub$TApreds[logsub$scale == '3']
+  #   TA.pthresh = min(logsub$lnA[logsub$TApreds >= 0.50])
+  # 
+  #   TA.r2 = summary(TAlm.r2)$r.squared
+  #   TA.curvy =  TA.xmid - TA.pxmid
+  # 
+  #   TAmodel = data.frame(stateroute = s, TA.min, TA.max, TA.slope,
+  #              TA.xmid, TA.thresh,
+  #              TA.pmin, TA.pmax, TA.pslope,
+  #              TA.pxmid, TA.pthresh,
+  #              TA.r2, TA.curvy)
+  # 
+  # 
+  # TA.df = rbind(TA.df, TAmodel)
 
   
 } #end of loop 
@@ -196,8 +196,8 @@ for(s in stateroutes){
   
 #join all together using inner_join by focal rte, not cbind 
 coefs = OA.df %>% 
-  inner_join(CA.df, OA.df, by = "stateroute") %>% 
-  inner_join(TA.df, OA.df, by = "stateroute") 
+  inner_join(CA.df, OA.df, by = "stateroute") #%>% 
+  #inner_join(TA.df, OA.df, by = "stateroute") 
  
 
   
