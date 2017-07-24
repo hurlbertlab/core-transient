@@ -189,20 +189,20 @@ for(s in stateroutes){
     #PREDICTED stats (for fitting line): 
     ON.pmin =  min(logsub$ONpreds[logsub$logN == min(logsub$logN)])
     ON.pmax = max(logsub$ONpreds[logsub$logN == max(logsub$logN)])
-    ON.pslope = ((ON.pmax - ON.pmin)/(max(logsub$logN[logsub$meanOcc == max(logsub$meanOcc)]) - min(logsub$logN[logsub$meanOcc == min(logsub$meanOcc)])))
+    ON.pslope = ((ON.pmax - ON.pmin)/(max(logsub$logN[logsub$ONpreds == max(logsub$ONpreds)]) - min(logsub$logN[logsub$ONpreds == min(logsub$ONpreds)])))
     ON.pxmid = logsub$ONpreds[logsub$scale == '3']
     ON.pthresh = as.character(min(logsub$scale[logsub$ONpreds > 0.49 & logsub$ONpreds < 0.60])) 
     
     ON.r2 = summary(ONlm.r2)$r.squared
     ON.curvy =  ON.xmid - ON.pxmid 
     
-    temp = data.frame(stateroute = s, ON.min, ON.max, ON.slope, 
+    data.frame(stateroute = s, ON.min, ON.max, ON.slope, 
                ON.xmid, ON.thresh, 
                ON.pmin, ON.pmax, ON.pslope, 
                ON.pxmid, ON.pthresh, 
                ON.r2, ON.curvy)
     
-    return(temp)
+    
     
   }, warning = function(w) {
     warnings = rbind(warnings, data.frame(stateroute = s, warning = w))
@@ -253,20 +253,20 @@ for(s in stateroutes){
     #PREDICTED stats (for fitting line): 
     CA.pmin =  min(logsub$CApreds[logsub$logA == min(logsub$logA)])
     CA.pmax = max(logsub$CApreds[logsub$logA == max(logsub$logA)])
-    CA.pslope = ((CA.pmax - CA.pmin)/(max(logsub$logA[logsub$pctCore == max(logsub$pctCore)]) - min(logsub$logA[logsub$pctCore == min(logsub$pctCore)])))
+    CA.pslope = ((CA.pmax - CA.pmin)/(max(logsub$logA[logsub$CApreds == max(logsub$CApreds)]) - min(logsub$logA[logsub$CApreds == min(logsub$CApreds)])))
     CA.pxmid = logsub$CApreds[logsub$scale == '3']
     CA.pthresh = as.character(min(logsub$scale[logsub$CApreds > 0.49 & logsub$CApreds < 0.60])) 
     
     CA.r2 = summary(CAlm.r2)$r.squared
     CA.curvy =  CA.xmid - CA.pxmid 
     
-    temp = data.frame(stateroute = s, CA.min, CA.max, CA.slope, 
+    data.frame(stateroute = s, CA.min, CA.max, CA.slope, 
                CA.xmid, CA.thresh, 
                CA.pmin, CA.pmax, CA.pslope, 
                CA.pxmid, CA.pthresh, 
                CA.r2, CA.curvy)
     
-    return(temp)
+    
     
   }, warning = function(w) {
     warnings = rbind(warnings, data.frame(stateroute = s, warning = w))
@@ -315,20 +315,20 @@ for(s in stateroutes){
     #PREDICTED stats (for fitting line): 
     CN.pmin =  min(logsub$CNpreds[logsub$logN == min(logsub$logN)])
     CN.pmax = max(logsub$CNpreds[logsub$logN == max(logsub$logN)])
-    CN.pslope = ((CN.pmax - CN.pmin)/(max(logsub$logN[logsub$pctCore == max(logsub$pctCore)]) - min(logsub$logN[logsub$pctCore == min(logsub$pctCore)])))
+    CN.pslope = ((CN.pmax - CN.pmin)/(max(logsub$logN[logsub$CNpreds == max(logsub$CNpreds)]) - min(logsub$logN[logsub$CNpreds == min(logsub$CNpreds)])))
     CN.pxmid = logsub$CNpreds[logsub$scale == '3']
     CN.pthresh = as.character(min(logsub$scale[logsub$CNpreds > 0.49 & logsub$CNpreds < 0.60])) 
     
     CN.r2 = summary(CNlm.r2)$r.squared
     CN.curvy =  CN.xmid - CN.pxmid 
     
-    temp = data.frame(stateroute = s, CN.min, CN.max, CN.slope, 
+    data.frame(stateroute = s, CN.min, CN.max, CN.slope, 
                CN.xmid, CN.thresh, 
                CN.pmin, CN.pmax, CN.pslope, 
                CN.pxmid, CN.pthresh, 
                CN.r2, CN.curvy)
     
-    return(temp)
+    
     
   }, warning = function(w) {
     warnings = rbind(warnings, data.frame(stateroute = s, warning = w))
@@ -380,7 +380,7 @@ for(s in stateroutes){
   #   #PREDICTED stats (for fitting line): 
   #   TA.pmin =  min(logsub$TApreds[logsub$lnA == min(logsub$lnA)])
   #   TA.pmax = max(logsub$TApreds[logsub$lnA == max(logsub$lnA)])
-  #   TA.pslope = ((TA.pmax - TA.pmin)/(max(logsub$lnA[logsub$pctTran == max(logsub$pctTran)]) - min(logsub$lnA[logsub$pctTran == min(logsub$pctTran)])))
+  #   TA.pslope = ((TA.pmax - TA.pmin)/(max(logsub$lnA[logsub$TApreds == max(logsub$TApreds)]) - min(logsub$lnA[logsub$TApreds == min(logsub$TApreds)])))
   #   TA.pxmid = logsub$TApreds[logsub$scale == '3']
   #   TA.pthresh = as.character(min(logsub$scale[logsub$TApreds > 0.49 & logsub$TApreds < 0.60])) 
   #   
@@ -441,7 +441,7 @@ for(s in stateroutes){
   #   #PREDICTED stats (for fitting line): 
   #   TN.pmin =  min(logsub$TNpreds[logsub$lnN == min(logsub$lnN)])
   #   TN.pmax = max(logsub$TNpreds[logsub$lnN == max(logsub$lnN)])
-  #   TN.pslope = ((TN.pmax - TN.pmin)/(max(logsub$lnN[logsub$pctTran == max(logsub$pctTran)]) - min(logsub$lnN[logsub$pctTran == min(logsub$pctTran)])))
+  #   TN.pslope = ((TN.pmax - TN.pmin)/(max(logsub$lnN[logsub$TNpreds == max(logsub$TNpreds)]) - min(logsub$lnN[logsub$TNpreds == min(logsub$TNpreds)])))
   #   TN.pxmid = logsub$TNpreds[logsub$scale == '3']
   #   TN.pthresh = as.character(min(logsub$scale[logsub$TNpreds > 0.49 & logsub$TNpreds < 0.60])) 
   # 
