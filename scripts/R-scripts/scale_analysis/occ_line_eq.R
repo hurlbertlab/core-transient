@@ -118,7 +118,7 @@ for(s in stateroutes){
   
    #CA
     CAlog = lm(pctCore ~ logA, data = logsub) #lm instead of nls, reg linear model
-    logsub$CApreds = predict(CAlog)
+    logsub$CApreds = predict(CAlog) #just what's literally on the line but not actual preds 
     #CApred_df = data.frame(preds = predict(CAlog), scale = logsub$scale, logA = logsub$logA)  #get preds -> is predicting unique per scale, all clear
     CAlm.r2 = lm(pctCore ~ CApreds, data = logsub) #get r2 from model, so far this is just predmod tho 
     
@@ -228,10 +228,11 @@ OAlog = lm(meanOcc ~ logA, data = coef_sub) #lm instead of nls, reg linear model
 OApreds = data.frame(preds = predict(OAlog), scale = coef_sub$scale, logA = coef_sub$logA) 
 
 
-plot1 = ggplot(coef_sub, aes(x = logA, y = meanOcc))+geom_point(colour = "firebrick")+
-  geom_abline(yintercept = , slope = OA.slope) +labs(x = "Log area", y = "Mean % Occupancy")+
+
+plot1 = ggplot(coef_join, aes(x = logA, y = meanOcc))+geom_point()+
+  geom_smooth(aes(colour = stateroute), intercept = OA.xmid, slope = OA.pslope) +labs(x = "Log area", y = "Mean % Occupancy")+
   coord_cartesian(ylim = c(0, 1))
 
-#ref from abline help: 
 
-
+ggplot(coef_join, aes(x = logA, y = meanOcc))+geom_point()+geom_point(aes(x = OA.min))
+#in order to plot min and maxes need x and y, just duplicating vals in both directions rn!
