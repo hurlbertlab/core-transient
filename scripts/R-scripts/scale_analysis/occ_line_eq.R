@@ -50,23 +50,6 @@ TA.df = data.frame(stateroute = numeric(), TA.min = numeric(), TA.max = numeric(
 
 #read in data for processing
 bbs_allscales = read.csv("data/BBS/bbs_allscales.csv", header = TRUE)
-#this stuff is the same, looks normal ^
-unique(bbs_allscales$scale)
-levels(bbs_allscales$scale) #checking before running loop that all scales rep'd
-
-
-#make sure scale is leveled in order: 
-bbs_allscales$scale = factor(bbs_allscales$scale, 
-                              levels = c('5-1', '5-2', '5-3', '5-4', '5-5', '5-6', '5-7', '5-8', '5-9', '5-10',
-                                         '10-1', '10-2', '10-3', '10-4', '10-5', '25-1', '25-2', '50-1', 
-                                         '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12',
-                                         '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24',
-                                         '25', '26', '27', '28', '29', '30', '31', '32', '33', '34', '35', '36',
-                                         '37', '38', '39', '40', '41', '42', '43', '44', '45', '46', '47', '48',
-                                         '49', '50', '51', '52', '53', '54', '55', '56', '57', '58', '59', '60',
-                                         '61', '62', '63', '64', '65', '66'), ordered=TRUE)
-
-
 levels(bbs_allscales$scale)
 unique(bbs_allscales$scale)
 #ALL clear 07/24
@@ -131,7 +114,7 @@ for(s in stateroutes){
     OA.xmid = logsub$meanOcc[logsub$scale == '3'] #@ scale == 3, for a given focal rte s, actual value
     OA.thresh = min(logsub$logA[logsub$meanOcc >= 0.5]) 
     #want the FIRST instance where it hits this range -> how? minimum scale at which it does that
-    #then save as a character so associated levels data doesn't stay stuck on the single data point
+    #save as an area, not a "scale" 
     
     #PREDICTED stats (for fitting line): 
     OA.pmin =  min(logsub$OApreds[logsub$logA == min(logsub$logA)])
@@ -235,11 +218,7 @@ coefs = OA.df %>%
   inner_join(CA.df, OA.df, by = "stateroute") #%>% 
   #inner_join(TA.df, OA.df, by = "stateroute") 
  
-
-  
 coefs_2 = na.omit(coefs) #same as above
-  
-  
 write.csv(coefs, "scripts/R-scripts/scale_analysis/coefs.csv", row.names = FALSE) #updated 07/24
 #exp mods have much better r2 vals for pctTran than power 
 
@@ -249,6 +228,16 @@ write.csv(coefs, "scripts/R-scripts/scale_analysis/coefs.csv", row.names = FALSE
 
 bbs_allscales = read.csv("data/BBS/bbs_allscales.csv", header = TRUE)
 coefs = read.csv("scripts/R-scripts/scale_analysis/coefs.csv", header = TRUE)
+
+coefs_mini = coefs %>%
+  select(stateroute, OA.pmin, OA.pmax) %>%
+  gather(key = OA.pmin, 
+         value = occ_val, 
+         OA.pmin:OA.pmax, 
+         na.rm = TRUE) %>% #doubled size of df, every rte has associated max and min vals 
+  rename(linemetric = OA.pmin)
+ggplot(coefs_mini, aes(x = linemetric, y = occ_val))+geom_boxplot(aes(fill = linemetric))+
+  theme_classic()+theme(legend.position="none")
 
 
 #will go inside plotting forloop 
@@ -264,7 +253,6 @@ OAlog = lm(meanOcc ~ logA, data = coef_sub) #lm instead of nls, reg linear model
 OApreds = data.frame(preds = predict(OAlog), scale = coef_sub$scale, logA = coef_sub$logA) 
 
 
-
 plot1 = ggplot(coef_join, aes(x = logA, y = meanOcc))+geom_point()+
   geom_smooth(aes(colour = stateroute), intercept = OA.xmid, slope = OA.pslope) +labs(x = "Log area", y = "Mean % Occupancy")+
   coord_cartesian(ylim = c(0, 1))
@@ -272,3 +260,76 @@ plot1 = ggplot(coef_join, aes(x = logA, y = meanOcc))+geom_point()+
 
 ggplot(coef_join, aes(x = logA, y = meanOcc))+geom_point()+geom_point(aes(x = OA.min))
 #in order to plot min and maxes need x and y, just duplicating vals in both directions rn!
+
+
+####Old plotting code from logfcn####
+preds.df = data.frame(stateroute = numeric(), logA = numeric(), 
+                      OApreds= numeric(), ONpreds = numeric(), 
+                      CApreds = numeric(), CNpreds = numeric(),
+                      TApreds = numeric(), TNpreds = numeric())
+
+
+pdf("output/plots/Molly Plots/BBS_scaleplots.pdf", onefile = TRUE)
+coef_join = coefs %>% inner_join(bbs_allscales3, by = c("stateroute"="focalrte"))
+stateroutes = unique(bbs_allscales3$focalrte)
+
+#extracting predicted values and plotting in same loop
+for (s in stateroutes) {
+  theme_set(theme_bw()+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()))
+  coef_sub = subset(coef_join, coef_join$stateroute == s)
+  logA = coef_sub$logA
+  
+  #OA
+  OApreds = logistic_fcn(coef_sub[,33], coef_sub[,2], coef_sub[,3], coef_sub[,4]) 
+  plot1 = ggplot(coef_sub, aes(x = logA, y = meanOcc))+geom_point(colour = "firebrick")+
+    geom_line(aes(x = logA, y = OApreds), color = "navy") +labs(x = "Log area", y = "Mean % Occupancy")+
+    coord_cartesian(ylim = c(0, 1))
+  
+  
+  #ON
+  ONpreds = logistic_fcn(coef_sub[,34], coef_sub[,6], coef_sub[,7], coef_sub[,8])
+  plot2 = ggplot(coef_sub, aes(x = logN, y = meanOcc))+geom_point(colour = "firebrick")+
+    geom_line(aes(x = logN, y = ONpreds), color = "navy") +labs(x = "Log abundance", y = "Mean % Occupancy")+
+    coord_cartesian(ylim = c(0, 1))
+  
+  
+  #CA
+  CApreds = logistic_fcn(coef_sub[,33], coef_sub[,10], coef_sub[,11], coef_sub[,12])
+  plot1_2= ggplot(coef_sub, aes(x = logA, y = pctCore))+geom_point(colour = "turquoise")+
+    geom_line(aes(x = logA, y = CApreds), color = "navy")+labs(x = "Log area", y = "% Core Occupancy")+
+    coord_cartesian(ylim = c(0, 1))
+  
+  #aveN
+  #CN
+  CNpreds = logistic_fcn(coef_sub[,34], coef_sub[,14], coef_sub[,15], coef_sub[,16])
+  plot2_2= ggplot(coef_sub, aes(x = logN, y = pctCore))+geom_point(colour = "turquoise")+
+    geom_line(aes(x = logN, y = CNpreds), color = "navy")+labs(x = "Log abundance", y = "% Core Occupancy")+
+    coord_cartesian(ylim = c(0, 1))
+  
+  #using exponential function since higher explanatory power than pwr function
+  #TA
+  TApreds =  coef_sub[,35]*(coef_sub[,18]) #35 = optimum; replacing ^ with * bc natural log, removing -1
+  plot1_3 = ggplot(coef_sub, aes(x = lnA, y = log(pctTran)))+geom_point(colour = "olivedrab")+
+    geom_line(aes(x = lnA, y = log(TApreds)), color = "navy") +labs(x = "Log area", y = "% Transient Occupancy")+
+    coord_cartesian(ylim = c(-4, 1)) #FIX
+  
+  #TN
+  TNpreds = coef_sub[,36]*(coef_sub[,22])
+  plot2_3 = ggplot(coef_sub, aes(x = lnN, y = log(pctTran)))+geom_point(colour = "olivedrab")+
+    geom_line(aes(x = lnN, y = TNpreds), color = "navy")+labs(x = "Log abundance", y = "% Transient Occupancy")+
+    coord_cartesian(ylim = c(-4, 1))
+  
+  #storing plots
+  predplot = grid.arrange(plot1, plot2, plot1_2, plot2_2, plot1_3, plot2_3,
+                          ncol=2, top = paste("predplot_", s, sep = ""))
+  #storing preds:
+  temp.df = data.frame(stateroute = s, logA = logA, 
+                       OApreds= OApreds , ONpreds = ONpreds, 
+                       CApreds = CApreds, CNpreds = CNpreds,
+                       TApreds = TApreds, TNpreds = TNpreds)
+  preds.df = rbind(preds.df, temp.df)
+  
+}
+dev.off()
+write.csv(preds.df, "C:/git/core-transient/scripts/R-scripts/scale_analysis/preds.csv", row.names = FALSE)
+

@@ -60,13 +60,6 @@ occ_counts = function(countData, countColumns, scale) {
     summarize(meanOcc = mean(occ), 
               pctCore = sum(occ > 2/3)/length(occ),
               pctTran = sum(occ <= 1/3)/length(occ)) %>%
-    
-    
-    
-    
-    #spRichTrans33  
-    # spRichTrans25 = sum(occ <= 1/4)/length(occ),
-    # spRichTrans10 = sum(occ <= 0.1)/length(occ)) %>%
     mutate(scale = paste(scale, g, sep = "-")) %>%
     left_join(abun.summ, by = 'stateroute')
   return(occ.summ)
@@ -92,6 +85,7 @@ write.csv(bbs_below, paste(BBS, "bbs_below.csv", sep = ""), row.names = FALSE) #
 #should be able to use the 50 stop info (1 rte) from this output to aggregate routes AFTER below scale
 write.csv(bbs_below, "data/BBS/bbs_below.csv", row.names = FALSE)
 
+#at scale of a single route (e.g. "50-1", no communities)
 
 
 ####Calculations for Occupancy above the scale of a BBS route####
@@ -147,11 +141,38 @@ for (r in uniqrtes) { #for each focal route
       arrange(dist)
       #(for a given focal rte, narrow input data to those 66 secondary routes in focal cluster)
     
+    # Use below code to inform occ calc appropriately
+    
+    
+    # occ_counts = function(countData, countColumns, scale) {
+    #   bbssub = countData[, c("stateroute", "year", "AOU", countColumns)] #these are our grouping vars
+    #   bbssub$groupCount = rowSums(bbssub[, countColumns]) 
+    #   bbsu = unique(bbssub[bbssub[, "groupCount"]!= 0, c("stateroute", "year", "AOU")]) 
+    #   
+    #   abun.summ = bbssub %>% #abundance
+    #     group_by(stateroute, year) %>%  
+    #     summarize(totalN = sum(groupCount)) %>%
+    #     group_by(stateroute) %>%
+    #     summarize(aveN = mean(totalN)) #we want to go further and summarize across focal + secondary rtes tho
+    #   
+    #   occ.summ = bbsu %>% #occupancy
+    #     count(stateroute, AOU) %>%
+    #     mutate(occ = n/15, scale = scale, subrouteID = countColumns[1]) %>%
+    #     group_by(stateroute) %>%
+    #     summarize(meanOcc = mean(occ), 
+    #               pctCore = sum(occ > 2/3)/length(occ),
+    #               pctTran = sum(occ <= 1/3)/length(occ)) %>%
+    #     mutate(scale = paste(scale, g, sep = "-")) %>%
+    #     left_join(abun.summ, by = 'stateroute')
+    #   return(occ.summ)
+    
+    
+    
     occ.summ = focal_clustr %>% 
       summarize(aveN2 = sum(aveN), 
-                meanOcc2 = mean(meanOcc), 
-                pctCore2 = sum(meanOcc > 2/3)/length(meanOcc),
-                pctTran2 = sum(meanOcc <= 1/3)/length(meanOcc), 
+                meanOcc2 = mean(Occ), 
+                pctCore2 = sum(Occ > 2/3)/length(Occ),
+                pctTran2 = sum(Occ <= 1/3)/length(Occ), 
                 maxRadius = max(dist)) 
     
     #now - how to cycle thru agg occ calcs from 2-66? w/in list? 
