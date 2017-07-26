@@ -71,6 +71,42 @@ levels(bbs_allscales$scale)
 unique(bbs_allscales$scale)
 #ALL clear 07/24
 
+###Pre-coefs distribution analysis###
+topscales = bbs_allscales %>% 
+  filter(scale == '3')
+
+ggplot(topscales, aes(x = pctCore))+geom_histogram(bins = 20)
+#a non-trivial group of focal rtes still maintain very low % Core representation in their communities, even at our highest scales 
+#I would predict that these focal rtes are largely clustered in Western and mountain regions 
+#let's see: 
+
+topscales2 = topscales %>% 
+  filter(pctCore < 0.50) %>%
+  mutate(Dom = 'T') 
+  
+topscales3 = topscales %>% 
+  filter(pctCore >= 0.50) %>% 
+  mutate(Dom = "C")
+
+topscales_new = rbind(topscales2, topscales3)
+topscales_new$Dom = as.factor(topscales_new$Dom)
+topscales_new = select(topscales_new, focalrte, meanOcc, pctCore, pctTran, logA, Dom)
+
+
+#all focal rtes with all possible pairings
+bbs_latlon = read.csv(paste(BBS, "good_rtes2.csv", sep = ""), header = TRUE)
+bbs_latlon = bbs_latlon %>% inner_join(topscales_new, by = c("stateroute" = "focalrte"))
+
+##the rough way: 
+map('world', xlim = range(bbs_latlon$Longi), ylim = range(bbs_latlon$Lati))
+points(bbs_latlon$Longi[bbs_latlon$Dom == "C"], bbs_latlon$Lati[bbs_latlon$Dom == "C"], pch = 16, col = "blue")
+points(bbs_latlon$Longi[bbs_latlon$Dom == "T"], bbs_latlon$Lati[bbs_latlon$Dom == "T"], pch = 16, col = "red")
+
+#basically how I would assume these communities would be distributed 
+legend(x="bottomleft", legend = unique(bbs_latlon$Dom), fill = unique(bbs_latlon$Dom))
+title("Distribution of communities at scale of 3 routes")
+
+
 ####coefs trycatch####
 stateroutes = unique(bbs_allscales$focalrte)
 #07/24 version of tryCatch
