@@ -62,7 +62,8 @@ occ_counts = function(countData, countColumns, scale) {
     summarize(meanOcc = mean(occ), 
               pctCore = sum(occ > 2/3)/length(occ),
               pctTran = sum(occ <= 1/3)/length(occ)) %>%
-    mutate(scale = paste(scale, g, sep = "-")) %>%
+    mutate(scale = paste(scale, g, sep = "-")) %>% #, 
+           #scale = scale) %>%
     left_join(abun.summ, by = 'stateroute')
   return(occ.summ)
 }
@@ -72,7 +73,6 @@ occ_counts = function(countData, countColumns, scale) {
 #fix to run all at once, so no sep run for above-scale, USE occ-counts for both 
 
 b_scales = c(5, 10, 25, 50)
-
 output = c()
 for (scale in b_scales) {
   numGroups = floor(50/scale)
@@ -81,14 +81,37 @@ for (scale in b_scales) {
     temp = occ_counts(fifty_bestAous, groupedCols, scale)
     output = rbind(output, temp) 
   }
+  #take means across scales, ignoring g 
+  #don't need to do anything conveluted if keep original scales as own column
+  #but then I'm running into the same technical error as I was with the larger routes, where I'm 
+  #averaging instead of recalculating occ as I should be -> but not aggregating these, so necessary at all? 
+  #pressing on in the meanwhile, but establish later -> NOT aggregating, pointedly. 
+  # 
+  # means = filter(output, scale == scale)
+  #   abun.summ = means %>% 
+  #   group_by(stateroute) %>%
+  #   summarize(aveN = mean(aveN))
+  # 
+  # occ.summ = means %>% 
+  #   group_by(stateroute) %>% 
+  #   summarize(meanOcc = mean(meanOcc), 
+  #             pctCore = sum(meanOcc > 2/3)/length(meanOcc),
+  #             pctTran = sum(meanOcc <= 1/3)/length(meanOcc)) %>%
+  #   mutate(scale = scale) %>%
+  #   left_join(abun.summ, by = 'stateroute')
+  # 
+  # occ_final = rbind(occ_final, occ.summ)
+  #   
 }
+
+
+
 bbs_below<-data.frame(output)
 write.csv(bbs_below, paste(BBS, "bbs_below.csv", sep = ""), row.names = FALSE) #updated 06/30, on BioArk
 #should be able to use the 50 stop info (1 rte) from this output to aggregate routes AFTER below scale
 write.csv(bbs_below, "data/BBS/bbs_below.csv", row.names = FALSE)
 
 #at scale of a single route (e.g. "50-1", no communities)
-
 
 ####Data prep for calculating occupancy above the scale of a BBS route####
 #Revised calcs workspace 
