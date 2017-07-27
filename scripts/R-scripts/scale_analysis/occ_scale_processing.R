@@ -265,7 +265,7 @@ bbs_allscales3$scale = factor(bbs_allscales3$scale,
                                         '61', '62', '63', '64', '65', '66'), ordered=TRUE)
 
 write.csv(bbs_allscales3, "data/BBS/bbs_allscales.csv", row.names = FALSE) #overwrote bbs all scales file 
-#updated 07/24/2017 from 1003 to 1001 routes
+#updated 07/27/2017 from 1003 to 1001 routes
 
 
 ####Occ-scale analysis####
@@ -284,6 +284,6 @@ plot(meanOcc~logN, data = bbs_allscales, xlab = "Average Abundance" , ylab = "Me
 #^^same pattern roughly; abundance describes ~same amt of variance as area so serves as a good proxy 
 
 
-#ALL files updated 07/20 ~4pm 
+#ALL files updated 07/27 ~3pm 
 
 
