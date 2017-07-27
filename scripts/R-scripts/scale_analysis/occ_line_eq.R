@@ -59,33 +59,6 @@ library(stats)
 # Data directories
 BBS = '//bioark.ad.unc.edu/HurlbertLab/Jenkins/BBS scaled/'
 
-#removing xmids since just vectors now for calcing curvy stat
-
-####Extract coefficients from scale-occupancy relationships for analysis####
-OA.df = data.frame(stateroute = numeric(), OA.min = numeric(), OA.max = numeric(), OA.slope = numeric(), 
-                   OA.thresh = numeric(), 
-                   OA.pmin = numeric(), OA.pmax = numeric(), OA.pslope = numeric(), 
-                   OA.pthresh = numeric(), 
-                   OA.r2 = numeric(), OA.curvy = numeric()) 
-
-CA.df = data.frame(stateroute = numeric(), CA.min = numeric(), CA.max = numeric(), CA.slope = numeric(), 
-                   CA.thresh = numeric(), 
-                   CA.pmin = numeric(), CA.pmax = numeric(), CA.pslope = numeric(), 
-                   CA.pthresh = numeric(), 
-                   CA.r2 = numeric(), CA.curvy = numeric())
-
-TA.df = data.frame(stateroute = numeric(), TA.min = numeric(), TA.max = numeric(), TA.slope = numeric(), 
-                   TA.thresh = numeric(), 
-                   TA.pmin = numeric(), TA.pmax = numeric(), TA.pslope = numeric(), 
-                   TA.pthresh = numeric(), 
-                   TA.r2 = numeric(), TA.curvy = numeric())
-
-#read in data for processing
-bbs_allscales = read.csv("data/BBS/bbs_allscales.csv", header = TRUE)
-levels(bbs_allscales$scale)
-unique(bbs_allscales$scale)
-#ALL clear 07/24
-
 ###Pre-coefs distribution analysis###
 minscales = bbs_allscales %>% 
   filter(scale == '50-1')%>% 
@@ -105,7 +78,7 @@ ggplot(topscales, aes(x = pctTran))+geom_histogram(bins = 20)
 topscales2 = topscales %>% 
   filter(pctCore < 0.50) %>%
   mutate(Dom = 'T') 
-  
+
 topscales3 = topscales %>% 
   filter(pctCore >= 0.50) %>% 
   mutate(Dom = "C")
@@ -167,10 +140,39 @@ legend(x="bottomleft", legend = unique(bbs_latlon$Dom), fill = unique(bbs_latlon
 title("Distribution of communities at scale of 66 routes")
 
 
+####Extract coefficients from scale-occupancy relationships for analysis####
+OA.df = data.frame(stateroute = numeric(), OA.min = numeric(), OA.max = numeric(), OA.slope = numeric(), 
+                   OA.thresh = numeric(), 
+                   OA.pmin = numeric(), OA.pmax = numeric(), OA.pslope = numeric(), 
+                   OA.pthresh = numeric(), 
+                   OA.r2 = numeric(), OA.curvy = numeric()) 
 
-####coefs trycatch####
+CA.df = data.frame(stateroute = numeric(), CA.min = numeric(), CA.max = numeric(), CA.slope = numeric(), 
+                   CA.thresh = numeric(), 
+                   CA.pmin = numeric(), CA.pmax = numeric(), CA.pslope = numeric(), 
+                   CA.pthresh = numeric(), 
+                   CA.r2 = numeric(), CA.curvy = numeric())
+
+TA.df = data.frame(stateroute = numeric(), TA.min = numeric(), TA.max = numeric(), TA.slope = numeric(), 
+                   TA.thresh = numeric(), 
+                   TA.pmin = numeric(), TA.pmax = numeric(), TA.pslope = numeric(), 
+                   TA.pthresh = numeric(), 
+                   TA.r2 = numeric(), TA.curvy = numeric())
+
+#read in data for processing
+bbs_allscales = read.csv("data/BBS/bbs_allscales.csv", header = TRUE)
+levels(bbs_allscales$scale)
+unique(bbs_allscales$scale)
+#ALL clear 07/24
+
+
+
+####coefs####
 stateroutes = unique(bbs_allscales$focalrte)
-#07/24 version of tryCatch
+
+#do I even need a loop? can't I just group by stateroute and calc these ?
+
+
 for(s in stateroutes){
   logsub = subset(bbs_allscales, bbs_allscales$focalrte == s)  
   #for each focalrte with 83 scales, what are the actual values 
@@ -205,9 +207,9 @@ for(s in stateroutes){
     OA.curvy =  sum(OA.xmid - OA.pxmid) #AUC proxy
 
     OAmodel = data.frame(stateroute = s, OA.min, OA.max, OA.slope, 
-                                          OA.xmid, OA.thresh, 
+                                          OA.thresh, 
                                           OA.pmin, OA.pmax, OA.pslope, 
-                                          OA.pxmid, OA.pthresh, 
+                                          OA.pthresh, 
                                           OA.r2, OA.curvy)
     
   OA.df = rbind(OA.df, OAmodel)
@@ -224,7 +226,7 @@ for(s in stateroutes){
     CA.min = min(logsub$pctCore[logsub$logA == min(logsub$logA)])
     CA.max = max(logsub$pctCore[logsub$logA == max(logsub$logA)])
     CA.slope = ((CA.max - CA.min)/(max(logsub$logA[logsub$pctCore == max(logsub$pctCore)]) - min(logsub$logA[logsub$pctCore == min(logsub$pctCore)])))
-    CA.xmid = logsub$pctCore[logsub$scale == '3'] #@ scale == 3, for a given focal rte s, actual value
+    CA.xmid = logsub$pctCore #@ scale == 3, for a given focal rte s, actual value
     CA.thresh = min(logsub$logA[logsub$pctCore >= 0.5]) 
     #want the FIRST instance where it hits this range -> how? minimum scale at which it does that
     #other threshold limits/metrics relevant to %core and %transient? 
@@ -233,16 +235,16 @@ for(s in stateroutes){
     CA.pmin =  min(logsub$CApreds[logsub$logA == min(logsub$logA)])
     CA.pmax = max(logsub$CApreds[logsub$logA == max(logsub$logA)])
     CA.pslope = ((CA.pmax - CA.pmin)/(max(logsub$logA[logsub$CApreds == max(logsub$CApreds)]) - min(logsub$logA[logsub$CApreds == min(logsub$CApreds)])))
-    CA.pxmid = logsub$CApreds[logsub$scale == '3']
+    CA.pxmid = logsub$CApreds
     CA.pthresh = min(logsub$logA[logsub$CApreds >= 0.5]) 
     
     CA.r2 = summary(CAlm.r2)$r.squared
-    CA.curvy =  CA.xmid - CA.pxmid 
+    CA.curvy =  sum(CA.xmid - CA.pxmid) 
     
     CAmodel = data.frame(stateroute = s, CA.min, CA.max, CA.slope, 
-               CA.xmid, CA.thresh, 
+               CA.thresh, 
                CA.pmin, CA.pmax, CA.pslope, 
-               CA.pxmid, CA.pthresh, 
+               CA.pthresh, 
                CA.r2, CA.curvy)
     
   CA.df = rbind(CA.df, CAmodel)
@@ -263,7 +265,7 @@ for(s in stateroutes){
   #   TA.min = min(logsub$pctTran[logsub$lnA == max(logsub$lnA)])
   #   TA.max = max(logsub$pctTran[logsub$lnA == min(logsub$lnA)])
   #   TA.slope = ((TA.min - TA.max)/(max(logsub$lnA[logsub$pctTran == max(logsub$pctTran)]) - min(logsub$lnA[logsub$pctTran == min(logsub$pctTran)])))
-  #   TA.xmid = logsub$pctTran[logsub$scale == '3'] #@ scale == 3, for a given focal rte s, actual value
+  #   TA.xmid = logsub$pctTran #@ scale == 3, for a given focal rte s, actual value
   #   TA.thresh = min(logsub$lnA[logsub$pctTran >= 0.50])
   #   #want the FIRST instance where it hits this range -> how? minimum scale at which it does that
   #   #then save as a character so associated levels data doesn't stay stuck on the single data point
@@ -272,16 +274,16 @@ for(s in stateroutes){
   #   TA.pmin =  min(logsub$TApreds[logsub$lnA == min(logsub$lnA)])
   #   TA.pmax = max(logsub$TApreds[logsub$lnA == max(logsub$lnA)])
   #   TA.pslope = ((TA.pmin - TA.pmax)/(max(logsub$lnA[logsub$TApreds == max(logsub$TApreds)]) - min(logsub$lnA[logsub$TApreds == min(logsub$TApreds)])))
-  #   TA.pxmid = logsub$TApreds[logsub$scale == '3']
+  #   TA.pxmid = logsub$TApreds
   #   TA.pthresh = min(logsub$lnA[logsub$TApreds >= 0.50])
   # 
   #   TA.r2 = summary(TAlm.r2)$r.squared
-  #   TA.curvy =  TA.xmid - TA.pxmid
+  #   TA.curvy =  sum(TA.xmid - TA.pxmid)
   # 
   #   TAmodel = data.frame(stateroute = s, TA.min, TA.max, TA.slope,
-  #              TA.xmid, TA.thresh,
+  #              TA.thresh,
   #              TA.pmin, TA.pmax, TA.pslope,
-  #              TA.pxmid, TA.pthresh,
+  #              TA.pthresh,
   #              TA.r2, TA.curvy)
   # 
   # 
