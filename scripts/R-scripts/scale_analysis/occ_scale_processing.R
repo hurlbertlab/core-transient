@@ -131,8 +131,6 @@ for (scale in c_scales) {
 bbs_above_guide = data.frame(output)
 
 
-
-
 ####Rte loop####
 dist.df = read.csv("scripts/R-scripts/scale_analysis/dist_df.csv", header = TRUE)
 bbs_below = read.csv(paste(BBS, "bbs_below.csv", sep = ""), header = TRUE)
@@ -147,11 +145,11 @@ uniqrtes = unique(bbs_fullrte$stateroute) #all routes present are unique, still 
 numrtes = 2:66 # based on min common number in top 6 grid cells, see grid_sampling_justification script 
 output = data.frame(focalrte = NULL,
                     scale = NULL, 
-                    aveN = NULL,
                     meanOcc = NULL, 
                     pctCore = NULL,
                     pctTran = NULL,
-                    maxRadius = NULL)
+                    maxdist = NULL,
+                    aveN = NULL)
 
 
 for (r in uniqrtes) { #for each focal route
@@ -166,30 +164,30 @@ for (r in uniqrtes) { #for each focal route
       select(everything()) %>% data.frame()
     
     focal_clustr = bbs_above_guide %>% 
-      filter(stateroute %in% tmp_rte_group$rte2) %>%
-      arrange(dist) %>% select(everything()) %>% data.frame()
+      filter(stateroute %in% tmp_rte_group$rte2) #tmp_rte_group already ordered by distance so don't need 2x
       #(for a given focal rte, narrow input data to those 66 secondary routes in focal cluster)
     
-      occ.summ = focal_clustr %>% 
-      summarize(aveN2 = sum(aveN), 
-                meanOcc2 = mean(Occ), 
-                pctCore2 = sum(Occ > 2/3)/length(Occ),
-                pctTran2 = sum(Occ <= 1/3)/length(Occ), 
-                maxRadius = max(dist)) 
     
-    #now - how to cycle thru agg occ calcs from 2-66? w/in list? 
-    #create scale variable corresponding to num rows/routes pulled into occ calc
-    #tmp_rte_group is effectively our sub for "count columns" at the above-rte scale 
-    #START with a community occ and abun already calc'd for each individual rte
-        temp = data.frame(focalrte = r,
-                          scale = nu, #total # routes being aggregated -> do I really need the +1 if it's already inclusive of the 1st?
-                          meanOcc = occ.summ$meanOcc2, 
-                          pctCore = occ.summ$pctCore2,
-                          pctTran = occ.summ$pctTran2,
-                          aveN = occ.summ$aveN2, 
-                          maxRadius = occ.summ$maxRadius)   
-        
-        output = rbind(output, temp)
+    abun.summ = focal_clustr %>% #abundance
+      group_by(year) %>%  #not grouping by stateroute bc it stops mattering 
+      summarize(totalN = sum(groupCount)) %>%
+      summarize(aveN = mean(totalN), 
+                stateroute = r)
+      
+    
+    occ.summ = focal_clustr %>% #occupancy 
+      count(stateroute, AOU) %>% #already sorted out any routes with 0's in first loop 
+      mutate(occ = n/15, scale = nu) %>% #, subrouteID = countColumns[1]) #%>% countColumns not needed bc already pared down
+      #group_by(stateroute) %>% don't want to group by stateroute though! want to calc for whole group
+      summarize(focalrte = r, 
+                scale = nu, 
+                meanOcc = mean(occ), 
+                pctCore = sum(occ > 2/3)/length(occ),
+                pctTran = sum(occ <= 1/3)/length(occ), 
+                maxdist = max(tmp_rte_group$dist)) %>% 
+    left_join(abun.summ, by = c('focalrte' = 'stateroute'))
+    
+        output = rbind(output, occ.summ)
         print(paste("Focal rte", r, "#' rtes sampled", nu)) #for viewing progress
     
     #adding 2 to end since using an input df with all of the exact same column names -> can change back b4 merging, after loop
