@@ -90,7 +90,7 @@ write.csv(bbs_below, "data/BBS/bbs_below.csv", row.names = FALSE)
 #at scale of a single route (e.g. "50-1", no communities)
 
 
-####Calculations for Occupancy above the scale of a BBS route####
+####Data prep for calculating occupancy above the scale of a BBS route####
 #Revised calcs workspace 
 #sort out bbs_below to ONLY those routes at 50-stop scale (occ calc'd for a single route)
 #use to aggregate 
@@ -105,9 +105,10 @@ dist.df = data.frame(rte1 = rep(good_rtes2$stateroute, each = nrow(good_rtes2)),
                      dist = as.vector(distances))
 write.csv(dist.df, "scripts/R-scripts/scale_analysis/dist_df.csv", row.names = FALSE) #for later calcs
 
-####50-1 scale prep for being used for above-scale, occ_counts2####
+#occ_counts2
 #important to not remove AOU and stateroute data by year, but to halt at that step 
 #so can be guided thru original occ_counts, with secondary routes as "countColumns" 
+#have to gen new function
 
 occ_counts2 = function(countData, countColumns, scale) {
   bbssub = countData[, c("stateroute", "year", "AOU", countColumns)] #these are our grouping vars
@@ -115,6 +116,12 @@ occ_counts2 = function(countData, countColumns, scale) {
   bbsu = unique(bbssub[bbssub[, "groupCount"]!= 0, c("stateroute", "year", "AOU", "groupCount")])
   return(bbsu)
 }
+
+
+fifty_allyears = read.csv(paste(BBS, "fifty_allyears.csv", sep = ""), header = TRUE) #using updated version, 50 stop data, 07/12
+fifty_bestAous = fifty_allyears %>% 
+  filter(AOU > 2880 & !(AOU >= 3650 & AOU <= 3810) & !(AOU >= 3900 & AOU <= 3910) & 
+           !(AOU >= 4160 & AOU <= 4210) & AOU != 7010) #leaving out owls, waterbirds as less reliable data
 
 #should just return data for 50-1 scale, across all 50 stops 
 c_scales = c(50)
@@ -129,14 +136,11 @@ for (scale in c_scales) {
 }
 
 bbs_above_guide = data.frame(output)
+write.csv(bbs_above_guide, "scripts/R-scripts/scale_analysis/bbs_above_guide.csv", row.names = FALSE)
 
-
-####Rte loop####
+####Calculating occupancy scales 2:66 loop####
 dist.df = read.csv("scripts/R-scripts/scale_analysis/dist_df.csv", header = TRUE)
-bbs_below = read.csv(paste(BBS, "bbs_below.csv", sep = ""), header = TRUE)
-bbs_fullrte = bbs_below %>%
-  filter(scale == "50-1") %>%
-  select(stateroute, meanOcc, aveN) #953 routes at scale of a single route
+bbs_above_guide = read.csv("scripts/R-scripts/scale_analysis/bbs_above_guide.csv", header = TRUE)
 
 #go one step at a time, logically -> don't rush thru recreating the loop 
 
