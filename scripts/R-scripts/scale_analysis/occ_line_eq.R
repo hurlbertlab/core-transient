@@ -66,7 +66,7 @@ minscales = bbs_allscales %>%
 
 
 topscales = bbs_allscales %>% 
-  filter(scale == '3')
+  filter(scale == '50-1')
 
 ggplot(topscales, aes(x = pctCore))+geom_histogram(bins = 20)
 ggplot(topscales, aes(x = meanOcc))+geom_histogram(bins = 20)
@@ -76,7 +76,7 @@ ggplot(topscales, aes(x = pctTran))+geom_histogram(bins = 20)
 #let's see: 
 
 topscales2 = topscales %>% 
-  filter(pctCore < 0.50) %>%
+  filter(pctTran >= 0.50) %>%
   mutate(Dom = 'T') 
 
 topscales3 = topscales %>% 
@@ -99,7 +99,7 @@ points(bbs_latlon$Longi[bbs_latlon$Dom == "T"], bbs_latlon$Lati[bbs_latlon$Dom =
 
 #basically how I would assume these communities would be distributed 
 legend(x="bottomleft", legend = unique(bbs_latlon$Dom), fill = unique(bbs_latlon$Dom))
-title("Distribution of communities at scale of 3 routes")
+title("Distribution of communities at scale of 1 routes")
 
 
 #at scale of 66 routes
@@ -114,7 +114,7 @@ ggplot(topscales, aes(x = pctTran))+geom_histogram(bins = 30)
 #let's see: 
 
 topscales2 = topscales %>% 
-  filter(pctCore < 0.50) %>%
+  filter(pctTran >= 0.50) %>%
   mutate(Dom = 'T') 
 
 topscales3 = topscales %>% 
