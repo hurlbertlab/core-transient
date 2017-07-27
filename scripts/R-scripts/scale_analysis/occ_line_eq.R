@@ -26,6 +26,9 @@
   #6)finally, we look at the variation in occupancy explained by scale thru R^2 values 
   #7)and we look at the straightness or curviness of the actual data 
       #as compared to the data derived from our model.
+      #PREDICTION: focal routes with larger "curvy" values will occur in regions of greater habitat heterogeneity, 
+      #and deviance from the line will correspond with the greater environmental variance
+      #associated with the location of that focal route.
 
 #We explore the variation in this relationship 
 #and attempt to characterize whether or not it is best explained by habitat heterogeneity 
@@ -84,6 +87,11 @@ unique(bbs_allscales$scale)
 #ALL clear 07/24
 
 ###Pre-coefs distribution analysis###
+minscales = bbs_allscales %>% 
+  filter(scale == '50-1')%>% 
+  summarize(min = min(meanOcc))
+
+
 topscales = bbs_allscales %>% 
   filter(scale == '3')
 
@@ -117,6 +125,43 @@ points(bbs_latlon$Longi[bbs_latlon$Dom == "T"], bbs_latlon$Lati[bbs_latlon$Dom =
 #basically how I would assume these communities would be distributed 
 legend(x="bottomleft", legend = unique(bbs_latlon$Dom), fill = unique(bbs_latlon$Dom))
 title("Distribution of communities at scale of 3 routes")
+
+
+#at scale of 66 routes
+topscales = bbs_allscales %>% 
+  filter(scale == '66')
+
+ggplot(topscales, aes(x = pctCore))+geom_histogram(bins = 20)
+#a non-trivial group of focal rtes still maintain very low % Core representation in their communities, even at our highest scales 
+#I would predict that these focal rtes are largely clustered in Western and mountain regions 
+#let's see: 
+
+topscales2 = topscales %>% 
+  filter(pctCore < 0.50) %>%
+  mutate(Dom = 'T') 
+
+topscales3 = topscales %>% 
+  filter(pctCore >= 0.50) %>% 
+  mutate(Dom = "C")
+
+topscales_new = rbind(topscales2, topscales3)
+topscales_new$Dom = as.factor(topscales_new$Dom)
+topscales_new = select(topscales_new, focalrte, meanOcc, pctCore, pctTran, logA, Dom)
+
+
+#all focal rtes with all possible pairings
+bbs_latlon = read.csv(paste(BBS, "good_rtes2.csv", sep = ""), header = TRUE)
+bbs_latlon = bbs_latlon %>% inner_join(topscales_new, by = c("stateroute" = "focalrte"))
+
+##the rough way: 
+map('world', xlim = range(bbs_latlon$Longi), ylim = range(bbs_latlon$Lati))
+points(bbs_latlon$Longi[bbs_latlon$Dom == "C"], bbs_latlon$Lati[bbs_latlon$Dom == "C"], pch = 16, col = "blue")
+points(bbs_latlon$Longi[bbs_latlon$Dom == "T"], bbs_latlon$Lati[bbs_latlon$Dom == "T"], pch = 16, col = "red")
+
+#basically how I would assume these communities would be distributed 
+legend(x="bottomleft", legend = unique(bbs_latlon$Dom), fill = unique(bbs_latlon$Dom))
+title("Distribution of communities at scale of 66 routes")
+
 
 
 ####coefs trycatch####
