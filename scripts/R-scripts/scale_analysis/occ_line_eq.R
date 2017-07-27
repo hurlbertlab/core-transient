@@ -1,8 +1,33 @@
 #Occupancy-scale analysis
 
-##feat. alternative to curve-fitting parameters: slope, intercept, and x value @ scale of 3 aggregated routes.
 # author: Molly F. Jenkins
 # date: 06/27/2017
+
+####Summary####
+#This script takes a dataset of BBS routes with occupancy values calculated for every scale, 
+#scales ranging in size from 1/10th of a BBS route to 66 aggregated BBS routes. 
+#Using this data we analyze the relationship between temporal occupancy of communities and scale. 
+#We characterize this relationship in a series of simple linear models between occupancy and scale 
+#(using log(area) as our variable of spatial scale). From these models and our existing data, 
+#for every focal route we traced how occupancy changes across scale, from smallest to largest scale. 
+#We characterized these changes through a series of variables: 
+  #1)the minimum occupancy value at the minimum scale for a focal route 
+  #2)the maximum occupancy value at the maximum scale for a focal route 
+  #3)the slope of the line linking the minimum and maximum values 
+      #the steepness (or flatness) of this line corresponds with the rate of accumulation of core species 
+      #for a given community 
+  #4)the midpoint occupancy value of the line at the scale of 3 aggregated routes per focal route 
+      #the value of mean occupancy for the community at this scale is also a useful proxy for 
+      #the rate of accumulation of core species for a given community 
+  #5)the scale at which mean occupancy first reaches or surpasses 50% 
+      #At what scale, at what area in km must we reach in order to reliably see consistent occupancy 
+      #PREDICTION: in areas of fairly uniform habitat type, this scale should be lower 
+      #PREDICTION: in areas of fairly high habitat heterogeneity, this scale should be higher 
+#We explore the variation in this relationship 
+#and attempt to characterize whether or not it is best explained by habitat heterogeneity 
+#using the variation present across several environmental variables as proxies for habitat heterogeneity. 
+
+
 
 # setwd("C:/git/core-transient")
 #'#' Please download and install the following packages:
