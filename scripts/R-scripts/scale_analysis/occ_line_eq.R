@@ -59,25 +59,25 @@ library(stats)
 # Data directories
 BBS = '//bioark.ad.unc.edu/HurlbertLab/Jenkins/BBS scaled/'
 
-
+#removing xmids since just vectors now for calcing curvy stat
 
 ####Extract coefficients from scale-occupancy relationships for analysis####
 OA.df = data.frame(stateroute = numeric(), OA.min = numeric(), OA.max = numeric(), OA.slope = numeric(), 
-                   OA.xmid = numeric(), OA.thresh = numeric(), 
+                   OA.thresh = numeric(), 
                    OA.pmin = numeric(), OA.pmax = numeric(), OA.pslope = numeric(), 
-                   OA.pxmid = numeric(), OA.pthresh = numeric(), 
+                   OA.pthresh = numeric(), 
                    OA.r2 = numeric(), OA.curvy = numeric()) 
 
 CA.df = data.frame(stateroute = numeric(), CA.min = numeric(), CA.max = numeric(), CA.slope = numeric(), 
-                   CA.xmid = numeric(), CA.thresh = numeric(), 
+                   CA.thresh = numeric(), 
                    CA.pmin = numeric(), CA.pmax = numeric(), CA.pslope = numeric(), 
-                   CA.pxmid = numeric(), CA.pthresh = numeric(), 
+                   CA.pthresh = numeric(), 
                    CA.r2 = numeric(), CA.curvy = numeric())
 
 TA.df = data.frame(stateroute = numeric(), TA.min = numeric(), TA.max = numeric(), TA.slope = numeric(), 
-                   TA.xmid = numeric(), TA.thresh = numeric(), 
+                   TA.thresh = numeric(), 
                    TA.pmin = numeric(), TA.pmax = numeric(), TA.pslope = numeric(), 
-                   TA.pxmid = numeric(), TA.pthresh = numeric(), 
+                   TA.pthresh = numeric(), 
                    TA.r2 = numeric(), TA.curvy = numeric())
 
 #read in data for processing
@@ -89,13 +89,15 @@ unique(bbs_allscales$scale)
 ###Pre-coefs distribution analysis###
 minscales = bbs_allscales %>% 
   filter(scale == '50-1')%>% 
-  summarize(min = min(meanOcc))
+  summarize(min = min(meanOcc)) #0.34
 
 
 topscales = bbs_allscales %>% 
   filter(scale == '3')
 
 ggplot(topscales, aes(x = pctCore))+geom_histogram(bins = 20)
+ggplot(topscales, aes(x = meanOcc))+geom_histogram(bins = 20)
+ggplot(topscales, aes(x = pctTran))+geom_histogram(bins = 20)
 #a non-trivial group of focal rtes still maintain very low % Core representation in their communities, even at our highest scales 
 #I would predict that these focal rtes are largely clustered in Western and mountain regions 
 #let's see: 
@@ -131,7 +133,9 @@ title("Distribution of communities at scale of 3 routes")
 topscales = bbs_allscales %>% 
   filter(scale == '66')
 
-ggplot(topscales, aes(x = pctCore))+geom_histogram(bins = 20)
+ggplot(topscales, aes(x = pctCore))+geom_histogram(bins = 30)
+ggplot(topscales, aes(x = meanOcc))+geom_histogram(bins = 30)
+ggplot(topscales, aes(x = pctTran))+geom_histogram(bins = 30)
 #a non-trivial group of focal rtes still maintain very low % Core representation in their communities, even at our highest scales 
 #I would predict that these focal rtes are largely clustered in Western and mountain regions 
 #let's see: 
