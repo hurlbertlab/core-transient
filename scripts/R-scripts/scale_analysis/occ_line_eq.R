@@ -175,11 +175,6 @@ stateroutes = unique(bbs_allscales$focalrte)
 
 for(s in stateroutes){
   logsub = subset(bbs_allscales, bbs_allscales$focalrte == s)  
-  #for each focalrte with 83 scales, what are the actual values 
-  #characterizing how temporal occupancy of communities shifts with scale? 
-  #using our model to generate predictions, how do those predictions compare? 
-  #how radically does our predicted line curve away from our data, how closely does it track our data?
-  
   #OA 
     OAlog = lm(meanOcc ~ logA, data = logsub) #lm instead of nls, reg linear model
     logsub$OApreds = predict(OAlog)
@@ -188,7 +183,7 @@ for(s in stateroutes){
     
     
     #ACTUAL stats (for plotting data pts): 
-    OA.min = logsub$meanOcc[logsub$logA == min(logsub$logA)]
+    OA.min = min(logsub$meanOcc[logsub$logA == min(logsub$logA)])
     OA.max = logsub$meanOcc[logsub$logA == max(logsub$logA)]
     OA.slope = ((OA.max - OA.min)/(max(logsub$logA[logsub$meanOcc == max(logsub$meanOcc)]) - min(logsub$logA[logsub$meanOcc == min(logsub$meanOcc)])))
     OA.xmid = logsub$meanOcc #vector for a given focal rte s, actual value
@@ -198,7 +193,7 @@ for(s in stateroutes){
     
     #PREDICTED stats (for fitting line): 
     OA.pmin =  min(logsub$OApreds[logsub$logA == min(logsub$logA)])
-    OA.pmax = max(logsub$OApreds[logsub$logA == max(logsub$logA)])
+    OA.pmax = logsub$OApreds[logsub$logA == max(logsub$logA)]
     OA.pslope = ((OA.pmax - OA.pmin)/(max(logsub$logA[logsub$OApreds == max(logsub$OApreds)]) - min(logsub$logA[logsub$OApreds == min(logsub$OApreds)])))
     OA.pxmid = logsub$OApreds
     OA.pthresh = min(logsub$logA[logsub$OApreds >= 0.5]) 
@@ -224,7 +219,7 @@ for(s in stateroutes){
     
     #ACTUAL stats (for plotting data pts): 
     CA.min = min(logsub$pctCore[logsub$logA == min(logsub$logA)])
-    CA.max = max(logsub$pctCore[logsub$logA == max(logsub$logA)])
+    CA.max = logsub$pctCore[logsub$logA == max(logsub$logA)]
     CA.slope = ((CA.max - CA.min)/(max(logsub$logA[logsub$pctCore == max(logsub$pctCore)]) - min(logsub$logA[logsub$pctCore == min(logsub$pctCore)])))
     CA.xmid = logsub$pctCore #@ scale == 3, for a given focal rte s, actual value
     CA.thresh = min(logsub$logA[logsub$pctCore >= 0.5]) 
@@ -233,7 +228,7 @@ for(s in stateroutes){
     
     #PREDICTED stats (for fitting line): 
     CA.pmin =  min(logsub$CApreds[logsub$logA == min(logsub$logA)])
-    CA.pmax = max(logsub$CApreds[logsub$logA == max(logsub$logA)])
+    CA.pmax = logsub$CApreds[logsub$logA == max(logsub$logA)]
     CA.pslope = ((CA.pmax - CA.pmin)/(max(logsub$logA[logsub$CApreds == max(logsub$CApreds)]) - min(logsub$logA[logsub$CApreds == min(logsub$CApreds)])))
     CA.pxmid = logsub$CApreds
     CA.pthresh = min(logsub$logA[logsub$CApreds >= 0.5]) 
@@ -250,44 +245,40 @@ for(s in stateroutes){
   CA.df = rbind(CA.df, CAmodel)
   
  
-  # # Fitting % transient
-  # #TA
-  # TAlog = lm(pctTran ~ lnA, data = logsub) #lm instead of nls, reg linear model
-  #   logsub$TApreds = predict(TAlog)
-  #   #TApred_df = data.frame(preds = predict(TAlog), scale = logsub$scale, lnA = logsub$lnA)  #get preds -> is predicting unique per scale, all clear
-  #   TAlm.r2 = lm(pctTran ~ TApreds, data = logsub) #get r2 from model, so far this is just predmod tho
-  # 
-  #   #ACTUAL stats (for plotting data pts):
-  #   #LOOKS DIFFERENT because transient, negative slope should be what we get 
-  #   #the maximum %Tran val should occur at the minimum lnA value
-  #   #the minimum %Tran val should occur at the maximum lnA value 
-  #   
-  #   TA.min = min(logsub$pctTran[logsub$lnA == max(logsub$lnA)])
-  #   TA.max = max(logsub$pctTran[logsub$lnA == min(logsub$lnA)])
-  #   TA.slope = ((TA.min - TA.max)/(max(logsub$lnA[logsub$pctTran == max(logsub$pctTran)]) - min(logsub$lnA[logsub$pctTran == min(logsub$pctTran)])))
-  #   TA.xmid = logsub$pctTran #@ scale == 3, for a given focal rte s, actual value
-  #   TA.thresh = min(logsub$lnA[logsub$pctTran >= 0.50])
-  #   #want the FIRST instance where it hits this range -> how? minimum scale at which it does that
-  #   #then save as a character so associated levels data doesn't stay stuck on the single data point
-  # 
-  #   #PREDICTED stats (for fitting line):
-  #   TA.pmin =  min(logsub$TApreds[logsub$lnA == min(logsub$lnA)])
-  #   TA.pmax = max(logsub$TApreds[logsub$lnA == max(logsub$lnA)])
-  #   TA.pslope = ((TA.pmin - TA.pmax)/(max(logsub$lnA[logsub$TApreds == max(logsub$TApreds)]) - min(logsub$lnA[logsub$TApreds == min(logsub$TApreds)])))
-  #   TA.pxmid = logsub$TApreds
-  #   TA.pthresh = min(logsub$lnA[logsub$TApreds >= 0.50])
-  # 
-  #   TA.r2 = summary(TAlm.r2)$r.squared
-  #   TA.curvy =  sum(TA.xmid - TA.pxmid)
-  # 
-  #   TAmodel = data.frame(stateroute = s, TA.min, TA.max, TA.slope,
-  #              TA.thresh,
-  #              TA.pmin, TA.pmax, TA.pslope,
-  #              TA.pthresh,
-  #              TA.r2, TA.curvy)
-  # 
-  # 
-  # TA.df = rbind(TA.df, TAmodel)
+  # Fitting % transient
+  #TA
+  TAlog = lm(pctTran ~ lnA, data = logsub) #lm instead of nls, reg linear model
+    logsub$TApreds = predict(TAlog)
+    #TApred_df = data.frame(preds = predict(TAlog), scale = logsub$scale, lnA = logsub$lnA)  #get preds -> is predicting unique per scale, all clear
+    TAlm.r2 = lm(pctTran ~ TApreds, data = logsub) #get r2 from model, so far this is just predmod tho
+
+    #ACTUAL stats (for plotting data pts):
+    TA.min = min(logsub$pctTran[logsub$lnA == min(logsub$lnA)])
+    TA.max = logsub$pctTran[logsub$lnA == max(logsub$lnA)]
+    TA.slope = ((TA.max - TA.min)/(max(logsub$lnA[logsub$pctTran == max(logsub$pctTran)]) - min(logsub$lnA[logsub$pctTran == min(logsub$pctTran)])))
+    TA.xmid = logsub$pctTran #@ scale == 3, for a given focal rte s, actual value
+    TA.thresh = min(logsub$lnA[logsub$pctTran >= 0.50])
+    #want the FIRST instance where it hits this range -> how? minimum scale at which it does that
+    #then save as a character so associated levels data doesn't stay stuck on the single data point
+
+    #PREDICTED stats (for fitting line):
+    TA.pmin =  min(logsub$TApreds[logsub$lnA == min(logsub$lnA)])
+    TA.pmax = logsub$TApreds[logsub$lnA == max(logsub$lnA)]
+    TA.pslope = ((TA.pmax - TA.pmin)/(max(logsub$lnA[logsub$TApreds == max(logsub$TApreds)]) - min(logsub$lnA[logsub$TApreds == min(logsub$TApreds)])))
+    TA.pxmid = logsub$TApreds
+    TA.pthresh = min(logsub$lnA[logsub$TApreds >= 0.50])
+
+    TA.r2 = summary(TAlm.r2)$r.squared
+    TA.curvy =  sum(TA.xmid - TA.pxmid)
+
+    TAmodel = data.frame(stateroute = s, TA.min, TA.max, TA.slope,
+               TA.thresh,
+               TA.pmin, TA.pmax, TA.pslope,
+               TA.pthresh,
+               TA.r2, TA.curvy)
+
+
+  TA.df = rbind(TA.df, TAmodel)
 
   
 } #end of loop 
@@ -295,11 +286,10 @@ for(s in stateroutes){
   
 #join all together using inner_join by focal rte, not cbind 
 coefs = OA.df %>% 
-  inner_join(CA.df, OA.df, by = "stateroute") #%>% 
-  #inner_join(TA.df, OA.df, by = "stateroute") 
+  inner_join(CA.df, OA.df, by = "stateroute") %>% 
+  inner_join(TA.df, OA.df, by = "stateroute") 
  
-coefs_2 = na.omit(coefs) #same as above
-write.csv(coefs, "scripts/R-scripts/scale_analysis/coefs.csv", row.names = FALSE) #updated 07/24
+write.csv(coefs, "scripts/R-scripts/scale_analysis/coefs.csv", row.names = FALSE) #updated 07/27
 #exp mods have much better r2 vals for pctTran than power 
 
 ####Plotting occupancy-scale relationships with observed and predicted values####
