@@ -145,7 +145,7 @@ bbs_above_guide = read.csv("scripts/R-scripts/scale_analysis/bbs_above_guide.csv
 #go one step at a time, logically -> don't rush thru recreating the loop 
 
 #need to make sure NOT running thru 66 times on the same site and scale 
-uniqrtes = unique(bbs_fullrte$stateroute) #all routes present are unique, still 953 which is great
+uniqrtes = unique(bbs_above_guide$stateroute) #all routes present are unique, still 953 which is great
 numrtes = 2:66 # based on min common number in top 6 grid cells, see grid_sampling_justification script 
 output = data.frame(focalrte = NULL,
                     scale = NULL, 
@@ -217,7 +217,7 @@ bbs_below = read.csv(paste(BBS, "bbs_below.csv", sep = ""), header = TRUE)
 
 #adding maxRadius column to bbs_below w/NA's + renaming and rearranging columns accordingly, creating area cols
 bbs_below = bbs_below %>% 
-  mutate(maxRadius = c("NA")) %>%
+  mutate(maxdist = c("NA")) %>%
   dplyr::rename(focalrte = stateroute) %>%
   select(focalrte, scale, everything()) %>%
   mutate(area = (as.integer(lapply(strsplit(as.character(bbs_below$scale), 
@@ -226,13 +226,15 @@ bbs_below = bbs_below %>%
 
 
 bbs_above = bbs_above %>% 
-  dplyr::mutate(area = scale*50*(pi*(0.4^2))) #area in km by # of routes * 50 stops in each rte * area of a stop (for above-route scale later)
+  dplyr::mutate(area = scale*50*(pi*(0.4^2))) %>% #area in km by # of routes * 50 stops in each rte * area of a stop (for above-route scale later)
+  dplyr::select(focalrte, scale, meanOcc, pctCore, pctTran, aveN, maxdist, area)
+
 bbs_above$scale = as.factor(bbs_above$scale)
 
 
 bbs_allscales = rbind(bbs_below, bbs_above) #rbind ok since all share column names
 write.csv(bbs_allscales, "data/BBS/bbs_allscales.csv", row.names = FALSE)
-#updated 07/20/2017, also in BioArk since old copy ALSO there
+#updated 07/27/2017, also in BioArk since old copy ALSO there
 write.csv(bbs_allscales, paste(BBS, "bbs_allscales.csv", sep = ""), row.names = FALSE)
 
 ####filter out stateroutes that are one-sided in scale####
