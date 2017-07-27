@@ -11,8 +11,8 @@
 #(using log(area) as our variable of spatial scale). From these models and our existing data, 
 #for every focal route we traced how occupancy changes across scale, from smallest to largest scale. 
 #We characterized these changes through a series of variables: 
-  #1)the minimum occupancy value at the minimum scale for a focal route 
-  #2)the maximum occupancy value at the maximum scale for a focal route 
+  #1)the occupancy value at the minimum scale for a focal route 
+  #2)the occupancy value at the maximum scale for a focal route 
   #3)the slope of the line linking the minimum and maximum values 
       #the steepness (or flatness) of this line corresponds with the rate of accumulation of core species 
       #for a given community 
@@ -182,10 +182,10 @@ for(s in stateroutes){
     
     
     #ACTUAL stats (for plotting data pts): 
-    OA.min = min(logsub$meanOcc[logsub$logA == min(logsub$logA)])
-    OA.max = max(logsub$meanOcc[logsub$logA == max(logsub$logA)])
+    OA.min = logsub$meanOcc[logsub$logA == min(logsub$logA)]
+    OA.max = logsub$meanOcc[logsub$logA == max(logsub$logA)]
     OA.slope = ((OA.max - OA.min)/(max(logsub$logA[logsub$meanOcc == max(logsub$meanOcc)]) - min(logsub$logA[logsub$meanOcc == min(logsub$meanOcc)])))
-    OA.xmid = logsub$meanOcc[logsub$scale == '3'] #@ scale == 3, for a given focal rte s, actual value
+    OA.xmid = logsub$meanOcc #vector for a given focal rte s, actual value
     OA.thresh = min(logsub$logA[logsub$meanOcc >= 0.5]) 
     #want the FIRST instance where it hits this range -> how? minimum scale at which it does that
     #save as an area, not a "scale" 
@@ -194,11 +194,11 @@ for(s in stateroutes){
     OA.pmin =  min(logsub$OApreds[logsub$logA == min(logsub$logA)])
     OA.pmax = max(logsub$OApreds[logsub$logA == max(logsub$logA)])
     OA.pslope = ((OA.pmax - OA.pmin)/(max(logsub$logA[logsub$OApreds == max(logsub$OApreds)]) - min(logsub$logA[logsub$OApreds == min(logsub$OApreds)])))
-    OA.pxmid = logsub$OApreds[logsub$scale == '3']
+    OA.pxmid = logsub$OApreds
     OA.pthresh = min(logsub$logA[logsub$OApreds >= 0.5]) 
     
     OA.r2 = summary(OAlm.r2)$r.squared
-    OA.curvy =  OA.xmid - OA.pxmid 
+    OA.curvy =  sum(OA.xmid - OA.pxmid) #AUC proxy
 
     OAmodel = data.frame(stateroute = s, OA.min, OA.max, OA.slope, 
                                           OA.xmid, OA.thresh, 
