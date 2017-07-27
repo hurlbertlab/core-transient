@@ -112,7 +112,8 @@ write.csv(dist.df, "scripts/R-scripts/scale_analysis/dist_df.csv", row.names = F
 occ_counts2 = function(countData, countColumns, scale) {
   bbssub = countData[, c("stateroute", "year", "AOU", countColumns)] #these are our grouping vars
   bbssub$groupCount = rowSums(bbssub[, countColumns]) 
-  return(bbssub)
+  bbsu = unique(bbssub[bbssub[, "groupCount"]!= 0, c("stateroute", "year", "AOU", "groupCount")])
+  return(bbsu)
 }
 
 #should just return data for 50-1 scale, across all 50 stops 
@@ -130,8 +131,6 @@ for (scale in c_scales) {
 bbs_above_guide = data.frame(output)
 
 
-#we don't care how many for occupancy, just for abun, so this needs to go into rte loop 
-bbsu = unique(bbssub[bbssub[, "groupCount"]!= 0, c("stateroute", "year", "AOU")])
 
 
 ####Rte loop####
@@ -166,9 +165,9 @@ for (r in uniqrtes) { #for each focal route
       slice(1:nu) %>% 
       select(everything()) %>% data.frame()
     
-    focal_clustr = bbs_fullrte %>% 
-      inner_join(tmp_rte_group, by = c("stateroute" = "rte2"))%>%
-      arrange(dist)
+    focal_clustr = bbs_above_guide %>% 
+      filter(stateroute %in% tmp_rte_group$rte2) %>%
+      arrange(dist) %>% select(everything()) %>% data.frame()
       #(for a given focal rte, narrow input data to those 66 secondary routes in focal cluster)
     
       occ.summ = focal_clustr %>% 
