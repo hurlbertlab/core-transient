@@ -23,6 +23,10 @@
       #At what scale, at what area in km must we reach in order to reliably see consistent occupancy 
       #PREDICTION: in areas of fairly uniform habitat type, this scale should be lower 
       #PREDICTION: in areas of fairly high habitat heterogeneity, this scale should be higher 
+  #6)finally, we look at the variation in occupancy explained by scale thru R^2 values 
+  #7)and we look at the straightness or curviness of the actual data 
+      #as compared to the data derived from our model.
+
 #We explore the variation in this relationship 
 #and attempt to characterize whether or not it is best explained by habitat heterogeneity 
 #using the variation present across several environmental variables as proxies for habitat heterogeneity. 

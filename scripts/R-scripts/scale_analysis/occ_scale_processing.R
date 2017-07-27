@@ -42,6 +42,8 @@ fifty_bestAous = fifty_allyears %>%
            !(AOU >= 4160 & AOU <= 4210) & AOU != 7010) #leaving out owls, waterbirds as less reliable data
 
 #occ_counts function for calculating occupancy at any scale
+#countcolumns can refer to the stops in a stateroute OR 
+#it can refer to the associated secondary routes to aggregate across 
 occ_counts = function(countData, countColumns, scale) {
   bbssub = countData[, c("stateroute", "year", "AOU", countColumns)] #these are our grouping vars
   bbssub$groupCount = rowSums(bbssub[, countColumns]) 
@@ -103,6 +105,34 @@ dist.df = data.frame(rte1 = rep(good_rtes2$stateroute, each = nrow(good_rtes2)),
                      dist = as.vector(distances))
 write.csv(dist.df, "scripts/R-scripts/scale_analysis/dist_df.csv", row.names = FALSE) #for later calcs
 
+####50-1 scale prep for being used for above-scale, occ_counts2####
+#important to not remove AOU and stateroute data by year, but to halt at that step 
+#so can be guided thru original occ_counts, with secondary routes as "countColumns" 
+
+occ_counts2 = function(countData, countColumns, scale) {
+  bbssub = countData[, c("stateroute", "year", "AOU", countColumns)] #these are our grouping vars
+  bbssub$groupCount = rowSums(bbssub[, countColumns]) 
+  return(bbssub)
+}
+
+#should just return data for 50-1 scale, across all 50 stops 
+c_scales = c(50)
+output = c()
+for (scale in c_scales) {
+  numGroups = floor(50/scale)
+  for (g in 1:numGroups) {
+    groupedCols = paste("Stop", ((g-1)*scale + 1):(g*scale), sep = "")
+    temp = occ_counts2(fifty_bestAous, groupedCols, scale)
+    output = rbind(output, temp) 
+  }
+}
+
+bbs_above_guide = data.frame(output)
+
+
+#we don't care how many for occupancy, just for abun, so this needs to go into rte loop 
+bbsu = unique(bbssub[bbssub[, "groupCount"]!= 0, c("stateroute", "year", "AOU")])
+
 
 ####Rte loop####
 dist.df = read.csv("scripts/R-scripts/scale_analysis/dist_df.csv", header = TRUE)
@@ -141,34 +171,7 @@ for (r in uniqrtes) { #for each focal route
       arrange(dist)
       #(for a given focal rte, narrow input data to those 66 secondary routes in focal cluster)
     
-    # Use below code to inform occ calc appropriately
-    
-    
-    # occ_counts = function(countData, countColumns, scale) {
-    #   bbssub = countData[, c("stateroute", "year", "AOU", countColumns)] #these are our grouping vars
-    #   bbssub$groupCount = rowSums(bbssub[, countColumns]) 
-    #   bbsu = unique(bbssub[bbssub[, "groupCount"]!= 0, c("stateroute", "year", "AOU")]) 
-    #   
-    #   abun.summ = bbssub %>% #abundance
-    #     group_by(stateroute, year) %>%  
-    #     summarize(totalN = sum(groupCount)) %>%
-    #     group_by(stateroute) %>%
-    #     summarize(aveN = mean(totalN)) #we want to go further and summarize across focal + secondary rtes tho
-    #   
-    #   occ.summ = bbsu %>% #occupancy
-    #     count(stateroute, AOU) %>%
-    #     mutate(occ = n/15, scale = scale, subrouteID = countColumns[1]) %>%
-    #     group_by(stateroute) %>%
-    #     summarize(meanOcc = mean(occ), 
-    #               pctCore = sum(occ > 2/3)/length(occ),
-    #               pctTran = sum(occ <= 1/3)/length(occ)) %>%
-    #     mutate(scale = paste(scale, g, sep = "-")) %>%
-    #     left_join(abun.summ, by = 'stateroute')
-    #   return(occ.summ)
-    
-    
-    
-    occ.summ = focal_clustr %>% 
+      occ.summ = focal_clustr %>% 
       summarize(aveN2 = sum(aveN), 
                 meanOcc2 = mean(Occ), 
                 pctCore2 = sum(Occ > 2/3)/length(Occ),
