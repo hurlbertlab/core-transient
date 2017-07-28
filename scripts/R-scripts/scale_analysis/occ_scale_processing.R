@@ -62,7 +62,8 @@ occ_counts = function(countData, countColumns, scale) {
     summarize(meanOcc = mean(occ), 
               pctCore = sum(occ > 2/3)/length(occ),
               pctTran = sum(occ <= 1/3)/length(occ)) %>%
-    mutate(scale = paste(scale, g, sep = "-")) %>%
+    mutate(scale = paste(scale, g, sep = "-")) %>% #, 
+           #scale = scale) %>%
     left_join(abun.summ, by = 'stateroute')
   return(occ.summ)
 }
@@ -72,7 +73,6 @@ occ_counts = function(countData, countColumns, scale) {
 #fix to run all at once, so no sep run for above-scale, USE occ-counts for both 
 
 b_scales = c(5, 10, 25, 50)
-
 output = c()
 for (scale in b_scales) {
   numGroups = floor(50/scale)
@@ -81,14 +81,37 @@ for (scale in b_scales) {
     temp = occ_counts(fifty_bestAous, groupedCols, scale)
     output = rbind(output, temp) 
   }
+  #take means across scales, ignoring g 
+  #don't need to do anything conveluted if keep original scales as own column
+  #but then I'm running into the same technical error as I was with the larger routes, where I'm 
+  #averaging instead of recalculating occ as I should be -> but not aggregating these, so necessary at all? 
+  #pressing on in the meanwhile, but establish later -> NOT aggregating, pointedly. 
+  # 
+  # means = filter(output, scale == scale)
+  #   abun.summ = means %>% 
+  #   group_by(stateroute) %>%
+  #   summarize(aveN = mean(aveN))
+  # 
+  # occ.summ = means %>% 
+  #   group_by(stateroute) %>% 
+  #   summarize(meanOcc = mean(meanOcc), 
+  #             pctCore = sum(meanOcc > 2/3)/length(meanOcc),
+  #             pctTran = sum(meanOcc <= 1/3)/length(meanOcc)) %>%
+  #   mutate(scale = scale) %>%
+  #   left_join(abun.summ, by = 'stateroute')
+  # 
+  # occ_final = rbind(occ_final, occ.summ)
+  #   
 }
+
+
+
 bbs_below<-data.frame(output)
 write.csv(bbs_below, paste(BBS, "bbs_below.csv", sep = ""), row.names = FALSE) #updated 06/30, on BioArk
 #should be able to use the 50 stop info (1 rte) from this output to aggregate routes AFTER below scale
 write.csv(bbs_below, "data/BBS/bbs_below.csv", row.names = FALSE)
 
 #at scale of a single route (e.g. "50-1", no communities)
-
 
 ####Data prep for calculating occupancy above the scale of a BBS route####
 #Revised calcs workspace 
@@ -145,7 +168,7 @@ bbs_above_guide = read.csv("scripts/R-scripts/scale_analysis/bbs_above_guide.csv
 #go one step at a time, logically -> don't rush thru recreating the loop 
 
 #need to make sure NOT running thru 66 times on the same site and scale 
-uniqrtes = unique(bbs_fullrte$stateroute) #all routes present are unique, still 953 which is great
+uniqrtes = unique(bbs_above_guide$stateroute) #all routes present are unique, still 953 which is great
 numrtes = 2:66 # based on min common number in top 6 grid cells, see grid_sampling_justification script 
 output = data.frame(focalrte = NULL,
                     scale = NULL, 
@@ -217,7 +240,7 @@ bbs_below = read.csv(paste(BBS, "bbs_below.csv", sep = ""), header = TRUE)
 
 #adding maxRadius column to bbs_below w/NA's + renaming and rearranging columns accordingly, creating area cols
 bbs_below = bbs_below %>% 
-  mutate(maxRadius = c("NA")) %>%
+  mutate(maxdist = c("NA")) %>%
   dplyr::rename(focalrte = stateroute) %>%
   select(focalrte, scale, everything()) %>%
   mutate(area = (as.integer(lapply(strsplit(as.character(bbs_below$scale), 
@@ -226,13 +249,15 @@ bbs_below = bbs_below %>%
 
 
 bbs_above = bbs_above %>% 
-  dplyr::mutate(area = scale*50*(pi*(0.4^2))) #area in km by # of routes * 50 stops in each rte * area of a stop (for above-route scale later)
+  dplyr::mutate(area = scale*50*(pi*(0.4^2))) %>% #area in km by # of routes * 50 stops in each rte * area of a stop (for above-route scale later)
+  dplyr::select(focalrte, scale, meanOcc, pctCore, pctTran, aveN, maxdist, area)
+
 bbs_above$scale = as.factor(bbs_above$scale)
 
 
 bbs_allscales = rbind(bbs_below, bbs_above) #rbind ok since all share column names
 write.csv(bbs_allscales, "data/BBS/bbs_allscales.csv", row.names = FALSE)
-#updated 07/20/2017, also in BioArk since old copy ALSO there
+#updated 07/27/2017, also in BioArk since old copy ALSO there
 write.csv(bbs_allscales, paste(BBS, "bbs_allscales.csv", sep = ""), row.names = FALSE)
 
 ####filter out stateroutes that are one-sided in scale####
@@ -263,7 +288,7 @@ bbs_allscales3$scale = factor(bbs_allscales3$scale,
                                         '61', '62', '63', '64', '65', '66'), ordered=TRUE)
 
 write.csv(bbs_allscales3, "data/BBS/bbs_allscales.csv", row.names = FALSE) #overwrote bbs all scales file 
-#updated 07/24/2017 from 1003 to 1001 routes
+#updated 07/27/2017 from 1003 to 1001 routes
 
 
 ####Occ-scale analysis####
@@ -282,6 +307,6 @@ plot(meanOcc~logN, data = bbs_allscales, xlab = "Average Abundance" , ylab = "Me
 #^^same pattern roughly; abundance describes ~same amt of variance as area so serves as a good proxy 
 
 
-#ALL files updated 07/20 ~4pm 
+#ALL files updated 07/27 ~3pm 
 
 

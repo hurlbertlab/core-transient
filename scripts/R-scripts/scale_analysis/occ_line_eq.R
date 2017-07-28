@@ -11,8 +11,8 @@
 #(using log(area) as our variable of spatial scale). From these models and our existing data, 
 #for every focal route we traced how occupancy changes across scale, from smallest to largest scale. 
 #We characterized these changes through a series of variables: 
-  #1)the minimum occupancy value at the minimum scale for a focal route 
-  #2)the maximum occupancy value at the maximum scale for a focal route 
+  #1)the occupancy value at the minimum scale for a focal route 
+  #2)the occupancy value at the maximum scale for a focal route 
   #3)the slope of the line linking the minimum and maximum values 
       #the steepness (or flatness) of this line corresponds with the rate of accumulation of core species 
       #for a given community 
@@ -59,51 +59,26 @@ library(stats)
 # Data directories
 BBS = '//bioark.ad.unc.edu/HurlbertLab/Jenkins/BBS scaled/'
 
-
-
-####Extract coefficients from scale-occupancy relationships for analysis####
-OA.df = data.frame(stateroute = numeric(), OA.min = numeric(), OA.max = numeric(), OA.slope = numeric(), 
-                   OA.xmid = numeric(), OA.thresh = numeric(), 
-                   OA.pmin = numeric(), OA.pmax = numeric(), OA.pslope = numeric(), 
-                   OA.pxmid = numeric(), OA.pthresh = numeric(), 
-                   OA.r2 = numeric(), OA.curvy = numeric()) 
-
-CA.df = data.frame(stateroute = numeric(), CA.min = numeric(), CA.max = numeric(), CA.slope = numeric(), 
-                   CA.xmid = numeric(), CA.thresh = numeric(), 
-                   CA.pmin = numeric(), CA.pmax = numeric(), CA.pslope = numeric(), 
-                   CA.pxmid = numeric(), CA.pthresh = numeric(), 
-                   CA.r2 = numeric(), CA.curvy = numeric())
-
-TA.df = data.frame(stateroute = numeric(), TA.min = numeric(), TA.max = numeric(), TA.slope = numeric(), 
-                   TA.xmid = numeric(), TA.thresh = numeric(), 
-                   TA.pmin = numeric(), TA.pmax = numeric(), TA.pslope = numeric(), 
-                   TA.pxmid = numeric(), TA.pthresh = numeric(), 
-                   TA.r2 = numeric(), TA.curvy = numeric())
-
-#read in data for processing
-bbs_allscales = read.csv("data/BBS/bbs_allscales.csv", header = TRUE)
-levels(bbs_allscales$scale)
-unique(bbs_allscales$scale)
-#ALL clear 07/24
-
 ###Pre-coefs distribution analysis###
 minscales = bbs_allscales %>% 
   filter(scale == '50-1')%>% 
-  summarize(min = min(meanOcc))
+  summarize(min = min(meanOcc)) #0.34
 
 
 topscales = bbs_allscales %>% 
-  filter(scale == '3')
+  filter(scale == '50-1')
 
 ggplot(topscales, aes(x = pctCore))+geom_histogram(bins = 20)
+ggplot(topscales, aes(x = meanOcc))+geom_histogram(bins = 20)
+ggplot(topscales, aes(x = pctTran))+geom_histogram(bins = 20)
 #a non-trivial group of focal rtes still maintain very low % Core representation in their communities, even at our highest scales 
 #I would predict that these focal rtes are largely clustered in Western and mountain regions 
 #let's see: 
 
 topscales2 = topscales %>% 
-  filter(pctCore < 0.50) %>%
+  filter(pctTran >= 0.50) %>%
   mutate(Dom = 'T') 
-  
+
 topscales3 = topscales %>% 
   filter(pctCore >= 0.50) %>% 
   mutate(Dom = "C")
@@ -124,20 +99,22 @@ points(bbs_latlon$Longi[bbs_latlon$Dom == "T"], bbs_latlon$Lati[bbs_latlon$Dom =
 
 #basically how I would assume these communities would be distributed 
 legend(x="bottomleft", legend = unique(bbs_latlon$Dom), fill = unique(bbs_latlon$Dom))
-title("Distribution of communities at scale of 3 routes")
+title("Distribution of communities at scale of 1 routes")
 
 
 #at scale of 66 routes
 topscales = bbs_allscales %>% 
   filter(scale == '66')
 
-ggplot(topscales, aes(x = pctCore))+geom_histogram(bins = 20)
+ggplot(topscales, aes(x = pctCore))+geom_histogram(bins = 30)
+ggplot(topscales, aes(x = meanOcc))+geom_histogram(bins = 30)
+ggplot(topscales, aes(x = pctTran))+geom_histogram(bins = 30)
 #a non-trivial group of focal rtes still maintain very low % Core representation in their communities, even at our highest scales 
 #I would predict that these focal rtes are largely clustered in Western and mountain regions 
 #let's see: 
 
 topscales2 = topscales %>% 
-  filter(pctCore < 0.50) %>%
+  filter(pctTran >= 0.50) %>%
   mutate(Dom = 'T') 
 
 topscales3 = topscales %>% 
@@ -163,17 +140,41 @@ legend(x="bottomleft", legend = unique(bbs_latlon$Dom), fill = unique(bbs_latlon
 title("Distribution of communities at scale of 66 routes")
 
 
+####Extract coefficients from scale-occupancy relationships for analysis####
+OA.df = data.frame(stateroute = numeric(), OA.min = numeric(), OA.max = numeric(), OA.slope = numeric(), 
+                   OA.thresh = numeric(), 
+                   OA.pmin = numeric(), OA.pmax = numeric(), OA.pslope = numeric(), 
+                   OA.pthresh = numeric(), 
+                   OA.r2 = numeric(), OA.curvy = numeric()) 
 
-####coefs trycatch####
+CA.df = data.frame(stateroute = numeric(), CA.min = numeric(), CA.max = numeric(), CA.slope = numeric(), 
+                   CA.thresh = numeric(), 
+                   CA.pmin = numeric(), CA.pmax = numeric(), CA.pslope = numeric(), 
+                   CA.pthresh = numeric(), 
+                   CA.r2 = numeric(), CA.curvy = numeric())
+
+TA.df = data.frame(stateroute = numeric(), TA.min = numeric(), TA.max = numeric(), TA.slope = numeric(), 
+                   TA.thresh = numeric(), 
+                   TA.pmin = numeric(), TA.pmax = numeric(), TA.pslope = numeric(), 
+                   TA.pthresh = numeric(), 
+                   TA.r2 = numeric(), TA.curvy = numeric())
+
+#read in data for processing
+bbs_allscales = read.csv("data/BBS/bbs_allscales.csv", header = TRUE)
+levels(bbs_allscales$scale)
+unique(bbs_allscales$scale)
+#ALL clear 07/24
+
+
+
+####coefs####
 stateroutes = unique(bbs_allscales$focalrte)
-#07/24 version of tryCatch
+
+#do I even need a loop? can't I just group by stateroute and calc these ?
+
+
 for(s in stateroutes){
   logsub = subset(bbs_allscales, bbs_allscales$focalrte == s)  
-  #for each focalrte with 83 scales, what are the actual values 
-  #characterizing how temporal occupancy of communities shifts with scale? 
-  #using our model to generate predictions, how do those predictions compare? 
-  #how radically does our predicted line curve away from our data, how closely does it track our data?
-  
   #OA 
     OAlog = lm(meanOcc ~ logA, data = logsub) #lm instead of nls, reg linear model
     logsub$OApreds = predict(OAlog)
@@ -183,27 +184,27 @@ for(s in stateroutes){
     
     #ACTUAL stats (for plotting data pts): 
     OA.min = min(logsub$meanOcc[logsub$logA == min(logsub$logA)])
-    OA.max = max(logsub$meanOcc[logsub$logA == max(logsub$logA)])
+    OA.max = logsub$meanOcc[logsub$logA == max(logsub$logA)]
     OA.slope = ((OA.max - OA.min)/(max(logsub$logA[logsub$meanOcc == max(logsub$meanOcc)]) - min(logsub$logA[logsub$meanOcc == min(logsub$meanOcc)])))
-    OA.xmid = logsub$meanOcc[logsub$scale == '3'] #@ scale == 3, for a given focal rte s, actual value
+    OA.xmid = logsub$meanOcc #vector for a given focal rte s, actual value
     OA.thresh = min(logsub$logA[logsub$meanOcc >= 0.5]) 
     #want the FIRST instance where it hits this range -> how? minimum scale at which it does that
     #save as an area, not a "scale" 
     
     #PREDICTED stats (for fitting line): 
     OA.pmin =  min(logsub$OApreds[logsub$logA == min(logsub$logA)])
-    OA.pmax = max(logsub$OApreds[logsub$logA == max(logsub$logA)])
+    OA.pmax = logsub$OApreds[logsub$logA == max(logsub$logA)]
     OA.pslope = ((OA.pmax - OA.pmin)/(max(logsub$logA[logsub$OApreds == max(logsub$OApreds)]) - min(logsub$logA[logsub$OApreds == min(logsub$OApreds)])))
-    OA.pxmid = logsub$OApreds[logsub$scale == '3']
+    OA.pxmid = logsub$OApreds
     OA.pthresh = min(logsub$logA[logsub$OApreds >= 0.5]) 
     
     OA.r2 = summary(OAlm.r2)$r.squared
-    OA.curvy =  OA.xmid - OA.pxmid 
+    OA.curvy =  sum(OA.xmid - OA.pxmid) #AUC proxy
 
     OAmodel = data.frame(stateroute = s, OA.min, OA.max, OA.slope, 
-                                          OA.xmid, OA.thresh, 
+                                          OA.thresh, 
                                           OA.pmin, OA.pmax, OA.pslope, 
-                                          OA.pxmid, OA.pthresh, 
+                                          OA.pthresh, 
                                           OA.r2, OA.curvy)
     
   OA.df = rbind(OA.df, OAmodel)
@@ -218,70 +219,66 @@ for(s in stateroutes){
     
     #ACTUAL stats (for plotting data pts): 
     CA.min = min(logsub$pctCore[logsub$logA == min(logsub$logA)])
-    CA.max = max(logsub$pctCore[logsub$logA == max(logsub$logA)])
+    CA.max = logsub$pctCore[logsub$logA == max(logsub$logA)]
     CA.slope = ((CA.max - CA.min)/(max(logsub$logA[logsub$pctCore == max(logsub$pctCore)]) - min(logsub$logA[logsub$pctCore == min(logsub$pctCore)])))
-    CA.xmid = logsub$pctCore[logsub$scale == '3'] #@ scale == 3, for a given focal rte s, actual value
+    CA.xmid = logsub$pctCore #@ scale == 3, for a given focal rte s, actual value
     CA.thresh = min(logsub$logA[logsub$pctCore >= 0.5]) 
     #want the FIRST instance where it hits this range -> how? minimum scale at which it does that
     #other threshold limits/metrics relevant to %core and %transient? 
     
     #PREDICTED stats (for fitting line): 
     CA.pmin =  min(logsub$CApreds[logsub$logA == min(logsub$logA)])
-    CA.pmax = max(logsub$CApreds[logsub$logA == max(logsub$logA)])
+    CA.pmax = logsub$CApreds[logsub$logA == max(logsub$logA)]
     CA.pslope = ((CA.pmax - CA.pmin)/(max(logsub$logA[logsub$CApreds == max(logsub$CApreds)]) - min(logsub$logA[logsub$CApreds == min(logsub$CApreds)])))
-    CA.pxmid = logsub$CApreds[logsub$scale == '3']
+    CA.pxmid = logsub$CApreds
     CA.pthresh = min(logsub$logA[logsub$CApreds >= 0.5]) 
     
     CA.r2 = summary(CAlm.r2)$r.squared
-    CA.curvy =  CA.xmid - CA.pxmid 
+    CA.curvy =  sum(CA.xmid - CA.pxmid) 
     
     CAmodel = data.frame(stateroute = s, CA.min, CA.max, CA.slope, 
-               CA.xmid, CA.thresh, 
+               CA.thresh, 
                CA.pmin, CA.pmax, CA.pslope, 
-               CA.pxmid, CA.pthresh, 
+               CA.pthresh, 
                CA.r2, CA.curvy)
     
   CA.df = rbind(CA.df, CAmodel)
   
  
-  # # Fitting % transient
-  # #TA
-  # TAlog = lm(pctTran ~ lnA, data = logsub) #lm instead of nls, reg linear model
-  #   logsub$TApreds = predict(TAlog)
-  #   #TApred_df = data.frame(preds = predict(TAlog), scale = logsub$scale, lnA = logsub$lnA)  #get preds -> is predicting unique per scale, all clear
-  #   TAlm.r2 = lm(pctTran ~ TApreds, data = logsub) #get r2 from model, so far this is just predmod tho
-  # 
-  #   #ACTUAL stats (for plotting data pts):
-  #   #LOOKS DIFFERENT because transient, negative slope should be what we get 
-  #   #the maximum %Tran val should occur at the minimum lnA value
-  #   #the minimum %Tran val should occur at the maximum lnA value 
-  #   
-  #   TA.min = min(logsub$pctTran[logsub$lnA == max(logsub$lnA)])
-  #   TA.max = max(logsub$pctTran[logsub$lnA == min(logsub$lnA)])
-  #   TA.slope = ((TA.min - TA.max)/(max(logsub$lnA[logsub$pctTran == max(logsub$pctTran)]) - min(logsub$lnA[logsub$pctTran == min(logsub$pctTran)])))
-  #   TA.xmid = logsub$pctTran[logsub$scale == '3'] #@ scale == 3, for a given focal rte s, actual value
-  #   TA.thresh = min(logsub$lnA[logsub$pctTran >= 0.50])
-  #   #want the FIRST instance where it hits this range -> how? minimum scale at which it does that
-  #   #then save as a character so associated levels data doesn't stay stuck on the single data point
-  # 
-  #   #PREDICTED stats (for fitting line):
-  #   TA.pmin =  min(logsub$TApreds[logsub$lnA == min(logsub$lnA)])
-  #   TA.pmax = max(logsub$TApreds[logsub$lnA == max(logsub$lnA)])
-  #   TA.pslope = ((TA.pmin - TA.pmax)/(max(logsub$lnA[logsub$TApreds == max(logsub$TApreds)]) - min(logsub$lnA[logsub$TApreds == min(logsub$TApreds)])))
-  #   TA.pxmid = logsub$TApreds[logsub$scale == '3']
-  #   TA.pthresh = min(logsub$lnA[logsub$TApreds >= 0.50])
-  # 
-  #   TA.r2 = summary(TAlm.r2)$r.squared
-  #   TA.curvy =  TA.xmid - TA.pxmid
-  # 
-  #   TAmodel = data.frame(stateroute = s, TA.min, TA.max, TA.slope,
-  #              TA.xmid, TA.thresh,
-  #              TA.pmin, TA.pmax, TA.pslope,
-  #              TA.pxmid, TA.pthresh,
-  #              TA.r2, TA.curvy)
-  # 
-  # 
-  # TA.df = rbind(TA.df, TAmodel)
+  # Fitting % transient
+  #TA
+  TAlog = lm(pctTran ~ lnA, data = logsub) #lm instead of nls, reg linear model
+    logsub$TApreds = predict(TAlog)
+    #TApred_df = data.frame(preds = predict(TAlog), scale = logsub$scale, lnA = logsub$lnA)  #get preds -> is predicting unique per scale, all clear
+    TAlm.r2 = lm(pctTran ~ TApreds, data = logsub) #get r2 from model, so far this is just predmod tho
+
+    #ACTUAL stats (for plotting data pts):
+    TA.min = min(logsub$pctTran[logsub$lnA == min(logsub$lnA)])
+    TA.max = logsub$pctTran[logsub$lnA == max(logsub$lnA)]
+    TA.slope = ((TA.max - TA.min)/(max(logsub$lnA[logsub$pctTran == max(logsub$pctTran)]) - min(logsub$lnA[logsub$pctTran == min(logsub$pctTran)])))
+    TA.xmid = logsub$pctTran #@ scale == 3, for a given focal rte s, actual value
+    TA.thresh = min(logsub$lnA[logsub$pctTran >= 0.50])
+    #want the FIRST instance where it hits this range -> how? minimum scale at which it does that
+    #then save as a character so associated levels data doesn't stay stuck on the single data point
+
+    #PREDICTED stats (for fitting line):
+    TA.pmin =  min(logsub$TApreds[logsub$lnA == min(logsub$lnA)])
+    TA.pmax = logsub$TApreds[logsub$lnA == max(logsub$lnA)]
+    TA.pslope = ((TA.pmax - TA.pmin)/(max(logsub$lnA[logsub$TApreds == max(logsub$TApreds)]) - min(logsub$lnA[logsub$TApreds == min(logsub$TApreds)])))
+    TA.pxmid = logsub$TApreds
+    TA.pthresh = min(logsub$lnA[logsub$TApreds >= 0.50])
+
+    TA.r2 = summary(TAlm.r2)$r.squared
+    TA.curvy =  sum(TA.xmid - TA.pxmid)
+
+    TAmodel = data.frame(stateroute = s, TA.min, TA.max, TA.slope,
+               TA.thresh,
+               TA.pmin, TA.pmax, TA.pslope,
+               TA.pthresh,
+               TA.r2, TA.curvy)
+
+
+  TA.df = rbind(TA.df, TAmodel)
 
   
 } #end of loop 
@@ -289,11 +286,10 @@ for(s in stateroutes){
   
 #join all together using inner_join by focal rte, not cbind 
 coefs = OA.df %>% 
-  inner_join(CA.df, OA.df, by = "stateroute") #%>% 
-  #inner_join(TA.df, OA.df, by = "stateroute") 
+  inner_join(CA.df, OA.df, by = "stateroute") %>% 
+  inner_join(TA.df, OA.df, by = "stateroute") 
  
-coefs_2 = na.omit(coefs) #same as above
-write.csv(coefs, "scripts/R-scripts/scale_analysis/coefs.csv", row.names = FALSE) #updated 07/24
+write.csv(coefs, "scripts/R-scripts/scale_analysis/coefs.csv", row.names = FALSE) #updated 07/27
 #exp mods have much better r2 vals for pctTran than power 
 
 ####Plotting occupancy-scale relationships with observed and predicted values####
