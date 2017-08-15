@@ -96,7 +96,9 @@ summ1.5 = summ1[, c("datasetID","site","system","taxa","propCore", "propTrans", 
 write.csv(summ1.5, "output/tabular_data/summ1.5.csv", row.names = FALSE)
 # read in pre formatted bbs below dataset
 bbs_summ2 = read.csv("data/BBS/bbs_below_summ2.csv", header = TRUE)
-summ2 = rbind(bbs_summ2,summ1.5)
+bbs_summ50 = bbs_summ2[grep("-50-", as.character(bbs_summ2$site)),]
+  
+summ2 = rbind(bbs_summ50,summ1.5)
 write.csv(summ2, "output/tabular_data/summ2.csv", row.names = FALSE)
 dsets = unique(summ2[, c('datasetID', 'system','taxa')])
 
@@ -151,7 +153,7 @@ mtext("Datasets", 2, cex = 1.25, las = 0, line = 2.5)
 title(outer=FALSE,adj=1,main="C",cex.main=1.5,col="black",font=2,line=-0.1)
 bar2 = barplot(log10(sitesByTaxa[taxorder]), axes = F, axisnames = F, ylim = c(0,4),
                col = as.character(taxcolors$color[match(taxorder, taxcolors$taxa)]))
-axis(2, 0:4,labels=c("0","1","10","1000","10000"))
+axis(2, 0:3,labels=c("1","10","100","1000"))
 mtext(expression("Assemblages"), 2, cex = 1.25, las = 0, line = 3.5)
 title(outer=FALSE,adj=0.95,main="D",cex.main=1.5,col="black",font=2,line=-0.1)
 
