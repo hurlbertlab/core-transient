@@ -9,19 +9,35 @@ setwd("C:/git/core-transient")
 
 library(lme4)
 library(plyr) # for core-transient functions
-library(gridExtra)
+library(ggplot2)
 library(tidyr)
 library(maps)
-library(cowplot)
+library(gridExtra)
 library(RColorBrewer)
 library(sp)
 library(rgdal)
 library(raster)
 library(dplyr)
+library(merTools)
 library(digest)
-library(ggplot2)
+
 
 source('scripts/R-scripts/core-transient_functions.R')
+
+# Maximum occupancy of transient species
+# (and hence the minimum occupancy of core species is 1 - threshold)
+threshold = 1/3
+
+# Number of replicates for randomization tests
+reps = 999
+
+##################################################################
+
+# If running summaries for the first time (or wanting to start
+# anew because all formatted datasets have changed) and a
+# 'core-transient_summary.csv' file does not exist yet in the 
+# output/tabular_data folder, or if you just want to get summary
+# stats for one or a few datasets into R, run this section
 
 # Specify here the datasetIDs and then run the code below.
 dataformattingtable = read.csv('data_formatting_table.csv', header = T) 
@@ -31,186 +47,310 @@ datasetIDs = dataformattingtable$dataset_ID[dataformattingtable$format_flag == 1
 # BBS (dataset 1) will be analyzed separately for now.
 datasetIDs = datasetIDs[!datasetIDs %in% c(1)]
 
-##### Boxplots showing distribution of core and transient species by taxon #####
-# Read in datasets
-bbs_below_st = read.csv("data/BBS/bbs_below_st.csv", header = TRUE)
-summ1.5 = read.csv("output/tabular_data/summ1.5.csv", header = TRUE)
-taxcolors = read.csv("output/tabular_data/taxcolors.csv", header = TRUE)
+# Other datasets will need to be excluded depending on the particular analysis:
+#  --only datasets with countFormat %in% c('count', 'abundance') can be used
+#    for species abundance distribution analysis
+#  --only datasets with multiple hierarchical spatial scales can be used
+#    for the scale analysis
+#  --datasets without propOcc values for individual species can only be used
+#    in summaries of proportion transient vs core (e.g. d319, d257)
+#    (although I think these should get weeded out based on the first criterion)
 
-summ1.5$meanAbundance = NULL
-
-# Rbind bbs at stateroute level and summary data together
-summ2.5 = rbind(bbs_below_st,summ1.5)
-
-core = summ2.5 %>%
-  dplyr::group_by(taxa) %>%
-  dplyr::summarize(mean(propCore)) 
-trans = summ2.5 %>%
-  dplyr::group_by(taxa) %>%
-  dplyr::summarize(mean(propTrans)) 
-
-propCT = merge(core, trans, by = "taxa")
-propCT = data.frame(propCT)
-propCT$mean.propNeither. = 1 - propCT$mean.propCore. - propCT$mean.propTrans.
-
-
-lm.hsd = lm(mean.propTrans. ~ taxa, data= propCT) #Tukeys HSD
-aov(lm.hsd)
-agricolae::HSD.test(lm.hsd, "taxa")
-
-propCT_long = gather(propCT, "class","value", c(mean.propCore.:mean.propNeither.))
-propCT_long = arrange(propCT_long, desc(class))
-propCT_long$taxa = as.factor(propCT_long$taxa)
-propCT_long$taxa = factor(propCT_long$taxa,
-                          levels = c('Benthos','Invertebrate','Fish','Plankton','Mammal','Plant','Bird'),ordered = TRUE)
-colscale = c("#c51b8a", "#fdd49e", "#225ea8")
-
-### Fig 2b
-core_e = summ2.5 %>%
-  dplyr::group_by(system) %>%
-  dplyr::summarize(mean(propCore)) 
-trans_e = summ2.5 %>%
-  dplyr::group_by(system) %>%
-  dplyr::summarize(mean(propTrans)) 
-
-prope = merge(core_e, trans_e, by = "system")
-prope = data.frame(prope)
-prope$mean.propNeither. = 1 - prope$mean.propCore. - prope$mean.propTrans.
-
-prope_long = gather(prope, "class","value", c(mean.propCore.:mean.propNeither.))
-prope_long = arrange(prope_long, desc(class))
-prope_long$system = as.factor(prope_long$system)
-
-##################################################################
-# barplot of % transients versus community size at diff thresholds
-datasetIDs = dataformattingtable$dataset_ID[dataformattingtable$format_flag == 1]
-
-### Have to cut out stuff that have mean abundance NA
-datasetIDs = datasetIDs[!datasetIDs %in% c(1, 67,270,271,317,319,325)]
-
-
-summaryTransFun = function(datasetID){
-  # Get data:
-  dataList = getDataList(datasetID)
-  sites  = as.character(dataList$siteSummary$site)
-  # Get summary stats for each site:       
-  outList = list(length = length(sites))
-  for(i in 1:length(sites)){
-    propOcc = subset(dataList$propOcc, site == sites[i])$propOcc
-    siteSummary = subset(dataList$siteSummary, site == sites[i])
-    nTime = siteSummary$nTime
-    spRichTotal = siteSummary$spRich
-    spRichCore33 = length(propOcc[propOcc > 2/3])
-    spRichTrans33 = length(propOcc[propOcc <= 1/3])
-    spRichTrans25 = length(propOcc[propOcc <= 1/4])
-    if(nTime > 9){
-      spRichTrans10 = length(propOcc[propOcc <= .1])
-      propTrans10 = spRichTrans10/spRichTotal
-    }
-    else{
-      propTrans10 = NA
-    }
-    propCore33 = spRichCore33/spRichTotal
-    propTrans33 = spRichTrans33/spRichTotal
-    propTrans25 = spRichTrans25/spRichTotal
-    
-    outList[[i]] = data.frame(datasetID, site = sites[i],
-                              system = dataList$system, taxa = dataList$taxa,
-                              nTime, spRichTotal, spRichCore33, spRichTrans33,
-                              propCore33,  propTrans33, propTrans25, propTrans10)
-  }
-  return(plyr::rbind.fill(outList))
-}
-
-percTransSummaries = c()
+summaries = c()
 for (d in datasetIDs) {
-  percTransSumm = summaryTransFun(d)
-  
-  percTransSummaries = rbind(percTransSummaries, percTransSumm)
+  newsumm = summaryStatsFun(d, threshold, reps)
+  summaries = rbind(summaries, newsumm)
   print(d)
 }
-percTransSummaries = percTransSummaries[, c("datasetID","site","system","taxa","propCore33", "propTrans33", "propTrans25", "propTrans10")]
-# percTransSummaries$site = as.numeric(percTransSummaries$site)
-#rbind threshold dataset with BBS thresholds
-bbs_focal_occs_pctTrans = read.csv("data/BBS/bbs_focal_occs_pctTrans.csv", header = TRUE)
-bbs_focal_occs_pctTrans$site = as.factor(bbs_focal_occs_pctTrans$site)
-percTransSummaries_w_bbs = rbind(percTransSummaries, bbs_focal_occs_pctTrans)
-write.csv(percTransSummaries_w_bbs, "output/tabular_data/alt_trans_thresholds.csv", row.names = F)
 
-CT_plot=merge(percTransSummaries_w_bbs, taxcolors, by="taxa")
-CT_long = gather(CT_plot, "level_trans","pTrans", propTrans33:propTrans10)
+write.csv(summaries, 'output/tabular_data/core-transient_summary.csv', 
+          row.names = T)
 
-ttrans = CT_plot %>%
-  dplyr::group_by(taxa) %>%
-  dplyr::summarize(mean(propTrans33)) 
+##################################################################
 
-propCT_long$abbrev = propCT_long$taxa
-propCT_long$abbrev = gsub("Benthos", 'Be', propCT_long$abbrev)
-propCT_long$abbrev = gsub("Bird", 'Bi', propCT_long$abbrev)
-propCT_long$abbrev = gsub("Fish", 'F', propCT_long$abbrev)
-propCT_long$abbrev = gsub("Invertebrate", 'I', propCT_long$abbrev)
-propCT_long$abbrev = gsub("Mammal", 'M', propCT_long$abbrev)
-propCT_long$abbrev = gsub("Plankton", 'Pn', propCT_long$abbrev)
-propCT_long$abbrev = gsub("Plant", 'Pt', propCT_long$abbrev)
-propCT_long$abbrev = factor(propCT_long$abbrev,
-                            levels = c('Be','I','F','Pn','Pt','M','Bi'),ordered = TRUE)
+# If running summaries for the newly updated or created formatted
+# datasets to be appended to the existing 'core-transient_summary.csv'
+# file, then run this section.
 
-colscale = c("#225ea8","#fdd49e", "#c51b8a")
-m = ggplot(data=propCT_long, aes(factor(abbrev), y=value, fill=factor(class))) + geom_bar(stat = "identity")  + xlab("") + ylab("Proportion of Species") + scale_fill_manual(labels = c("Core", "Intermediate", "Transient"),values = colscale)+theme(axis.ticks.x=element_blank(),axis.text.x=element_text(size=6),axis.text.y=element_text(size=20),axis.title.y=element_text(size=24,angle=90,vjust = 4),axis.line.x = element_blank(),axis.line.y = element_blank())+ theme(legend.text=element_text(size=24),legend.key.size = unit(2, 'lines'))+theme(legend.position="right", legend.key.width=unit(1, "lines"))+ guides(fill = guide_legend(keywidth = 3, keyheight = 2,title="", reverse=TRUE))+ coord_fixed(ratio = 4)
-# ggsave(file="C:/Git/core-transient/output/plots/2a.pdf", height = 10, width = 15)
+# If you do not want to re-write the existing file, set write = FALSE.
 
-prope_long$system = factor(prope_long$system,
-                            levels = c('Freshwater','Marine','Terrestrial'),ordered = TRUE)
+# Also, this command can be used instead of the section above to
+# create the 'core-transient_summary.csv' file from scratch for all
+# datasets with formatted data.
+
+# summ = addNewSummariesFun(threshold, reps, write = TRUE)
 
 
-# colscaleb = c("tan","brown", "dark green")
-e = ggplot(data=prope_long, aes(factor(system), y=value, fill=factor(class))) + geom_bar(stat = "identity")  + xlab("") + ylab("")+ scale_fill_manual(labels = c("Core", "Intermediate", "Transient"), values = colscale)+theme(axis.ticks.x=element_blank(),axis.text.x=element_text(size=4),axis.text.y=element_text(size=20),axis.title.x=element_text(size=24),axis.title.y=element_text(size=24,angle=90,vjust = 2.5),axis.line.x = element_blank(),axis.line.y = element_blank())+ theme(legend.text=element_text(size=18),legend.key.size = unit(2, 'lines'))+theme(legend.position="top", legend.justification=c(0, 1), legend.key.width=unit(1, "lines"))+ guides(fill = guide_legend(keywidth = 3, keyheight = 1,title="", reverse=TRUE))+ coord_fixed(ratio = 4)
-# ggsave(file="C:/Git/core-transient/output/plots/2b.pdf", height = 10, width = 15)
+#####################lump reptile and ampibian into herptile, get rid of invert if possible - other category?, do a table of communities
 
-# make a gridded plot
-get_legend<-function(myggplot){
-  tmp <- ggplot_gtable(ggplot_build(myggplot))
-  leg <- which(sapply(tmp$grobs, function(x) x$name) == "guide-box")
-  legend <- tmp$grobs[[leg]]
-  return(legend)
+# Plotting summary results across datasets for Core-Transient analysis
+summ = read.csv('output/tabular_data/core-transient_summary.csv', header=T)
+summ$taxa = factor(summ$taxa)
+summ$taxa[summ$taxa == "Arthropod"] <- "Invertebrate"
+summ$taxa[summ$taxa == "Reptile"] <- NA
+summ$system[summ$system == "Aquatic"] <- "Freshwater"
+summ$system = factor(summ$system)
+summ = na.omit(summ)
+summ1 =  subset(summ, !datasetID %in% c(1, 99, 85, 90, 91, 92, 97, 124)) # excluding BBS to include below-scale route info
+summ1.5 = summ1[, c("datasetID","site","system","taxa","propCore", "propTrans", "meanAbundance")]
+write.csv(summ1.5, "output/tabular_data/summ1.5.csv", row.names = FALSE)
+# read in pre formatted bbs below dataset
+bbs_summ2 = read.csv("data/BBS/bbs_below_summ2.csv", header = TRUE)
+summ2 = rbind(bbs_summ2,summ1.5)
+write.csv(summ2, "output/tabular_data/summ2.csv", row.names = FALSE)
+dsets = unique(summ2[, c('datasetID', 'system','taxa')])
+
+taxorder = c('Bird', 'Plant', 'Mammal', 'Fish', 'Invertebrate', 'Benthos', 'Plankton')
+
+dsetsBySystem = table(dsets$system)
+dsetsByTaxa = table(dsets$taxa)
+sitesBySystem = table(summ2$system)
+sitesByTaxa = table(summ2$taxa)
+
+colors7 = c(colors()[552], # plankton
+            rgb(29/255, 106/255, 155/255), #bird
+            colors()[144], # invert
+            colors()[139], # plant
+            colors()[551], #mammal
+            colors()[17], #benthos
+            colors()[637]) #fish
+
+            
+
+symbols7 = c(16, 18, 167, 15, 17, 1, 3) 
+
+taxcolors = data.frame(taxa = unique(summ$taxa), color = colors7, pch = symbols7)
+
+taxcolors$abbrev = taxcolors$taxa
+taxcolors$abbrev = gsub("Benthos", 'Be', taxcolors$abbrev)
+taxcolors$abbrev = gsub("Bird", 'Bi', taxcolors$abbrev)
+taxcolors$abbrev = gsub("Fish", 'F', taxcolors$abbrev)
+taxcolors$abbrev = gsub("Invertebrate", 'I', taxcolors$abbrev)
+taxcolors$abbrev = gsub("Mammal", 'M', taxcolors$abbrev)
+taxcolors$abbrev = gsub("Plankton", 'Pn', taxcolors$abbrev)
+taxcolors$abbrev = gsub("Plant", 'Pt', taxcolors$abbrev)
+
+write.csv(taxcolors, "output/tabular_data/taxcolors.csv", row.names = FALSE)
+
+
+pdf('output/plots/data_summary_hists.pdf', height = 8, width = 10)
+par(mfrow = c(3, 2), mar = c(4,4,1.2,1.2), cex = 1.25, oma = c(0,0,0,0), las = 1,
+    cex.lab = 1)
+b1=barplot(dsetsBySystem, col = c('burlywood','skyblue', 'navy'), xaxt = "n",cex.names = 1) 
+mtext("Datasets", 2, cex = 1.25, las = 0, line = 2.5)
+title(outer=FALSE,adj=1,main="A",cex.main=1.5,col="black",font=2,line=-0.1)
+barplot(log10(sitesBySystem), col = c('burlywood','skyblue', 'navy'), cex.names = 1, 
+        xaxt = "n",yaxt = "n", ylim = c(0,4)) 
+axis(side = 2, 0:4,labels=c("0","1","10","1000","10000"))
+mtext(expression("Assemblages"), 2, cex = 1.25, las = 0, line = 3.5)
+title(outer=FALSE,adj=1,main="B",cex.main=1.5,col="black",font=2,line=-0.1)
+bar1 = barplot(dsetsByTaxa[taxorder], xaxt = "n", axisnames = F,
+               col = as.character(taxcolors$color[match(taxorder, taxcolors$taxa)]))
+
+mtext("Datasets", 2, cex = 1.25, las = 0, line = 2.5)
+title(outer=FALSE,adj=1,main="C",cex.main=1.5,col="black",font=2,line=-0.1)
+bar2 = barplot(log10(sitesByTaxa[taxorder]), axes = F, axisnames = F, ylim = c(0,4),
+               col = as.character(taxcolors$color[match(taxorder, taxcolors$taxa)]))
+axis(2, 0:4,labels=c("0","1","10","1000","10000"))
+mtext(expression("Assemblages"), 2, cex = 1.25, las = 0, line = 3.5)
+title(outer=FALSE,adj=0.95,main="D",cex.main=1.5,col="black",font=2,line=-0.1)
+
+# numspp_comm 
+summ1$taxa <-droplevels(summ1$taxa, exclude = c("","All","Amphibian", "Reptile"))
+summ1.col = merge(summ1, taxcolors, by = "taxa")
+summ1.col$taxa <- factor(summ1.col$taxa,
+                         levels = c('Bird','Plant','Mammal','Fish','Invertebrate','Benthos','Plankton'),ordered = TRUE)
+rankedtaxorder = c('Bird','Mammal','Plankton','Benthos','Invertebrate','Plant','Fish')
+
+bar1 = boxplot(summ1.col$spRichTotal~summ1.col$taxa, cex.axis =1, frame.plot = FALSE,  col = as.character(summ1.col$color[match(taxorder, summ1.col$taxa)]), axes = FALSE, ylim = c(0, 160)) 
+axis(side = 2) 
+mtext(expression("Species Richness"), 2, cex = 1.25, las = 0, line = 2.5)
+title(outer=FALSE,adj=1,main="E",cex.main=1.5,col="black",font=2,line=-0.1)
+bar2 = boxplot(summ1.col$nTime~summ1.col$taxa, xaxt = "n", frame.plot = FALSE, cex.axis =1,col = as.character(summ1.col$color[match(taxorder, summ1.col$taxa)]))
+mtext(expression("Years"), 2, cex = 1.25, las = 0, line = 2.5)
+title(outer=FALSE,adj=1,main="F",cex.main=1.5,col="black",font=2,line=-0.1)
+
+dev.off()
+
+
+#### barplot of mean occ by taxa #####
+numCT = read.csv("output/tabular_data/numCT.csv", header=TRUE)
+
+# n calculates number of sites by taxa -nested sites
+numCT_taxa = numCT %>%
+  dplyr::count(site, taxa) %>%
+  group_by(taxa) %>%
+  tally(n)
+numCT_taxa = data.frame(n)
+# calculates number of sites by taxa -raw
+sitetally = summ %>%
+  dplyr::count(site, taxa) %>%
+  group_by(taxa) %>%
+  dplyr::tally()
+sitetally = data.frame(sitetally)
+
+numCT_box=merge(numCT_taxa, taxcolors, by="taxa")
+
+nrank = summ %>% 
+  group_by(taxa) %>%
+  dplyr::summarize(mean(mu)) 
+nrank = data.frame(nrank)
+nrank = arrange(nrank, desc(mean.mu.))
+
+summ_plot = merge(summ, nrank, by = "taxa", all.x=TRUE)
+
+summ$taxa <- factor(summ$taxa,
+                       levels = c('Bird','Mammal','Plankton','Benthos','Invertebrate','Plant','Fish'),ordered = TRUE)
+rankedtaxorder = c('Bird','Mammal','Plankton','Benthos','Invertebrate','Plant','Fish')
+
+dsetsBySystem = table(dsets$system)
+dsetsByTaxa = table(dsets$taxa)
+sitesBySystem = table(summ2$system)
+sitesByTaxa = table(summ2$taxa)
+
+colorsrank = c(rgb(29/255, 106/255, 155/255), #bird
+               colors()[551],#mammal
+               colors()[552], # plankton
+               colors()[17], # benthos
+               colors()[144], # arth
+               colors()[139],# plant
+               colors()[637]) #fish
+
+
+symbols7 = c(16, 18, 167, 15, 17, 1, 3) 
+taxcolorsrank = data.frame(taxa = unique(summ$taxa), color = colorsrank, pch = symbols7)
+
+w <- ggplot(summ, aes(factor(taxa), mu))+theme_classic()+
+  theme(axis.text.x=element_text(angle=90,size=10,vjust=0.5)) + xlab("Taxa") + ylab("Mean Occupancy\n")
+w + geom_boxplot(width=1, position=position_dodge(width=0.6),aes(x=taxa, y=mu), fill = taxcolorsrank$color)+
+  scale_fill_manual(labels = taxcolors$taxa, values = taxcolors$color)+theme(axis.ticks=element_blank(),axis.text.x=element_text(size=14),axis.text.y=element_text(size=14),axis.title.x=element_text(size=22),axis.title.y=element_text(size=22,angle=90,vjust = 1)) + guides(fill=guide_legend(title=""))+ theme(plot.margin = unit(c(.5,.5,.5,.5),"lines")) + annotate("text", x = nrank$taxa, y = 1.05, label = sitetally$n,size=5,vjust=0.8, color = "black")
+ggsave("C:/Git/core-transient/output/plots/meanOcc.pdf", height = 8, width = 12)
+
+
+####### MODELS ######
+latlongs = read.csv("data/latlongs/latlongs.csv", header =TRUE)
+
+# merge multiple lat long file to propOcc to get naming convention correct
+latlong_w_sites = merge(latlongs, summ[,c("datasetID", "site", "propTrans")], by = c("datasetID", "site"), all.x = TRUE) 
+
+#drop BBS and add in below scale
+latlong_w_sites = subset(latlong_w_sites, !datasetID == 1)
+
+# reformat non multi grain lat longs
+dft = subset(dataformattingtable, countFormat == "count" & format_flag == 1) # only want count data for model
+dft = subset(dft, !dataset_ID %in% c(1,247,248,269,289,315))
+dft = dft[,c("CentralLatitude", "CentralLongitude","dataset_ID", "taxa")]
+names(dft) <- c("Lat","Lon", "datasetID", "taxa")
+dft2 = merge(dft, summ[, c("datasetID","site","propTrans")], by = "datasetID")
+  
+# combining all lat longs, including scaled up data
+all_latlongs.5 = rbind(dft2, latlong_w_sites)
+
+# rbind in new BBS data
+bbs_be_lat = read.csv("data/BBS/bbs_be_lat.csv", header = TRUE)
+# rbind new bbs data to lat longs
+all_latlongs =  rbind(bbs_be_lat, all_latlongs.5)
+all_latlongs = na.omit(all_latlongs)
+
+# Makes routes into a spatialPointsDataframe
+coordinates(all_latlongs)=c('Lon','Lat')
+projection(all_latlongs) = CRS("+proj=longlat +ellps=WGS84")
+prj.string <- CRS("+proj=laea +lat_0=45.235 +lon_0=-106.675 +units=km")
+# "+proj=laea +lat_0=45.235 +lon_0=-106.675 +units=km"
+# Transforms routes to an equal-area projection - see previously defined prj.string
+routes.laea = spTransform(all_latlongs, CRS("+proj=laea +lat_0=45.235 +lon_0=-106.675 +units=km"))
+
+##### extracting elevation data ####
+# A function that draws a circle of radius r around a point: p (x,y)
+RADIUS = 40
+
+make.cir = function(p,r){
+  points=c()
+  for(i in 1:360){
+    theta = i*2*pi/360
+    y = p[2] + r*cos(theta)
+    x = p[1] + r*sin(theta)
+    points = rbind(points,c(x,y))
+  }
+  points=rbind(points,points[1,])
+  circle=Polygon(points,hole=F)
+  circle
 }
-legend <- get_legend(m + theme(legend.position="right"))
-prow <- plot_grid( m + theme(legend.position="none"),
-                   e + theme(legend.position="none"),
-                   align = 'vh',
-                   labels = c("A", "B"),
-                   label_size = 26,
-                   vjust = 5,
-                   hjust = -4,
-                   nrow = 1
+
+routes.laea@data$dId_site = paste(routes.laea@data$datasetID, routes.laea@data$site, sep = "_")
+routes.laea@data$unique = 1:16602
+
+
+#Draw circles around all routes 
+circs = sapply(1:nrow(routes.laea@data), function(x){
+  circ =  make.cir(routes.laea@coords[x,],RADIUS)
+  circ = Polygons(list(circ),ID=routes.laea$unique[x]) 
+}
 )
-p2 = plot_grid(prow,legend, rel_widths = c(3, 0.7)) 
-p2
-ggsave(file="C:/Git/core-transient/output/plots/2a_2b.pdf", height = 10, width = 15,p2)
 
-#### barplot of percent transients by taxa ---SUPP FIG
-CT_long$taxa = as.factor(CT_long$taxa)
-CT_long$abbrev = CT_long$taxa
-CT_long$abbrev = gsub("Benthos", 'Be', CT_long$abbrev)
-CT_long$abbrev = gsub("Bird", 'Bi', CT_long$abbrev)
-CT_long$abbrev = gsub("Fish", 'F', CT_long$abbrev)
-CT_long$abbrev = gsub("Invertebrate", 'I', CT_long$abbrev)
-CT_long$abbrev = gsub("Mammal", 'M', CT_long$abbrev)
-CT_long$abbrev = gsub("Plankton", 'Pn', CT_long$abbrev)
-CT_long$abbrev = gsub("Plant", 'Pt', CT_long$abbrev)
-CT_long$abbrev = factor(CT_long$abbrev,
-                        levels = c('Be','I','F','Pn','Pt','M','Bi'),ordered = TRUE)
+circs.sp = SpatialPolygons(circs, proj4string=CRS("+proj=laea +lat_0=45.235 +lon_0=-106.675 +units=km"))
 
+# Check that circle locations look right
+plot(circs.sp, add = TRUE)
 
-p <- ggplot(CT_long, aes(x = reorder(abbrev, -pTrans), y = pTrans))+theme_classic()
+# read in elevation raster at 1 km resolution
+elev <- raster("Z:/GIS/DEM/sdat_10003_1_20170424_102000103.tif")
+NorthAm = readOGR("Z:/GIS/geography", "continent")
+NorthAm2 = spTransform(NorthAm, CRS("+proj=laea +lat_0=45.235 +lon_0=-106.675 +units=km"))
 
-cols <- (CT_long$color)
-cols=c("#ece7f2","#9ecae1", "#225ea8")
+plot(elevNA2)
+plot(NorthAm2)
+
+clip<-function(raster,shape) {
+  a1_crop<-crop(raster,shape)
+  step1<-rasterize(shape,a1_crop)
+  a1_crop*step1}
 
 
-p = p+geom_boxplot(width=0.8,position=position_dodge(width=0.8),aes(x=factor(abbrev), y=pTrans, fill=level_trans))+ 
-  scale_colour_manual(breaks = CT_long$level_trans,
-                      values = taxcolors$color)  + xlab("Taxa") + ylab("Proportion of Species")+
-  scale_fill_manual(labels = c("10%", "25%", "33%"),
-                    values = cols)+theme(axis.ticks.x=element_blank(),axis.text.x=element_text(size=20),axis.text.y=element_text(size=20),axis.title.x=element_text(size=24),axis.title.y=element_text(size=24,angle=90,vjust = 2))+guides(fill=guide_legend(title="",keywidth = 2, keyheight = 1)) + theme(legend.text=element_text(size=24),legend.key.size = unit(2, 'lines'), legend.title=element_text(size=24))+theme(legend.position="top", legend.justification=c(0, 1), legend.key.width=unit(1, "lines"))+ coord_fixed(ratio = 4)
-ggsave(file="C:/Git/core-transient/output/plots/supp_2.pdf", height = 10, width = 15,p)
+elevNA2 = projectRaster(elev, crs = prj.string) #UNMASKED!
+elevNA3 <- raster::mask(elevNA2, NorthAm2)
+
+test = clip(elevNA2, NorthAm2)
+
+elev.point = raster::extract(elevNA3, routes.laea)
+elev.mean = raster::extract(elevNA3, circs.sp, fun = mean, na.rm=T)
+elev.var = raster::extract(elevNA3, circs.sp, fun = var, na.rm=T)
+
+env_elev = data.frame(unique = routes.laea@data$unique, elev.point = elev.point, elev.mean = elev.mean, elev.var = elev.var)
+
+
+lat_scale_elev = merge(routes.laea, env_elev, by = c("unique")) # checked to make sure order lined up, d/n seem to be another way to merge since DID keeps getting lost
+lat_scale_elev = data.frame(lat_scale_elev)
+
+# lat_scale_elev = subset(lat_scale_elev, unique < 26)
+# lat_scale_elev$stateroute = strsplit(as.character(lat_scale_elev$site), "-")
+# lat_scale_elev$stateroute = lapply(lat_scale_elev$stateroute, "[[", 1) 
+# lat_scale_elev$stateroute = unlist(lat_scale_elev$stateroute)
+# lat_scale_elev$stateroute = as.numeric(lat_scale_elev$stateroute)
+
+lat_scale_rich = merge(lat_scale_elev, summ[,c("datasetID","site", "meanAbundance")], by = c("datasetID", "site"), all.x = TRUE)
+#  "spRichTrans", 
+write.csv(lat_scale_rich, "output/tabular_data/lat_scale_rich.csv", row.names = F)
+# lat_scale_rich = read.csv("output/tabular_data/lat_scale_rich.csv", header = TRUE)
+
+
+# Model -  want 5 km radius here!!!!
+mod1 = lmer(propTrans ~ (1|taxa) * log10(meanAbundance) * log10(elev.var), data=lat_scale_rich) 
+summary(mod1)
+coefs <- data.frame(coef(summary(mod1)))
+coefs$p.z <- 2 * (1 - pnorm(abs(coefs$t.value)))
+
+
+ggplot(data=lat_scale_rich, aes(elev.var,propTrans)) +geom_point(aes(color = as.factor(lat_scale_rich$taxa)), size = 3) + xlab("Elevation Variance")+ ylab("% Transient")+ theme_classic()
+
+# visualizing model results
+mod1test = subset(lat_scale_rich, lat_scale_rich$datasetID == 1)
+mod1test$scale =  strsplit(mod1test$site,"-")
+mod1test$scaled = sapply(mod1test$scale, "[[", 2) # selects the second element in a list
+ggplot(data=mod1test, aes(elev.var,propTrans)) + geom_point(aes(color = as.factor(as.numeric(mod1test$scaled))), size = 3)+ xlab("Elevation Variance")+ ylab("BBS Scaled % Transient")  + theme_classic() 
+hist(mod1test$propTrans)
+
+# simple linear model based on data in Fig 2b of % transient ~ taxonomic group, just to have a p-value associated with the statement "The proportion of an assemblage made up of transient species varied strongly across taxonomic group."
+transmod = lm(pTrans~taxa, data = CT_long)
+summary(transmod)
+

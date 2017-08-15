@@ -9,19 +9,17 @@ setwd("C:/git/core-transient")
 
 library(lme4)
 library(plyr) # for core-transient functions
-library(ggplot2)
-library(merTools)
+library(gridExtra)
 library(tidyr)
 library(maps)
-library(gridExtra)
+library(cowplot)
 library(RColorBrewer)
 library(sp)
 library(rgdal)
 library(raster)
 library(dplyr)
 library(digest)
-library(Hmisc)
-
+library(ggplot2)
 
 source('scripts/R-scripts/core-transient_functions.R')
 
@@ -33,228 +31,186 @@ datasetIDs = dataformattingtable$dataset_ID[dataformattingtable$format_flag == 1
 # BBS (dataset 1) will be analyzed separately for now.
 datasetIDs = datasetIDs[!datasetIDs %in% c(1)]
 
-#################### FIG 3 ######################### 
-occ_taxa=read.csv("output/tabular_data/occ_taxa.csv",header=TRUE)
-
-colors7 = c(colors()[552], # plankton
-            rgb(29/255, 106/255, 155/255), #bird
-            colors()[144], # invert
-            colors()[139], # plant
-            colors()[551], #mammal
-            colors()[17], #benthos
-            colors()[637]) #fish
-
-
-
-symbols7 = c(16, 18, 167, 15, 17, 1, 3) 
-
+##### Boxplots showing distribution of core and transient species by taxon #####
+# Read in datasets
+bbs_below_st = read.csv("data/BBS/bbs_below_st.csv", header = TRUE)
+summ1.5 = read.csv("output/tabular_data/summ1.5.csv", header = TRUE)
 taxcolors = read.csv("output/tabular_data/taxcolors.csv", header = TRUE)
-scaleIDs = filter(dataformattingtable, spatial_scale_variable == 'Y',
-                  format_flag == 1)$dataset_ID
 
-# subsetting to only count ids 
-scaleIDs = scaleIDs[! scaleIDs %in% c(207, 210, 217, 218, 222, 223, 225, 238, 241,258, 282, 322, 280,317)]
-bbs_abun = read.csv("data/BBS/bbs_abun_occ.csv", header=TRUE)
+summ1.5$meanAbundance = NULL
 
-#### Fig 3a Area #####
-area = read.csv("output/tabular_data/scaled_areas_3_2.csv", header = TRUE)
+# Rbind bbs at stateroute level and summary data together
+summ2.5 = rbind(bbs_below_st,summ1.5)
 
-areamerge.5 = merge(occ_taxa[,c("datasetID", "site", "pctTrans")], area, by = c("datasetID", "site"), na.rm = TRUE)
-areamerge.5  = areamerge.5 [, c("datasetID", "site", "taxa", "pctTrans", "area")]
+core = summ2.5 %>%
+  dplyr::group_by(taxa) %>%
+  dplyr::summarize(mean(propCore)) 
+trans = summ2.5 %>%
+  dplyr::group_by(taxa) %>%
+  dplyr::summarize(mean(propTrans)) 
 
-# read in bbs abundance data
-bbs_area = read.csv("data/BBS/bbs_area.csv", header = TRUE)
-areamerge = rbind(bbs_area,areamerge.5)
-write.csv(areamerge, "output/tabular_data/areamerge.csv", row.names = FALSE)
+propCT = merge(core, trans, by = "taxa")
+propCT = data.frame(propCT)
+propCT$mean.propNeither. = 1 - propCT$mean.propCore. - propCT$mean.propTrans.
 
-#### Figures 3a-3c panel plot #####
-scaleIDs = filter(dataformattingtable, spatial_scale_variable == 'Y',
-                  format_flag == 1)$dataset_ID 
-scaleIDs = scaleIDs[! scaleIDs %in% c(207, 210, 217, 218, 222, 223, 225, 241,258, 282, 322, 280, 248, 254, 291)]  # waiting on data for 248
-bbs_spRich = read.csv("data/BBS/bbs_abun4_spRich.csv", header = TRUE)
-occ_merge = occ_taxa[,c("datasetID", "site","taxa", "meanAbundance", "pctTrans","pctCore","pctNeither","scale", "spRich")]
-bbs_occ = rbind(bbs_spRich,occ_merge)
 
-#### Fig 3c/d predicted model ####
-bbs_occ_pred = bbs_occ[!bbs_occ$datasetID %in% c(207, 210, 217, 218, 222, 223, 225, 238, 241, 258, 282, 322, 280,317),]
-
-mod3c = lmer(pctTrans~(1|datasetID) * taxa * log10(meanAbundance), data=bbs_occ_pred)
-summary(mod3c)
-occ_sub_pred = data.frame(datasetID = 999, taxa = unique(bbs_occ_pred$taxa), meanAbundance =  102) # 102 is median abun for data frame (median(bbs_occ_pred$meanAbundance))
-# to test: test = filter(occ_sub_pred, taxa == "Invertebrate")
-predmod3c = merTools::predictInterval(mod3c, occ_sub_pred, n.sims=1000)
-
-# matching by predicted output vals based on occ_sub_pred
-predmod3c$taxa = c("Bird","Invertebrate", "Plant", "Mammal","Fish", "Plankton", "Benthos") 
-write.csv(predmod3c, "output/tabular_data/predmod3c.csv", row.names = FALSE)
-
-predmod = merge(predmod3c, taxcolors, by = "taxa")
-
-lm.hsd = lm(fit ~ taxa, data= predmod) #Tukeys HSD
-summary(aov(fit ~ taxa, data= predmod), test = "Chisq")
+lm.hsd = lm(mean.propTrans. ~ taxa, data= propCT) #Tukeys HSD
+aov(lm.hsd)
 agricolae::HSD.test(lm.hsd, "taxa")
-predmod$order = c(1,4,3,6,7,5,2)
 
-# 3d
-ecosys = merge(bbs_occ_pred, dataformattingtable[,c("dataset_ID", "system")], by.y = "dataset_ID", by.x = "datasetID")
-mod3d = lmer(pctTrans~(1|datasetID) * system * log10(as.numeric(meanAbundance)), data=ecosys)
-summary(mod3d)
-occ_pred_3d = data.frame(datasetID = 999, system = unique(ecosys$system), meanAbundance =  102) # 102 is median abun for data frame (median(bbs_occ_pred$meanAbundance))
-predmod3d = merTools::predictInterval(mod3d, occ_pred_3d, n.sims=1000)
-predmod3d$order = c(1:3)
+propCT_long = gather(propCT, "class","value", c(mean.propCore.:mean.propNeither.))
+propCT_long = arrange(propCT_long, desc(class))
+propCT_long$taxa = as.factor(propCT_long$taxa)
+propCT_long$taxa = factor(propCT_long$taxa,
+                          levels = c('Benthos','Invertebrate','Fish','Plankton','Mammal','Plant','Bird'),ordered = TRUE)
+colscale = c("#c51b8a", "#fdd49e", "#225ea8")
+
+### Fig 2b
+core_e = summ2.5 %>%
+  dplyr::group_by(system) %>%
+  dplyr::summarize(mean(propCore)) 
+trans_e = summ2.5 %>%
+  dplyr::group_by(system) %>%
+  dplyr::summarize(mean(propTrans)) 
+
+prope = merge(core_e, trans_e, by = "system")
+prope = data.frame(prope)
+prope$mean.propNeither. = 1 - prope$mean.propCore. - prope$mean.propTrans.
+
+prope_long = gather(prope, "class","value", c(mean.propCore.:mean.propNeither.))
+prope_long = arrange(prope_long, desc(class))
+prope_long$system = as.factor(prope_long$system)
+
+##################################################################
+# barplot of % transients versus community size at diff thresholds
+datasetIDs = dataformattingtable$dataset_ID[dataformattingtable$format_flag == 1]
+
+### Have to cut out stuff that have mean abundance NA
+datasetIDs = datasetIDs[!datasetIDs %in% c(1, 67,270,271,317,319,325)]
+
+
+summaryTransFun = function(datasetID){
+  # Get data:
+  dataList = getDataList(datasetID)
+  sites  = as.character(dataList$siteSummary$site)
+  # Get summary stats for each site:       
+  outList = list(length = length(sites))
+  for(i in 1:length(sites)){
+    propOcc = subset(dataList$propOcc, site == sites[i])$propOcc
+    siteSummary = subset(dataList$siteSummary, site == sites[i])
+    nTime = siteSummary$nTime
+    spRichTotal = siteSummary$spRich
+    spRichCore33 = length(propOcc[propOcc > 2/3])
+    spRichTrans33 = length(propOcc[propOcc <= 1/3])
+    spRichTrans25 = length(propOcc[propOcc <= 1/4])
+    if(nTime > 9){
+      spRichTrans10 = length(propOcc[propOcc <= .1])
+      propTrans10 = spRichTrans10/spRichTotal
+    }
+    else{
+      propTrans10 = NA
+    }
+    propCore33 = spRichCore33/spRichTotal
+    propTrans33 = spRichTrans33/spRichTotal
+    propTrans25 = spRichTrans25/spRichTotal
+    
+    outList[[i]] = data.frame(datasetID, site = sites[i],
+                              system = dataList$system, taxa = dataList$taxa,
+                              nTime, spRichTotal, spRichCore33, spRichTrans33,
+                              propCore33,  propTrans33, propTrans25, propTrans10)
+  }
+  return(plyr::rbind.fill(outList))
+}
+
+percTransSummaries = c()
+for (d in datasetIDs) {
+  percTransSumm = summaryTransFun(d)
   
-# pseudo r2
-mod3 = lm(areamerge$pctTrans ~ log10(areamerge$area))
-area_r = na.omit(areamerge)
-mod_r = lm(area_r$pctTrans~predict(mod3))
-summary(mod_r)
-  
-#### panel plot ####
-area_plot = data.frame()
-pdf('output/plots/3a_3d.pdf', height = 10, width = 14)
-par(mfrow = c(2, 2), mar = c(5,5,1,1), cex = 1, oma = c(0,0,0,0), las = 1)
-palette(colors7)
-
-plot(NA, xlim = c(-2, 7), ylim = c(0,1), col = as.character(taxcolor$color), xlab = expression("log"[10]*" Area"), ylab = "% Transients", cex.lab = 2,frame.plot=FALSE, xaxt = "n", yaxt = "n")
-axis(1, cex.axis =  1.5)
-axis(2, cex.axis =  1.5)
-b1 = for(id in scaleIDs){
-  print(id)
-  plotsub = subset(areamerge,datasetID == id)
-  taxa = as.character(unique(plotsub$taxa))
-  mod3 = lm(plotsub$pctTrans ~ log10(plotsub$area))
-  mod3.slope = summary(mod3)$coef[2,"Estimate"]
-  mod3.coef1 = summary(mod3$coef[1])[3]
-  xnew = range(log10(plotsub$area))
-  xhat <- predict(mod3, newdata = data.frame((xnew)))
-  xhats = range(xhat)
-  lower = range(xhat)[1]
-  upper = range(xhat)[2]
-  print(xhats)
-  taxcolor = subset(taxcolors, taxa == as.character(plotsub$taxa)[1])
-  y= summary(mod3)$coef[1]+ (xhats)*summary(mod3)$coef[2]
-  area_plot  = rbind(area_plot , c(id, lower,upper, mod3.slope,taxa))
-  
-   lines(log10(plotsub$area), fitted(mod3), col=as.character(taxcolor$color),lwd=4)
-  par(new=TRUE)
+  percTransSummaries = rbind(percTransSummaries, percTransSumm)
+  print(d)
 }
-title(outer=FALSE,adj=0.02,main="A",cex.main=2,col="black",font=2,line=-1)
-par(new= FALSE)
+percTransSummaries = percTransSummaries[, c("datasetID","site","system","taxa","propCore33", "propTrans33", "propTrans25", "propTrans10")]
+# percTransSummaries$site = as.numeric(percTransSummaries$site)
+#rbind threshold dataset with BBS thresholds
+bbs_focal_occs_pctTrans = read.csv("data/BBS/bbs_focal_occs_pctTrans.csv", header = TRUE)
+bbs_focal_occs_pctTrans$site = as.factor(bbs_focal_occs_pctTrans$site)
+percTransSummaries_w_bbs = rbind(percTransSummaries, bbs_focal_occs_pctTrans)
+write.csv(percTransSummaries_w_bbs, "output/tabular_data/alt_trans_thresholds.csv", row.names = F)
 
-plot(NA, xlim = c(0, 7), ylim = c(0,1), col = as.character(taxcolor$color), xlab = expression("log"[10]*" Community Size"), ylab = "% Transients", cex.lab = 2,frame.plot=FALSE, yaxt = "n", xaxt = "n")
-axis(1, cex.axis =  1.5)
-axis(2, cex.axis =  1.5)
-b2 = for(id in scaleIDs){
-  print(id)
-  plotsub = subset(bbs_occ,datasetID == id)
-  mod3 = lm(plotsub$pctTrans ~ log10(plotsub$meanAbundance))
-  xnew = range(log10(plotsub$meanAbundance))
-  xhat <- predict(mod3, newdata = data.frame((xnew)))
-  xhats = range(xhat)
-  print(xhats)
-  taxcolor = subset(taxcolors, taxa == as.character(plotsub$taxa)[1])
-  y=summary(mod3)$coef[1] + (xhats)*summary(mod3)$coef[2]
-  lines(log10(plotsub$meanAbundance), fitted(mod3), col=as.character(taxcolor$color),lwd=4)
-  par(new=TRUE)
+CT_plot=merge(percTransSummaries_w_bbs, taxcolors, by="taxa")
+CT_long = gather(CT_plot, "level_trans","pTrans", propTrans33:propTrans10)
+
+ttrans = CT_plot %>%
+  dplyr::group_by(taxa) %>%
+  dplyr::summarize(mean(propTrans33)) 
+
+propCT_long$abbrev = propCT_long$taxa
+propCT_long$abbrev = gsub("Benthos", 'Be', propCT_long$abbrev)
+propCT_long$abbrev = gsub("Bird", 'Bi', propCT_long$abbrev)
+propCT_long$abbrev = gsub("Fish", 'F', propCT_long$abbrev)
+propCT_long$abbrev = gsub("Invertebrate", 'I', propCT_long$abbrev)
+propCT_long$abbrev = gsub("Mammal", 'M', propCT_long$abbrev)
+propCT_long$abbrev = gsub("Plankton", 'Pn', propCT_long$abbrev)
+propCT_long$abbrev = gsub("Plant", 'Pt', propCT_long$abbrev)
+propCT_long$abbrev = factor(propCT_long$abbrev,
+                            levels = c('Be','I','F','Pn','Pt','M','Bi'),ordered = TRUE)
+
+colscale = c("#225ea8","#fdd49e", "#c51b8a")
+m = ggplot(data=propCT_long, aes(factor(abbrev), y=value, fill=factor(class))) + geom_bar(stat = "identity")  + xlab("") + ylab("Proportion of Species") + scale_fill_manual(labels = c("Core", "Intermediate", "Transient"),values = colscale)+theme(axis.ticks.x=element_blank(),axis.text.x=element_text(size=6),axis.text.y=element_text(size=20),axis.title.y=element_text(size=24,angle=90,vjust = 4),axis.line.x = element_blank(),axis.line.y = element_blank())+ theme(legend.text=element_text(size=24),legend.key.size = unit(2, 'lines'))+theme(legend.position="right", legend.key.width=unit(1, "lines"))+ guides(fill = guide_legend(keywidth = 3, keyheight = 2,title="", reverse=TRUE))+ coord_fixed(ratio = 4)
+# ggsave(file="C:/Git/core-transient/output/plots/2a.pdf", height = 10, width = 15)
+
+prope_long$system = factor(prope_long$system,
+                            levels = c('Freshwater','Marine','Terrestrial'),ordered = TRUE)
+
+
+# colscaleb = c("tan","brown", "dark green")
+e = ggplot(data=prope_long, aes(factor(system), y=value, fill=factor(class))) + geom_bar(stat = "identity")  + xlab("") + ylab("")+ scale_fill_manual(labels = c("Core", "Intermediate", "Transient"), values = colscale)+theme(axis.ticks.x=element_blank(),axis.text.x=element_text(size=4),axis.text.y=element_text(size=20),axis.title.x=element_text(size=24),axis.title.y=element_text(size=24,angle=90,vjust = 2.5),axis.line.x = element_blank(),axis.line.y = element_blank())+ theme(legend.text=element_text(size=18),legend.key.size = unit(2, 'lines'))+theme(legend.position="top", legend.justification=c(0, 1), legend.key.width=unit(1, "lines"))+ guides(fill = guide_legend(keywidth = 3, keyheight = 1,title="", reverse=TRUE))+ coord_fixed(ratio = 4)
+# ggsave(file="C:/Git/core-transient/output/plots/2b.pdf", height = 10, width = 15)
+
+# make a gridded plot
+get_legend<-function(myggplot){
+  tmp <- ggplot_gtable(ggplot_build(myggplot))
+  leg <- which(sapply(tmp$grobs, function(x) x$name) == "guide-box")
+  legend <- tmp$grobs[[leg]]
+  return(legend)
 }
-abline(v = log10(102), lty = 'dotted', lwd = 2) 
-par(new=TRUE)
-title(outer=FALSE,adj=0.02,main="B",cex.main=2,col="black",font=2,line=-1)
-legend('topright', legend = as.character(taxcolors$taxa), lty=1,lwd=3,col = as.character(taxcolors$color), cex = 1.5, bty = "n")
-par(new = FALSE)
+legend <- get_legend(m + theme(legend.position="right"))
+prow <- plot_grid( m + theme(legend.position="none"),
+                   e + theme(legend.position="none"),
+                   align = 'vh',
+                   labels = c("A", "B"),
+                   label_size = 26,
+                   vjust = 5,
+                   hjust = -4,
+                   nrow = 1
+)
+p2 = plot_grid(prow,legend, rel_widths = c(3, 0.7)) 
+p2
+ggsave(file="C:/Git/core-transient/output/plots/2a_2b.pdf", height = 10, width = 15,p2)
 
-b3 = barplot(predmod$fit[predmod$order], cex.names = 2,col = c(colors()[17],"gold2", "turquoise2","red","forestgreen","purple4","#1D6A9B"), ylim = c(0, 1), yaxt = "n")
-axis(2, cex.axis = 1.5)
-Hmisc::errbar(c(0.7, 1.9, 3.1, 4.3, 5.5, 6.7, 7.9), predmod$fit[predmod$order], predmod$upr[predmod$order], predmod$lwr[predmod$order], add= TRUE, lwd = 1.25, pch = 3)
-mtext("% Transients", 2, cex = 2, las = 0, line = 3)
-title(outer=FALSE,adj=0.02,main="C",cex.main=2,col="black",font=2,line=-1)
-
-b4 = barplot(predmod3d$fit[predmod3d$order], cex.names = 1.5,col = c('burlywood','skyblue','navy'), ylim = c(0, 0.8), yaxt = "n")
-axis(2, cex.axis = 1.5)
-Hmisc::errbar(c(0.7, 1.9, 3.1), predmod3d$fit[predmod3d$order], predmod3d$upr[predmod3d$order], predmod3d$lwr[predmod3d$order], add= TRUE, lwd = 1.25, pch = 3)
-mtext("% Transients", 2, cex = 2, las = 0, line = 3)
-title(outer=FALSE,adj=0.02,main="D",cex.main=2,col="black",font=2,line=-1)
-dev.off()
-
-dev.off()
-
-colnames(area_plot) = c("id","xlow","xhigh","slope", "taxa")
-area_plot = data.frame(area_plot)
-area_plot$datasetID = as.numeric(area_plot$id)
-area_plot$xlow = as.numeric(area_plot$xlow)
-area_plot$xhigh = as.numeric(area_plot$xhigh)
-area_plot$slope = as.numeric(area_plot$slope)
-write.csv(area_plot, "output/tabular_data/fig_3a_output.csv", row.names =FALSE)
+#### barplot of percent transients by taxa ---SUPP FIG
+CT_long$taxa = as.factor(CT_long$taxa)
+CT_long$abbrev = CT_long$taxa
+CT_long$abbrev = gsub("Benthos", 'Be', CT_long$abbrev)
+CT_long$abbrev = gsub("Bird", 'Bi', CT_long$abbrev)
+CT_long$abbrev = gsub("Fish", 'F', CT_long$abbrev)
+CT_long$abbrev = gsub("Invertebrate", 'I', CT_long$abbrev)
+CT_long$abbrev = gsub("Mammal", 'M', CT_long$abbrev)
+CT_long$abbrev = gsub("Plankton", 'Pn', CT_long$abbrev)
+CT_long$abbrev = gsub("Plant", 'Pt', CT_long$abbrev)
+CT_long$abbrev = factor(CT_long$abbrev,
+                        levels = c('Be','I','F','Pn','Pt','M','Bi'),ordered = TRUE)
 
 
-# ggplot not happening
-#area_plot$taxa = factor(area_plot$taxa, levels = c('Invertebrate','Fish','Plankton','Mammal','Plant','Bird','Benthos'),ordered = TRUE)
-#colscale = c("gold2","turquoise2", "red", "purple4","forestgreen","#1D6A9B", "azure4")
+p <- ggplot(CT_long, aes(x = reorder(abbrev, -pTrans), y = pTrans))+theme_classic()
 
-#p <- ggplot(area_plot, aes(x = log10(area), y = slope))
-#p + geom_abline(intercept = 0,slope = 1, lwd =1.5,linetype="dashed") + geom_point(aes(colour = taxa), size = 6) + xlab("Species Richness") + ylab("Species Richness Without Transients") + scale_colour_manual(breaks = plot_relationship$taxa,values = colscale) + theme(axis.text.x=element_text(size=24),axis.text.y=element_text(size=24),axis.title.x=element_text(size=32),axis.title.y=element_text(size=32,angle=90,vjust = 2))+ theme_classic()
-#ggsave(file="C:/Git/core-transient/output/plots/sparea_4c.pdf", height = 10, width = 15)
+cols <- (CT_long$color)
+cols=c("#ece7f2","#9ecae1", "#225ea8")
 
-# pseudo r2
-mod4 = lm(bbs_occ$pctTrans ~ log10(bbs_occ$meanAbundance))
-bbs_r = na.omit(bbs_occ)
-mod4_r = lm(bbs_r$pctTrans~predict(mod4))
-summary(mod4_r)
 
-#### Figure 3b transients and scale ####
-pdf('output/plots/3b_sara_scale_transient_reg.pdf', height = 6, width = 7.5)
-par(mfrow = c(1, 1), mar = c(6, 6, 1, 1), mgp = c(4, 1, 0), 
-    cex.axis = 1.5, cex.lab = 2, las = 1)
-palette(colors7)
-
-bbs_spRich = read.csv("data/BBS/bbs_abun4_spRich.csv", header = TRUE)
-occ_merge = occ_taxa[,c("datasetID", "site","taxa", "meanAbundance", "pctTrans","pctCore","pctNeither","scale", "spRich")]
-bbs_occ = rbind(bbs_spRich,occ_merge)
-
-for(id in scaleIDs){
-  print(id)
-  plotsub = subset(bbs_occ,datasetID == id)
-  mod3 = lm(plotsub$pctTrans ~ log10(plotsub$meanAbundance))
-  xnew = range(log10(plotsub$meanAbundance))
-  xhat <- predict(mod3, newdata = data.frame((xnew)))
-  xhats = range(xhat)
-  print(xhats)
-  taxcolor = subset(taxcolors, taxa == as.character(plotsub$taxa)[1])
-  y=summary(mod3)$coef[1] + (xhats)*summary(mod3)$coef[2]
-  plot(NA, xlim = c(0, 7), ylim = c(0,1), col = as.character(taxcolor$color), xlab = expression("Log"[10]*" Community Size"), ylab = "% Transients", cex = 1.5)
-  lines(log10(plotsub$meanAbundance), fitted(mod3), col=as.character(taxcolor$color),lwd=5)
-  par(new=TRUE)
-}
-par(new=TRUE)
-legend('topright', legend = as.character(taxcolors$taxa), lty=1,lwd=3,col = as.character(taxcolors$color), cex = 1.35)
-L = legend('topright', legend = as.character(taxcolors$taxa), lty=1,lwd=3,col = as.character(taxcolors$color), cex = 1.35)
-dev.off()
-
-#### Supplemental core and scale ####
-pdf('output/plots/supp_sara_scale_core_reg.pdf', height = 6, width = 7.5)
-par(mfrow = c(1, 1), mar = c(6, 6, 1, 1), mgp = c(4, 1, 0), 
-    cex.axis = 1.5, cex.lab = 2, las = 1)
-palette(colors7)
-for(id in scaleIDs){
-  print(id)
-  plotsub = subset(bbs_occ,datasetID == id)
-  mod3 = lm((1-plotsub$pctTrans) ~ log10(plotsub$meanAbundance))
-  xnew=range(log10(plotsub$meanAbundance))
-  xhat <- predict(mod3, newdata = data.frame((xnew)))
-  xhats = range(xhat)
-  print(xhats)
-  taxcolor=subset(taxcolors, taxa == as.character(plotsub$taxa)[1])
-  y=summary(mod3)$coef[1] + (xhats)*summary(mod3)$coef[2]
-  plot(NA, xlim = c(0, 7), ylim = c(0,1), col = as.character(taxcolor$color), xlab = expression("Log"[10]*" Community Size"), ylab = "% Core", cex = 1.5)
-  lines(log10(plotsub$meanAbundance), fitted(mod3), col=as.character(taxcolor$color),lwd=5)
-  par(new=TRUE)
-}
-segments(0,  0, x1 = 5.607, y1 = 1, col = rgb(29/255, 106/255, 155/255), lwd=5)
-par(new=TRUE)
-dev.off()
-
-##### old ggplot #####
-p <- ggplot(predmod, aes(x = factor(abbrev), y = fit, fill=factor(predmod$taxa)))
-p +geom_bar(stat = "identity", fill = levels(colscale))+ theme_classic() + geom_errorbar(ymin = predmod$lwr, ymax= predmod$upr, width=0.2) + xlab("") + ylab("Proportion of Species") + ylim(0, 1) + theme(axis.ticks.x=element_blank(),axis.text.x=element_blank(),axis.text.y=element_text(size=30),axis.title.x=element_text(size=30),axis.title.y=element_text(size=24,angle=90,vjust = 2))+guides(fill=guide_legend(title="",keywidth = 2, keyheight = 1)) 
-
-ggsave(file="C:/Git/core-transient/output/plots/3c_predmod.pdf", height = 10, width = 15)
+p = p+geom_boxplot(width=0.8,position=position_dodge(width=0.8),aes(x=factor(abbrev), y=pTrans, fill=level_trans))+ 
+  scale_colour_manual(breaks = CT_long$level_trans,
+                      values = taxcolors$color)  + xlab("Taxa") + ylab("Proportion of Species")+
+  scale_fill_manual(labels = c("10%", "25%", "33%"),
+                    values = cols)+theme(axis.ticks.x=element_blank(),axis.text.x=element_text(size=20),axis.text.y=element_text(size=20),axis.title.x=element_text(size=24),axis.title.y=element_text(size=24,angle=90,vjust = 2))+guides(fill=guide_legend(title="",keywidth = 2, keyheight = 1)) + theme(legend.text=element_text(size=24),legend.key.size = unit(2, 'lines'), legend.title=element_text(size=24))+theme(legend.position="top", legend.justification=c(0, 1), legend.key.width=unit(1, "lines"))+ coord_fixed(ratio = 4)
+ggsave(file="C:/Git/core-transient/output/plots/supp_2.pdf", height = 10, width = 15,p)
