@@ -59,15 +59,15 @@ allbbs = bbs_abun_occ %>% dplyr::count(stateroute, scale) %>% filter(scale == 50
 names(allbbs) = c("stateroute", "scale", "spRich")
 
 # create bbs files
-bbs_count4a = dplyr::rename(bbs_count, year = Year, site = stateroute, species = aou, count = speciestotal)
-bbs_count4a$datasetID = 1
-write.csv(bbs_count4a, "data/standardized_datasets/dataset_1.csv", row.names = FALSE)
+bbs_count5a = dplyr::rename(bbs_count, year = Year, site = stateroute, species = aou, count = speciestotal)
+bbs_count5a$datasetID = 1
+write.csv(bbs_count5a, "data/standardized_datasets/dataset_1.csv", row.names = FALSE)
 
 # bbs_abun_occ1 = subset(bbs_abun_occ, scale ==  50)
 bbs_occ_aou = dplyr::rename(bbs_occ_aou, site = stateroute, species = aou, propOcc = occ)
 bbs_occ_aou$datasetID  = 1
-bbs_occ4a = bbs_occ_aou[, c("datasetID", "site", "species", "propOcc")]
-write.csv(bbs_occ4a, "data/propOcc_datasets/propOcc_1.csv", row.names = FALSE)
+bbs_occ5a = bbs_occ_aou[, c("datasetID", "site", "species", "propOcc")]
+write.csv(bbs_occ5a, "data/propOcc_datasets/propOcc_1.csv", row.names = FALSE)
 
 #' Get list of dataset IDS for datasets that meet criteria for analysis including:
 #' * Study wide criteria
@@ -236,7 +236,7 @@ dev.off()
 ggsave(file="C:/Git/core-transient/output/plots/1a_hists.pdf", height = 10, width = 16)
 
 
-#### Figure 4b ####
+#### Figure 5b ####
 # read in route level ndvi and elevation data (radius = 40 km)
 # we want to agg by month here
 gimms_ndvi = read.csv("output/tabular_data/gimms_ndvi_bbs_data.csv", header = TRUE)
@@ -291,7 +291,7 @@ limits = aes(ymax = corr_res_long$CIupper, ymin=corr_res_long$CIlower)
 # no variation - add in CIS?
 l = ggplot(data=corr_res_long, aes(factor(env), value, fill = class, alpha = 0.7))+ geom_bar(width = 0.8, position = position_dodge(width = 0.9), stat="identity")+ scale_fill_manual(values = c("All" = "dark orange2","Trans" = "#c51b8a","Ntrans" = "yellow"), labels = c("All species","Excluding transients", "Transients only"))+ geom_bar(data=corr_res_long, aes(factor(env), value, fill = class), width = 0.8, position = position_dodge(width = 0.9), stat="identity")+ geom_errorbar(aes(ymin = corr_res_long$CIlower, ymax = corr_res_long$CIupper), width =.1, position = position_dodge(.9))+ theme_classic() + theme(axis.text.x=element_text(size=46, color = "black", vjust = 5), axis.ticks.x=element_blank(),axis.text.y=element_text(size=30, color = "black"),axis.title.x=element_text(size=46, color = "black"),axis.title.y=element_text(size=46,angle=90,vjust = 2))+ xlab(NULL) + ylab(expression(paste(italic("r")))) + scale_y_continuous(breaks=c(-0.5,-0.3,-0.1,.1,.3,.5))+ guides(fill=guide_legend(title=NULL)) + theme(legend.text = element_text(size = 38), legend.title = element_blank(), legend.key.height=unit(2,"line")) + geom_hline(yintercept=0, lty = "dashed", lwd = 1.25) + theme(plot.margin=unit(c(1,1,2,1),"cm"))
 four_b <- l
-ggsave(file="C:/Git/core-transient/output/plots/4b_corrcoeff_NDVI.pdf", height = 5, width = 15)
+ggsave(file="C:/Git/core-transient/output/plots/5b_corrcoeff_NDVI.pdf", height = 5, width = 15)
 
 #### test for fig 1 new #####
 mh = read.csv("data/raw_datasets/dataset_255RAW/MHfig1.csv", header = TRUE)
@@ -301,7 +301,7 @@ ggplot(mh, aes(x=abunx, freqy,fill=factor(class))) + geom_bar(stat="identity", p
 
 ggsave(file="C:/Git/core-transient/output/plots/1b_M_H_hists.pdf", height = 10, width = 16)
 
-#### Figure 4c ####
+#### Figure 5c ####
 turnover = read.csv("output/tabular_data/temporal_turnover.csv", header = TRUE)
 turnover_taxa = merge(turnover,dataformattingtable[,c("dataset_ID", "taxa")], by.x = "datasetID", by.y = "dataset_ID")
 turnover_col = merge(turnover_taxa, taxcolors, by = "taxa")
@@ -319,9 +319,9 @@ colscale = c("gold2","turquoise2", "red", "purple4","forestgreen","#1D6A9B")
 m <- ggplot(turnover_else, aes(x = TJ, y = TJnotrans))
 four_c <-m + geom_abline(intercept = 0,slope = 1, lwd =1.5,linetype="dashed")+geom_point(aes(colour = taxa), size = 5)+ geom_point(data = turnover_bbs, aes(colour = taxa),size = 2) + xlab("Turnover (all species)") + ylab("Turnover \n (excluding transients)")  + scale_colour_manual(breaks = turnover_col$taxa,values = colscale) + theme_classic() + theme(axis.text.x=element_text(size=30, color = "black"),axis.text.y=element_text(size=30, color = "black"),axis.ticks.x=element_blank(),axis.title.x=element_text(size=46, color = "black"),axis.title.y=element_text(size=46,angle=90,vjust = 5))+ guides(colour = guide_legend(title = "Taxa"))
 
-ggsave(file="C:/Git/core-transient/output/plots/4c_spturnover.pdf", height = 10, width = 15)
+ggsave(file="C:/Git/core-transient/output/plots/5c_spturnover.pdf", height = 10, width = 15)
 
-##### Figure 4d ##### only scaled vars
+##### Figure 5d ##### only scaled vars
 bbs_uniq_area = bbs_abun_occ %>% dplyr::select(stateroute,scale,subrouteID,area) %>% unique()
 
 notransbbsscale = bbs_abun_occ %>% filter(occupancy > 1/3) %>% dplyr::count(stateroute, scale, subrouteID)
@@ -412,7 +412,7 @@ p <- ggplot(plot_relationship, aes(x = areaSlope, y = areaSlope_noTrans))
 four_d <-p + geom_abline(intercept = 0,slope = 1, lwd =1.5,linetype="dashed") +geom_point(data=slopes_bbs, aes(colour = taxa),alpha = 5/100, size = 2)+  geom_point(aes(colour = taxa), size = 5)+ theme_classic() + scale_color_manual("Taxa", breaks = plot_relationship$taxa,values = colscales)+ xlab(expression(paste(italic("z "), "(all species)"))) + ylab(expression(paste(italic("z "), "(excluding transients)"))) +ylim(0,1)+xlim(0,1) + theme(axis.text.x=element_text(size=30, color = "black"),axis.ticks.x=element_blank(),axis.text.y=element_text(size=30, color = "black"),axis.title.x=element_text(size=46, color = "black"),axis.title.y=element_text(size=46,angle=90,vjust = 2))+ theme(legend.text = element_text(size = 38), legend.title = element_blank(), legend.key.height=unit(3,"line")) #,legend.position = c(.75, .3))
 
 
-ggsave(file="C:/Git/core-transient/output/plots/4d_sparea.pdf", height = 10, width = 15)
+ggsave(file="C:/Git/core-transient/output/plots/5d_sparea.pdf", height = 10, width = 15)
 
 
 # make a gridded plot
@@ -436,7 +436,7 @@ pt1 <- plot_grid(k + theme(legend.position="none"),
 )
 p1 = plot_grid(pt1,legenda, ncol = 2, rel_widths = c(1, .1))
 
-# ggsave(file="C:/Git/core-transient/output/plots/4a_4b.pdf", height = 10, width = 15,p1)
+# ggsave(file="C:/Git/core-transient/output/plots/5a_5b.pdf", height = 10, width = 15,p1)
 
 # c & d
 legendc <- get_legend(four_d)
@@ -450,15 +450,7 @@ z <- plot_grid(four_c+ theme(legend.position="none"),
                rel_widths = c(1, 0.05, 1),
                nrow = 1)
 p2 = plot_grid(z,legendc, ncol = 2) 
-# ggsave(file="C:/Git/core-transient/output/plots/4c_4d.pdf", height = 12, width = 16,p2)
-
-#pdf("output/plots/4a_4d.pdf", height = 16, width = 22); print(
-#all4)
-#grid.text("lognormal",x = unit(.16, "npc"), y = unit(0.68, "npc"), just = c("left", "bottom"), 
-#gp = gpar(fontface = "bold", fontsize = 18, col = "black")) 
-#grid.text("logseries",x = unit(.45, "npc"), y = unit(0.68, "npc"), just = c("right", "bottom"), 
-#gp = gpar(fontface = "bold", fontsize = 18, col = "black"))
-#dev.off()
+# ggsave(file="C:/Git/core-transient/output/plots/5c_5d.pdf", height = 12, width = 16,p2)
 
 all4 = plot_grid(pt1, NULL, z, align = "hv", nrow = 2,rel_heights = c(1,1), rel_widths = c(1, 0.05,1))
 all4
@@ -467,6 +459,6 @@ all4
 
 
 
-ggsave(file="C:/Git/core-transient/output/plots/4a_4d.pdf", height = 16, width = 22,all4)
+ggsave(file="C:/Git/core-transient/output/plots/5a_5d.pdf", height = 16, width = 22,all4)
 
 
