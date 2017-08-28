@@ -59,6 +59,7 @@ library(stats)
 # Data directories
 BBS = '//bioark.ad.unc.edu/HurlbertLab/Jenkins/BBS scaled/'
 
+bbs_allscales = read.csv("data/BBS/bbs_allscales.csv", header = TRUE)
 ###Pre-coefs distribution analysis###
 minscales = bbs_allscales %>% 
   filter(scale == '50-1')%>% 
@@ -291,9 +292,10 @@ coefs = OA.df %>%
  
 write.csv(coefs, "scripts/R-scripts/scale_analysis/coefs.csv", row.names = FALSE) #updated 07/27
 #exp mods have much better r2 vals for pctTran than power 
+#checked, working correctly 08/28, output not NA's but normal!
 
 ####Plotting occupancy-scale relationships with observed and predicted values####
-#work in progress
+#work in progress 08/28
 #do I want to plot slope and line of predicted values over the top of actual? should be an easy sub 
 
 bbs_allscales = read.csv("data/BBS/bbs_allscales.csv", header = TRUE)
