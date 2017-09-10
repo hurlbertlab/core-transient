@@ -29,6 +29,8 @@
       #PREDICTION: focal routes with larger "curvy" values will occur in regions of greater habitat heterogeneity, 
       #and deviance from the line will correspond with the greater environmental variance
       #associated with the location of that focal route.
+      #i.e. curvy is a proxy for AUC, where greater deviance of the predicted vals vs the actual vals will result 
+      #in larger overall curvy values and larger area under the curve
 
 #We explore the variation in this relationship 
 #and attempt to characterize whether or not it is best explained by habitat heterogeneity 
@@ -45,6 +47,13 @@
   #BUT: it DOES mean we will have pseudo-duplicates at the lower scales w/diff starting points of segments, and so 
   #multiple plotting points for the lower scales instead of a single representative point. This necessitates the "min" qualifier
   #in calculating some of the coefficients.  
+
+#2) In calculating the AUC proxy "curvy" values, should I be squaring the differences before summing them? 
+  #Because we are interested in the magnitude of deviance from the observed values in instances of greater heterogeneity, 
+  #and not the specific direction - simply adding them could cancel out or diminish the magnitude or gulf of deviance 
+  #in areas where the deviance is large in a negative direction at some scales, and large in a positive direction in others. 
+  #These stateroutes would express similar "curviness" values as areas of high homogeneity, where this is little net difference 
+  #and a smaller magnitude of deviance from the observed values. Because of this, I think we should be squaring and summing. 
 
 # setwd("C:/git/core-transient")
 #'#' Please download and install the following packages:
@@ -316,7 +325,25 @@ coefs = read.csv("scripts/R-scripts/scale_analysis/coefs.csv", header = TRUE)
 #plot observed occ scale thresh or mid vals vs pthresh or pmid vals across scales 
 #subtract actual - pred to gen new column of AUC vals for each scale  
 
-#first plot freqs of occupancy vals with vals binned every .05 and .1 incremements for diff scales 
+#first plot freqs of occupancy vals with vals binned every .05 and .1 incremements for diff scales: 
+
+#First plots: scale = 1, x axis = meanOcc, y axis = freq of meanOcc vals (hist) 
+bbs_one = bbs_allscales %>% 
+  filter(scale == "50-1")
+
+one_rtfreq = ggplot(bbs_one, aes(x=meanOcc))+geom_histogram(bins = 30) + coord_cartesian(xlim = c(0, 0.95))
+one_rtfreq
+#compare btw/East vs West N. American routes, split in half and compare to predicted whiteboard sketches 
+
+
+#Secondary comparison plots: scale = 66, x-axis = meanOcc, y axis = freq of meanOcc vals (hist)
+bbs_top = bbs_allscales %>% 
+  filter(scale == "66")
+
+lndscpe_rtfreq = ggplot(bbs_top, aes(x=meanOcc))+geom_histogram(bins = 30)+coord_cartesian(xlim = c(0, 0.95)) 
+lndscpe_rtfreq
+####YAAASSSS this is what I wanted to see ^^ 
+#top scales freq is tighter, but also way less normal
 
 
 
