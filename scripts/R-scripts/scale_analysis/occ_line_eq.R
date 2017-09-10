@@ -353,10 +353,10 @@ bbs_one_W = bbs_one %>%
 
 
 #plotting comparisons:
-one_rtfreqE = ggplot(bbs_one_E, aes(x=meanOcc))+geom_histogram(bins = 30) + coord_cartesian(xlim = c(0, 0.95))
+one_rtfreqE = ggplot(bbs_one_E, aes(x=meanOcc))+geom_histogram(bins = 30) + coord_cartesian(xlim = c(0, 0.95))+labs(title = "Single rte East") 
 one_rtfreqE
 
-one_rtfreqW = ggplot(bbs_one_W, aes(x=meanOcc))+geom_histogram(bins = 30) + coord_cartesian(xlim = c(0, 0.95))
+one_rtfreqW = ggplot(bbs_one_W, aes(x=meanOcc))+geom_histogram(bins = 30) + coord_cartesian(xlim = c(0, 0.95))+labs(title = "Single rte West") 
 one_rtfreqW
 
 
@@ -376,13 +376,19 @@ bbs_top_W = bbs_top %>%
 
 #plotting comparisons: 
 
-lndscpe_rtfreqE = ggplot(bbs_top_E, aes(x=meanOcc))+geom_histogram(bins = 30)+coord_cartesian(xlim = c(0, 0.95)) 
+lndscpe_rtfreqE = ggplot(bbs_top_E, aes(x=meanOcc))+geom_histogram(bins = 20)+coord_cartesian(xlim = c(0, 0.95))+labs(title = "Landscape East") 
 lndscpe_rtfreqE
 
-lndscpe_rtfreqW = ggplot(bbs_top_W, aes(x=meanOcc))+geom_histogram(bins = 30)+coord_cartesian(xlim = c(0, 0.95)) 
+lndscpe_rtfreqW = ggplot(bbs_top_W, aes(x=meanOcc))+geom_histogram(bins = 20)+coord_cartesian(xlim = c(0, 0.95))+labs(title = "Landscape West")  
 lndscpe_rtfreqW
 
 #WOW LOOK AT THOSE DISCREPANCIES!!!!
+comparisons = grid.arrange(one_rtfreqE, one_rtfreqW, lndscpe_rtfreqE, lndscpe_rtfreqW)
+
+
+
+
+
 
 
 ###idk what I was trying to do here, revisit w/lab notebook later 
