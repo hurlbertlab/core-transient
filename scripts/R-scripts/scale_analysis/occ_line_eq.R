@@ -334,7 +334,14 @@ bbs_one = bbs_allscales %>%
 one_rtfreq = ggplot(bbs_one, aes(x=meanOcc))+geom_histogram(bins = 30) + coord_cartesian(xlim = c(0, 0.95))
 one_rtfreq
 #compare btw/East vs West N. American routes, split in half and compare to predicted whiteboard sketches 
+#since statecode/focalrte names aren't assigned in order from East to West, filter by greater than or less than longitudinal cutoff 
+#add route coordinate data first and then filter based on that 
 
+
+
+bbs_one_E = bbs_one %>% 
+  filter(focalrte <= )
+bbs_one_W
 
 #Secondary comparison plots: scale = 66, x-axis = meanOcc, y axis = freq of meanOcc vals (hist)
 bbs_top = bbs_allscales %>% 
@@ -345,6 +352,8 @@ lndscpe_rtfreq
 ####YAAASSSS this is what I wanted to see ^^ 
 #top scales freq is tighter, but also way less normal
 
+bbs_top_E
+bbs_top_W 
 
 
 
