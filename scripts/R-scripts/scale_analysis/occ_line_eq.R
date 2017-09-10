@@ -34,7 +34,17 @@
 #and attempt to characterize whether or not it is best explained by habitat heterogeneity 
 #using the variation present across several environmental variables as proxies for habitat heterogeneity. 
 
+#### CURRENT ISSUES #### #revised 09/10/2017
 
+#1) Have below-scale duplicates w/diff starting locations i.e. 
+  #"scale" = Factor w/83 levels "10-1", "10-2", "10-3", "10-4", "10-5", "5-1", "5-2", "5-3", "5-4", "5-5", "5-6", "5-7", "5-8", etc. 
+  #no duplicates for 1:66 obvi, these were calculated correctly 
+  #can I have multi values for a single scale or should I calc avg occ and pctCore and pctTran across the segments w/in a route? 
+  #i.e. occ/15 at a scale, but scales designated by segments and occ calcd initially based on the starting stop # 
+  # was told this summer that that was alright and that we were pointedly NOT aggregating across the lower scales, and that's fine 
+  #BUT: it DOES mean we will have pseudo-duplicates at the lower scales w/diff starting points of segments, and so 
+  #multiple plotting points for the lower scales instead of a single representative point. This necessitates the "min" qualifier
+  #in calculating some of the coefficients.  
 
 # setwd("C:/git/core-transient")
 #'#' Please download and install the following packages:
@@ -301,6 +311,15 @@ write.csv(coefs, "scripts/R-scripts/scale_analysis/coefs.csv", row.names = FALSE
 bbs_allscales = read.csv("data/BBS/bbs_allscales.csv", header = TRUE)
 coefs = read.csv("scripts/R-scripts/scale_analysis/coefs.csv", header = TRUE)
 
+#plot observed occ scale thresh or mid vals vs pthresh or pmid vals across scales 
+#subtract actual - pred to gen new column of AUC vals for each scale  
+
+#first plot freqs of occupancy vals with vals binned every .05 and .1 incremements for diff scales 
+
+
+
+
+###idk what I was trying to do here, revisit w/lab notebook later 
 coefs_mini = coefs %>%
   select(stateroute, OA.pmin, OA.pmax) %>%
   gather(key = OA.pmin, 
