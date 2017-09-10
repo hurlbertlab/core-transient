@@ -55,6 +55,10 @@
   #These stateroutes would express similar "curviness" values as areas of high homogeneity, where this is little net difference 
   #and a smaller magnitude of deviance from the observed values. Because of this, I think we should be squaring and summing. 
 
+#3) Curviness is a great proxy for calculating the AUC per focal route, but it doesn't allow us to see how that changes across scales. 
+  #Considering having a second df output from the creation of coefs that allows us to see how those individual deviances change 
+  #esp across scales. 
+
 # setwd("C:/git/core-transient")
 #'#' Please download and install the following packages:
 library(raster)
@@ -316,7 +320,7 @@ write.csv(coefs, "scripts/R-scripts/scale_analysis/coefs.csv", row.names = FALSE
 #checked, working correctly 08/28, output not NA's but normal!
 
 ####Plotting occupancy-scale relationships with observed and predicted values####
-#work in progress 08/28
+#work in progress
 #do I want to plot slope and line of predicted values over the top of actual? should be an easy sub 
 
 bbs_allscales = read.csv("data/BBS/bbs_allscales.csv", header = TRUE)
@@ -385,8 +389,19 @@ lndscpe_rtfreqW
 #WOW LOOK AT THOSE DISCREPANCIES!!!!
 comparisons = grid.arrange(one_rtfreqE, one_rtfreqW, lndscpe_rtfreqE, lndscpe_rtfreqW)
 
+#left off and stopped here 09/10
+#now plot curvy vals at diff routes bc effectively summarizing area under curve across scales for each route 
+#but are we interested in SEEING the way that AUC varies across scales moreso than across longitudes 
+#so y axis = curvy, x axis = longitude (?) 
 
+#so AUC should vary with scale, but also with east vs west divide -> greater AUC vals in West = greater deviance from obs on avg
+#lati + longi + coefs 
 
+coefs = coefs %>% 
+  left_join(goodrtes, by = "stateroute")
+
+auc_plot = ggplot(coefs, aes(x=Longi, y = OA.curvy))+geom_point()
+auc_plot
 
 
 
