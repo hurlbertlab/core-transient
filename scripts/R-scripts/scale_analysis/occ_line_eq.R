@@ -321,6 +321,13 @@ write.csv(coefs, "scripts/R-scripts/scale_analysis/coefs.csv", row.names = FALSE
 
 bbs_allscales = read.csv("data/BBS/bbs_allscales.csv", header = TRUE)
 coefs = read.csv("scripts/R-scripts/scale_analysis/coefs.csv", header = TRUE)
+goodrtes = read.csv(paste(BBS, "good_rtes2.csv", sep = ""), header = TRUE)
+  
+  
+#merge longi and lati to bbs_allscales prior to east vs west plotting 
+bbs_allscales = bbs_allscales %>% 
+  left_join(goodrtes, by = c("focalrte" = "stateroute"))
+  
 
 #plot observed occ scale thresh or mid vals vs pthresh or pmid vals across scales 
 #subtract actual - pred to gen new column of AUC vals for each scale  
@@ -340,8 +347,18 @@ one_rtfreq
 
 
 bbs_one_E = bbs_one %>% 
-  filter(focalrte <= )
-bbs_one_W
+  filter(Longi > -100) #greater than -100 is -99, -98, -97 etc. 
+bbs_one_W = bbs_one %>% 
+  filter(Longi <= -100 ) #less than or equal to -100 is further away from 0 and further negative
+
+
+#plotting comparisons:
+one_rtfreqE = ggplot(bbs_one_E, aes(x=meanOcc))+geom_histogram(bins = 30) + coord_cartesian(xlim = c(0, 0.95))
+one_rtfreqE
+
+one_rtfreqW = ggplot(bbs_one_W, aes(x=meanOcc))+geom_histogram(bins = 30) + coord_cartesian(xlim = c(0, 0.95))
+one_rtfreqW
+
 
 #Secondary comparison plots: scale = 66, x-axis = meanOcc, y axis = freq of meanOcc vals (hist)
 bbs_top = bbs_allscales %>% 
@@ -352,9 +369,20 @@ lndscpe_rtfreq
 ####YAAASSSS this is what I wanted to see ^^ 
 #top scales freq is tighter, but also way less normal
 
-bbs_top_E
-bbs_top_W 
+bbs_top_E = bbs_top %>% 
+  filter(Longi > -100) 
+bbs_top_W = bbs_top %>% 
+  filter(Longi <= -100)
 
+#plotting comparisons: 
+
+lndscpe_rtfreqE = ggplot(bbs_top_E, aes(x=meanOcc))+geom_histogram(bins = 30)+coord_cartesian(xlim = c(0, 0.95)) 
+lndscpe_rtfreqE
+
+lndscpe_rtfreqW = ggplot(bbs_top_W, aes(x=meanOcc))+geom_histogram(bins = 30)+coord_cartesian(xlim = c(0, 0.95)) 
+lndscpe_rtfreqW
+
+#WOW LOOK AT THOSE DISCREPANCIES!!!!
 
 
 ###idk what I was trying to do here, revisit w/lab notebook later 
