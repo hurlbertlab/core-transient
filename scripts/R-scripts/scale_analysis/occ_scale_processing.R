@@ -190,7 +190,9 @@ for (r in uniqrtes) { #for each focal route
                 stateroute = r)
       
     
-    occ.summ = focal_clustr %>% #occupancy 
+    occ.summ = focal_clustr %>% #occupancy -> focal clustr should GROW with scale, larger avg pool -> 
+      #increased likelihood that AOU will be present -> OH! I don't want stateroute in here! it doesn't matter! 
+      #it just matters that it shows up in the cluster at all, not just the stateroutes that go in
       count(stateroute, AOU) %>% #already sorted out any routes with 0's in first loop 
       mutate(occ = n/15, scale = nu) %>% #, subrouteID = countColumns[1]) #%>% countColumns not needed bc already pared down
       #group_by(stateroute) %>% don't want to group by stateroute though! want to calc for whole clustr
