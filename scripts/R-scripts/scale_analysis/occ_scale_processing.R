@@ -62,7 +62,7 @@ occ_counts = function(countData, countColumns, scale) {
     summarize(meanOcc = mean(occ), 
               pctCore = sum(occ > 2/3)/length(occ),
               pctTran = sum(occ <= 1/3)/length(occ)) %>%
-    mutate(scale = paste(scale, g, sep = "-")) %>% #, 
+    mutate(scale = paste(scale, g, sep = "-")) %>% #, #may want to get rid of, this is at the column-counting scale
            #scale = scale) %>%
     left_join(abun.summ, by = 'stateroute')
   return(occ.summ)
@@ -71,43 +71,31 @@ occ_counts = function(countData, countColumns, scale) {
 
 # Generic calculation of occupancy for a specified scale
 #fix to run all at once, so no sep run for above-scale, USE occ-counts for both 
-
+output2 = c()
 b_scales = c(5, 10, 25, 50)
 output = c()
-for (scale in b_scales) {
-  numGroups = floor(50/scale)
+for (s in b_scales) {
+  numGroups = floor(50/s)
   for (g in 1:numGroups) {
-    groupedCols = paste("Stop", ((g-1)*scale + 1):(g*scale), sep = "")
-    temp = occ_counts(fifty_bestAous, groupedCols, scale)
+    groupedCols = paste("Stop", ((g-1)*s + 1):(g*s), sep = "")
+    temp = occ_counts(fifty_bestAous, groupedCols, s) 
     output = rbind(output, temp) 
-  }
-  #take means across scales, ignoring g 
-  #don't need to do anything conveluted if keep original scales as own column
-  #but then I'm running into the same technical error as I was with the larger routes, where I'm 
-  #averaging instead of recalculating occ as I should be -> but not aggregating these, so necessary at all? 
-  #pressing on in the meanwhile, but establish later -> NOT aggregating, pointedly. 
-  # 
-  # means = filter(output, scale == scale)
-  #   abun.summ = means %>% 
-  #   group_by(stateroute) %>%
-  #   summarize(aveN = mean(aveN))
-  # 
-  # occ.summ = means %>% 
-  #   group_by(stateroute) %>% 
-  #   summarize(meanOcc = mean(meanOcc), 
-  #             pctCore = sum(meanOcc > 2/3)/length(meanOcc),
-  #             pctTran = sum(meanOcc <= 1/3)/length(meanOcc)) %>%
-  #   mutate(scale = scale) %>%
-  #   left_join(abun.summ, by = 'stateroute')
-  # 
-  # occ_final = rbind(occ_final, occ.summ)
-  #   
+  } 
+  
+  occ.summ = output %>% 
+    group_by(stateroute) %>%
+    summarize(aveN = mean(aveN), 
+              meanOcc = mean(meanOcc), #taking mean values across segments within a route (OK'd) after initial calcs by segment
+              pctCore = mean(pctCore),
+              pctTran = mean(pctTran), 
+              scale = as.factor(s)) 
+  
+  output2 = rbind(output2, occ.summ)
 }
+plot(meanOcc~aveN, data = output2) #looks good, low avg bc small sample, high % Tran relative to Core   
 
-
-
-bbs_below<-data.frame(output)
-write.csv(bbs_below, paste(BBS, "bbs_below.csv", sep = ""), row.names = FALSE) #updated 06/30, on BioArk
+bbs_below<-data.frame(output2)
+write.csv(bbs_below, paste(BBS, "bbs_below.csv", sep = ""), row.names = FALSE) #updated 09/19, on BioArk
 #should be able to use the 50 stop info (1 rte) from this output to aggregate routes AFTER below scale
 write.csv(bbs_below, "data/BBS/bbs_below.csv", row.names = FALSE)
 
@@ -205,10 +193,10 @@ for (r in uniqrtes) { #for each focal route
     occ.summ = focal_clustr %>% #occupancy 
       count(stateroute, AOU) %>% #already sorted out any routes with 0's in first loop 
       mutate(occ = n/15, scale = nu) %>% #, subrouteID = countColumns[1]) #%>% countColumns not needed bc already pared down
-      #group_by(stateroute) %>% don't want to group by stateroute though! want to calc for whole group
+      #group_by(stateroute) %>% don't want to group by stateroute though! want to calc for whole clustr
       summarize(focalrte = r, 
                 scale = nu, 
-                meanOcc = mean(occ), 
+                meanOcc = mean(occ), #FIX 09/19
                 pctCore = sum(occ > 2/3)/length(occ),
                 pctTran = sum(occ <= 1/3)/length(occ), 
                 maxdist = max(tmp_rte_group$dist)) %>% 
@@ -244,7 +232,9 @@ bbs_below = bbs_below %>%
   dplyr::rename(focalrte = stateroute) %>%
   select(focalrte, scale, everything()) %>%
   mutate(area = (as.integer(lapply(strsplit(as.character(bbs_below$scale), 
-                                            split="-"), "[", 1)))*(pi*(0.4^2))) 
+                                            split="-"), "[", 1)))*(pi*(0.4^2)),
+         scale = as.factor(paste("seg", as.integer(lapply(strsplit(as.character(bbs_below$scale), 
+                                                    split="-"), "[", 1)), sep = "")))
 #modify and split scale so that it's just the # of stops in each seg; not the seg order # preceded by a "-"
 
 
