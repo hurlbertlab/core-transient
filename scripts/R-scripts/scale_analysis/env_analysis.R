@@ -269,7 +269,8 @@ for(r in focal_rtes){
   
   qhull = convhulln(tempenv_q, "FA")
   zhull = convhulln(tempenv_z, "FA")
-    
+  
+  #get variance of rte means, calc across entire rte_group according to scale   
   temp = data.frame(stateroute = r,
                     ndvi_v = var(tempenv$zndvi, na.rm = TRUE), #fix missing values!!!!
                     elev_v = var(tempenv$zelev), #bc each of these values is calculated across the 2ndary rtes for each focal rte
