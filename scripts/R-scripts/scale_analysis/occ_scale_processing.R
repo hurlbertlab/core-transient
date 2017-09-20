@@ -152,6 +152,8 @@ write.csv(bbs_above_guide, "scripts/R-scripts/scale_analysis/bbs_above_guide.csv
 ####Calculating occupancy scales 2:66 loop####
 dist.df = read.csv("scripts/R-scripts/scale_analysis/dist_df.csv", header = TRUE)
 bbs_above_guide = read.csv("scripts/R-scripts/scale_analysis/bbs_above_guide.csv", header = TRUE)
+#groupcounts for each AOU for each year at scale of ONE stateroute 
+
 
 #go one step at a time, logically -> don't rush thru recreating the loop 
 
@@ -166,11 +168,11 @@ output = data.frame(focalrte = NULL,
                     maxdist = NULL,
                     aveN = NULL)
 
-
+#test example route 2010 and nu at 57 routes -> large scale, should have high occ 
 for (r in uniqrtes) { #for each focal route
   for (nu in numrtes) { #for each level of scale aggregated to each focal route
     
-    tmp_rte_group = dist.df %>% 
+    tmp_rte_group = dist.df %>% #changes with size of nu but caps at 66
       filter(rte1 == r) %>% 
       top_n(66, desc(dist)) %>% #fixed ordering by including arrange parm, 
       #remove/skip top row 
@@ -180,8 +182,8 @@ for (r in uniqrtes) { #for each focal route
     
     focal_clustr = bbs_above_guide %>% 
       filter(stateroute %in% tmp_rte_group$rte2) #tmp_rte_group already ordered by distance so don't need 2x
-      #(for a given focal rte, narrow input data to those 66 secondary routes in focal cluster)
-    
+      #(for a given focal rte, narrow input data to those nu secondary routes in focal cluster)
+      #across 57 routes
     
     abun.summ = focal_clustr %>% #abundance
       group_by(year) %>%  #not grouping by stateroute bc it stops mattering 
@@ -190,21 +192,39 @@ for (r in uniqrtes) { #for each focal route
                 stateroute = r)
       
     
+    
+    # occ.summ = bbsu %>% #occupancy
+    #   count(stateroute, AOU) %>%
+    #   mutate(occ = n/15, scale = scale, subrouteID = countColumns[1]) %>%
+    #   group_by(stateroute) %>%
+    #   summarize(meanOcc = mean(occ)
+    
     occ.summ = focal_clustr %>% #occupancy -> focal clustr should GROW with scale, larger avg pool -> 
       #increased likelihood that AOU will be present -> OH! I don't want stateroute in here! it doesn't matter! 
       #it just matters that it shows up in the cluster at all, not just the stateroutes that go in
-      count(stateroute, AOU) %>% #already sorted out any routes with 0's in first loop 
-      mutate(occ = n/15, scale = nu) %>% #, subrouteID = countColumns[1]) #%>% countColumns not needed bc already pared down
-      #group_by(stateroute) %>% don't want to group by stateroute though! want to calc for whole clustr
+      count(AOU, year) %>%
+      group_by(AOU) %>% count(AOU) %>% 
+      mutate(occ = nn/15, scale = nu) %>% #, subrouteID = countColumns[1]) #%>% countColumns not needed bc already pared down
+     # group_by(r) %>% #don't want to group by stateroute though! want to calc for whole clustr
       summarize(focalrte = r, 
                 scale = nu, 
-                meanOcc = mean(occ), #FIX 09/19
+                meanOcc = mean(occ), #FIX 09/19 across vector of 57 occupancies
                 pctCore = sum(occ > 2/3)/length(occ),
                 pctTran = sum(occ <= 1/3)/length(occ), 
-                maxdist = max(tmp_rte_group$dist)) %>% 
-    left_join(abun.summ, by = c('focalrte' = 'stateroute'))
+                maxdist = max(tmp_rte_group$dist)) 
+      
+      
+      
+      occ2 = occ.summ %>% 
+      group_by(focalrte) %>% 
+      summarize(scale = nu, 
+                meanOcc = mean(meanOcc), 
+                pctCore = mean(pctCore), 
+                pctTran = mean(pctTran), 
+                maxdist = mean(maxdist)) %>%
+      left_join(abun.summ, by = c('focalrte' = 'stateroute'))
     
-        output = rbind(output, occ.summ)
+        output = rbind(output, occ2)
         print(paste("Focal rte", r, "#' rtes sampled", nu)) #for viewing progress
     
     #adding 2 to end since using an input df with all of the exact same column names -> can change back b4 merging, after loop
