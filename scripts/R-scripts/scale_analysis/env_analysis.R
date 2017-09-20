@@ -196,8 +196,7 @@ write.csv(bbs_envs, "scripts/R-scripts/scale_analysis/bbs_envs.csv", row.names =
 
 ####Pare down routes to exclude routes that are missing above OR below scale####
 bbs_allscales = read.csv("data/BBS/bbs_allscales.csv", header = TRUE)
-bbs_allscales2 = bbs_allscales %>% count(focalrte) %>% filter(n == 83) %>% data.frame() 
-bbs_envs = filter(bbs_envs, stateroute %in% bbs_allscales2$focalrte)
+bbs_envs = filter(bbs_envs, stateroute %in% bbs_allscales$focalrte)
 write.csv(bbs_envs, "scripts/R-scripts/scale_analysis/bbs_envs.csv", row.names = FALSE) #updated 06/20 to reflect exclusive scale filtering
 
 ####Calc z-scores, quantiles pre-variance loop####

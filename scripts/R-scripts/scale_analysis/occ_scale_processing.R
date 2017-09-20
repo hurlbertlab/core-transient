@@ -283,21 +283,8 @@ bbs_allscales$lnN = log(bbs_allscales$aveN) #rerun plots with this?
 
 #only want rtes w/all 83 scales rep'd, which at this point - there are! 
 bbs_allscales2 = bbs_allscales %>% filter(meanOcc != 'NA') %>% 
-  count(focalrte) %>% filter(n == 83) %>% data.frame() #fix error to exclude NAs
+  count(focalrte) %>% filter(n == 69) %>% data.frame() #fix error to exclude NAs
 bbs_allscales3 = filter(bbs_allscales, focalrte %in% bbs_allscales2$focalrte)
-
-#Order levels of scale factor post-join####
-#fix duplication of scale (50-1, 1 -> check up)
-
-bbs_allscales3$scale = factor(bbs_allscales3$scale, 
-                             levels = c('5-1', '5-2', '5-3', '5-4', '5-5', '5-6', '5-7', '5-8', '5-9', '5-10',
-                                        '10-1', '10-2', '10-3', '10-4', '10-5', '25-1', '25-2', '50-1', 
-                                        '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12',
-                                        '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24',
-                                        '25', '26', '27', '28', '29', '30', '31', '32', '33', '34', '35', '36',
-                                        '37', '38', '39', '40', '41', '42', '43', '44', '45', '46', '47', '48',
-                                        '49', '50', '51', '52', '53', '54', '55', '56', '57', '58', '59', '60',
-                                        '61', '62', '63', '64', '65', '66'), ordered=TRUE)
 
 write.csv(bbs_allscales3, "data/BBS/bbs_allscales.csv", row.names = FALSE) #overwrote bbs all scales file 
 #updated 07/27/2017 from 1003 to 1001 routes
@@ -310,9 +297,9 @@ levels(bbs_allscales$scale)
 unique(bbs_allscales$scale)
 
 
-mod1 = lm(meanOcc~logA, data = bbs_allscales) #expljkains ~50% of the variation in occ
+mod1 = lm(meanOcc~logA, data = bbs_allscales) #expljkains ~75-80% of the variation in occ
 mod2 = lm(meanOcc~logN, data = bbs_allscales)
-summary(mod1)
+summary(mod2)
 
 plot(meanOcc~logA, data = bbs_allscales, xlab = "Log Area" , ylab = "Mean Temporal Occupancy")
 plot(meanOcc~logN, data = bbs_allscales, xlab = "Average Abundance" , ylab = "Mean Temporal Occupancy")

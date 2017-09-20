@@ -82,88 +82,6 @@ library(stats)
 # Data directories
 BBS = '//bioark.ad.unc.edu/HurlbertLab/Jenkins/BBS scaled/'
 
-bbs_allscales = read.csv("data/BBS/bbs_allscales.csv", header = TRUE)
-###Pre-coefs distribution analysis###
-minscales = bbs_allscales %>% 
-  filter(scale == '50-1')%>% 
-  summarize(min = min(meanOcc)) #0.34
-
-
-topscales = bbs_allscales %>% 
-  filter(scale == '50-1')
-
-ggplot(topscales, aes(x = pctCore))+geom_histogram(bins = 20)
-ggplot(topscales, aes(x = meanOcc))+geom_histogram(bins = 20)
-ggplot(topscales, aes(x = pctTran))+geom_histogram(bins = 20)
-#a non-trivial group of focal rtes still maintain very low % Core representation in their communities, even at our highest scales 
-#I would predict that these focal rtes are largely clustered in Western and mountain regions 
-#let's see: 
-
-topscales2 = topscales %>% 
-  filter(pctTran >= 0.50) %>%
-  mutate(Dom = 'T') 
-
-topscales3 = topscales %>% 
-  filter(pctCore >= 0.50) %>% 
-  mutate(Dom = "C")
-
-topscales_new = rbind(topscales2, topscales3)
-topscales_new$Dom = as.factor(topscales_new$Dom)
-topscales_new = select(topscales_new, focalrte, meanOcc, pctCore, pctTran, logA, Dom)
-
-
-#all focal rtes with all possible pairings
-bbs_latlon = read.csv(paste(BBS, "good_rtes2.csv", sep = ""), header = TRUE)
-bbs_latlon = bbs_latlon %>% inner_join(topscales_new, by = c("stateroute" = "focalrte"))
-
-##the rough way: 
-map('world', xlim = range(bbs_latlon$Longi), ylim = range(bbs_latlon$Lati))
-points(bbs_latlon$Longi[bbs_latlon$Dom == "C"], bbs_latlon$Lati[bbs_latlon$Dom == "C"], pch = 16, col = "blue")
-points(bbs_latlon$Longi[bbs_latlon$Dom == "T"], bbs_latlon$Lati[bbs_latlon$Dom == "T"], pch = 16, col = "red")
-
-#basically how I would assume these communities would be distributed 
-legend(x="bottomleft", legend = unique(bbs_latlon$Dom), fill = unique(bbs_latlon$Dom))
-title("Distribution of communities at scale of 1 routes")
-
-
-#at scale of 66 routes
-topscales = bbs_allscales %>% 
-  filter(scale == '66')
-
-ggplot(topscales, aes(x = pctCore))+geom_histogram(bins = 30)
-ggplot(topscales, aes(x = meanOcc))+geom_histogram(bins = 30)
-ggplot(topscales, aes(x = pctTran))+geom_histogram(bins = 30)
-#a non-trivial group of focal rtes still maintain very low % Core representation in their communities, even at our highest scales 
-#I would predict that these focal rtes are largely clustered in Western and mountain regions 
-#let's see: 
-
-topscales2 = topscales %>% 
-  filter(pctTran >= 0.50) %>%
-  mutate(Dom = 'T') 
-
-topscales3 = topscales %>% 
-  filter(pctCore >= 0.50) %>% 
-  mutate(Dom = "C")
-
-topscales_new = rbind(topscales2, topscales3)
-topscales_new$Dom = as.factor(topscales_new$Dom)
-topscales_new = select(topscales_new, focalrte, meanOcc, pctCore, pctTran, logA, Dom)
-
-
-#all focal rtes with all possible pairings
-bbs_latlon = read.csv(paste(BBS, "good_rtes2.csv", sep = ""), header = TRUE)
-bbs_latlon = bbs_latlon %>% inner_join(topscales_new, by = c("stateroute" = "focalrte"))
-
-##the rough way: 
-map('world', xlim = range(bbs_latlon$Longi), ylim = range(bbs_latlon$Lati))
-points(bbs_latlon$Longi[bbs_latlon$Dom == "C"], bbs_latlon$Lati[bbs_latlon$Dom == "C"], pch = 16, col = "blue")
-points(bbs_latlon$Longi[bbs_latlon$Dom == "T"], bbs_latlon$Lati[bbs_latlon$Dom == "T"], pch = 16, col = "red")
-
-#basically how I would assume these communities would be distributed 
-legend(x="bottomleft", legend = unique(bbs_latlon$Dom), fill = unique(bbs_latlon$Dom))
-title("Distribution of communities at scale of 66 routes")
-
-
 ####Extract coefficients from scale-occupancy relationships for analysis####
 OA.df = data.frame(stateroute = numeric(), OA.min = numeric(), OA.max = numeric(), OA.slope = numeric(), 
                    OA.thresh = numeric(), 
@@ -315,7 +233,7 @@ coefs = OA.df %>%
   inner_join(CA.df, OA.df, by = "stateroute") %>% 
   inner_join(TA.df, OA.df, by = "stateroute") 
  
-write.csv(coefs, "scripts/R-scripts/scale_analysis/coefs.csv", row.names = FALSE) #updated 07/27
+write.csv(coefs, "scripts/R-scripts/scale_analysis/coefs.csv", row.names = FALSE) #updated 09/20
 #exp mods have much better r2 vals for pctTran than power 
 #checked, working correctly 08/28, output not NA's but normal!
 
@@ -340,7 +258,7 @@ bbs_allscales = bbs_allscales %>%
 
 #First plots: scale = 1, x axis = meanOcc, y axis = freq of meanOcc vals (hist) 
 bbs_one = bbs_allscales %>% 
-  filter(scale == "50-1")
+  filter(scale == "seg50")
 
 one_rtfreq = ggplot(bbs_one, aes(x=meanOcc))+geom_histogram(bins = 30) + coord_cartesian(xlim = c(0, 0.95))
 one_rtfreq
@@ -357,10 +275,10 @@ bbs_one_W = bbs_one %>%
 
 
 #plotting comparisons:
-one_rtfreqE = ggplot(bbs_one_E, aes(x=meanOcc))+geom_histogram(bins = 30) + coord_cartesian(xlim = c(0, 0.95))+labs(title = "Single rte East") 
+one_rtfreqE = ggplot(bbs_one_E, aes(x=meanOcc))+geom_histogram(bins = 30) + coord_cartesian(xlim = c(0, 0.95), ylim = c(0, 80))+labs(title = "Single rte East") 
 one_rtfreqE
 
-one_rtfreqW = ggplot(bbs_one_W, aes(x=meanOcc))+geom_histogram(bins = 30) + coord_cartesian(xlim = c(0, 0.95))+labs(title = "Single rte West") 
+one_rtfreqW = ggplot(bbs_one_W, aes(x=meanOcc))+geom_histogram(bins = 30) + coord_cartesian(xlim = c(0, 0.95), ylim = c(0, 80))+labs(title = "Single rte West") 
 one_rtfreqW
 
 
@@ -368,7 +286,7 @@ one_rtfreqW
 bbs_top = bbs_allscales %>% 
   filter(scale == "66")
 
-lndscpe_rtfreq = ggplot(bbs_top, aes(x=meanOcc))+geom_histogram(bins = 30)+coord_cartesian(xlim = c(0, 0.95)) 
+lndscpe_rtfreq = ggplot(bbs_top, aes(x=meanOcc))+geom_histogram(bins = 30)+coord_cartesian(xlim = c(0, 0.95), ylim = c(0, 80)) 
 lndscpe_rtfreq
 ####YAAASSSS this is what I wanted to see ^^ 
 #top scales freq is tighter, but also way less normal
@@ -380,10 +298,10 @@ bbs_top_W = bbs_top %>%
 
 #plotting comparisons: 
 
-lndscpe_rtfreqE = ggplot(bbs_top_E, aes(x=meanOcc))+geom_histogram(bins = 20)+coord_cartesian(xlim = c(0, 0.95))+labs(title = "Landscape East") 
+lndscpe_rtfreqE = ggplot(bbs_top_E, aes(x=meanOcc))+geom_histogram(bins = 30)+coord_cartesian(xlim = c(0, 0.95), ylim = c(0, 80))+labs(title = "Landscape East") 
 lndscpe_rtfreqE
 
-lndscpe_rtfreqW = ggplot(bbs_top_W, aes(x=meanOcc))+geom_histogram(bins = 20)+coord_cartesian(xlim = c(0, 0.95))+labs(title = "Landscape West")  
+lndscpe_rtfreqW = ggplot(bbs_top_W, aes(x=meanOcc))+geom_histogram(bins = 30)+coord_cartesian(xlim = c(0, 0.95), ylim = c(0, 80))+labs(title = "Landscape West")  
 lndscpe_rtfreqW
 
 #WOW LOOK AT THOSE DISCREPANCIES!!!!
@@ -400,10 +318,21 @@ comparisons = grid.arrange(one_rtfreqE, one_rtfreqW, lndscpe_rtfreqE, lndscpe_rt
 coefs = coefs %>% 
   left_join(goodrtes, by = "stateroute")
 
-auc_plot = ggplot(coefs, aes(x=Longi, y = OA.curvy))+geom_point()
+auc_plot = ggplot(coefs, aes(x = OA.AUC))+geom_histogram(bins = 30)
 auc_plot
+#looks pretty normal which is good, little to no area under curve means close good fit with some minor tendency towards overestimating and going too high 
+AUC_E = coefs %>% 
+  filter(Longi > -100) 
+AUC_W = coefs %>% 
+  filter(Longi <= -100)
 
 
+AUC_Eplot = ggplot(AUC_E, aes(x = OA.AUC))+geom_histogram(bins = 30)
+AUC_Eplot #mirrors the first dist 
+
+AUC_Wplot = ggplot(AUC_W, aes(x = OA.AUC))+geom_histogram(bins = 30)
+AUC_Wplot
+#bigger spread, def not normal dist if we narrowed down
 
 
 ###idk what I was trying to do here, revisit w/lab notebook later 
