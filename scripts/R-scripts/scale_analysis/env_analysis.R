@@ -192,12 +192,12 @@ bbs_envs = env_elev %>%
          prec.point, prec.mean, prec.var, 
          temp.point, temp.mean, temp.var)
 write.csv(bbs_envs, "scripts/R-scripts/scale_analysis/bbs_envs.csv", row.names = FALSE) 
-#current version 06/20
+#current version 09/20
 
 ####Pare down routes to exclude routes that are missing above OR below scale####
 bbs_allscales = read.csv("data/BBS/bbs_allscales.csv", header = TRUE)
 bbs_envs = filter(bbs_envs, stateroute %in% bbs_allscales$focalrte)
-write.csv(bbs_envs, "scripts/R-scripts/scale_analysis/bbs_envs.csv", row.names = FALSE) #updated 06/20 to reflect exclusive scale filtering
+write.csv(bbs_envs, "scripts/R-scripts/scale_analysis/bbs_envs.csv", row.names = FALSE) #updated 09/20 to reflect fixed above scale
 
 ####Calc z-scores, quantiles pre-variance loop####
 bbs_envs = read.csv("scripts/R-scripts/scale_analysis/bbs_envs.csv", header = TRUE)
@@ -233,7 +233,7 @@ hull$area #189.74 #4.502
 hull$vol #66.22 #0.54 second time around....
 
 
-####Pair env data to secondary rtes associated with each focal rte; calc variance for each focal rte####
+####Pair env data to secondary rtes associated with each focal rte; calc variance across scales for each focal rte####
 bbs_envs = read.csv("scripts/R-scripts/scale_analysis/bbs_envs.csv", header = TRUE)
 dist.df = read.csv("scripts/R-scripts/scale_analysis/dist_df.csv", header = TRUE)
 
@@ -249,10 +249,12 @@ env_hetero = data.frame(stateroute = NULL,
 
 focal_rtes = unique(bbs_envs$stateroute)
 
+#need to add scale component and not just do for top scale (66) alone....???? 
 for(r in focal_rtes){
+  for(nu in scales) {
   rte_group = dist.df2 %>% 
     filter(rte1 == r) %>% 
-    top_n(66, desc(dist)) %>%
+    top_n(nu, desc(dist)) %>%
     select(rte2) %>% as.vector()
   
   tempenv = bbs_envs %>%
@@ -271,6 +273,7 @@ for(r in focal_rtes){
   
   #get variance of rte means, calc across entire rte_group according to scale   
   temp = data.frame(stateroute = r,
+                    scale = nu,
                     ndvi_v = var(tempenv$zndvi, na.rm = TRUE), #fix missing values!!!!
                     elev_v = var(tempenv$zelev), #bc each of these values is calculated across the 2ndary rtes for each focal rte
                     prec_v = var(tempenv$zprec), #such that all 66 2ndary rtes will be summed into one variance value for each focal rte
@@ -283,8 +286,9 @@ for(r in focal_rtes){
                     zhull_vol = zhull$vol)
   
   env_hetero = rbind(env_hetero, temp)
+  }
+  #may need a second level of output rbinding here
 }
-
 write.csv(env_hetero, "scripts/R-scripts/scale_analysis/env_hetero.csv", row.names = FALSE)
 #updated 06/20
 
@@ -312,6 +316,9 @@ write.csv(env_coefs, "scripts/R-scripts/scale_analysis/env_coefs.csv", row.names
 
 covmatrix = round(cor(coefs[, 2:ncol(coefs)]), 2)
 covmatrix
+
+
+#ADAPT BELOW CODE to reflect NEW COEFFICIENTS INCLUDING AUC and RE-RUN MODELS
 
 # nested loop for examining variation in coefs/fitted curves explained by env heterogeneity 
 #so: response = coefficients = dependent; predictor = environmental heterogeneity = independent
