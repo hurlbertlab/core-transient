@@ -17,7 +17,7 @@ library(nlme)
 library(gridExtra)
 library(wesanderson)
 library(stats)
-
+library(geometry)
 # To run this script, you need temperature, precip, etc data, 
 # which are currently stored in the following directories off of github: 
 
@@ -59,12 +59,17 @@ write.csv(bbs_envs, "scripts/R-scripts/scale_analysis/bbs_envs.csv", row.names =
 #http://www.qhull.org/html/qconvex.htm#synopsis
 bbs_envs = read.csv("scripts/R-scripts/scale_analysis/bbs_envs.csv", header = TRUE)
 #subset to just appropriate dims for convhulln 
-sub_envs = bbs_envs %>% select(temp_q, prec_q, elev_q, ndvi_q) %>% filter(ndvi_q != 'NA') #cuts down to 890 
+sub_envs = bbs_envs %>% select(temp_q, prec_q, elev_q, ndvi_q) %>% filter(ndvi_q != 'NA') #cuts nothing, all there 
 
 
 hull = convhulln(sub_envs, "FA")
 hull$area #189.74 #4.502 
 hull$vol #66.22 #0.54 second time around....
+
+
+#bbs_envs has env data @ scale of single route 
+#following code compiles vars of env data @scale of 66 rtes
+
 
 
 ####Pair env data to secondary rtes associated with each focal rte; calc variance across scales for each focal rte####
@@ -78,7 +83,7 @@ dist.df2 = filter(dist.df, rte1 %in% bbs_envs$stateroute & rte2 %in% bbs_envs$st
 #now calc var for each focal rte (rte1)
 env_hetero = data.frame(stateroute = NULL, scale = NULL,
                         ndvi_v = NULL, elev_v = NULL, prec_v = NULL, temp_v = NULL,
-                        ndvi_qv = NULL, elev_qv = NULL, prec_qv = NULL, temp_qv = NULL)
+                        ndvi_qv = NULL, elev_qv = NULL, prec_qv = NULL, temp_qv = NULL, qhull = NULL, zhull = NULL)
 
 focal_rtes = unique(bbs_envs$stateroute)
 scales = c(1,1,1,1:66)
@@ -108,6 +113,9 @@ for(r in focal_rtes){
     select(ztemp, zprec, zelev, zndvi) %>% 
     filter(zndvi != 'NA')
   
+  qhull_df = convhulln(tempenv_q, "FA")
+  zhull_df = convhulln(tempenv_z, "FA")
+  
   #get variance of rte means, calc across entire rte_group according to scale   
   temp = data.frame(stateroute = r,
                     scale = nu,
@@ -118,8 +126,9 @@ for(r in focal_rtes){
                     ndvi_qv = var(tempenv$ndvi_q, na.rm = TRUE),
                     elev_qv = var(tempenv$elev_q), 
                     prec_qv = var(tempenv$prec_q), 
-                    temp_qv = var(tempenv$temp_q)
-                    )
+                    temp_qv = var(tempenv$temp_q), 
+                    qhull = qhull_df$vol,
+                    zhull = zhull_df$vol)
   
   env_hetero = rbind(env_hetero, temp)
   }
@@ -130,8 +139,9 @@ write.csv(env_hetero, "scripts/R-scripts/scale_analysis/env_hetero.csv", row.nam
 
 ####Merge env_hetero to coefs for comparing env variation for a site to its associated AUC####
 env_auc = coefs %>% 
-  inner_join(env_hetero, by = "stateroute")
-
+  inner_join(env_hetero, by = "stateroute") #and also join 
+#mod env coef names to reflect that they have to do with max scale 
+#join original coef vars at scale of single focal rte and also make sure reflected in names 
 auc_mod1 = lm(OA.AUC ~ elev_v, data = env_auc)
 summary(auc_mod1)
 
