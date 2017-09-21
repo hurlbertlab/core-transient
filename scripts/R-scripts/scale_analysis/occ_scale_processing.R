@@ -268,7 +268,7 @@ bbs_above$scale = as.factor(bbs_above$scale)
 
 bbs_allscales = rbind(bbs_below, bbs_above) #rbind ok since all share column names
 write.csv(bbs_allscales, "data/BBS/bbs_allscales.csv", row.names = FALSE)
-#updated 07/27/2017, also in BioArk since old copy ALSO there
+#updated 09/20/2017, also in BioArk since old copy ALSO there
 write.csv(bbs_allscales, paste(BBS, "bbs_allscales.csv", sep = ""), row.names = FALSE)
 
 ####filter out stateroutes that are one-sided in scale####
@@ -280,13 +280,15 @@ bbs_allscales$logN = log10(bbs_allscales$aveN)
 bbs_allscales$lnA = log(bbs_allscales$area) #log is the natural log 
 bbs_allscales$lnN = log(bbs_allscales$aveN) #rerun plots with this?
 
-#only want rtes w/all 83 scales rep'd, which at this point - there are! 
-bbs_allscales2 = bbs_allscales %>% filter(meanOcc != 'NA') %>% 
+
+#only want rtes w/all 69 scales rep'd, which at this point - there are! 
+bbs_allscales2 = bbs_allscales %>% filter(meanOcc != 'NaN' & meanOcc != 'NA') %>% 
   count(focalrte) %>% filter(n == 69) %>% data.frame() #fix error to exclude NAs
 bbs_allscales3 = filter(bbs_allscales, focalrte %in% bbs_allscales2$focalrte)
 
-write.csv(bbs_allscales3, "data/BBS/bbs_allscales.csv", row.names = FALSE) #overwrote bbs all scales file 
-#updated 07/27/2017 from 1003 to 1001 routes
+write.csv(bbs_allscales3, "data/BBS/bbs_allscales.csv", row.names = FALSE) 
+#overwrote bbs all scales file 
+#updated 09/20
 
 
 ####Occ-scale analysis####
@@ -298,13 +300,13 @@ unique(bbs_allscales$scale)
 
 mod1 = lm(meanOcc~logA, data = bbs_allscales) #expljkains ~75-80% of the variation in occ
 mod2 = lm(meanOcc~logN, data = bbs_allscales)
-summary(mod2)
+summary(mod1)
 
 plot(meanOcc~logA, data = bbs_allscales, xlab = "Log Area" , ylab = "Mean Temporal Occupancy")
 plot(meanOcc~logN, data = bbs_allscales, xlab = "Average Abundance" , ylab = "Mean Temporal Occupancy")
 #^^same pattern roughly; abundance describes ~same amt of variance as area so serves as a good proxy 
 
 
-#ALL files updated 07/27 ~3pm 
+#ALL files updated 09/20 ~3pm 
 
 
