@@ -172,6 +172,9 @@ output = data.frame(focalrte = NULL,
 for (r in uniqrtes) { #for each focal route
   for (nu in numrtes) { #for each level of scale aggregated to each focal route
     
+    #takes dist.df and generates a new list that changes based on which route in uniqrtes is being focused on 
+    #and the length of the list varies with the scale or nu 
+    
     tmp_rte_group = dist.df %>% #changes with size of nu but caps at 66
       filter(rte1 == r) %>% 
       top_n(66, desc(dist)) %>% #fixed ordering by including arrange parm, 
@@ -179,6 +182,8 @@ for (r in uniqrtes) { #for each focal route
       arrange(dist) %>%
       slice(1:nu) %>% 
       select(everything()) %>% data.frame()
+    
+    #takes varying list from above and uses it to subset the bbs data so that occ can be calculated for the cluster 
     
     focal_clustr = bbs_above_guide %>% 
       filter(stateroute %in% tmp_rte_group$rte2) #tmp_rte_group already ordered by distance so don't need 2x
@@ -191,20 +196,14 @@ for (r in uniqrtes) { #for each focal route
       summarize(aveN = mean(totalN), 
                 stateroute = r)
       
-    
-    
-    # occ.summ = bbsu %>% #occupancy
-    #   count(stateroute, AOU) %>%
-    #   mutate(occ = n/15, scale = scale, subrouteID = countColumns[1]) %>%
-    #   group_by(stateroute) %>%
-    #   summarize(meanOcc = mean(occ)
-    
     occ.summ = focal_clustr %>% #occupancy -> focal clustr should GROW with scale, larger avg pool -> 
       #increased likelihood that AOU will be present -> OH! I don't want stateroute in here! it doesn't matter! 
       #it just matters that it shows up in the cluster at all, not just the stateroutes that go in
-      count(AOU, year) %>%
-      group_by(AOU) %>% count(AOU) %>% 
-      mutate(occ = nn/15, scale = nu) %>% #, subrouteID = countColumns[1]) #%>% countColumns not needed bc already pared down
+      #how many years does each AOU show up in the cluster 
+      select(year, AOU) %>% #duplicates remnant of distinct secondary routes - finally ID'd bug
+      distinct() %>% #removing duplicates 09/20
+      count(AOU) %>% #how many times does that AOU show up in that clustr that year 
+      mutate(occ = n/15, scale = nu) %>% #, subrouteID = countColumns[1]) #%>% countColumns not needed bc already pared down
      # group_by(r) %>% #don't want to group by stateroute though! want to calc for whole clustr
       summarize(focalrte = r, 
                 scale = nu, 
