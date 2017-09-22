@@ -72,7 +72,7 @@ hull$vol #66.22 #0.54 second time around....
 
 
 
-####Pair env data to secondary rtes associated with each focal rte; calc variance across scales for each focal rte####
+####Pair env data to secondary rtes associated with each focal rte; calc variance across top scale for each focal rte####
 bbs_envs = read.csv("scripts/R-scripts/scale_analysis/bbs_envs.csv", header = TRUE)
 dist.df = read.csv("scripts/R-scripts/scale_analysis/dist_df.csv", header = TRUE)
 
@@ -81,13 +81,14 @@ dist.df2 = filter(dist.df, rte1 %in% bbs_envs$stateroute & rte2 %in% bbs_envs$st
 
 #num of rows matches num of rows in dts.df, good 
 #now calc var for each focal rte (rte1)
-env_hetero = data.frame(stateroute = NULL, scale = NULL,
-                        ndvi_v = NULL, elev_v = NULL, prec_v = NULL, temp_v = NULL,
-                        ndvi_qv = NULL, elev_qv = NULL, prec_qv = NULL, temp_qv = NULL, qhull = NULL, zhull = NULL)
+env_hetero = data.frame(stateroute = NULL,
+                        top_ndvi_zv = NULL,
+                        top_elev_zv = NULL,
+                        top_prec_zv = NULL,
+                        top_temp_zv = NULL,
+                        top_zhull = NULL)
 
 focal_rtes = unique(bbs_envs$stateroute)
-scales = c(1,1,1,1:66)
-
 #need to structure using focal_clustr template 
 
 #need to add scale component and not just do for top scale (66) alone....???? 
@@ -99,43 +100,33 @@ for(r in focal_rtes){
     #and the length of the list varies with the scale or nu 
     rte_group = dist.df2 %>% 
     filter(rte1 == r) %>% 
-    top_n(nu, desc(dist)) %>%
+    top_n(66, desc(dist)) %>%
     select(rte2) %>% as.vector()
   
   tempenv = bbs_envs %>%
     filter(stateroute %in% rte_group$rte2)
   
-  tempenv_q = tempenv %>%
-    select(temp_q, prec_q, elev_q, ndvi_q) %>% 
-    filter(ndvi_q != 'NA')
-  
-  tempenv_z = tempenv %>%
+  tempenv_z = tempenv %>% #subset of tempenv for convhull calcs 
     select(ztemp, zprec, zelev, zndvi) %>% 
     filter(zndvi != 'NA')
   
-  qhull_df = convhulln(tempenv_q, "FA")
   zhull_df = convhulln(tempenv_z, "FA")
   
   #get variance of rte means, calc across entire rte_group according to scale   
   temp = data.frame(stateroute = r,
-                    scale = nu,
-                    ndvi_v = var(tempenv$zndvi, na.rm = TRUE), #fix missing values!!!!
-                    elev_v = var(tempenv$zelev), #bc each of these values is calculated across the 2ndary rtes for each focal rte
-                    prec_v = var(tempenv$zprec), #such that all 66 2ndary rtes will be summed into one variance value for each focal rte
-                    temp_v = var(tempenv$ztemp), #a vector is going in and a single val is coming out
-                    ndvi_qv = var(tempenv$ndvi_q, na.rm = TRUE),
-                    elev_qv = var(tempenv$elev_q), 
-                    prec_qv = var(tempenv$prec_q), 
-                    temp_qv = var(tempenv$temp_q), 
-                    qhull = qhull_df$vol,
-                    zhull = zhull_df$vol)
+                    top_ndvi_zv = var(tempenv$zndvi, na.rm = TRUE), #fix missing values!!!!
+                    top_elev_zv = var(tempenv$zelev), #bc each of these values is calculated across the 2ndary rtes for each focal rte
+                    top_prec_zv = var(tempenv$zprec), #such that all 66 2ndary rtes will be summed into one variance value for each focal rte
+                    top_temp_zv = var(tempenv$ztemp), #a vector is going in and a single val is coming out
+                    top_zhull = zhull_df$vol)
   
   env_hetero = rbind(env_hetero, temp)
   }
   #may need a second level of output rbinding here
 #}
-write.csv(env_hetero, "scripts/R-scripts/scale_analysis/env_hetero.csv", row.names = FALSE)
-#updated 09/20
+top_envhetero = env_hetero
+write.csv(top_envhetero, "scripts/R-scripts/scale_analysis/top_envhetero.csv", row.names = FALSE)
+#updated 09/21
 
 ####Merge env_hetero to coefs for comparing env variation for a site to its associated AUC####
 env_auc = coefs %>% 
