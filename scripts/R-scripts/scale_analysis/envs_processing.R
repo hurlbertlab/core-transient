@@ -187,10 +187,11 @@ bbs_envs = env_elev %>%
   left_join(env_ndvi, by = c("routes.stateroute" = "site_id")) %>% 
   left_join(env_prec, by = "routes.stateroute") %>%
   left_join(env_temp, by = "routes.stateroute") %>%
-  select(stateroute = routes.stateroute, elev.point, elev.mean, elev.var, 
-         ndvi.mean = ndvi_mean, #I don't have var for ndvi, FIX 09/21
-         prec.point, prec.mean, prec.var, 
-         temp.point, temp.mean, temp.var) %>%
+  select(stateroute = routes.stateroute, 
+         elev.mean, elev.var, 
+         ndvi.mean = ndvi_mean, ndvi.var = ndvi_var, #I don't have var for ndvi, FIX 09/21
+         prec.mean, prec.var, 
+         temp.mean, temp.var) %>%
   filter(temp.mean != "NA", prec.mean != "NA", elev.mean != "NA", ndvi.mean != "NA") #945 routes when NA obs removed
 write.csv(bbs_envs, "scripts/R-scripts/scale_analysis/bbs_envs.csv", row.names = FALSE) 
 #current version 09/21
