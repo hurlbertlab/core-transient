@@ -80,6 +80,8 @@ sub_envs = bbs_envs %>% select(temp_q, prec_q, elev_q, ndvi_q) %>% filter(ndvi_q
 #bbs_envs has env data @ scale of single route 
 #following code compiles vars of env data @scale of 66 rtes
 
+#ALTERNATIVE: add together z scores as in early code using euclidean distance bet/points or ranking in euclidean space
+#- so between scale at 1 and scale at 66 
 
 
 ####Pair env data to secondary rtes associated with each focal rte; calc variance across top scale for each focal rte####
@@ -146,7 +148,7 @@ coefs = read.csv("scripts/R-scripts/scale_analysis/coefs.csv", header = TRUE) #A
 #Merge top_envhetero to coefs for comparing env variation for a site to its associated AUC 
 #at the scale of a landscape and scale of a rte
 env_coefs = coefs %>% 
-  inner_join(top_envhetero, by = "stateroute") %>%
+  inner_join(top_envhetero, by = "stateroute") %>% #coefs to top scale env characterizing data
   inner_join(bbs_envs, by = "stateroute") %>% #and also join single rte
   select(-contains("temp"), -contains("prec")) #and also rm precip and temp vars since now wrapped up in convhull 
 
@@ -164,12 +166,13 @@ summary(auc_mod1)
 write.csv(env_coefs, "scripts/R-scripts/scale_analysis/env_coefs.csv", row.names = FALSE)
 #updated 09/21
 
-
-
-covmatrix = round(cor(coefs[, 2:ncol(coefs)]), 2)
+covmatrix = round(cor(env_coefs[, 2:ncol(env_coefs)]), 2)
 covmatrix
 
 
+
+####Coef & habitat heterogeneity models####
+env_coefs = read.csv("scripts/R-scripts/scale_analysis/env_coefs.csv", header = TRUE)
 #ADAPT BELOW CODE to reflect NEW COEFFICIENTS INCLUDING AUC and RE-RUN MODELS
 
 # nested loop for examining variation in coefs/fitted curves explained by env heterogeneity 
