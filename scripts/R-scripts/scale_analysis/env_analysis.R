@@ -178,13 +178,23 @@ subenv_coefs = env_coefs %>%
   select(-matches("CA"), -matches("TA")) #for now ignoring %Core and %Tran and focusing on mean Occupancy 
 
 #check out cov matrix to inform model generation and predictions:
-covmatrix = round(cor(subenv_coefs[, 2:ncol(subenv_coefs)]), 2)
+covmatrix = round(cor(subenv_coefs[, 1:ncol(subenv_coefs)]), 2) #since clipped stateroute don't need to clip again
 covmatrix = as.data.frame(covmatrix)
 write.csv(covmatrix, "scripts/R-scripts/scale_analysis/covmatrix.csv", row.names = FALSE)
 
 
 #join original coef vars at scale of single focal rte and also make sure reflected in names 
-pmin_mod1 = lm(OA.pmin ~ zndvi, data = env_coefs)
+#e.g. "Does the min and the predicted min vary with environmental heterogeneity 
+#at the scale of a single route? at the scale of a landscape?
+min_mod1 = lm(OA.min ~ ndvi_zv, data = env_coefs)
+min_mod2 = lm(OA.pmin ~ top_ndvi_zv, data = env_coefs)
+
+pmin_mod1 = lm(OA.pmin ~ ndvi_zv, data = env_coefs)
+pmin_mod2 = lm(OA.pmin ~ top_ndvi_zv, data = env_coefs)
+
+
+
+
 summary(pmin_mod1)
 #test example model
 
