@@ -31,27 +31,28 @@ BBS = '//bioark.ad.unc.edu/HurlbertLab/Jenkins/BBS scaled/'
 bbs_envs = read.csv("scripts/R-scripts/scale_analysis/bbs_envs.csv", header = TRUE)
 bbs_allscales = read.csv("data/BBS/bbs_allscales.csv", header = TRUE)
 bbs_envs = filter(bbs_envs, stateroute %in% bbs_allscales$focalrte)
-write.csv(bbs_envs, "scripts/R-scripts/scale_analysis/bbs_envs.csv", row.names = FALSE) #updated 09/20 to reflect fixed above scale
 
 ####Calc z-scores, quantiles pre-variance loop####
 bbs_envs = read.csv("scripts/R-scripts/scale_analysis/bbs_envs.csv", header = TRUE)
 
-#alt simplistic standardization using z scores
-bbs_envs$ztemp = (bbs_envs$temp.mean - mean(bbs_envs$temp.mean)) / sd(bbs_envs$temp.mean)
-bbs_envs$zprec = (bbs_envs$prec.mean - mean(bbs_envs$prec.mean)) / sd(bbs_envs$prec.mean)
-bbs_envs$zelev = (bbs_envs$elev.mean - mean(bbs_envs$elev.mean)) / sd(bbs_envs$elev.mean)
-bbs_envs$zndvi = ((bbs_envs$ndvi.mean) - mean(na.exclude(bbs_envs$ndvi.mean))) / sd(na.exclude(bbs_envs$ndvi.mean)) 
+#alt simplistic standardization using z scores 
+#means (need for calc top scale variance)
+bbs_envs$temp_zm = (bbs_envs$temp.mean - mean(bbs_envs$temp.mean)) / sd(bbs_envs$temp.mean)
+bbs_envs$prec_zm = (bbs_envs$prec.mean - mean(bbs_envs$prec.mean)) / sd(bbs_envs$prec.mean)
+bbs_envs$elev_zm = (bbs_envs$elev.mean - mean(bbs_envs$elev.mean)) / sd(bbs_envs$elev.mean)
+bbs_envs$ndvi_zm = ((bbs_envs$ndvi.mean) - mean(na.exclude(bbs_envs$ndvi.mean))) / sd(na.exclude(bbs_envs$ndvi.mean)) 
 #NA's for ndvi vals around statertes in the 3000's
 #with z scores
 
-# Calc quantiles
-bbs_envs$ndvi_q= rank(bbs_envs$ndvi.mean)/nrow(bbs_envs) #needs to be corrected since NA values in ndvi col
-bbs_envs$elev_q= rank(bbs_envs$elev.mean)/nrow(bbs_envs) 
-bbs_envs$temp_q= rank(bbs_envs$temp.mean)/nrow(bbs_envs) 
-bbs_envs$prec_q= rank(bbs_envs$prec.mean)/nrow(bbs_envs)
-write.csv(bbs_envs, "scripts/R-scripts/scale_analysis/bbs_envs.csv", row.names = FALSE) #updated 09/21
-#with z scores and quantiles both
+#variance (need for var comparison bet/top and bottom scales)
+bbs_envs$temp_zv = (bbs_envs$temp.var - mean(bbs_envs$temp.var)) / sd(bbs_envs$temp.var)
+bbs_envs$prec_zv = (bbs_envs$prec.var - mean(bbs_envs$prec.var)) / sd(bbs_envs$prec.var)
+bbs_envs$elev_zv = (bbs_envs$elev.var - mean(bbs_envs$elev.var)) / sd(bbs_envs$elev.var)
+bbs_envs$ndvi_zv = ((bbs_envs$ndvi.var) - mean(na.exclude(bbs_envs$ndvi.var))) / sd(na.exclude(bbs_envs$ndvi.var)) 
 
+write.csv(bbs_envs, "scripts/R-scripts/scale_analysis/bbs_envs.csv", row.names = FALSE) #updated 09/21 to reflect fixed above scale
+#conversion done for single-rte scale envs 
+#use pre-standardized means to calc above-rte variance and THEN convert to z scores for comparison to lower scales 
 
 ####Convex polygon comparison of variables####
 #not variances yet 
@@ -60,7 +61,7 @@ write.csv(bbs_envs, "scripts/R-scripts/scale_analysis/bbs_envs.csv", row.names =
 #http://www.qhull.org/html/qconvex.htm#synopsis
 bbs_envs = read.csv("scripts/R-scripts/scale_analysis/bbs_envs.csv", header = TRUE)
 #subset to just appropriate dims for convhulln 
-sub_envs = bbs_envs %>% select(temp_q, prec_q, elev_q, ndvi_q) %>% filter(ndvi_q != 'NA') #cuts nothing, all there 
+sub_envs = bbs_envs %>% select(temp_zm, prec_zm, elev_zm, ndvi_zm) %>% filter(ndvi_zm != 'NA') #cuts nothing, all there 
 
 # 
 # hull = convhulln(sub_envs, "FA")
@@ -86,7 +87,7 @@ sub_envs = bbs_envs %>% select(temp_q, prec_q, elev_q, ndvi_q) %>% filter(ndvi_q
 
 
 ####Pair env data to secondary rtes associated with each focal rte; calc variance across top scale for each focal rte####
-bbs_envs = read.csv("scripts/R-scripts/scale_analysis/bbs_envs.csv", header = TRUE)
+bbs_envs = read.csv("scripts/R-scripts/scale_analysis/bbs_envs.csv", header = TRUE) #09/21
 dist.df = read.csv("scripts/R-scripts/scale_analysis/dist_df.csv", header = TRUE)
 
 #need to pair down by routes existing in bbs_envs (which have been sorted appropriately) and then calculated the top n 66 based on distance
@@ -94,11 +95,11 @@ dist.df2 = filter(dist.df, rte1 %in% bbs_envs$stateroute & rte2 %in% bbs_envs$st
 
 #num of rows matches num of rows in dts.df, good 
 #now calc var for each focal rte (rte1)
-env_hetero = data.frame(stateroute = NULL,
-                        top_ndvi_zv = NULL,
-                        top_elev_zv = NULL,
-                        top_prec_zv = NULL,
-                        top_temp_zv = NULL,
+top_envhetero = data.frame(stateroute = NULL,
+                        top_ndvi_v = NULL,
+                        top_elev_v = NULL,
+                        top_prec_v = NULL,
+                        top_temp_v = NULL,
                         top_zhull = NULL)
 
 focal_rtes = unique(bbs_envs$stateroute)
@@ -120,26 +121,38 @@ for(r in focal_rtes){
     filter(stateroute %in% rte_group$rte2)
   
   tempenv_z = tempenv %>% #subset of tempenv for convhull calcs 
-    select(ztemp, zprec, zelev, zndvi) %>% 
-    filter(zndvi != 'NA')
+    select(temp_zm, prec_zm, elev_zm, ndvi_zm) %>% #using means for convhull calc
+    filter(ndvi_zm != 'NA') #this is ok since for convhull 
   
   zhull_df = convhulln(tempenv_z, "FA")
   
   #get variance of rte means, calc across entire rte_group according to scale   
   temp = data.frame(stateroute = r,
-                    top_ndvi_zv = var(tempenv$zndvi, na.rm = TRUE), #fix missing values!!!!
-                    top_elev_zv = var(tempenv$zelev), #bc each of these values is calculated across the 2ndary rtes for each focal rte
-                    top_prec_zv = var(tempenv$zprec), #such that all 66 2ndary rtes will be summed into one variance value for each focal rte
-                    top_temp_zv = var(tempenv$ztemp), #a vector is going in and a single val is coming out
+                    top_ndvi_v = var(tempenv$ndvi.mean, na.rm = TRUE), #fix missing values!!!!
+                    top_elev_v = var(tempenv$elev.mean), #bc each of these values is calculated across the 2ndary rtes for each focal rte
+                    top_prec_v = var(tempenv$prec.mean), #such that all 66 2ndary rtes will be summed into one variance value for each focal rte
+                    top_temp_v = var(tempenv$temp.mean), #a vector is going in and a single val is coming out
                     top_zhull = zhull_df$vol)
   
-  env_hetero = rbind(env_hetero, temp)
+  top_envhetero = rbind(top_envhetero, temp)
   }
   #may need a second level of output rbinding here
 #}
-top_envhetero = env_hetero
+
+
+#NOW convert top_ndvi_var etc. to z-scores (after variance has been calculated, NOT before) 
+#variance (need for var comparison bet/top and bottom scales)
+top_envhetero$top_temp_zv = (top_envhetero$top_temp_v - mean(top_envhetero$top_temp_v)) / sd(top_envhetero$top_temp_v)
+top_envhetero$top_prec_zv = (top_envhetero$top_prec_v - mean(top_envhetero$top_prec_v)) / sd(top_envhetero$top_prec_v)
+top_envhetero$top_elev_zv = (top_envhetero$top_elev_v - mean(top_envhetero$top_elev_v)) / sd(top_envhetero$top_elev_v)
+top_envhetero$top_ndvi_zv = ((top_envhetero$top_ndvi_v) - mean(na.exclude(top_envhetero$top_ndvi_v))) / sd(na.exclude(top_envhetero$top_ndvi_v))
+
 write.csv(top_envhetero, "scripts/R-scripts/scale_analysis/top_envhetero.csv", row.names = FALSE)
 #updated 09/21
+
+#naming convention for comparisons: #env.var_zv -> z score origin, variance/habheterogeneity at rt, from 40km buffer circle raster clip.  
+                 #topenv.var_zv -> z score origin, variance/habhet at landscape (var across rt buffermeans in top clustr (zm vector))
+                #zm from 40 km buffer circle raster clip too
 
 ####Coef vs env hetero models####
 top_envhetero = read.csv("scripts/R-scripts/scale_analysis/top_envhetero.csv", header = TRUE) #landscape habitat vars 
@@ -153,17 +166,7 @@ env_coefs = coefs %>%
   inner_join(bbs_envs, by = "stateroute") %>% #and also join single rte
   select(-contains("temp"), -contains("prec")) #and also rm precip and temp vars since now wrapped up in convhull 
 
-
-
-
-
 #mod env coef names to reflect that they have to do with max scale #1003 rows, 54 cols 
-
-#join original coef vars at scale of single focal rte and also make sure reflected in names 
-auc_mod1 = lm(OA.AUC ~ elev_v, data = env_auc)
-summary(auc_mod1)
-#test example model
-
 write.csv(env_coefs, "scripts/R-scripts/scale_analysis/env_coefs.csv", row.names = FALSE)
 #updated 09/21
 
@@ -175,13 +178,19 @@ env_coefs = read.csv("scripts/R-scripts/scale_analysis/env_coefs.csv", header = 
 #check out cov matrix to inform model generation and predictions:
 covmatrix = round(cor(env_coefs[, 2:ncol(env_coefs)]), 2)
 covmatrix = as.data.frame(covmatrix)
-
 write.csv(covmatrix, "scripts/R-scripts/scale_analysis/covmatrix.csv", row.names = FALSE)
 
+
+#join original coef vars at scale of single focal rte and also make sure reflected in names 
+pmin_mod1 = lm(OA.pmin ~ zndvi, data = env_coefs)
+summary(pmin_mod1)
+#test example model
 
 # nested loop for examining variation in coefs/fitted curves explained by env heterogeneity 
 #so: response = coefficients = dependent; predictor = environmental heterogeneity = independent
 rsqrd_hetero = data.frame(dep = character(), ind = character(), r2 = numeric())
+
+
 
 for (d in 2:25) { #adjust columns appropriately -> make sure correct order of ind and dep vars!
   for (i in 26:ncol(env_coefs)) {
