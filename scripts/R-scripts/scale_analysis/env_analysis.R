@@ -28,6 +28,7 @@ BBS = '//bioark.ad.unc.edu/HurlbertLab/Jenkins/BBS scaled/'
 #Now need to calc var across clustrs - and in ways 
 
 ####Pare down routes to exclude routes that are missing above OR below scale####
+bbs_envs = read.csv("scripts/R-scripts/scale_analysis/bbs_envs.csv", header = TRUE)
 bbs_allscales = read.csv("data/BBS/bbs_allscales.csv", header = TRUE)
 bbs_envs = filter(bbs_envs, stateroute %in% bbs_allscales$focalrte)
 write.csv(bbs_envs, "scripts/R-scripts/scale_analysis/bbs_envs.csv", row.names = FALSE) #updated 09/20 to reflect fixed above scale
@@ -48,7 +49,7 @@ bbs_envs$ndvi_q= rank(bbs_envs$ndvi.mean)/nrow(bbs_envs) #needs to be corrected 
 bbs_envs$elev_q= rank(bbs_envs$elev.mean)/nrow(bbs_envs) 
 bbs_envs$temp_q= rank(bbs_envs$temp.mean)/nrow(bbs_envs) 
 bbs_envs$prec_q= rank(bbs_envs$prec.mean)/nrow(bbs_envs)
-write.csv(bbs_envs, "scripts/R-scripts/scale_analysis/bbs_envs.csv", row.names = FALSE) #updated 09/20
+write.csv(bbs_envs, "scripts/R-scripts/scale_analysis/bbs_envs.csv", row.names = FALSE) #updated 09/21
 #with z scores and quantiles both
 
 
