@@ -141,8 +141,8 @@ write.csv(top_envhetero, "scripts/R-scripts/scale_analysis/top_envhetero.csv", r
 #updated 09/21
 
 ####Coef vs env hetero models####
-top_envhetero = read.csv("scripts/R-scripts/scale_analysis/env_hetero.csv", header = TRUE) #landscape habitat vars 
-bbs_envs = read.csv() #single rte habitat vars 
+top_envhetero = read.csv("scripts/R-scripts/scale_analysis/top_envhetero.csv", header = TRUE) #landscape habitat vars 
+bbs_envs = read.csv("scripts/R-scripts/scale_analysis/bbs_envs.csv", header = TRUE) #single rte habitat vars 
 coefs = read.csv("scripts/R-scripts/scale_analysis/coefs.csv", header = TRUE) #AUC etc. 
 
 #Merge top_envhetero to coefs for comparing env variation for a site to its associated AUC 
@@ -166,14 +166,17 @@ summary(auc_mod1)
 write.csv(env_coefs, "scripts/R-scripts/scale_analysis/env_coefs.csv", row.names = FALSE)
 #updated 09/21
 
+
+####Coef & habitat heterogeneity models####
+env_coefs = read.csv("scripts/R-scripts/scale_analysis/env_coefs.csv", header = TRUE)
+#ADAPT BELOW CODE to reflect NEW COEFFICIENTS INCLUDING AUC and RE-RUN MODELS
+
+#check out cov matrix to inform model generation and predictions:
 covmatrix = round(cor(env_coefs[, 2:ncol(env_coefs)]), 2)
 covmatrix
 
 
 
-####Coef & habitat heterogeneity models####
-env_coefs = read.csv("scripts/R-scripts/scale_analysis/env_coefs.csv", header = TRUE)
-#ADAPT BELOW CODE to reflect NEW COEFFICIENTS INCLUDING AUC and RE-RUN MODELS
 
 # nested loop for examining variation in coefs/fitted curves explained by env heterogeneity 
 #so: response = coefficients = dependent; predictor = environmental heterogeneity = independent
