@@ -130,7 +130,8 @@ ndvi_data_summer <- ndvi_gimms_raw %>%
   group_by(site_id, year) %>% #calc avg across summer months for each year
   summarise(ndvi_sum = mean(ndvi), na.rm = TRUE) %>%
   group_by(site_id) %>% #calc avg across years
-  summarise(ndvi_mean = mean(ndvi_sum), na.rm = TRUE) %>% 
+  summarise(ndvi_mean = mean(ndvi_sum), 
+            ndvi_var = var(ndvi_sum), na.rm = TRUE) %>% 
   ungroup()
 
 write.csv(ndvi_data_summer, "scripts/R-scripts/scale_analysis/ndvi_summer.csv", row.names = FALSE) #updated with correct NDVI extraction
@@ -187,7 +188,7 @@ bbs_envs = env_elev %>%
   left_join(env_prec, by = "routes.stateroute") %>%
   left_join(env_temp, by = "routes.stateroute") %>%
   select(stateroute = routes.stateroute, elev.point, elev.mean, elev.var, 
-         ndvi.mean = ndvi_mean,
+         ndvi.mean = ndvi_mean, #I don't have var for ndvi, FIX 09/21
          prec.point, prec.mean, prec.var, 
          temp.point, temp.mean, temp.var) %>%
   filter(temp.mean != "NA", prec.mean != "NA", elev.mean != "NA", ndvi.mean != "NA") #945 routes when NA obs removed
