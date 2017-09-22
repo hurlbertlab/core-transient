@@ -193,10 +193,12 @@ pmin_mod1 = lm(OA.pmin ~ ndvi_zv, data = env_coefs)
 pmin_mod2 = lm(OA.pmin ~ top_ndvi_zv, data = env_coefs)
 
 
+summary(pmin_mod2)
+#test example model -> elev and ndvi explain more variation at the landscape scale than local scale. 
 
 
-summary(pmin_mod1)
-#test example model
+
+####UP NEXT: run series of models and reassess/renew plots from spring####
 
 # nested loop for examining variation in coefs/fitted curves explained by env heterogeneity 
 #so: response = coefficients = dependent; predictor = environmental heterogeneity = independent
