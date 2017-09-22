@@ -189,6 +189,7 @@ bbs_envs = env_elev %>%
   select(stateroute = routes.stateroute, elev.point, elev.mean, elev.var, 
          ndvi.mean = ndvi_mean,
          prec.point, prec.mean, prec.var, 
-         temp.point, temp.mean, temp.var)
+         temp.point, temp.mean, temp.var) %>%
+  filter(temp.mean != "NA", prec.mean != "NA", elev.mean != "NA", ndvi.mean != "NA") #945 routes when NA obs removed
 write.csv(bbs_envs, "scripts/R-scripts/scale_analysis/bbs_envs.csv", row.names = FALSE) 
-#current version 09/20
+#current version 09/21
