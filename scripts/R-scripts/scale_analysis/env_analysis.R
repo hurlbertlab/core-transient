@@ -128,37 +128,25 @@ top_envhetero = env_hetero
 write.csv(top_envhetero, "scripts/R-scripts/scale_analysis/top_envhetero.csv", row.names = FALSE)
 #updated 09/21
 
-####Merge env_hetero to coefs for comparing env variation for a site to its associated AUC####
-env_auc = coefs %>% 
-  inner_join(env_hetero, by = "stateroute") #and also join 
-#mod env coef names to reflect that they have to do with max scale 
+####Coef vs env hetero models####
+top_envhetero = read.csv("scripts/R-scripts/scale_analysis/env_hetero.csv", header = TRUE) #landscape habitat vars 
+bbs_envs = read.csv() #single rte habitat vars 
+coefs = read.csv("scripts/R-scripts/scale_analysis/coefs.csv", header = TRUE) #AUC etc. 
+
+#Merge top_envhetero to coefs for comparing env variation for a site to its associated AUC 
+#at the scale of a landscape and scale of a rte
+env_coefs = coefs %>% 
+  inner_join(top_envhetero, by = "stateroute") %>%
+  inner_join(bbs_envs, by = "stateroute") #and also join single rte 
+#mod env coef names to reflect that they have to do with max scale #1003 rows, 54 cols 
+
 #join original coef vars at scale of single focal rte and also make sure reflected in names 
 auc_mod1 = lm(OA.AUC ~ elev_v, data = env_auc)
 summary(auc_mod1)
+#test example model
 
-
-
-
-
-
-####Elev vs NDVI plotting####
-env_hetero = read.csv("scripts/R-scripts/scale_analysis/env_hetero.csv", header = TRUE)
-bbs_envs = read.csv("scripts/R-scripts/scale_analysis/bbs_envs.csv", header = TRUE)
-
-#elev vs ndvi on plot - variance of quantile scores
-q_scores = ggplot(env_hetero, aes(x = ndvi_qv, y = elev_qv))+geom_point()+theme_classic()+ggtitle("Variance of quantiles")
-z_scores = ggplot(env_hetero, aes(x = ndvi_v, y = elev_v))+geom_point()+theme_classic()+ggtitle("Variance of z-scores")
-#elev vs ndvi on plot - straight z scores, no var calc 
-z_raw = ggplot(bbs_envs, aes(x=zndvi, y = zelev))+geom_point()+theme_classic()+ggtitle("Z scores of raw data")
-qz = grid.arrange(q_scores, z_scores)
-z_raw 
-
-####Coef vs env hetero models####
-env_hetero = read.csv("scripts/R-scripts/scale_analysis/env_hetero.csv", header = TRUE) #replacing bbs_envs with hetero measures
-coefs = read.csv("scripts/R-scripts/scale_analysis/coefs.csv", header = TRUE)
-env_coefs = inner_join(coefs, env_hetero, by = "stateroute")
 write.csv(env_coefs, "scripts/R-scripts/scale_analysis/env_coefs.csv", row.names = FALSE)
-#updated 09/20
+#updated 09/21
 
 
 
