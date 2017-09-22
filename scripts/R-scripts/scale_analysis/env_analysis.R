@@ -173,10 +173,12 @@ write.csv(env_coefs, "scripts/R-scripts/scale_analysis/env_coefs.csv", row.names
 
 ####Coef & habitat heterogeneity models####
 env_coefs = read.csv("scripts/R-scripts/scale_analysis/env_coefs.csv", header = TRUE)
-#ADAPT BELOW CODE to reflect NEW COEFFICIENTS INCLUDING AUC and RE-RUN MODELS
+
+subenv_coefs = env_coefs %>%
+  select(-contains("CA"), -contains("TA")) #for now ignoring %Core and %Tran and focusing on mean Occupancy 
 
 #check out cov matrix to inform model generation and predictions:
-covmatrix = round(cor(env_coefs[, 2:ncol(env_coefs)]), 2)
+covmatrix = round(cor(subenv_coefs[, 2:ncol(subenv_coefs)]), 2)
 covmatrix = as.data.frame(covmatrix)
 write.csv(covmatrix, "scripts/R-scripts/scale_analysis/covmatrix.csv", row.names = FALSE)
 
