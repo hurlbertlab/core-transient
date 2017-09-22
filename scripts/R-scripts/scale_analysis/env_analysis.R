@@ -175,7 +175,7 @@ write.csv(env_coefs, "scripts/R-scripts/scale_analysis/env_coefs.csv", row.names
 env_coefs = read.csv("scripts/R-scripts/scale_analysis/env_coefs.csv", header = TRUE)
 
 subenv_coefs = env_coefs %>%
-  select(-contains("CA"), -contains("TA")) #for now ignoring %Core and %Tran and focusing on mean Occupancy 
+  select(-matches("CA"), -matches("TA")) #for now ignoring %Core and %Tran and focusing on mean Occupancy 
 
 #check out cov matrix to inform model generation and predictions:
 covmatrix = round(cor(subenv_coefs[, 2:ncol(subenv_coefs)]), 2)
