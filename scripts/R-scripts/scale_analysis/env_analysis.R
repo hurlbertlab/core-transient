@@ -174,9 +174,9 @@ env_coefs = read.csv("scripts/R-scripts/scale_analysis/env_coefs.csv", header = 
 
 #check out cov matrix to inform model generation and predictions:
 covmatrix = round(cor(env_coefs[, 2:ncol(env_coefs)]), 2)
-covmatrix
+covmatrix = as.data.frame(covmatrix)
 
-
+write.csv(covmatrix, "scripts/R-scripts/scale_analysis/covmatrix.csv", row.names = FALSE)
 
 
 # nested loop for examining variation in coefs/fitted curves explained by env heterogeneity 
