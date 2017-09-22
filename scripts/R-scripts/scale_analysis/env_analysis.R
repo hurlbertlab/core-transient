@@ -61,12 +61,22 @@ bbs_envs = read.csv("scripts/R-scripts/scale_analysis/bbs_envs.csv", header = TR
 #subset to just appropriate dims for convhulln 
 sub_envs = bbs_envs %>% select(temp_q, prec_q, elev_q, ndvi_q) %>% filter(ndvi_q != 'NA') #cuts nothing, all there 
 
-
-hull = convhulln(sub_envs, "FA")
-hull$area #189.74 #4.502 
-hull$vol #66.22 #0.54 second time around....
-
-
+# 
+# hull = convhulln(sub_envs, "FA")
+# hull$area #189.74 #4.502 
+# hull$vol #66.22 #0.54 second time around....
+# rtes = unique(bbs_envs$stateroute)
+# output = c()
+# for(s in rtes){
+#   sub_envs = bbs_envs %>% filter(stateroute == s)
+#   hull = convhulln(sub_envs, "FA")
+#   temp = summarize(stateroute = s, 
+#                     zhull = hull$vol)  
+#   output = rbind(output, temp) 
+# } 
+#   
+ #not possible ! need 20 pts! 
+  
 #bbs_envs has env data @ scale of single route 
 #following code compiles vars of env data @scale of 66 rtes
 
@@ -137,7 +147,13 @@ coefs = read.csv("scripts/R-scripts/scale_analysis/coefs.csv", header = TRUE) #A
 #at the scale of a landscape and scale of a rte
 env_coefs = coefs %>% 
   inner_join(top_envhetero, by = "stateroute") %>%
-  inner_join(bbs_envs, by = "stateroute") #and also join single rte 
+  inner_join(bbs_envs, by = "stateroute") %>% #and also join single rte
+  select(-contains("temp"), -contains("prec")) #and also rm precip and temp vars since now wrapped up in convhull 
+
+
+
+
+
 #mod env coef names to reflect that they have to do with max scale #1003 rows, 54 cols 
 
 #join original coef vars at scale of single focal rte and also make sure reflected in names 
