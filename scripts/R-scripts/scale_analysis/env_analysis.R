@@ -202,21 +202,27 @@ summary(pmin_mod2)
 
 # nested loop for examining variation in coefs/fitted curves explained by env heterogeneity 
 #so: response = coefficients = dependent; predictor = environmental heterogeneity = independent
+
+#first need to make sure JUST looking at variance characterizing site, not means -> filter out 
+
+hab_het = env_coefs %>% 
+  select(-elev.mean, -ndvi.mean, -elev_zm, -ndvi_zm)
+
 rsqrd_hetero = data.frame(dep = character(), ind = character(), r2 = numeric())
 
 
 
 for (d in 2:10) { #adjust columns appropriately -> make sure correct order of ind and dep vars!
-  for (i in 32:ncol(env_coefs)) {
-    tempmod = lm(env_coefs[,d] ~ env_coefs[,i])
-    tempdf = data.frame(dep = names(env_coefs)[d], 
-                        ind = names(env_coefs)[i], 
+  for (i in 32:ncol(hab_het)) {
+    tempmod = lm(hab_het[,d] ~ hab_het[,i])
+    tempdf = data.frame(dep = names(hab_het)[d], 
+                        ind = names(hab_het)[i], 
                         r2 = summary(tempmod)$r.squared)
     rsqrd_hetero = rbind(rsqrd_hetero, tempdf)
   }
 }
 write.csv(rsqrd_hetero, "scripts/R-scripts/scale_analysis/rsqrd_hetero.csv", row.names = FALSE) 
-#updated 10/03 using corrected env_coef vals
+#updated 10/03 using corrected hab_het vals, only variances characterizing sites
 
 
 ####Visually Characterizing measures of habitat heterogeneity####
