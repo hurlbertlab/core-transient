@@ -207,6 +207,7 @@ summary(pmin_mod2)
 
 hab_het = env_coefs %>% 
   select(-elev.mean, -ndvi.mean, -elev_zm, -ndvi_zm)
+write.csv(hab_het, "scripts/R-scripts/scale_analysis/hab_het.csv", row.names = FALSE)
 
 rsqrd_hetero = data.frame(dep = character(), ind = character(), r2 = numeric())
 
