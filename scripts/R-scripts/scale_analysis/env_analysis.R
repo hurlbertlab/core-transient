@@ -206,8 +206,8 @@ rsqrd_hetero = data.frame(dep = character(), ind = character(), r2 = numeric())
 
 
 
-for (d in 2:25) { #adjust columns appropriately -> make sure correct order of ind and dep vars!
-  for (i in 26:ncol(env_coefs)) {
+for (d in 2:10) { #adjust columns appropriately -> make sure correct order of ind and dep vars!
+  for (i in 32:ncol(env_coefs)) {
     tempmod = lm(env_coefs[,d] ~ env_coefs[,i])
     tempdf = data.frame(dep = names(env_coefs)[d], 
                         ind = names(env_coefs)[i], 
@@ -215,7 +215,8 @@ for (d in 2:25) { #adjust columns appropriately -> make sure correct order of in
     rsqrd_hetero = rbind(rsqrd_hetero, tempdf)
   }
 }
-write.csv(rsqrd_hetero, "scripts/R-scripts/scale_analysis/rsqrd_hetero.csv", row.names = FALSE) #updated 06/20 using best stateroutes
+write.csv(rsqrd_hetero, "scripts/R-scripts/scale_analysis/rsqrd_hetero.csv", row.names = FALSE) 
+#updated 10/03 using corrected env_coef vals
 
 
 ####Visually Characterizing measures of habitat heterogeneity####
