@@ -228,11 +228,23 @@ write.csv(rsqrd_hetero, "scripts/R-scripts/scale_analysis/rsqrd_hetero.csv", row
 
 ####Visually Characterizing measures of habitat heterogeneity####
 rsqrd_hetero = read.csv("scripts/R-scripts/scale_analysis/rsqrd_hetero.csv", header = TRUE)
-env_coefs = read.csv("scripts/R-scripts/scale_analysis/env_coefs.csv", header = TRUE)
+hab_het = read.csv("scripts/R-scripts/scale_analysis/hab_het.csv", header = TRUE)
 
 ggplot(data = rsqrd_hetero, aes(x = ind, y = r2, fill = ind))+geom_boxplot()+theme_classic()+
   theme(legend.position="none")+
   labs(x = "Environmental variables", y = "Variation Explained (R^2)")
+
+#INTERPRETATION: 
+#elevation and ndvi at the highest scales explain more variation in the pmin and pthresh values 
+#compared to any other measures of habitat heterogeneity 
+#However, elevation explains more variation than ndvi at the top scales - AND 
+#the gulf between ndvi and elevation in terms of explanatory power widens at the larger scales 
+# - the two measures are closer together in importance at the lowest scales. 
+
+
+
+
+
 
 #excluding transient data for incompleteness, selecting only relevant measures of heterogeneity 
 #INFLEXION POINTS: 
