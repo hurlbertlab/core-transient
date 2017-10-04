@@ -241,6 +241,7 @@ ggplot(data = rsqrd_hetero, aes(x = ind, y = r2, color = dep))+geom_point()+them
 #with different env variables? Draw graphically in notes to help conceptualize. 
 
 #what happens when we do again with q values?
+
 #INTERPRETATION: 
 #elevation and ndvi at the highest scales explain more variation in the pmin and pthresh values 
 #compared to any other measures of habitat heterogeneity 
