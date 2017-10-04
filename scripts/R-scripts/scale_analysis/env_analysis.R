@@ -234,13 +234,25 @@ ggplot(data = rsqrd_hetero, aes(x = ind, y = r2, fill = ind))+geom_boxplot()+the
   theme(legend.position="none")+
   labs(x = "Environmental variables", y = "Variation Explained (R^2)")
 
+ggplot(data = rsqrd_hetero, aes(x = ind, y = r2, color = dep))+geom_point()+theme_classic()+
+  labs(x = "Environmental variables", y = "Variation Explained (R^2)")
+
+#why are pmin and pthresh consistently highest vals for explaining variation? how do these change 
+#with different env variables? Draw graphically in notes to help conceptualize. 
+
+#what happens when we do again with q values?
 #INTERPRETATION: 
 #elevation and ndvi at the highest scales explain more variation in the pmin and pthresh values 
 #compared to any other measures of habitat heterogeneity 
 #However, elevation explains more variation than ndvi at the top scales - AND 
 #the gulf between ndvi and elevation in terms of explanatory power widens at the larger scales 
 # - the two measures are closer together in importance at the lowest scales. 
+#NDVI variance at local scale actually has an 'outlier' point further above even local elev variation 
+#depending on which coefficient metric that corresponds to, it may be that ndvi explains more 
+#local variation in heterogeneity and variation at the lower scales of the occ-scale relationship 
+#while elevational heterogeneity explains variation at the higher scales of the occ-scale relationship?  
 
+#Let's check it out: 
 
 
 
