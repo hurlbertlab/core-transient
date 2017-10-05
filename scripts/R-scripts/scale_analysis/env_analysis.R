@@ -42,13 +42,7 @@ bbs_envs$prec_zm = (bbs_envs$prec.mean - mean(bbs_envs$prec.mean)) / sd(bbs_envs
 bbs_envs$elev_zm = (bbs_envs$elev.mean - mean(bbs_envs$elev.mean)) / sd(bbs_envs$elev.mean)
 bbs_envs$ndvi_zm = ((bbs_envs$ndvi.mean) - mean(na.exclude(bbs_envs$ndvi.mean))) / sd(na.exclude(bbs_envs$ndvi.mean)) 
 #NA's for ndvi vals around statertes in the 3000's
-#with z scores
-
-#variance (need for var comparison bet/top and bottom scales)
-bbs_envs$temp_zv = (bbs_envs$temp.var - mean(bbs_envs$temp.var)) / sd(bbs_envs$temp.var)
-bbs_envs$prec_zv = (bbs_envs$prec.var - mean(bbs_envs$prec.var)) / sd(bbs_envs$prec.var)
-bbs_envs$elev_zv = (bbs_envs$elev.var - mean(bbs_envs$elev.var)) / sd(bbs_envs$elev.var)
-bbs_envs$ndvi_zv = ((bbs_envs$ndvi.var) - mean(na.exclude(bbs_envs$ndvi.var))) / sd(na.exclude(bbs_envs$ndvi.var)) 
+#with z scores for convhull only, don't z scores of variances 
 
 write.csv(bbs_envs, "scripts/R-scripts/scale_analysis/bbs_envs.csv", row.names = FALSE) #updated 09/21 to reflect fixed above scale
 #conversion done for single-rte scale envs 
@@ -105,7 +99,7 @@ top_envhetero = data.frame(stateroute = NULL,
 focal_rtes = unique(bbs_envs$stateroute)
 #need to structure using focal_clustr template 
 
-#need to add scale component and not just do for top scale (66) alone....???? 
+#add nu scale component for calculating means at each scale interval 
 for(r in focal_rtes){
   # for(nu in scales) { #just running for top scale for now 
   #to characterize total var that can be encompassed on a rte
@@ -138,14 +132,7 @@ for(r in focal_rtes){
   }
   #may need a second level of output rbinding here
 #}
-
-
-#NOW convert top_ndvi_var etc. to z-scores (after variance has been calculated, NOT before) 
-#variance (need for var comparison bet/top and bottom scales)
-top_envhetero$top_temp_zv = (top_envhetero$top_temp_v - mean(top_envhetero$top_temp_v)) / sd(top_envhetero$top_temp_v)
-top_envhetero$top_prec_zv = (top_envhetero$top_prec_v - mean(top_envhetero$top_prec_v)) / sd(top_envhetero$top_prec_v)
-top_envhetero$top_elev_zv = (top_envhetero$top_elev_v - mean(top_envhetero$top_elev_v)) / sd(top_envhetero$top_elev_v)
-top_envhetero$top_ndvi_zv = ((top_envhetero$top_ndvi_v) - mean(na.exclude(top_envhetero$top_ndvi_v))) / sd(na.exclude(top_envhetero$top_ndvi_v))
+#removed top scale z score calcs bc not necessary outside of polygon hull calcs 
 
 write.csv(top_envhetero, "scripts/R-scripts/scale_analysis/top_envhetero.csv", row.names = FALSE)
 #updated 09/21
@@ -164,7 +151,7 @@ coefs = read.csv("scripts/R-scripts/scale_analysis/coefs.csv", header = TRUE) #A
 env_coefs = coefs %>% 
   inner_join(top_envhetero, by = "stateroute") %>% #coefs to top scale env characterizing data
   inner_join(bbs_envs, by = "stateroute") %>% #and also join single rte
-  select(-contains("temp"), -contains("prec")) #and also rm precip and temp vars since now wrapped up in convhull 
+  select(-contains("temp"), -contains("prec"), -contains("zm"), -contains("zv")) #and also rm precip and temp vars since now wrapped up in convhull 
 
 #mod env coef names to reflect that they have to do with max scale #1003 rows, 54 cols 
 write.csv(env_coefs, "scripts/R-scripts/scale_analysis/env_coefs.csv", row.names = FALSE)
@@ -206,21 +193,27 @@ summary(pmin_mod2)
 #first need to make sure JUST looking at variance characterizing site, not means -> filter out 
 
 hab_het = env_coefs %>% 
-  select(-elev.mean, -ndvi.mean, -elev_zm, -ndvi_zm)
-write.csv(hab_het, "scripts/R-scripts/scale_analysis/hab_het.csv", row.names = FALSE)
+  select(-elev.mean, -ndvi.mean)
 
 rsqrd_hetero = data.frame(dep = character(), ind = character(), r2 = numeric())
-
-
+#modify to include plotting of obs values for each stateroute vs pred line 
+#and plot these with r squared vals as annotations to plots too 
 
 for (d in 2:10) { #adjust columns appropriately -> make sure correct order of ind and dep vars!
   for (i in 32:ncol(hab_het)) {
     tempmod = lm(hab_het[,d] ~ hab_het[,i])
+    
     tempdf = data.frame(dep = names(hab_het)[d], 
                         ind = names(hab_het)[i], 
                         r2 = summary(tempmod)$r.squared)
+    
+    templot = ggplot(data = hab_het, aes(x = hab_het[,i], y = hab_het[,d]))+geom_point()+
+      geom_line(aes(y = predict(tempmod), color = 'Model'))+
+      labs(x = names(hab_het)[i], y = names(hab_het)[d])+guides(color = "none")+
+      annotate("text", x = 0.03, y = 0.55, label = paste("italic(R) ^ 2 ==", tempdf$r2, sep = ""), parse = TRUE)
+    
     rsqrd_hetero = rbind(rsqrd_hetero, tempdf)
-  }
+    }
 }
 write.csv(rsqrd_hetero, "scripts/R-scripts/scale_analysis/rsqrd_hetero.csv", row.names = FALSE) 
 #updated 10/03 using corrected hab_het vals, only variances characterizing sites
@@ -237,10 +230,29 @@ ggplot(data = rsqrd_hetero, aes(x = ind, y = r2, fill = ind))+geom_boxplot()+the
 ggplot(data = rsqrd_hetero, aes(x = ind, y = r2, color = dep))+geom_point()+theme_classic()+
   labs(x = "Environmental variables", y = "Variation Explained (R^2)")
 
+ggplot(data = hab_het, aes(x = elev.var, y = OA.pmin))+geom_point()+geom_smooth()
+ggplot(data = hab_het, aes(x = ndvi.var, y = OA.pmin))+geom_point()+geom_smooth()
+ggplot(data = hab_het, aes(x = top_elev_v, y = OA.pmin))+geom_point()+geom_smooth()
+ggplot(data = hab_het, aes(x = top_ndvi_v, y = OA.pmin))+geom_point()+geom_smooth()
+
+
+ggplot(data = hab_het, aes(x = elev.var, y = OA.pthresh))+geom_point()+geom_smooth()
+ggplot(data = hab_het, aes(x = ndvi.var, y = OA.pthresh))+geom_point()+geom_smooth()
+ggplot(data = hab_het, aes(x = top_elev_v, y = OA.pthresh))+geom_point()+geom_smooth()
+ggplot(data = hab_het, aes(x = top_ndvi_v, y = OA.pthresh))+geom_point()+geom_smooth()
+
+
+
+ggplot(data = hab_het, aes(x = elev.var, y = OA.pslope))+geom_point()+geom_smooth()
+ggplot(data = hab_het, aes(x = ndvi.var, y = OA.pslope))+geom_point()+geom_smooth()
+ggplot(data = hab_het, aes(x = top_elev_v, y = OA.pslope))+geom_point()+geom_smooth()
+ggplot(data = hab_het, aes(x = top_ndvi_v, y = OA.pslope))+geom_point()+geom_smooth()
+
+
 #why are pmin and pthresh consistently highest vals for explaining variation? how do these change 
 #with different env variables? Draw graphically in notes to help conceptualize. 
 
-#what happens when we do again with q values?
+
 
 #INTERPRETATION: 
 #elevation and ndvi at the highest scales explain more variation in the pmin and pthresh values 
