@@ -198,7 +198,7 @@ hab_het = env_coefs %>%
 rsqrd_hetero = data.frame(dep = character(), ind = character(), r2 = numeric())
 #modify to include plotting of obs values for each stateroute vs pred line 
 #and plot these with r squared vals as annotations to plots too 
-pdf("output/plots/Molly Plots/habhet_models.pdf", onefile = TRUE)
+setwd("C:/git/core-transient/output/plots/Molly Plots/habhet/")
 
 
 for (d in 2:10) { #adjust columns appropriately -> make sure correct order of ind and dep vars!
@@ -214,11 +214,14 @@ for (d in 2:10) { #adjust columns appropriately -> make sure correct order of in
       labs(x = names(hab_het)[i], y = names(hab_het)[d])+guides(color = "none")+
       annotate("text", x = 0.5*max(hab_het[,i]), y = 0.5*max(hab_het[,d]), 
                label = paste("italic(R) ^ 2 ==", tempdf$r2, sep = ""), parse = TRUE, 
-               color = "red", size = 5.5)
+               color = "red", size = 5.5) 
+    ggsave(templot, filename=paste("hab_het", names(hab_het)[d], 
+                                   names(hab_het)[i],".png",sep=""))
     
     rsqrd_hetero = rbind(rsqrd_hetero, tempdf)
     }
 }
+
 dev.off()
 write.csv(rsqrd_hetero, "scripts/R-scripts/scale_analysis/rsqrd_hetero.csv", row.names = FALSE) 
 #updated 10/03 using corrected hab_het vals, only variances characterizing sites
