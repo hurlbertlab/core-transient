@@ -187,7 +187,7 @@ bbs_envs = env_elev %>%
   left_join(env_ndvi, by = c("routes.stateroute" = "site_id")) %>% 
   left_join(env_prec, by = "routes.stateroute") %>%
   left_join(env_temp, by = "routes.stateroute") %>%
-  select(stateroute = routes.stateroute, 
+  dplyr::select(stateroute = routes.stateroute, 
          elev.mean, elev.var, 
          ndvi.mean = ndvi_mean, ndvi.var = ndvi_var, #I don't have var for ndvi, FIX 09/21
          prec.mean, prec.var, 

@@ -55,7 +55,7 @@ write.csv(bbs_envs, "scripts/R-scripts/scale_analysis/bbs_envs.csv", row.names =
 #http://www.qhull.org/html/qconvex.htm#synopsis
 bbs_envs = read.csv("scripts/R-scripts/scale_analysis/bbs_envs.csv", header = TRUE)
 #subset to just appropriate dims for convhulln 
-sub_envs = bbs_envs %>% select(temp_zm, prec_zm, elev_zm, ndvi_zm) %>% filter(ndvi_zm != 'NA') #cuts nothing, all there 
+#sub_envs = bbs_envs %>% select(temp_zm, prec_zm, elev_zm, ndvi_zm) %>% filter(ndvi_zm != 'NA') #cuts nothing, all there 
 
 # 
 # hull = convhulln(sub_envs, "FA")
@@ -101,7 +101,7 @@ focal_rtes = unique(bbs_envs$stateroute)
 
 #add nu scale component for calculating means at each scale interval 
 for(r in focal_rtes){
-  # for(nu in scales) { #just running for top scale for now 
+  for(nu in scales) { #just running for top scale for now 
   #to characterize total var that can be encompassed on a rte
  
     #takes dist.df and generates a new list that changes based on which route in uniqrtes is being focused on 
