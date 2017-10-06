@@ -147,7 +147,7 @@ for(r in focal_rtes){
 }
 #removed top scale z score calcs bc not necessary outside of polygon hull calcs 
 
-write.csv(reg_envhetero, "scripts/R-scripts/scale_analysis/top_envhetero.csv", row.names = FALSE)
+write.csv(reg_envhetero, "scripts/R-scripts/scale_analysis/reg_envhetero.csv", row.names = FALSE)
 #updated 10/06
 
 #naming convention for comparisons: #env.var_zv -> z score origin, variance/habheterogeneity at rt, from 40km buffer circle raster clip.  
