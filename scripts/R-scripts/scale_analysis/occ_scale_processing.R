@@ -62,7 +62,7 @@ occ_counts = function(countData, countColumns, scale) {
     summarize(meanOcc = mean(occ), 
               pctCore = sum(occ > 2/3)/length(occ),
               pctTran = sum(occ <= 1/3)/length(occ)) %>%
-    mutate(scale = paste(scale, g, sep = "-")) %>% #, 
+    mutate(scale = paste(scale, g, sep = "-")) %>% #, #may want to get rid of, this is at the column-counting scale
            #scale = scale) %>%
     left_join(abun.summ, by = 'stateroute')
   return(occ.summ)
@@ -71,43 +71,31 @@ occ_counts = function(countData, countColumns, scale) {
 
 # Generic calculation of occupancy for a specified scale
 #fix to run all at once, so no sep run for above-scale, USE occ-counts for both 
-
+output2 = c()
 b_scales = c(5, 10, 25, 50)
 output = c()
-for (scale in b_scales) {
-  numGroups = floor(50/scale)
+for (s in b_scales) {
+  numGroups = floor(50/s)
   for (g in 1:numGroups) {
-    groupedCols = paste("Stop", ((g-1)*scale + 1):(g*scale), sep = "")
-    temp = occ_counts(fifty_bestAous, groupedCols, scale)
+    groupedCols = paste("Stop", ((g-1)*s + 1):(g*s), sep = "")
+    temp = occ_counts(fifty_bestAous, groupedCols, s) 
     output = rbind(output, temp) 
-  }
-  #take means across scales, ignoring g 
-  #don't need to do anything conveluted if keep original scales as own column
-  #but then I'm running into the same technical error as I was with the larger routes, where I'm 
-  #averaging instead of recalculating occ as I should be -> but not aggregating these, so necessary at all? 
-  #pressing on in the meanwhile, but establish later -> NOT aggregating, pointedly. 
-  # 
-  # means = filter(output, scale == scale)
-  #   abun.summ = means %>% 
-  #   group_by(stateroute) %>%
-  #   summarize(aveN = mean(aveN))
-  # 
-  # occ.summ = means %>% 
-  #   group_by(stateroute) %>% 
-  #   summarize(meanOcc = mean(meanOcc), 
-  #             pctCore = sum(meanOcc > 2/3)/length(meanOcc),
-  #             pctTran = sum(meanOcc <= 1/3)/length(meanOcc)) %>%
-  #   mutate(scale = scale) %>%
-  #   left_join(abun.summ, by = 'stateroute')
-  # 
-  # occ_final = rbind(occ_final, occ.summ)
-  #   
+  } 
+  
+  occ.summ = output %>% 
+    group_by(stateroute) %>%
+    summarize(aveN = mean(aveN), 
+              meanOcc = mean(meanOcc), #taking mean values across segments within a route (OK'd) after initial calcs by segment
+              pctCore = mean(pctCore),
+              pctTran = mean(pctTran), 
+              scale = as.factor(s)) 
+  
+  output2 = rbind(output2, occ.summ)
 }
+plot(meanOcc~aveN, data = output2) #looks good, low avg bc small sample, high % Tran relative to Core   
 
-
-
-bbs_below<-data.frame(output)
-write.csv(bbs_below, paste(BBS, "bbs_below.csv", sep = ""), row.names = FALSE) #updated 06/30, on BioArk
+bbs_below<-data.frame(output2)
+write.csv(bbs_below, paste(BBS, "bbs_below.csv", sep = ""), row.names = FALSE) #updated 09/19, on BioArk
 #should be able to use the 50 stop info (1 rte) from this output to aggregate routes AFTER below scale
 write.csv(bbs_below, "data/BBS/bbs_below.csv", row.names = FALSE)
 
@@ -164,6 +152,8 @@ write.csv(bbs_above_guide, "scripts/R-scripts/scale_analysis/bbs_above_guide.csv
 ####Calculating occupancy scales 2:66 loop####
 dist.df = read.csv("scripts/R-scripts/scale_analysis/dist_df.csv", header = TRUE)
 bbs_above_guide = read.csv("scripts/R-scripts/scale_analysis/bbs_above_guide.csv", header = TRUE)
+#groupcounts for each AOU for each year at scale of ONE stateroute 
+
 
 #go one step at a time, logically -> don't rush thru recreating the loop 
 
@@ -178,11 +168,14 @@ output = data.frame(focalrte = NULL,
                     maxdist = NULL,
                     aveN = NULL)
 
-
+#test example route 2010 and nu at 57 routes -> large scale, should have high occ 
 for (r in uniqrtes) { #for each focal route
   for (nu in numrtes) { #for each level of scale aggregated to each focal route
     
-    tmp_rte_group = dist.df %>% 
+    #takes dist.df and generates a new list that changes based on which route in uniqrtes is being focused on 
+    #and the length of the list varies with the scale or nu 
+    
+    tmp_rte_group = dist.df %>% #changes with size of nu but caps at 66
       filter(rte1 == r) %>% 
       top_n(66, desc(dist)) %>% #fixed ordering by including arrange parm, 
       #remove/skip top row 
@@ -190,10 +183,12 @@ for (r in uniqrtes) { #for each focal route
       slice(1:nu) %>% 
       select(everything()) %>% data.frame()
     
+    #takes varying list from above and uses it to subset the bbs data so that occ can be calculated for the cluster 
+    
     focal_clustr = bbs_above_guide %>% 
       filter(stateroute %in% tmp_rte_group$rte2) #tmp_rte_group already ordered by distance so don't need 2x
-      #(for a given focal rte, narrow input data to those 66 secondary routes in focal cluster)
-    
+      #(for a given focal rte, narrow input data to those nu secondary routes in focal cluster)
+      #across 57 routes
     
     abun.summ = focal_clustr %>% #abundance
       group_by(year) %>%  #not grouping by stateroute bc it stops mattering 
@@ -201,20 +196,34 @@ for (r in uniqrtes) { #for each focal route
       summarize(aveN = mean(totalN), 
                 stateroute = r)
       
-    
-    occ.summ = focal_clustr %>% #occupancy 
-      count(stateroute, AOU) %>% #already sorted out any routes with 0's in first loop 
+    occ.summ = focal_clustr %>% #occupancy -> focal clustr should GROW with scale, larger avg pool -> 
+      #increased likelihood that AOU will be present -> OH! I don't want stateroute in here! it doesn't matter! 
+      #it just matters that it shows up in the cluster at all, not just the stateroutes that go in
+      #how many years does each AOU show up in the cluster 
+      select(year, AOU) %>% #duplicates remnant of distinct secondary routes - finally ID'd bug
+      distinct() %>% #removing duplicates 09/20
+      count(AOU) %>% #how many times does that AOU show up in that clustr that year 
       mutate(occ = n/15, scale = nu) %>% #, subrouteID = countColumns[1]) #%>% countColumns not needed bc already pared down
-      #group_by(stateroute) %>% don't want to group by stateroute though! want to calc for whole group
+     # group_by(r) %>% #don't want to group by stateroute though! want to calc for whole clustr
       summarize(focalrte = r, 
                 scale = nu, 
-                meanOcc = mean(occ), 
+                meanOcc = mean(occ), #FIX 09/19 across vector of 57 occupancies
                 pctCore = sum(occ > 2/3)/length(occ),
                 pctTran = sum(occ <= 1/3)/length(occ), 
-                maxdist = max(tmp_rte_group$dist)) %>% 
-    left_join(abun.summ, by = c('focalrte' = 'stateroute'))
+                maxdist = max(tmp_rte_group$dist)) 
+      
+      
+      
+      occ2 = occ.summ %>% 
+      group_by(focalrte) %>% 
+      summarize(scale = nu, 
+                meanOcc = mean(meanOcc), 
+                pctCore = mean(pctCore), 
+                pctTran = mean(pctTran), 
+                maxdist = mean(maxdist)) %>%
+      left_join(abun.summ, by = c('focalrte' = 'stateroute'))
     
-        output = rbind(output, occ.summ)
+        output = rbind(output, occ2)
         print(paste("Focal rte", r, "#' rtes sampled", nu)) #for viewing progress
     
     #adding 2 to end since using an input df with all of the exact same column names -> can change back b4 merging, after loop
@@ -230,9 +239,9 @@ bbs_above = as.data.frame(output)
 #Calc area for above route scale
 #bbs_above$area = bbs_above_v2$numrtes*50*(pi*(0.4^2)) #number of routes * fifty stops * area in sq km of a stop 
 write.csv(bbs_above, paste(BBS, "bbs_above.csv", sep = ""), row.names = FALSE)
-#updated 07/20 evening locally and on BioArk; not sure if data folder will reject on git
+#updated 09/20 evening locally and on BioArk; not sure if data folder will reject on git
 write.csv(bbs_above, "data/BBS/bbs_above.csv", row.names = FALSE)
-#updated 07/20
+#updated 09/20
 
 ####scale-joining####
 bbs_above = read.csv(paste(BBS, "bbs_above.csv", sep = ""), header = TRUE)
@@ -244,7 +253,9 @@ bbs_below = bbs_below %>%
   dplyr::rename(focalrte = stateroute) %>%
   select(focalrte, scale, everything()) %>%
   mutate(area = (as.integer(lapply(strsplit(as.character(bbs_below$scale), 
-                                            split="-"), "[", 1)))*(pi*(0.4^2))) 
+                                            split="-"), "[", 1)))*(pi*(0.4^2)),
+         scale = as.factor(paste("seg", as.integer(lapply(strsplit(as.character(bbs_below$scale), 
+                                                    split="-"), "[", 1)), sep = "")))
 #modify and split scale so that it's just the # of stops in each seg; not the seg order # preceded by a "-"
 
 
@@ -257,7 +268,7 @@ bbs_above$scale = as.factor(bbs_above$scale)
 
 bbs_allscales = rbind(bbs_below, bbs_above) #rbind ok since all share column names
 write.csv(bbs_allscales, "data/BBS/bbs_allscales.csv", row.names = FALSE)
-#updated 07/27/2017, also in BioArk since old copy ALSO there
+#updated 09/20/2017, also in BioArk since old copy ALSO there
 write.csv(bbs_allscales, paste(BBS, "bbs_allscales.csv", sep = ""), row.names = FALSE)
 
 ####filter out stateroutes that are one-sided in scale####
@@ -269,26 +280,15 @@ bbs_allscales$logN = log10(bbs_allscales$aveN)
 bbs_allscales$lnA = log(bbs_allscales$area) #log is the natural log 
 bbs_allscales$lnN = log(bbs_allscales$aveN) #rerun plots with this?
 
-#only want rtes w/all 83 scales rep'd, which at this point - there are! 
-bbs_allscales2 = bbs_allscales %>% filter(meanOcc != 'NA') %>% 
-  count(focalrte) %>% filter(n == 83) %>% data.frame() #fix error to exclude NAs
+
+#only want rtes w/all 69 scales rep'd, which at this point - there are! 
+bbs_allscales2 = bbs_allscales %>% filter(meanOcc != 'NaN' & meanOcc != 'NA') %>% 
+  count(focalrte) %>% filter(n == 69) %>% data.frame() #fix error to exclude NAs
 bbs_allscales3 = filter(bbs_allscales, focalrte %in% bbs_allscales2$focalrte)
 
-#Order levels of scale factor post-join####
-#fix duplication of scale (50-1, 1 -> check up)
-
-bbs_allscales3$scale = factor(bbs_allscales3$scale, 
-                             levels = c('5-1', '5-2', '5-3', '5-4', '5-5', '5-6', '5-7', '5-8', '5-9', '5-10',
-                                        '10-1', '10-2', '10-3', '10-4', '10-5', '25-1', '25-2', '50-1', 
-                                        '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12',
-                                        '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24',
-                                        '25', '26', '27', '28', '29', '30', '31', '32', '33', '34', '35', '36',
-                                        '37', '38', '39', '40', '41', '42', '43', '44', '45', '46', '47', '48',
-                                        '49', '50', '51', '52', '53', '54', '55', '56', '57', '58', '59', '60',
-                                        '61', '62', '63', '64', '65', '66'), ordered=TRUE)
-
-write.csv(bbs_allscales3, "data/BBS/bbs_allscales.csv", row.names = FALSE) #overwrote bbs all scales file 
-#updated 07/27/2017 from 1003 to 1001 routes
+write.csv(bbs_allscales3, "data/BBS/bbs_allscales.csv", row.names = FALSE) 
+#overwrote bbs all scales file 
+#updated 09/20
 
 
 ####Occ-scale analysis####
@@ -298,7 +298,7 @@ levels(bbs_allscales$scale)
 unique(bbs_allscales$scale)
 
 
-mod1 = lm(meanOcc~logA, data = bbs_allscales) #expljkains ~50% of the variation in occ
+mod1 = lm(meanOcc~logA, data = bbs_allscales) #expljkains ~75-80% of the variation in occ
 mod2 = lm(meanOcc~logN, data = bbs_allscales)
 summary(mod1)
 
@@ -307,6 +307,6 @@ plot(meanOcc~logN, data = bbs_allscales, xlab = "Average Abundance" , ylab = "Me
 #^^same pattern roughly; abundance describes ~same amt of variance as area so serves as a good proxy 
 
 
-#ALL files updated 07/27 ~3pm 
+#ALL files updated 09/20 ~3pm 
 
 

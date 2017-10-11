@@ -29,12 +29,35 @@
       #PREDICTION: focal routes with larger "curvy" values will occur in regions of greater habitat heterogeneity, 
       #and deviance from the line will correspond with the greater environmental variance
       #associated with the location of that focal route.
+      #i.e. curvy is a proxy for AUC, where greater deviance of the predicted vals vs the actual vals will result 
+      #in larger overall curvy values and larger area under the curve
 
 #We explore the variation in this relationship 
 #and attempt to characterize whether or not it is best explained by habitat heterogeneity 
 #using the variation present across several environmental variables as proxies for habitat heterogeneity. 
 
+#### CURRENT ISSUES #### #revised 09/10/2017
 
+#1) Have below-scale duplicates w/diff starting locations i.e. 
+  #"scale" = Factor w/83 levels "10-1", "10-2", "10-3", "10-4", "10-5", "5-1", "5-2", "5-3", "5-4", "5-5", "5-6", "5-7", "5-8", etc. 
+  #no duplicates for 1:66 obvi, these were calculated correctly 
+  #can I have multi values for a single scale or should I calc avg occ and pctCore and pctTran across the segments w/in a route? 
+  #i.e. occ/15 at a scale, but scales designated by segments and occ calcd initially based on the starting stop # 
+  # was told this summer that that was alright and that we were pointedly NOT aggregating across the lower scales, and that's fine 
+  #BUT: it DOES mean we will have pseudo-duplicates at the lower scales w/diff starting points of segments, and so 
+  #multiple plotting points for the lower scales instead of a single representative point. This necessitates the "min" qualifier
+  #in calculating some of the coefficients.  
+
+#2) In calculating the AUC proxy "curvy" values, should I be squaring the differences before summing them? 
+  #Because we are interested in the magnitude of deviance from the observed values in instances of greater heterogeneity, 
+  #and not the specific direction - simply adding them could cancel out or diminish the magnitude or gulf of deviance 
+  #in areas where the deviance is large in a negative direction at some scales, and large in a positive direction in others. 
+  #These stateroutes would express similar "curviness" values as areas of high homogeneity, where this is little net difference 
+  #and a smaller magnitude of deviance from the observed values. Because of this, I think we should be squaring and summing. 
+
+#3) Curviness is a great proxy for calculating the AUC per focal route, but it doesn't allow us to see how that changes across scales. 
+  #Considering having a second df output from the creation of coefs that allows us to see how those individual deviances change 
+  #esp across scales. 
 
 # setwd("C:/git/core-transient")
 #'#' Please download and install the following packages:
@@ -59,105 +82,24 @@ library(stats)
 # Data directories
 BBS = '//bioark.ad.unc.edu/HurlbertLab/Jenkins/BBS scaled/'
 
-###Pre-coefs distribution analysis###
-minscales = bbs_allscales %>% 
-  filter(scale == '50-1')%>% 
-  summarize(min = min(meanOcc)) #0.34
-
-
-topscales = bbs_allscales %>% 
-  filter(scale == '50-1')
-
-ggplot(topscales, aes(x = pctCore))+geom_histogram(bins = 20)
-ggplot(topscales, aes(x = meanOcc))+geom_histogram(bins = 20)
-ggplot(topscales, aes(x = pctTran))+geom_histogram(bins = 20)
-#a non-trivial group of focal rtes still maintain very low % Core representation in their communities, even at our highest scales 
-#I would predict that these focal rtes are largely clustered in Western and mountain regions 
-#let's see: 
-
-topscales2 = topscales %>% 
-  filter(pctTran >= 0.50) %>%
-  mutate(Dom = 'T') 
-
-topscales3 = topscales %>% 
-  filter(pctCore >= 0.50) %>% 
-  mutate(Dom = "C")
-
-topscales_new = rbind(topscales2, topscales3)
-topscales_new$Dom = as.factor(topscales_new$Dom)
-topscales_new = select(topscales_new, focalrte, meanOcc, pctCore, pctTran, logA, Dom)
-
-
-#all focal rtes with all possible pairings
-bbs_latlon = read.csv(paste(BBS, "good_rtes2.csv", sep = ""), header = TRUE)
-bbs_latlon = bbs_latlon %>% inner_join(topscales_new, by = c("stateroute" = "focalrte"))
-
-##the rough way: 
-map('world', xlim = range(bbs_latlon$Longi), ylim = range(bbs_latlon$Lati))
-points(bbs_latlon$Longi[bbs_latlon$Dom == "C"], bbs_latlon$Lati[bbs_latlon$Dom == "C"], pch = 16, col = "blue")
-points(bbs_latlon$Longi[bbs_latlon$Dom == "T"], bbs_latlon$Lati[bbs_latlon$Dom == "T"], pch = 16, col = "red")
-
-#basically how I would assume these communities would be distributed 
-legend(x="bottomleft", legend = unique(bbs_latlon$Dom), fill = unique(bbs_latlon$Dom))
-title("Distribution of communities at scale of 1 routes")
-
-
-#at scale of 66 routes
-topscales = bbs_allscales %>% 
-  filter(scale == '66')
-
-ggplot(topscales, aes(x = pctCore))+geom_histogram(bins = 30)
-ggplot(topscales, aes(x = meanOcc))+geom_histogram(bins = 30)
-ggplot(topscales, aes(x = pctTran))+geom_histogram(bins = 30)
-#a non-trivial group of focal rtes still maintain very low % Core representation in their communities, even at our highest scales 
-#I would predict that these focal rtes are largely clustered in Western and mountain regions 
-#let's see: 
-
-topscales2 = topscales %>% 
-  filter(pctTran >= 0.50) %>%
-  mutate(Dom = 'T') 
-
-topscales3 = topscales %>% 
-  filter(pctCore >= 0.50) %>% 
-  mutate(Dom = "C")
-
-topscales_new = rbind(topscales2, topscales3)
-topscales_new$Dom = as.factor(topscales_new$Dom)
-topscales_new = select(topscales_new, focalrte, meanOcc, pctCore, pctTran, logA, Dom)
-
-
-#all focal rtes with all possible pairings
-bbs_latlon = read.csv(paste(BBS, "good_rtes2.csv", sep = ""), header = TRUE)
-bbs_latlon = bbs_latlon %>% inner_join(topscales_new, by = c("stateroute" = "focalrte"))
-
-##the rough way: 
-map('world', xlim = range(bbs_latlon$Longi), ylim = range(bbs_latlon$Lati))
-points(bbs_latlon$Longi[bbs_latlon$Dom == "C"], bbs_latlon$Lati[bbs_latlon$Dom == "C"], pch = 16, col = "blue")
-points(bbs_latlon$Longi[bbs_latlon$Dom == "T"], bbs_latlon$Lati[bbs_latlon$Dom == "T"], pch = 16, col = "red")
-
-#basically how I would assume these communities would be distributed 
-legend(x="bottomleft", legend = unique(bbs_latlon$Dom), fill = unique(bbs_latlon$Dom))
-title("Distribution of communities at scale of 66 routes")
-
-
 ####Extract coefficients from scale-occupancy relationships for analysis####
 OA.df = data.frame(stateroute = numeric(), OA.min = numeric(), OA.max = numeric(), OA.slope = numeric(), 
                    OA.thresh = numeric(), 
-                   OA.pmin = numeric(), OA.pmax = numeric(), OA.pslope = numeric(), 
+                   OA.pmin = numeric(), OA.pmax = numeric(), OA.pslope = numeric(),  
                    OA.pthresh = numeric(), 
-                   OA.r2 = numeric(), OA.curvy = numeric()) 
+                   OA.r2 = numeric(), OA.AUC = numeric()) 
 
 CA.df = data.frame(stateroute = numeric(), CA.min = numeric(), CA.max = numeric(), CA.slope = numeric(), 
                    CA.thresh = numeric(), 
-                   CA.pmin = numeric(), CA.pmax = numeric(), CA.pslope = numeric(), 
+                   CA.pmin = numeric(), CA.pmax = numeric(), CA.pslope = numeric(),
                    CA.pthresh = numeric(), 
-                   CA.r2 = numeric(), CA.curvy = numeric())
+                   CA.r2 = numeric(), CA.AUC = numeric())
 
 TA.df = data.frame(stateroute = numeric(), TA.min = numeric(), TA.max = numeric(), TA.slope = numeric(), 
                    TA.thresh = numeric(), 
                    TA.pmin = numeric(), TA.pmax = numeric(), TA.pslope = numeric(), 
                    TA.pthresh = numeric(), 
-                   TA.r2 = numeric(), TA.curvy = numeric())
+                   TA.r2 = numeric(), TA.AUC = numeric())
 
 #read in data for processing
 bbs_allscales = read.csv("data/BBS/bbs_allscales.csv", header = TRUE)
@@ -199,13 +141,14 @@ for(s in stateroutes){
     OA.pthresh = min(logsub$logA[logsub$OApreds >= 0.5]) 
     
     OA.r2 = summary(OAlm.r2)$r.squared
-    OA.curvy =  sum(OA.xmid - OA.pxmid) #AUC proxy
+    OA.AUC =  sum(OA.xmid - OA.pxmid) #AUC proxy - taking diff between actual and predicted mid vals at EVERY scale and adding together
+   
 
     OAmodel = data.frame(stateroute = s, OA.min, OA.max, OA.slope, 
                                           OA.thresh, 
-                                          OA.pmin, OA.pmax, OA.pslope, 
+                                          OA.pmin, OA.pmax, OA.pslope,
                                           OA.pthresh, 
-                                          OA.r2, OA.curvy)
+                                          OA.r2, OA.AUC)
     
   OA.df = rbind(OA.df, OAmodel)
   #
@@ -234,13 +177,14 @@ for(s in stateroutes){
     CA.pthresh = min(logsub$logA[logsub$CApreds >= 0.5]) 
     
     CA.r2 = summary(CAlm.r2)$r.squared
-    CA.curvy =  sum(CA.xmid - CA.pxmid) 
+    CA.AUC =  sum(CA.xmid - CA.pxmid) #AUC proxy - taking diff between actual and predicted mid vals at EVERY scale and adding together
+     
     
     CAmodel = data.frame(stateroute = s, CA.min, CA.max, CA.slope, 
                CA.thresh, 
                CA.pmin, CA.pmax, CA.pslope, 
                CA.pthresh, 
-               CA.r2, CA.curvy)
+               CA.r2, CA.AUC)
     
   CA.df = rbind(CA.df, CAmodel)
   
@@ -269,13 +213,13 @@ for(s in stateroutes){
     TA.pthresh = min(logsub$lnA[logsub$TApreds >= 0.50])
 
     TA.r2 = summary(TAlm.r2)$r.squared
-    TA.curvy =  sum(TA.xmid - TA.pxmid)
-
-    TAmodel = data.frame(stateroute = s, TA.min, TA.max, TA.slope,
+    TA.AUC =  sum(TA.xmid - TA.pxmid) #AUC proxy - taking diff between actual and predicted mid vals at EVERY scale and adding together
+  
+    TAmodel = data.frame(stateroute = s, TA.min, TA.max, TA.slope,  
                TA.thresh,
                TA.pmin, TA.pmax, TA.pslope,
                TA.pthresh,
-               TA.r2, TA.curvy)
+               TA.r2, TA.AUC)
 
 
   TA.df = rbind(TA.df, TAmodel)
@@ -289,8 +233,9 @@ coefs = OA.df %>%
   inner_join(CA.df, OA.df, by = "stateroute") %>% 
   inner_join(TA.df, OA.df, by = "stateroute") 
  
-write.csv(coefs, "scripts/R-scripts/scale_analysis/coefs.csv", row.names = FALSE) #updated 07/27
+write.csv(coefs, "scripts/R-scripts/scale_analysis/coefs.csv", row.names = FALSE) #updated 09/21
 #exp mods have much better r2 vals for pctTran than power 
+#checked, working correctly 08/28, output not NA's but normal!
 
 ####Plotting occupancy-scale relationships with observed and predicted values####
 #work in progress
@@ -298,108 +243,93 @@ write.csv(coefs, "scripts/R-scripts/scale_analysis/coefs.csv", row.names = FALSE
 
 bbs_allscales = read.csv("data/BBS/bbs_allscales.csv", header = TRUE)
 coefs = read.csv("scripts/R-scripts/scale_analysis/coefs.csv", header = TRUE)
-
-coefs_mini = coefs %>%
-  select(stateroute, OA.pmin, OA.pmax) %>%
-  gather(key = OA.pmin, 
-         value = occ_val, 
-         OA.pmin:OA.pmax, 
-         na.rm = TRUE) %>% #doubled size of df, every rte has associated max and min vals 
-  rename(linemetric = OA.pmin)
-ggplot(coefs_mini, aes(x = linemetric, y = occ_val))+geom_boxplot(aes(fill = linemetric))+
-  theme_classic()+theme(legend.position="none")
-
-
-#will go inside plotting forloop 
-coef_join = coefs %>% inner_join(bbs_allscales, by = c("stateroute"="focalrte"))
-#stateroutes = unique(bbs_allscales$focalrte)
-s = 2001
-coef_sub = subset(coef_join, coef_join$stateroute == s)
-
-
-theme_set(theme_bw()+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()))
-#OA
-OAlog = lm(meanOcc ~ logA, data = coef_sub) #lm instead of nls, reg linear model
-OApreds = data.frame(preds = predict(OAlog), scale = coef_sub$scale, logA = coef_sub$logA) 
-
-
-plot1 = ggplot(coef_join, aes(x = logA, y = meanOcc))+geom_point()+
-  geom_smooth(aes(colour = stateroute), intercept = OA.xmid, slope = OA.pslope) +labs(x = "Log area", y = "Mean % Occupancy")+
-  coord_cartesian(ylim = c(0, 1))
-
-
-ggplot(coef_join, aes(x = logA, y = meanOcc))+geom_point()+geom_point(aes(x = OA.min))
-#in order to plot min and maxes need x and y, just duplicating vals in both directions rn!
-
-
-####Old plotting code from logfcn####
-preds.df = data.frame(stateroute = numeric(), logA = numeric(), 
-                      OApreds= numeric(), ONpreds = numeric(), 
-                      CApreds = numeric(), CNpreds = numeric(),
-                      TApreds = numeric(), TNpreds = numeric())
-
-
-pdf("output/plots/Molly Plots/BBS_scaleplots.pdf", onefile = TRUE)
-coef_join = coefs %>% inner_join(bbs_allscales3, by = c("stateroute"="focalrte"))
-stateroutes = unique(bbs_allscales3$focalrte)
-
-#extracting predicted values and plotting in same loop
-for (s in stateroutes) {
-  theme_set(theme_bw()+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()))
-  coef_sub = subset(coef_join, coef_join$stateroute == s)
-  logA = coef_sub$logA
-  
-  #OA
-  OApreds = logistic_fcn(coef_sub[,33], coef_sub[,2], coef_sub[,3], coef_sub[,4]) 
-  plot1 = ggplot(coef_sub, aes(x = logA, y = meanOcc))+geom_point(colour = "firebrick")+
-    geom_line(aes(x = logA, y = OApreds), color = "navy") +labs(x = "Log area", y = "Mean % Occupancy")+
-    coord_cartesian(ylim = c(0, 1))
+goodrtes = read.csv(paste(BBS, "good_rtes2.csv", sep = ""), header = TRUE)
   
   
-  #ON
-  ONpreds = logistic_fcn(coef_sub[,34], coef_sub[,6], coef_sub[,7], coef_sub[,8])
-  plot2 = ggplot(coef_sub, aes(x = logN, y = meanOcc))+geom_point(colour = "firebrick")+
-    geom_line(aes(x = logN, y = ONpreds), color = "navy") +labs(x = "Log abundance", y = "Mean % Occupancy")+
-    coord_cartesian(ylim = c(0, 1))
+#merge longi and lati to bbs_allscales prior to east vs west plotting 
+bbs_allscales = bbs_allscales %>% 
+  left_join(goodrtes, by = c("focalrte" = "stateroute"))
   
-  
-  #CA
-  CApreds = logistic_fcn(coef_sub[,33], coef_sub[,10], coef_sub[,11], coef_sub[,12])
-  plot1_2= ggplot(coef_sub, aes(x = logA, y = pctCore))+geom_point(colour = "turquoise")+
-    geom_line(aes(x = logA, y = CApreds), color = "navy")+labs(x = "Log area", y = "% Core Occupancy")+
-    coord_cartesian(ylim = c(0, 1))
-  
-  #aveN
-  #CN
-  CNpreds = logistic_fcn(coef_sub[,34], coef_sub[,14], coef_sub[,15], coef_sub[,16])
-  plot2_2= ggplot(coef_sub, aes(x = logN, y = pctCore))+geom_point(colour = "turquoise")+
-    geom_line(aes(x = logN, y = CNpreds), color = "navy")+labs(x = "Log abundance", y = "% Core Occupancy")+
-    coord_cartesian(ylim = c(0, 1))
-  
-  #using exponential function since higher explanatory power than pwr function
-  #TA
-  TApreds =  coef_sub[,35]*(coef_sub[,18]) #35 = optimum; replacing ^ with * bc natural log, removing -1
-  plot1_3 = ggplot(coef_sub, aes(x = lnA, y = log(pctTran)))+geom_point(colour = "olivedrab")+
-    geom_line(aes(x = lnA, y = log(TApreds)), color = "navy") +labs(x = "Log area", y = "% Transient Occupancy")+
-    coord_cartesian(ylim = c(-4, 1)) #FIX
-  
-  #TN
-  TNpreds = coef_sub[,36]*(coef_sub[,22])
-  plot2_3 = ggplot(coef_sub, aes(x = lnN, y = log(pctTran)))+geom_point(colour = "olivedrab")+
-    geom_line(aes(x = lnN, y = TNpreds), color = "navy")+labs(x = "Log abundance", y = "% Transient Occupancy")+
-    coord_cartesian(ylim = c(-4, 1))
-  
-  #storing plots
-  predplot = grid.arrange(plot1, plot2, plot1_2, plot2_2, plot1_3, plot2_3,
-                          ncol=2, top = paste("predplot_", s, sep = ""))
-  #storing preds:
-  temp.df = data.frame(stateroute = s, logA = logA, 
-                       OApreds= OApreds , ONpreds = ONpreds, 
-                       CApreds = CApreds, CNpreds = CNpreds,
-                       TApreds = TApreds, TNpreds = TNpreds)
-  preds.df = rbind(preds.df, temp.df)
-  
-}
-dev.off()
-write.csv(preds.df, "C:/git/core-transient/scripts/R-scripts/scale_analysis/preds.csv", row.names = FALSE)
 
+#plot observed occ scale thresh or mid vals vs pthresh or pmid vals across scales 
+#subtract actual - pred to gen new column of AUC vals for each scale  
+
+#first plot freqs of occupancy vals with vals binned every .05 and .1 incremements for diff scales: 
+
+#First plots: scale = 1, x axis = meanOcc, y axis = freq of meanOcc vals (hist) 
+bbs_one = bbs_allscales %>% 
+  filter(scale == "seg50")
+
+one_rtfreq = ggplot(bbs_one, aes(x=meanOcc))+geom_histogram(bins = 30) + coord_cartesian(xlim = c(0, 0.95))
+one_rtfreq
+#compare btw/East vs West N. American routes, split in half and compare to predicted whiteboard sketches 
+#since statecode/focalrte names aren't assigned in order from East to West, filter by greater than or less than longitudinal cutoff 
+#add route coordinate data first and then filter based on that 
+
+
+
+bbs_one_E = bbs_one %>% 
+  filter(Longi > -100) #greater than -100 is -99, -98, -97 etc. 
+bbs_one_W = bbs_one %>% 
+  filter(Longi <= -100 ) #less than or equal to -100 is further away from 0 and further negative
+
+
+#plotting comparisons:
+one_rtfreqE = ggplot(bbs_one_E, aes(x=meanOcc))+geom_histogram(bins = 30) + coord_cartesian(xlim = c(0, 0.95), ylim = c(0, 80))+labs(title = "Single rte East") 
+one_rtfreqE
+
+one_rtfreqW = ggplot(bbs_one_W, aes(x=meanOcc))+geom_histogram(bins = 30) + coord_cartesian(xlim = c(0, 0.95), ylim = c(0, 80))+labs(title = "Single rte West") 
+one_rtfreqW
+
+
+#Secondary comparison plots: scale = 66, x-axis = meanOcc, y axis = freq of meanOcc vals (hist)
+bbs_top = bbs_allscales %>% 
+  filter(scale == "66")
+
+lndscpe_rtfreq = ggplot(bbs_top, aes(x=meanOcc))+geom_histogram(bins = 30)+coord_cartesian(xlim = c(0, 0.95), ylim = c(0, 80)) 
+lndscpe_rtfreq
+####YAAASSSS this is what I wanted to see ^^ 
+#top scales freq is tighter, but also way less normal
+
+bbs_top_E = bbs_top %>% 
+  filter(Longi > -100) 
+bbs_top_W = bbs_top %>% 
+  filter(Longi <= -100)
+
+#plotting comparisons: 
+
+lndscpe_rtfreqE = ggplot(bbs_top_E, aes(x=meanOcc))+geom_histogram(bins = 30)+coord_cartesian(xlim = c(0.5, 0.95), ylim = c(0, 80))+labs(title = "Landscape East") 
+lndscpe_rtfreqE
+
+lndscpe_rtfreqW = ggplot(bbs_top_W, aes(x=meanOcc))+geom_histogram(bins = 30)+coord_cartesian(xlim = c(0.5, 0.95), ylim = c(0, 80))+labs(title = "Landscape West")  
+lndscpe_rtfreqW
+
+#WOW LOOK AT THOSE DISCREPANCIES!!!!
+comparisons = grid.arrange(one_rtfreqE, one_rtfreqW, lndscpe_rtfreqE, lndscpe_rtfreqW)
+
+#left off and stopped here 09/10
+#now plot curvy vals at diff routes bc effectively summarizing area under curve across scales for each route 
+#but are we interested in SEEING the way that AUC varies across scales moreso than across longitudes 
+#so y axis = curvy, x axis = longitude (?) 
+
+#so AUC should vary with scale, but also with east vs west divide -> greater AUC vals in West = greater deviance from obs on avg
+#lati + longi + coefs 
+
+coefs = coefs %>% 
+  left_join(goodrtes, by = "stateroute")
+
+auc_plot = ggplot(coefs, aes(x = OA.AUC))+geom_histogram(bins = 30)
+auc_plot
+#looks pretty normal which is good, little to no area under curve means close good fit with some minor tendency towards overestimating and going too high 
+AUC_E = coefs %>% 
+  filter(Longi > -100) 
+AUC_W = coefs %>% 
+  filter(Longi <= -100)
+
+
+AUC_Eplot = ggplot(AUC_E, aes(x = OA.AUC))+geom_histogram(bins = 30)
+AUC_Eplot #mirrors the first dist 
+
+AUC_Wplot = ggplot(AUC_W, aes(x = OA.AUC))+geom_histogram(bins = 30)
+AUC_Wplot
+#bigger spread, def not normal dist if we narrowed down

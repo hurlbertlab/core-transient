@@ -1,3 +1,6 @@
+#Occupancy-scale analysis
+# author: Molly F. Jenkins
+# date: 06/27/2017
 # setwd("C:/git/core-transient")
 #'#' Please download and install the following packages:
 library(raster)
@@ -14,210 +17,36 @@ library(nlme)
 library(gridExtra)
 library(wesanderson)
 library(stats)
-library(gimms)
-library(devtools)
 library(geometry)
-library(DBI)
-library(RSQLite) #absolutely necessary for NDVI data
-library(rdataretriever)
-library(magrittr)
-library(stringr)
 # To run this script, you need temperature, precip, etc data, 
 # which are currently stored in the following directories off of github: 
 
 # Data directories
-tempdatadir = '//bioark.ad.unc.edu/HurlbertLab/GIS/ClimateData/BIOCLIM_meanTemp/'
-precipdata = '//bioark.ad.unc.edu/HurlbertLab/GIS/ClimateData/2-25-2011/prec/'
-ndvidata = "//bioark.ad.unc.edu/HurlbertLab/GIS/MODIS NDVI/"
 BBS = '//bioark.ad.unc.edu/HurlbertLab/Jenkins/BBS scaled/'
-geog = "//bioark.ad.unc.edu/HurlbertLab/GIS/geography/"
 
-#all focal rtes with all possible pairings
-bbs_latlon = read.csv(paste(BBS, "good_rtes2.csv", sep = ""), header = TRUE)
-
-#exclude routes that have missing above OR below scale data, such that sites are only calculated for routes that cover all 83 scales
-bbs_allscales = read.csv("data/BBS/bbs_allscales.csv", header = TRUE)
-bbs_allscales2 = bbs_allscales %>% count(focalrte) %>% filter(n == 83) %>% data.frame() 
-bbs_latlon = filter(bbs_latlon, stateroute %in% bbs_allscales2$focalrte)
-
-
-sites = data.frame(longitude = bbs_latlon$Longi, latitude = bbs_latlon$Lati) 
-#points(sites$longitude, sites$latitude, col= "red", pch=16) #check on map
-
-# Makes routes into a spatialPointsDataframe
-latlon = na.omit(bbs_latlon)
-coordinates(latlon)=c('Longi', 'Lati')
-projection(latlon) = CRS("+proj=longlat +ellps=WGS84") 
-#out of order? YUP. 
-#had Lati, Longi -> needed to be Longi, Lati. 
-
-prj.string <- CRS("+proj=laea +lat_0=45.235 +lon_0=-106.675 +units=km")
-# original in Sara's code: "+proj=laea +lat_0=45.235 +lon_0=-106.675 +units=km"
-# Transforms routes to an equal-area projection - see previously defined prj.string
-routes.laea = spTransform(latlon, CRS = CRS("+proj=laea +lat_0=45.235 +lon_0=-106.675 +units=km")) 
-#works w/blank projection; doesn't work otherwise
-#keep receiving "non finite transformation detected: Lat Longi" error and 
-#"error failure in points, 532 projected points not finite 
-
-##### extracting elevation data ####
-# A function that draws a circle of radius r around a point: p (x,y)
-RADIUS = 40
-
-make.cir = function(p,r){
-  points=c()
-  for(i in 1:360){
-    theta = i*2*pi/360
-    y = p[2] + r*cos(theta)
-    x = p[1] + r*sin(theta)
-    points = rbind(points,c(x,y))
-  }
-  points=rbind(points,points[1,])
-  circle=Polygon(points,hole=F)
-  circle
-}
-
-#routes.laea@data$dId_site = paste(routes.laea@data$datasetID, routes.laea@data$site, sep = "_")
-#routes.laea@data$unique = 1:1003 unnecessary since still have stateroute ID's
-
-
-#Draw circles around all routes 
-circs = sapply(1:nrow(routes.laea@data), function(x){
-  circ =  make.cir(routes.laea@coords[x,],RADIUS)
-  circ = Polygons(list(circ),ID=routes.laea$stateroute[x]) 
-}
-)
-
-circs.sp = SpatialPolygons(circs, proj4string=CRS("+proj=laea +lat_0=45.235 +lon_0=-106.675 +units=km"))
-
-# read in elevation raster at 2.5 km resolution (see above)
-NorthAm = readOGR(dsn = "//bioark.ad.unc.edu/HurlbertLab/GIS/geography", layer = "continent")
-NorthAm2 = spTransform(NorthAm, CRS("+proj=laea +lat_0=45.235 +lon_0=-106.675 +units=km"))
-
-plot(NorthAm2)
-# Check that circle locations look right #big surprise, they don't -> fix projection!!!
-plot(circs.sp, add = TRUE) #looks great
-
-clip<-function(raster,shape) {
-  a1_crop<-crop(raster,shape)
-  step1<-rasterize(shape,a1_crop)
-  a1_crop*step1}
-
-
-#elev
-elev = raster::getData("worldclim", var = "alt", res = 2.5) #raster::getData("alt", country = 'USA', res = 2.5)
-str(elev)
-elev2 = projectRaster(elev, crs = CRS("+proj=laea +lat_0=45.235 +lon_0=-106.675 +units=km")) #should work, just needs time
-elev3 <- raster::mask(elev2, NorthAm2)
-
-test = clip(elev2, NorthAm2)
-
-elev.point = raster::extract(elev3, routes.laea)
-elev.mean = raster::extract(elev3, circs.sp, fun = mean, na.rm=T)
-elev.var = raster::extract(elev3, circs.sp, fun = var, na.rm=T)
-
-env_elev = data.frame(routes = routes.laea, 
-                      elev.point = elev.point, 
-                      elev.mean = elev.mean, elev.var = elev.var)
-
-#write.csv(env_elev, "scripts/R-scripts/scale_analysis/env_elev.csv", row.names = FALSE)
-
-#ndvi 
-#gimms
-#ndvi_gimms_raw <- get_bbs_gimms_ndvi()
-ndvi_gimms_raw = read.csv("data/BBS/ndvi_raw.csv") #Sara version, sourced from tabular data folder 
-
-ndvi_data_summer <- ndvi_gimms_raw %>%
-  filter(!is.na(ndvi), month %in% c('may', 'jun', 'jul', 'aug'), year > 2000) %>%
-  group_by(site_id, year) %>% #calc avg across summer months for each year
-  summarise(ndvi_sum = mean(ndvi), na.rm = TRUE) %>%
-  group_by(site_id) %>% #calc avg across years
-  summarise(ndvi_mean = mean(ndvi_sum), na.rm = TRUE) %>% 
-  ungroup()
-
-write.csv(ndvi_data_summer, "scripts/R-scripts/scale_analysis/ndvi_summer.csv", row.names = FALSE) #updated with correct NDVI extraction
-#5015 routes with associated ndvi data
-#means calculated across 40 km buffer zone, use as would means from other vars 
-#write.csv(env_ndvi, "scripts/R-scripts/scale_analysis/env_ndvi.csv", row.names = FALSE)
-#updated 05/31 
-
-#precip 
-prec = raster::getData("worldclim", var = "prec", res = 2.5)  
-prec2 = sum(prec)
-prec2 = prec2/1000 #convert to m from mm
-plot(prec2) #plotting correctly
-
-prec2 = projectRaster(prec2, crs = CRS("+proj=laea +lat_0=45.235 +lon_0=-106.675 +units=km")) #worked 
-#need to reset CRS here bc otherwise spatialpoints objects like routes.laea get coerced to the default CRS of prec2
-#prec3 <- raster::mask(prec2, NorthAm2) check with Sara on masking data
-
-prec.point = raster::extract(prec2, routes.laea) #working!!!! 
-prec.mean = raster::extract(prec2, circs.sp, fun = mean, na.rm=T)
-prec.var = raster::extract(prec2, circs.sp, fun = var, na.rm=T)
-
-env_prec = data.frame(routes = routes.laea, 
-                      prec.point = prec.point, 
-                      prec.mean = prec.mean, prec.var = prec.var)
-#write.csv(env_prec, "scripts/R-scripts/scale_analysis/env_prec.csv", row.names = FALSE) # updated 05/12
-
-#temp 
-temp = raster::getData("worldclim", var = "tmean", res = 2.5) 
-temp2 = temp/10 #taking to degrees Celsius in correct units
-temp3 = mean(temp2) #stack/brick format to layer
-plot(temp3)
-
-temp4 = projectRaster(temp3, crs = CRS("+proj=laea +lat_0=45.235 +lon_0=-106.675 +units=km")) #should work, just needs time
-#temp3 <- raster::mask(temp2, NorthAm2) #again, check with Sara on skipping this
-
-temp.point = raster::extract(temp4, routes.laea)
-temp.mean = raster::extract(temp4, circs.sp, fun = mean, na.rm=T)
-temp.var = raster::extract(temp4, circs.sp, fun = var, na.rm=T)
-
-env_temp = data.frame(routes = routes.laea, 
-                      temp.point = temp.point, 
-                      temp.mean = temp.mean, temp.var = temp.var)
-#write.csv(env_temp, "scripts/R-scripts/scale_analysis/env_temp.csv", row.names = FALSE)
-
-####Merge env df's together into one with relevant stateroutes, mean, and var data 
-env_elev = read.csv("scripts/R-scripts/scale_analysis/env_elev.csv", header = TRUE)
-env_ndvi = read.csv("scripts/R-scripts/scale_analysis/ndvi_summer.csv", header = TRUE)
-env_prec = read.csv("scripts/R-scripts/scale_analysis/env_prec.csv", header = TRUE)
-env_temp = read.csv("scripts/R-scripts/scale_analysis/env_temp.csv", header = TRUE)
-
-bbs_envs = env_elev %>%
-  left_join(env_ndvi, by = c("routes.stateroute" = "site_id")) %>% 
-  left_join(env_prec, by = "routes.stateroute") %>%
-  left_join(env_temp, by = "routes.stateroute") %>%
-  select(stateroute = routes.stateroute, elev.point, elev.mean, elev.var, 
-         ndvi.mean = ndvi_mean,
-         prec.point, prec.mean, prec.var, 
-         temp.point, temp.mean, temp.var)
-write.csv(bbs_envs, "scripts/R-scripts/scale_analysis/bbs_envs.csv", row.names = FALSE) 
-#current version 06/20
+#Have env data means for all routes 
+#Now need to calc var across clustrs - and in ways 
 
 ####Pare down routes to exclude routes that are missing above OR below scale####
+bbs_envs = read.csv("scripts/R-scripts/scale_analysis/bbs_envs.csv", header = TRUE)
 bbs_allscales = read.csv("data/BBS/bbs_allscales.csv", header = TRUE)
-bbs_allscales2 = bbs_allscales %>% count(focalrte) %>% filter(n == 83) %>% data.frame() 
-bbs_envs = filter(bbs_envs, stateroute %in% bbs_allscales2$focalrte)
-write.csv(bbs_envs, "scripts/R-scripts/scale_analysis/bbs_envs.csv", row.names = FALSE) #updated 06/20 to reflect exclusive scale filtering
+bbs_envs = filter(bbs_envs, stateroute %in% bbs_allscales$focalrte)
 
 ####Calc z-scores, quantiles pre-variance loop####
 bbs_envs = read.csv("scripts/R-scripts/scale_analysis/bbs_envs.csv", header = TRUE)
 
-#alt simplistic standardization using z scores
-bbs_envs$ztemp = (bbs_envs$temp.mean - mean(bbs_envs$temp.mean)) / sd(bbs_envs$temp.mean)
-bbs_envs$zprec = (bbs_envs$prec.mean - mean(bbs_envs$prec.mean)) / sd(bbs_envs$prec.mean)
-bbs_envs$zelev = (bbs_envs$elev.mean - mean(bbs_envs$elev.mean)) / sd(bbs_envs$elev.mean)
-bbs_envs$zndvi = ((bbs_envs$ndvi.mean) - mean(na.exclude(bbs_envs$ndvi.mean))) / sd(na.exclude(bbs_envs$ndvi.mean)) 
+#alt simplistic standardization using z scores 
+#means (need for calc top scale variance)
+bbs_envs$temp_zm = (bbs_envs$temp.mean - mean(bbs_envs$temp.mean)) / sd(bbs_envs$temp.mean)
+bbs_envs$prec_zm = (bbs_envs$prec.mean - mean(bbs_envs$prec.mean)) / sd(bbs_envs$prec.mean)
+bbs_envs$elev_zm = (bbs_envs$elev.mean - mean(bbs_envs$elev.mean)) / sd(bbs_envs$elev.mean)
+bbs_envs$ndvi_zm = ((bbs_envs$ndvi.mean) - mean(na.exclude(bbs_envs$ndvi.mean))) / sd(na.exclude(bbs_envs$ndvi.mean)) 
 #NA's for ndvi vals around statertes in the 3000's
-#with z scores
+#with z scores for convhull only, don't z scores of variances 
 
-# Calc quantiles
-bbs_envs$ndvi_q= rank(bbs_envs$ndvi.mean)/nrow(bbs_envs) #needs to be corrected since NA values in ndvi col
-bbs_envs$elev_q= rank(bbs_envs$elev.mean)/nrow(bbs_envs) 
-bbs_envs$temp_q= rank(bbs_envs$temp.mean)/nrow(bbs_envs) 
-bbs_envs$prec_q= rank(bbs_envs$prec.mean)/nrow(bbs_envs)
-#write.csv(bbs_envs, "scripts/R-scripts/scale_analysis/bbs_envs.csv", row.names = FALSE) #updated 05/31
-#with z scores and quantiles both
+write.csv(bbs_envs, "scripts/R-scripts/scale_analysis/bbs_envs.csv", row.names = FALSE) #updated 09/21 to reflect fixed above scale
+#conversion done for single-rte scale envs 
+#use pre-standardized means to calc above-rte variance and THEN convert to z scores for comparison to lower scales 
 
 ####Convex polygon comparison of variables####
 #not variances yet 
@@ -226,16 +55,33 @@ bbs_envs$prec_q= rank(bbs_envs$prec.mean)/nrow(bbs_envs)
 #http://www.qhull.org/html/qconvex.htm#synopsis
 bbs_envs = read.csv("scripts/R-scripts/scale_analysis/bbs_envs.csv", header = TRUE)
 #subset to just appropriate dims for convhulln 
-sub_envs = bbs_envs %>% select(temp_q, prec_q, elev_q, ndvi_q) %>% filter(ndvi_q != 'NA') #cuts down to 890 
+#sub_envs = bbs_envs %>% select(temp_zm, prec_zm, elev_zm, ndvi_zm) %>% filter(ndvi_zm != 'NA') #cuts nothing, all there 
+
+# 
+# hull = convhulln(sub_envs, "FA")
+# hull$area #189.74 #4.502 
+# hull$vol #66.22 #0.54 second time around....
+# rtes = unique(bbs_envs$stateroute)
+# output = c()
+# for(s in rtes){
+#   sub_envs = bbs_envs %>% filter(stateroute == s)
+#   hull = convhulln(sub_envs, "FA")
+#   temp = summarize(stateroute = s, 
+#                     zhull = hull$vol)  
+#   output = rbind(output, temp) 
+# } 
+#   
+ #not possible ! need 20 pts! 
+  
+#bbs_envs has env data @ scale of single route 
+#following code compiles vars of env data @scale of 66 rtes
+
+#ALTERNATIVE: add together z scores as in early code using euclidean distance bet/points or ranking in euclidean space
+#- so between scale at 1 and scale at 66 
 
 
-hull = convhulln(sub_envs, "FA")
-hull$area #189.74 #4.502 
-hull$vol #66.22 #0.54 second time around....
-
-
-####Pair env data to secondary rtes associated with each focal rte; calc variance for each focal rte####
-bbs_envs = read.csv("scripts/R-scripts/scale_analysis/bbs_envs.csv", header = TRUE)
+####Pair env data to secondary rtes associated with each focal rte; calc variance across top scale for each focal rte####
+bbs_envs = read.csv("scripts/R-scripts/scale_analysis/bbs_envs.csv", header = TRUE) #10/06
 dist.df = read.csv("scripts/R-scripts/scale_analysis/dist_df.csv", header = TRUE)
 
 #need to pair down by routes existing in bbs_envs (which have been sorted appropriately) and then calculated the top n 66 based on distance
@@ -243,99 +89,207 @@ dist.df2 = filter(dist.df, rte1 %in% bbs_envs$stateroute & rte2 %in% bbs_envs$st
 
 #num of rows matches num of rows in dts.df, good 
 #now calc var for each focal rte (rte1)
-env_hetero = data.frame(stateroute = NULL, 
-                        ndvi_v = NULL, elev_v = NULL, prec_v = NULL, temp_v = NULL,
-                        ndvi_qv = NULL, elev_qv = NULL, prec_qv = NULL, temp_qv = NULL, 
-                        qhull_vol = NULL, zhull_vol = NULL)
+top_envhetero = data.frame(stateroute = NULL,
+                           scale = NULL, 
+                           reg_ndvi_v = NULL,
+                           reg_elev_v = NULL,
+                           reg_ndvi_m = NULL,
+                           reg_elev_m = NULL)
 
 focal_rtes = unique(bbs_envs$stateroute)
+#need to structure using focal_clustr template 
+scales = c(2:66)
+output = data.frame(stateroute = NULL,
+                    scale = NULL, 
+                    reg_ndvi_v = NULL,
+                    reg_elev_v = NULL,
+                    reg_ndvi_m = NULL,
+                    reg_elev_m = NULL)
 
+#add nu scale component for calculating means at each scale interval 
 for(r in focal_rtes){
-  rte_group = dist.df2 %>% 
+  for(nu in scales) { #just running for top scale for now 
+  #to characterize total var that can be encompassed on a rte
+ 
+    #takes dist.df and generates a new list that changes based on which route in uniqrtes is being focused on 
+    #and the length of the list varies with the scale or nu 
+    rte_group = dist.df2 %>% 
     filter(rte1 == r) %>% 
-    top_n(66, desc(dist)) %>%
-    select(rte2) %>% as.vector()
+    top_n(nu, desc(dist)) %>%
+    dplyr::select(rte2) %>% as.vector()
   
   tempenv = bbs_envs %>%
     filter(stateroute %in% rte_group$rte2)
   
-  tempenv_q = tempenv %>%
-    select(temp_q, prec_q, elev_q, ndvi_q) %>% 
-    filter(ndvi_q != 'NA')
+  #can I incorporate an if else conditional here -> 
+  #but would only have entry for one row, no, best do it outside
   
-  tempenv_z = tempenv %>%
-    select(ztemp, zprec, zelev, zndvi) %>% 
-    filter(zndvi != 'NA')
+  #only want to do this at top scale of 66 rtes, maybe just do sep 
+  # tempenv_z = tempenv %>% #subset of tempenv for convhull calcs 
+  #   select(temp_zm, prec_zm, elev_zm, ndvi_zm) %>% #using means for convhull calc
+  #   filter(ndvi_zm != 'NA') #this is ok since for convhull 
+  #   zhull_df = convhulln(tempenv_z, "FA")
   
-  qhull = convhulln(tempenv_q, "FA")
-  zhull = convhulln(tempenv_z, "FA")
-    
+  #once hull calcs have been done, don't need to keep temp or precip in final df
+  
+  #get variance of rte means, calc across entire rte_group according to scale   
   temp = data.frame(stateroute = r,
-                    ndvi_v = var(tempenv$zndvi, na.rm = TRUE), #fix missing values!!!!
-                    elev_v = var(tempenv$zelev), #bc each of these values is calculated across the 2ndary rtes for each focal rte
-                    prec_v = var(tempenv$zprec), #such that all 66 2ndary rtes will be summed into one variance value for each focal rte
-                    temp_v = var(tempenv$ztemp), 
-                    ndvi_qv = var(tempenv$ndvi_q, na.rm = TRUE),
-                    elev_qv = var(tempenv$elev_q), 
-                    prec_qv = var(tempenv$prec_q), 
-                    temp_qv = var(tempenv$temp_q),
-                    qhull_vol = qhull$vol,
-                    zhull_vol = zhull$vol)
+                    scale = nu,
+                    reg_ndvi_v = var(tempenv$ndvi.mean, na.rm = TRUE), #fix missing values!!!!
+                    reg_elev_v = var(tempenv$elev.mean), #bc each of these values is calculated across the 2ndary rtes for each focal rte
+                    reg_ndvi_m = mean(tempenv$ndvi.mean), 
+                    reg_elev_m = mean(tempenv$elev.mean)) #a vector is going in and a single val is coming out
+                    #top_zhull = zhull_df$vol)
   
-  env_hetero = rbind(env_hetero, temp)
+  output = rbind(output, temp)
+  }
+  reg_envhetero = rbind(top_envhetero, output) #may need a second level of output rbinding here
 }
+#removed top scale z score calcs bc not necessary outside of polygon hull calcs 
 
-write.csv(env_hetero, "scripts/R-scripts/scale_analysis/env_hetero.csv", row.names = FALSE)
-#updated 06/20
+write.csv(reg_envhetero, "scripts/R-scripts/scale_analysis/reg_envhetero.csv", row.names = FALSE)
+#updated 10/06
 
-
-####Elev vs NDVI plotting####
-env_hetero = read.csv("scripts/R-scripts/scale_analysis/env_hetero.csv", header = TRUE)
-bbs_envs = read.csv("scripts/R-scripts/scale_analysis/bbs_envs.csv", header = TRUE)
-
-#elev vs ndvi on plot - variance of quantile scores
-q_scores = ggplot(env_hetero, aes(x = ndvi_qv, y = elev_qv))+geom_point()+theme_classic()+ggtitle("Variance of quantiles")
-z_scores = ggplot(env_hetero, aes(x = ndvi_v, y = elev_v))+geom_point()+theme_classic()+ggtitle("Variance of z-scores")
-#elev vs ndvi on plot - straight z scores, no var calc 
-z_raw = ggplot(bbs_envs, aes(x=zndvi, y = zelev))+geom_point()+theme_classic()+ggtitle("Z scores of raw data")
-qz = grid.arrange(q_scores, z_scores)
-z_raw 
+#naming convention for comparisons: #env.var_zv -> z score origin, variance/habheterogeneity at rt, from 40km buffer circle raster clip.  
+                 #topenv.var_zv -> z score origin, variance/habhet at landscape (var across rt buffermeans in top clustr (zm vector))
+                #zm from 40 km buffer circle raster clip too
 
 ####Coef vs env hetero models####
-env_hetero = read.csv("scripts/R-scripts/scale_analysis/env_hetero.csv", header = TRUE) #replacing bbs_envs with hetero measures
-coefs = read.csv("scripts/R-scripts/scale_analysis/coefs.csv", header = TRUE)
-env_coefs = inner_join(coefs, env_hetero, by = "stateroute")
+top_envhetero = read.csv("scripts/R-scripts/scale_analysis/top_envhetero.csv", header = TRUE) #landscape habitat vars 
+bbs_envs = read.csv("scripts/R-scripts/scale_analysis/bbs_envs.csv", header = TRUE) #single rte habitat vars 
+coefs = read.csv("scripts/R-scripts/scale_analysis/coefs.csv", header = TRUE) #AUC etc. 
+
+#Merge top_envhetero to coefs for comparing env variation for a site to its associated AUC 
+#at the scale of a landscape and scale of a rte
+env_coefs = coefs %>% 
+  inner_join(top_envhetero, by = "stateroute") %>% #coefs to top scale env characterizing data
+  inner_join(bbs_envs, by = "stateroute") #and also join single rte
+  
+#mod env coef names to reflect that they have to do with max scale #1003 rows, 54 cols 
 write.csv(env_coefs, "scripts/R-scripts/scale_analysis/env_coefs.csv", row.names = FALSE)
-#updated 06/20
+#updated 09/21
+
+
+####Coef & habitat heterogeneity models####
+env_coefs = read.csv("scripts/R-scripts/scale_analysis/env_coefs.csv", header = TRUE)
+
+subenv_coefs = env_coefs %>%
+  select(-matches("CA"), -matches("TA")) #for now ignoring %Core and %Tran and focusing on mean Occupancy 
+
+#check out cov matrix to inform model generation and predictions:
+covmatrix = round(cor(subenv_coefs[, 1:ncol(subenv_coefs)]), 2) #since clipped stateroute don't need to clip again
+covmatrix = as.data.frame(covmatrix)
+write.csv(covmatrix, "scripts/R-scripts/scale_analysis/covmatrix.csv", row.names = FALSE)
+
+
+#join original coef vars at scale of single focal rte and also make sure reflected in names 
+#e.g. "Does the min and the predicted min vary with environmental heterogeneity 
+#at the scale of a single route? at the scale of a landscape?
+min_mod1 = lm(OA.min ~ ndvi_zv, data = env_coefs)
+min_mod2 = lm(OA.pmin ~ top_ndvi_zv, data = env_coefs)
+
+pmin_mod1 = lm(OA.pmin ~ ndvi_zv, data = env_coefs)
+pmin_mod2 = lm(OA.pmin ~ top_ndvi_zv, data = env_coefs)
+
+
+summary(pmin_mod2)
+#test example model -> elev and ndvi explain more variation at the landscape scale than local scale. 
 
 
 
-covmatrix = round(cor(coefs[, 2:ncol(coefs)]), 2)
-covmatrix
+####UP NEXT: run series of models and reassess/renew plots from spring####
 
 # nested loop for examining variation in coefs/fitted curves explained by env heterogeneity 
 #so: response = coefficients = dependent; predictor = environmental heterogeneity = independent
-rsqrd_hetero = data.frame(dep = character(), ind = character(), r2 = numeric())
 
-for (d in 2:25) { #adjust columns appropriately -> make sure correct order of ind and dep vars!
-  for (i in 26:ncol(env_coefs)) {
-    tempmod = lm(env_coefs[,d] ~ env_coefs[,i])
-    tempdf = data.frame(dep = names(env_coefs)[d], 
-                        ind = names(env_coefs)[i], 
+#first need to make sure JUST looking at variance characterizing site, not means -> filter out 
+
+hab_het = env_coefs %>% 
+  select(-elev.mean, -ndvi.mean)
+
+rsqrd_hetero = data.frame(dep = character(), ind = character(), r2 = numeric())
+#modify to include plotting of obs values for each stateroute vs pred line 
+#and plot these with r squared vals as annotations to plots too 
+setwd("C:/git/core-transient/output/plots/Molly Plots/habhet/")
+
+
+for (d in 2:10) { #adjust columns appropriately -> make sure correct order of ind and dep vars!
+  for (i in 32:ncol(hab_het)) {
+    tempmod = lm(hab_het[,d] ~ hab_het[,i])
+    
+    tempdf = data.frame(dep = names(hab_het)[d], 
+                        ind = names(hab_het)[i], 
                         r2 = summary(tempmod)$r.squared)
+    
+    templot = ggplot(data = hab_het, aes(x = hab_het[,i], y = hab_het[,d]))+geom_point()+
+      geom_line(aes(y = predict(tempmod), color = 'Model'))+
+      labs(x = names(hab_het)[i], y = names(hab_het)[d])+guides(color = "none")+
+      annotate("text", x = 0.5*max(hab_het[,i]), y = 0.5*max(hab_het[,d]), 
+               label = paste("italic(R) ^ 2 ==", tempdf$r2, sep = ""), parse = TRUE, 
+               color = "red", size = 5.5) 
+    ggsave(templot, filename=paste("hab_het", names(hab_het)[d], 
+                                   names(hab_het)[i],".png",sep=""))
+    
     rsqrd_hetero = rbind(rsqrd_hetero, tempdf)
-  }
+    }
 }
-write.csv(rsqrd_hetero, "scripts/R-scripts/scale_analysis/rsqrd_hetero.csv", row.names = FALSE) #updated 06/20 using best stateroutes
+
+dev.off()
+write.csv(rsqrd_hetero, "scripts/R-scripts/scale_analysis/rsqrd_hetero.csv", row.names = FALSE) 
+#updated 10/03 using corrected hab_het vals, only variances characterizing sites
 
 
 ####Visually Characterizing measures of habitat heterogeneity####
 rsqrd_hetero = read.csv("scripts/R-scripts/scale_analysis/rsqrd_hetero.csv", header = TRUE)
-env_coefs = read.csv("scripts/R-scripts/scale_analysis/env_coefs.csv", header = TRUE)
+hab_het = read.csv("scripts/R-scripts/scale_analysis/hab_het.csv", header = TRUE)
 
 ggplot(data = rsqrd_hetero, aes(x = ind, y = r2, fill = ind))+geom_boxplot()+theme_classic()+
   theme(legend.position="none")+
   labs(x = "Environmental variables", y = "Variation Explained (R^2)")
+
+ggplot(data = rsqrd_hetero, aes(x = ind, y = r2, color = dep))+geom_point()+theme_classic()+
+  labs(x = "Environmental variables", y = "Variation Explained (R^2)")
+
+ggplot(data = hab_het, aes(x = elev.var, y = OA.pmin))+geom_point()+geom_smooth()
+ggplot(data = hab_het, aes(x = ndvi.var, y = OA.pmin))+geom_point()+geom_smooth()
+ggplot(data = hab_het, aes(x = top_elev_v, y = OA.pmin))+geom_point()+geom_smooth()
+ggplot(data = hab_het, aes(x = top_ndvi_v, y = OA.pmin))+geom_point()+geom_smooth()
+
+
+ggplot(data = hab_het, aes(x = elev.var, y = OA.pthresh))+geom_point()+geom_smooth()
+ggplot(data = hab_het, aes(x = ndvi.var, y = OA.pthresh))+geom_point()+geom_smooth()
+ggplot(data = hab_het, aes(x = top_elev_v, y = OA.pthresh))+geom_point()+geom_smooth()
+ggplot(data = hab_het, aes(x = top_ndvi_v, y = OA.pthresh))+geom_point()+geom_smooth()
+
+
+
+ggplot(data = hab_het, aes(x = elev.var, y = OA.pslope))+geom_point()+geom_smooth()
+ggplot(data = hab_het, aes(x = ndvi.var, y = OA.pslope))+geom_point()+geom_smooth()
+ggplot(data = hab_het, aes(x = top_elev_v, y = OA.pslope))+geom_point()+geom_smooth()
+ggplot(data = hab_het, aes(x = top_ndvi_v, y = OA.pslope))+geom_point()+geom_smooth()
+
+
+#why are pmin and pthresh consistently highest vals for explaining variation? how do these change 
+#with different env variables? Draw graphically in notes to help conceptualize. 
+
+
+
+#INTERPRETATION: 
+#elevation and ndvi at the highest scales explain more variation in the pmin and pthresh values 
+#compared to any other measures of habitat heterogeneity 
+#However, elevation explains more variation than ndvi at the top scales - AND 
+#the gulf between ndvi and elevation in terms of explanatory power widens at the larger scales 
+# - the two measures are closer together in importance at the lowest scales. 
+#NDVI variance at local scale actually has an 'outlier' point further above even local elev variation 
+#depending on which coefficient metric that corresponds to, it may be that ndvi explains more 
+#local variation in heterogeneity and variation at the lower scales of the occ-scale relationship 
+#while elevational heterogeneity explains variation at the higher scales of the occ-scale relationship?  
+
+#Let's check it out: 
+
+
+
+
 
 #excluding transient data for incompleteness, selecting only relevant measures of heterogeneity 
 #INFLEXION POINTS: 
