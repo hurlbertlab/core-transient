@@ -111,7 +111,7 @@ summary(mod_r)
   
 #### panel plot ####
 area_plot = data.frame()
-pdf('output/plots/4a_4d.pdf', height = 10, width = 14)
+pdf('output/plots/4a_4d_points.pdf', height = 10, width = 14)
 par(mfrow = c(2, 2), mar = c(5,5,1,1), cex = 1, oma = c(0,0,0,0), las = 1)
 palette(colors7)
 
@@ -134,8 +134,8 @@ b1 = for(id in scaleIDs){
   taxcolor = subset(taxcolors, taxa == as.character(plotsub$taxa)[1])
   y= summary(mod4)$coef[1]+ (xhats)*summary(mod4)$coef[2]
   area_plot  = rbind(area_plot , c(id, lower,upper, mod4.slope,taxa))
-  
    lines(log10(plotsub$area), fitted(mod4), col=as.character(taxcolor$color),lwd=4)
+   # points(log10(plotsub$area), plotsub$pctTrans)
   par(new=TRUE)
 }
 title(outer=FALSE,adj=0.02,main="A",cex.main=2,col="black",font=2,line=-1)
@@ -155,6 +155,7 @@ b2 = for(id in scaleIDs){
   taxcolor = subset(taxcolors, taxa == as.character(plotsub$taxa)[1])
   y=summary(mod4)$coef[1] + (xhats)*summary(mod4)$coef[2]
   lines(log10(plotsub$meanAbundance), fitted(mod4), col=as.character(taxcolor$color),lwd=4)
+  # points(log10(plotsub$meanAbundance), plotsub$pctTrans)
   par(new=TRUE)
 }
 abline(v = log10(102), lty = 'dotted', lwd = 2) 
