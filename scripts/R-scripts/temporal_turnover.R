@@ -41,7 +41,12 @@ turnover = function(splist1, splist2) {
   return(Jturnover)
 }
 
-
+bray = function(splist1, splist2) {
+  tot_uniq_sp = length(unique(c(splist1, splist2)))
+  shared_sp = length(splist1) + length(splist2) - tot_uniq_sp
+  brayturnover = ((tot_uniq_sp-2*shared_sp)/tot_uniq_sp)
+  return(brayturnover)
+}
 
 
 #' Get list of dataset IDS for datasets that meet criteria for analysis
@@ -72,6 +77,7 @@ bbs_occ = bbs_occ[,c("datasetID", "site", "year", "species", "count", "propOcc")
 all_data = rbind(all_data, bbs_occ)
 
 turnover_output = data.frame()
+bray_output = data.frame()
 for (dataset in datasetIDs[,1]) {
   subdata = subset(all_data, datasetID == dataset)
   sites = unique(subdata$site)
@@ -82,22 +88,34 @@ for (dataset in datasetIDs[,1]) {
     years = as.numeric(unique(sitedata$year))
     TJs = c()
     TJ_notrans = c()
+    tbrays = c()
+    tbraysnotran = c()
     for (year in years[1:(length(years)-1)]) {
       comm1 = unique(sitedata$species[sitedata$year == year])
       comm2 = unique(sitedata$species[sitedata$year == year + 1])
       T_J = turnover(comm1, comm2)
+      t_bray = bray(comm1, comm2)
+      
       
       comm1_noT = unique(notrans$species[notrans$year == year])
       comm2_noT = unique(notrans$species[notrans$year == year + 1])
       T_J_notran = turnover(comm1_noT, comm2_noT)
+      t_bray_notran = bray(comm1_noT, comm2_noT)
       
       TJs = c(TJs, T_J)
       TJ_notrans = c(TJ_notrans, T_J_notran)
+      TJ_bray = c(tbrays, t_bray)
+      TJ_bray_notran = c(tbraysnotran, t_bray_notran)
     }
     temp_output = data.frame(datasetID = dataset, site = site, TJ = mean(TJs),
                              TJnotrans = mean(TJ_notrans))
     turnover_output = rbind(turnover_output, temp_output)
+    
+    bray_temp = data.frame(datasetID = dataset, site = site, TJ = mean(TJ_bray),
+                             TJnotrans = mean(TJ_bray_notran))
+    bray_output = rbind(bray_output, bray_temp)
   }
 }
 
 write.csv(turnover_output, "output/tabular_data/temporal_turnover.csv", row.names = FALSE)
+write.csv(bray_output, "output/tabular_data/temporal_turnover_bray.csv", row.names = FALSE)
