@@ -45,6 +45,7 @@ bbs_abun_occ = read.csv("data/BBS/bbs_abun_occ.csv", header = TRUE)
 bbs_occ = read.csv("data/BBS/bbs_abun4_spRich.csv", header = TRUE)
 bbs_count = read.csv("data/BBS/bbs_2000_2014.csv", header = TRUE)
 bbs_occ_aou = read.csv("data/BBS/bbs_occ_2000_2014.csv", header = TRUE)
+bray_output = read.csv("output/tabular_data/temporal_turnover_bray.csv", header = TRUE)
 
 # addings symbols to taxcolors
 symbols = c(15, 16, 15, 17, 16, 15, 16) 
@@ -306,6 +307,14 @@ turnover = read.csv("output/tabular_data/temporal_turnover.csv", header = TRUE)
 turnover_taxa = merge(turnover,dataformattingtable[,c("dataset_ID", "taxa")], by.x = "datasetID", by.y = "dataset_ID")
 turnover_col = merge(turnover_taxa, taxcolors, by = "taxa")
 
+bray_taxa = merge(bray_output,dataformattingtable[,c("dataset_ID", "taxa")], by.x = "datasetID", by.y = "dataset_ID")
+bray_col = merge(bray_taxa, taxcolors, by = "taxa")
+bray_col$bbs =ifelse(bray_col$datasetID == 1, "yes", "no")
+bray_bbs = filter(bray_col, bbs == "yes")
+bray_else = filter(bray_col, bbs == "no")
+
+bray_else$taxa = factor(bray_else$taxa,
+                            levels = c('Invertebrate','Fish','Plankton','Mammal','Plant','Bird'),ordered = TRUE)
 # bbs column for diff point symbols
 turnover_col$bbs =ifelse(turnover_col$datasetID == 1, "yes", "no")
 turnover_bbs = filter(turnover_col, bbs == "yes")
@@ -318,8 +327,12 @@ colscale = c("gold2","turquoise2", "red", "purple4","forestgreen","#1D6A9B")
 
 m <- ggplot(turnover_else, aes(x = TJ, y = TJnotrans))
 four_c <-m + geom_abline(intercept = 0,slope = 1, lwd =1.5,linetype="dashed")+geom_point(aes(colour = taxa), size = 5)+ geom_point(data = turnover_bbs, aes(colour = taxa),size = 2) + xlab("Turnover (all species)") + ylab("Turnover \n (excluding transients)")  + scale_colour_manual(breaks = turnover_col$taxa,values = colscale) + theme_classic() + theme(axis.text.x=element_text(size=30, color = "black"),axis.text.y=element_text(size=30, color = "black"),axis.ticks.x=element_blank(),axis.title.x=element_text(size=46, color = "black"),axis.title.y=element_text(size=46,angle=90,vjust = 5))+ guides(colour = guide_legend(title = "Taxa"))
-
 ggsave(file="C:/Git/core-transient/output/plots/5c_spturnover.pdf", height = 10, width = 15)
+
+b <- ggplot(bray_else, aes(x = TJ, y = TJnotrans))
+bray <-b + geom_abline(intercept = 0,slope = 1, lwd =1.5,linetype="dashed")+geom_point(aes(colour = taxa), size = 5)+ geom_point(data = bray_bbs, aes(colour = taxa),size = 2) + xlab("Bray-Curtis Index (all species)") + ylab("Bray-Curtis \n (excluding transients)")  + scale_colour_manual(breaks = bray_col$taxa,values = colscale) + theme_classic() + theme(axis.text.x=element_text(size=30, color = "black"),axis.text.y=element_text(size=30, color = "black"),axis.ticks.x=element_blank(),axis.title.x=element_text(size=46, color = "black"),axis.title.y=element_text(size=46,angle=90,vjust = 5))+ guides(colour = guide_legend(title = "Taxa"))
+ggsave(file="C:/Git/core-transient/output/plots/5s_brayturnover.pdf", height = 10, width = 15)
+
 
 ##### Figure 5d ##### only scaled vars
 bbs_uniq_area = bbs_abun_occ %>% dplyr::select(stateroute,scale,subrouteID,area) %>% unique()

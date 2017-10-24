@@ -65,12 +65,14 @@ all_data = left_join(abund_data, propocc_data, by = c('datasetID', 'site', 'spec
 
 # add in bbs data (id, site, year, sp, count, propOcc)
 bbs = read.csv("data/BBS/bbs_2000_2014.csv", header = TRUE)
-bbs$year = bbs$date
+bbs$year = bbs$Year
 bbs_abun_occ = read.csv("data/BBS/bbs_abun_occ.csv", header = TRUE)
 bbs_abun_occ$species = bbs_abun_occ$AOU
 bbs_abun_occ$site = bbs_abun_occ$stateroute
-bbs_occ= merge(bbs, bbs_abun_occ[,c("species","site", "occupancy")], by = c("species","site"))
+bbs_occ= merge(bbs_abun_occ[,c("species","site", "occupancy")],bbs, by.x = c("species","site"), by.y = c("aou","stateroute"))
 bbs_occ$propOcc = bbs_occ$occupancy
+bbs_occ$count = bbs_occ$speciestotal
+bbs_occ$datasetID = 1
 bbs_occ = bbs_occ[,c("datasetID", "site", "year", "species", "count", "propOcc")]
 
 # rbind to get single data frame
