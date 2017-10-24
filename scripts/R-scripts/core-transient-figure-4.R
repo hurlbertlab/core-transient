@@ -70,7 +70,7 @@ write.csv(areamerge, "output/tabular_data/areamerge.csv", row.names = FALSE)
 #### Figures 4a-4c panel plot #####
 scaleIDs = filter(dataformattingtable, spatial_scale_variable == 'Y',
                   format_flag == 1)$dataset_ID 
-scaleIDs = scaleIDs[! scaleIDs %in% c(207, 210, 217, 218, 222, 223, 225, 241,258, 282, 322, 280, 248, 254, 291)]  # waiting on data for 248
+scaleIDs = scaleIDs[! scaleIDs %in% c(207, 210, 217, 218, 222, 223, 225, 241,258, 282, 322, 280, 248, 254, 277, 280, 291, 314)]  # waiting on data for 248
 bbs_spRich = read.csv("data/BBS/bbs_abun4_spRich.csv", header = TRUE)
 occ_merge = occ_taxa[,c("datasetID", "site","taxa", "meanAbundance", "pctTrans","pctCore","pctNeither","scale", "spRich")]
 bbs_occ = rbind(bbs_spRich,occ_merge)
@@ -253,9 +253,3 @@ for(id in scaleIDs){
 segments(0,  0, x1 = 5.607, y1 = 1, col = rgb(29/255, 106/255, 155/255), lwd=5)
 par(new=TRUE)
 dev.off()
-
-##### old ggplot #####
-p <- ggplot(predmod, aes(x = factor(abbrev), y = fit, fill=factor(predmod$taxa)))
-p +geom_bar(stat = "identity", fill = levels(colscale))+ theme_classic() + geom_errorbar(ymin = predmod$lwr, ymax= predmod$upr, width=0.2) + xlab("") + ylab("Proportion of Species") + ylim(0, 1) + theme(axis.ticks.x=element_blank(),axis.text.x=element_blank(),axis.text.y=element_text(size=30),axis.title.x=element_text(size=30),axis.title.y=element_text(size=24,angle=90,vjust = 2))+guides(fill=guide_legend(title="",keywidth = 2, keyheight = 1)) 
-
-ggsave(file="C:/Git/core-transient/output/plots/4c_predmod.pdf", height = 10, width = 15)
