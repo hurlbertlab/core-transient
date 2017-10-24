@@ -291,13 +291,13 @@ dataFormattingTable[,'Raw_spatial_grain'] =
   dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain',  
                                  
 #--! PROVIDE INFO !--#
-                                 20) 
+                                 300) 
 
 dataFormattingTable[,'Raw_spatial_grain_unit'] = 
   dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain_unit',  
                                  
 #--! PROVIDE INFO !--#
-                                 'm') 
+                                 'm2') 
 
 
 # BEFORE YOU CONTINUE. We need to make sure that there are at least minNTime for 
@@ -376,7 +376,7 @@ dataFormattingTable[,'Notes_siteFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_siteFormat', 
 
 #--! PROVIDE INFO !--#
-  'The site field reflects both the WATERSHED and REPSITE within each watershed.')
+  'The site field reflects both the WATERSHED and REPSITE within each watershed. 20 steps were taken at arms length 10 times for each sample (150 m * 2 m)')
 
 
 #-------------------------------------------------------------------------------*
@@ -753,7 +753,7 @@ sGrain = 'WATERSHED_REPSITE'
 # This is a reasonable choice of spatial grain because ...
 #--! PROVIDE INFO !--#
 # ...the REPSITE scale consists of  10 sets of sweep-nets, each of which includes
-# 20 sweeps, and spans a transect of ~50 meters.
+# 20 sweeps at arms length (~2 m).
 
 # The function "richnessYearSubsetFun" below will subset the data to sites with an 
 # adequate number of years of sampling and species richness. If there are no 

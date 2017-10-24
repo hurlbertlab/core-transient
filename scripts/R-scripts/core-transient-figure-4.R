@@ -70,7 +70,7 @@ write.csv(areamerge, "output/tabular_data/areamerge.csv", row.names = FALSE)
 #### Figures 4a-4c panel plot #####
 scaleIDs = filter(dataformattingtable, spatial_scale_variable == 'Y',
                   format_flag == 1)$dataset_ID 
-scaleIDs = scaleIDs[! scaleIDs %in% c(207, 210, 217, 218, 222, 223, 225, 241,258, 282, 322, 280, 248, 254, 277, 280, 291, 314)]  # waiting on data for 248
+scaleIDs = scaleIDs[! scaleIDs %in% c(207, 210, 217, 218, 222, 223, 225, 241,258, 282, 322, 280, 248, 254, 277, 279, 280, 291, 314)]  # waiting on data for 248
 bbs_spRich = read.csv("data/BBS/bbs_abun4_spRich.csv", header = TRUE)
 occ_merge = occ_taxa[,c("datasetID", "site","taxa", "meanAbundance", "pctTrans","pctCore","pctNeither","scale", "spRich")]
 bbs_occ = rbind(bbs_spRich,occ_merge)
