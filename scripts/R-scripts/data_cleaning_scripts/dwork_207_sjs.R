@@ -304,7 +304,7 @@ dataFormattingTable[,'Raw_spatial_grain'] =
   dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain',  
                                  
 #--! PROVIDE INFO !--#
-                                 .8) 
+                                 .04) 
 
 dataFormattingTable[,'Raw_spatial_grain_unit'] = 
   dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain_unit',  
@@ -719,17 +719,17 @@ sGrain = 'maxgrain_Plot'
 
 # This is a reasonable choice of spatial grain because ...
 #--! PROVIDE INFO !--#
-# quadrats are only 0.8 m2 which is clearly too small so we use the aggregates
-# of 7 quadrats per "Plot".
+# quadrats are only 0.04 m2 which is clearly too small so we use the aggregates
+# of 5 quadrats per "Plot".
 
-dataFormattingTable[,'Formatted_spatial_grain'] = 
-  dataFormattingTableFieldUpdate(datasetID, 'Formatted_spatial_grain',  
+#dataFormattingTable[,'Formatted_spatial_grain'] = 
+#  dataFormattingTableFieldUpdate(datasetID, 'Formatted_spatial_grain',  
                                  
                                  #--! PROVIDE INFO !--#
-                                 5.6) 
+                                 .2) 
 
-dataFormattingTable[,'Formatted_spatial_grain_unit'] = 
-  dataFormattingTableFieldUpdate(datasetID, 'Formatted_spatial_grain_unit',  
+#dataFormattingTable[,'Formatted_spatial_grain_unit'] = 
+#  dataFormattingTableFieldUpdate(datasetID, 'Formatted_spatial_grain_unit',  
                                  
                                  #--! PROVIDE INFO !--#
                                  'm2') 
