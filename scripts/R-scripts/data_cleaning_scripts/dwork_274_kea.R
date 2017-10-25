@@ -270,8 +270,7 @@ dataFormattingTable[,'subannualTgrain'] =
 # fill in the fields that specify nested spatial grains below.
 
 #--! PROVIDE INFO !--#
-dataset2$site="maxgrain"
-site_grain_names = c("site","WATERSHED", "REPSITE")
+site_grain_names = c("WATERSHED", "REPSITE")
 
 # We will now create the site field with these codes concatenated if there
 # are multiple grain fields. Otherwise, site will just be the single grain field.
@@ -367,7 +366,7 @@ dataFormattingTable[,'spatial_scale_variable'] =
   dataFormattingTableFieldUpdate(datasetID, 'spatial_scale_variable',
 
 #--! PROVIDE INFO !--#
-                                 'Y') # Fill value here in quotes
+                                 'N') # Fill value here in quotes
 
 # Notes_siteFormat. Use this field to THOROUGHLY describe any changes made to the 
 # site field during formatting.
@@ -376,7 +375,7 @@ dataFormattingTable[,'Notes_siteFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_siteFormat', 
 
 #--! PROVIDE INFO !--#
-  'The site field reflects both the WATERSHED and REPSITE within each watershed. 20 steps were taken at arms length 10 times for each sample (150 m * 2 m)')
+  'The site field reflects both the WATERSHED and REPSITE within each watershed. 20 steps were taken at arms length 10 times for each sample (150 m * 2 m), so not hierarchical')
 
 
 #-------------------------------------------------------------------------------*
