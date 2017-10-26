@@ -270,7 +270,8 @@ dataFormattingTable[,'subannualTgrain'] =
 # fill in the fields that specify nested spatial grains below.
 
 #--! PROVIDE INFO !--#
-site_grain_names = c("WATERSHED", "REPSITE")
+dataset2$maxgrain = 1
+site_grain_names = c("maxgrain","WATERSHED", "REPSITE")
 
 # We will now create the site field with these codes concatenated if there
 # are multiple grain fields. Otherwise, site will just be the single grain field.
@@ -290,7 +291,7 @@ dataFormattingTable[,'Raw_spatial_grain'] =
   dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain',  
                                  
 #--! PROVIDE INFO !--#
-                                 300) 
+                                 200) 
 
 dataFormattingTable[,'Raw_spatial_grain_unit'] = 
   dataFormattingTableFieldUpdate(datasetID, 'Raw_spatial_grain_unit',  
@@ -356,7 +357,7 @@ dataFormattingTable[,'Raw_siteUnit'] =
   dataFormattingTableFieldUpdate(datasetID, 'Raw_siteUnit',  
 
 #--! PROVIDE INFO !--#
-                                 'WATERSHED_REPSITE') 
+                                 'maxgrain_WATERSHED_REPSITE') 
 
 
 # spatial_scale_variable. Is a site potentially nested (e.g., plot within a quad or 
@@ -366,7 +367,7 @@ dataFormattingTable[,'spatial_scale_variable'] =
   dataFormattingTableFieldUpdate(datasetID, 'spatial_scale_variable',
 
 #--! PROVIDE INFO !--#
-                                 'N') # Fill value here in quotes
+                                 'Y') # Fill value here in quotes
 
 # Notes_siteFormat. Use this field to THOROUGHLY describe any changes made to the 
 # site field during formatting.
@@ -375,7 +376,7 @@ dataFormattingTable[,'Notes_siteFormat'] =
   dataFormattingTableFieldUpdate(datasetID, 'Notes_siteFormat', 
 
 #--! PROVIDE INFO !--#
-  'The site field reflects both the WATERSHED and REPSITE within each watershed. 20 steps were taken at arms length 10 times for each sample (150 m * 2 m), so not hierarchical')
+  'The site field reflects both the WATERSHED and REPSITE within the site. 20 steps were taken at arms length 10 times for each sample, so we assumed each sweep covered ~20mx1m (average length of 20 steps and arms width)')
 
 
 #-------------------------------------------------------------------------------*

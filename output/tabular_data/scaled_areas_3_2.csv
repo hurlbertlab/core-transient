@@ -2473,22 +2473,22 @@ datasetID,site,spRich,nTime,meanAbundance,scale,taxa,area,Raw_spatial_grain,Raw_
 259,1_9_75,12,13,6.461538462,3,Plant,0.0625,0.0625,m2
 259,1_9_77,16,11,32.72727273,3,Plant,0.0625,0.0625,m2
 274,maxgrain,34,13,1741.769231,1,Invertebrate,320,20,m
-274,maxgrain_000b,15,10,298.2,2,Invertebrate,20,20,m
-274,maxgrain_001d,28,23,367.8695652,2,Invertebrate,20,20,m
-274,maxgrain_002c,26,18,366.6666667,2,Invertebrate,20,20,m
-274,maxgrain_002d,25,21,318.1904762,2,Invertebrate,20,20,m
-274,maxgrain_004b,25,23,386.9565217,2,Invertebrate,20,20,m
-274,maxgrain_004d,15,8,387.625,2,Invertebrate,20,20,m
-274,maxgrain_004f,25,21,295.4761905,2,Invertebrate,20,20,m
-274,maxgrain_020b,24,13,196.6153846,2,Invertebrate,20,20,m
-274,maxgrain_0spb,27,13,307,2,Invertebrate,20,20,m
-274,maxgrain_0sub,27,13,211.5384615,2,Invertebrate,20,20,m
-274,maxgrain_n01a,31,7,386.5714286,2,Invertebrate,20,20,m
-274,maxgrain_n01b,29,11,267,2,Invertebrate,20,20,m
-274,maxgrain_n04a,28,8,343.75,2,Invertebrate,20,20,m
-274,maxgrain_n04d,31,11,346.8181818,2,Invertebrate,20,20,m
-274,maxgrain_n20a,31,8,297.5,2,Invertebrate,20,20,m
-274,maxgrain_n20b,30,8,181.75,2,Invertebrate,20,20,m
+274,maxgrain_000b,15,10,298.2,2,Invertebrate,200,200,m
+274,maxgrain_001d,28,23,367.8695652,2,Invertebrate,200,200,m
+274,maxgrain_002c,26,18,366.6666667,2,Invertebrate,200,200,m
+274,maxgrain_002d,25,21,318.1904762,2,Invertebrate,200,200,m
+274,maxgrain_004b,25,23,386.9565217,2,Invertebrate,200,200,m
+274,maxgrain_004d,15,8,387.625,2,Invertebrate,200,200,m
+274,maxgrain_004f,25,21,295.4761905,2,Invertebrate,200,200,m
+274,maxgrain_020b,24,13,196.6153846,2,Invertebrate,200,200,m
+274,maxgrain_0spb,27,13,307,2,Invertebrate,200,200,m
+274,maxgrain_0sub,27,13,211.5384615,2,Invertebrate,200,200,m
+274,maxgrain_n01a,31,7,386.5714286,2,Invertebrate,200,200,m
+274,maxgrain_n01b,29,11,267,2,Invertebrate,200,200,m
+274,maxgrain_n04a,28,8,343.75,2,Invertebrate,200,200,m
+274,maxgrain_n04d,31,11,346.8181818,2,Invertebrate,200,200,m
+274,maxgrain_n20a,31,8,297.5,2,Invertebrate,200,200,m
+274,maxgrain_n20b,30,8,181.75,2,Invertebrate,200,200,m2
 275,El Verde,18,17,756.2941176,1,Invertebrate,933.9,28.3,m2
 275,El Verde_100,11,18,8.444444444,2,Invertebrate,28.3,28.3,m2
 275,El Verde_139,13,21,26.42857143,2,Invertebrate,28.3,28.3,m2
