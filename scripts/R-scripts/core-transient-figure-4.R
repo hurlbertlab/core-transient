@@ -70,7 +70,7 @@ write.csv(areamerge, "output/tabular_data/areamerge.csv", row.names = FALSE)
 #### Figures 4a-4c panel plot #####
 scaleIDs = filter(dataformattingtable, spatial_scale_variable == 'Y',
                   format_flag == 1)$dataset_ID 
-scaleIDs = scaleIDs[! scaleIDs %in% c(207, 210, 217, 218, 222, 223, 225, 241,258, 282, 322, 280, 248, 254, 277, 279, 280, 291, 314)]  # waiting on data for 248
+scaleIDs = scaleIDs[! scaleIDs %in% c(207, 210, 217, 218, 222, 223, 225, 241,258, 282, 322, 280, 248, 254, 279, 291)]  # waiting on data for 248
 bbs_spRich = read.csv("data/BBS/bbs_abun4_spRich.csv", header = TRUE)
 occ_merge = occ_taxa[,c("datasetID", "site","taxa", "meanAbundance", "pctTrans","pctCore","pctNeither","scale", "spRich")]
 bbs_occ = rbind(bbs_spRich,occ_merge)
@@ -111,16 +111,25 @@ summary(mod_r)
   
 #### panel plot ####
 area_plot = data.frame()
+areamerge_fig = read.csv("output/tabular_data/areafig.csv", header = TRUE)
+area.5 = merge(occ_taxa[,c("datasetID", "site", "pctTrans")], areamerge_fig, by = c("datasetID", "site"), na.rm = TRUE)
+area.5  = area.5 [, c("datasetID", "site", "taxa", "pctTrans", "area")]
+areamerge_fig = rbind(bbs_area,areamerge.5)
+# areamerge %>%
+#  dplyr::filter(datasetID == c(277, 280, 314)) %>%
+#  summarise(volchange = area^(2/3))
+  
+  
 pdf('output/plots/4a_4d.pdf', height = 10, width = 14)
 par(mfrow = c(2, 2), mar = c(5,5,1,1), cex = 1, oma = c(0,0,0,0), las = 1)
 palette(colors7)
 
-plot(NA, xlim = c(-2, 7), ylim = c(0,1), col = as.character(taxcolor$color), xlab = expression("log"[10]*" Area (m"^2*")"), ylab = "Proportion transient species", cex.lab = 2,frame.plot=FALSE, xaxt = "n", yaxt = "n", mgp = c(3.25,1,0))
+plot(NA, xlim = c(-2, 7), ylim = c(0,1), col = as.character(taxcolor$color), xlab = expression("log"[10]*" Area (m"^2*")"), ylab = "% Transients", cex.lab = 2,frame.plot=FALSE, xaxt = "n", yaxt = "n", mgp = c(3.25,1,0))
 axis(1, cex.axis =  1.5)
 axis(2, cex.axis =  1.5)
 b1 = for(id in scaleIDs){
   print(id)
-  plotsub = subset(areamerge,datasetID == id)
+  plotsub = subset(areamerge_fig,datasetID == id)
   taxa = as.character(unique(plotsub$taxa))
   mod4 = lm(plotsub$pctTrans ~ log10(plotsub$area))
   mod4.slope = summary(mod4)$coef[2,"Estimate"]
@@ -141,7 +150,7 @@ b1 = for(id in scaleIDs){
 title(outer=FALSE,adj=0.02,main="A",cex.main=2,col="black",font=2,line=-1)
 par(new= FALSE)
 
-plot(NA, xlim = c(0, 7), ylim = c(0,1), col = as.character(taxcolor$color), xlab = expression("log"[10]*" Community Size"), ylab = "Proportion transient species", cex.lab = 2,frame.plot=FALSE, yaxt = "n", xaxt = "n", mgp = c(3.25,1,0))
+plot(NA, xlim = c(0, 7), ylim = c(0,1), col = as.character(taxcolor$color), xlab = expression("log"[10]*" Community Size"), ylab = "% Transients", cex.lab = 2,frame.plot=FALSE, yaxt = "n", xaxt = "n", mgp = c(3.25,1,0))
 axis(1, cex.axis =  1.5)
 axis(2, cex.axis =  1.5)
 b2 = for(id in scaleIDs){
@@ -167,13 +176,13 @@ par(new = FALSE)
 b4 = barplot(predmod$fit[predmod$order], cex.names = 2,col = c(colors()[17],"gold2", "turquoise2","red","forestgreen","purple4","#1D6A9B"), ylim = c(0, 1), yaxt = "n")
 axis(2, cex.axis = 1.5)
 Hmisc::errbar(c(0.7, 1.9, 3.1, 4.3, 5.5, 6.7, 7.9), predmod$fit[predmod$order], predmod$upr[predmod$order], predmod$lwr[predmod$order], add= TRUE, lwd = 1.25, pch = 3)
-mtext("Proportion transient species", 2, cex = 2, las = 0, line = 3, mgp = c(3.25,1,0))
+mtext("% Transients", 2, cex = 2, las = 0, line = 3, mgp = c(3.25,1,0))
 title(outer=FALSE,adj=0.02,main="C",cex.main=2,col="black",font=2,line=-1)
 
 b4 = barplot(predmod4d$fit[predmod4d$order], cex.names = 1.5,col = c('burlywood','skyblue','navy'), ylim = c(0, 0.8), yaxt = "n")
 axis(2, cex.axis = 1.5)
 Hmisc::errbar(c(0.7, 1.9, 3.1), predmod4d$fit[predmod4d$order], predmod4d$upr[predmod4d$order], predmod4d$lwr[predmod4d$order], add= TRUE, lwd = 1.25, pch = 3)
-mtext("Proportion transient species", 2, cex = 2, las = 0, line = 3, mgp = c(3.25,1,0))
+mtext("% Transients", 2, cex = 2, las = 0, line = 3, mgp = c(3.25,1,0))
 title(outer=FALSE,adj=0.02,main="D",cex.main=2,col="black",font=2,line=-1)
 dev.off()
 
