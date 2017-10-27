@@ -155,19 +155,19 @@ write.csv(reg_envhetero, "scripts/R-scripts/scale_analysis/reg_envhetero.csv", r
                 #zm from 40 km buffer circle raster clip too
 
 ####Coef vs env hetero models####
-top_envhetero = read.csv("scripts/R-scripts/scale_analysis/top_envhetero.csv", header = TRUE) #landscape habitat vars 
-bbs_envs = read.csv("scripts/R-scripts/scale_analysis/bbs_envs.csv", header = TRUE) #single rte habitat vars 
+reg_envhetero = read.csv("scripts/R-scripts/scale_analysis/reg_envhetero.csv", header = TRUE) #landscape habitat vars 2:66 scale
+bbs_envs = read.csv("scripts/R-scripts/scale_analysis/bbs_envs.csv", header = TRUE) #single rte habitat vars 1 scale
 coefs = read.csv("scripts/R-scripts/scale_analysis/coefs.csv", header = TRUE) #AUC etc. 
 
 #Merge top_envhetero to coefs for comparing env variation for a site to its associated AUC 
 #at the scale of a landscape and scale of a rte
 env_coefs = coefs %>% 
-  inner_join(top_envhetero, by = "stateroute") %>% #coefs to top scale env characterizing data
+  inner_join(reg_envhetero, by = "stateroute") %>% #coefs to top scale env characterizing data
   inner_join(bbs_envs, by = "stateroute") #and also join single rte
   
 #mod env coef names to reflect that they have to do with max scale #1003 rows, 54 cols 
 write.csv(env_coefs, "scripts/R-scripts/scale_analysis/env_coefs.csv", row.names = FALSE)
-#updated 09/21
+#updated 10/26
 
 
 ####Coef & habitat heterogeneity models####
