@@ -179,23 +179,47 @@ env_all = reg_envhetero %>%
   
 write.csv(env_all, "scripts/R-scripts/scale_analysis/env_all.csv", row.names = FALSE)  
   
-####Coefs of occ-scale relationship to habitat hetero measures####   
+####abitat hetero measures and scale independent of coefs (for predictions)####   
 coefs = read.csv("scripts/R-scripts/scale_analysis/coefs.csv", header = TRUE) #AUC etc. 
 env_all = read.csv("scripts/R-scripts/scale_analysis/env_all.csv", header = TRUE) #AUC etc. 
 
 #first visualize how habitat hetero changes with scale and run model on this to corroborate occ-scale patterns 
-p1 = ggplot(env_all, aes(x = scale))+geom_point(aes(y = ndvi.var))
-p2 = ggplot(env_all, aes(x = scale))+geom_point(aes(y = elev.var))
-p3 = ggplot(env_all, aes(x = scale))+geom_point(aes(y = ndvi.mean))
-p4 = ggplot(env_all, aes(x = scale))+geom_point(aes(y = elev.mean))
+p1 = ggplot(env_all, aes(x = scale, y = ndvi.var))+geom_point()
+p2 = ggplot(env_all, aes(x = scale, y= elev.var))+geom_point()
+p3 = ggplot(env_all, aes(x = scale, y = ndvi.mean))+geom_point()
+p4 = ggplot(env_all, aes(x = scale, y = elev.mean))+geom_point()
 
 p5 = grid.arrange(p1, p2, p3, p4) #visually = more tightening up of patterns at larger scales, EXCEPT elevational variance
 #recall that env vars calculated iteratively over consecutively larger and larger radius out from each focal route, 
 #and so across progressively larger and larger vector of values from each subsumed secondary route therein 
 #so: mean(vector of means of secondary routes, vector length based on nu/scale) AND 
 #variance(vector of means of secondary routes, vector length based on nu/scale)
+#only var and means encompassed by each stateroute, NOT these values across all focal routes
+
+
+mod1 = lm(ndvi.var ~ scale, data = env_all)
+mod2 = lm(elev.var ~ scale, data = env_all)
+mod3 = lm(ndvi.mean ~ scale, data = env_all)
+mod4 = lm(elev.mean ~ scale, data = env_all)
+
+summary(mod1)
+summary(mod2)
+summary(mod3)
+summary(mod4)
+
+p1+geom_smooth(formula = mod1)
+p2+geom_smooth(formula = mod2)
+#all sig, but only explain like 6% and 4% of var across scale 
+#directionally, consider interpretations and how predictions may follow 
+#elevational variances are tighter at low scales, and much higher at high scales 
+#variances in ndvi are similarly higher at high scales
+#exceptions to this in both make relationship weaker 
+#what are those exceptions, and why are they like that? 
+
+####Coefs to habitat het####
 
   #coefs to top scale env characterizing data
+env_coefs = env_all %>%
   inner_join(coefs, by = "stateroute") #and also join single rte
   
 #mod env coef names to reflect that they have to do with max scale #1003 rows, 54 cols 
