@@ -183,6 +183,17 @@ write.csv(env_all, "scripts/R-scripts/scale_analysis/env_all.csv", row.names = F
 coefs = read.csv("scripts/R-scripts/scale_analysis/coefs.csv", header = TRUE) #AUC etc. 
 env_all = read.csv("scripts/R-scripts/scale_analysis/env_all.csv", header = TRUE) #AUC etc. 
 
+#first visualize how habitat hetero changes with scale and run model on this to corroborate occ-scale patterns 
+p1 = ggplot(env_all, aes(x = scale))+geom_point(aes(y = ndvi.var))
+p2 = ggplot(env_all, aes(x = scale))+geom_point(aes(y = elev.var))
+p3 = ggplot(env_all, aes(x = scale))+geom_point(aes(y = ndvi.mean))
+p4 = ggplot(env_all, aes(x = scale))+geom_point(aes(y = elev.mean))
+
+p5 = grid.arrange(p1, p2, p3, p4) #visually = more tightening up of patterns at larger scales, EXCEPT elevational variance
+#recall that env vars calculated iteratively over consecutively larger and larger radius out from each focal route, 
+#and so across progressively larger and larger vector of values from each subsumed secondary route therein 
+#so: mean(vector of means of secondary routes, vector length based on nu/scale) AND 
+#variance(vector of means of secondary routes, vector length based on nu/scale)
 
   #coefs to top scale env characterizing data
   inner_join(coefs, by = "stateroute") #and also join single rte
