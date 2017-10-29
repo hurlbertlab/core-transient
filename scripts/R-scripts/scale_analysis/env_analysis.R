@@ -234,20 +234,31 @@ env_coefs = read.csv("scripts/R-scripts/scale_analysis/env_coefs.csv", header = 
 covmatrix = round(cor(env_coefs[, 1:ncol(env_coefs)]), 2) #since clipped stateroute don't need to clip again - should I clip scale?
 covmatrix = as.data.frame(covmatrix)
 write.csv(covmatrix, "scripts/R-scripts/scale_analysis/covmatrix.csv", row.names = FALSE)
+#mean and var - interpret how covary with coefs and direction - i.e. ndvi mean covaries positively with pmin, 
+#but elev mean covaries negatively with pmin 
+#and both variances covary negatively with pmin 
+#ndvi mean covaries negatively with pthresh, elev mean positively
+#no other variables have this divergent relationship in directionality of covariance, 
+#ndvi var and elev var always in unison when strong
+#hab het variance measures: pslope and pthresh positive, pmin and pmax both negative covariance
 
 
 #join original coef vars at scale of single focal rte and also make sure reflected in names 
 #e.g. "Does the min and the predicted min vary with environmental heterogeneity 
 #at the scale of a single route? at the scale of a landscape?
-min_mod1 = lm(OA.min ~ ndvi_zv, data = env_coefs)
-min_mod2 = lm(OA.pmin ~ top_ndvi_zv, data = env_coefs)
+min_mod1 = lm(OA.min ~ ndvi.var, data = env_coefs)
+min_mod2 = lm(OA.pmin ~ ndvi.var, data = env_coefs)
 
-pmin_mod1 = lm(OA.pmin ~ ndvi_zv, data = env_coefs)
-pmin_mod2 = lm(OA.pmin ~ top_ndvi_zv, data = env_coefs)
+min_mod3 = lm(OA.min ~ elev.var, data = env_coefs)
+min_mod4 = lm(OA.pmin ~ elev.var, data = env_coefs)
 
+summary(min_mod1)
+summary(min_mod2)
+summary(min_mod3)
+summary(min_mod4)
 
-summary(pmin_mod2)
-#test example model -> elev and ndvi explain more variation at the landscape scale than local scale. 
+#explains a good deal of variation in our predicted vals and their deviance from the actual 
+#test example models -> elev and ndvi explain more variation at the landscape scale than local scale. 
 
 
 
@@ -258,31 +269,28 @@ summary(pmin_mod2)
 
 #first need to make sure JUST looking at variance characterizing site, not means -> filter out 
 
-hab_het = env_coefs %>% 
-  select(-elev.mean, -ndvi.mean)
-
 rsqrd_hetero = data.frame(dep = character(), ind = character(), r2 = numeric())
 #modify to include plotting of obs values for each stateroute vs pred line 
 #and plot these with r squared vals as annotations to plots too 
 setwd("C:/git/core-transient/output/plots/Molly Plots/habhet/")
 
 
-for (d in 2:10) { #adjust columns appropriately -> make sure correct order of ind and dep vars!
-  for (i in 32:ncol(hab_het)) {
-    tempmod = lm(hab_het[,d] ~ hab_het[,i])
+for (d in 2:6) { #adjust columns appropriately -> make sure correct order of ind and dep vars!
+  for (i in 7:16) {
+    tempmod = lm(env_coefs[,d] ~ env_coefs[,i])
     
-    tempdf = data.frame(dep = names(hab_het)[d], 
-                        ind = names(hab_het)[i], 
+    tempdf = data.frame(dep = names(env_coefs)[d], 
+                        ind = names(env_coefs)[i], 
                         r2 = summary(tempmod)$r.squared)
     
-    templot = ggplot(data = hab_het, aes(x = hab_het[,i], y = hab_het[,d]))+geom_point()+
+    templot = ggplot(data = env_coefs, aes(x = env_coefs[,i], y = env_coefs[,d]))+geom_point()+
       geom_line(aes(y = predict(tempmod), color = 'Model'))+
-      labs(x = names(hab_het)[i], y = names(hab_het)[d])+guides(color = "none")+
-      annotate("text", x = 0.5*max(hab_het[,i]), y = 0.5*max(hab_het[,d]), 
+      labs(x = names(env_coefs)[i], y = names(env_coefs)[d])+guides(color = "none")+
+      annotate("text", x = 0.5*max(env_coefs[,i]), y = 0.5*max(env_coefs[,d]), 
                label = paste("italic(R) ^ 2 ==", tempdf$r2, sep = ""), parse = TRUE, 
                color = "red", size = 5.5) 
-    ggsave(templot, filename=paste("hab_het", names(hab_het)[d], 
-                                   names(hab_het)[i],".png",sep=""))
+    ggsave(templot, filename=paste("env_coefs", names(env_coefs)[d], 
+                                   names(env_coefs)[i],".png",sep=""))
     
     rsqrd_hetero = rbind(rsqrd_hetero, tempdf)
     }
