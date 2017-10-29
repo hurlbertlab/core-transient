@@ -230,11 +230,8 @@ write.csv(env_coefs, "scripts/R-scripts/scale_analysis/env_coefs.csv", row.names
 ####Coef & habitat heterogeneity models####
 env_coefs = read.csv("scripts/R-scripts/scale_analysis/env_coefs.csv", header = TRUE)
 
-subenv_coefs = env_coefs %>%
-  select(-matches("CA"), -matches("TA")) #for now ignoring %Core and %Tran and focusing on mean Occupancy 
-
 #check out cov matrix to inform model generation and predictions:
-covmatrix = round(cor(subenv_coefs[, 1:ncol(subenv_coefs)]), 2) #since clipped stateroute don't need to clip again
+covmatrix = round(cor(env_coefs[, 1:ncol(env_coefs)]), 2) #since clipped stateroute don't need to clip again - should I clip scale?
 covmatrix = as.data.frame(covmatrix)
 write.csv(covmatrix, "scripts/R-scripts/scale_analysis/covmatrix.csv", row.names = FALSE)
 
