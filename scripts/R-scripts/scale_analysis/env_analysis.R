@@ -157,13 +157,35 @@ write.csv(reg_envhetero, "scripts/R-scripts/scale_analysis/reg_envhetero.csv", r
 ####Coef vs env hetero models####
 reg_envhetero = read.csv("scripts/R-scripts/scale_analysis/reg_envhetero.csv", header = TRUE) #landscape habitat vars 2:66 scale
 bbs_envs = read.csv("scripts/R-scripts/scale_analysis/bbs_envs.csv", header = TRUE) #single rte habitat vars 1 scale
-coefs = read.csv("scripts/R-scripts/scale_analysis/coefs.csv", header = TRUE) #AUC etc. 
 
 #Merge top_envhetero to coefs for comparing env variation for a site to its associated AUC 
 #at the scale of a landscape and scale of a rte
-env_coefs = coefs %>% 
-  inner_join(reg_envhetero, by = "stateroute") %>% #coefs to top scale env characterizing data
-  inner_join(bbs_envs, by = "stateroute") #and also join single rte
+
+#also prep datasets for merge 
+bbs_envs = bbs_envs[, 1:5] %>% 
+  mutate(scale = 1)
+
+reg_envhetero = reg_envhetero %>% 
+  rename(elev.mean = reg_elev_m, 
+         elev.var = reg_elev_v, 
+         ndvi.mean = reg_ndvi_m, 
+         ndvi.var = reg_ndvi_v) 
+
+reg_envhetero$scale = as.numeric(reg_envhetero$scale)
+
+env_all = reg_envhetero %>% 
+  full_join(bbs_envs) %>% #fixed, but scales out of order with row position, but everything still where it should be 
+  arrange(stateroute, scale)
+  
+write.csv(env_all, "scripts/R-scripts/scale_analysis/env_all.csv", row.names = FALSE)  
+  
+####Coefs of occ-scale relationship to habitat hetero measures####   
+coefs = read.csv("scripts/R-scripts/scale_analysis/coefs.csv", header = TRUE) #AUC etc. 
+env_all = read.csv("scripts/R-scripts/scale_analysis/env_all.csv", header = TRUE) #AUC etc. 
+
+
+  #coefs to top scale env characterizing data
+  inner_join(coefs, by = "stateroute") #and also join single rte
   
 #mod env coef names to reflect that they have to do with max scale #1003 rows, 54 cols 
 write.csv(env_coefs, "scripts/R-scripts/scale_analysis/env_coefs.csv", row.names = FALSE)
