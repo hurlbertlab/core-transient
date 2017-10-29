@@ -218,13 +218,13 @@ p2+geom_smooth(formula = mod2)
 
 ####Coefs to habitat het####
 
-  #coefs to top scale env characterizing data
+#coefs to top scale env characterizing data
 env_coefs = env_all %>%
   inner_join(coefs, by = "stateroute") #and also join single rte
   
-#mod env coef names to reflect that they have to do with max scale #1003 rows, 54 cols 
+#since now reflective of all scales, 62370 rows, 36 cols 
 write.csv(env_coefs, "scripts/R-scripts/scale_analysis/env_coefs.csv", row.names = FALSE)
-#updated 10/26
+#updated 10/29
 
 
 ####Coef & habitat heterogeneity models####
