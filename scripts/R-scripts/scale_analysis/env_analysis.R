@@ -157,43 +157,108 @@ write.csv(reg_envhetero, "scripts/R-scripts/scale_analysis/reg_envhetero.csv", r
 ####Coef vs env hetero models####
 reg_envhetero = read.csv("scripts/R-scripts/scale_analysis/reg_envhetero.csv", header = TRUE) #landscape habitat vars 2:66 scale
 bbs_envs = read.csv("scripts/R-scripts/scale_analysis/bbs_envs.csv", header = TRUE) #single rte habitat vars 1 scale
-coefs = read.csv("scripts/R-scripts/scale_analysis/coefs.csv", header = TRUE) #AUC etc. 
 
 #Merge top_envhetero to coefs for comparing env variation for a site to its associated AUC 
 #at the scale of a landscape and scale of a rte
-env_coefs = coefs %>% 
-  inner_join(reg_envhetero, by = "stateroute") %>% #coefs to top scale env characterizing data
-  inner_join(bbs_envs, by = "stateroute") #and also join single rte
+
+#also prep datasets for merge 
+bbs_envs = bbs_envs[, 1:5] %>% 
+  mutate(scale = 1)
+
+reg_envhetero = reg_envhetero %>% 
+  rename(elev.mean = reg_elev_m, 
+         elev.var = reg_elev_v, 
+         ndvi.mean = reg_ndvi_m, 
+         ndvi.var = reg_ndvi_v) 
+
+reg_envhetero$scale = as.numeric(reg_envhetero$scale)
+
+env_all = reg_envhetero %>% 
+  full_join(bbs_envs) %>% #fixed, but scales out of order with row position, but everything still where it should be 
+  arrange(stateroute, scale)
   
-#mod env coef names to reflect that they have to do with max scale #1003 rows, 54 cols 
+write.csv(env_all, "scripts/R-scripts/scale_analysis/env_all.csv", row.names = FALSE)  
+  
+####abitat hetero measures and scale independent of coefs (for predictions)####   
+coefs = read.csv("scripts/R-scripts/scale_analysis/coefs.csv", header = TRUE) #AUC etc. 
+env_all = read.csv("scripts/R-scripts/scale_analysis/env_all.csv", header = TRUE) #AUC etc. 
+
+#first visualize how habitat hetero changes with scale and run model on this to corroborate occ-scale patterns 
+p1 = ggplot(env_all, aes(x = scale, y = ndvi.var))+geom_point()
+p2 = ggplot(env_all, aes(x = scale, y= elev.var))+geom_point()
+p3 = ggplot(env_all, aes(x = scale, y = ndvi.mean))+geom_point()
+p4 = ggplot(env_all, aes(x = scale, y = elev.mean))+geom_point()
+
+p5 = grid.arrange(p1, p2, p3, p4) #visually = more tightening up of patterns at larger scales, EXCEPT elevational variance
+#recall that env vars calculated iteratively over consecutively larger and larger radius out from each focal route, 
+#and so across progressively larger and larger vector of values from each subsumed secondary route therein 
+#so: mean(vector of means of secondary routes, vector length based on nu/scale) AND 
+#variance(vector of means of secondary routes, vector length based on nu/scale)
+#only var and means encompassed by each stateroute, NOT these values across all focal routes
+
+
+mod1 = lm(ndvi.var ~ scale, data = env_all)
+mod2 = lm(elev.var ~ scale, data = env_all)
+mod3 = lm(ndvi.mean ~ scale, data = env_all)
+mod4 = lm(elev.mean ~ scale, data = env_all)
+
+summary(mod1)
+summary(mod2)
+summary(mod3)
+summary(mod4)
+
+p1+geom_smooth(formula = mod1)
+p2+geom_smooth(formula = mod2)
+#all sig, but only explain like 6% and 4% of var across scale 
+#directionally, consider interpretations and how predictions may follow 
+#elevational variances are tighter at low scales, and much higher at high scales 
+#variances in ndvi are similarly higher at high scales
+#exceptions to this in both make relationship weaker 
+#what are those exceptions, and why are they like that? 
+
+####Coefs to habitat het####
+
+#coefs to top scale env characterizing data
+env_coefs = env_all %>%
+  inner_join(coefs, by = "stateroute") #and also join single rte
+  
+#since now reflective of all scales, 62370 rows, 36 cols 
 write.csv(env_coefs, "scripts/R-scripts/scale_analysis/env_coefs.csv", row.names = FALSE)
-#updated 10/26
+#updated 10/29
 
 
 ####Coef & habitat heterogeneity models####
 env_coefs = read.csv("scripts/R-scripts/scale_analysis/env_coefs.csv", header = TRUE)
 
-subenv_coefs = env_coefs %>%
-  select(-matches("CA"), -matches("TA")) #for now ignoring %Core and %Tran and focusing on mean Occupancy 
-
 #check out cov matrix to inform model generation and predictions:
-covmatrix = round(cor(subenv_coefs[, 1:ncol(subenv_coefs)]), 2) #since clipped stateroute don't need to clip again
+covmatrix = round(cor(env_coefs[, 1:ncol(env_coefs)]), 2) #since clipped stateroute don't need to clip again - should I clip scale?
 covmatrix = as.data.frame(covmatrix)
 write.csv(covmatrix, "scripts/R-scripts/scale_analysis/covmatrix.csv", row.names = FALSE)
+#mean and var - interpret how covary with coefs and direction - i.e. ndvi mean covaries positively with pmin, 
+#but elev mean covaries negatively with pmin 
+#and both variances covary negatively with pmin 
+#ndvi mean covaries negatively with pthresh, elev mean positively
+#no other variables have this divergent relationship in directionality of covariance, 
+#ndvi var and elev var always in unison when strong
+#hab het variance measures: pslope and pthresh positive, pmin and pmax both negative covariance
 
 
 #join original coef vars at scale of single focal rte and also make sure reflected in names 
 #e.g. "Does the min and the predicted min vary with environmental heterogeneity 
 #at the scale of a single route? at the scale of a landscape?
-min_mod1 = lm(OA.min ~ ndvi_zv, data = env_coefs)
-min_mod2 = lm(OA.pmin ~ top_ndvi_zv, data = env_coefs)
+min_mod1 = lm(OA.min ~ ndvi.var, data = env_coefs)
+min_mod2 = lm(OA.pmin ~ ndvi.var, data = env_coefs)
 
-pmin_mod1 = lm(OA.pmin ~ ndvi_zv, data = env_coefs)
-pmin_mod2 = lm(OA.pmin ~ top_ndvi_zv, data = env_coefs)
+min_mod3 = lm(OA.min ~ elev.var, data = env_coefs)
+min_mod4 = lm(OA.pmin ~ elev.var, data = env_coefs)
 
+summary(min_mod1)
+summary(min_mod2)
+summary(min_mod3)
+summary(min_mod4)
 
-summary(pmin_mod2)
-#test example model -> elev and ndvi explain more variation at the landscape scale than local scale. 
+#explains a good deal of variation in our predicted vals and their deviance from the actual 
+#test example models -> elev and ndvi explain more variation at the landscape scale than local scale. 
 
 
 
@@ -204,31 +269,28 @@ summary(pmin_mod2)
 
 #first need to make sure JUST looking at variance characterizing site, not means -> filter out 
 
-hab_het = env_coefs %>% 
-  select(-elev.mean, -ndvi.mean)
-
 rsqrd_hetero = data.frame(dep = character(), ind = character(), r2 = numeric())
 #modify to include plotting of obs values for each stateroute vs pred line 
 #and plot these with r squared vals as annotations to plots too 
-setwd("C:/git/core-transient/output/plots/Molly Plots/habhet/")
+setwd("C:/git/core-transient/output/plots/'Molly Plots'/habhet/")
 
 
-for (d in 2:10) { #adjust columns appropriately -> make sure correct order of ind and dep vars!
-  for (i in 32:ncol(hab_het)) {
-    tempmod = lm(hab_het[,d] ~ hab_het[,i])
+for (d in 2:6) { #adjust columns appropriately -> make sure correct order of ind and dep vars!
+  for (i in 7:16) {
+    tempmod = lm(env_coefs[,d] ~ env_coefs[,i])
     
-    tempdf = data.frame(dep = names(hab_het)[d], 
-                        ind = names(hab_het)[i], 
+    tempdf = data.frame(dep = names(env_coefs)[d], 
+                        ind = names(env_coefs)[i], 
                         r2 = summary(tempmod)$r.squared)
     
-    templot = ggplot(data = hab_het, aes(x = hab_het[,i], y = hab_het[,d]))+geom_point()+
+    templot = ggplot(data = env_coefs, aes(x = env_coefs[,i], y = env_coefs[,d]))+geom_point()+
       geom_line(aes(y = predict(tempmod), color = 'Model'))+
-      labs(x = names(hab_het)[i], y = names(hab_het)[d])+guides(color = "none")+
-      annotate("text", x = 0.5*max(hab_het[,i]), y = 0.5*max(hab_het[,d]), 
+      labs(x = names(env_coefs)[i], y = names(env_coefs)[d])+guides(color = "none")+
+      annotate("text", x = 0.5*max(env_coefs[,i]), y = 0.5*max(env_coefs[,d]), 
                label = paste("italic(R) ^ 2 ==", tempdf$r2, sep = ""), parse = TRUE, 
                color = "red", size = 5.5) 
-    ggsave(templot, filename=paste("hab_het", names(hab_het)[d], 
-                                   names(hab_het)[i],".png",sep=""))
+    ggsave(templot, filename=paste("env_coefs", names(env_coefs)[d], 
+                                   names(env_coefs)[i],".png",sep=""))
     
     rsqrd_hetero = rbind(rsqrd_hetero, tempdf)
     }
@@ -236,7 +298,7 @@ for (d in 2:10) { #adjust columns appropriately -> make sure correct order of in
 
 dev.off()
 write.csv(rsqrd_hetero, "scripts/R-scripts/scale_analysis/rsqrd_hetero.csv", row.names = FALSE) 
-#updated 10/03 using corrected hab_het vals, only variances characterizing sites
+#updated 10/29 using corrected hab_het vals, only variances characterizing sites
 
 
 ####Visually Characterizing measures of habitat heterogeneity####
