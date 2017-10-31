@@ -308,5 +308,10 @@ plot(meanOcc~logN, data = bbs_allscales, xlab = "Average Abundance" , ylab = "Me
 
 
 #ALL files updated 09/20 ~3pm 
-
-
+bbs_allscales$preds = predict(mod1)
+pred_plot = ggplot(bbs_allscales, aes(x = logA, y = meanOcc))+geom_line(aes(group = focalrte), color = "grey")+
+  theme_classic()+geom_line(aes(y = preds), color = "red")+ #geom_smooth(model = lm, color = 'red')+
+  labs(x = "Log Area", y = "Mean Community Occupancy")+ 
+  annotate("text", x = 2.5, y = 0.45, colour = "red", label = "italic(R) ^ 2 == 0.7424", parse = TRUE)+
+  scale_color_manual(values=c("Observed"="grey", "Mean Predicted"="red"))
+pred_plot
