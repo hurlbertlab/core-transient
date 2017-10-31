@@ -331,15 +331,9 @@ write.csv(rsqrd_hetero, "scripts/R-scripts/scale_analysis/rsqrd_hetero.csv", row
 rsqrd_hetero = read.csv("scripts/R-scripts/scale_analysis/rsqrd_hetero.csv", header = TRUE)
 hab_het = read.csv("scripts/R-scripts/scale_analysis/hab_het.csv", header = TRUE)
 
-ggplot(data = rsqrd_hetero, aes(y = corr_r))
-
-
-
-
-ggplot(data = covmatrix, aes(y = r2))+geom_col(aes(x = dep))+facet_wrap(~ind)+ 
-  coord_cartesian(ylim = c(min(rsqrd_hetero$r2), max(rsqrd_hetero$r2)))
-
-
+r_plot = ggplot(data = rsqrd_hetero, aes(y = corr_r))+geom_col(aes(x=dep))+facet_wrap(~ind)+
+  theme_bw()
+r_plot 
 
 
 

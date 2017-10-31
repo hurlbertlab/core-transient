@@ -309,9 +309,26 @@ plot(meanOcc~logN, data = bbs_allscales, xlab = "Average Abundance" , ylab = "Me
 
 #ALL files updated 09/20 ~3pm 
 bbs_allscales$preds = predict(mod1)
-pred_plot = ggplot(bbs_allscales, aes(x = logA, y = meanOcc))+geom_line(aes(group = focalrte), color = "grey")+
+pred_plot = ggplot(bbs_allscales, aes(x = logA, y = meanOcc))+geom_line(aes(group = focalrte), color = "focalrte")+
   theme_classic()+geom_line(aes(y = preds), color = "red")+ #geom_smooth(model = lm, color = 'red')+
   labs(x = "Log Area", y = "Mean Community Occupancy")+ 
   annotate("text", x = 2.5, y = 0.45, colour = "red", label = "italic(R) ^ 2 == 0.7424", parse = TRUE)+
   scale_color_manual(values=c("Observed"="grey", "Mean Predicted"="red"))
 pred_plot
+
+bbs_allscales$preds2 = predict(mod2)
+pred_plot2 = ggplot(bbs_allscales, aes(x = logN, y = meanOcc))+geom_line(aes(group = focalrte), color = "grey")+
+  theme_classic()+geom_line(aes(y = preds2), color = "red")+ #geom_smooth(model = lm, color = 'red')+
+  labs(x = "Log Abundance", y = "Mean Community Occupancy")+ 
+  annotate("text", x = 4, y = 0.45, colour = "red", label = "italic(R) ^ 2 == 0.8087", parse = TRUE)+
+  scale_color_manual(values=c("Observed"="grey", "Mean Predicted"="red"))
+pred_plot2
+summary(mod2)
+
+
+abun_p = ggplot(bbs_allscales, aes(x = logN, y = meanOcc, colour = focalrte))+
+  geom_line(aes(group = focalrte))+
+  theme_classic()+ #geom_smooth(model = lm, color = 'red')+
+  labs(x = "Log Abundance", y = "Mean Community Occupancy")
+abun_p
+?geom_line 
