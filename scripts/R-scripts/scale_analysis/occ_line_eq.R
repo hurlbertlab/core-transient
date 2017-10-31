@@ -327,9 +327,13 @@ AUC_W = coefs %>%
   filter(Longi <= -100)
 
 
-AUC_Eplot = ggplot(AUC_E, aes(x = OA.AUC))+geom_histogram(bins = 30)
+AUC_Eplot = ggplot(AUC_E, aes(x = OA.AUC))+geom_histogram(bins = 30)+
+  coord_cartesian(xlim = c(-6e-14, 6e-14), ylim = c(0, 75))+labs(y = "AUC East")
 AUC_Eplot #mirrors the first dist 
 
-AUC_Wplot = ggplot(AUC_W, aes(x = OA.AUC))+geom_histogram(bins = 30)
+AUC_Wplot = ggplot(AUC_W, aes(x = OA.AUC))+geom_histogram(bins = 30)+
+  coord_cartesian(xlim = c(-6e-14, 6e-14), ylim = c(0, 75))+labs(y = "AUC West")
 AUC_Wplot
+
+comp = grid.arrange(AUC_Eplot, AUC_Wplot)
 #bigger spread, def not normal dist if we narrowed down
