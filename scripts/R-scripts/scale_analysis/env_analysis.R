@@ -182,20 +182,17 @@ write.csv(env_all, "scripts/R-scripts/scale_analysis/env_all.csv", row.names = F
 ####abitat hetero measures and scale independent of coefs (for predictions)####   
 coefs = read.csv("scripts/R-scripts/scale_analysis/coefs.csv", header = TRUE) #AUC etc. 
 env_all = read.csv("scripts/R-scripts/scale_analysis/env_all.csv", header = TRUE) #AUC etc. 
+#calc areas of scales and run against logA consistently ? 
+
+env_all$area = env_all$scale #*40 etc etc etc
+
+
 
 #first visualize how habitat hetero changes with scale and run model on this to corroborate occ-scale patterns 
-p1 = ggplot(env_all, aes(x = scale, y = ndvi.var))+geom_point()
-p2 = ggplot(env_all, aes(x = scale, y= elev.var))+geom_point()
-p3 = ggplot(env_all, aes(x = scale, y = ndvi.mean))+geom_point()
-p4 = ggplot(env_all, aes(x = scale, y = elev.mean))+geom_point()
-
-p5 = grid.arrange(p1, p2, p3, p4) #visually = more tightening up of patterns at larger scales, EXCEPT elevational variance
-#recall that env vars calculated iteratively over consecutively larger and larger radius out from each focal route, 
-#and so across progressively larger and larger vector of values from each subsumed secondary route therein 
-#so: mean(vector of means of secondary routes, vector length based on nu/scale) AND 
-#variance(vector of means of secondary routes, vector length based on nu/scale)
-#only var and means encompassed by each stateroute, NOT these values across all focal routes
-
+p1 = ggplot(env_all, aes(x = scale, y = ndvi.var))+geom_line(aes(group = stateroute), color = "grey")
+p2 = ggplot(env_all, aes(x = scale, y= elev.var))+geom_line(aes(group = stateroute), color = "grey")
+p3 = ggplot(env_all, aes(x = scale, y = ndvi.mean))+geom_line(aes(group = stateroute), color = "grey")
+p4 = ggplot(env_all, aes(x = scale, y = elev.mean))+geom_line(aes(group = stateroute), color = "grey")
 
 mod1 = lm(ndvi.var ~ scale, data = env_all)
 mod2 = lm(elev.var ~ scale, data = env_all)
@@ -207,8 +204,32 @@ summary(mod2)
 summary(mod3)
 summary(mod4)
 
-p1+geom_smooth(formula = mod1)
-p2+geom_smooth(formula = mod2)
+env_all$nv_preds = predict(mod1)
+env_all$nm_preds = predict(mod3)
+env_all$ev_preds = predict(mod2)
+env_all$em_preds = predict(mod4)
+
+p5 = p1+geom_line(data = env_all, aes(y = nv_preds), color = "red")+ 
+  theme_classic()+
+  annotate("text", x = 40, y = 0.10, colour = "red", label = "italic(R) ^ 2 == 0.06378", parse = TRUE)
+p6 = p2+geom_line(data = env_all, aes(y = ev_preds), color = "red")+
+  theme_classic()+
+  annotate("text", x = 35, y = 756000, colour = "red", label = "italic(R) ^ 2 == 0.04223", parse = TRUE)
+p7 = p3+geom_line(data = env_all, aes(y= nm_preds), color = "red")+
+  theme_classic()+
+  annotate("text", x = 40, y = 0.2, colour = "red", label = "italic(R) ^ 2 == 0.0001299", parse = TRUE)
+p8 = p4+ geom_line(data = env_all, aes(y = em_preds), color = "red")+
+  theme_classic()+
+  annotate("text", x = 40, y = 3000, colour = "red", label = "italic(R) ^ 2 == 0.0004142", parse = TRUE)  
+
+p9 = grid.arrange(p5, p6, p7, p8) 
+#visually = more tightening up of patterns at larger scales, EXCEPT elevational variance
+#recall that env vars calculated iteratively over consecutively larger and larger radius out from each focal route, 
+#and so across progressively larger and larger vector of values from each subsumed secondary route therein 
+#so: mean(vector of means of secondary routes, vector length based on nu/scale) AND 
+#variance(vector of means of secondary routes, vector length based on nu/scale)
+#only var and means encompassed by each stateroute, NOT these values across all focal routes
+
 #all sig, but only explain like 6% and 4% of var across scale 
 #directionally, consider interpretations and how predictions may follow 
 #elevational variances are tighter at low scales, and much higher at high scales 
@@ -231,7 +252,7 @@ write.csv(env_coefs, "scripts/R-scripts/scale_analysis/env_coefs.csv", row.names
 env_coefs = read.csv("scripts/R-scripts/scale_analysis/env_coefs.csv", header = TRUE)
 
 #check out cov matrix to inform model generation and predictions:
-covmatrix = round(cor(env_coefs[, 1:ncol(env_coefs)]), 2) #since clipped stateroute don't need to clip again - should I clip scale?
+covmatrix = round(cor(env_coefs[, 3:ncol(env_coefs)]), 2) #since clipped stateroute don't need to clip again - should I clip scale?
 covmatrix = as.data.frame(covmatrix)
 write.csv(covmatrix, "scripts/R-scripts/scale_analysis/covmatrix.csv", row.names = FALSE)
 #mean and var - interpret how covary with coefs and direction - i.e. ndvi mean covaries positively with pmin, 
@@ -269,28 +290,33 @@ summary(min_mod4)
 
 #first need to make sure JUST looking at variance characterizing site, not means -> filter out 
 
-rsqrd_hetero = data.frame(dep = character(), ind = character(), r2 = numeric())
+rsqrd_hetero = data.frame(dep = character(), ind = character(), 
+                          r2 = numeric(), adjr = numeric(), corr_r = numeric())
 #modify to include plotting of obs values for each stateroute vs pred line 
 #and plot these with r squared vals as annotations to plots too 
 setwd("C:/git/core-transient/output/plots/'Molly Plots'/habhet/")
 
 
-for (d in 2:6) { #adjust columns appropriately -> make sure correct order of ind and dep vars!
+for (d in 3:6) { #adjust columns appropriately -> make sure correct order of ind and dep vars!
   for (i in 7:16) {
     tempmod = lm(env_coefs[,d] ~ env_coefs[,i])
+    tempcor = cor.test(env_coefs[,d], env_coefs[,i], method = "pearson")
+    
     
     tempdf = data.frame(dep = names(env_coefs)[d], 
                         ind = names(env_coefs)[i], 
-                        r2 = summary(tempmod)$r.squared)
+                        r2 = summary(tempmod)$r.squared, 
+                        adjr = summary(tempmod)$adj.r.squared, 
+                        corr_r = as.numeric(tempcor$estimate))
     
-    templot = ggplot(data = env_coefs, aes(x = env_coefs[,i], y = env_coefs[,d]))+geom_point()+
-      geom_line(aes(y = predict(tempmod), color = 'Model'))+
-      labs(x = names(env_coefs)[i], y = names(env_coefs)[d])+guides(color = "none")+
-      annotate("text", x = 0.5*max(env_coefs[,i]), y = 0.5*max(env_coefs[,d]), 
-               label = paste("italic(R) ^ 2 ==", tempdf$r2, sep = ""), parse = TRUE, 
-               color = "red", size = 5.5) 
-    ggsave(templot, filename=paste("env_coefs", names(env_coefs)[d], 
-                                   names(env_coefs)[i],".png",sep=""))
+    # templot = ggplot(data = env_coefs, aes(x = env_coefs[,i], y = env_coefs[,d]))+geom_point()+
+    #   geom_line(aes(y = predict(tempmod), color = 'Model'))+
+    #   labs(x = names(env_coefs)[i], y = names(env_coefs)[d])+guides(color = "none")+
+    #   annotate("text", x = 0.5*max(env_coefs[,i]), y = 0.5*max(env_coefs[,d]), 
+    #            label = paste("italic(R) ^ 2 ==", tempdf$r2, sep = ""), parse = TRUE, 
+    #            color = "red", size = 5.5) 
+    # ggsave(templot, filename=paste("env_coefs", names(env_coefs)[d], 
+    #                                names(env_coefs)[i],".png",sep=""))
     
     rsqrd_hetero = rbind(rsqrd_hetero, tempdf)
     }
@@ -298,19 +324,30 @@ for (d in 2:6) { #adjust columns appropriately -> make sure correct order of ind
 
 dev.off()
 write.csv(rsqrd_hetero, "scripts/R-scripts/scale_analysis/rsqrd_hetero.csv", row.names = FALSE) 
-#updated 10/29 using corrected hab_het vals, only variances characterizing sites
+#updated 10/30 using corrected hab_het vals, only variances characterizing sites
 
 
 ####Visually Characterizing measures of habitat heterogeneity####
 rsqrd_hetero = read.csv("scripts/R-scripts/scale_analysis/rsqrd_hetero.csv", header = TRUE)
 hab_het = read.csv("scripts/R-scripts/scale_analysis/hab_het.csv", header = TRUE)
 
+r_plot = ggplot(data = rsqrd_hetero, aes(y = corr_r))+geom_col(aes(x=dep))+facet_wrap(~ind)+
+  theme_bw()
+r_plot 
+
+
+
+#on the right track but not quite: 
 ggplot(data = rsqrd_hetero, aes(x = ind, y = r2, fill = ind))+geom_boxplot()+theme_classic()+
   theme(legend.position="none")+
   labs(x = "Environmental variables", y = "Variation Explained (R^2)")
 
 ggplot(data = rsqrd_hetero, aes(x = ind, y = r2, color = dep))+geom_point()+theme_classic()+
   labs(x = "Environmental variables", y = "Variation Explained (R^2)")
+
+
+
+
 
 ggplot(data = hab_het, aes(x = elev.var, y = OA.pmin))+geom_point()+geom_smooth()
 ggplot(data = hab_het, aes(x = ndvi.var, y = OA.pmin))+geom_point()+geom_smooth()
