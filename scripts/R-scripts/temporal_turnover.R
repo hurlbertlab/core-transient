@@ -41,8 +41,8 @@ turnover = function(splist1, splist2) {
   return(Jturnover)
 }
 
-bray = function(splist1, splist2) {
-  brayturnover = sum(abs(splist1 - splist2))/sum(abs(splist1 + splist2))
+bray = function(vec1, vec2) {
+  brayturnover = sum(abs(vec1 - vec2))/sum(abs(vec1 + vec2))
   return(brayturnover)
 }
 
