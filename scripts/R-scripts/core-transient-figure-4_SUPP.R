@@ -107,6 +107,8 @@ predmod3d = merTools::predictInterval(mod3d, occ_pred_3d, n.sims=1000)
 predmod3d$order = c(1,2,3)
 
 #### panel plot ####
+areaids = unique(areamerge$datasetID)
+areaids = areaids[! areaids %in% c(222)] 
 area_plot = data.frame()
 pdf('output/plots/3a_3d_25SUPP.pdf', height = 10, width = 12)
 par(mfrow = c(2, 2), mar = c(5,5,1,1), cex = 1, oma = c(0,0,0,0), las = 1)
@@ -135,7 +137,7 @@ title(outer=FALSE,adj=0.02,main="A",cex.main=2,col="black",font=2,line=-1)
 par(new= FALSE)
 
 plot(NA, xlim = c(0, 7), ylim = c(0,1), col = as.character(taxcolor$color), xlab = expression("log"[10]*" Community Size"), ylab = "% Transients", cex.lab = 2,frame.plot=FALSE)
-b2 = for(id in unique(areamerge$datasetID)){
+b2 = for(id in scaleIDs){
   print(id)
   plotsub = subset(bbs_occ,datasetID == id)
   mod3 = lm(plotsub$pctTrans25 ~ log10(plotsub$meanAbundance))
@@ -234,7 +236,7 @@ title(outer=FALSE,adj=0.02,main="A",cex.main=2,col="black",font=2,line=-1)
 par(new= FALSE)
 
 plot(NA, xlim = c(0, 7), ylim = c(0,1), col = as.character(taxcolor$color), xlab = expression("log"[10]*" Community Size"), ylab = "% Transients", cex.lab = 2,frame.plot=FALSE)
-b2 = for(id in unique(areamerge$datasetID)){
+b2 = for(id in areaids){
   print(id)
   plotsub = subset(bbs_occ,datasetID == id)
   mod3 = lm(plotsub$pctTrans10 ~ log10(plotsub$meanAbundance))
