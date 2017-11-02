@@ -169,6 +169,18 @@ dev.off()
 
 
 
+# pseudo r2
+mod4 = lm(areamerge$pctTrans ~ log10(areamerge$area))
+area_r = na.omit(areamerge)
+mod_r = lm(area_r$pctTrans~predict(mod4))
+summary(mod_r)
+
+# pseudo r2
+mod4 = lm(bbs_occ$pctTrans ~ log10(bbs_occ$meanAbundance))
+bbs_r = na.omit(bbs_occ)
+mod4_r = lm(bbs_r$pctTrans~predict(mod4))
+summary(mod4_r)
+
 ##### 10 pct trans ######
 
 areamerge.5 = merge(occ_taxa10[,c("datasetID", "site", "pctTrans10")], area, by = c("datasetID", "site"))
@@ -206,6 +218,7 @@ summary(mod3d)
 occ_pred_3d = data.frame(datasetID = 999, system = unique(ecosys$system), meanAbundance =  102) # 102 is median abun for data frame (median(bbs_occ_pred$meanAbundance))
 predmod3d = merTools::predictInterval(mod3d, occ_pred_3d, n.sims=1000)
 predmod3d$order = c(1:3)
+
 
 #### panel plot ####
 area_plot = data.frame()
@@ -267,4 +280,16 @@ title(outer=FALSE,adj=0.02,main="D",cex.main=2,col="black",font=2,line=-1)
 dev.off()
 
 dev.off()
+
+# pseudo r2
+mod4 = lm(areamerge$pctTrans ~ log10(areamerge$area))
+area_r = na.omit(areamerge)
+mod_r = lm(area_r$pctTrans~predict(mod4))
+summary(mod_r)
+
+# pseudo r2
+mod4 = lm(bbs_occ$pctTrans ~ log10(bbs_occ$meanAbundance))
+bbs_r = na.omit(bbs_occ)
+mod4_r = lm(bbs_r$pctTrans~predict(mod4))
+summary(mod4_r)
 

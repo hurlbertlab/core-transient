@@ -342,7 +342,6 @@ summary(mod1)
 coefs <- data.frame(coef(summary(mod1)))
 coefs$p.z <- 2 * (1 - pnorm(abs(coefs$t.value)))
 
-
 ggplot(data=lat_scale_rich, aes(elev.var,propTrans)) +geom_point(aes(color = as.factor(lat_scale_rich$taxa)), size = 3) + xlab("Elevation Variance")+ ylab("% Transient")+ theme_classic()
 
 # visualizing model results
