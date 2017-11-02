@@ -41,9 +41,8 @@ turnover = function(splist1, splist2) {
   return(Jturnover)
 }
 
-bray = function(splist1, splist2, comm1, comm2) {
-  shared_sp = length(intersect(comm1, comm2))
-  brayturnover = 2*shared_sp/(sum(splist1) + sum(splist2))
+bray = function(splist1, splist2) {
+  brayturnover = sum(abs(splist1 - splist2))/sum(abs(splist1 + splist2))
   return(brayturnover)
 }
 
@@ -94,31 +93,33 @@ for (dataset in datasetIDs[,1]) {
     for (year in years[1:(length(years)-1)]) {
       comm1 = unique(sitedata$species[sitedata$year == year])
       comm2 = unique(sitedata$species[sitedata$year == year + 1])
-      abun1 = sitedata$count[sitedata$year == year]
-      abun2 = sitedata$count[sitedata$year == year + 1]
+      sitesub = spread(sitedata, year, count)
+      # as.vector(sitesub$[5])
+      sub1 = sitesub[sitesub$year == year,]
+      sub2 = sitesub[sitesub$year == year + 1,]
       T_J = turnover(comm1, comm2)
-      t_bray = bray(abun1, abun2, comm1, comm2)
+      t_bray = bray(abun1, abun2)
       
       
       comm1_noT = unique(notrans$species[notrans$year == year])
       comm2_noT = unique(notrans$species[notrans$year == year + 1])
-      abun1_noT = notrans$count[notrans$year == year]
-      abun2_noT = notrans$count[notrans$year == year + 1]
+   #   abun1_noT = notrans$count[notrans$year == year]
+   #   abun2_noT = notrans$count[notrans$year == year + 1]
       T_J_notran = turnover(comm1_noT, comm2_noT)
-      t_bray_notran = bray(abun1_noT, abun2_noT, comm1_noT, comm2_noT)
+   #   t_bray_notran = bray(abun1_noT, abun2_noT, comm1_noT, comm2_noT)
       
       TJs = c(TJs, T_J)
       TJ_notrans = c(TJ_notrans, T_J_notran)
-      TJ_bray = c(tbrays, t_bray)
-      TJ_bray_notran = c(tbraysnotran, t_bray_notran)
+   #   TJ_bray = c(tbrays, t_bray)
+   #   TJ_bray_notran = c(tbraysnotran, t_bray_notran)
     }
     temp_output = data.frame(datasetID = dataset, site = site, TJ = mean(TJs),
                              TJnotrans = mean(TJ_notrans))
     turnover_output = rbind(turnover_output, temp_output)
     
-    bray_temp = data.frame(datasetID = dataset, site = site, TJ = mean(TJ_bray),
+   # bray_temp = data.frame(datasetID = dataset, site = site, TJ = mean(TJ_bray),
                              TJnotrans = mean(TJ_bray_notran))
-    bray_output = rbind(bray_output, bray_temp)
+   # bray_output = rbind(bray_output, bray_temp)
   }
 }
 
