@@ -111,8 +111,9 @@ write.csv(bbs_focal_occs_pctTrans, "data/BBS/bbs_focal_occs_pctTrans.csv", row.n
 
 #### BBS prep to merge area with abundance data ####
 bbs_abun = read.csv("data/BBS/bbs_abun_occ.csv", header=TRUE)
-bbs_abun$site = bbs_abun$stateroute
-bbs_area = merge(bbs_below_st, bbs_abun, by = "site")
+bbs_area = merge(bbs_below_st, bbs_abun, by.x = "site", by.y = "stateroute")
+bbs_area$subrouteID2 = substring(bbs_area$subrouteID, 5)
+bbs_area$site = paste(bbs_area$site,bbs_area$scale,bbs_area$subrouteID2,  sep = "-")
 bbs_area$pctTrans = bbs_area$propTrans
 bbs_area = bbs_area[, c("datasetID", "site", "taxa", "pctTrans", "area")]
 write.csv(bbs_area, "data/BBS/bbs_area.csv", row.names = FALSE)

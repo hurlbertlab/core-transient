@@ -103,10 +103,19 @@ occ_pred_4d = data.frame(datasetID = 999, system = unique(ecosys$system), meanAb
 predmod4d = merTools::predictInterval(mod4d, occ_pred_4d, n.sims=1000)
 predmod4d$order = c(1:3)
 
-# pseudo r2
-mod4c = lmer(pctTrans~(1|datasetID) * taxa * log10(meanAbundance), data=bbs_occ_pred)
-ptrans = na.omit(bbs_occ_pred$pctTrans)
-mod_r = lm(ptrans~predict(mod4c))
+
+# pseudo r2 area
+bbs_occ_area = merge(bbs_occ_pred, areamerge[,c("datasetID", "site", "area")], by = c("datasetID", "site"))
+bbs_occ_area = na.omit(bbs_occ_area)
+mod4a = lmer(pctTrans~(1|datasetID) * taxa * log10(area), data=bbs_occ_area)
+mod_a = lm(bbs_occ_area$pctTrans~predict(mod4a))
+summary(mod_a)
+
+
+# pseudo r2 abun
+mod4b = lmer(pctTrans~(1|datasetID) * taxa * log10(meanAbundance), data=bbs_occ_pred)
+ptransA = na.omit(bbs_occ_pred$pctTrans)
+mod_r = lm(ptransA~predict(mod4b))
 summary(mod_r)
 
 #### panel plot ####
