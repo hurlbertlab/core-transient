@@ -64,6 +64,7 @@ areamerge.5  = areamerge.5 [, c("datasetID", "site", "taxa", "pctTrans", "area")
 
 # read in bbs abundance data
 bbs_area = read.csv("data/BBS/bbs_area.csv", header = TRUE)
+bbs_area = bbs_area[!duplicated(bbs_area), ]
 areamerge = rbind(bbs_area,areamerge.5)
 write.csv(areamerge, "output/tabular_data/areamerge.csv", row.names = FALSE)
 
