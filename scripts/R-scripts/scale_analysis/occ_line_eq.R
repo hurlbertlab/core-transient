@@ -141,7 +141,7 @@ for(s in stateroutes){
     OA.pthresh = min(logsub$logA[logsub$OApreds >= 0.5]) 
     
     OA.r2 = summary(OAlm.r2)$r.squared
-    OA.AUC =  sum(OA.xmid - OA.pxmid) #AUC proxy - taking diff between actual and predicted mid vals at EVERY scale and adding together
+    OA.AUC =  sum(abs(OA.xmid - OA.pxmid)) #AUC proxy - taking diff between actual and predicted mid vals at EVERY scale and adding together
    
 
     OAmodel = data.frame(stateroute = s, OA.min, OA.max, OA.slope, 
@@ -177,7 +177,7 @@ for(s in stateroutes){
     CA.pthresh = min(logsub$logA[logsub$CApreds >= 0.5]) 
     
     CA.r2 = summary(CAlm.r2)$r.squared
-    CA.AUC =  sum(CA.xmid - CA.pxmid) #AUC proxy - taking diff between actual and predicted mid vals at EVERY scale and adding together
+    CA.AUC =  sum(abs(CA.xmid - CA.pxmid)) #AUC proxy - taking diff between actual and predicted mid vals at EVERY scale and adding together
      
     
     CAmodel = data.frame(stateroute = s, CA.min, CA.max, CA.slope, 
@@ -213,7 +213,7 @@ for(s in stateroutes){
     TA.pthresh = min(logsub$lnA[logsub$TApreds >= 0.50])
 
     TA.r2 = summary(TAlm.r2)$r.squared
-    TA.AUC =  sum(TA.xmid - TA.pxmid) #AUC proxy - taking diff between actual and predicted mid vals at EVERY scale and adding together
+    TA.AUC =  sum(abs(TA.xmid - TA.pxmid)) #AUC proxy - taking diff between actual and predicted mid vals at EVERY scale and adding together
   
     TAmodel = data.frame(stateroute = s, TA.min, TA.max, TA.slope,  
                TA.thresh,
