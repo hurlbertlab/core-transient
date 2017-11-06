@@ -57,30 +57,230 @@ for (s in b_scales) {
 
 #transform output into matrix for use with coylefig script 
 output = output[, -3]
+
+output_o = output %>% 
+  spread(AOU, occ)
+output_o = as.data.frame(output_o)
+
 #remove na's 
 output = na.omit(output)
 
 
-# output_o = output %>% not necessary 
-#   spread(AOU, occ)
-# output_o = as.matrix(output_o)
+density(output$occ)
+par(mar=c(4,4,1,1)+0.5)
+par(lend=2)
+num.years = 15
+
+pdf('C:/git/core-transient/output/plots/Molly_Plots/coyle_1.pdf', height = 8, width = 10)
+# Add kernel density
+partdensity = density(output_o[output_o>0],from=1/min(num.years),
+                      to=(min(num.years)-1)/min(num.years),kernel='gaussian', na.rm=T, n=2000)
+plot(partdensity$y~partdensity$x,
+     main='',
+     xlab='',
+     ylab='',
+     xlim=c(0,1),ylim=c(0,2.5),
+     lwd=5,axes=F,type='l',lend=2
+)
+
+# Add breakpoints
+segments(0.33,0,0.33,partdensity$y[which(round(partdensity$x,2)==0.33)[1]], lty=3,lwd=2) #v2
+segments(0.66,0,0.66,partdensity$y[which(round(partdensity$x,2)==0.66)[1]], lty=3,lwd=2) #v2
+
+# Add axes
+axis(1,at=seq(0,1,0.2),pos=0,cex.axis=2)
+axis(2, c(0,2),labels=c("",""))
+
+
+# Add titles
+title(main='',xlab='Proportion of time present at site',ylab='Probability Density',
+      line=2,cex.lab=2.5)
+
+# Add proportions
+allsp = !is.na(occupancy.matrix)
+coresp = output_o>=0.6667
+occasp = output_o<0.3334
+
+# text(0.66+(0.33/2),0.10,paste('(',round(sum(coresp,na.rm=T)/sum(allsp,na.rm=T)*100,1),' %)',sep=''),
+# cex=3,font=1)
+# text(0.33/2,0.10,paste('(',round(sum(occasp,na.rm=T)/sum(allsp,na.rm=T)*100,1),' %)',sep=''),
+# cex=3,font=1)
+
+#text(0.66+(0.33/2),0.35,'Core',cex=3,font=2) #v3
+#text(0.33/2,0.35,'Transient',cex=3,font=2) #v3
+
+dev.off()
+#looks perfect 
+
 
 #repeat for scale of 5 stop segment and scale of 66 routes 
 
+####Figure 1b: at scale of 5 stop segments####
+# Generic calculation of occupancy for a specified scale
+#fix to run all at once, so no sep run for above-scale, USE occ-counts for both 
+
 #scale of 5 segments (min) 
 min_scales = c(5)
-output2 = c()
+min_out = c()
 for (s in min_scales) {
   numGroups = floor(50/s)
   for (g in 1:numGroups) {
     groupedCols = paste("Stop", ((g-1)*s + 1):(g*s), sep = "")
     temp = occ_counts(fifty_bestAous, groupedCols, s) 
-    output2 = rbind(output2, temp) 
+    min_out = rbind(min_out, temp) 
   } 
 }
 
+#transform output into matrix for use with coylefig script 
+min_out = min_out[, -3]
+#need to avg occs between unique stateroute-AOU pairs since 5 for every 1 
+min_out2 = min_out %>% 
+  group_by(AOU, stateroute) %>% 
+  summarise(occ = mean(occ)) %>% select(everything()) 
+            
 
 
-# plot(bbs_allscales$aveN~bbs_allscales$)
+min_out3 = spread(data = min_out2, AOU, occ)
 
+min_out2 = as.data.frame(min_out2)
+min_out3 = as.data.frame(min_out3)
+#remove na's 
+min_out2 = na.omit(min_out2)
+
+
+density(min_out2$occ)
+par(mar=c(4,4,1,1)+0.5)
+par(lend=2)
+num.years = 15
+
+pdf('C:/git/core-transient/output/plots/Molly_Plots/fig1b.pdf', height = 8, width = 10)
+# Add kernel density
+partdensity = density(min_out3[min_out3>0],from=1/min(num.years),
+                      to=(min(num.years)-1)/min(num.years),kernel='gaussian', na.rm=T, n=2000)
+plot(partdensity$y~partdensity$x,
+     main='',
+     xlab='',
+     ylab='',
+     xlim=c(0,1),ylim=c(0,2.5),
+     lwd=5,axes=F,type='l',lend=2
+)
+
+# Add breakpoints
+segments(0.33,0,0.33,partdensity$y[which(round(partdensity$x,2)==0.33)[1]], lty=3,lwd=2) #v2
+segments(0.66,0,0.66,partdensity$y[which(round(partdensity$x,2)==0.66)[1]], lty=3,lwd=2) #v2
+
+# Add axes
+axis(1,at=seq(0,1,0.2),pos=0,cex.axis=2)
+axis(2, c(0,2),labels=c("",""))
+
+
+# Add titles
+title(main='Scale of 1/10 of single route',xlab='Proportion of time present at site',ylab='Probability Density',
+      line=2,cex.lab=2.5)
+
+# Add proportions
+allsp = !is.na(min_out3)
+coresp = min_out3>=0.6667
+occasp = min_out3<0.3334
+
+# text(0.66+(0.33/2),0.10,paste('(',round(sum(coresp,na.rm=T)/sum(allsp,na.rm=T)*100,1),' %)',sep=''),
+# cex=3,font=1)
+# text(0.33/2,0.10,paste('(',round(sum(occasp,na.rm=T)/sum(allsp,na.rm=T)*100,1),' %)',sep=''),
+# cex=3,font=1)
+
+#text(0.66+(0.33/2),0.35,'Core',cex=3,font=2) #v3
+#text(0.33/2,0.35,'Transient',cex=3,font=2) #v3
+
+dev.off()
+
+#again, perfect 
+
+####Fig 1c: distribution at the maximum scale####
+
+#occ_counts function for calculating occupancy at any scale
+#countcolumns can refer to the stops in a stateroute OR 
+#it can refer to the associated secondary routes to aggregate across 
+occ_counts = function(countData, countColumns, scale) {
+  bbssub = countData[, c("stateroute", "year", "AOU", countColumns)] #these are our grouping vars
+  bbssub$groupCount = rowSums(bbssub[, countColumns]) 
+  bbsu = unique(bbssub[bbssub[, "groupCount"]!= 0, c("stateroute", "year", "AOU")]) 
+  
+  
+  occ.summ = bbsu %>% #occupancy
+    count(stateroute, AOU) %>%
+    mutate(occ = n/15, AOU = AOU, stateroute = stateroute)
+  return(occ.summ)
+  
+}
+
+
+# Generic calculation of occupancy for a specified scale
+#fix to run all at once, so no sep run for above-scale, USE occ-counts for both 
+b_scales = c(50)
+output = c()
+for (s in b_scales) {
+  numGroups = floor(50/s)
+  for (g in 1:numGroups) {
+    groupedCols = paste("Stop", ((g-1)*s + 1):(g*s), sep = "")
+    temp = occ_counts(fifty_bestAous, groupedCols, s) 
+    output = rbind(output, temp) 
+  } 
+}
+
+#transform output into matrix for use with coylefig script 
+output = output[, -3]
+
+output_o = output %>% 
+  spread(AOU, occ)
+output_o = as.data.frame(output_o)
+
+#remove na's 
+output = na.omit(output)
+
+
+density(output$occ)
+par(mar=c(4,4,1,1)+0.5)
+par(lend=2)
+num.years = 15
+
+pdf('C:/git/core-transient/output/plots/Molly_Plots/coyle_1.pdf', height = 8, width = 10)
+# Add kernel density
+partdensity = density(output_o[output_o>0],from=1/min(num.years),
+                      to=(min(num.years)-1)/min(num.years),kernel='gaussian', na.rm=T, n=2000)
+plot(partdensity$y~partdensity$x,
+     main='',
+     xlab='',
+     ylab='',
+     xlim=c(0,1),ylim=c(0,2.5),
+     lwd=5,axes=F,type='l',lend=2
+)
+
+# Add breakpoints
+segments(0.33,0,0.33,partdensity$y[which(round(partdensity$x,2)==0.33)[1]], lty=3,lwd=2) #v2
+segments(0.66,0,0.66,partdensity$y[which(round(partdensity$x,2)==0.66)[1]], lty=3,lwd=2) #v2
+
+# Add axes
+axis(1,at=seq(0,1,0.2),pos=0,cex.axis=2)
+axis(2, c(0,2),labels=c("",""))
+
+
+# Add titles
+title(main='',xlab='Proportion of time present at site',ylab='Probability Density',
+      line=2,cex.lab=2.5)
+
+# Add proportions
+allsp = !is.na(occupancy.matrix)
+coresp = output_o>=0.6667
+occasp = output_o<0.3334
+
+# text(0.66+(0.33/2),0.10,paste('(',round(sum(coresp,na.rm=T)/sum(allsp,na.rm=T)*100,1),' %)',sep=''),
+# cex=3,font=1)
+# text(0.33/2,0.10,paste('(',round(sum(occasp,na.rm=T)/sum(allsp,na.rm=T)*100,1),' %)',sep=''),
+# cex=3,font=1)
+
+#text(0.66+(0.33/2),0.35,'Core',cex=3,font=2) #v3
+#text(0.33/2,0.35,'Transient',cex=3,font=2) #v3
+
+dev.off()
+#looks perfect 
 
