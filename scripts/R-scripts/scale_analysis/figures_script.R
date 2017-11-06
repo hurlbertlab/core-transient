@@ -246,38 +246,30 @@ for (r in uniqrtes) { #for each focal route
     
 
 #transform output into matrix for use with coylefig script 
-min_out = min_out[, -3]
-#need to avg occs between unique stateroute-AOU pairs since 5 for every 1 
-min_out2 = min_out %>% 
-  group_by(AOU, stateroute) %>% 
-  summarise(occ = mean(occ)) %>% select(everything()) 
+max_out = max_out[, -2]
 
-
-#transform output into matrix for use with coylefig script 
-output = output[, -3]
-
-output_o = output %>% 
+max_out_m = max_out %>% 
   spread(AOU, occ)
-output_o = as.data.frame(output_o)
+max_out_m = as.data.frame(max_out_m)
+max_out = as.data.frame(max_out)
+#remove na's from long form 
+max_out = na.omit(max_out)
 
-#remove na's 
-output = na.omit(output)
 
-
-density(output$occ)
+density(max_out$occ)
 par(mar=c(4,4,1,1)+0.5)
 par(lend=2)
 num.years = 15
 
-pdf('C:/git/core-transient/output/plots/Molly_Plots/coyle_1.pdf', height = 8, width = 10)
+pdf('C:/git/core-transient/output/plots/Molly_Plots/fig1c.pdf', height = 8, width = 10)
 # Add kernel density
-partdensity = density(output_o[output_o>0],from=1/min(num.years),
+partdensity = density(max_out_m[max_out_m>0],from=1/min(num.years),
                       to=(min(num.years)-1)/min(num.years),kernel='gaussian', na.rm=T, n=2000)
 plot(partdensity$y~partdensity$x,
      main='',
      xlab='',
      ylab='',
-     xlim=c(0,1),ylim=c(0,2.5),
+     #xlim=c(0,1),ylim=c(0,2.5),
      lwd=5,axes=F,type='l',lend=2
 )
 
@@ -291,13 +283,13 @@ axis(2, c(0,2),labels=c("",""))
 
 
 # Add titles
-title(main='',xlab='Proportion of time present at site',ylab='Probability Density',
+title(main='At maximum scale',xlab='Proportion of time present at site',ylab='Probability Density',
       line=2,cex.lab=2.5)
 
 # Add proportions
-allsp = !is.na(occupancy.matrix)
-coresp = output_o>=0.6667
-occasp = output_o<0.3334
+allsp = !is.na(max_out_m)
+coresp = max_out_m>=0.6667
+occasp = max_out_m<0.3334
 
 # text(0.66+(0.33/2),0.10,paste('(',round(sum(coresp,na.rm=T)/sum(allsp,na.rm=T)*100,1),' %)',sep=''),
 # cex=3,font=1)
@@ -308,5 +300,5 @@ occasp = output_o<0.3334
 #text(0.33/2,0.35,'Transient',cex=3,font=2) #v3
 
 dev.off()
-#looks perfect 
+#looks SUPER weird and need to troubleshoot density dist 
 
