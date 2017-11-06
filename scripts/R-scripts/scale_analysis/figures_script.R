@@ -196,6 +196,9 @@ dev.off()
 #again, perfect 
 
 ####Fig 1c: distribution at the maximum scale####
+dist.df = read.csv("scripts/R-scripts/scale_analysis/dist_df.csv", header = TRUE)
+bbs_above_guide = read.csv("scripts/R-scripts/scale_analysis/bbs_above_guide.csv", header = TRUE)
+#groupcounts for each AOU for each year at scale of ONE stateroute 
 
 #occ_counts function for calculating occupancy at any scale
 #countcolumns can refer to the stops in a stateroute OR 
@@ -214,18 +217,51 @@ occ_counts = function(countData, countColumns, scale) {
 }
 
 
-# Generic calculation of occupancy for a specified scale
-#fix to run all at once, so no sep run for above-scale, USE occ-counts for both 
-b_scales = c(50)
-output = c()
-for (s in b_scales) {
-  numGroups = floor(50/s)
-  for (g in 1:numGroups) {
-    groupedCols = paste("Stop", ((g-1)*s + 1):(g*s), sep = "")
-    temp = occ_counts(fifty_bestAous, groupedCols, s) 
-    output = rbind(output, temp) 
-  } 
+uniqrtes = unique(bbs_above_guide$stateroute) #all routes present are unique, still 953 which is great
+numrtes = 66 # based on min common number in top 6 grid cells, see grid_sampling_justification script 
+max_out = c()
+
+#test example route 2010 and nu at 57 routes -> large scale, should have high occ 
+for (r in uniqrtes) { #for each focal route
+  for (nu in numrtes) { #for each level of scale aggregated to each focal route
+    
+    #takes dist.df and generates a new list that changes based on which route in uniqrtes is being focused on 
+    #and the length of the list varies with the scale or nu 
+    
+    tmp_rte_group = dist.df %>% #changes with size of nu but caps at 66
+      filter(rte1 == r) %>% 
+      top_n(66, desc(dist)) %>% #fixed ordering by including arrange parm, 
+      #remove/skip top row 
+      arrange(dist) %>%
+      slice(1:nu) %>% 
+      select(everything()) %>% data.frame()
+    
+    #takes varying list from above and uses it to subset the bbs data so that occ can be calculated for the cluster 
+    
+    focal_clustr = bbs_above_guide %>% 
+      filter(stateroute %in% tmp_rte_group$rte2) #tmp_rte_group already ordered by distance so don't need 2x
+    #(for a given focal rte, narrow input data to those nu secondary routes in focal cluster)
+    #across 57 routes
+    
+    abun.summ = focal_clustr %>% #abundance
+      group_by(year) %>%  #not grouping by stateroute bc it stops mattering 
+      summarize(totalN = sum(groupCount)) %>%
+      summarize(aveN = mean(totalN), 
+                stateroute = r)
+    
+    occ.summ = focal_clustr %>% #occupancy -> focal clustr should GROW with scale, larger avg pool -> 
+      #increased likelihood that AOU will be present -> OH! I don't want stateroute in here! it doesn't matter! 
+      #it just matters that it shows up in the cluster at all, not just the stateroutes that go in
+      #how many years does each AOU show up in the cluster 
+      select(year, AOU) %>% #duplicates remnant of distinct secondary routes - finally ID'd bug
+      distinct() %>% #removing duplicates 09/20
+      count(AOU) %>% #how many times does that AOU show up in that clustr that year 
+      mutate(occ = n/15, scale = nu) 
+    
+  }
 }
+    
+    
 
 #transform output into matrix for use with coylefig script 
 output = output[, -3]
