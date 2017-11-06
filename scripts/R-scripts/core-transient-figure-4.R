@@ -77,7 +77,7 @@ occ_merge = occ_taxa[,c("datasetID", "site","taxa", "meanAbundance", "pctTrans",
 bbs_occ = rbind(bbs_spRich,occ_merge)
 
 #### Fig 4c/d predicted model ####
-bbs_occ_pred = bbs_occ[!bbs_occ$datasetID %in% c(207, 210, 217, 218, 222, 223, 225, 238, 241, 258, 282, 322, 280,317),]
+bbs_occ_pred = bbs_occ[!bbs_occ$datasetID %in% c(207, 210, 217, 218, 222, 223, 225, 238, 241, 248, 258, 282, 322, 280,317),]
 
 mod4c = lmer(pctTrans~(1|datasetID) * taxa * log10(meanAbundance), data=bbs_occ_pred)
 summary(mod4c)

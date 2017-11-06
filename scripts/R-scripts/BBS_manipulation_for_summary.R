@@ -87,7 +87,7 @@ write.csv(bbs_below, "data/BBS/bbs_below_summ2.csv", row.names = FALSE)
 # read in BBS route level data for fig 2
 bbs_focal_occs_pctTrans = read.csv("data/BBS/bbs_below_pctTrans.csv", header = TRUE)
 bbs_focal_occs_pctTrans = subset(bbs_focal_occs_pctTrans, bbs_focal_occs_pctTrans$scale == '50-1')
-bbs_focal_occs_pctTrans$site = bbs_focal_occs_pctTrans$stateroute
+bbs_focal_occs_pctTrans$site = paste(bbs_focal_occs_pctTrans$stateroute, bbs_focal_occs_pctTrans$scale, sep = "-")
 bbs_focal_occs_pctTrans$datasetID = 1
 bbs_focal_occs_pctTrans$system = "Terrestrial"
 bbs_focal_occs_pctTrans$taxa = "Bird"
@@ -95,6 +95,9 @@ bbs_focal_occs_pctTrans$propCore33 = bbs_focal_occs_pctTrans$pctCore
 bbs_focal_occs_pctTrans$propTrans33 = bbs_focal_occs_pctTrans$spRichTrans33
 bbs_focal_occs_pctTrans$propTrans25 = bbs_focal_occs_pctTrans$spRichTrans25
 bbs_focal_occs_pctTrans$propTrans10 = bbs_focal_occs_pctTrans$spRichTrans10
+#bbs_focal_occs_pctTrans$meanAbundance = bbs_focal_occs_pctTrans$aveN
+bbs_focal_occs_pctTrans = bbs_focal_occs_pctTrans[, c("datasetID","site","system","taxa","propTrans33","propTrans25","propTrans10")]
+write.csv(bbs_focal_occs_pctTrans, "data/BBS/bbs_focal_occs_pctTrans_Site.csv", row.names = FALSE)
 
 # 2a
 bbs_below_st = bbs_focal_occs_pctTrans

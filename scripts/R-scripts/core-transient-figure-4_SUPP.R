@@ -63,13 +63,15 @@ scaleIDs = scaleIDs[! scaleIDs %in% c(207, 210, 217, 218, 222, 223, 210, 238, 24
 bbs_abun = read.csv("data/BBS/bbs_abun_occ.csv", header=TRUE)
 
 # read in bbs abundance data
-bbs_area.5 = read.csv("data/BBS/bbs_area.csv", header = TRUE)
-bbs_area = tidyr::separate(bbs_area, site, c("site", "subsite"), sep = "-")
-bbs_focal_occs_pctTrans = read.csv("data/BBS/bbs_focal_occs_pctTrans.csv", header = TRUE)
+bbs_area = read.csv("data/BBS/bbs_area.csv", header = TRUE)
+# bbs_area = tidyr::separate(bbs_area.5, site, c("site", "subsite"), sep = "-")
+bbs_focal_occs_pctTrans = read.csv("data/BBS/bbs_focal_occs_pctTrans_Site.csv", header = TRUE)
 bbs_area2 = merge(bbs_area[, c("site", "area")], bbs_focal_occs_pctTrans, by = "site")
+bbs_area2 = bbs_area2[!duplicated(bbs_area2), ]
 bbs_area2$pctTrans25 = bbs_area2$propTrans25
 bbs_area2$site = as.factor(bbs_area2$site)
 bbs_area2  = bbs_area2[, c("datasetID", "site", "taxa", "pctTrans25", "area")]
+
 #### Fig 3a Area #####
 area = read.csv("output/tabular_data/scaled_areas_3_2.csv", header = TRUE)
 
@@ -80,7 +82,7 @@ areamerge = rbind(bbs_area2, areamerge)
 areamerge = na.omit(areamerge)
 
 bbs_spRich = read.csv("data/BBS/bbs_abun4_spRich.csv", header = TRUE)
-bbs_spRich = tidyr::separate(bbs_spRich, site, c("site", "subsite"), sep = "-")
+# bbs_spRich = tidyr::separate(bbs_spRich, site, c("site", "subsite"), sep = "-")
 bbs_spRich25 = merge(bbs_spRich, bbs_focal_occs_pctTrans[,c("site", "propTrans25")], by = "site")
 bbs_spRich25$pctTrans25 = bbs_spRich25$propTrans25
 bbs_spRich25 = bbs_spRich25[, c("datasetID", "site", "taxa",  "meanAbundance", "pctTrans25","scale", "spRich")]
@@ -181,7 +183,6 @@ dev.off()
 
 # pseudo r2 area
 bbs_occ_area = merge(bbs_occ_pred, areamerge[,c("datasetID", "site", "area")], by = c("datasetID", "site"))
-bbs_occ_area = na.omit(bbs_occ_area)
 mod4a = lmer(bbs_occ_area$pctTrans25~(1|datasetID) * taxa * log10(area), data=bbs_occ_area)
 mod_a = lm(bbs_occ_area$pctTrans25~predict(mod4a))
 summary(mod_a)
@@ -203,13 +204,14 @@ scaleIDs = filter(dataformattingtable, spatial_scale_variable == 'Y',
 scaleIDs = scaleIDs[! scaleIDs %in% c(1, 207, 210, 217, 218, 222, 223, 225, 241,258,274, 282, 322, 280, 248, 254, 279, 291)]  # waiting on data for 248
 bbs_spRich = read.csv("data/BBS/bbs_abun4_spRich.csv", header = TRUE)
 # read in bbs abundance data
-bbs_area.5 = read.csv("data/BBS/bbs_area.csv", header = TRUE)
-bbs_area = tidyr::separate(bbs_area, site, c("site", "subsite"), sep = "-")
-bbs_focal_occs_pctTrans = read.csv("data/BBS/bbs_focal_occs_pctTrans.csv", header = TRUE)
+bbs_area = read.csv("data/BBS/bbs_area.csv", header = TRUE)
+# bbs_area = tidyr::separate(bbs_area, site, c("site", "subsite"), sep = "-")
+bbs_focal_occs_pctTrans = read.csv("data/BBS/bbs_focal_occs_pctTrans_Site.csv", header = TRUE)
 bbs_area2 = merge(bbs_area[, c("site", "area")], bbs_focal_occs_pctTrans, by = "site")
 bbs_area2$pctTrans10 = bbs_area2$propTrans10
 bbs_area2$site = as.factor(bbs_area2$site)
 bbs_area2  = bbs_area2[, c("datasetID", "site", "taxa", "pctTrans10", "area")]
+bbs_area2 = bbs_area2[!duplicated(bbs_area2), ]
 #### Fig 3a Area #####
 area = read.csv("output/tabular_data/scaled_areas_3_2.csv", header = TRUE)
 
@@ -220,12 +222,12 @@ areamerge = rbind(bbs_area2, areamerge)
 areamerge = na.omit(areamerge)
 
 bbs_spRich = read.csv("data/BBS/bbs_abun4_spRich.csv", header = TRUE)
-bbs_spRich = tidyr::separate(bbs_spRich, site, c("site", "subsite"), sep = "-")
+# bbs_spRich = tidyr::separate(bbs_spRich, site, c("site", "subsite"), sep = "-")
 bbs_spRich10 = merge(bbs_spRich, bbs_focal_occs_pctTrans[,c("site", "propTrans10")], by = "site")
 bbs_spRich10$pctTrans10 = bbs_spRich10$propTrans10
 bbs_spRich10 = bbs_spRich10[, c("datasetID", "site", "taxa",  "meanAbundance", "pctTrans10","scale", "spRich")]
 
-occ_merge = occ_taxa10[,c("datasetID", "site","taxa", "meanAbundance", "pctTrans10","pctCore","pctNeither","scale", "spRich")]
+occ_merge = occ_taxa10[,c("datasetID", "site","taxa", "meanAbundance", "pctTrans10","scale", "spRich")]
 bbs_occ = rbind(occ_merge, bbs_spRich10)
 
 #### Fig 3c/d predicted model ####
@@ -316,13 +318,12 @@ dev.off()
 
 # pseudo r2 area
 bbs_occ_area = merge(bbs_occ_pred, areamerge[,c("datasetID", "site", "area")], by = c("datasetID", "site"))
-bbs_occ_area = na.omit(bbs_occ_area)
-mod4a = lmer(bbs_occ_area$pctTrans10~(1|datasetID) * taxa * log10(area), data=bbs_occ_area)
-mod_a = lm(bbs_occ_area$pctTrans10~predict(mod4a))
-summary(mod_a)
+mod5a = lmer(bbs_occ_area$pctTrans10~(1|datasetID) * taxa * log10(area), data=bbs_occ_area)
+mod_a10 = lm(bbs_occ_area$pctTrans10~predict(mod5a))
+summary(mod_a10)
 
 # pseudo r2 abun
-mod4b = lmer(pctTrans10~(1|datasetID) * taxa * log10(meanAbundance), data=bbs_occ_pred)
-mod_r = lm(bbs_occ_pred$pctTrans10~predict(mod4b))
-summary(mod_r)
+mod6b = lmer(pctTrans10~(1|datasetID) * taxa * log10(meanAbundance), data=bbs_occ_pred)
+mod_r10 = lm(bbs_occ_pred$pctTrans10~predict(mod6b))
+summary(mod_r10)
 
