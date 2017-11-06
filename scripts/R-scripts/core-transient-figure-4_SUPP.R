@@ -64,7 +64,7 @@ bbs_abun = read.csv("data/BBS/bbs_abun_occ.csv", header=TRUE)
 
 # read in bbs abundance data
 bbs_area = read.csv("data/BBS/bbs_area.csv", header = TRUE)
-# bbs_area = tidyr::separate(bbs_area.5, site, c("site", "subsite"), sep = "-")
+bbs_area$area[bbs_area$area == 2.513274] = 2.513274  #### left off here!
 bbs_focal_occs_pctTrans = read.csv("data/BBS/bbs_focal_occs_pctTrans_Site.csv", header = TRUE)
 bbs_area2 = merge(bbs_area[, c("site", "area")], bbs_focal_occs_pctTrans, by = "site")
 bbs_area2 = bbs_area2[!duplicated(bbs_area2), ]
