@@ -1,5 +1,5 @@
 #Figures and tables 
-#wd1: 
+#wd1: setwd("C:/git/core-transient")
 #wd2: setwd("\\bioark.ad.unc.edu\HurlbertLab\Jenkins\Final folder") 
 
 #Figure 1: Bimodal dist images; number of spp on y vs # years present  
@@ -203,27 +203,14 @@ bbs_above_guide = read.csv("scripts/R-scripts/scale_analysis/bbs_above_guide.csv
 #occ_counts function for calculating occupancy at any scale
 #countcolumns can refer to the stops in a stateroute OR 
 #it can refer to the associated secondary routes to aggregate across 
-occ_counts = function(countData, countColumns, scale) {
-  bbssub = countData[, c("stateroute", "year", "AOU", countColumns)] #these are our grouping vars
-  bbssub$groupCount = rowSums(bbssub[, countColumns]) 
-  bbsu = unique(bbssub[bbssub[, "groupCount"]!= 0, c("stateroute", "year", "AOU")]) 
-  
-  
-  occ.summ = bbsu %>% #occupancy
-    count(stateroute, AOU) %>%
-    mutate(occ = n/15, AOU = AOU, stateroute = stateroute)
-  return(occ.summ)
-  
-}
-
 
 uniqrtes = unique(bbs_above_guide$stateroute) #all routes present are unique, still 953 which is great
-numrtes = 66 # based on min common number in top 6 grid cells, see grid_sampling_justification script 
+nu = 66 # based on min common number in top 6 grid cells, see grid_sampling_justification script 
 max_out = c()
 
 #test example route 2010 and nu at 57 routes -> large scale, should have high occ 
 for (r in uniqrtes) { #for each focal route
-  for (nu in numrtes) { #for each level of scale aggregated to each focal route
+  #for each level of scale aggregated to each focal route
     
     #takes dist.df and generates a new list that changes based on which route in uniqrtes is being focused on 
     #and the length of the list varies with the scale or nu 
@@ -243,12 +230,6 @@ for (r in uniqrtes) { #for each focal route
     #(for a given focal rte, narrow input data to those nu secondary routes in focal cluster)
     #across 57 routes
     
-    abun.summ = focal_clustr %>% #abundance
-      group_by(year) %>%  #not grouping by stateroute bc it stops mattering 
-      summarize(totalN = sum(groupCount)) %>%
-      summarize(aveN = mean(totalN), 
-                stateroute = r)
-    
     occ.summ = focal_clustr %>% #occupancy -> focal clustr should GROW with scale, larger avg pool -> 
       #increased likelihood that AOU will be present -> OH! I don't want stateroute in here! it doesn't matter! 
       #it just matters that it shows up in the cluster at all, not just the stateroutes that go in
@@ -256,12 +237,21 @@ for (r in uniqrtes) { #for each focal route
       select(year, AOU) %>% #duplicates remnant of distinct secondary routes - finally ID'd bug
       distinct() %>% #removing duplicates 09/20
       count(AOU) %>% #how many times does that AOU show up in that clustr that year 
-      mutate(occ = n/15, scale = nu) 
+      mutate(occ = n/15, stateroute = r) 
+    
+    max_out = rbind(max_out, occ.summ)
     
   }
-}
+
     
-    
+
+#transform output into matrix for use with coylefig script 
+min_out = min_out[, -3]
+#need to avg occs between unique stateroute-AOU pairs since 5 for every 1 
+min_out2 = min_out %>% 
+  group_by(AOU, stateroute) %>% 
+  summarise(occ = mean(occ)) %>% select(everything()) 
+
 
 #transform output into matrix for use with coylefig script 
 output = output[, -3]
