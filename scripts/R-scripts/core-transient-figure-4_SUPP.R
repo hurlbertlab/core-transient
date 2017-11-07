@@ -64,9 +64,8 @@ bbs_abun = read.csv("data/BBS/bbs_abun_occ.csv", header=TRUE)
 
 # read in bbs abundance data
 bbs_area = read.csv("data/BBS/bbs_area.csv", header = TRUE)
-bbs_area$area[bbs_area$area == 2.513274] = 2.513274  #### left off here!
 bbs_focal_occs_pctTrans = read.csv("data/BBS/bbs_focal_occs_pctTrans_Site.csv", header = TRUE)
-bbs_area2 = merge(bbs_area[, c("site", "area")], bbs_focal_occs_pctTrans, by = "site")
+bbs_area2 = right_join(bbs_area[, c("site", "area")], bbs_focal_occs_pctTrans, by = "site")
 bbs_area2 = bbs_area2[!duplicated(bbs_area2), ]
 bbs_area2$pctTrans25 = bbs_area2$propTrans25
 bbs_area2$site = as.factor(bbs_area2$site)
@@ -188,9 +187,21 @@ mod_a = lm(bbs_occ_area$pctTrans25~predict(mod4a))
 summary(mod_a)
 
 # pseudo r2 abun
-mod4b = lmer(pctTrans25~(1|datasetID) * taxa * log10(meanAbundance), data=bbs_occ_pred)
-mod_r = lm(bbs_occ_pred$pctTrans25~predict(mod4b))
+mod4b = lmer(pctTrans25~(1|datasetID) * taxa * log10(meanAbundance), data=bbs_occ_area)
+mod_r = lm(bbs_occ_area$pctTrans25~predict(mod4b))
 summary(mod_r)
+
+
+# R2 area
+mod4 = lm(pctTrans25~log10(area), data=bbs_occ_area)
+area_r = na.omit(mod4)
+mod_r = lm(bbs_occ_area$pctTrans25~predict(mod4))
+summary(mod_r)
+
+mod6 = lm(pctTrans25~log10(meanAbundance), data=bbs_occ_area)
+mod_ar = lm(bbs_occ_area$pctTrans25~predict(mod6))
+summary(mod_ar)
+
 
 ##### 10 pct trans ######
 
@@ -323,7 +334,14 @@ mod_a10 = lm(bbs_occ_area$pctTrans10~predict(mod5a))
 summary(mod_a10)
 
 # pseudo r2 abun
-mod6b = lmer(pctTrans10~(1|datasetID) * taxa * log10(meanAbundance), data=bbs_occ_pred)
-mod_r10 = lm(bbs_occ_pred$pctTrans10~predict(mod6b))
+mod6b = lmer(pctTrans10~(1|datasetID) * taxa * log10(meanAbundance), data=bbs_occ_area)
+mod_r10 = lm(bbs_occ_area$pctTrans10~predict(mod6b))
 summary(mod_r10)
 
+
+# R2 area
+mod4 = lm(pctTrans10~log10(area), data=bbs_occ_area)
+summary(mod4)
+
+mod10 = lm(pctTrans10~log10(meanAbundance), data=bbs_occ_area)
+summary(mod10)

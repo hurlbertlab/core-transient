@@ -114,9 +114,19 @@ summary(mod_a)
 
 
 # pseudo r2 abun
-mod4b = lmer(pctTrans~(1|datasetID) * taxa * log10(meanAbundance), data=bbs_occ_pred)
-mod_r = lm(bbs_occ_pred$pctTrans~predict(mod4b))
+mod4b = lmer(pctTrans~(1|datasetID) * taxa * log10(meanAbundance), data=bbs_occ_area)
+mod_r = lm(bbs_occ_area$pctTrans~predict(mod4b))
 summary(mod_r)
+
+
+# R2 area
+modar = lm(pctTrans~log10(area), data=bbs_occ_area)
+summary(modar)
+
+mod6 = lm(pctTrans~log10(meanAbundance), data=bbs_occ_area)
+summary(mod6)
+
+
 
 #### panel plot ####
 area_plot = data.frame()
