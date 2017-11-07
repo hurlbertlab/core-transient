@@ -263,9 +263,10 @@ num.years = 15
 
 pdf('C:/git/core-transient/output/plots/Molly_Plots/fig1c.pdf', height = 8, width = 10)
 # Add kernel density
-test = ggplot(max_out)
-
-
+test = ggplot(max_out, aes(occ))
+test+geom_density(kernel = "gaussian")
+#a little weird but SO much better than below coding 
+#reconfig 1a and 1b to be ggplots then, futz with 
 
 
 partdensity = density(max_out_m[max_out_m>0],from=1/min(num.years), #my smoothing bandwidth for this is perhaps inappropriate?
