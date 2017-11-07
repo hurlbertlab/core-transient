@@ -13,7 +13,7 @@
 #individual occ values for spp at each stateroute across the 15 year window 
 
 
-
+BBS = '//bioark.ad.unc.edu/HurlbertLab/Jenkins/BBS scaled/'
 
 
 
@@ -263,7 +263,12 @@ num.years = 15
 
 pdf('C:/git/core-transient/output/plots/Molly_Plots/fig1c.pdf', height = 8, width = 10)
 # Add kernel density
-partdensity = density(max_out_m[max_out_m>0],from=1/min(num.years),
+test = ggplot(max_out)
+
+
+
+
+partdensity = density(max_out_m[max_out_m>0],from=1/min(num.years), #my smoothing bandwidth for this is perhaps inappropriate?
                       to=(min(num.years)-1)/min(num.years),kernel='gaussian', na.rm=T, n=2000)
 plot(partdensity$y~partdensity$x,
      main='',
