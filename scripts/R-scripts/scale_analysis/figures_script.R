@@ -268,16 +268,16 @@ test+geom_density(kernel = "gaussian")
 #a little weird but SO much better than below coding 
 #reconfig 1a and 1b to be ggplots then, futz with 
 
-
-partdensity = density(max_out_m[max_out_m>0],from=1/min(num.years), #my smoothing bandwidth for this is perhaps inappropriate?
-                      to=(min(num.years)-1)/min(num.years),kernel='gaussian', na.rm=T, n=2000)
-plot(partdensity$y~partdensity$x,
-     main='',
-     xlab='',
-     ylab='',
-     #xlim=c(0,1),ylim=c(0,2.5),
-     lwd=5,axes=F,type='l',lend=2
-)
+# 
+# partdensity = density(max_out_m[max_out_m>0],from=1/min(num.years), #my smoothing bandwidth for this is perhaps inappropriate?
+#                       to=(min(num.years)-1)/min(num.years),kernel='gaussian', na.rm=T, n=2000)
+# plot(partdensity$y~partdensity$x,
+#      main='',
+#      xlab='',
+#      ylab='',
+#      #xlim=c(0,1),ylim=c(0,2.5),
+#      lwd=5,axes=F,type='l',lend=2
+# )
 
 # Add breakpoints
 segments(0.33,0,0.33,partdensity$y[which(round(partdensity$x,2)==0.33)[1]], lty=3,lwd=2) #v2
