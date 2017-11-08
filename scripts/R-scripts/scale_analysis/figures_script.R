@@ -55,31 +55,30 @@ for (s in b_scales) {
   } 
 }
 
-#transform output into matrix for use with coylefig script 
-output = output[, -3]
+#transformation into matrix unnecessary with ggplot version 
 
-output_o = output %>% 
+#remove na's for density analysis of longform  
+outputd = na.omit(output)
+density(outputd$occ) #density analysis still completed outside of ggplot 
+
+#version 1 
+output_m = output[, -3] %>%
   spread(AOU, occ)
-output_o = as.data.frame(output_o)
+output_m = as.data.frame(output_m)
 
-#remove na's 
-output = na.omit(output)
-
-
-density(output$occ)
 par(mar=c(4,4,1,1)+0.5)
 par(lend=2)
 num.years = 15
 
 pdf('C:/git/core-transient/output/plots/Molly_Plots/coyle_1.pdf', height = 8, width = 10)
 # Add kernel density
-partdensity = density(output_o[output_o>0],from=1/min(num.years),
+partdensity = density(output_m[output_m>0],from=1/min(num.years),
                       to=(min(num.years)-1)/min(num.years),kernel='gaussian', na.rm=T, n=2000)
 plot(partdensity$y~partdensity$x,
      main='',
      xlab='',
      ylab='',
-     xlim=c(0,1),ylim=c(0,2.5),
+     xlim=c(0,1),ylim=c(0,2.5), #this ylim max cutoff - why? for visual simplicity?
      lwd=5,axes=F,type='l',lend=2
 )
 
@@ -96,10 +95,23 @@ axis(2, c(0,2),labels=c("",""))
 title(main='',xlab='Proportion of time present at site',ylab='Probability Density',
       line=2,cex.lab=2.5)
 
-# Add proportions
-allsp = !is.na(occupancy.matrix)
-coresp = output_o>=0.6667
-occasp = output_o<0.3334
+
+#version 2:
+pdf('C:/git/core-transient/output/plots/Molly_Plots/fig1a.pdf', height = 8, width = 10)
+# Add kernel density
+fig1a = ggplot(output, aes(occ))+
+  geom_density(kernel = "gaussian", n = 2000, na.rm = TRUE)+
+  labs(x = "Proportion of time present at site", y = "Probability Density", title = "Single Route Scale")+ 
+  theme_classic() #coord_cartesian(xlim = c(0, 1), ylim = c(0, 2.5))+
+
+# FIX: Add breakpoints as geoms
+segments(0.33,0,0.33,partdensity$y[which(round(partdensity$x,2)==0.33)[1]], lty=3,lwd=2) #v2
+segments(0.66,0,0.66,partdensity$y[which(round(partdensity$x,2)==0.66)[1]], lty=3,lwd=2) #v2
+
+# Add proportions as annotations
+allsp = !is.na(output)
+coresp = output>=0.6667
+occasp = output<0.3334
 
 # text(0.66+(0.33/2),0.10,paste('(',round(sum(coresp,na.rm=T)/sum(allsp,na.rm=T)*100,1),' %)',sep=''),
 # cex=3,font=1)
@@ -144,11 +156,10 @@ min_out3 = spread(data = min_out2, AOU, occ)
 
 min_out2 = as.data.frame(min_out2)
 min_out3 = as.data.frame(min_out3)
+
 #remove na's 
-min_out2 = na.omit(min_out2)
-
-
-density(min_out2$occ)
+min_outd = na.omit(min_out2)
+density(min_outd$occ)
 par(mar=c(4,4,1,1)+0.5)
 par(lend=2)
 num.years = 15
@@ -194,6 +205,26 @@ occasp = min_out3<0.3334
 dev.off()
 
 #again, perfect 
+
+#version 2:
+pdf('C:/git/core-transient/output/plots/Molly_Plots/fig1b.pdf', height = 8, width = 10)
+# Add kernel density
+fig1b = ggplot(min_out2, aes(occ))+
+  geom_density(kernel = "gaussian", n = 2000, na.rm = TRUE)+
+  labs(x = "Proportion of time present at site", y = "Probability Density", title = "Minimum Scale")+ 
+  theme_classic() #coord_cartesian(xlim = c(0, 1), ylim = c(0, 2.5))+
+
+# FIX: Add breakpoints as geoms
+segments(0.33,0,0.33,partdensity$y[which(round(partdensity$x,2)==0.33)[1]], lty=3,lwd=2) #v2
+segments(0.66,0,0.66,partdensity$y[which(round(partdensity$x,2)==0.66)[1]], lty=3,lwd=2) #v2
+
+# Add proportions as annotations
+allsp = !is.na(output)
+coresp = output>=0.6667
+occasp = output<0.3334
+
+
+
 
 ####Fig 1c: distribution at the maximum scale####
 dist.df = read.csv("scripts/R-scripts/scale_analysis/dist_df.csv", header = TRUE)
@@ -243,68 +274,48 @@ for (r in uniqrtes) { #for each focal route
     
   }
 
-    
-
-#transform output into matrix for use with coylefig script 
 max_out = max_out[, -2]
 
 max_out_m = max_out %>% 
   spread(AOU, occ)
 max_out_m = as.data.frame(max_out_m)
 max_out = as.data.frame(max_out)
-#remove na's from long form 
-max_out = na.omit(max_out)
+
+#version 1 
+partdensity = density(max_out_m[max_out_m>0],from=1/min(num.years),
+                      to=(min(num.years)-1)/min(num.years),kernel='gaussian', na.rm=T, n=2000)
+plot(partdensity$y~partdensity$x,
+     main='',
+     xlab='',
+     ylab='',
+     lwd=5,axes=F,type='l',lend=2
+)
 
 
-density(max_out$occ)
+#remove na's from long form for density 
+max_outd = na.omit(max_out)
+density(max_outd$occ)
 par(mar=c(4,4,1,1)+0.5)
 par(lend=2)
 num.years = 15
 
 pdf('C:/git/core-transient/output/plots/Molly_Plots/fig1c.pdf', height = 8, width = 10)
 # Add kernel density
-test = ggplot(max_out, aes(occ))
-test+geom_density(kernel = "gaussian")
-#a little weird but SO much better than below coding 
-#reconfig 1a and 1b to be ggplots then, futz with 
+fig1c = ggplot(max_out, aes(occ))+
+  geom_density(kernel = "gaussian", n = 2000, na.rm = TRUE)+
+  labs(x = "Proportion of time present at site", y = "Probability Density", title = "Maximum Scale")+theme_classic()
+#so it was the limits giving me crap in the original 
 
-# 
-# partdensity = density(max_out_m[max_out_m>0],from=1/min(num.years), #my smoothing bandwidth for this is perhaps inappropriate?
-#                       to=(min(num.years)-1)/min(num.years),kernel='gaussian', na.rm=T, n=2000)
-# plot(partdensity$y~partdensity$x,
-#      main='',
-#      xlab='',
-#      ylab='',
-#      #xlim=c(0,1),ylim=c(0,2.5),
-#      lwd=5,axes=F,type='l',lend=2
-# )
-
-# Add breakpoints
+# FIX: Add breakpoints as geoms
 segments(0.33,0,0.33,partdensity$y[which(round(partdensity$x,2)==0.33)[1]], lty=3,lwd=2) #v2
 segments(0.66,0,0.66,partdensity$y[which(round(partdensity$x,2)==0.66)[1]], lty=3,lwd=2) #v2
 
-# Add axes
-axis(1,at=seq(0,1,0.2),pos=0,cex.axis=2)
-axis(2, c(0,2),labels=c("",""))
+# Add proportions as annotations
+allsp = !is.na(output)
+coresp = output>=0.6667
+occasp = output<0.3334
+#a little weird but SO much better than below coding 
+#reconfig 1a and 1b to be ggplots then, futz with 
+dev.off() 
 
-
-# Add titles
-title(main='At maximum scale',xlab='Proportion of time present at site',ylab='Probability Density',
-      line=2,cex.lab=2.5)
-
-# Add proportions
-allsp = !is.na(max_out_m)
-coresp = max_out_m>=0.6667
-occasp = max_out_m<0.3334
-
-# text(0.66+(0.33/2),0.10,paste('(',round(sum(coresp,na.rm=T)/sum(allsp,na.rm=T)*100,1),' %)',sep=''),
-# cex=3,font=1)
-# text(0.33/2,0.10,paste('(',round(sum(occasp,na.rm=T)/sum(allsp,na.rm=T)*100,1),' %)',sep=''),
-# cex=3,font=1)
-
-#text(0.66+(0.33/2),0.35,'Core',cex=3,font=2) #v3
-#text(0.33/2,0.35,'Transient',cex=3,font=2) #v3
-
-dev.off()
-#looks SUPER weird and need to troubleshoot density dist 
-
+fig1_whole = grid.arrange(fig1a, fig1b, fig1c)
