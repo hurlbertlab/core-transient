@@ -319,3 +319,5 @@ occasp = output<0.3334
 dev.off() 
 
 fig1_whole = grid.arrange(fig1a, fig1b, fig1c)
+
+fig1_alt = grid.arrange(fig1b, fig1c)
