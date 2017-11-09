@@ -71,8 +71,10 @@ write.csv(bbs_occ_aou, "data/BBS/bbs_occ_2000_2014.csv", row.names = FALSE)
 #### BBS prep to merge with summ2 dataset #####
 # need datasetID, site, system, taxa, propCore, propTrans, and meanAbundance
 # read in below-scale bbs dataset 
-bbs_below = read.csv("data/BBS/bbs_below.csv", header = TRUE)
-bbs_below$site = paste(bbs_below$stateroute, bbs_below$scale, sep = "-")
+bbs_below = read.csv("scripts/R-scripts/scale_analysis/bbs_allscales.csv", header = TRUE) %>%
+  filter(area <25.14, scale != '1')
+
+bbs_below$site = paste(bbs_below$focalrte, bbs_below$scale, sep = "-")
 bbs_below$datasetID = 1
 bbs_below$system = "Terrestrial"
 bbs_below$taxa = "Bird"
@@ -80,7 +82,19 @@ bbs_below$propCore = bbs_below$pctCore
 bbs_below$propTrans = bbs_below$pctTran
 bbs_below$meanAbundance = bbs_below$aveN
 bbs_below = bbs_below[, c("datasetID","site","system","taxa","propCore","propTrans","meanAbundance")]
-write.csv(bbs_below, "data/BBS/bbs_below_summ2.csv", row.names = FALSE)
+
+
+# BBS scales area
+numstops = c(5, 10, 25, 50)
+bbsArea_m2 = data.frame(stops = numstops, area = numstops*pi*400^2)
+
+bbs_below$stops = as.numeric(matrix(unlist(strsplit(bbs_below$site, "-")), byrow = T, ncol = 3)[,2])
+
+bbs_allscales33 = left_join(bbs_below, bbsArea_m2)
+write.csv(bbs_below, "data/BBS/bbs_allscales33.csv", row.names = FALSE)
+
+
+
 
 
 #### BBS prep to merge with different percent transient thresholds at route scale #####
