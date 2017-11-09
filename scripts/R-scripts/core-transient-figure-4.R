@@ -132,7 +132,7 @@ area_plot = data.frame()
 areamerge_fig = read.csv("output/tabular_data/areafig.csv", header = TRUE)
 area.5 = merge(occ_taxa[,c("datasetID", "site", "pctTrans")], areamerge_fig, by = c("datasetID", "site"), na.rm = TRUE)
 area.5  = area.5 [, c("datasetID", "site", "taxa", "pctTrans", "area")]
-areamerge_fig = rbind(bbs_area,areamerge.5)
+areamerge_fig = rbind(bbs_area,area.5)
 # areamerge %>%
 #  dplyr::filter(datasetID == c(277, 280, 314)) %>%
 #  summarise(volchange = area^(2/3))
@@ -142,7 +142,7 @@ pdf('output/plots/4a_4d.pdf', height = 10, width = 14)
 par(mfrow = c(2, 2), mar = c(5,5,1,1), cex = 1, oma = c(0,0,0,0), las = 1)
 palette(colors7)
 
-plot(NA, xlim = c(-2, 7), ylim = c(0,1), col = as.character(taxcolor$color), xlab = expression("log"[10]*" Area (m"^2*")"), ylab = "% Transients", cex.lab = 2,frame.plot=FALSE, xaxt = "n", yaxt = "n", mgp = c(3.25,1,0))
+plot(NA, xlim = c(-2, 8), ylim = c(0,1), col = as.character(taxcolor$color), xlab = expression("log"[10]*" Area (m"^2*")"), ylab = "% Transients", cex.lab = 2,frame.plot=FALSE, xaxt = "n", yaxt = "n", mgp = c(3.25,1,0))
 axis(1, cex.axis =  1.5)
 axis(2, cex.axis =  1.5)
 b1 = for(id in scaleIDs){

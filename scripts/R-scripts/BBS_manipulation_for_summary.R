@@ -87,7 +87,22 @@ bbs_allscales33 = left_join(bbs_below, bbsArea_m2)
 write.csv(bbs_below, "data/BBS/bbs_allscales33.csv", row.names = FALSE)
 
 #### BBS prep to merge with different percent transient thresholds at route scale #####
-# read in BBS route level data for fig 2
+occ.summ = bbs_allscales33 %>% #occupancy
+  count(site, AOU) %>%
+  mutate(occ = n/15, scale = scale, subrouteID = countColumns[1]) %>%
+  group_by(stateroute) %>%
+  summarize(meanOcc = mean(occ), 
+            pctCore = sum(occ > 2/3)/length(occ),
+            pctTran = sum(occ <= 1/3)/length(occ)) %>%
+  #spRichTrans33  
+  # spRichTrans25 = sum(occ <= 1/4)/length(occ),
+  # spRichTrans10 = sum(occ <= 0.1)/length(occ)) %>%
+  mutate(scale = paste(scale, g, sep = "-")) %>%
+  left_join(abun.summ, by = 'stateroute')
+return(occ.summ)
+
+
+#read in BBS route level data for fig 2
 bbs_focal_occs_pctTrans = read.csv("data/BBS/bbs_below_pctTrans.csv", header = TRUE)
 bbs_focal_occs_pctTrans$site = paste(bbs_focal_occs_pctTrans$stateroute, bbs_focal_occs_pctTrans$scale, sep = "-")
 bbs_focal_occs_pctTrans$datasetID = 1
