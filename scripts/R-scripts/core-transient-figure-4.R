@@ -54,18 +54,17 @@ scaleIDs = filter(dataformattingtable, spatial_scale_variable == 'Y',
 
 # subsetting to only count ids 
 scaleIDs = scaleIDs[! scaleIDs %in% c(207, 210, 217, 218, 222, 223, 225, 238, 241,258, 282, 322, 280,317)]
-bbs_abun = read.csv("data/BBS/bbs_abun_occ.csv", header=TRUE)
-
+bbs_abun = read.csv("data/BBS/bbs_allscales33.csv", header=TRUE)
+bbs_abun$pctTrans = bbs_abun$propTrans
 #### Fig 4a Area #####
 area = read.csv("output/tabular_data/scaled_areas_3_2.csv", header = TRUE)
 
 areamerge.5 = merge(occ_taxa[,c("datasetID", "site", "pctTrans")], area, by = c("datasetID", "site"), na.rm = TRUE)
-areamerge.5  = areamerge.5 [, c("datasetID", "site", "taxa", "pctTrans", "area")]
+areamerge1  = areamerge.5 [, c("datasetID", "site", "taxa", "pctTrans", "area")]
 
 # read in bbs abundance data
-bbs_area = read.csv("data/BBS/bbs_area.csv", header = TRUE)
-bbs_area = bbs_area[!duplicated(bbs_area), ]
-areamerge = rbind(bbs_area,areamerge.5)
+bbs_area = bbs_abun[, c("datasetID", "site", "taxa", "pctTrans", "area")]
+areamerge = rbind(bbs_area,areamerge1)
 write.csv(areamerge, "output/tabular_data/areamerge.csv", row.names = FALSE)
 
 #### Figures 4a-4c panel plot #####

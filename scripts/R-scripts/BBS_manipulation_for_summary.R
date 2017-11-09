@@ -54,19 +54,12 @@ bbs_w_aou = bbs_sub1 %>% filter(aou > 2880) %>%
 
 write.csv(bbs_w_aou, "data/BBS/bbs_2000_2014.csv", row.names = FALSE)
 #### creating new bbs_abun_occ from scratch #####
-bbs_occ = bbs_sub1 %>% 
+bbs_occ = bbs_w_aou %>% 
   dplyr::count(aou, stateroute) %>% 
   filter(n < 16) %>% 
   dplyr::mutate(occ = n/15)
 
-bbs_occ = read.csv("data/BBS/bbs_occ_2000_2014.csv", header = TRUE)
-bbs_occ_aou = bbs_occ %>% filter(aou > 2880) %>%
-  filter(aou < 3650 | aou > 3810) %>%
-  filter(aou < 3900 | aou > 3910) %>%
-  filter(aou < 4160 | aou > 4210) %>%
-  filter(aou != 7010)
-
-write.csv(bbs_occ_aou, "data/BBS/bbs_occ_2000_2014.csv", row.names = FALSE)
+write.csv(bbs_occ, "data/BBS/bbs_occ_2000_2014.csv", row.names = FALSE)
 
 #### BBS prep to merge with summ2 dataset #####
 # need datasetID, site, system, taxa, propCore, propTrans, and meanAbundance
@@ -81,7 +74,7 @@ bbs_below$taxa = "Bird"
 bbs_below$propCore = bbs_below$pctCore
 bbs_below$propTrans = bbs_below$pctTran
 bbs_below$meanAbundance = bbs_below$aveN
-bbs_below = bbs_below[, c("datasetID","site","system","taxa","propCore","propTrans","meanAbundance")]
+bbs_below = bbs_below[, c("datasetID","site","system","taxa","propCore","propTrans","meanAbundance", "area")]
 
 
 # BBS scales area
@@ -92,10 +85,6 @@ bbs_below$stops = as.numeric(matrix(unlist(strsplit(bbs_below$site, "-")), byrow
 
 bbs_allscales33 = left_join(bbs_below, bbsArea_m2)
 write.csv(bbs_below, "data/BBS/bbs_allscales33.csv", row.names = FALSE)
-
-
-
-
 
 #### BBS prep to merge with different percent transient thresholds at route scale #####
 # read in BBS route level data for fig 2
@@ -123,20 +112,6 @@ write.csv(bbs_below_st, "data/BBS/bbs_below_st.csv", row.names = FALSE)
 # 2b
 bbs_focal_occs_pctTrans = bbs_focal_occs_pctTrans[, c("datasetID","site","system","taxa","propCore33", "propTrans33", "propTrans25", "propTrans10")]
 write.csv(bbs_focal_occs_pctTrans, "data/BBS/bbs_focal_occs_pctTrans.csv", row.names = FALSE)
-
-
-#### BBS prep to merge area with abundance data ####
-bbs_abun = read.csv("data/BBS/bbs_abun_occ.csv", header=TRUE)
-bbs_abun$subrouteID2 = substring(bbs_abun$subrouteID, 5)
-bbs_abun$site = paste(bbs_abun$stateroute,bbs_abun$scale,bbs_abun$subrouteID2,  sep = "-")
-bbs_area = merge(bbs_below_st, bbs_abun, by = "site")
-
-
-bbs_area$pctTrans = bbs_area$propTrans
-bbs_area = bbs_area[, c("datasetID", "site", "taxa", "pctTrans", "area")]
-write.csv(bbs_area, "data/BBS/bbs_area.csv", row.names = FALSE)
-
-
 
 #### BBS prep for figure 4 ####
 # exclude AOU species codes <=2880 [waterbirds, shorebirds, etc], (>=3650 & <=3810) [owls],
