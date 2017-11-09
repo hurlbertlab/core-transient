@@ -64,6 +64,7 @@ areamerge.5  = areamerge.5 [, c("datasetID", "site", "taxa", "pctTrans", "area")
 
 # read in bbs abundance data
 bbs_area = read.csv("data/BBS/bbs_area.csv", header = TRUE)
+bbs_area = bbs_area[!duplicated(bbs_area), ]
 areamerge = rbind(bbs_area,areamerge.5)
 write.csv(areamerge, "output/tabular_data/areamerge.csv", row.names = FALSE)
 
@@ -76,7 +77,7 @@ occ_merge = occ_taxa[,c("datasetID", "site","taxa", "meanAbundance", "pctTrans",
 bbs_occ = rbind(bbs_spRich,occ_merge)
 
 #### Fig 4c/d predicted model ####
-bbs_occ_pred = bbs_occ[!bbs_occ$datasetID %in% c(207, 210, 217, 218, 222, 223, 225, 238, 241, 258, 282, 322, 280,317),]
+bbs_occ_pred = bbs_occ[!bbs_occ$datasetID %in% c(207, 210, 217, 218, 222, 223, 225, 238, 241, 248, 258, 282, 322, 280,317),]
 
 mod4c = lmer(pctTrans~(1|datasetID) * taxa * log10(meanAbundance), data=bbs_occ_pred)
 summary(mod4c)
@@ -103,11 +104,29 @@ occ_pred_4d = data.frame(datasetID = 999, system = unique(ecosys$system), meanAb
 predmod4d = merTools::predictInterval(mod4d, occ_pred_4d, n.sims=1000)
 predmod4d$order = c(1:3)
 
-# pseudo r2
-mod4c = lmer(pctTrans~(1|datasetID) * taxa * log10(meanAbundance), data=bbs_occ_pred)
-ptrans = na.omit(bbs_occ_pred$pctTrans)
-mod_r = lm(ptrans~predict(mod4c))
+
+# pseudo r2 area
+bbs_occ_area = merge(bbs_occ_pred, areamerge[,c("datasetID", "site", "area")], by = c("datasetID", "site"))
+bbs_occ_area = na.omit(bbs_occ_area)
+mod4a = lmer(pctTrans~(1|datasetID) * taxa * log10(area), data=bbs_occ_area)
+mod_a = lm(bbs_occ_area$pctTrans~predict(mod4a))
+summary(mod_a)
+
+
+# pseudo r2 abun
+mod4b = lmer(pctTrans~(1|datasetID) * taxa * log10(meanAbundance), data=bbs_occ_area)
+mod_r = lm(bbs_occ_area$pctTrans~predict(mod4b))
 summary(mod_r)
+
+
+# R2 area
+modar = lm(pctTrans~log10(area), data=bbs_occ_area)
+summary(modar)
+
+mod6 = lm(pctTrans~log10(meanAbundance), data=bbs_occ_area)
+summary(mod6)
+
+
 
 #### panel plot ####
 area_plot = data.frame()

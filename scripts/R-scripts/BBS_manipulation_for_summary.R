@@ -100,8 +100,7 @@ write.csv(bbs_below, "data/BBS/bbs_allscales33.csv", row.names = FALSE)
 #### BBS prep to merge with different percent transient thresholds at route scale #####
 # read in BBS route level data for fig 2
 bbs_focal_occs_pctTrans = read.csv("data/BBS/bbs_below_pctTrans.csv", header = TRUE)
-bbs_focal_occs_pctTrans = subset(bbs_focal_occs_pctTrans, bbs_focal_occs_pctTrans$scale == '50-1')
-bbs_focal_occs_pctTrans$site = bbs_focal_occs_pctTrans$stateroute
+bbs_focal_occs_pctTrans$site = paste(bbs_focal_occs_pctTrans$stateroute, bbs_focal_occs_pctTrans$scale, sep = "-")
 bbs_focal_occs_pctTrans$datasetID = 1
 bbs_focal_occs_pctTrans$system = "Terrestrial"
 bbs_focal_occs_pctTrans$taxa = "Bird"
@@ -109,12 +108,15 @@ bbs_focal_occs_pctTrans$propCore33 = bbs_focal_occs_pctTrans$pctCore
 bbs_focal_occs_pctTrans$propTrans33 = bbs_focal_occs_pctTrans$spRichTrans33
 bbs_focal_occs_pctTrans$propTrans25 = bbs_focal_occs_pctTrans$spRichTrans25
 bbs_focal_occs_pctTrans$propTrans10 = bbs_focal_occs_pctTrans$spRichTrans10
+#bbs_focal_occs_pctTrans$meanAbundance = bbs_focal_occs_pctTrans$aveN
+bbs_focal_occs_pctTrans = bbs_focal_occs_pctTrans[, c("datasetID","site","system","taxa","propTrans33","propTrans25","propTrans10")]
+write.csv(bbs_focal_occs_pctTrans, "data/BBS/bbs_focal_occs_pctTrans_Site.csv", row.names = FALSE)
 
 # 2a
 bbs_below_st = bbs_focal_occs_pctTrans
 bbs_below_st$propCore = bbs_below_st$propCore33
 bbs_below_st$propTrans = bbs_below_st$propTrans33
-bbs_below_st = bbs_below_st [, c("datasetID","site","system","taxa","propCore","propTrans")]
+# bbs_below_st = bbs_below_st [, c("datasetID","site","system","taxa","propTrans")]
 
 write.csv(bbs_below_st, "data/BBS/bbs_below_st.csv", row.names = FALSE)
 
@@ -125,11 +127,15 @@ write.csv(bbs_focal_occs_pctTrans, "data/BBS/bbs_focal_occs_pctTrans.csv", row.n
 
 #### BBS prep to merge area with abundance data ####
 bbs_abun = read.csv("data/BBS/bbs_abun_occ.csv", header=TRUE)
-bbs_abun$site = bbs_abun$stateroute
+bbs_abun$subrouteID2 = substring(bbs_abun$subrouteID, 5)
+bbs_abun$site = paste(bbs_abun$stateroute,bbs_abun$scale,bbs_abun$subrouteID2,  sep = "-")
 bbs_area = merge(bbs_below_st, bbs_abun, by = "site")
+
+
 bbs_area$pctTrans = bbs_area$propTrans
 bbs_area = bbs_area[, c("datasetID", "site", "taxa", "pctTrans", "area")]
 write.csv(bbs_area, "data/BBS/bbs_area.csv", row.names = FALSE)
+
 
 
 #### BBS prep for figure 4 ####
