@@ -321,3 +321,29 @@ dev.off()
 fig1_whole = grid.arrange(fig1a, fig1b, fig1c)
 
 fig1_alt = grid.arrange(fig1b, fig1c)
+
+
+####Fig 3####
+NorthAm = readOGR(dsn = "//bioark.ad.unc.edu/HurlbertLab/GIS/geography", layer = "continent")
+NorthAm2 = spTransform(NorthAm, CRS("+proj=laea +lat_0=45.235 +lon_0=-106.675 +units=km"))
+bbs_latlon = read.csv(paste(BBS, "good_rtes2.csv", sep = ""), header = TRUE)
+
+#exclude routes that have missing above OR below scale data, such that sites are only calculated for routes that cover all 83 scales
+bbs_allscales = read.csv("data/BBS/bbs_allscales.csv", header = TRUE)
+bbs_latlon = filter(bbs_latlon, stateroute %in% bbs_allscales$focalrte)
+
+
+sites = data.frame(longitude = bbs_latlon$Longi, latitude = bbs_latlon$Lati) 
+
+
+#East 
+plot(NorthAm, xlim = c(-72, -71), ylim = c(33, 43))
+points(sites$longitude, sites$latitude, pch = 16)
+map.scale(x = -77.8, y = 33.5)
+#identify(ord1.plot,what="species",cex=0.7,col="blue")
+
+#West 
+#East 
+plot(NorthAm, xlim = c(-130, -115), ylim = c(32, 50))
+points(sites$longitude, sites$latitude, pch = 16)
+map.scale(x = -133, y = 33.5)
