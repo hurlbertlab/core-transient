@@ -80,17 +80,17 @@ areamerge = rbind(bbs_area2, areamerge)
 areamerge = na.omit(areamerge)
 
 
-bbs_spRich25 = merge(bbs_spRich, bbs_focal_occs_pctTrans[,c("site", "propTrans25")], by = "site")
+bbs_spRich25 = merge(bbs_abun, bbs_focal_occs_pctTrans[,c("site", "propTrans25")], by = "site")  
 bbs_spRich25$pctTrans25 = bbs_spRich25$propTrans25
-bbs_spRich25 = bbs_spRich25[, c("datasetID", "site", "taxa",  "meanAbundance", "pctTrans25","scale", "spRich")]
+bbs_spRich25 = bbs_spRich25[, c("datasetID", "site", "taxa",  "meanAbundance", "pctTrans25")]
 #### Figures 3a-3c panel plot #####
 scaleIDs = filter(dataformattingtable, spatial_scale_variable == 'Y',
                   format_flag == 1)$dataset_ID 
-scaleIDs = scaleIDs[! scaleIDs %in% c(1, 207, 210, 217, 218, 222, 223, 225, 241,258,274, 282, 322, 280, 248, 254, 279, 291)]  # waiting on data for 248
+scaleIDs = scaleIDs[! scaleIDs %in% c(207, 210, 217, 218, 222, 223, 225, 241,258,274, 282, 322, 280, 248, 254, 279, 291)]  # waiting on data for 248
 
-occ_merge = occ_taxa25[,c("datasetID", "site","taxa", "meanAbundance", "pctTrans25","scale", "spRich")]
+occ_merge = occ_taxa25[,c("datasetID", "site","taxa", "meanAbundance", "pctTrans25")]
 bbs_occ = rbind(occ_merge, bbs_spRich25)
-
+bbs_occ = bbs_occ[!bbs_occ$site %in% c("53800-5-6", "53800-25-2"),]
 #### Fig 3c/d predicted model ####
 bbs_occ_pred = bbs_occ[!bbs_occ$datasetID %in% c(207, 210, 217, 218, 222, 223, 225, 238, 241, 258, 282, 322, 280,317),]
 bbs_occ_pred = na.omit(bbs_occ_pred)
@@ -210,35 +210,28 @@ areamerge  = areamerge.5[, c("datasetID", "site", "taxa", "pctTrans10", "area")]
 #### Figures 3a-3c panel plot #####
 scaleIDs = filter(dataformattingtable, spatial_scale_variable == 'Y',
                   format_flag == 1)$dataset_ID 
-scaleIDs = scaleIDs[! scaleIDs %in% c(1, 207, 210, 217, 218, 222, 223, 225, 241,258,274, 282, 322, 280, 248, 254, 279, 291)]  # waiting on data for 248
-bbs_spRich = read.csv("data/BBS/bbs_abun4_spRich.csv", header = TRUE)
-# read in bbs abundance data
-bbs_area = read.csv("data/BBS/bbs_area.csv", header = TRUE)
+scaleIDs = scaleIDs[! scaleIDs %in% c(207, 210, 217, 218, 222, 223, 225, 241,258,274, 282, 322, 280, 248, 254, 279, 291)]  
 # bbs_area = tidyr::separate(bbs_area, site, c("site", "subsite"), sep = "-")
 bbs_focal_occs_pctTrans = read.csv("data/BBS/bbs_focal_occs_pctTrans_Site.csv", header = TRUE)
-bbs_area2 = merge(bbs_area[, c("site", "area")], bbs_focal_occs_pctTrans, by = "site")
+bbs_area2 = merge(bbs_abun[, c("site", "area", "meanAbundance")], bbs_focal_occs_pctTrans, by = "site")
 bbs_area2$pctTrans10 = bbs_area2$propTrans10
 bbs_area2$site = as.factor(bbs_area2$site)
-bbs_area2  = bbs_area2[, c("datasetID", "site", "taxa", "pctTrans10", "area")]
-bbs_area2 = bbs_area2[!duplicated(bbs_area2), ]
+bbs_area3  = bbs_area2[, c("datasetID", "site", "taxa", "pctTrans10", "area")]
+
 #### Fig 3a Area #####
 area = read.csv("output/tabular_data/scaled_areas_3_2.csv", header = TRUE)
 
 areamerge.5 = merge(occ_taxa10[,c("datasetID", "site", "pctTrans10")], area, by = c("datasetID", "site"))
 areamerge  = areamerge.5[, c("datasetID", "site", "taxa", "pctTrans10", "area")]
 
-areamerge = rbind(bbs_area2, areamerge)
+areamerge = rbind(bbs_area3, areamerge)
 areamerge = na.omit(areamerge)
 
-bbs_spRich = read.csv("data/BBS/bbs_abun4_spRich.csv", header = TRUE)
-# bbs_spRich = tidyr::separate(bbs_spRich, site, c("site", "subsite"), sep = "-")
-bbs_spRich10 = merge(bbs_spRich, bbs_focal_occs_pctTrans[,c("site", "propTrans10")], by = "site")
-bbs_spRich10$pctTrans10 = bbs_spRich10$propTrans10
-bbs_spRich10 = bbs_spRich10[, c("datasetID", "site", "taxa",  "meanAbundance", "pctTrans10","scale", "spRich")]
+bbs_spRich10 = bbs_area2[, c("datasetID", "site", "taxa",  "meanAbundance", "pctTrans10")]
 
-occ_merge = occ_taxa10[,c("datasetID", "site","taxa", "meanAbundance", "pctTrans10","scale", "spRich")]
+occ_merge = occ_taxa10[,c("datasetID", "site","taxa", "meanAbundance", "pctTrans10")]
 bbs_occ = rbind(occ_merge, bbs_spRich10)
-
+bbs_occ = bbs_occ[!bbs_occ$site %in% c("53800-5-6", "53800-25-2"),]
 #### Fig 3c/d predicted model ####
 bbs_occ_pred = bbs_occ[!bbs_occ$datasetID %in% c(207, 210, 217, 218, 222, 223, 225, 238, 241, 258, 282, 322, 280,317),]
 bbs_occ_pred = na.omit(bbs_occ_pred)
