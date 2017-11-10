@@ -60,12 +60,11 @@ scaleIDs = filter(dataformattingtable, spatial_scale_variable == 'Y',
                   format_flag == 1)$dataset_ID
 # subsetting to only count ids 
 scaleIDs = scaleIDs[! scaleIDs %in% c(207, 210, 217, 218, 222, 223, 210, 238, 241,258, 282, 322, 280,317)]
-bbs_abun = read.csv("data/BBS/bbs_abun_occ.csv", header=TRUE)
+bbs_abun = read.csv("data/BBS/bbs_allscales33.csv", header=TRUE)
 
 # read in bbs abundance data
-bbs_area = read.csv("data/BBS/bbs_area.csv", header = TRUE)
 bbs_focal_occs_pctTrans = read.csv("data/BBS/bbs_focal_occs_pctTrans_Site.csv", header = TRUE)
-bbs_area2 = right_join(bbs_area[, c("site", "area")], bbs_focal_occs_pctTrans, by = "site")
+bbs_area2 = right_join(bbs_allscales33[, c("site", "area")], bbs_focal_occs_pctTrans, by = "site")
 bbs_area2 = bbs_area2[!duplicated(bbs_area2), ]
 bbs_area2$pctTrans25 = bbs_area2$propTrans25
 bbs_area2$site = as.factor(bbs_area2$site)
@@ -80,8 +79,7 @@ areamerge  = areamerge.5[, c("datasetID", "site", "taxa", "pctTrans25", "area")]
 areamerge = rbind(bbs_area2, areamerge)
 areamerge = na.omit(areamerge)
 
-bbs_spRich = read.csv("data/BBS/bbs_abun4_spRich.csv", header = TRUE)
-# bbs_spRich = tidyr::separate(bbs_spRich, site, c("site", "subsite"), sep = "-")
+
 bbs_spRich25 = merge(bbs_spRich, bbs_focal_occs_pctTrans[,c("site", "propTrans25")], by = "site")
 bbs_spRich25$pctTrans25 = bbs_spRich25$propTrans25
 bbs_spRich25 = bbs_spRich25[, c("datasetID", "site", "taxa",  "meanAbundance", "pctTrans25","scale", "spRich")]

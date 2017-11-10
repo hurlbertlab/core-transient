@@ -71,9 +71,11 @@ write.csv(areamerge, "output/tabular_data/areamerge.csv", row.names = FALSE)
 scaleIDs = filter(dataformattingtable, spatial_scale_variable == 'Y',
                   format_flag == 1)$dataset_ID 
 scaleIDs = scaleIDs[! scaleIDs %in% c(207, 210, 217, 218, 222, 223, 225, 241,258, 282, 322, 280, 248, 254, 279, 291)]  # waiting on data for 248
-bbs_spRich = read.csv("data/BBS/bbs_abun4_spRich.csv", header = TRUE)
-occ_merge = occ_taxa[,c("datasetID", "site","taxa", "meanAbundance", "pctTrans","pctCore","pctNeither","scale", "spRich")]
+bbs_abun$pctCore = bbs_abun$propCore
+bbs_spRich = bbs_abun[,c("datasetID","site","taxa", "meanAbundance", "pctTrans","pctCore")]
+occ_merge = occ_taxa[,c("datasetID", "site","taxa", "meanAbundance", "pctTrans","pctCore")]
 bbs_occ = rbind(bbs_spRich,occ_merge)
+bbs_occ = bbs_occ[!bbs_occ$site %in% c("53800-5-6", "53800-25-2"),]
 
 #### Fig 4c/d predicted model ####
 bbs_occ_pred = bbs_occ[!bbs_occ$datasetID %in% c(207, 210, 217, 218, 222, 223, 225, 238, 241, 248, 258, 282, 322, 280,317),]
@@ -191,7 +193,7 @@ title(outer=FALSE,adj=0.02,main="B",cex.main=2,col="black",font=2,line=-1)
 legend('topright', legend = as.character(taxcolors$taxa), lty=1,lwd=3,col = as.character(taxcolors$color), cex = 1.5, bty = "n")
 par(new = FALSE)
 
-b4 = barplot(predmod$fit[predmod$order], cex.names = 2,col = c(colors()[17],"gold2", "turquoise2","red","forestgreen","purple4","#1D6A9B"), ylim = c(0, 1), yaxt = "n")
+b4 = barplot(predmod$fit[predmod$order], cex.names = 2,col = c(colors()[17],"gold2", "turquoise2","red","forestgreen","purple4","#1D6A9B"), ylim = c(0, 1.1), yaxt = "n")
 axis(2, cex.axis = 1.5)
 Hmisc::errbar(c(0.7, 1.9, 3.1, 4.3, 5.5, 6.7, 7.9), predmod$fit[predmod$order], predmod$upr[predmod$order], predmod$lwr[predmod$order], add= TRUE, lwd = 1.25, pch = 3)
 mtext("% Transients", 2, cex = 2, las = 0, line = 3, mgp = c(3.25,1,0))
@@ -235,8 +237,7 @@ par(mfrow = c(1, 1), mar = c(6, 6, 1, 1), mgp = c(4, 1, 0),
     cex.axis = 1.5, cex.lab = 2, las = 1)
 palette(colors7)
 
-bbs_spRich = read.csv("data/BBS/bbs_abun4_spRich.csv", header = TRUE)
-occ_merge = occ_taxa[,c("datasetID", "site","taxa", "meanAbundance", "pctTrans","pctCore","pctNeither","scale", "spRich")]
+occ_merge = occ_taxa[,c("datasetID", "site","taxa", "meanAbundance", "pctTrans","pctCore")]
 bbs_occ = rbind(bbs_spRich,occ_merge)
 
 for(id in scaleIDs){

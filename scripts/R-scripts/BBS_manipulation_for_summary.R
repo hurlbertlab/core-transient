@@ -61,12 +61,18 @@ bbs_occ = bbs_w_aou %>%
 
 write.csv(bbs_occ, "data/BBS/bbs_occ_2000_2014.csv", row.names = FALSE)
 
+
+
+#### getting spRich by route
+bbs_sprich = bbs_w_aou %>% group_by(aou,Year) %>%
+  dplyr::count(stateroute) 
+
 #### BBS prep to merge with summ2 dataset #####
 # need datasetID, site, system, taxa, propCore, propTrans, and meanAbundance
 # read in below-scale bbs dataset 
 bbs_below = read.csv("scripts/R-scripts/scale_analysis/bbs_allscales.csv", header = TRUE) %>%
   filter(area <25.14, scale != '1')
-
+# bbs_below = merge(bbs_below.5, bbs_sprich, by.y = "stateroute", by.x = "focalrte")
 bbs_below$site = paste(bbs_below$focalrte, bbs_below$scale, sep = "-")
 bbs_below$datasetID = 1
 bbs_below$system = "Terrestrial"
