@@ -92,7 +92,7 @@ circs.sp = SpatialPolygons(circs, proj4string=CRS("+proj=laea +lat_0=45.235 +lon
 NorthAm = readOGR(dsn = "//bioark.ad.unc.edu/HurlbertLab/GIS/geography", layer = "continent")
 NorthAm2 = spTransform(NorthAm, CRS("+proj=laea +lat_0=45.235 +lon_0=-106.675 +units=km"))
 
-plot(NorthAm2)
+plot(NorthAm, xlim = c(-160, -60), ylim = c(25, 70))
 # Check that circle locations look right #big surprise, they don't -> fix projection!!!
 plot(circs.sp, add = TRUE) #looks great
 

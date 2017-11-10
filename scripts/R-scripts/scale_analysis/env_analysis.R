@@ -329,47 +329,72 @@ write.csv(rsqrd_hetero, "scripts/R-scripts/scale_analysis/rsqrd_hetero.csv", row
 
 ####Visually Characterizing measures of habitat heterogeneity####
 rsqrd_hetero = read.csv("scripts/R-scripts/scale_analysis/rsqrd_hetero.csv", header = TRUE)
-hab_het = read.csv("scripts/R-scripts/scale_analysis/hab_het.csv", header = TRUE)
+# hab_het = read.csv("scripts/R-scripts/scale_analysis/hab_het.csv", header = TRUE)
 
 r_plot = ggplot(data = rsqrd_hetero, aes(y = corr_r))+geom_col(aes(x=dep))+facet_wrap(~ind)+
   theme_bw()
 r_plot 
 
 
+env_coefs = read.csv("scripts/R-scripts/scale_analysis/env_coefs.csv", header = TRUE)
 
-#on the right track but not quite: 
-ggplot(data = rsqrd_hetero, aes(x = ind, y = r2, fill = ind))+geom_boxplot()+theme_classic()+
-  theme(legend.position="none")+
-  labs(x = "Environmental variables", y = "Variation Explained (R^2)")
+#scale on x and r on y, panel by coef of interest, line color by var measure
 
-ggplot(data = rsqrd_hetero, aes(x = ind, y = r2, color = dep))+geom_point()+theme_classic()+
-  labs(x = "Environmental variables", y = "Variation Explained (R^2)")
+# goal plot -> ggplot(envcoefs, aes(x = scale, y = corr_r))+geom_line(aes(color = dep))+facet_wrap(~ind)
+#I want a corr_r value for every dep and ind variable at every scale, for every focal
+#for every scale, for every focal route - will have a LOT - maybe just do a subset for meeting 
 
-
-
-
-
-ggplot(data = hab_het, aes(x = elev.var, y = OA.pmin))+geom_point()+geom_smooth()
-ggplot(data = hab_het, aes(x = ndvi.var, y = OA.pmin))+geom_point()+geom_smooth()
-ggplot(data = hab_het, aes(x = top_elev_v, y = OA.pmin))+geom_point()+geom_smooth()
-ggplot(data = hab_het, aes(x = top_ndvi_v, y = OA.pmin))+geom_point()+geom_smooth()
+#the correlation coefficients themselves won't change, bc representative of the overall 
+#occ-scale relationship, that's fine - the hab_het vals will change though bc measures 
+#at each scale 
+#starting at scale of 1 since that's lowest res we have for habhet across scales, 
+#rerun previous dep/ind loop with new mods
 
 
-ggplot(data = hab_het, aes(x = elev.var, y = OA.pthresh))+geom_point()+geom_smooth()
-ggplot(data = hab_het, aes(x = ndvi.var, y = OA.pthresh))+geom_point()+geom_smooth()
-ggplot(data = hab_het, aes(x = top_elev_v, y = OA.pthresh))+geom_point()+geom_smooth()
-ggplot(data = hab_het, aes(x = top_ndvi_v, y = OA.pthresh))+geom_point()+geom_smooth()
+scales_hetero = data.frame(dep = character(), ind = character(), 
+                          r2 = numeric(), adjr = numeric(), corr_r = numeric(), scale = numeric())
+#modify to include plotting of obs values for each stateroute vs pred line 
+#and plot these with r squared vals as annotations to plots too 
+#setwd("C:/git/core-transient/output/plots/Molly_Plots/habhet/")
+scales = unique(env_coefs$scale)
+
+
+for (s in scales) {
+  env_coefs2 = env_coefs %>% 
+    filter(scale == s)
+    for (d in 3:6) { #adjust columns appropriately -> make sure correct order of ind and dep vars!
+      for (i in 7:16) {
+       tempmod = lm(env_coefs2[,d] ~ env_coefs2[,i])
+       tempcor = cor.test(env_coefs2[,d], env_coefs2[,i], method = "pearson")
+    
+    
+       tempdf = data.frame(dep = names(env_coefs2)[d], 
+                        ind = names(env_coefs2)[i], 
+                        r2 = summary(tempmod)$r.squared, 
+                        adjr = summary(tempmod)$adj.r.squared, 
+                        corr_r = as.numeric(tempcor$estimate), 
+                        scale = s)
+    
+    # templot = ggplot(data = env_coefs, aes(x = env_coefs[,i], y = env_coefs[,d]))+geom_point()+
+    #   geom_line(aes(y = predict(tempmod), color = 'Model'))+
+    #   labs(x = names(env_coefs)[i], y = names(env_coefs)[d])+guides(color = "none")+
+    #   annotate("text", x = 0.5*max(env_coefs[,i]), y = 0.5*max(env_coefs[,d]), 
+    #            label = paste("italic(R) ^ 2 ==", tempdf$r2, sep = ""), parse = TRUE, 
+    #            color = "red", size = 5.5) 
+    # ggsave(templot, filename=paste("env_coefs", names(env_coefs)[d], 
+    #                                names(env_coefs)[i],".png",sep=""))
+    
+        scales_hetero = rbind(scales_hetero, tempdf)
+    }
+  }
+}
+
+write.csv(scales_hetero, "scripts/R-scripts/scale_analysis/scales_hetero.csv", row.names = FALSE) 
+#updated 11/09 using corrected hab_het vals, only variances characterizing sites
 
 
 
-ggplot(data = hab_het, aes(x = elev.var, y = OA.pslope))+geom_point()+geom_smooth()
-ggplot(data = hab_het, aes(x = ndvi.var, y = OA.pslope))+geom_point()+geom_smooth()
-ggplot(data = hab_het, aes(x = top_elev_v, y = OA.pslope))+geom_point()+geom_smooth()
-ggplot(data = hab_het, aes(x = top_ndvi_v, y = OA.pslope))+geom_point()+geom_smooth()
 
-
-#why are pmin and pthresh consistently highest vals for explaining variation? how do these change 
-#with different env variables? Draw graphically in notes to help conceptualize. 
 
 
 
@@ -384,129 +409,3 @@ ggplot(data = hab_het, aes(x = top_ndvi_v, y = OA.pslope))+geom_point()+geom_smo
 #local variation in heterogeneity and variation at the lower scales of the occ-scale relationship 
 #while elevational heterogeneity explains variation at the higher scales of the occ-scale relationship?  
 
-#Let's check it out: 
-
-
-
-
-
-#excluding transient data for incompleteness, selecting only relevant measures of heterogeneity 
-#INFLEXION POINTS: 
-rsub_i = rsqrd_hetero %>%
-  filter((dep == "OA.i" | dep == "ON.i" | dep == "CA.i" | dep == "CN.i") & 
-           (ind == "elev_qv" | ind == "ndvi_qv" | ind == "qhull_vol" | ind == "zhull_vol"))
-rsub_i = droplevels(rsub_i) #removing ghost levels to ensure correct plotting/analyses
-
-ggplot(data = rsub_i, aes(x = ind, y = r2)) + geom_boxplot()+theme_classic() 
-#variance in elevation (quantiles) and convex hull polygon volume (all 4 env vars, z scores) 
-#both explain more variance in the INFLEXION POINTS (i) of the occ-scale relationship than ndvi or qhull volume 
-
-#ASYMPTOTES (A)
-rsub_A = rsqrd_hetero %>%
-  filter((dep == "OA.A" | dep == "ON.A" | dep == "CA.A" | dep == "CN.A") & 
-           (ind == "elev_qv" | ind == "ndvi_qv" | ind == "qhull_vol" | ind == "zhull_vol"))
-rsub_A = droplevels(rsub_A) #removing ghost levels to ensure correct plotting/analyses
-
-ggplot(data = rsub_A, aes(x = ind, y = r2)) + geom_boxplot()+theme_classic() 
-#variance in elevation (quantiles) and convex hull polygon volume (all 4 env vars, z scores) 
-#once again, elevation performs well, altho in this case ndvi explains more variation more consistently than convex hull volume. 
-
-
-#separate analysis for just transients since relationship not immediately apparent
-rsub_t = rsqrd_hetero %>%
-  filter((dep == "TAexp" | dep == "TApow" | dep == "TNexp" | dep == "TNpow") & 
-  (ind == "elev_qv" | ind == "ndvi_qv" | ind == "qhull_vol" | ind == "zhull_vol"))
-rsub_t = droplevels(rsub_t) #removing ghost levels to ensure correct plotting/analyses
-
-ggplot(data = rsub_t, aes(x = ind, y = r2)) + geom_boxplot()+theme_classic() #elev explains more variation in the transients
-
-
-
-
-# the above are all based on the models themselves...what about the numbers? 
-p1A = ggplot(data = env_coefs, aes(elev_qv, OA.A))+geom_point()
-p2A = ggplot(data = env_coefs, aes(ndvi_qv, OA.A))+geom_point()
-p3A = ggplot(data = env_coefs, aes(qhull_vol, OA.A))+geom_point()
-p4A = ggplot(data = env_coefs, aes(zhull_vol, OA.A))+geom_point()
-
-p5_1 = gridExtra::grid.arrange(p1A, p2A, p3A, p4A)
-
-max(env_coefs$OA.A, na.rm = T) #why.....is there a 7 in my OA.A values....? still a 7
-
-p1B = ggplot(data = env_coefs, aes(elev_qv, OA.i))+geom_point()
-p2B = ggplot(data = env_coefs, aes(ndvi_qv, OA.i))+geom_point()
-p3B = ggplot(data = env_coefs, aes(qhull_vol, OA.i))+geom_point()
-p4B = ggplot(data = env_coefs, aes(zhull_vol, OA.i))+geom_point()
-
-p5_2 = gridExtra::grid.arrange(p1B, p2B, p3B, p4B)
-max(env_coefs$OA.i, na.rm = T) #16??? really shouldn't be possible. is this bc dealing with log area? -> after data fixes, now 8 
-
-p_final = grid.arrange(p5_1, p5_2)
-
-#what we expected: 
-#Homogenous communities (i.e. low ndvi, low elev values)
-  #i as a coefficient should be lower, accumulation of core species more linear early on in scale relationship 
-  #k is difficult to predict but is the slope AT the inflexion point i 
-  #A should be higher, relationship should asymptote out earlier and a greater stretch should be in an asymptotic form 
-
-#Heterogenous communities (i.e. high ndvi, high elev values)
-  #i as a coef should be higher (relative to what?) due to a longer period of Transient dominance in the lower scales pulling down the average, 
-    #meaning i is further along in the x axis relative to the y 
-  #k is again, difficult to predict 
-  #A should be lower and shorter, as asymptotic form barely reached 
-
-#what does this comparison look like? How do I split sites up via a threshold for hetero vs homogenous 
-#to compare their avg coefs? 
-
-#a distribution of hull_vol (panel 1), elev (panel 2), and ndvi (panel 3)? 
-
-ggplot(data = env_coefs, aes(x = qhull_vol))+geom_histogram(binwidth = 0.005)
-
-
-
-
-
-
-
-####Variance Partitioning of Env Predictors####
-#would I be basing my total remaining unexplained variation off of the meanOcc~logA relationship? (OA.i?)
-#so the 12% remaining
-#focusing just on OA.i and main env vars
-#how do variance partitioning with more than 4 parts? 
-
-globalmod<-lm(OA.i~elev+meanP+temp+ndvi, data=env_coefs)
-mod1<-lm(OA.i~elev, data=env_coefs)
-mod2<-lm(OA.i~meanP, data=env_coefs)
-mod3<-lm(OA.i~ndvi, data=env_coefs)
-mod4<-lm(OA.i~temp, data=env_coefs)
-#and then Euclid_mod2
-summary(globalmod)$r.squared
-summary(mod1)$r.squared
-summary(mod2)$r.squared
-summary(mod3)$r.squared
-summary(mod4)$r.squared 
-
-
-#running with mods 2+3 bc best ranked and most interesting 
-a= summary(globalmod)$r.squared - summary(mod2)$r.squared
-a
-c= summary(globalmod)$r.squared - summary(mod3)$r.squared
-c
-b= summary(mod2)$r.squared - c
-b
-d= 1- summary(globalmod)$r.squared
-d
-#isn't it ok that d = ~87.5% tho, given that the r^2 for occ~logA was 88%? 
-
-########
-
-
-devtools::load_all(path = 'C:/git/core-transient')
-
-ndvi_data_raw <- get_bbs_gimms_ndvi()
-
-ndvi_data_summer <- ndvi_data_raw %>%
-  filter(!is.na(ndvi), month %in% c('may', 'jun', 'jul'), year > 1981) %>%
-  group_by(site_id, year) %>%
-  summarise(ndvi_sum = mean(ndvi)) %>%
-  ungroup()

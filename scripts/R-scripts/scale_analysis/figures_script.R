@@ -323,6 +323,12 @@ fig1_whole = grid.arrange(fig1a, fig1b, fig1c)
 fig1_alt = grid.arrange(fig1b, fig1c)
 
 
+## merge output, min, and max into single df while adding new column delineating which 
+## category: single, min, or max the data corresponds to so multiple lines can be 
+## overlaid on single density plot 
+
+
+
 ####Fig 3####
 NorthAm = readOGR(dsn = "//bioark.ad.unc.edu/HurlbertLab/GIS/geography", layer = "continent")
 NorthAm2 = spTransform(NorthAm, CRS("+proj=laea +lat_0=45.235 +lon_0=-106.675 +units=km"))
@@ -347,3 +353,24 @@ map.scale(x = -77.8, y = 33.5)
 plot(NorthAm, xlim = c(-130, -115), ylim = c(32, 50))
 points(sites$longitude, sites$latitude, pch = 16)
 map.scale(x = -133, y = 33.5)
+
+
+####Results section figs####
+
+scales_hetero = read.csv("scripts/R-scripts/scale_analysis/scales_hetero.csv", header = TRUE)
+
+#scale on x and r on y, panel by coef of interest, line color by var measure
+
+ggplot(scales_hetero, aes(x = scale, y = corr_r))+
+  geom_line(aes(color = dep))+facet_wrap(~ind)+theme_classic()
+#I want a corr_r value for every dep and ind variable at every scale, for every focal
+#for every scale, for every focal route - will have a LOT - maybe just do a subset for meeting 
+
+#the correlation coefficients themselves won't change, bc representative of the overall 
+#occ-scale relationship, that's fine - the hab_het vals will change though bc measures 
+#at each scale 
+#starting at scale of 1 since that's lowest res we have for habhet across scales, 
+#rerun previous dep/ind loop with new mods
+
+
+
