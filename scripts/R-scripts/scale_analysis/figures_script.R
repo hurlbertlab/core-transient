@@ -103,6 +103,8 @@ fig1a = ggplot(output, aes(occ))+
   geom_density(kernel = "gaussian", n = 2000, na.rm = TRUE)+
   labs(x = "Proportion of time present at site", y = "Probability Density", title = "Single Route Scale")+ 
   theme_classic() #coord_cartesian(xlim = c(0, 1), ylim = c(0, 2.5))+
+fig1a
+
 
 # FIX: Add breakpoints as geoms
 segments(0.33,0,0.33,partdensity$y[which(round(partdensity$x,2)==0.33)[1]], lty=3,lwd=2) #v2
@@ -213,7 +215,7 @@ fig1b = ggplot(min_out2, aes(occ))+
   geom_density(kernel = "gaussian", n = 2000, na.rm = TRUE)+
   labs(x = "Proportion of time present at site", y = "Probability Density", title = "Minimum Scale")+ 
   theme_classic() #coord_cartesian(xlim = c(0, 1), ylim = c(0, 2.5))+
-
+fig1b 
 # FIX: Add breakpoints as geoms
 segments(0.33,0,0.33,partdensity$y[which(round(partdensity$x,2)==0.33)[1]], lty=3,lwd=2) #v2
 segments(0.66,0,0.66,partdensity$y[which(round(partdensity$x,2)==0.66)[1]], lty=3,lwd=2) #v2
@@ -302,9 +304,10 @@ num.years = 15
 pdf('C:/git/core-transient/output/plots/Molly_Plots/fig1c.pdf', height = 8, width = 10)
 # Add kernel density
 fig1c = ggplot(max_out, aes(occ))+
-  geom_density(kernel = "gaussian", n = 2000, na.rm = TRUE)+
+  geom_density(bw = "bcv", kernel = "gaussian", n = 2000, na.rm = TRUE)+
   labs(x = "Proportion of time present at site", y = "Probability Density", title = "Maximum Scale")+theme_classic()
 #so it was the limits giving me crap in the original 
+fig1c
 
 # FIX: Add breakpoints as geoms
 segments(0.33,0,0.33,partdensity$y[which(round(partdensity$x,2)==0.33)[1]], lty=3,lwd=2) #v2
@@ -322,11 +325,32 @@ fig1_whole = grid.arrange(fig1a, fig1b, fig1c)
 
 fig1_alt = grid.arrange(fig1b, fig1c)
 
-
+####Figure 4 all graphs overlay####
 ## merge output, min, and max into single df while adding new column delineating which 
 ## category: single, min, or max the data corresponds to so multiple lines can be 
 ## overlaid on single density plot 
 
+output$scale = c("Single Route Scale")
+min_out2$scale = c("Smallest Scale")
+max_out$scale = c("Largest Scale")
+output = output %>% 
+  arrange(stateroute, AOU, occ, scale) %>% 
+  select(-n)
+
+min_out2 = min_out2 %>% 
+  select(stateroute, AOU, occ, scale) 
+
+max_out = max_out %>% 
+  select(stateroute, AOU, occ, scale) 
+
+two_fig = rbind(output, min_out2)
+all_fig = rbind(two_fig, max_out)
+all_fig$scale = as.factor(all_fig$scale)
+
+all_figplot = ggplot(all_fig, aes(occ, group = scale, color = scale))+
+  geom_density(bw = "bcv", kernel = "gaussian", n = 2000, na.rm = TRUE)+
+  labs(x = "Proportion of time present at site", y = "Probability Density")+theme_classic()
+all_figplot
 
 
 ####Fig 3####

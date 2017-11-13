@@ -4,7 +4,7 @@
 # author: Molly F. Jenkins
 # date: 06/27/2017
 
-# setwd("C:/git/core-transient")
+# setwd("C:/core-transient")
 #'#' Please download and install the following packages:
 library(raster)
 library(maps)
