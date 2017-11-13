@@ -168,6 +168,7 @@ all_figplot
 
 
 ####Fig 3####
+##Make background grey, illustrate 66 points region in black, with red star centerpt 
 NorthAm = readOGR(dsn = "//bioark.ad.unc.edu/HurlbertLab/GIS/geography", layer = "continent")
 NorthAm2 = spTransform(NorthAm, CRS("+proj=laea +lat_0=45.235 +lon_0=-106.675 +units=km"))
 bbs_latlon = read.csv(paste(BBS, "good_rtes2.csv", sep = ""), header = TRUE)
@@ -180,25 +181,12 @@ bbs_latlon = filter(bbs_latlon, stateroute %in% bbs_allscales$focalrte)
 sites = data.frame(longitude = bbs_latlon$Longi, latitude = bbs_latlon$Lati) 
 
 
-#East 
-plot(NorthAm, xlim = c(-72, -71), ylim = c(33, 43))
-points(sites$longitude, sites$latitude, pch = 16)
-map.scale(x = -77.8, y = 33.5)
-#identify(ord1.plot,what="species",cex=0.7,col="blue")
-
-#West 
-#East 
-plot(NorthAm, xlim = c(-130, -115), ylim = c(32, 50))
-points(sites$longitude, sites$latitude, pch = 16)
-map.scale(x = -133, y = 33.5)
-
-
 ####Results section figs####
-
+#scales hetero derived at end of env_analysis script
 scales_hetero = read.csv("scripts/R-scripts/scale_analysis/scales_hetero.csv", header = TRUE)
 
-#scale on x and r on y, panel by coef of interest, line color by var measure
 
+#scale on x and r on y, panel by coef of interest, line color by var measure
 ggplot(scales_hetero, aes(x = scale, y = corr_r))+
   geom_line(aes(color = dep))+facet_wrap(~ind)+theme_classic()
 #I want a corr_r value for every dep and ind variable at every scale, for every focal
