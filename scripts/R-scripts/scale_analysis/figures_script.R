@@ -15,9 +15,6 @@
 
 BBS = '//bioark.ad.unc.edu/HurlbertLab/Jenkins/BBS scaled/'
 
-
-
-
 fifty_allyears = read.csv(paste(BBS, "fifty_allyears.csv", sep = ""), header = TRUE) #using updated version, 50 stop data, 07/12
 bbs_allscales = read.csv("data/BBS/bbs_allscales.csv", header = TRUE)
 
@@ -57,73 +54,11 @@ for (s in b_scales) {
 
 #transformation into matrix unnecessary with ggplot version 
 
-#remove na's for density analysis of longform  
-outputd = na.omit(output)
-density(outputd$occ) #density analysis still completed outside of ggplot 
-
-#version 1 
-output_m = output[, -3] %>%
-  spread(AOU, occ)
-output_m = as.data.frame(output_m)
-
-par(mar=c(4,4,1,1)+0.5)
-par(lend=2)
-num.years = 15
-
-pdf('C:/git/core-transient/output/plots/Molly_Plots/coyle_1.pdf', height = 8, width = 10)
-# Add kernel density
-partdensity = density(output_m[output_m>0],from=1/min(num.years),
-                      to=(min(num.years)-1)/min(num.years),kernel='gaussian', na.rm=T, n=2000)
-plot(partdensity$y~partdensity$x,
-     main='',
-     xlab='',
-     ylab='',
-     xlim=c(0,1),ylim=c(0,2.5), #this ylim max cutoff - why? for visual simplicity?
-     lwd=5,axes=F,type='l',lend=2
-)
-
-# Add breakpoints
-segments(0.33,0,0.33,partdensity$y[which(round(partdensity$x,2)==0.33)[1]], lty=3,lwd=2) #v2
-segments(0.66,0,0.66,partdensity$y[which(round(partdensity$x,2)==0.66)[1]], lty=3,lwd=2) #v2
-
-# Add axes
-axis(1,at=seq(0,1,0.2),pos=0,cex.axis=2)
-axis(2, c(0,2),labels=c("",""))
-
-
-# Add titles
-title(main='',xlab='Proportion of time present at site',ylab='Probability Density',
-      line=2,cex.lab=2.5)
-
-
-#version 2:
-pdf('C:/git/core-transient/output/plots/Molly_Plots/fig1a.pdf', height = 8, width = 10)
-# Add kernel density
 fig1a = ggplot(output, aes(occ))+
   geom_density(kernel = "gaussian", n = 2000, na.rm = TRUE)+
   labs(x = "Proportion of time present at site", y = "Probability Density", title = "Single Route Scale")+ 
   theme_classic() #coord_cartesian(xlim = c(0, 1), ylim = c(0, 2.5))+
-
-# FIX: Add breakpoints as geoms
-segments(0.33,0,0.33,partdensity$y[which(round(partdensity$x,2)==0.33)[1]], lty=3,lwd=2) #v2
-segments(0.66,0,0.66,partdensity$y[which(round(partdensity$x,2)==0.66)[1]], lty=3,lwd=2) #v2
-
-# Add proportions as annotations
-allsp = !is.na(output)
-coresp = output>=0.6667
-occasp = output<0.3334
-
-# text(0.66+(0.33/2),0.10,paste('(',round(sum(coresp,na.rm=T)/sum(allsp,na.rm=T)*100,1),' %)',sep=''),
-# cex=3,font=1)
-# text(0.33/2,0.10,paste('(',round(sum(occasp,na.rm=T)/sum(allsp,na.rm=T)*100,1),' %)',sep=''),
-# cex=3,font=1)
-
-#text(0.66+(0.33/2),0.35,'Core',cex=3,font=2) #v3
-#text(0.33/2,0.35,'Transient',cex=3,font=2) #v3
-
-dev.off()
-#looks perfect 
-
+fig1a
 
 #repeat for scale of 5 stop segment and scale of 66 routes 
 
@@ -149,82 +84,14 @@ min_out = min_out[, -3]
 min_out2 = min_out %>% 
   group_by(AOU, stateroute) %>% 
   summarise(occ = mean(occ)) %>% select(everything()) 
-            
-
-
-min_out3 = spread(data = min_out2, AOU, occ)
 
 min_out2 = as.data.frame(min_out2)
-min_out3 = as.data.frame(min_out3)
 
-#remove na's 
-min_outd = na.omit(min_out2)
-density(min_outd$occ)
-par(mar=c(4,4,1,1)+0.5)
-par(lend=2)
-num.years = 15
-
-pdf('C:/git/core-transient/output/plots/Molly_Plots/fig1b.pdf', height = 8, width = 10)
-# Add kernel density
-partdensity = density(min_out3[min_out3>0],from=1/min(num.years),
-                      to=(min(num.years)-1)/min(num.years),kernel='gaussian', na.rm=T, n=2000)
-plot(partdensity$y~partdensity$x,
-     main='',
-     xlab='',
-     ylab='',
-     xlim=c(0,1),ylim=c(0,2.5),
-     lwd=5,axes=F,type='l',lend=2
-)
-
-# Add breakpoints
-segments(0.33,0,0.33,partdensity$y[which(round(partdensity$x,2)==0.33)[1]], lty=3,lwd=2) #v2
-segments(0.66,0,0.66,partdensity$y[which(round(partdensity$x,2)==0.66)[1]], lty=3,lwd=2) #v2
-
-# Add axes
-axis(1,at=seq(0,1,0.2),pos=0,cex.axis=2)
-axis(2, c(0,2),labels=c("",""))
-
-
-# Add titles
-title(main='Scale of 1/10 of single route',xlab='Proportion of time present at site',ylab='Probability Density',
-      line=2,cex.lab=2.5)
-
-# Add proportions
-allsp = !is.na(min_out3)
-coresp = min_out3>=0.6667
-occasp = min_out3<0.3334
-
-# text(0.66+(0.33/2),0.10,paste('(',round(sum(coresp,na.rm=T)/sum(allsp,na.rm=T)*100,1),' %)',sep=''),
-# cex=3,font=1)
-# text(0.33/2,0.10,paste('(',round(sum(occasp,na.rm=T)/sum(allsp,na.rm=T)*100,1),' %)',sep=''),
-# cex=3,font=1)
-
-#text(0.66+(0.33/2),0.35,'Core',cex=3,font=2) #v3
-#text(0.33/2,0.35,'Transient',cex=3,font=2) #v3
-
-dev.off()
-
-#again, perfect 
-
-#version 2:
-pdf('C:/git/core-transient/output/plots/Molly_Plots/fig1b.pdf', height = 8, width = 10)
-# Add kernel density
 fig1b = ggplot(min_out2, aes(occ))+
   geom_density(kernel = "gaussian", n = 2000, na.rm = TRUE)+
   labs(x = "Proportion of time present at site", y = "Probability Density", title = "Minimum Scale")+ 
   theme_classic() #coord_cartesian(xlim = c(0, 1), ylim = c(0, 2.5))+
-
-# FIX: Add breakpoints as geoms
-segments(0.33,0,0.33,partdensity$y[which(round(partdensity$x,2)==0.33)[1]], lty=3,lwd=2) #v2
-segments(0.66,0,0.66,partdensity$y[which(round(partdensity$x,2)==0.66)[1]], lty=3,lwd=2) #v2
-
-# Add proportions as annotations
-allsp = !is.na(output)
-coresp = output>=0.6667
-occasp = output<0.3334
-
-
-
+fig1b 
 
 ####Fig 1c: distribution at the maximum scale####
 dist.df = read.csv("scripts/R-scripts/scale_analysis/dist_df.csv", header = TRUE)
@@ -241,12 +108,7 @@ max_out = c()
 
 #test example route 2010 and nu at 57 routes -> large scale, should have high occ 
 for (r in uniqrtes) { #for each focal route
-  #for each level of scale aggregated to each focal route
-    
-    #takes dist.df and generates a new list that changes based on which route in uniqrtes is being focused on 
-    #and the length of the list varies with the scale or nu 
-    
-    tmp_rte_group = dist.df %>% #changes with size of nu but caps at 66
+  tmp_rte_group = dist.df %>% #changes with size of nu but caps at 66
       filter(rte1 == r) %>% 
       top_n(66, desc(dist)) %>% #fixed ordering by including arrange parm, 
       #remove/skip top row 
@@ -254,17 +116,11 @@ for (r in uniqrtes) { #for each focal route
       slice(1:nu) %>% 
       select(everything()) %>% data.frame()
     
-    #takes varying list from above and uses it to subset the bbs data so that occ can be calculated for the cluster 
     
     focal_clustr = bbs_above_guide %>% 
-      filter(stateroute %in% tmp_rte_group$rte2) #tmp_rte_group already ordered by distance so don't need 2x
-    #(for a given focal rte, narrow input data to those nu secondary routes in focal cluster)
-    #across 57 routes
+      filter(stateroute %in% tmp_rte_group$rte2) 
     
-    occ.summ = focal_clustr %>% #occupancy -> focal clustr should GROW with scale, larger avg pool -> 
-      #increased likelihood that AOU will be present -> OH! I don't want stateroute in here! it doesn't matter! 
-      #it just matters that it shows up in the cluster at all, not just the stateroutes that go in
-      #how many years does each AOU show up in the cluster 
+    occ.summ = focal_clustr %>% 
       select(year, AOU) %>% #duplicates remnant of distinct secondary routes - finally ID'd bug
       distinct() %>% #removing duplicates 09/20
       count(AOU) %>% #how many times does that AOU show up in that clustr that year 
@@ -275,61 +131,44 @@ for (r in uniqrtes) { #for each focal route
   }
 
 max_out = max_out[, -2]
-
-max_out_m = max_out %>% 
-  spread(AOU, occ)
-max_out_m = as.data.frame(max_out_m)
 max_out = as.data.frame(max_out)
 
-#version 1 
-partdensity = density(max_out_m[max_out_m>0],from=1/min(num.years),
-                      to=(min(num.years)-1)/min(num.years),kernel='gaussian', na.rm=T, n=2000)
-plot(partdensity$y~partdensity$x,
-     main='',
-     xlab='',
-     ylab='',
-     lwd=5,axes=F,type='l',lend=2
-)
-
-
-#remove na's from long form for density 
-max_outd = na.omit(max_out)
-density(max_outd$occ)
-par(mar=c(4,4,1,1)+0.5)
-par(lend=2)
-num.years = 15
-
-pdf('C:/git/core-transient/output/plots/Molly_Plots/fig1c.pdf', height = 8, width = 10)
-# Add kernel density
 fig1c = ggplot(max_out, aes(occ))+
-  geom_density(kernel = "gaussian", n = 2000, na.rm = TRUE)+
+  geom_density(bw = "bcv", kernel = "gaussian", n = 2000, na.rm = TRUE)+
   labs(x = "Proportion of time present at site", y = "Probability Density", title = "Maximum Scale")+theme_classic()
 #so it was the limits giving me crap in the original 
+fig1c
 
-# FIX: Add breakpoints as geoms
-segments(0.33,0,0.33,partdensity$y[which(round(partdensity$x,2)==0.33)[1]], lty=3,lwd=2) #v2
-segments(0.66,0,0.66,partdensity$y[which(round(partdensity$x,2)==0.66)[1]], lty=3,lwd=2) #v2
-
-# Add proportions as annotations
-allsp = !is.na(output)
-coresp = output>=0.6667
-occasp = output<0.3334
-#a little weird but SO much better than below coding 
-#reconfig 1a and 1b to be ggplots then, futz with 
-dev.off() 
-
-fig1_whole = grid.arrange(fig1a, fig1b, fig1c)
-
-fig1_alt = grid.arrange(fig1b, fig1c)
-
-
+####Figure 4 all graphs overlay####
 ## merge output, min, and max into single df while adding new column delineating which 
 ## category: single, min, or max the data corresponds to so multiple lines can be 
 ## overlaid on single density plot 
 
+output$scale = c("Single Route Scale")
+min_out2$scale = c("Smallest Scale")
+max_out$scale = c("Largest Scale")
+output = output %>% 
+  arrange(stateroute, AOU, occ, scale) %>% 
+  select(-n)
+
+min_out2 = min_out2 %>% 
+  select(stateroute, AOU, occ, scale) 
+
+max_out = max_out %>% 
+  select(stateroute, AOU, occ, scale) 
+
+two_fig = rbind(output, min_out2)
+all_fig = rbind(two_fig, max_out)
+all_fig$scale = as.factor(all_fig$scale)
+
+all_figplot = ggplot(all_fig, aes(occ, group = scale, color = scale))+
+  geom_density(bw = "bcv", kernel = "gaussian", n = 2000, na.rm = TRUE)+
+  labs(x = "Proportion of time present at site", y = "Probability Density")+theme_classic()
+all_figplot
 
 
 ####Fig 3####
+##Make background grey, illustrate 66 points region in black, with red star centerpt 
 NorthAm = readOGR(dsn = "//bioark.ad.unc.edu/HurlbertLab/GIS/geography", layer = "continent")
 NorthAm2 = spTransform(NorthAm, CRS("+proj=laea +lat_0=45.235 +lon_0=-106.675 +units=km"))
 bbs_latlon = read.csv(paste(BBS, "good_rtes2.csv", sep = ""), header = TRUE)
@@ -342,25 +181,12 @@ bbs_latlon = filter(bbs_latlon, stateroute %in% bbs_allscales$focalrte)
 sites = data.frame(longitude = bbs_latlon$Longi, latitude = bbs_latlon$Lati) 
 
 
-#East 
-plot(NorthAm, xlim = c(-72, -71), ylim = c(33, 43))
-points(sites$longitude, sites$latitude, pch = 16)
-map.scale(x = -77.8, y = 33.5)
-#identify(ord1.plot,what="species",cex=0.7,col="blue")
-
-#West 
-#East 
-plot(NorthAm, xlim = c(-130, -115), ylim = c(32, 50))
-points(sites$longitude, sites$latitude, pch = 16)
-map.scale(x = -133, y = 33.5)
-
-
 ####Results section figs####
-
+#scales hetero derived at end of env_analysis script
 scales_hetero = read.csv("scripts/R-scripts/scale_analysis/scales_hetero.csv", header = TRUE)
 
-#scale on x and r on y, panel by coef of interest, line color by var measure
 
+#scale on x and r on y, panel by coef of interest, line color by var measure
 ggplot(scales_hetero, aes(x = scale, y = corr_r))+
   geom_line(aes(color = dep))+facet_wrap(~ind)+theme_classic()
 #I want a corr_r value for every dep and ind variable at every scale, for every focal
