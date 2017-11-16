@@ -180,7 +180,7 @@ dist.df_sub = dist.df %>%
   arrange(dist) 
   
 dist.df_sub2 = dist.df %>% 
-  filter(rte1 == "80002") %>%
+  filter(rte1 == "92120") %>%
   top_n(66, desc(dist)) %>% #fixed ordering by including arrange parm, 
   arrange(dist) 
 
