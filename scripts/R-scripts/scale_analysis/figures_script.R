@@ -199,10 +199,10 @@ star2 = sites2[1,]
 
 plot(NorthAm, xlim = c(-160, -60), ylim = c(25, 70))
 points(bbs_latlon$Longi, bbs_latlon$Lati, col= "grey", pch=16)
-points(sites1$longitude, sites1$latitude, col = "blue", pch = 16)
-points(sites2$longitude, sites2$latitude, col = "red", pch = 16)
-points(star1$longitude, star1$latitude, col = "black", pch = 17)
-points(star2$longitude, star2$latitude, col = "black", pch = 17)
+points(sites1$longitude, sites1$latitude, col = "lightseagreen", pch = 16)
+points(sites2$longitude, sites2$latitude, col = "goldenrod", pch = 16)
+points(star1$longitude, star1$latitude, col = "black", pch = 17, cex = 2)
+points(star2$longitude, star2$latitude, col = "black", pch = 17, cex = 2)
 
 ####Results section figs####
 #scales hetero derived at end of env_analysis script
