@@ -173,16 +173,36 @@ all_figplot
 NorthAm = readOGR(dsn = "//bioark.ad.unc.edu/HurlbertLab/GIS/geography", layer = "continent")
 NorthAm2 = spTransform(NorthAm, CRS("+proj=laea +lat_0=45.235 +lon_0=-106.675 +units=km"))
 bbs_latlon = read.csv(paste(BBS, "good_rtes2.csv", sep = ""), header = TRUE)
+dist.df = read.csv("scripts/R-scripts/scale_analysis/dist_df.csv", header = TRUE)
+dist.df_sub = dist.df %>% 
+  filter(rte1 == "2001")%>% 
+  top_n(66, desc(dist)) %>% #fixed ordering by including arrange parm, 
+  arrange(dist) 
+  
+dist.df_sub2 = dist.df %>% 
+  filter(rte1 == "80002") %>%
+  top_n(66, desc(dist)) %>% #fixed ordering by including arrange parm, 
+  arrange(dist) 
+
 
 #exclude routes that have missing above OR below scale data, such that sites are only calculated for routes that cover all 83 scales
 bbs_allscales = read.csv("data/BBS/bbs_allscales.csv", header = TRUE)
 bbs_latlon = filter(bbs_latlon, stateroute %in% bbs_allscales$focalrte)
+bbs_latlon$stateroute = as.character(bbs_latlon$stateroute)
+bbs_secnd = filter(bbs_latlon, stateroute %in% dist.df_sub$rte2)
+bbs_thrd = filter(bbs_latlon, stateroute %in% dist.df_sub2$rte2)
 
+sites1 = data.frame(longitude = bbs_secnd$Longi, latitude = bbs_secnd$Lati) 
+sites2 = data.frame(longitude = bbs_thrd$Longi, latitude = bbs_thrd$Lati) 
+star1 = sites1[1,]
+star2 = sites2[1,]
 
-sites = data.frame(longitude = bbs_latlon$Longi, latitude = bbs_latlon$Lati) 
 plot(NorthAm, xlim = c(-160, -60), ylim = c(25, 70))
-points(sites$longitude, sites$latitude, col= "grey", pch=16)
-points(sites_sub)
+points(bbs_latlon$Longi, bbs_latlon$Lati, col= "grey", pch=16)
+points(sites1$longitude, sites1$latitude, col = "blue", pch = 16)
+points(sites2$longitude, sites2$latitude, col = "red", pch = 16)
+points(star1$longitude, star1$latitude, col = "black", pch = 17)
+points(star2$longitude, star2$latitude, col = "black", pch = 17)
 
 ####Results section figs####
 #scales hetero derived at end of env_analysis script
