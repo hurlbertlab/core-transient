@@ -2,6 +2,7 @@
 #wd1: setwd("C:/git/core-transient")
 #wd2: setwd("\\bioark.ad.unc.edu\HurlbertLab\Jenkins\Final folder") 
 
+library(tidyverse)
 #Figure 1: Bimodal dist images; number of spp on y vs # years present  
 #A: original bimodal dist 
 #B: distribution at smallest scales 
@@ -179,7 +180,9 @@ bbs_latlon = filter(bbs_latlon, stateroute %in% bbs_allscales$focalrte)
 
 
 sites = data.frame(longitude = bbs_latlon$Longi, latitude = bbs_latlon$Lati) 
-
+plot(NorthAm, xlim = c(-160, -60), ylim = c(25, 70))
+points(sites$longitude, sites$latitude, col= "grey", pch=16)
+points(sites_sub)
 
 ####Results section figs####
 #scales hetero derived at end of env_analysis script
