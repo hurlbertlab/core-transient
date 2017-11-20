@@ -146,8 +146,8 @@ fig1c
 ## overlaid on single density plot 
 
 output$scale = c("Single Route Scale")
-min_out2$scale = c("Smallest Scale")
-max_out$scale = c("Largest Scale")
+min_out2$scale = c("Local Scale")
+max_out$scale = c("Regional Scale")
 output = output %>% 
   arrange(stateroute, AOU, occ, scale) %>% 
   select(-n)
