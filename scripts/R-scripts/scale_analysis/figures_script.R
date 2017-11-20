@@ -163,7 +163,7 @@ all_fig = rbind(two_fig, max_out)
 all_fig$scale = as.factor(all_fig$scale)
 
 all_figplot = ggplot(all_fig, aes(occ, group = scale, color = scale))+
-  geom_density(bw = "bcv", kernel = "gaussian", n = 2000, na.rm = TRUE)+
+  stat_density(geom = "line", bw = "bcv", kernel = "gaussian", n = 2000, na.rm = TRUE)+
   labs(x = "Proportion of time present at site", y = "Probability Density")+theme_classic()
 all_figplot
 
