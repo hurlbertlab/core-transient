@@ -161,9 +161,15 @@ fig1c
 ## category: single, min, or max the data corresponds to so multiple lines can be 
 ## overlaid on single density plot 
 
-output$scale = 1
-min_out2$scale = .10
-# max_out$scale = c("Largest Scale")
+# <<<<<<< HEAD
+# output$scale = 1
+# min_out2$scale = .10
+# # max_out$scale = c("Largest Scale")
+# =======
+# output$scale = c("Single Route Scale")
+# min_out2$scale = c("Local Scale")
+# max_out$scale = c("Regional Scale")
+# >>>>>>> f1c590e6043bf38c744f891e4c763df712f21b21
 output = output %>% 
   arrange(stateroute, AOU, occ, scale) %>% 
   dplyr::select(-n)
@@ -182,7 +188,7 @@ write.csv(all_fig, "C:/git/core-transient/scripts/R-scripts/scale_analysis/all_f
 
 
 all_figplot = ggplot(all_fig, aes(occ, group = scale, color = scale))+
-  geom_density(bw = "bcv", kernel = "gaussian", n = 2000, na.rm = TRUE)+
+  stat_density(geom = "line", bw = "bcv", kernel = "gaussian", n = 2000, na.rm = TRUE)+
   labs(x = "Proportion of time present at site", y = "Probability Density")+theme_classic()
 all_figplot
 
