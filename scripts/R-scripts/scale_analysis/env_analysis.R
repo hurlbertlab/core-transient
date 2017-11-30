@@ -268,10 +268,10 @@ write.csv(covmatrix, "scripts/R-scripts/scale_analysis/covmatrix.csv", row.names
 #e.g. "Does the min and the predicted min vary with environmental heterogeneity 
 #at the scale of a single route? at the scale of a landscape?
 min_mod1 = lm(OA.min ~ ndvi.var, data = env_coefs)
-min_mod2 = lm(OA.pmin ~ ndvi.var, data = env_coefs)
+min_mod2 = lm(ON.min ~ ndvi.var, data = env_coefs)
 
 min_mod3 = lm(OA.min ~ elev.var, data = env_coefs)
-min_mod4 = lm(OA.pmin ~ elev.var, data = env_coefs)
+min_mod4 = lm(ON.min ~ elev.var, data = env_coefs)
 
 summary(min_mod1)
 summary(min_mod2)
@@ -298,7 +298,7 @@ setwd("C:/git/core-transient/output/plots/'Molly Plots'/habhet/")
 
 
 for (d in 3:6) { #adjust columns appropriately -> make sure correct order of ind and dep vars!
-  for (i in 7:16) {
+  for (i in 8:17) {
     tempmod = lm(env_coefs[,d] ~ env_coefs[,i])
     tempcor = cor.test(env_coefs[,d], env_coefs[,i], method = "pearson")
     
