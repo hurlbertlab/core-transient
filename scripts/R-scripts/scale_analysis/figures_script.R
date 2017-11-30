@@ -40,6 +40,9 @@ fifty_bestAous = fifty_allyears %>%
 #occ_counts function for calculating occupancy at any scale
 #countcolumns can refer to the stops in a stateroute OR 
 #it can refer to the associated secondary routes to aggregate across 
+#occ_counts function for calculating occupancy at any scale
+#countcolumns can refer to the stops in a stateroute OR 
+#it can refer to the associated secondary routes to aggregate across 
 occ_counts = function(countData, countColumns, scale) {
   bbssub = countData[, c("stateroute", "year", "AOU", countColumns)] #these are our grouping vars
   bbssub$groupCount = rowSums(bbssub[, countColumns]) 
@@ -51,7 +54,7 @@ occ_counts = function(countData, countColumns, scale) {
   
   occ.summ = bbsu %>% #occupancy
     count(stateroute, AOU) %>%
-    mutate(occ = n/15, scale = paste(scale, g, sep = "-")) %>% #, #may want to get rid of, this is at the column-counting scale
+    mutate(occ = n/15, scale = scale) %>% #, #may want to get rid of, this is at the column-counting scale
     #scale = scale) %>%
     left_join(abun.summ, by = 'stateroute')
   return(occ.summ)
@@ -73,10 +76,14 @@ for (s in b_scales) {
 
 min_dist = output
 #transformation into matrix unnecessary with ggplot version 
-write.csv(min_dist, "C:/git/core-transient/scripts/R-scripts/scale_analysis/min_dist.csv", row.names = FALSE)
+write.csv(min_dist, "//bioark.ad.unc.edu/HurlbertLab/Jenkins/BBS scaled/min_dist.csv", row.names = FALSE)
 
-fig1a = ggplot(output, aes(occ))+
-  geom_density(kernel = "gaussian", n = 2000, na.rm = TRUE)+
+#filter to scale == 50, check
+min_dist2 = min_dist %>% 
+  filter(scale == "50")
+
+fig1a = ggplot(min_dist2, aes(occ))+
+  geom_density(bw = "bcv", kernel = "gaussian", n = 2000, na.rm = TRUE)+
   labs(x = "Proportion of time present at site", y = "Probability Density", title = "Single Route Scale")+ 
   theme_classic() #coord_cartesian(xlim = c(0, 1), ylim = c(0, 2.5))+
 fig1a
@@ -90,15 +97,15 @@ fig1a
 #scale of 5 segments (min) 
 min_out = min_out[, -3]
 #need to avg occs between unique stateroute-AOU pairs since 5 for every 1 
-min_out2 = min_out %>% 
-  group_by(AOU, stateroute) %>% 
+min_dist3 = min_dist %>% 
+  group_by(AOU, stateroute, scale) %>% 
   summarise(occ = mean(occ)) %>% dplyr::select(everything()) 
 
 min_out2 = as.data.frame(min_out2)
 
-fig1b = ggplot(min_out2, aes(occ))+
+fig1b = ggplot(min_dist3, aes(occ, group = scale, color = scale))+
   geom_density(kernel = "gaussian", n = 2000, na.rm = TRUE)+
-  labs(x = "Proportion of time present at site", y = "Probability Density", title = "Minimum Scale")+ 
+  labs(x = "Proportion of time present at site", y = "Probability Density", title = "Local Scales")+ 
   theme_classic() #coord_cartesian(xlim = c(0, 1), ylim = c(0, 2.5))+
 fig1b 
 
