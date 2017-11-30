@@ -245,7 +245,7 @@ env_coefs = env_all %>%
   
 #since now reflective of all scales, 62370 rows, 36 cols 
 write.csv(env_coefs, "scripts/R-scripts/scale_analysis/env_coefs.csv", row.names = FALSE)
-#updated 10/29
+#updated 11/29
 
 
 ####Coef & habitat heterogeneity models####

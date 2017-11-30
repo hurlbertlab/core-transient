@@ -156,9 +156,9 @@ for(s in stateroutes){
 coefs = OA.df %>% 
   inner_join(ON.df, OA.df, by = "stateroute")
  
-write.csv(coefs, "scripts/R-scripts/scale_analysis/coefs.csv", row.names = FALSE) #updated 09/21
-#exp mods have much better r2 vals for pctTran than power 
-#checked, working correctly 08/28, output not NA's but normal!
+write.csv(coefs, "scripts/R-scripts/scale_analysis/coefs.csv", row.names = FALSE) 
+#updated 11/21, removal of redundant coefs and inclusion of ON
+
 
 ####Plotting occupancy-scale relationships with observed and predicted values####
 #work in progress
