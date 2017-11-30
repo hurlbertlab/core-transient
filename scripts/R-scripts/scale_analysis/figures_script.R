@@ -3,6 +3,21 @@
 #wd2: setwd("\\bioark.ad.unc.edu\HurlbertLab\Jenkins\Final folder") 
 
 library(tidyverse)
+library(raster)
+library(maps)
+library(sp)
+library(rgdal)
+library(maptools)
+library(rgeos)
+library(fields)
+library(gridExtra)
+library(wesanderson)
+library(stats)
+library(gimms)
+library(devtools)
+library(geometry)
+library(DBI)
+
 #Figure 1: Bimodal dist images; number of spp on y vs # years present  
 #A: original bimodal dist 
 #B: distribution at smallest scales 
@@ -84,7 +99,7 @@ min_out = min_out[, -3]
 #need to avg occs between unique stateroute-AOU pairs since 5 for every 1 
 min_out2 = min_out %>% 
   group_by(AOU, stateroute) %>% 
-  summarise(occ = mean(occ)) %>% select(everything()) 
+  summarise(occ = mean(occ)) %>% dplyr::select(everything()) 
 
 min_out2 = as.data.frame(min_out2)
 
@@ -108,28 +123,29 @@ nu = 66 # based on min common number in top 6 grid cells, see grid_sampling_just
 max_out = c()
 
 #test example route 2010 and nu at 57 routes -> large scale, should have high occ 
-for (r in uniqrtes) { #for each focal route
-  tmp_rte_group = dist.df %>% #changes with size of nu but caps at 66
+  for (r in uniqrtes) { #for each focal route
+    tmp_rte_group = dist.df %>% #changes with size of nu but caps at 66
       filter(rte1 == r) %>% 
       top_n(66, desc(dist)) %>% #fixed ordering by including arrange parm, 
       #remove/skip top row 
       arrange(dist) %>%
       slice(1:nu) %>% 
-      select(everything()) %>% data.frame()
+      dplyr::select(everything()) %>% data.frame()
     
     
     focal_clustr = bbs_above_guide %>% 
       filter(stateroute %in% tmp_rte_group$rte2) 
     
     occ.summ = focal_clustr %>% 
-      select(year, AOU) %>% #duplicates remnant of distinct secondary routes - finally ID'd bug
+      dplyr::select(year, AOU) %>% #duplicates remnant of distinct secondary routes - finally ID'd bug
       distinct() %>% #removing duplicates 09/20
       count(AOU) %>% #how many times does that AOU show up in that clustr that year 
-      mutate(occ = n/15, stateroute = r) 
+      dplyr::mutate(occ = n/15, stateroute = r) 
     
     max_out = rbind(max_out, occ.summ)
     
   }
+
 
 max_out = max_out[, -2]
 max_out = as.data.frame(max_out)
@@ -145,27 +161,48 @@ fig1c
 ## category: single, min, or max the data corresponds to so multiple lines can be 
 ## overlaid on single density plot 
 
-output$scale = c("Single Route Scale")
-min_out2$scale = c("Smallest Scale")
-max_out$scale = c("Largest Scale")
+output$scale = 1
+min_out2$scale = .10
+# max_out$scale = c("Largest Scale")
 output = output %>% 
   arrange(stateroute, AOU, occ, scale) %>% 
-  select(-n)
+  dplyr::select(-n)
 
 min_out2 = min_out2 %>% 
-  select(stateroute, AOU, occ, scale) 
+  dplyr::select(stateroute, AOU, occ, scale) 
 
 max_out = max_out %>% 
-  select(stateroute, AOU, occ, scale) 
+  dplyr::select(stateroute, AOU, occ, scale) 
 
 two_fig = rbind(output, min_out2)
 all_fig = rbind(two_fig, max_out)
 all_fig$scale = as.factor(all_fig$scale)
+write.csv(all_fig, "C:/git/core-transient/scripts/R-scripts/scale_analysis/all_figoutput.csv", row.names = FALSE)
+
+
 
 all_figplot = ggplot(all_fig, aes(occ, group = scale, color = scale))+
   geom_density(bw = "bcv", kernel = "gaussian", n = 2000, na.rm = TRUE)+
   labs(x = "Proportion of time present at site", y = "Probability Density")+theme_classic()
 all_figplot
+
+####Results Figure occ-scale: area and abundance####
+#Using same data from distribution plots, visualize occ and scale 
+#troubleshoot discrepancies in bbs_allscales occ calcs from occ_processing script
+
+BBS = '//bioark.ad.unc.edu/HurlbertLab/Jenkins/BBS scaled/'
+fifty_allyears = read.csv(paste(BBS, "fifty_allyears.csv", sep = ""), header = TRUE) #using updated version, 50 stop data, 07/12
+bbs_allscales = read.csv("data/BBS/bbs_allscales.csv", header = TRUE)
+fifty_bestAous = fifty_allyears %>% 
+  filter(AOU > 2880 & !(AOU >= 3650 & AOU <= 3810) & !(AOU >= 3900 & AOU <= 3910) & 
+           !(AOU >= 4160 & AOU <= 4210) & AOU != 7010) #leaving out owls, waterbirds as less reliable data
+
+plot(bbs_allscales$meanOcc~bbs_allscales$logA)
+plot(bbs_allscales$meanOcc~bbs_allscales$logN)
+#jump between 1 and 2 scales -> diagnose 
+
+
+
 
 
 ####Fig 3####
@@ -180,29 +217,30 @@ dist.df_sub = dist.df %>%
   arrange(dist) 
   
 dist.df_sub2 = dist.df %>% 
-  filter(rte1 == "92120") %>%
+  filter(rte1 == "11244") %>%
   top_n(66, desc(dist)) %>% #fixed ordering by including arrange parm, 
   arrange(dist) 
+  
 
 
 #exclude routes that have missing above OR below scale data, such that sites are only calculated for routes that cover all 83 scales
 bbs_allscales = read.csv("data/BBS/bbs_allscales.csv", header = TRUE)
 bbs_latlon = filter(bbs_latlon, stateroute %in% bbs_allscales$focalrte)
 bbs_latlon$stateroute = as.character(bbs_latlon$stateroute)
-bbs_secnd = filter(bbs_latlon, stateroute %in% dist.df_sub$rte2)
+bbs_secnd = filter(bbs_latlon, stateroute %in% dist.df_sub$rte2) #things get out of order! 
 bbs_thrd = filter(bbs_latlon, stateroute %in% dist.df_sub2$rte2)
 
 sites1 = data.frame(longitude = bbs_secnd$Longi, latitude = bbs_secnd$Lati) 
 sites2 = data.frame(longitude = bbs_thrd$Longi, latitude = bbs_thrd$Lati) 
-star1 = sites1[1,]
-star2 = sites2[1,]
+star1 = bbs_secnd %>% filter(stateroute == "2001")
+star2 = bbs_thrd %>% filter(stateroute == "11244")
 
 plot(NorthAm, xlim = c(-160, -60), ylim = c(25, 70))
 points(bbs_latlon$Longi, bbs_latlon$Lati, col= "grey", pch=16)
 points(sites1$longitude, sites1$latitude, col = "lightseagreen", pch = 16)
 points(sites2$longitude, sites2$latitude, col = "goldenrod", pch = 16)
-points(star1$longitude, star1$latitude, col = "black", pch = 17, cex = 2)
-points(star2$longitude, star2$latitude, col = "black", pch = 17, cex = 2)
+points(star1$Longi, star1$Lati, col = "black", pch = 17, cex = 2)
+points(star2$Longi, star2$Lati, col = "black", pch = 17, cex = 2)
 
 ####Results section figs####
 #scales hetero derived at end of env_analysis script
