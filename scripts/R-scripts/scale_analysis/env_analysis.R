@@ -324,7 +324,7 @@ for (d in 3:6) { #adjust columns appropriately -> make sure correct order of ind
 
 dev.off()
 write.csv(rsqrd_hetero, "scripts/R-scripts/scale_analysis/rsqrd_hetero.csv", row.names = FALSE) 
-#updated 10/30 using corrected hab_het vals, only variances characterizing sites
+#updated 11/29 using corrected hab_het vals, only variances characterizing sites
 
 
 ####Visually Characterizing measures of habitat heterogeneity####
@@ -363,7 +363,7 @@ for (s in scales) {
   env_coefs2 = env_coefs %>% 
     filter(scale == s)
     for (d in 3:6) { #adjust columns appropriately -> make sure correct order of ind and dep vars!
-      for (i in 7:16) {
+      for (i in 8:17) {
        tempmod = lm(env_coefs2[,d] ~ env_coefs2[,i])
        tempcor = cor.test(env_coefs2[,d], env_coefs2[,i], method = "pearson")
     
@@ -390,7 +390,7 @@ for (s in scales) {
 }
 
 write.csv(scales_hetero, "scripts/R-scripts/scale_analysis/scales_hetero.csv", row.names = FALSE) 
-#updated 11/09 using corrected hab_het vals, only variances characterizing sites
+#updated 11/29 using corrected hab_het vals, only variances characterizing sites
 
 
 
