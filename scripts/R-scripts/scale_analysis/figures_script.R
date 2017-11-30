@@ -16,7 +16,6 @@ library(stats)
 library(gimms)
 library(devtools)
 library(geometry)
-library(DBI)
 
 #Figure 1: Bimodal dist images; number of spp on y vs # years present  
 #A: original bimodal dist 
@@ -46,18 +45,22 @@ occ_counts = function(countData, countColumns, scale) {
   bbssub$groupCount = rowSums(bbssub[, countColumns]) 
   bbsu = unique(bbssub[bbssub[, "groupCount"]!= 0, c("stateroute", "year", "AOU")]) 
   
+  abun.summ = bbssub %>% #abundance
+    group_by(stateroute, year) %>%  
+    summarize(totalN = sum(groupCount))  #we want to go further and summarize across focal + secondary rtes tho
   
   occ.summ = bbsu %>% #occupancy
     count(stateroute, AOU) %>%
-    mutate(occ = n/15, AOU = AOU, stateroute = stateroute)
+    mutate(occ = n/15, scale = paste(scale, g, sep = "-")) %>% #, #may want to get rid of, this is at the column-counting scale
+    #scale = scale) %>%
+    left_join(abun.summ, by = 'stateroute')
   return(occ.summ)
-  
-  }
-  
+}
+
 
 # Generic calculation of occupancy for a specified scale
 #fix to run all at once, so no sep run for above-scale, USE occ-counts for both 
-b_scales = c(50)
+b_scales = c(5, 10, 25, 50)
 output = c()
 for (s in b_scales) {
   numGroups = floor(50/s)
@@ -68,7 +71,9 @@ for (s in b_scales) {
   } 
 }
 
+min_dist = output
 #transformation into matrix unnecessary with ggplot version 
+write.csv(min_dist, "C:/git/core-transient/scripts/R-scripts/scale_analysis/min_dist.csv", row.names = FALSE)
 
 fig1a = ggplot(output, aes(occ))+
   geom_density(kernel = "gaussian", n = 2000, na.rm = TRUE)+
@@ -83,18 +88,6 @@ fig1a
 #fix to run all at once, so no sep run for above-scale, USE occ-counts for both 
 
 #scale of 5 segments (min) 
-min_scales = c(5, 10, 25)   #do for 5, 10, and 25 
-min_out = c()
-for (s in min_scales) {
-  numGroups = floor(50/s)
-  for (g in 1:numGroups) {
-    groupedCols = paste("Stop", ((g-1)*s + 1):(g*s), sep = "")
-    temp = occ_counts(fifty_bestAous, groupedCols, s) 
-    min_out = rbind(min_out, temp) 
-  } 
-}
-
-#transform output into matrix for use with coylefig script 
 min_out = min_out[, -3]
 #need to avg occs between unique stateroute-AOU pairs since 5 for every 1 
 min_out2 = min_out %>% 
