@@ -83,7 +83,7 @@ fig1a
 #fix to run all at once, so no sep run for above-scale, USE occ-counts for both 
 
 #scale of 5 segments (min) 
-min_scales = c(5)
+min_scales = c(5, 10, 25)   #do for 5, 10, and 25 
 min_out = c()
 for (s in min_scales) {
   numGroups = floor(50/s)
@@ -119,9 +119,10 @@ bbs_above_guide = read.csv("scripts/R-scripts/scale_analysis/bbs_above_guide.csv
 #it can refer to the associated secondary routes to aggregate across 
 
 uniqrtes = unique(bbs_above_guide$stateroute) #all routes present are unique, still 953 which is great
-nu = 66 # based on min common number in top 6 grid cells, see grid_sampling_justification script 
+scales = c(2, 4, 8, 16, 32, 66) # based on min common number in top 6 grid cells, see grid_sampling_justification script 
 max_out = c()
 
+for (nu in scales){
 #test example route 2010 and nu at 57 routes -> large scale, should have high occ 
   for (r in uniqrtes) { #for each focal route
     tmp_rte_group = dist.df %>% #changes with size of nu but caps at 66
@@ -145,7 +146,7 @@ max_out = c()
     max_out = rbind(max_out, occ.summ)
     
   }
-
+}
 
 max_out = max_out[, -2]
 max_out = as.data.frame(max_out)
