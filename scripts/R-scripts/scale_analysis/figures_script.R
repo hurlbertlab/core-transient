@@ -188,15 +188,13 @@ max_out = read.csv("//bioark.ad.unc.edu/HurlbertLab/Jenkins/BBS scaled/max_out.c
 #organize by scales; label and differentiate scales so that below-rtes are appropriately smaller
 #do area calcs and color by area? 
 
-
-single = min_out %>% 
-  filter(scale == "50")
-
 min_out = min_out %>% 
-  dplyr::select(stateroute, AOU, occ, scale) 
+  dplyr::select(stateroute, AOU, occ, scale) %>% 
+  dplyr::mutate(area = scale*(pi*(0.4^2))) #scale corresponds to the number of stops
 
 max_out = max_out %>% 
-  dplyr::select(stateroute, AOU, occ, scale) 
+  dplyr::select(stateroute, AOU, occ, scale) %>% 
+  dplyr::mutate(area = scale*50*(pi*(0.4^2))) #scale corresponds to the number of agg routes; 50 stops per rte
 
 two_fig = rbind(output, min_out2)
 all_fig = rbind(two_fig, max_out)
