@@ -208,12 +208,22 @@ write.csv(all_fig, "//bioark.ad.unc.edu/HurlbertLab/Jenkins/BBS scaled/all_figou
 
 ####Plotting how distributions change across scale, using area####
 all_fig = read.csv("//bioark.ad.unc.edu/HurlbertLab/Jenkins/BBS scaled/all_figoutput.csv", header = TRUE)
+#all_fig$area = as.factor(all_fig$area)
 
-
-all_figplot = ggplot(all_fig, aes(occ, group = scale, color = scale))+
-  stat_density(geom = "line", bw = "bcv", kernel = "gaussian", n = 2000, na.rm = TRUE)+
-  labs(x = "Proportion of time present at site", y = "Probability Density")+theme_classic()
+all_figplot = ggplot(all_fig, aes(occ, group = area, color = area))+
+  geom_density(geom = "line", bw = "bcv", kernel = "gaussian", n = 4000, na.rm = TRUE)+
+  labs(x = "Proportion of time present at site", y = "Probability Density", title = "All scales")+theme_classic()
 all_figplot
+
+
+minplot = ggplot(min_out, aes(occ, group = area, color = area))+
+  geom_density(geom = "line", bw = "bcv", kernel = "gaussian", n = 4000, na.rm = TRUE)+
+  labs(x = "Proportion of time present at site", y = "Probability Density", title = "Local scales")+theme_classic()
+minplot
+
+#interesting problem - geom line does not permit lines to crisscross, but geom_density does 
+# - although then we have polygon problem again. How to fix? 
+
 
 ####Results Figure occ-scale: area and abundance####
 #Using same data from distribution plots, visualize occ and scale 
