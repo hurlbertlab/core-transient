@@ -190,15 +190,18 @@ max_out = read.csv("//bioark.ad.unc.edu/HurlbertLab/Jenkins/BBS scaled/max_out.c
 
 min_out = min_out %>% 
   dplyr::select(stateroute, AOU, occ, scale) %>% 
-  dplyr::mutate(area = scale*(pi*(0.4^2))) #scale corresponds to the number of stops
+  dplyr::mutate(area = scale*(pi*(0.4^2))) %>% #scale corresponds to the number of stops
+  dplyr::select(stateroute, AOU, occ, area)
+
 
 max_out = max_out %>% 
   dplyr::select(stateroute, AOU, occ, scale) %>% 
-  dplyr::mutate(area = scale*50*(pi*(0.4^2))) #scale corresponds to the number of agg routes; 50 stops per rte
+  dplyr::mutate(area = scale*50*(pi*(0.4^2))) %>% #scale corresponds to the number of agg routes; 50 stops per rte
+  dplyr::select(stateroute, AOU, occ, area)
 
-two_fig = rbind(output, min_out2)
-all_fig = rbind(two_fig, max_out)
-all_fig$scale = as.factor(all_fig$scale)
+
+
+all_fig = rbind(max_out, min_out)
 write.csv(all_fig, "C:/git/core-transient/scripts/R-scripts/scale_analysis/all_figoutput.csv", row.names = FALSE)
 
 
