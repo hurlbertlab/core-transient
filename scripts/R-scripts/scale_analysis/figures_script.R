@@ -76,7 +76,9 @@ for (s in b_scales) {
 
 min_dist = output
 #transformation into matrix unnecessary with ggplot version 
-write.csv(min_dist, "//bioark.ad.unc.edu/HurlbertLab/Jenkins/BBS scaled/min_dist.csv", row.names = FALSE)
+#write.csv(min_dist, "//bioark.ad.unc.edu/HurlbertLab/Jenkins/BBS scaled/min_dist.csv", row.names = FALSE)
+min_dist = read.csv("//bioark.ad.unc.edu/HurlbertLab/Jenkins/BBS scaled/min_dist.csv", header = TRUE)
+
 
 #filter to scale == 50, check
 min_dist2 = min_dist %>% 
@@ -95,13 +97,14 @@ fig1a
 #fix to run all at once, so no sep run for above-scale, USE occ-counts for both 
 
 #scale of 5 segments (min) 
-min_out = min_out[, -3]
+min_dist = min_dist[, -3]
 #need to avg occs between unique stateroute-AOU pairs since 5 for every 1 
 min_dist3 = min_dist %>% 
   group_by(AOU, stateroute, scale) %>% 
   summarise(occ = mean(occ)) %>% dplyr::select(everything()) 
 
-min_out2 = as.data.frame(min_out2)
+min_out = as.data.frame(min_dist3)
+#write.csv(min_out, "//bioark.ad.unc.edu/HurlbertLab/Jenkins/BBS scaled/min_out.csv", row.names = FALSE)
 
 fig1b = ggplot(min_dist3, aes(occ, group = scale, color = scale))+
   geom_density(kernel = "gaussian", n = 2000, na.rm = TRUE)+
@@ -123,7 +126,7 @@ scales = c(2, 4, 8, 16, 32, 66) # based on min common number in top 6 grid cells
 max_out = c()
 
 for (nu in scales){
-#test example route 2010 and nu at 57 routes -> large scale, should have high occ 
+  #test example route 2010 and nu at 57 routes -> large scale, should have high occ 
   for (r in uniqrtes) { #for each focal route
     tmp_rte_group = dist.df %>% #changes with size of nu but caps at 66
       filter(rte1 == r) %>% 
@@ -141,7 +144,7 @@ for (nu in scales){
       dplyr::select(year, AOU) %>% #duplicates remnant of distinct secondary routes - finally ID'd bug
       distinct() %>% #removing duplicates 09/20
       count(AOU) %>% #how many times does that AOU show up in that clustr that year 
-      dplyr::mutate(occ = n/15, stateroute = r) 
+      dplyr::mutate(occ = n/15, stateroute = r, scale = nu) 
     
     max_out = rbind(max_out, occ.summ)
     
@@ -157,6 +160,8 @@ fig1c = ggplot(max_out, aes(occ))+
 #so it was the limits giving me crap in the original 
 fig1c
 
+write.csv(max_out, "//bioark.ad.unc.edu/HurlbertLab/Jenkins/BBS scaled/max_out.csv", row.names = FALSE)
+
 ####Figure 4 all graphs overlay####
 ## merge output, min, and max into single df while adding new column delineating which 
 ## category: single, min, or max the data corresponds to so multiple lines can be 
@@ -171,11 +176,23 @@ fig1c
 # min_out2$scale = c("Local Scale")
 # max_out$scale = c("Regional Scale")
 # >>>>>>> f1c590e6043bf38c744f891e4c763df712f21b21
-output = output %>% 
-  arrange(stateroute, AOU, occ, scale) %>% 
-  dplyr::select(-n)
 
-min_out2 = min_out2 %>% 
+
+#read in min and single route scale occ density data 
+min_out = read.csv("//bioark.ad.unc.edu/HurlbertLab/Jenkins/BBS scaled/min_out.csv", header = TRUE)
+#scales 2:66 agg routes 
+max_out = read.csv("//bioark.ad.unc.edu/HurlbertLab/Jenkins/BBS scaled/max_out.csv", header = TRUE)
+#updated 12/12 
+
+
+#organize by scales; label and differentiate scales so that below-rtes are appropriately smaller
+#do area calcs and color by area? 
+
+
+single = min_out %>% 
+  filter(scale == "50")
+
+min_out = min_out %>% 
   dplyr::select(stateroute, AOU, occ, scale) 
 
 max_out = max_out %>% 
@@ -222,12 +239,12 @@ dist.df_sub = dist.df %>%
   filter(rte1 == "2001")%>% 
   top_n(66, desc(dist)) %>% #fixed ordering by including arrange parm, 
   arrange(dist) 
-  
+
 dist.df_sub2 = dist.df %>% 
   filter(rte1 == "11244") %>%
   top_n(66, desc(dist)) %>% #fixed ordering by including arrange parm, 
   arrange(dist) 
-  
+
 
 
 #exclude routes that have missing above OR below scale data, such that sites are only calculated for routes that cover all 83 scales
