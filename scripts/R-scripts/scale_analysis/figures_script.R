@@ -202,8 +202,12 @@ max_out = max_out %>%
 
 
 all_fig = rbind(max_out, min_out)
-write.csv(all_fig, "C:/git/core-transient/scripts/R-scripts/scale_analysis/all_figoutput.csv", row.names = FALSE)
+write.csv(all_fig, "//bioark.ad.unc.edu/HurlbertLab/Jenkins/BBS scaled/all_figoutput.csv", row.names = FALSE)
+#stored in bioark folder 
 
+
+####Plotting how distributions change across scale, using area####
+all_fig = read.csv("//bioark.ad.unc.edu/HurlbertLab/Jenkins/BBS scaled/all_figoutput.csv", header = TRUE)
 
 
 all_figplot = ggplot(all_fig, aes(occ, group = scale, color = scale))+
