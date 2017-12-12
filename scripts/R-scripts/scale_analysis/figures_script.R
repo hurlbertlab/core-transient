@@ -211,13 +211,13 @@ all_fig = read.csv("//bioark.ad.unc.edu/HurlbertLab/Jenkins/BBS scaled/all_figou
 #all_fig$area = as.factor(all_fig$area)
 
 all_figplot = ggplot(all_fig, aes(occ, group = area, color = area))+
-  geom_density(geom = "line", bw = "bcv", kernel = "gaussian", n = 4000, na.rm = TRUE)+
+  stat_density(geom = "path", position = "identity", bw = "bcv", kernel = "gaussian", n = 4000, na.rm = TRUE)+
   labs(x = "Proportion of time present at site", y = "Probability Density", title = "All scales")+theme_classic()
 all_figplot
 
 
 minplot = ggplot(min_out, aes(occ, group = area, color = area))+
-  geom_density(geom = "line", bw = "bcv", kernel = "gaussian", n = 4000, na.rm = TRUE)+
+  stat_density(geom = "path", position = "identity", bw = "bcv", kernel = "gaussian", n = 4000, na.rm = TRUE)+
   labs(x = "Proportion of time present at site", y = "Probability Density", title = "Local scales")+theme_classic()
 minplot
 
