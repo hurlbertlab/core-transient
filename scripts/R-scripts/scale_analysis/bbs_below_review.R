@@ -1,8 +1,34 @@
 ####BBS below troubleshooting####
 
+setwd("C:/git/core-transient")
+#'#' Please download and install the following packages:
+library(raster)
+library(maps)
+library(sp)
+library(rgdal)
+library(maptools)
+library(rgeos)
+library(dplyr)
+library(fields)
+library(tidyr)
+library(ggplot2)
+library(nlme)
+library(gridExtra)
+library(wesanderson)
+library(stats)
+
+
+# To run this script, you need temperature, precip, etc data, 
+# which are currently stored in the following directories off of github: 
+
+# Data directories
+tempdatadir = '//bioark.ad.unc.edu/HurlbertLab/GIS/ClimateData/BIOCLIM_meanTemp/'
+precipdata = '//bioark.ad.unc.edu/HurlbertLab/GIS/ClimateData/2-25-2011/prec/'
+ndvidata = "//bioark.ad.unc.edu/HurlbertLab/GIS/MODIS NDVI/"
+BBS = '//bioark.ad.unc.edu/HurlbertLab/Jenkins/BBS scaled/'
+
+
 #modify below code to rerun for bbs below 
-
-
 
 occ_counts2 = function(countData, countColumns, scale) {
   bbssub = countData[, c("stateroute", "year", "AOU", countColumns)] #these are our grouping vars
@@ -53,7 +79,7 @@ for (r in uniqrtes) { #for each focal route
     
     
     
-#find parallel from occ_counts2 for appropriate scales, filter by correct scales 
+    #find parallel from occ_counts2 for appropriate scales, filter by correct scales 
     
     # tmp_rte_group = dist.df %>% #changes with size of nu but caps at 66
     #   filter(rte1 == r) %>% 
@@ -112,10 +138,11 @@ for (r in uniqrtes) { #for each focal route
 
 
 bbs_below = as.data.frame(output)
-
+write.csv(bbs_below, paste(BBS, "bbs_below_new.csv", sep = ""), row.names = FALSE)
 
 ####Recomparing problem scale differences####
 bbs_above = read.csv(paste(BBS, "bbs_above.csv", sep = ""), header = TRUE)
+bbs_below = read.csv(paste(BBS, "bbs_below_new.csv", sep = ""), header = TRUE)
 
 #adding maxRadius column to bbs_below w/NA's + renaming and rearranging columns accordingly, creating area cols
 bbs_below = bbs_below %>% 
@@ -148,6 +175,6 @@ bbs_prob = bbs_allscales
 ####Closer look at scales 1 vs 2 where jump occurs####
 
 
-ggplot(bbs_prob, aes(x = logA, y = meanOcc))+geom_line(aes(group = focalrte), color = "grey")+
+ggplot(bbs_below, aes(x = log(area), y = meanOcc))+geom_line(aes(group = focalrte), color = "grey")+
   theme_classic() + #+geom_line(aes(y = preds), color = "red")+ #geom_smooth(model = lm, color = 'red')+
   labs(x = "Log Area", y = "Mean Community Occupancy")
