@@ -4,7 +4,7 @@
 # author: Molly F. Jenkins
 # date: 06/27/2017
 
-# setwd("C:/core-transient")
+# setwd("C:/git/core-transient")
 #'#' Please download and install the following packages:
 library(raster)
 library(maps)
@@ -51,19 +51,12 @@ occ_counts = function(countData, countColumns, scale) {
   
   abun.summ = bbssub %>% #abundance
     group_by(stateroute, year) %>%  
-    summarize(totalN = sum(groupCount)) %>%
-    group_by(stateroute) %>%
-    summarize(aveN = mean(totalN)) #we want to go further and summarize across focal + secondary rtes tho
+    summarize(totalN = sum(groupCount))  #we want to go further and summarize across focal + secondary rtes tho
   
   occ.summ = bbsu %>% #occupancy
     count(stateroute, AOU) %>%
-    mutate(occ = n/15, scale = scale, subrouteID = countColumns[1]) %>%
-    group_by(stateroute) %>%
-    summarize(meanOcc = mean(occ), 
-              pctCore = sum(occ > 2/3)/length(occ),
-              pctTran = sum(occ <= 1/3)/length(occ)) %>%
-    mutate(scale = paste(scale, g, sep = "-")) %>% #, #may want to get rid of, this is at the column-counting scale
-           #scale = scale) %>%
+    mutate(occ = n/15, scale = scale) %>% #, #may want to get rid of, this is at the column-counting scale
+    #scale = scale) %>%
     left_join(abun.summ, by = 'stateroute')
   return(occ.summ)
 }
@@ -71,8 +64,8 @@ occ_counts = function(countData, countColumns, scale) {
 
 # Generic calculation of occupancy for a specified scale
 #fix to run all at once, so no sep run for above-scale, USE occ-counts for both 
-output2 = c()
 b_scales = c(5, 10, 25, 50)
+output2 = c()
 output = c()
 for (s in b_scales) {
   numGroups = floor(50/s)
@@ -80,18 +73,57 @@ for (s in b_scales) {
     groupedCols = paste("Stop", ((g-1)*s + 1):(g*s), sep = "")
     temp = occ_counts(fifty_bestAous, groupedCols, s) 
     output = rbind(output, temp) 
-  } 
+  }
   
   occ.summ = output %>% 
     group_by(stateroute) %>%
-    summarize(aveN = mean(aveN), 
-              meanOcc = mean(meanOcc), #taking mean values across segments within a route (OK'd) after initial calcs by segment
-              pctCore = mean(pctCore),
-              pctTran = mean(pctTran), 
+    summarize(aveN = mean(totalN), 
+              meanOcc = mean(occ), 
+              pctCore = sum(occ > 2/3)/length(occ),
+              pctTran = sum(occ <= 1/3)/length(occ),
               scale = as.factor(s)) 
   
   output2 = rbind(output2, occ.summ)
 }
+
+####Testing the above function for matching w/distribution plots####
+#set g = 1 
+#set s = 50 
+output = c()
+groupedCols = paste("Stop", ((g-1)*s + 1):(g*s), sep = "")
+temp = occ_counts(fifty_bestAous, groupedCols, s) 
+output = rbind(output, temp)
+
+occ.summ = output %>% 
+  group_by(stateroute) %>%
+  summarize(aveN = mean(totalN), 
+            meanOcc = mean(occ), 
+            pctCore = sum(occ > 2/3)/length(occ),
+            pctTran = sum(occ <= 1/3)/length(occ),
+            scale = as.factor(s))
+
+View(occ.summ)
+ggplot(output, aes(occ)) + geom_density(bw = "bcv", kernel = "gaussian", n = 2000, na.rm = TRUE) + 
+  labs(x = "Proportion of time present at site", y = "Probability Density", title = "Single Route Scale")+
+  theme_classic() 
+
+#from figures script: 
+min_dist = read.csv("//bioark.ad.unc.edu/HurlbertLab/Jenkins/BBS scaled/min_dist.csv", header = TRUE)
+
+#filter to scale == 50, check
+min_dist2 = min_dist %>% 
+  filter(scale == "50")
+
+fig1a = ggplot(min_dist2, aes(occ))+
+  geom_density(bw = "bcv", kernel = "gaussian", n = 2000, na.rm = TRUE)+
+  labs(x = "Proportion of time present at site", y = "Probability Density", title = "Single Route Scale")+ 
+  theme_classic() #coord_cartesian(xlim = c(0, 1), ylim = c(0, 2.5))+
+fig1a
+
+#figures should be the same. 
+
+####
+
 plot(meanOcc~aveN, data = output2) #looks good, low avg bc small sample, high % Tran relative to Core   
 
 bbs_below<-data.frame(output2)
