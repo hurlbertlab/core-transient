@@ -102,10 +102,23 @@ occ.summ = output %>%
             pctTran = sum(occ <= 1/3)/length(occ),
             scale = as.factor(s))
 
+
 View(occ.summ)
 ggplot(output, aes(occ)) + geom_density(bw = "bcv", kernel = "gaussian", n = 2000, na.rm = TRUE) + 
   labs(x = "Proportion of time present at site", y = "Probability Density", title = "Single Route Scale")+
   theme_classic() 
+
+#for whole series: 
+b_scales = c(5, 10, 25, 50)
+output = c()
+for (s in b_scales) {
+  numGroups = floor(50/s)
+  for (g in 1:numGroups) {
+    groupedCols = paste("Stop", ((g-1)*s + 1):(g*s), sep = "")
+    temp = occ_counts(fifty_bestAous, groupedCols, s) 
+    output = rbind(output, temp) 
+  }
+}
 
 #from figures script: 
 min_dist = read.csv("//bioark.ad.unc.edu/HurlbertLab/Jenkins/BBS scaled/min_dist.csv", header = TRUE)
@@ -120,7 +133,27 @@ fig1a = ggplot(min_dist2, aes(occ))+
   theme_classic() #coord_cartesian(xlim = c(0, 1), ylim = c(0, 2.5))+
 fig1a
 
-#figures should be the same. 
+min_dist3 = min_dist %>% 
+  group_by(AOU, stateroute, scale) %>% 
+  summarise(occ = mean(occ)) %>% dplyr::select(everything()) 
+
+ggplot(min_dist3, aes(occ, group = scale, color = scale))+
+  geom_density(kernel = "gaussian", n = 2000, na.rm = TRUE)+
+  labs(x = "Proportion of time present at site", y = "Probability Density", title = "Local Scales")+ 
+  theme_classic() #coord_cartesian(xlim = c(0, 1), ylim = c(0, 2.5))+
+###THEY LOOK EXACTLY THE FREAKING SAME WHAT IS WRONGGGGGGG###
+
+#output version 
+output3 = output %>% 
+  group_by(AOU, stateroute, scale) %>% 
+  summarise(occ = mean(occ)) %>% dplyr::select(everything()) 
+
+ggplot(output3, aes(occ, group = scale, color = scale))+
+  geom_density(kernel = "gaussian", n = 2000, na.rm = TRUE)+
+  labs(x = "Proportion of time present at site", y = "Probability Density", title = "Local Scales")+ 
+  theme_classic()
+
+#figures should be the same. they are. so what the hell is wrong with the data? 
 
 ####
 
@@ -286,7 +319,7 @@ write.csv(bbs_above, "data/BBS/bbs_above.csv", row.names = FALSE)
 
 ####scale-joining####
 bbs_above = read.csv(paste(BBS, "bbs_above.csv", sep = ""), header = TRUE)
-bbs_below = read.csv(paste(BBS, "bbs_below.csv", sep = ""), header = TRUE)
+bbs_below = read.csv(paste(BBS, "bbs_below_new.csv", sep = ""), header = TRUE)
 
 #adding maxRadius column to bbs_below w/NA's + renaming and rearranging columns accordingly, creating area cols
 bbs_below = bbs_below %>% 
@@ -308,14 +341,14 @@ bbs_above$scale = as.factor(bbs_above$scale)
 
 
 bbs_allscales = rbind(bbs_below, bbs_above) #rbind ok since all share column names
-write.csv(bbs_allscales, "data/BBS/bbs_allscales.csv", row.names = FALSE)
-#updated 09/20/2017, also in BioArk since old copy ALSO there
-write.csv(bbs_allscales, paste(BBS, "bbs_allscales.csv", sep = ""), row.names = FALSE)
+write.csv(bbs_allscales, "data/BBS/bbs_allscales_new.csv", row.names = FALSE)
+#updated 12/12/2017, also in BioArk since old copy ALSO there
+write.csv(bbs_allscales, paste(BBS, "bbs_allscales_new.csv", sep = ""), row.names = FALSE)
 
 ####filter out stateroutes that are one-sided in scale####
 #in terms of their representation of below vs above scale (should have both, not one alone)
 
-bbs_allscales = read.csv("data/BBS/bbs_allscales.csv", header = TRUE)
+bbs_allscales = read.csv("data/BBS/bbs_allscales_new.csv", header = TRUE)
 bbs_allscales$logA = log10(bbs_allscales$area)
 bbs_allscales$logN = log10(bbs_allscales$aveN)
 bbs_allscales$lnA = log(bbs_allscales$area) #log is the natural log 
