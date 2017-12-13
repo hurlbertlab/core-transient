@@ -86,6 +86,16 @@ for (s in b_scales) {
   output2 = rbind(output2, occ.summ)
 }
 
+
+single_rte = output2 %>% 
+  dplyr::filter(scale == "50")
+
+ggplot(single_rte)+geom_point(aes(x = pctCore, y = pctTran))
+ggplot(single_rte)+geom_point(aes(x = aveN, y = meanOcc))
+#I REALLY don't know why the mean Occ is so low, or why it is so gap-y compared to 2 routes 
+#I'm gonna check this out further down in bbs_allscales 
+
+
 ####Testing the above function for matching w/distribution plots####
 #set g = 1 
 #set s = 50 
@@ -348,12 +358,19 @@ write.csv(bbs_allscales, paste(BBS, "bbs_allscales_new.csv", sep = ""), row.name
 ####filter out stateroutes that are one-sided in scale####
 #in terms of their representation of below vs above scale (should have both, not one alone)
 
-bbs_allscales = read.csv("data/BBS/bbs_allscales_new.csv", header = TRUE)
+bbs_allscales = read.csv(paste(BBS, "bbs_allscales_new.csv", sep = ""), header = TRUE)
 bbs_allscales$logA = log10(bbs_allscales$area)
 bbs_allscales$logN = log10(bbs_allscales$aveN)
 bbs_allscales$lnA = log(bbs_allscales$area) #log is the natural log 
 bbs_allscales$lnN = log(bbs_allscales$aveN) #rerun plots with this?
 
+####Closer look at scales 1 vs 2 where jump occurs####
+bbs_prob = bbs_allscales %>% 
+  filter(scale == "seg50" | scale == "2")
+
+ggplot(bbs_prob, aes(x = aveN, y = meanOcc, color = scale))+geom_point()
+ggplot(bbs_prob, aes(x = logN, y = meanOcc, color = scale))+geom_point()
+ggplot(bbs_prob, aes(x = area, y = meanOcc, color = scale))+geom_point()
 
 #only want rtes w/all 69 scales rep'd, which at this point - there are! 
 bbs_allscales2 = bbs_allscales %>% filter(meanOcc != 'NaN' & meanOcc != 'NA') %>% 
@@ -380,29 +397,28 @@ plot(meanOcc~logA, data = bbs_allscales, xlab = "Log Area" , ylab = "Mean Tempor
 plot(meanOcc~logN, data = bbs_allscales, xlab = "Average Abundance" , ylab = "Mean Temporal Occupancy")
 #^^same pattern roughly; abundance describes ~same amt of variance as area so serves as a good proxy 
 
+plot(meanOcc~scale, data = bbs_allscales)
 
 #ALL files updated 09/20 ~3pm 
-bbs_allscales$preds = predict(mod1)
-pred_plot = ggplot(bbs_allscales, aes(x = logA, y = meanOcc))+geom_line(aes(group = focalrte), color = "focalrte")+
-  theme_classic()+geom_line(aes(y = preds), color = "red")+ #geom_smooth(model = lm, color = 'red')+
-  labs(x = "Log Area", y = "Mean Community Occupancy")+ 
-  annotate("text", x = 2.5, y = 0.45, colour = "red", label = "italic(R) ^ 2 == 0.7424", parse = TRUE)+
-  scale_color_manual(values=c("Observed"="grey", "Mean Predicted"="red"))
+#bbs_allscales$preds = predict(mod1)
+pred_plot = ggplot(bbs_allscales, aes(x = logA, y = meanOcc))+geom_line(aes(group = focalrte), color = "grey")+
+  theme_classic() + #+geom_line(aes(y = preds), color = "red")+ #geom_smooth(model = lm, color = 'red')+
+  labs(x = "Log Area", y = "Mean Community Occupancy") #+ 
+  # annotate("text", x = 2.5, y = 0.45, colour = "red", label = "italic(R) ^ 2 == 0.7424", parse = TRUE)+
+  # scale_color_manual(values=c("Observed"="grey", "Mean Predicted"="red"))
 pred_plot
 
-bbs_allscales$preds2 = predict(mod2)
+#bbs_allscales$preds2 = predict(mod2)
 pred_plot2 = ggplot(bbs_allscales, aes(x = logN, y = meanOcc))+geom_line(aes(group = focalrte), color = "grey")+
-  theme_classic()+geom_line(aes(y = preds2), color = "red")+ #geom_smooth(model = lm, color = 'red')+
-  labs(x = "Log Abundance", y = "Mean Community Occupancy")+ 
-  annotate("text", x = 4, y = 0.45, colour = "red", label = "italic(R) ^ 2 == 0.8087", parse = TRUE)+
-  scale_color_manual(values=c("Observed"="grey", "Mean Predicted"="red"))
+  theme_classic() + #+geom_line(aes(y = preds2), color = "red")+ #geom_smooth(model = lm, color = 'red')+
+  labs(x = "Log Abundance", y = "Mean Community Occupancy") #+ 
+  # annotate("text", x = 4, y = 0.45, colour = "red", label = "italic(R) ^ 2 == 0.8087", parse = TRUE)+
+  # scale_color_manual(values=c("Observed"="grey", "Mean Predicted"="red"))
 pred_plot2
-summary(mod2)
 
-
-abun_p = ggplot(bbs_allscales, aes(x = logN, y = meanOcc, colour = focalrte))+
+abun_p = ggplot(bbs_allscales, aes(x = logA, y = meanOcc, colour = logN))+
   geom_line(aes(group = focalrte))+
   theme_classic()+ #geom_smooth(model = lm, color = 'red')+
-  labs(x = "Log Abundance", y = "Mean Community Occupancy")
+  labs(x = "Log Area", y = "Mean Community Occupancy")
 abun_p
 ?geom_line 
