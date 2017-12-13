@@ -18,13 +18,14 @@ fifty_bestAous = fifty_allyears %>%
            !(AOU >= 4160 & AOU <= 4210) & AOU != 7010) #leaving out owls, waterbirds as less reliable data
 
 #should just return data for 50-1 scale, across all 50 stops 
-c_scales = c(50) #just doing for one for now
+c_scales = c(5, 10, 25, 50) #just doing for one for now -> need to fix and expand to full selection
 output = c()
 for (scale in c_scales) {
   numGroups = floor(50/scale)
   for (g in 1:numGroups) {
     groupedCols = paste("Stop", ((g-1)*scale + 1):(g*scale), sep = "")
     temp = occ_counts2(fifty_bestAous, groupedCols, scale)
+    temp$scale = scale
     output = rbind(output, temp) 
   }
 }
@@ -38,7 +39,7 @@ write.csv(bbs_below_guide, paste(BBS, "bbs_below_guide.csv", sep = ""), row.name
 
 #need to make sure NOT running thru 66 times on the same site and scale 
 uniqrtes = unique(bbs_below_guide$stateroute) #all routes present are unique, still 953 which is great
-scale = c(5, 10, 25, 50) 
+scale = unique(bbs_below_guide$scale)
 output = data.frame(focalrte = NULL,
                     scale = NULL, 
                     meanOcc = NULL, 
