@@ -126,13 +126,22 @@ fig1a
 
 plot(meanOcc~aveN, data = output2) #looks good, low avg bc small sample, high % Tran relative to Core   
 
-bbs_below<-data.frame(output2)
-write.csv(bbs_below, paste(BBS, "bbs_below.csv", sep = ""), row.names = FALSE) #updated 09/19, on BioArk
+bbs_below_new<-data.frame(output2)
+write.csv(bbs_below_new, paste(BBS, "bbs_below_new.csv", sep = ""), row.names = FALSE) #updated 12/12, on BioArk
 #should be able to use the 50 stop info (1 rte) from this output to aggregate routes AFTER below scale
 write.csv(bbs_below, "data/BBS/bbs_below.csv", row.names = FALSE)
 
 #at scale of a single route (e.g. "50-1", no communities)
 
+####Comparison of old vs new below rte data - is there a difference?####
+
+bbs_below = read.csv("//bioark.ad.unc.edu/HurlbertLab/Jenkins/BBS scaled/bbs_below.csv", header = TRUE) 
+bbs_below_new = read.csv("//bioark.ad.unc.edu/HurlbertLab/Jenkins/BBS scaled/bbs_below_new.csv", header = TRUE) 
+
+plot(meanOcc~log(aveN), data = bbs_below_new, xlab = "Average Abundance" , ylab = "Mean Temporal Occupancy")
+plot(meanOcc~log(aveN), data = bbs_below, xlab = "Average Abundance" , ylab = "Mean Temporal Occupancy")
+
+comp = gridExtra::grid.arrange(g1, g2)
 ####Data prep for calculating occupancy above the scale of a BBS route####
 #Revised calcs workspace 
 #sort out bbs_below to ONLY those routes at 50-stop scale (occ calc'd for a single route)
