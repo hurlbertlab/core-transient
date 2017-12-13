@@ -57,7 +57,45 @@ occ_counts = function(countData, countColumns, scale) {
     count(stateroute, AOU) %>%
     mutate(occ = n/15, scale = scale) %>% #, #may want to get rid of, this is at the column-counting scale
     #scale = scale) %>%
+    summarize(meanOcc = mean(occ), 
+    mpctCore = sum(occ > 2/3)/length(occ),
+    mpctTran = sum(occ <= 1/3)/length(occ)) %>%
     left_join(abun.summ, by = 'stateroute')
+  
+  
+  
+  occ.summ = focal_clustr %>% #occupancy -> focal clustr should GROW with scale, larger avg pool -> 
+    #increased likelihood that AOU will be present -> OH! I don't want stateroute in here! it doesn't matter! 
+    #it just matters that it shows up in the cluster at all, not just the stateroutes that go in
+    #how many years does each AOU show up in the cluster 
+    select(year, AOU) %>% #duplicates remnant of distinct secondary routes - finally ID'd bug
+    distinct() %>% #removing duplicates 09/20
+    count(AOU) %>% #how many times does that AOU show up in that clustr that year 
+    mutate(occ = n/15, scale = nu) %>% #, subrouteID = countColumns[1]) #%>% countColumns not needed bc already pared down
+    # group_by(r) %>% #don't want to group by stateroute though! want to calc for whole clustr
+    summarize(focalrte = r, 
+              scale = nu, 
+              meanOcc = mean(occ), #FIX 09/19 across vector of AOU occupancies for AOU mean
+              pctCore = sum(occ > 2/3)/length(occ),
+              pctTran = sum(occ <= 1/3)/length(occ), 
+              maxdist = max(tmp_rte_group$dist)) 
+  
+  
+  
+  occ2 = occ.summ %>% 
+    group_by(focalrte) %>% 
+    summarize(scale = nu, 
+              meanOcc = mean(meanOcc), #mean of means, community mean  
+              pctCore = mean(pctCore), 
+              pctTran = mean(pctTran), 
+              maxdist = mean(maxdist)) %>%
+    left_join(abun.summ, by = c('focalrte' = 'stateroute'))
+  
+  
+  
+  
+  
+  
   return(occ.summ)
 }
 
@@ -79,8 +117,8 @@ for (s in b_scales) {
     group_by(stateroute) %>%
     summarize(aveN = mean(totalN), 
               meanOcc = mean(occ), 
-              pctCore = sum(occ > 2/3)/length(occ),
-              pctTran = sum(occ <= 1/3)/length(occ),
+              mpctCore = sum(occ > 2/3)/length(occ),
+              mpctTran = sum(occ <= 1/3)/length(occ),
               scale = as.factor(s)) 
   
   output2 = rbind(output2, occ.summ)
@@ -291,7 +329,7 @@ for (r in uniqrtes) { #for each focal route
      # group_by(r) %>% #don't want to group by stateroute though! want to calc for whole clustr
       summarize(focalrte = r, 
                 scale = nu, 
-                meanOcc = mean(occ), #FIX 09/19 across vector of 57 occupancies
+                meanOcc = mean(occ), #FIX 09/19 across vector of AOU occupancies for AOU mean
                 pctCore = sum(occ > 2/3)/length(occ),
                 pctTran = sum(occ <= 1/3)/length(occ), 
                 maxdist = max(tmp_rte_group$dist)) 
@@ -301,7 +339,7 @@ for (r in uniqrtes) { #for each focal route
       occ2 = occ.summ %>% 
       group_by(focalrte) %>% 
       summarize(scale = nu, 
-                meanOcc = mean(meanOcc), 
+                meanOcc = mean(meanOcc), #mean of means, community mean  
                 pctCore = mean(pctCore), 
                 pctTran = mean(pctTran), 
                 maxdist = mean(maxdist)) %>%
