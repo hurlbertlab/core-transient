@@ -64,7 +64,7 @@ for (r in uniqrtes) { #for each focal route
     #   select(everything()) %>% data.frame()
     
     focal_clustr = bbs_below_guide %>% 
-      filter(stateroute == r) #tmp_rte_group already ordered by distance so don't need 2x
+      filter(stateroute == r & scale == nu) #tmp_rte_group already ordered by distance so don't need 2x
     #(for a given focal rte, narrow input data to those nu secondary routes in focal cluster)
     #across 57 routes
     
