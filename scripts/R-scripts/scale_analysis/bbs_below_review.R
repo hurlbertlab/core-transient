@@ -152,6 +152,17 @@ for (r in uniqrtes) { #for each focal route
 bbs_below = as.data.frame(output)
 write.csv(bbs_below, paste(BBS, "bbs_below_new.csv", sep = ""), row.names = FALSE)
 
+#NOW I can average for unique scale-route combo (currently duplicates based on segments)
+
+bbs_below_avgs = bbs_below %>% 
+  group_by(focalrte, scale) %>% 
+  summarize(meanOcc = mean(meanOcc), 
+            pctCore = mean(pctCore), 
+            pctTran = mean(pctTran), 
+            aveN = mean(aveN))
+
+write.csv(bbs_below_avgs, paste(BBS, "bbs_below_avgs.csv", sep = ""), row.names = FALSE)
+write.csv(bbs_below_avgs, "/data/BBS/bbs_below_avgs.csv", row.names = FALSE)
 ####Recomparing problem scale differences####
 bbs_above = read.csv(paste(BBS, "bbs_above.csv", sep = ""), header = TRUE)
 bbs_below = read.csv(paste(BBS, "bbs_below_new.csv", sep = ""), header = TRUE)
