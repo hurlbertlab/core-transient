@@ -52,6 +52,7 @@ for (scale in c_scales) {
     groupedCols = paste("Stop", ((g-1)*scale + 1):(g*scale), sep = "")
     temp = occ_counts2(fifty_bestAous, groupedCols, scale)
     temp$scale = scale
+    temp$seg = g #added segment specifier to aid in recalc
     output = rbind(output, temp) 
   }
 }
@@ -59,13 +60,19 @@ for (scale in c_scales) {
 bbs_below_guide = data.frame(output)
 write.csv(bbs_below_guide, paste(BBS, "bbs_below_guide.csv", sep = ""), row.names = FALSE)
 
-#bbs above guide derived from subset where scale == 50 
+#tested, works 
+test = bbs_below_guide %>% filter(scale == "25")
+unique(test$seg)
+#[1] 1 2; correct, 25 stop scale should only have two segments per route
 
 
+#I can group by scale and segment and THEN take means of segments
 
 #need to make sure NOT running thru 66 times on the same site and scale 
 uniqrtes = unique(bbs_below_guide$stateroute) #all routes present are unique, still 953 which is great
 scale = unique(bbs_below_guide$scale)
+rte_segments = unique(bbs_below_guide$seg)
+
 output = data.frame(focalrte = NULL,
                     scale = NULL, 
                     meanOcc = NULL, 
@@ -76,6 +83,11 @@ output = data.frame(focalrte = NULL,
 #test example route 2010 and nu at 57 routes -> large scale, should have high occ 
 for (r in uniqrtes) { #for each focal route
   for (nu in scale) { #for each level of scale aggregated to each focal route
+    #does rte segments need to change w/every scale? 
+    focal_c = bbs_below_guide %>% 
+      filter(stateroute == r & scale == nu)
+    
+    for (s in unique(focal_c$seg)) {
     
     
     
@@ -89,8 +101,8 @@ for (r in uniqrtes) { #for each focal route
     #   slice(1:nu) %>% 
     #   select(everything()) %>% data.frame()
     
-    focal_clustr = bbs_below_guide %>% 
-      filter(stateroute == r & scale == nu) #tmp_rte_group already ordered by distance so don't need 2x
+    focal_clustr = focal_c %>% 
+      filter(seg == s) #tmp_rte_group already ordered by distance so don't need 2x
     #(for a given focal rte, narrow input data to those nu secondary routes in focal cluster)
     #across 57 routes
     
@@ -129,7 +141,7 @@ for (r in uniqrtes) { #for each focal route
     print(paste("Focal rte", r, "#' rtes sampled", nu)) #for viewing progress
     
     #adding 2 to end since using an input df with all of the exact same column names -> can change back b4 merging, after loop
-    
+    } #segment loop 
   } #n loop
   
 } #r loop
