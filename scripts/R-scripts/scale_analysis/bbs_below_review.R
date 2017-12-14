@@ -150,7 +150,7 @@ for (r in uniqrtes) { #for each focal route
 
 
 bbs_below = as.data.frame(output)
-write.csv(bbs_below, paste(BBS, "bbs_below_new.csv", sep = ""), row.names = FALSE)
+#write.csv(bbs_below, paste(BBS, "bbs_below_new.csv", sep = ""), row.names = FALSE)
 
 #NOW I can average for unique scale-route combo (currently duplicates based on segments)
 
@@ -161,30 +161,38 @@ bbs_below_avgs = bbs_below %>%
             pctTran = mean(pctTran), 
             aveN = mean(aveN))
 
-write.csv(bbs_below_avgs, paste(BBS, "bbs_below_avgs.csv", sep = ""), row.names = FALSE)
-write.csv(bbs_below_avgs, "/data/BBS/bbs_below_avgs.csv", row.names = FALSE)
+# write.csv(bbs_below_avgs, paste(BBS, "bbs_below_avgs.csv", sep = ""), row.names = FALSE)
+# write.csv(bbs_below_avgs, "data/BBS/bbs_below_avgs.csv", row.names = FALSE)
+# successfully stored both avgs and new in bioark and data folder since small enough
+
+
 ####Recomparing problem scale differences####
 bbs_above = read.csv(paste(BBS, "bbs_above.csv", sep = ""), header = TRUE)
-bbs_below = read.csv(paste(BBS, "bbs_below_new.csv", sep = ""), header = TRUE)
+bbs_below = read.csv(paste(BBS, "bbs_below_avgs.csv", sep = ""), header = TRUE)
 
 #adding maxRadius column to bbs_below w/NA's + renaming and rearranging columns accordingly, creating area cols
 bbs_below = bbs_below %>% 
   mutate(maxdist = c("NA")) %>%
   select(focalrte, scale, everything()) %>%
-  mutate(area = bbs_below$scale*(pi*(0.4^2)))
+  mutate(area = bbs_below$scale*(pi*(0.4^2)), 
+         scale = paste("seg", scale, sep = ""))
          
 #modify and split scale so that it's just the # of stops in each seg; not the seg order # preceded by a "-"
 
 
 bbs_above = bbs_above %>% 
   dplyr::mutate(area = scale*50*(pi*(0.4^2))) %>% #area in km by # of routes * 50 stops in each rte * area of a stop (for above-route scale later)
-  dplyr::select(focalrte, scale, meanOcc, pctCore, pctTran, aveN, maxdist, area)%>% 
-  filter(scale == "2")
+  dplyr::select(focalrte, scale, meanOcc, pctCore, pctTran, aveN, maxdist, area) #%>% 
+  # filter(scale == "2")
 
 bbs_above$scale = as.factor(bbs_above$scale)
 
 
 bbs_allscales = rbind(bbs_below, bbs_above) #rbind ok since all share column names
+# write.csv(bbs_allscales, "C:/git/core-transient/data/BBS/bbs_allscales.csv", row.names = FALSE)
+# write.csv(bbs_allscales, paste(BBS, "bbs_allscales.csv", sep = ""), row.names = FALSE)
+
+
 
 ####filter out stateroutes that are one-sided in scale####
 #in terms of their representation of below vs above scale (should have both, not one alone)
