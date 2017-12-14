@@ -298,5 +298,21 @@ ggplot(scales_hetero, aes(x = scale, y = corr_r))+
 #starting at scale of 1 since that's lowest res we have for habhet across scales, 
 #rerun previous dep/ind loop with new mods
 
+####Plot stateroutes 1 by 1, pick out some emblematic "types"####
+bbs_allscales = na.omit(read.csv("C:/git/core-transient/data/BBS/bbs_allscales.csv", header = TRUE))
+focalrtes = unique(bbs_allscales$focalrte)
+setwd("C:/git/core-transient/output/plots/Molly_plots/Individual_rtes")
+
+for (r in focalrtes) {
+  bbs_allsub = bbs_allscales %>% filter(focalrte == r)
+  ggplot(bbs_allsub, aes(x = logA, y = meanOcc))+geom_line()+
+  theme_classic()+ labs(x = "Log Area", y = "Mean Community Occupancy", 
+                        title = r)
+  ggsave(paste("plot", r, ".tiff", sep = ""))
+}
+
+dev.off()
+
+
 
 
