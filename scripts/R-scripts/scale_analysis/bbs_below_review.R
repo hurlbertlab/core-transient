@@ -199,6 +199,9 @@ bbs_allscales$logA = log10(bbs_allscales$area)
 bbs_allscales$logN = log10(bbs_allscales$aveN)
 bbs_allscales$lnA = log(bbs_allscales$area) #log is the natural log 
 bbs_allscales$lnN = log(bbs_allscales$aveN) #rerun plots with this?
+# write.csv(bbs_allscales, "C:/git/core-transient/data/BBS/bbs_allscales.csv", row.names = FALSE)
+# write.csv(bbs_allscales, paste(BBS, "bbs_allscales.csv", sep = ""), row.names = FALSE)
+
 
 mod1 = lm(meanOcc~logA, data = bbs_allscales) #expljkains ~75-80% of the variation in occ
 mod2 = lm(meanOcc~logN, data = bbs_allscales)

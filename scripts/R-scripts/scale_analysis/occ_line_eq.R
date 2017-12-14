@@ -94,8 +94,9 @@ ON.df = data.frame(stateroute = numeric(), ON.min = numeric(), ON.max = numeric(
 bbs_allscales = read.csv("data/BBS/bbs_allscales.csv", header = TRUE)
 levels(bbs_allscales$scale)
 unique(bbs_allscales$scale)
-#ALL clear 07/24
-
+length(unique(bbs_allscales$focalrte))
+bbs_allscales = na.omit(bbs_allscales)
+length(unique(bbs_allscales$focalrte)) #ommitted 2 routes w/missing data
 
 
 ####coefs####
