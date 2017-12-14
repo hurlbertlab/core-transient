@@ -200,13 +200,18 @@ bbs_allscales$logN = log10(bbs_allscales$aveN)
 bbs_allscales$lnA = log(bbs_allscales$area) #log is the natural log 
 bbs_allscales$lnN = log(bbs_allscales$aveN) #rerun plots with this?
 
-
+mod1 = lm(meanOcc~logA, data = bbs_allscales) #expljkains ~75-80% of the variation in occ
+mod2 = lm(meanOcc~logN, data = bbs_allscales)
+summary(mod1) #R2 of 72.17 
+summary(mod2) #R2 of 75.57
 
 ggplot(bbs_allscales, aes(x = logA, y = meanOcc))+geom_line(aes(group = focalrte), color = "grey")+
-  theme_classic() +geom_smooth(model = lm, color = 'red')+
-  labs(x = "Log Area", y = "Mean Community Occupancy")
+  theme_classic() +geom_smooth(method = lm, color = 'red')+
+  labs(x = "Log Area", y = "Mean Community Occupancy")+
+  annotate("text", x = 1.85, y = 0.75, colour = "red", label = "italic(R) ^ 2 == 0.7217", parse = TRUE)
 
 
 ggplot(bbs_allscales, aes(x = logN, y = meanOcc))+geom_line(aes(group = focalrte), color = "grey")+
-  theme_classic() + geom_smooth(model = lm, color = 'red')+
-  labs(x = "Log Abundance", y = "Mean Community Occupancy")
+  theme_classic() + geom_smooth(method = lm, color = 'red')+
+  labs(x = "Log Abundance", y = "Mean Community Occupancy")+
+  annotate("text", x = 3.2, y = 0.75, colour = "red", label = "italic(R) ^ 2 == 0.7557", parse = TRUE)
