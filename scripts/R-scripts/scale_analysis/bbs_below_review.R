@@ -22,9 +22,6 @@ library(stats)
 # which are currently stored in the following directories off of github: 
 
 # Data directories
-tempdatadir = '//bioark.ad.unc.edu/HurlbertLab/GIS/ClimateData/BIOCLIM_meanTemp/'
-precipdata = '//bioark.ad.unc.edu/HurlbertLab/GIS/ClimateData/2-25-2011/prec/'
-ndvidata = "//bioark.ad.unc.edu/HurlbertLab/GIS/MODIS NDVI/"
 BBS = '//bioark.ad.unc.edu/HurlbertLab/Jenkins/BBS scaled/'
 
 
@@ -196,16 +193,20 @@ bbs_allscales = rbind(bbs_below, bbs_above) #rbind ok since all share column nam
 
 ####filter out stateroutes that are one-sided in scale####
 #in terms of their representation of below vs above scale (should have both, not one alone)
+bbs_allscales = read.csv(paste(BBS, "bbs_allscales.csv", sep = ""), header = TRUE)
+
 bbs_allscales$logA = log10(bbs_allscales$area)
 bbs_allscales$logN = log10(bbs_allscales$aveN)
 bbs_allscales$lnA = log(bbs_allscales$area) #log is the natural log 
 bbs_allscales$lnN = log(bbs_allscales$aveN) #rerun plots with this?
 
-bbs_prob = bbs_allscales
-
-####Closer look at scales 1 vs 2 where jump occurs####
 
 
-ggplot(bbs_below, aes(x = log(area), y = meanOcc))+geom_line(aes(group = focalrte), color = "grey")+
-  theme_classic() + #+geom_line(aes(y = preds), color = "red")+ #geom_smooth(model = lm, color = 'red')+
+ggplot(bbs_allscales, aes(x = logA, y = meanOcc))+geom_line(aes(group = focalrte), color = "grey")+
+  theme_classic() +geom_smooth(model = lm, color = 'red')+
   labs(x = "Log Area", y = "Mean Community Occupancy")
+
+
+ggplot(bbs_allscales, aes(x = logN, y = meanOcc))+geom_line(aes(group = focalrte), color = "grey")+
+  theme_classic() + geom_smooth(model = lm, color = 'red')+
+  labs(x = "Log Abundance", y = "Mean Community Occupancy")
