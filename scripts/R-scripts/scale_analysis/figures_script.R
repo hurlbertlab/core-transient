@@ -301,11 +301,12 @@ ggplot(scales_hetero, aes(x = scale, y = corr_r))+
 ####Plot stateroutes 1 by 1, pick out some emblematic "types"####
 bbs_allscales = na.omit(read.csv("C:/git/core-transient/data/BBS/bbs_allscales.csv", header = TRUE))
 focalrtes = unique(bbs_allscales$focalrte)
-setwd("C:/git/core-transient/output/plots/Molly_plots/Individual_rtes")
+setwd("C:/rte_imgs")
 
 for (r in focalrtes) {
   bbs_allsub = bbs_allscales %>% filter(focalrte == r)
-  ggplot(bbs_allsub, aes(x = logA, y = meanOcc))+geom_line()+
+  ggplot(bbs_allsub, aes(x = logA, y = meanOcc))+
+    geom_line()+ #coord_cartesian(xlim = c(0, 3.5), ylim = c(0, 1))+ tweak with 
   theme_classic()+ labs(x = "Log Area", y = "Mean Community Occupancy", 
                         title = r)
   ggsave(paste("plot", r, ".tiff", sep = ""))

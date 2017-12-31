@@ -439,20 +439,21 @@ plot(meanOcc~scale, data = bbs_allscales)
 
 #ALL files updated 09/20 ~3pm 
 #bbs_allscales$preds = predict(mod1)
+bbs_allsub = bbs_allscales %>% filter(focalrte == 33901 | focalrte == 72035 | focalrte == 60024)
+bbs_allsub$focalrte = as.factor(bbs_allsub$focalrte)
+#use this to assign neutral colors for each factor level per what color scheme is ideal?
+
+
 pred_plot = ggplot(bbs_allscales, aes(x = logA, y = meanOcc))+geom_line(aes(group = focalrte), color = "grey")+
-  theme_classic() + #+geom_line(aes(y = preds), color = "red")+ #geom_smooth(model = lm, color = 'red')+
-  labs(x = "Log Area", y = "Mean Community Occupancy") #+ 
-  # annotate("text", x = 2.5, y = 0.45, colour = "red", label = "italic(R) ^ 2 == 0.7424", parse = TRUE)+
-  # scale_color_manual(values=c("Observed"="grey", "Mean Predicted"="red"))
-pred_plot
+  theme_classic()+geom_line(data = bbs_allsub, aes(x = logA, y = meanOcc, group = as.factor(focalrte), color = as.factor(focalrte)), size = 2)+ #geom_smooth(model = lm, color = 'red')+
+  labs(x = "Log Area", y = "Mean Community Occupancy") 
+pred_plot #remember to thicken black line 
 
 #bbs_allscales$preds2 = predict(mod2)
 pred_plot2 = ggplot(bbs_allscales, aes(x = logN, y = meanOcc))+geom_line(aes(group = focalrte), color = "grey")+
-  theme_classic() + #+geom_line(aes(y = preds2), color = "red")+ #geom_smooth(model = lm, color = 'red')+
-  labs(x = "Log Abundance", y = "Mean Community Occupancy") #+ 
-  # annotate("text", x = 4, y = 0.45, colour = "red", label = "italic(R) ^ 2 == 0.8087", parse = TRUE)+
-  # scale_color_manual(values=c("Observed"="grey", "Mean Predicted"="red"))
-pred_plot2
+  theme_classic()+geom_line(data = bbs_allsub, aes(x = logN, y = meanOcc, group = as.factor(focalrte), color = as.factor(focalrte)), size = 2)+ #geom_smooth(model = lm, color = 'red')+
+  labs(x = "Log Abundance", y = "Mean Community Occupancy") 
+pred_plot2 #remember to thicken black line 
 
 abun_p = ggplot(bbs_allscales, aes(x = logA, y = meanOcc, colour = logN))+
   geom_line(aes(group = focalrte))+
