@@ -171,7 +171,6 @@ for (dataset in datasetIDs[,1]) {
   sites = unique(subdata$site)
   print(paste("Calculating turnover: dataset", dataset))
   for (site in sites) {
-     for(r in 1:1000){
         sitedata = subdata[subdata$site == site,]
         notrans = sitedata[sitedata$propOcc > 1/3,]
         trans = sitedata[sitedata$propOcc <= 1/3,]
@@ -179,6 +178,7 @@ for (dataset in datasetIDs[,1]) {
         TJs = c()
         TJ_notrans = c()
         subdata = sample(notrans, length(notrans))
+        for(r in 1:1000){
         regroup = rbind(trans, subdata)
           for (year in years[1:(length(years)-1)]) {
             comm1 = unique(subdata$species[subdata$year == year])
