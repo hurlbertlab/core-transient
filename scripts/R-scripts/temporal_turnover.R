@@ -106,7 +106,6 @@ for (dataset in datasetIDs[,1]) {
     temp_output = data.frame(datasetID = dataset, site = site, TJ = mean(TJs),
                              TJnotrans = mean(TJ_notrans))
     turnover_output = rbind(turnover_output, temp_output)
-  
   }
 }
     
@@ -162,3 +161,37 @@ for (dataset in datasetIDs[,1]) {
 
 
 write.csv(bray_output, "output/tabular_data/temporal_turnover_bray.csv", row.names = FALSE)
+
+
+
+#### null analysis ####
+null_output = data.frame()
+for (dataset in datasetIDs[,1]) {
+  subdata = subset(all_data, datasetID == dataset)
+  sites = unique(subdata$site)
+  print(paste("Calculating turnover: dataset", dataset))
+  for (site in sites) {
+     for(r in 1:1000){
+        sitedata = subdata[subdata$site == site,]
+        notrans = sitedata[sitedata$propOcc > 1/3,]
+        trans = sitedata[sitedata$propOcc <= 1/3,]
+        years = as.numeric(unique(sitedata$year))
+        TJs = c()
+        TJ_notrans = c()
+        subdata = sample(notrans, length(notrans))
+        regroup = rbind(trans, subdata)
+          for (year in years[1:(length(years)-1)]) {
+            comm1 = unique(subdata$species[subdata$year == year])
+            comm2 = unique(subdata$species[subdata$year == year + 1])
+            T_J = turnover(comm1, comm2)
+            TJs = c(TJs, T_J)
+    }
+    null_output.5 = data.frame(r= r, datasetID = dataset, site = site, TJ = mean(TJs),
+                             numnon = as.numeric(length(notrans)))
+    null_output = rbind(null_output, null_output.5)
+   }
+  }
+}
+
+
+

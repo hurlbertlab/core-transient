@@ -174,6 +174,7 @@ logseries_weights_excl = sad_data %>%
   group_by(datasetID, site) %>% 
   dplyr::summarize(weights = get_logseries_weight(abunds), treatment = 'Excluding')
 
+
 logseries_weights = rbind(logseries_weights_incl, logseries_weights_excl)
 write.csv(logseries_weights, "output/tabular_data/logseries_weights.csv")
 logseries_weights = read.csv("output/tabular_data/logseries_weights.csv", header = TRUE)
@@ -189,10 +190,14 @@ fourataxa = merge(fourataxa, taxcolors, by = "taxa")
 
 colscale = c("azure4","#1D6A9B","turquoise2","gold2","purple4","red", "forestgreen")  
 
-# m <- ggplot(fourataxa, aes(x = all_weight, y = excl_weight))
-# k <-m + geom_abline(intercept = 0,slope = 1, lwd =1.5,linetype="dashed")+geom_point(aes(colour = taxa), size = 5) + xlab("All Species") + ylab("Excluding Transients") + scale_colour_manual(breaks = fourataxa$taxa,values = colscale) + theme_classic() + theme(axis.text.x=element_text(size=30, color = "black"),axis.text.y=element_text(size=30, color = "black"),axis.ticks.x=element_blank(),axis.title.x=element_text(size=46, color = "black"),axis.title.y=element_text(size=46,angle=90,vjust = 5))+ theme(legend.position="none") #+geom_rug(size = 0.1)
+
+#### null model ####
+nontrans = sad_data %>%
+  filter(propOcc > 1/3) %>%
+  group_by(datasetID, site) 
 
 
+#### plot 5a ####
 hist_top <- ggplot(fourataxa, aes(all_weight))+geom_histogram(binwidth = 0.05, fill = "dark orange2")+ theme(axis.ticks=element_blank(), panel.background=element_blank(),line = element_blank(),axis.text.x=element_blank(), axis.text.y=element_blank(), axis.title.x=element_blank(), axis.title.y=element_blank(), plot.margin = unit(c(1,-0.5,0,3), "cm"))
 empty <- ggplot()+geom_point(aes(1,1), colour="white")+ theme(axis.ticks=element_blank(), 
         panel.background=element_blank(), 
