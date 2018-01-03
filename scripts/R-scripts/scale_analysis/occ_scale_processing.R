@@ -4,7 +4,7 @@
 # author: Molly F. Jenkins
 # date: 06/27/2017
 
-# setwd("C:/core-transient")
+# setwd("C:/git/core-transient")
 #'#' Please download and install the following packages:
 library(raster)
 library(maps)
@@ -51,27 +51,112 @@ occ_counts = function(countData, countColumns, scale) {
   
   abun.summ = bbssub %>% #abundance
     group_by(stateroute, year) %>%  
-    summarize(totalN = sum(groupCount)) %>%
-    group_by(stateroute) %>%
-    summarize(aveN = mean(totalN)) #we want to go further and summarize across focal + secondary rtes tho
+    summarize(totalN = sum(groupCount))  #we want to go further and summarize across focal + secondary rtes tho
   
   occ.summ = bbsu %>% #occupancy
     count(stateroute, AOU) %>%
-    mutate(occ = n/15, scale = scale, subrouteID = countColumns[1]) %>%
-    group_by(stateroute) %>%
+    mutate(occ = n/15, scale = scale) %>% #, #may want to get rid of, this is at the column-counting scale
+    #scale = scale) %>%
     summarize(meanOcc = mean(occ), 
-              pctCore = sum(occ > 2/3)/length(occ),
-              pctTran = sum(occ <= 1/3)/length(occ)) %>%
-    mutate(scale = paste(scale, g, sep = "-")) %>% #, #may want to get rid of, this is at the column-counting scale
-           #scale = scale) %>%
+    mpctCore = sum(occ > 2/3)/length(occ),
+    mpctTran = sum(occ <= 1/3)/length(occ)) %>%
     left_join(abun.summ, by = 'stateroute')
+  
+  
+  
+  occ.summ = focal_clustr %>% #occupancy -> focal clustr should GROW with scale, larger avg pool -> 
+    #increased likelihood that AOU will be present -> OH! I don't want stateroute in here! it doesn't matter! 
+    #it just matters that it shows up in the cluster at all, not just the stateroutes that go in
+    #how many years does each AOU show up in the cluster 
+    select(year, AOU) %>% #duplicates remnant of distinct secondary routes - finally ID'd bug
+    distinct() %>% #removing duplicates 09/20
+    count(AOU) %>% #how many times does that AOU show up in that clustr that year 
+    mutate(occ = n/15, scale = nu) %>% #, subrouteID = countColumns[1]) #%>% countColumns not needed bc already pared down
+    # group_by(r) %>% #don't want to group by stateroute though! want to calc for whole clustr
+    summarize(focalrte = r, 
+              scale = nu, 
+              meanOcc = mean(occ), #FIX 09/19 across vector of AOU occupancies for AOU mean
+              pctCore = sum(occ > 2/3)/length(occ),
+              pctTran = sum(occ <= 1/3)/length(occ), 
+              maxdist = max(tmp_rte_group$dist)) 
+  
+  
+  
+  occ2 = occ.summ %>% 
+    group_by(focalrte) %>% 
+    summarize(scale = nu, 
+              meanOcc = mean(meanOcc), #mean of means, community mean  
+              pctCore = mean(pctCore), 
+              pctTran = mean(pctTran), 
+              maxdist = mean(maxdist)) %>%
+    left_join(abun.summ, by = c('focalrte' = 'stateroute'))
+  
+  
+  
+  
+  
+  
   return(occ.summ)
 }
 
 
 # Generic calculation of occupancy for a specified scale
 #fix to run all at once, so no sep run for above-scale, USE occ-counts for both 
+b_scales = c(5, 10, 25, 50)
 output2 = c()
+output = c()
+for (s in b_scales) {
+  numGroups = floor(50/s)
+  for (g in 1:numGroups) {
+    groupedCols = paste("Stop", ((g-1)*s + 1):(g*s), sep = "")
+    temp = occ_counts(fifty_bestAous, groupedCols, s) 
+    output = rbind(output, temp) 
+  }
+  
+  occ.summ = output %>% 
+    group_by(stateroute) %>%
+    summarize(aveN = mean(totalN), 
+              meanOcc = mean(occ), 
+              mpctCore = sum(occ > 2/3)/length(occ),
+              mpctTran = sum(occ <= 1/3)/length(occ),
+              scale = as.factor(s)) 
+  
+  output2 = rbind(output2, occ.summ)
+}
+
+
+single_rte = output2 %>% 
+  dplyr::filter(scale == "50")
+
+ggplot(single_rte)+geom_point(aes(x = pctCore, y = pctTran))
+ggplot(single_rte)+geom_point(aes(x = aveN, y = meanOcc))
+#I REALLY don't know why the mean Occ is so low, or why it is so gap-y compared to 2 routes 
+#I'm gonna check this out further down in bbs_allscales 
+
+
+####Testing the above function for matching w/distribution plots####
+#set g = 1 
+#set s = 50 
+output = c()
+groupedCols = paste("Stop", ((g-1)*s + 1):(g*s), sep = "")
+temp = occ_counts(fifty_bestAous, groupedCols, s) 
+output = rbind(output, temp)
+
+occ.summ = output %>% 
+  group_by(stateroute) %>%
+  summarize(aveN = mean(totalN), 
+            meanOcc = mean(occ), 
+            pctCore = sum(occ > 2/3)/length(occ),
+            pctTran = sum(occ <= 1/3)/length(occ),
+            scale = as.factor(s))
+
+
+View(occ.summ)
+ggplot(output, aes(occ)) + geom_density(bw = "bcv", kernel = "gaussian", n = 2000, na.rm = TRUE) + 
+  labs(x = "Proportion of time present at site", y = "Probability Density", title = "Single Route Scale")+
+  theme_classic() 
+
+#for whole series: 
 b_scales = c(5, 10, 25, 50)
 output = c()
 for (s in b_scales) {
@@ -80,27 +165,64 @@ for (s in b_scales) {
     groupedCols = paste("Stop", ((g-1)*s + 1):(g*s), sep = "")
     temp = occ_counts(fifty_bestAous, groupedCols, s) 
     output = rbind(output, temp) 
-  } 
-  
-  occ.summ = output %>% 
-    group_by(stateroute) %>%
-    summarize(aveN = mean(aveN), 
-              meanOcc = mean(meanOcc), #taking mean values across segments within a route (OK'd) after initial calcs by segment
-              pctCore = mean(pctCore),
-              pctTran = mean(pctTran), 
-              scale = as.factor(s)) 
-  
-  output2 = rbind(output2, occ.summ)
+  }
 }
+
+#from figures script: 
+min_dist = read.csv("//bioark.ad.unc.edu/HurlbertLab/Jenkins/BBS scaled/min_dist.csv", header = TRUE)
+
+#filter to scale == 50, check
+min_dist2 = min_dist %>% 
+  filter(scale == "50")
+
+fig1a = ggplot(min_dist2, aes(occ))+
+  geom_density(bw = "bcv", kernel = "gaussian", n = 2000, na.rm = TRUE)+
+  labs(x = "Proportion of time present at site", y = "Probability Density", title = "Single Route Scale")+ 
+  theme_classic() #coord_cartesian(xlim = c(0, 1), ylim = c(0, 2.5))+
+fig1a
+
+min_dist3 = min_dist %>% 
+  group_by(AOU, stateroute, scale) %>% 
+  summarise(occ = mean(occ)) %>% dplyr::select(everything()) 
+
+ggplot(min_dist3, aes(occ, group = scale, color = scale))+
+  geom_density(kernel = "gaussian", n = 2000, na.rm = TRUE)+
+  labs(x = "Proportion of time present at site", y = "Probability Density", title = "Local Scales")+ 
+  theme_classic() #coord_cartesian(xlim = c(0, 1), ylim = c(0, 2.5))+
+###THEY LOOK EXACTLY THE FREAKING SAME WHAT IS WRONGGGGGGG###
+
+#output version 
+output3 = output %>% 
+  group_by(AOU, stateroute, scale) %>% 
+  summarise(occ = mean(occ)) %>% dplyr::select(everything()) 
+
+ggplot(output3, aes(occ, group = scale, color = scale))+
+  geom_density(kernel = "gaussian", n = 2000, na.rm = TRUE)+
+  labs(x = "Proportion of time present at site", y = "Probability Density", title = "Local Scales")+ 
+  theme_classic()
+
+#figures should be the same. they are. so what the hell is wrong with the data? 
+
+####
+
 plot(meanOcc~aveN, data = output2) #looks good, low avg bc small sample, high % Tran relative to Core   
 
-bbs_below<-data.frame(output2)
-write.csv(bbs_below, paste(BBS, "bbs_below.csv", sep = ""), row.names = FALSE) #updated 09/19, on BioArk
+bbs_below_new<-data.frame(output2)
+write.csv(bbs_below_new, paste(BBS, "bbs_below_new.csv", sep = ""), row.names = FALSE) #updated 12/12, on BioArk
 #should be able to use the 50 stop info (1 rte) from this output to aggregate routes AFTER below scale
 write.csv(bbs_below, "data/BBS/bbs_below.csv", row.names = FALSE)
 
 #at scale of a single route (e.g. "50-1", no communities)
 
+####Comparison of old vs new below rte data - is there a difference?####
+
+bbs_below = read.csv("//bioark.ad.unc.edu/HurlbertLab/Jenkins/BBS scaled/bbs_below.csv", header = TRUE) 
+bbs_below_new = read.csv("//bioark.ad.unc.edu/HurlbertLab/Jenkins/BBS scaled/bbs_below_new.csv", header = TRUE) 
+
+plot(meanOcc~log(aveN), data = bbs_below_new, xlab = "Average Abundance" , ylab = "Mean Temporal Occupancy")
+plot(meanOcc~log(aveN), data = bbs_below, xlab = "Average Abundance" , ylab = "Mean Temporal Occupancy")
+
+comp = gridExtra::grid.arrange(g1, g2)
 ####Data prep for calculating occupancy above the scale of a BBS route####
 #Revised calcs workspace 
 #sort out bbs_below to ONLY those routes at 50-stop scale (occ calc'd for a single route)
@@ -207,7 +329,7 @@ for (r in uniqrtes) { #for each focal route
      # group_by(r) %>% #don't want to group by stateroute though! want to calc for whole clustr
       summarize(focalrte = r, 
                 scale = nu, 
-                meanOcc = mean(occ), #FIX 09/19 across vector of 57 occupancies
+                meanOcc = mean(occ), #FIX 09/19 across vector of AOU occupancies for AOU mean
                 pctCore = sum(occ > 2/3)/length(occ),
                 pctTran = sum(occ <= 1/3)/length(occ), 
                 maxdist = max(tmp_rte_group$dist)) 
@@ -217,7 +339,7 @@ for (r in uniqrtes) { #for each focal route
       occ2 = occ.summ %>% 
       group_by(focalrte) %>% 
       summarize(scale = nu, 
-                meanOcc = mean(meanOcc), 
+                meanOcc = mean(meanOcc), #mean of means, community mean  
                 pctCore = mean(pctCore), 
                 pctTran = mean(pctTran), 
                 maxdist = mean(maxdist)) %>%
@@ -245,7 +367,7 @@ write.csv(bbs_above, "data/BBS/bbs_above.csv", row.names = FALSE)
 
 ####scale-joining####
 bbs_above = read.csv(paste(BBS, "bbs_above.csv", sep = ""), header = TRUE)
-bbs_below = read.csv(paste(BBS, "bbs_below.csv", sep = ""), header = TRUE)
+bbs_below = read.csv(paste(BBS, "bbs_below_new.csv", sep = ""), header = TRUE)
 
 #adding maxRadius column to bbs_below w/NA's + renaming and rearranging columns accordingly, creating area cols
 bbs_below = bbs_below %>% 
@@ -267,19 +389,26 @@ bbs_above$scale = as.factor(bbs_above$scale)
 
 
 bbs_allscales = rbind(bbs_below, bbs_above) #rbind ok since all share column names
-write.csv(bbs_allscales, "data/BBS/bbs_allscales.csv", row.names = FALSE)
-#updated 09/20/2017, also in BioArk since old copy ALSO there
-write.csv(bbs_allscales, paste(BBS, "bbs_allscales.csv", sep = ""), row.names = FALSE)
+write.csv(bbs_allscales, "data/BBS/bbs_allscales_new.csv", row.names = FALSE)
+#updated 12/12/2017, also in BioArk since old copy ALSO there
+write.csv(bbs_allscales, paste(BBS, "bbs_allscales_new.csv", sep = ""), row.names = FALSE)
 
 ####filter out stateroutes that are one-sided in scale####
 #in terms of their representation of below vs above scale (should have both, not one alone)
 
-bbs_allscales = read.csv("data/BBS/bbs_allscales.csv", header = TRUE)
+bbs_allscales = read.csv(paste(BBS, "bbs_allscales_new.csv", sep = ""), header = TRUE)
 bbs_allscales$logA = log10(bbs_allscales$area)
 bbs_allscales$logN = log10(bbs_allscales$aveN)
 bbs_allscales$lnA = log(bbs_allscales$area) #log is the natural log 
 bbs_allscales$lnN = log(bbs_allscales$aveN) #rerun plots with this?
 
+####Closer look at scales 1 vs 2 where jump occurs####
+bbs_prob = bbs_allscales %>% 
+  filter(scale == "seg50" | scale == "2")
+
+ggplot(bbs_prob, aes(x = aveN, y = meanOcc, color = scale))+geom_point()
+ggplot(bbs_prob, aes(x = logN, y = meanOcc, color = scale))+geom_point()
+ggplot(bbs_prob, aes(x = area, y = meanOcc, color = scale))+geom_point()
 
 #only want rtes w/all 69 scales rep'd, which at this point - there are! 
 bbs_allscales2 = bbs_allscales %>% filter(meanOcc != 'NaN' & meanOcc != 'NA') %>% 
@@ -306,29 +435,29 @@ plot(meanOcc~logA, data = bbs_allscales, xlab = "Log Area" , ylab = "Mean Tempor
 plot(meanOcc~logN, data = bbs_allscales, xlab = "Average Abundance" , ylab = "Mean Temporal Occupancy")
 #^^same pattern roughly; abundance describes ~same amt of variance as area so serves as a good proxy 
 
+plot(meanOcc~scale, data = bbs_allscales)
 
 #ALL files updated 09/20 ~3pm 
-bbs_allscales$preds = predict(mod1)
-pred_plot = ggplot(bbs_allscales, aes(x = logA, y = meanOcc))+geom_line(aes(group = focalrte), color = "focalrte")+
-  theme_classic()+geom_line(aes(y = preds), color = "red")+ #geom_smooth(model = lm, color = 'red')+
-  labs(x = "Log Area", y = "Mean Community Occupancy")+ 
-  annotate("text", x = 2.5, y = 0.45, colour = "red", label = "italic(R) ^ 2 == 0.7424", parse = TRUE)+
-  scale_color_manual(values=c("Observed"="grey", "Mean Predicted"="red"))
-pred_plot
+#bbs_allscales$preds = predict(mod1)
+bbs_allsub = bbs_allscales %>% filter(focalrte == 33901 | focalrte == 72035 | focalrte == 60024)
+bbs_allsub$focalrte = as.factor(bbs_allsub$focalrte)
+#use this to assign neutral colors for each factor level per what color scheme is ideal?
 
-bbs_allscales$preds2 = predict(mod2)
+
+pred_plot = ggplot(bbs_allscales, aes(x = logA, y = meanOcc))+geom_line(aes(group = focalrte), color = "grey")+
+  theme_classic()+geom_line(data = bbs_allsub, aes(x = logA, y = meanOcc, group = as.factor(focalrte), color = as.factor(focalrte)), size = 2)+ #geom_smooth(model = lm, color = 'red')+
+  labs(x = "Log Area", y = "Mean Community Occupancy") 
+pred_plot #remember to thicken black line 
+
+#bbs_allscales$preds2 = predict(mod2)
 pred_plot2 = ggplot(bbs_allscales, aes(x = logN, y = meanOcc))+geom_line(aes(group = focalrte), color = "grey")+
-  theme_classic()+geom_line(aes(y = preds2), color = "red")+ #geom_smooth(model = lm, color = 'red')+
-  labs(x = "Log Abundance", y = "Mean Community Occupancy")+ 
-  annotate("text", x = 4, y = 0.45, colour = "red", label = "italic(R) ^ 2 == 0.8087", parse = TRUE)+
-  scale_color_manual(values=c("Observed"="grey", "Mean Predicted"="red"))
-pred_plot2
-summary(mod2)
+  theme_classic()+geom_line(data = bbs_allsub, aes(x = logN, y = meanOcc, group = as.factor(focalrte), color = as.factor(focalrte)), size = 2)+ #geom_smooth(model = lm, color = 'red')+
+  labs(x = "Log Abundance", y = "Mean Community Occupancy") 
+pred_plot2 #remember to thicken black line 
 
-
-abun_p = ggplot(bbs_allscales, aes(x = logN, y = meanOcc, colour = focalrte))+
+abun_p = ggplot(bbs_allscales, aes(x = logA, y = meanOcc, colour = logN))+
   geom_line(aes(group = focalrte))+
   theme_classic()+ #geom_smooth(model = lm, color = 'red')+
-  labs(x = "Log Abundance", y = "Mean Community Occupancy")
+  labs(x = "Log Area", y = "Mean Community Occupancy")
 abun_p
 ?geom_line 

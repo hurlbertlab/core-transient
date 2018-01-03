@@ -16,15 +16,11 @@
   #3)the slope of the line linking the minimum and maximum values 
       #the steepness (or flatness) of this line corresponds with the rate of accumulation of core species 
       #for a given community 
-  #4)the midpoint occupancy value of the line at the scale of 3 aggregated routes per focal route 
-      #the value of mean occupancy for the community at this scale is also a useful proxy for 
-      #the rate of accumulation of core species for a given community 
-  #5)the scale at which mean occupancy first reaches or surpasses 50% 
+  #4)the scale at which mean occupancy first reaches or surpasses 50% 
       #At what scale, at what area in km must we reach in order to reliably see consistent occupancy 
       #PREDICTION: in areas of fairly uniform habitat type, this scale should be lower 
       #PREDICTION: in areas of fairly high habitat heterogeneity, this scale should be higher 
-  #6)finally, we look at the variation in occupancy explained by scale thru R^2 values 
-  #7)and we look at the straightness or curviness of the actual data 
+  #5)and we look at the straightness or curvature of the actual data 
       #as compared to the data derived from our model.
       #PREDICTION: focal routes with larger "curvy" values will occur in regions of greater habitat heterogeneity, 
       #and deviance from the line will correspond with the greater environmental variance
@@ -83,30 +79,24 @@ library(stats)
 BBS = '//bioark.ad.unc.edu/HurlbertLab/Jenkins/BBS scaled/'
 
 ####Extract coefficients from scale-occupancy relationships for analysis####
-OA.df = data.frame(stateroute = numeric(), OA.min = numeric(), OA.max = numeric(), OA.slope = numeric(), 
-                   OA.thresh = numeric(), 
-                   OA.pmin = numeric(), OA.pmax = numeric(), OA.pslope = numeric(),  
-                   OA.pthresh = numeric(), 
-                   OA.r2 = numeric(), OA.AUC = numeric()) 
+OA.df = data.frame(stateroute = numeric(), OA.min = numeric(), OA.max = numeric(), 
+                   OA.slope = numeric(), 
+                   OA.mid = numeric(), 
+                   OA.curvature = numeric())
+ON.df = data.frame(stateroute = numeric(), ON.min = numeric(), ON.max = numeric(), 
+                   ON.slope = numeric(), 
+                   ON.mid = numeric(), 
+                   ON.curvature = numeric())
 
-CA.df = data.frame(stateroute = numeric(), CA.min = numeric(), CA.max = numeric(), CA.slope = numeric(), 
-                   CA.thresh = numeric(), 
-                   CA.pmin = numeric(), CA.pmax = numeric(), CA.pslope = numeric(),
-                   CA.pthresh = numeric(), 
-                   CA.r2 = numeric(), CA.AUC = numeric())
 
-TA.df = data.frame(stateroute = numeric(), TA.min = numeric(), TA.max = numeric(), TA.slope = numeric(), 
-                   TA.thresh = numeric(), 
-                   TA.pmin = numeric(), TA.pmax = numeric(), TA.pslope = numeric(), 
-                   TA.pthresh = numeric(), 
-                   TA.r2 = numeric(), TA.AUC = numeric())
 
 #read in data for processing
 bbs_allscales = read.csv("data/BBS/bbs_allscales.csv", header = TRUE)
 levels(bbs_allscales$scale)
 unique(bbs_allscales$scale)
-#ALL clear 07/24
-
+length(unique(bbs_allscales$focalrte))
+bbs_allscales = na.omit(bbs_allscales)
+length(unique(bbs_allscales$focalrte)) #ommitted 2 routes w/missing data
 
 
 ####coefs####
@@ -121,121 +111,55 @@ for(s in stateroutes){
     OAlog = lm(meanOcc ~ logA, data = logsub) #lm instead of nls, reg linear model
     logsub$OApreds = predict(OAlog)
     #OApred_df = data.frame(preds = predict(OAlog), scale = logsub$scale, logA = logsub$logA)  #get preds -> is predicting unique per scale, all clear
-    OAlm.r2 = lm(meanOcc ~ OApreds, data = logsub) #get r2 from model, so far this is just predmod tho 
-    
-    
-    #ACTUAL stats (for plotting data pts): 
+   #ACTUAL stats (for plotting data pts): 
     OA.min = min(logsub$meanOcc[logsub$logA == min(logsub$logA)])
     OA.max = logsub$meanOcc[logsub$logA == max(logsub$logA)]
+    OA.mid = min(logsub$logA[logsub$meanOcc >= 0.5]) 
     OA.slope = ((OA.max - OA.min)/(max(logsub$logA[logsub$meanOcc == max(logsub$meanOcc)]) - min(logsub$logA[logsub$meanOcc == min(logsub$meanOcc)])))
-    OA.xmid = logsub$meanOcc #vector for a given focal rte s, actual value
-    OA.thresh = min(logsub$logA[logsub$meanOcc >= 0.5]) 
     #want the FIRST instance where it hits this range -> how? minimum scale at which it does that
     #save as an area, not a "scale" 
     
-    #PREDICTED stats (for fitting line): 
-    OA.pmin =  min(logsub$OApreds[logsub$logA == min(logsub$logA)])
-    OA.pmax = logsub$OApreds[logsub$logA == max(logsub$logA)]
-    OA.pslope = ((OA.pmax - OA.pmin)/(max(logsub$logA[logsub$OApreds == max(logsub$OApreds)]) - min(logsub$logA[logsub$OApreds == min(logsub$OApreds)])))
-    OA.pxmid = logsub$OApreds
-    OA.pthresh = min(logsub$logA[logsub$OApreds >= 0.5]) 
-    
-    OA.r2 = summary(OAlm.r2)$r.squared
-    OA.AUC =  sum(abs(OA.xmid - OA.pxmid)) #AUC proxy - taking diff between actual and predicted mid vals at EVERY scale and adding together
-   
-
+        OA.vec = logsub$meanOcc #vector for a given focal rte s, actual value
+        OA.pvec = logsub$OApreds #vector for given focal rte s, pred values
+    OA.curvature =  sum(abs(OA.vec - OA.pvec)) 
+    #AUC proxy - taking diff between actual and predicted mid vals at EVERY scale and adding together
     OAmodel = data.frame(stateroute = s, OA.min, OA.max, OA.slope, 
-                                          OA.thresh, 
-                                          OA.pmin, OA.pmax, OA.pslope,
-                                          OA.pthresh, 
-                                          OA.r2, OA.AUC)
+                                          OA.mid, OA.curvature)
     
   OA.df = rbind(OA.df, OAmodel)
   #
   
-   #CA
-    CAlog = lm(pctCore ~ logA, data = logsub) #lm instead of nls, reg linear model
-    logsub$CApreds = predict(CAlog) #just what's literally on the line but not actual preds 
-    #CApred_df = data.frame(preds = predict(CAlog), scale = logsub$scale, logA = logsub$logA)  #get preds -> is predicting unique per scale, all clear
-    CAlm.r2 = lm(pctCore ~ CApreds, data = logsub) #get r2 from model, so far this is just predmod tho 
-    
-    
-    #ACTUAL stats (for plotting data pts): 
-    CA.min = min(logsub$pctCore[logsub$logA == min(logsub$logA)])
-    CA.max = logsub$pctCore[logsub$logA == max(logsub$logA)]
-    CA.slope = ((CA.max - CA.min)/(max(logsub$logA[logsub$pctCore == max(logsub$pctCore)]) - min(logsub$logA[logsub$pctCore == min(logsub$pctCore)])))
-    CA.xmid = logsub$pctCore #@ scale == 3, for a given focal rte s, actual value
-    CA.thresh = min(logsub$logA[logsub$pctCore >= 0.5]) 
-    #want the FIRST instance where it hits this range -> how? minimum scale at which it does that
-    #other threshold limits/metrics relevant to %core and %transient? 
-    
-    #PREDICTED stats (for fitting line): 
-    CA.pmin =  min(logsub$CApreds[logsub$logA == min(logsub$logA)])
-    CA.pmax = logsub$CApreds[logsub$logA == max(logsub$logA)]
-    CA.pslope = ((CA.pmax - CA.pmin)/(max(logsub$logA[logsub$CApreds == max(logsub$CApreds)]) - min(logsub$logA[logsub$CApreds == min(logsub$CApreds)])))
-    CA.pxmid = logsub$CApreds
-    CA.pthresh = min(logsub$logA[logsub$CApreds >= 0.5]) 
-    
-    CA.r2 = summary(CAlm.r2)$r.squared
-    CA.AUC =  sum(abs(CA.xmid - CA.pxmid)) #AUC proxy - taking diff between actual and predicted mid vals at EVERY scale and adding together
-     
-    
-    CAmodel = data.frame(stateroute = s, CA.min, CA.max, CA.slope, 
-               CA.thresh, 
-               CA.pmin, CA.pmax, CA.pslope, 
-               CA.pthresh, 
-               CA.r2, CA.AUC)
-    
-  CA.df = rbind(CA.df, CAmodel)
+  #ON 
+  ONlog = lm(meanOcc ~ logN, data = logsub) #lm instead of nls, reg linear model
+  logsub$ONpreds = predict(ONlog)
+  #ONpred_df = data.frame(preds = predict(ONlog), scale = logsub$scale, logN = logsub$logN)  #get preds -> is predicting unique per scale, all clear
+  #ACTUAL stats (for plotting data pts): 
+  ON.min = min(logsub$meanOcc[logsub$logN == min(logsub$logN)])
+  ON.max = logsub$meanOcc[logsub$logN == max(logsub$logN)]
+  ON.mid = min(logsub$logN[logsub$meanOcc >= 0.5]) 
+  ON.slope = ((ON.max - ON.min)/(max(logsub$logN[logsub$meanOcc == max(logsub$meanOcc)]) - min(logsub$logN[logsub$meanOcc == min(logsub$meanOcc)])))
+  #want the FIRST instance where it hits this range -> how? minimum scale at which it does that
+  #save as an area, not a "scale" 
   
- 
-  # Fitting % transient
-  #TA
-  TAlog = lm(pctTran ~ lnA, data = logsub) #lm instead of nls, reg linear model
-    logsub$TApreds = predict(TAlog)
-    #TApred_df = data.frame(preds = predict(TAlog), scale = logsub$scale, lnA = logsub$lnA)  #get preds -> is predicting unique per scale, all clear
-    TAlm.r2 = lm(pctTran ~ TApreds, data = logsub) #get r2 from model, so far this is just predmod tho
-
-    #ACTUAL stats (for plotting data pts):
-    TA.min = min(logsub$pctTran[logsub$lnA == min(logsub$lnA)])
-    TA.max = logsub$pctTran[logsub$lnA == max(logsub$lnA)]
-    TA.slope = ((TA.max - TA.min)/(max(logsub$lnA[logsub$pctTran == max(logsub$pctTran)]) - min(logsub$lnA[logsub$pctTran == min(logsub$pctTran)])))
-    TA.xmid = logsub$pctTran #@ scale == 3, for a given focal rte s, actual value
-    TA.thresh = min(logsub$lnA[logsub$pctTran >= 0.50])
-    #want the FIRST instance where it hits this range -> how? minimum scale at which it does that
-    #then save as a character so associated levels data doesn't stay stuck on the single data point
-
-    #PREDICTED stats (for fitting line):
-    TA.pmin =  min(logsub$TApreds[logsub$lnA == min(logsub$lnA)])
-    TA.pmax = logsub$TApreds[logsub$lnA == max(logsub$lnA)]
-    TA.pslope = ((TA.pmax - TA.pmin)/(max(logsub$lnA[logsub$TApreds == max(logsub$TApreds)]) - min(logsub$lnA[logsub$TApreds == min(logsub$TApreds)])))
-    TA.pxmid = logsub$TApreds
-    TA.pthresh = min(logsub$lnA[logsub$TApreds >= 0.50])
-
-    TA.r2 = summary(TAlm.r2)$r.squared
-    TA.AUC =  sum(abs(TA.xmid - TA.pxmid)) #AUC proxy - taking diff between actual and predicted mid vals at EVERY scale and adding together
+  ON.vec = logsub$meanOcc #vector for a given focal rte s, actual value
+  ON.pvec = logsub$ONpreds #vector for given focal rte s, pred values
+  ON.curvature =  sum(abs(ON.vec - ON.pvec)) 
+  #NUC proxy - taking diff between actual and predicted mid vals at EVERY scale and adding together
+  ONmodel = data.frame(stateroute = s, ON.min, ON.max, ON.slope, 
+                       ON.mid, ON.curvature)
   
-    TAmodel = data.frame(stateroute = s, TA.min, TA.max, TA.slope,  
-               TA.thresh,
-               TA.pmin, TA.pmax, TA.pslope,
-               TA.pthresh,
-               TA.r2, TA.AUC)
-
-
-  TA.df = rbind(TA.df, TAmodel)
-
+  ON.df = rbind(ON.df, ONmodel)
+  #
+}  
   
-} #end of loop 
-  
-  
+   
 #join all together using inner_join by focal rte, not cbind 
 coefs = OA.df %>% 
-  inner_join(CA.df, OA.df, by = "stateroute") %>% 
-  inner_join(TA.df, OA.df, by = "stateroute") 
+  inner_join(ON.df, OA.df, by = "stateroute")
  
-write.csv(coefs, "scripts/R-scripts/scale_analysis/coefs.csv", row.names = FALSE) #updated 09/21
-#exp mods have much better r2 vals for pctTran than power 
-#checked, working correctly 08/28, output not NA's but normal!
+write.csv(coefs, "scripts/R-scripts/scale_analysis/coefs.csv", row.names = FALSE) 
+#updated 11/21, removal of redundant coefs and inclusion of ON
+
 
 ####Plotting occupancy-scale relationships with observed and predicted values####
 #work in progress

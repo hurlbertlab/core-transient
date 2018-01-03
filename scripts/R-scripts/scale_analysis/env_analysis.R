@@ -204,25 +204,6 @@ summary(mod2)
 summary(mod3)
 summary(mod4)
 
-env_all$nv_preds = predict(mod1)
-env_all$nm_preds = predict(mod3)
-env_all$ev_preds = predict(mod2)
-env_all$em_preds = predict(mod4)
-
-p5 = p1+geom_line(data = env_all, aes(y = nv_preds), color = "red")+ 
-  theme_classic()+
-  annotate("text", x = 40, y = 0.10, colour = "red", label = "italic(R) ^ 2 == 0.06378", parse = TRUE)
-p6 = p2+geom_line(data = env_all, aes(y = ev_preds), color = "red")+
-  theme_classic()+
-  annotate("text", x = 35, y = 756000, colour = "red", label = "italic(R) ^ 2 == 0.04223", parse = TRUE)
-p7 = p3+geom_line(data = env_all, aes(y= nm_preds), color = "red")+
-  theme_classic()+
-  annotate("text", x = 40, y = 0.2, colour = "red", label = "italic(R) ^ 2 == 0.0001299", parse = TRUE)
-p8 = p4+ geom_line(data = env_all, aes(y = em_preds), color = "red")+
-  theme_classic()+
-  annotate("text", x = 40, y = 3000, colour = "red", label = "italic(R) ^ 2 == 0.0004142", parse = TRUE)  
-
-p9 = grid.arrange(p5, p6, p7, p8) 
 #visually = more tightening up of patterns at larger scales, EXCEPT elevational variance
 #recall that env vars calculated iteratively over consecutively larger and larger radius out from each focal route, 
 #and so across progressively larger and larger vector of values from each subsumed secondary route therein 
@@ -245,7 +226,7 @@ env_coefs = env_all %>%
   
 #since now reflective of all scales, 62370 rows, 36 cols 
 write.csv(env_coefs, "scripts/R-scripts/scale_analysis/env_coefs.csv", row.names = FALSE)
-#updated 10/29
+#updated 12/14
 
 
 ####Coef & habitat heterogeneity models####
@@ -268,10 +249,10 @@ write.csv(covmatrix, "scripts/R-scripts/scale_analysis/covmatrix.csv", row.names
 #e.g. "Does the min and the predicted min vary with environmental heterogeneity 
 #at the scale of a single route? at the scale of a landscape?
 min_mod1 = lm(OA.min ~ ndvi.var, data = env_coefs)
-min_mod2 = lm(OA.pmin ~ ndvi.var, data = env_coefs)
+min_mod2 = lm(ON.min ~ ndvi.var, data = env_coefs)
 
 min_mod3 = lm(OA.min ~ elev.var, data = env_coefs)
-min_mod4 = lm(OA.pmin ~ elev.var, data = env_coefs)
+min_mod4 = lm(ON.min ~ elev.var, data = env_coefs)
 
 summary(min_mod1)
 summary(min_mod2)
@@ -294,11 +275,9 @@ rsqrd_hetero = data.frame(dep = character(), ind = character(),
                           r2 = numeric(), adjr = numeric(), corr_r = numeric())
 #modify to include plotting of obs values for each stateroute vs pred line 
 #and plot these with r squared vals as annotations to plots too 
-setwd("C:/git/core-transient/output/plots/'Molly Plots'/habhet/")
-
 
 for (d in 3:6) { #adjust columns appropriately -> make sure correct order of ind and dep vars!
-  for (i in 7:16) {
+  for (i in 8:17) {
     tempmod = lm(env_coefs[,d] ~ env_coefs[,i])
     tempcor = cor.test(env_coefs[,d], env_coefs[,i], method = "pearson")
     
@@ -322,9 +301,9 @@ for (d in 3:6) { #adjust columns appropriately -> make sure correct order of ind
     }
 }
 
-dev.off()
+
 write.csv(rsqrd_hetero, "scripts/R-scripts/scale_analysis/rsqrd_hetero.csv", row.names = FALSE) 
-#updated 10/30 using corrected hab_het vals, only variances characterizing sites
+#updated 12/14 using corrected hab_het vals, only variances characterizing sites
 
 
 ####Visually Characterizing measures of habitat heterogeneity####
@@ -363,7 +342,7 @@ for (s in scales) {
   env_coefs2 = env_coefs %>% 
     filter(scale == s)
     for (d in 3:6) { #adjust columns appropriately -> make sure correct order of ind and dep vars!
-      for (i in 7:16) {
+      for (i in 8:17) {
        tempmod = lm(env_coefs2[,d] ~ env_coefs2[,i])
        tempcor = cor.test(env_coefs2[,d], env_coefs2[,i], method = "pearson")
     
@@ -390,7 +369,7 @@ for (s in scales) {
 }
 
 write.csv(scales_hetero, "scripts/R-scripts/scale_analysis/scales_hetero.csv", row.names = FALSE) 
-#updated 11/09 using corrected hab_het vals, only variances characterizing sites
+#updated 12/14 using corrected hab_het vals, only variances characterizing sites
 
 
 
