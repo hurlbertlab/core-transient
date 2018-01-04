@@ -180,12 +180,14 @@ for (dataset in datasetIDs[,1]) {
         subdata = sample(notrans, length(notrans))
         for(r in 1:1000){
         regroup = rbind(trans, subdata)
+        if(length(years) > 0){
           for (year in years[1:(length(years)-1)]) {
             comm1 = unique(subdata$species[subdata$year == year])
             comm2 = unique(subdata$species[subdata$year == year + 1])
             T_J = turnover(comm1, comm2)
             TJs = c(TJs, T_J)
-    }
+          }
+        }
     null_output.5 = data.frame(r= r, datasetID = dataset, site = site, TJ = mean(TJs),
                              numnon = as.numeric(length(notrans)))
     null_output = rbind(null_output, null_output.5)
