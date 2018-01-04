@@ -7,19 +7,17 @@
 
 setwd("C:/git/core-transient")
 
+library(tidyverse)
 library(lme4)
 library(plyr) # for core-transient functions
 library(gridExtra)
-library(tidyr)
+library(agricolae)
 library(maps)
 library(cowplot)
-library(RColorBrewer)
-library(sp)
-library(rgdal)
-library(raster)
-library(dplyr)
-library(digest)
-library(ggplot2)
+#library(tidyr)
+# library(dplyr)
+# library(digest)
+# library(ggplot2)
 
 source('scripts/R-scripts/core-transient_functions.R')
 
@@ -33,14 +31,17 @@ datasetIDs = datasetIDs[!datasetIDs %in% c(1)]
 
 ##### Boxplots showing distribution of core and transient species by taxon #####
 # Read in datasets
-bbs_below_st = read.csv("data/BBS/bbs_below_st.csv", header = TRUE)
+bbs_abun4 = read.csv("data/BBS/bbs_abun4_spRich.csv", header = TRUE)
+bbs_abun4$propTrans = bbs_abun4$pctTrans
+bbs_abun4$propCore = bbs_abun4$pctCore
+bbs_abun4$system <- "Terrestrial"
+bbs_abun4 = bbs_abun4[,c("datasetID", "site","system", "taxa", "propCore", "propTrans", "meanAbundance")]
 summ1.5 = read.csv("output/tabular_data/summ1.5.csv", header = TRUE)
 taxcolors = read.csv("output/tabular_data/taxcolors.csv", header = TRUE)
 
-summ1.5$meanAbundance = NULL
 
 # Rbind bbs at stateroute level and summary data together
-summ2.5 = rbind(bbs_below_st,summ1.5)
+summ2.5 = rbind(bbs_abun4,summ1.5)
 
 core = summ2.5 %>%
   dplyr::group_by(taxa) %>%
@@ -130,10 +131,10 @@ for (d in datasetIDs) {
   print(d)
 }
 percTransSummaries = percTransSummaries[, c("datasetID","site","system","taxa","propCore33", "propTrans33", "propTrans25", "propTrans10")]
-# percTransSummaries$site = as.numeric(percTransSummaries$site)
 #rbind threshold dataset with BBS thresholds
 bbs_focal_occs_pctTrans = read.csv("data/BBS/bbs_focal_occs_pctTrans.csv", header = TRUE)
 bbs_focal_occs_pctTrans$site = as.factor(bbs_focal_occs_pctTrans$site)
+percTransSummaries$propCore33 = NULL
 percTransSummaries_w_bbs = rbind(percTransSummaries, bbs_focal_occs_pctTrans)
 write.csv(percTransSummaries_w_bbs, "output/tabular_data/alt_trans_thresholds.csv", row.names = F)
 
@@ -155,7 +156,7 @@ propCT_long$abbrev = gsub("Plant", 'Pt', propCT_long$abbrev)
 propCT_long$abbrev = factor(propCT_long$abbrev,
                             levels = c('Be','I','F','Pn','Pt','M','Bi'),ordered = TRUE)
 
-colscale = c("#225ea8","#fdd49e", "#c51b8a")
+colscale = c("light gray","dark gray", "black")
 m = ggplot(data=propCT_long, aes(factor(abbrev), y=value, fill=factor(class))) + geom_bar(stat = "identity")  + xlab("") + ylab("Proportion of Species") + scale_fill_manual(labels = c("Core", "Intermediate", "Transient"),values = colscale)+theme(axis.ticks.x=element_blank(),axis.text.x=element_text(size=6),axis.text.y=element_text(size=20),axis.title.y=element_text(size=24,angle=90,vjust = 4),axis.line.x = element_blank(),axis.line.y = element_blank())+ theme(legend.text=element_text(size=24),legend.key.size = unit(2, 'lines'))+theme(legend.position="right", legend.key.width=unit(1, "lines"))+ guides(fill = guide_legend(keywidth = 3, keyheight = 2,title="", reverse=TRUE))+ coord_fixed(ratio = 4)
 # ggsave(file="C:/Git/core-transient/output/plots/3a.pdf", height = 10, width = 15)
 
@@ -164,8 +165,15 @@ prope_long$system = factor(prope_long$system,
 
 
 # colscaleb = c("tan","brown", "dark green")
-e = ggplot(data=prope_long, aes(factor(system), y=value, fill=factor(class))) + geom_bar(stat = "identity")  + xlab("") + ylab("")+ scale_fill_manual(labels = c("Core", "Intermediate", "Transient"), values = colscale)+theme(axis.ticks.x=element_blank(),axis.text.x=element_text(size=4),axis.text.y=element_text(size=20),axis.title.x=element_text(size=24),axis.title.y=element_text(size=24,angle=90,vjust = 2.5),axis.line.x = element_blank(),axis.line.y = element_blank())+ theme(legend.text=element_text(size=18),legend.key.size = unit(2, 'lines'))+theme(legend.position="top", legend.justification=c(0, 1), legend.key.width=unit(1, "lines"))+ guides(fill = guide_legend(keywidth = 3, keyheight = 1,title="", reverse=TRUE))+ coord_fixed(ratio = 4)
-# ggsave(file="C:/Git/core-transient/output/plots/3b.pdf", height = 10, width = 15)
+e = ggplot(data=prope_long, aes(factor(system), y=value, fill=factor(class))) + 
+  geom_bar(stat = "identity")  + xlab("") + ylab("")+ scale_fill_manual(labels = c("Core", "Intermediate", "Transient"), values = colscale)+
+  theme(axis.ticks.x=element_blank(),axis.text.x=element_text(size=4),axis.text.y=element_text(size=20),
+        axis.title.x=element_text(size=24),axis.title.y=element_text(size=24,angle=90,vjust = 2.5),
+        axis.line.x = element_blank(),axis.line.y = element_blank())+ theme(legend.text=element_text(size=18),
+        legend.key.size = unit(2, 'lines'))+theme(legend.position="top", legend.justification=c(0, 1), 
+        legend.key.width=unit(1, "lines"))+ guides(fill = guide_legend(keywidth = 3, keyheight = 1,title="", 
+                                                                       reverse=TRUE))+ coord_fixed(ratio = 4)
+
 
 # make a gridded plot
 get_legend<-function(myggplot){
@@ -186,7 +194,7 @@ prow <- plot_grid( m + theme(legend.position="none"),
 )
 p2 = plot_grid(prow,legend, rel_widths = c(3, 0.7)) 
 p2
-ggsave(file="C:/Git/core-transient/output/plots/3a_3b.pdf", height = 10, width = 15,p2)
+ggsave(file="output/plots/3a_3b.pdf", height = 10, width = 15,p2)
 
 #### barplot of percent transients by taxa ---SUPP FIG
 CT_long$taxa = as.factor(CT_long$taxa)
