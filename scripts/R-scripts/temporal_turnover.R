@@ -177,9 +177,9 @@ for (dataset in datasetIDs[,1]) {
         years = as.numeric(unique(sitedata$year))
         TJs = c()
         TJ_notrans = c()
-        subdata = sample(notrans, length(notrans))
-        for(r in 1:1000){
         regroup = rbind(trans, subdata)
+        for(r in 1:1000){
+        subdata = sample(notrans, length(notrans))
         if(length(years) > 0){
           for (year in years[1:(length(years)-1)]) {
             comm1 = unique(subdata$species[subdata$year == year])

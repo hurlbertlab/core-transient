@@ -104,9 +104,11 @@ dsets = unique(summ2[, c('datasetID', 'system','taxa')])
 
 taxorder = c('Bird', 'Plant', 'Mammal', 'Fish', 'Invertebrate', 'Benthos', 'Plankton')
 
-dsetsBySystem = table(dsets$system)
+dsetsBySystem = data.frame(table(dsets$system))
+dsetsBySystem =  dsetsBySystem[order(-dsetsBySystem$Freq),]
 dsetsByTaxa = table(dsets$taxa)
-sitesBySystem = table(summ2$system)
+sitesBySystem = data.frame(table(summ2$system))
+sitesBySystem =  sitesBySystem[order(-sitesBySystem$Freq),]
 sitesByTaxa = table(summ2$taxa)
 
 colors7 = c(colors()[552], # plankton
@@ -138,13 +140,13 @@ write.csv(taxcolors, "output/tabular_data/taxcolors.csv", row.names = FALSE)
 pdf('output/plots/data_summary_hists.pdf', height = 8, width = 10)
 par(mfrow = c(3, 2), mar = c(4,4,1.2,1.2), cex = 1.25, oma = c(0,0,0,0), las = 1,
     cex.lab = 1)
-b1=barplot(dsetsBySystem, col = c('burlywood','skyblue', 'navy'), xaxt = "n",cex.names = 1) 
+b1=barplot(dsetsBySystem$Freq, col = c('burlywood','skyblue', 'navy'), xaxt = "n",cex.names = 1) 
 mtext("Datasets", 2, cex = 1.25, las = 0, line = 2.5)
 title(outer=FALSE,adj=1,main="A",cex.main=1.5,col="black",font=2,line=-0.1)
-barplot(log10(sitesBySystem), col = c('burlywood','skyblue', 'navy'), cex.names = 1, 
+barplot(log10(sitesBySystem$Freq), col = c('burlywood','skyblue', 'navy'), cex.names = 1, 
         xaxt = "n",yaxt = "n", ylim = c(0,4)) 
-axis(side = 2, 0:4,labels=c("0","1","10","1000","2000"))
-mtext(expression("Assemblages"), 2, cex = 1.25, las = 0, line = 3.5)
+axis(side = 2, 0:3,labels=c("1","10","100","500"))
+mtext(expression("Assemblages"), 2, cex = 1.25, las = 0, line = 3.5) # log[10]*
 title(outer=FALSE,adj=1,main="B",cex.main=1.5,col="black",font=2,line=-0.1)
 bar1 = barplot(dsetsByTaxa[taxorder], xaxt = "n", axisnames = F,
                col = as.character(taxcolors$color[match(taxorder, taxcolors$taxa)]))
