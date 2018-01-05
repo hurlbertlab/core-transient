@@ -190,13 +190,49 @@ fourataxa = merge(fourataxa, taxcolors, by = "taxa")
 
 colscale = c("azure4","#1D6A9B","turquoise2","gold2","purple4","red", "forestgreen")  
 
+
+#### null model ####
+null_output = c()
+for(id in datasetIDs[,1]){
+  print(id)
+  subdata = subset(sad_data, datasetID == id)
+  sites = unique(subdata$site)
+  for(site in sites){
+    sitedata = subdata[subdata$site == site,]
+    notrans = sitedata[sitedata$propOcc > 1/3,]
+    trans = sitedata[sitedata$propOcc <= 1/3,]
+    size = length(notrans$propOcc) - length(trans$propOcc)
+    for(r in 1:1000){
+      print(r)
+      subsad = sample_n(notrans, size, replace = FALSE)
+      regroup = rbind(trans, subsad)
+      logseries_weights_incl = regroup %>%
+        group_by(datasetID, site) %>% 
+        dplyr::summarize(weights = get_logseries_weight(abunds), treatment = 'All')
+      
+      logseries_weights_excl = regroup %>%
+        filter(propOcc > 1/3) %>%
+        group_by(datasetID, site) %>% 
+        dplyr::summarize(weights = get_logseries_weight(abunds), treatment = 'Excluding')
+      
+      logseries_weights = rbind(logseries_weights_incl, logseries_weights_excl)
+      
+      null_output = rbind(null_output, c(r, id, site, logseries_weights_incl[3], logseries_weights_excl[,3],numnon = as.numeric(length(notrans$propOcc))))
+    }
+  }
+}
+
+
+
+
+
 #### plot 5a ####
 hist_top <- ggplot(fourataxa, aes(all_weight))+geom_histogram(binwidth = 0.05, fill = "dark orange2")+ theme(axis.ticks=element_blank(), panel.background=element_blank(),line = element_blank(),axis.text.x=element_blank(), axis.text.y=element_blank(), axis.title.x=element_blank(), axis.title.y=element_blank(), plot.margin = unit(c(1,-0.5,0,3), "cm"))
 empty <- ggplot()+geom_point(aes(1,1), colour="white")+ theme(axis.ticks=element_blank(), 
-        panel.background=element_blank(), 
-        line = element_blank(),
-        axis.text.x=element_blank(), axis.text.y=element_blank(),           
-        axis.title.x=element_blank(), axis.title.y=element_blank())
+                                                              panel.background=element_blank(), 
+                                                              line = element_blank(),
+                                                              axis.text.x=element_blank(), axis.text.y=element_blank(),           
+                                                              axis.title.x=element_blank(), axis.title.y=element_blank())
 hist_right <- ggplot(fourataxa, aes(excl_weight))+geom_histogram(binwidth = 0.05, fill = "yellow")+coord_flip() + theme(axis.ticks=element_blank(), panel.background=element_blank(),line = element_blank(),axis.text.x=element_blank(), axis.text.y=element_blank(), axis.title.x=element_blank(), axis.title.y=element_blank(), plot.margin = unit(c(-1,1,2,.5), "cm"))
 grid.arrange(hist_top, empty, k, hist_right, ncol=2, nrow=2, widths=c(5, 1), heights=c(1, 5))
 
@@ -293,6 +329,31 @@ four_b <- l
 ggsave(file="C:/Git/core-transient/output/plots/5b_corrcoeff_NDVI.pdf", height = 5, width = 15)
 
 
+##### null model #####
+# calc bbs with and without trans
+null_output = data.frame()
+for (site in unique(bbs_abun_occ$stateroute)){
+  sitedata = bbs_abun_occ[bbs_abun_occ$stateroute == site,]
+  notrans = sitedata[sitedata$occupancy > 1/3,]
+  trans = sitedata[sitedata$occupancy <= 1/3,]
+  regroup = rbind(trans, sitedata)
+  for(r in 1:1000){
+    subdata = sample(notrans, length(notrans))
+    
+    bbs_spRich = merge(allbbs, notransbbs[c("stateroute", "spRichnotrans")], by = "stateroute")
+    bbs_spRich$site_id <- bbs_spRich$stateroute
+    # merging ndvi and elevation to bbs data
+    bbs_env = join(bbs_spRich, gimms_agg, type = "left")
+    bbs_env = merge(bbs_env, lat_scale_bbs[,c("site_id", "elev.point", "elev.mean", "elev.var")], by = "site_id")
+    
+    bar1 = cor.test(bbs_env$spRich, bbs_env$ndvi)$estimate
+    bar3 = cor.test(bbs_env$spRich, bbs_env$elev.mean)$estimate
+    bar2 = cor.test(bbs_env$spRichnotrans, bbs_env$ndvi)$estimate
+    
+    null_output = rbind(null_output, r, site, bar1, bar2, bar3)
+  }
+}
+
 #### test for fig 1 new #####
 mh = read.csv("data/raw_datasets/dataset_255RAW/MHfig1.csv", header = TRUE)
 mh$class = factor(mh$class, levels = c('trans','core'),ordered = TRUE)
@@ -313,7 +374,7 @@ bray_bbs = filter(bray_col, bbs == "yes")
 bray_else = filter(bray_col, bbs == "no")
 
 bray_else$taxa = factor(bray_else$taxa,
-                            levels = c('Invertebrate','Fish','Plankton','Mammal','Plant','Bird'),ordered = TRUE)
+                        levels = c('Invertebrate','Fish','Plankton','Mammal','Plant','Bird'),ordered = TRUE)
 # bbs column for diff point symbols
 turnover_col$bbs =ifelse(turnover_col$datasetID == 1, "yes", "no")
 turnover_bbs = filter(turnover_col, bbs == "yes")
@@ -428,6 +489,56 @@ four_d <-p + geom_abline(intercept = 0,slope = 1, lwd =1.5,linetype="dashed") +g
 
 ggsave(file="C:/Git/core-transient/output/plots/5d_sparea.pdf", height = 10, width = 15)
 
+##### null model ######
+null_output = data.frame()
+for (dataset in datasetIDs){
+  subdata = subset(occ_trans_area, datasetID == dataset)
+  sites = unique(subdata$site)
+  print(paste("Calculating SAR: dataset", dataset))
+  for (site in sites) {
+    sitedata = subdata[subdata$site == site,]
+    notrans = sitedata[sitedata$propOcc > 1/3,]
+    trans = sitedata[sitedata$propOcc <= 1/3,]
+    years = as.numeric(unique(sitedata$year))
+    TJs = c()
+    TJ_notrans = c()
+    regroup = rbind(trans, subdata)
+    for(r in 1:1000){
+      
+    }
+  }
+}
+
+scaleIDs = unique(occ_trans_area$datasetID)
+
+scaleIDs = scaleIDs[! scaleIDs %in% c(279,225,248,254, 282,291)] # 248 tbd
+
+slopes = data.frame(datasetID = NULL,
+                    taxa = NULL,
+                    areaSlope = NULL,
+                    areaSlope_noTrans = NULL)
+for(id in scaleIDs){
+  print(id)
+  plotsub = subset(occ_trans_area,datasetID == id) 
+  taxa = as.character(unique(plotsub$taxa))
+  mod.t = lm(log10(plotsub$spRich) ~ log10(plotsub$area))
+  mod.t.slope = summary(mod.t)$coef[2,"Estimate"]
+  mod.n= lm(log10(plotsub$notrans) ~ log10(plotsub$area))
+  mod.n.slope = summary(mod.n)$coef[2,"Estimate"]
+  print(mod.n.slope)
+  taxcolor = subset(taxcolors, taxa == as.character(plotsub$taxa)[1])
+  slopes = rbind(slopes, data.frame(datasetID = id,
+                                    taxa = taxa,
+                                    areaSlope = mod.t.slope, 
+                                    areaSlope_noTrans = mod.n.slope))
+}
+slopes$bbs = 'no'
+
+all_slopes =  rbind(slopes, slopes_bbs)
+
+
+
+
 ##### make a gridded plot #####
 get_legend<-function(myggplot){
   tmp <- ggplot_gtable(ggplot_build(myggplot))
@@ -473,5 +584,3 @@ all4
 
 
 ggsave(file="C:/Git/core-transient/output/plots/5a_5d.pdf", height = 16, width = 22,all4)
-
-

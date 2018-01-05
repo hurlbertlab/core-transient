@@ -144,6 +144,15 @@ pdf('output/plots/4a_4d.pdf', height = 10, width = 14)
 par(mfrow = c(2, 2), mar = c(5,5,1,1), cex = 1, oma = c(0,0,0,0), las = 1)
 palette(colors7)
 
+areamerge_fig = na.omit(areamerge_fig)
+all = lm(areamerge_fig$pctTrans ~ log10(areamerge_fig$area))
+xnew = range(log10(areamerge_fig$area))
+xhat <- predict(all, newdata = data.frame((xnew)))
+xhats = range(xhat)
+lower = range(xhat)[1]
+upper = range(xhat)[2]
+
+
 plot(NA, xlim = c(-2, 8), ylim = c(0,1), col = as.character(taxcolor$color), xlab = expression("log"[10]*" Area (m"^2*")"), ylab = "% Transients", cex.lab = 2,frame.plot=FALSE, xaxt = "n", yaxt = "n", mgp = c(3.25,1,0))
 axis(1, cex.axis =  1.5)
 axis(2, cex.axis =  1.5)
@@ -167,8 +176,16 @@ b1 = for(id in scaleIDs){
    # points(log10(plotsub$area), plotsub$pctTrans)
   par(new=TRUE)
 }
+lines(log10(areamerge_fig$area), fitted(all), col="black", lwd=3)
 title(outer=FALSE,adj=0.02,main="A",cex.main=2,col="black",font=2,line=-1)
 par(new= FALSE)
+
+
+bbs_occ = na.omit(bbs_occ)
+occ_all = lm(bbs_occ$pctTrans ~ log10(bbs_occ$meanAbundance))
+xnew = range(log10(bbs_occ$meanAbundance))
+xhat <- predict(occ_all, newdata = data.frame((xnew)))
+xhats = range(xhat)
 
 plot(NA, xlim = c(0, 7), ylim = c(0,1), col = as.character(taxcolor$color), xlab = expression("log"[10]*" Community Size"), ylab = "% Transients", cex.lab = 2,frame.plot=FALSE, yaxt = "n", xaxt = "n", mgp = c(3.25,1,0))
 axis(1, cex.axis =  1.5)
@@ -190,6 +207,7 @@ b2 = for(id in scaleIDs){
 abline(v = log10(102), lty = 'dotted', lwd = 2) 
 par(new=TRUE)
 title(outer=FALSE,adj=0.02,main="B",cex.main=2,col="black",font=2,line=-1)
+lines(log10(bbs_occ$meanAbundance), fitted(occ_all), col="black",lwd=3)
 legend('topright', legend = as.character(taxcolors$taxa), lty=1,lwd=3,col = as.character(taxcolors$color), cex = 1.5, bty = "n")
 par(new = FALSE)
 
