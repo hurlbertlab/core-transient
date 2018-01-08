@@ -52,13 +52,6 @@ symbols = c(15, 16, 15, 17, 16, 15, 16)
 Type = c("Invertebrate", "Vertebrate", "Invertebrate", "Plant", "Vertebrate", "Invertebrate", "Vertebrate") 
 taxcolors = cbind(taxcolors, Type,symbols)
 
-# calc bbs with and without trans
-notransbbs = bbs_abun_occ %>% filter(occupancy > 1/3) %>% dplyr::count(stateroute, scale) %>% filter(scale == 50)
-names(notransbbs) = c("stateroute", "scale", "spRichnotrans")
-
-allbbs = bbs_abun_occ %>% dplyr::count(stateroute, scale) %>% filter(scale == 50)
-names(allbbs) = c("stateroute", "scale", "spRich")
-
 # create bbs files
 bbs_count5a = dplyr::rename(bbs_count, year = Year, site = stateroute, species = aou, count = speciestotal)
 bbs_count5a$datasetID = 1
@@ -165,31 +158,7 @@ propocc_data = get_propocc_data(datasetIDs)
 summed_abunds = sum_abunds(abund_data)
 sad_data = left_join(summed_abunds, propocc_data, by = c('datasetID', 'site', 'species'))
 
-logseries_weights_incl = sad_data %>%
-  group_by(datasetID, site) %>% 
-  dplyr::summarize(weights = get_logseries_weight(abunds), treatment = 'All')
-
-logseries_weights_excl = sad_data %>%
-  filter(propOcc > 1/3) %>%
-  group_by(datasetID, site) %>% 
-  dplyr::summarize(weights = get_logseries_weight(abunds), treatment = 'Excluding')
-
-
-logseries_weights = rbind(logseries_weights_incl, logseries_weights_excl)
-write.csv(logseries_weights, "output/tabular_data/logseries_weights.csv")
-logseries_weights = read.csv("output/tabular_data/logseries_weights.csv", header = TRUE)
-
-d = merge(logseries_weights_incl, logseries_weights_excl, by = c("datasetID", "site"), all.x = TRUE)
-d$all_weight = d$weights.x 
-d$all = d$treatment.x 
-d$excl_weight = d$weights.y
-d$excl = d$treatment.y 
-d = d[, c("datasetID", "site","all_weight", "excl_weight")]
-fourataxa = merge(d, dataformattingtable[,c("dataset_ID", "taxa")],by.x = "datasetID", by.y = "dataset_ID")
-fourataxa = merge(fourataxa, taxcolors, by = "taxa")
-
 colscale = c("azure4","#1D6A9B","turquoise2","gold2","purple4","red", "forestgreen")  
-
 
 #### null model ####
 null_output = c()
