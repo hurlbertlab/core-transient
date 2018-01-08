@@ -435,7 +435,7 @@ for (dataset in datasetIDs[,1]) {
 
 
 
-
+##### plot 5c ####
 
 turnover = read.csv("output/tabular_data/temporal_turnover.csv", header = TRUE)
 turnover_taxa = merge(turnover,dataformattingtable[,c("dataset_ID", "taxa")], by.x = "datasetID", by.y = "dataset_ID")
@@ -471,84 +471,148 @@ ggsave(file="C:/Git/core-transient/output/plots/5s_brayturnover.pdf", height = 1
 
 
 ##### Figure 5d ##### only scaled vars
-bbs_uniq_area = bbs_abun_occ %>% dplyr::select(stateroute,scale,subrouteID,area) %>% unique()
+bbs_below = read.csv("data/BBS/bbs_below.csv", header = TRUE)
 
-notransbbsscale = bbs_abun_occ %>% filter(occupancy > 1/3) %>% dplyr::count(stateroute, scale, subrouteID)
-names(notransbbsscale) = c("stateroute", "scale", "subrouteID","notrans")
-noarea = left_join(notransbbsscale, bbs_uniq_area)
+null_5d = c()
+sites = unique(bbs_below$site)
 
-allbbsscale = bbs_abun_occ %>% dplyr::count(stateroute, scale, subrouteID) 
-names(allbbsscale) = c("stateroute", "scale","subrouteID", "spRich")
-allarea = left_join(allbbsscale, bbs_uniq_area)
+for(site in sites){
+    sitedata = bbs_below[bbs_below$site == site,]
+    notrans = sitedata[sitedata$occ > 1/3,]
+    trans = sitedata[sitedata$occ <= 1/3,]
+    size = length(notrans$occ) - length(trans$occ)
+    for(r in 1:1000){
+      print(r)
+      subsar = sample_n(notrans, abs(size), replace = FALSE) 
+      regroup = rbind(subsar, trans)
+    
+      notransbbsscale = bbs_below %>% filter(occ > 1/3) %>% dplyr::count(site)
+      names(notransbbsscale) = c("site","notrans")
 
-bbs_occ_scale = merge(allarea, noarea, by = c("stateroute", "scale", "subrouteID", "area"))
-bbs_occ_scale$subrouteID = gsub("Stop", "", bbs_occ_scale$subrouteID)
-bbs_occ_scale$site = paste(bbs_occ_scale$stateroute, bbs_occ_scale$scale, bbs_occ_scale$subrouteID, sep = "-")
+      allbbsscale = bbs_below %>% dplyr::count(site) 
+      names(allbbsscale) = c("site", "spRich")
 
-
-
-scaleIDs = unique(bbs_occ_scale$stateroute)
-slopes_bbs = data.frame(stateroute = NULL,
+      bbs_occ_scale.5 = merge(notransbbsscale, allbbsscale, by = "site")
+      bbs_occ_scale = unique(merge(bbs_occ_scale.5, bbs_below[, c("site", "area")], by = "site"))
+      
+      
+      scaleIDs = unique(bbs_occ_scale$site)
+      slopes_bbs = data.frame(stateroute = NULL,
                         site = NULL,
                         taxa = NULL,
                         areaSlope = NULL,
                         areaSlope_noTrans = NULL)
-for(id in scaleIDs){
-  print(id)
-  plotsub = subset(bbs_occ_scale,stateroute == id) 
-  site = plotsub$site
-  taxa = "Bird"
-  mod.t = lm(log10(plotsub$spRich) ~ log10(plotsub$area))
-  mod.t.slope = summary(mod.t)$coef[2,"Estimate"]
-  mod.n= lm(log10(plotsub$notrans) ~ log10(plotsub$area))
-  mod.n.slope = summary(mod.n)$coef[2,"Estimate"]
-  print(mod.n.slope)
-  taxcolor = subset(taxcolors, taxa == as.character(plotsub$taxa)[1])
-  slopes_bbs = rbind(slopes_bbs, data.frame(stateroute = id,
+
+      for(id in scaleIDs){
+        print(id)
+        plotsub = subset(bbs_occ_scale,site == id) 
+        site = plotsub$site
+        taxa = "Bird"
+        mod.t = lm(log10(plotsub$spRich) ~ log10(plotsub$area))
+        mod.t.slope = summary(mod.t)$coef[2,"Estimate"]
+        mod.n= lm(log10(plotsub$notrans) ~ log10(plotsub$area))
+        mod.n.slope = summary(mod.n)$coef[2,"Estimate"]
+        print(mod.n.slope)
+        taxcolor = subset(taxcolors, taxa == as.character(plotsub$taxa)[1])
+        slopes_bbs = rbind(slopes_bbs, data.frame(stateroute = id,
                                             site = site,
                                             taxa = taxa,
                                             areaSlope = mod.t.slope, 
                                             areaSlope_noTrans = mod.n.slope))
 }
+
 slopes_bbs$bbs = 'yes'
 
 slopes_bbs$datasetID = 1
 slopes_bbs = slopes_bbs[,c("datasetID","taxa","areaSlope", "areaSlope_noTrans", "bbs")]
 
-# merge sp rich and minus trans sprich other datasets
-notransrich$notrans = notransrich$n
 
-datasetrich = merge(allrich, notransrich[,c("datasetID", "site", "scale","notrans")], by = c("datasetID", "site", "scale"), all.x = TRUE)
-colnames(datasetrich)[4] <- "spRich" # rename a single column - make sure index is right
 
-occ_trans_area = merge(areamerge[,c("datasetID", "site", "area")], datasetrich, by = c("datasetID", "site"))
-occ_trans_area = merge(occ_trans_area, dataformattingtable[,c("dataset_ID", "taxa")], by.x = "datasetID", by.y = "dataset_ID")
-scaleIDs = unique(occ_trans_area$datasetID)
 
-scaleIDs = scaleIDs[! scaleIDs %in% c(279,225,248,254, 282,291)] # 248 tbd
 
-slopes = data.frame(datasetID = NULL,
+####  non bbs ####
+
+# rbind propOcc files
+propOccfiles = list.files("data/spatialGrainAnalysis/propOcc_datasets")
+allpropOcc = c()
+for(file in propOccfiles){
+  nfile= read.csv(paste("data/spatialGrainAnalysis/propOcc_datasets/", file, sep = ""), header= TRUE)
+  nfile$scale = as.numeric(substring(file, 18,last = 18))
+  nfile$site = as.factor(nfile$site)
+  allpropOcc = rbind(allpropOcc, nfile)
+}
+allpropOcc = data.frame(allpropOcc)
+
+null_5dB = c()
+for(id in datasetIDs[,1]){
+  subdata = subset(allpropOcc, datasetID == id)
+  sites = unique(subdata$site)
+  print(paste("Calculating SAR: dataset", dataset))
+for(site in sites){
+  sitedata = allpropOcc[allpropOcc$site == site,]
+  notrans = sitedata[sitedata$propOcc > 1/3,]
+  trans = sitedata[sitedata$propOcc <= 1/3,]
+  size = abs(length(notrans$propOcc) - length(trans$propOcc))
+  
+  # count up spRich with and without transients (for Fig 4)
+  notransrich = allpropOcc %>% filter(propOcc > 1/3) %>% dplyr::count(datasetID, site, scale)
+  allrich  = allpropOcc %>% dplyr::count(datasetID, site, scale)
+  # merge sp rich and minus trans sprich other datasets
+  notransrich$notrans = notransrich$n
+
+  datasetrich = merge(allrich, notransrich[,c("datasetID", "site", "scale","notrans")], by = c("datasetID", "site", "scale"), all.x = TRUE)
+  colnames(datasetrich)[4] <- "spRich" # rename a single column - make sure index is right
+
+  occ_trans_area = merge(areamerge[,c("datasetID", "site", "area")], datasetrich, by = c("datasetID", "site"))
+  occ_trans_area = merge(occ_trans_area, dataformattingtable[,c("dataset_ID", "taxa")], by.x = "datasetID", by.y = "dataset_ID")
+  scaleIDs = unique(occ_trans_area$datasetID)
+
+  scaleIDs = scaleIDs[! scaleIDs %in% c(279,225,248,254, 282,291)] # 248 tbd
+
+  slopes = data.frame(datasetID = NULL,
                     taxa = NULL,
                     areaSlope = NULL,
                     areaSlope_noTrans = NULL)
-for(id in scaleIDs){
-  print(id)
-  plotsub = subset(occ_trans_area,datasetID == id) 
-  taxa = as.character(unique(plotsub$taxa))
-  mod.t = lm(log10(plotsub$spRich) ~ log10(plotsub$area))
-  mod.t.slope = summary(mod.t)$coef[2,"Estimate"]
-  mod.n= lm(log10(plotsub$notrans) ~ log10(plotsub$area))
-  mod.n.slope = summary(mod.n)$coef[2,"Estimate"]
-  print(mod.n.slope)
-  taxcolor = subset(taxcolors, taxa == as.character(plotsub$taxa)[1])
-  slopes = rbind(slopes, data.frame(datasetID = id,
+
+      for(r in 1:1000){
+      print(r)
+      subsar = sample_n(notrans, abs(size), replace = FALSE) 
+      regroup = rbind(subsar, trans)
+
+    for(id in scaleIDs){
+    print(id)
+    plotsub = subset(occ_trans_area,datasetID == id) 
+    taxa = as.character(unique(plotsub$taxa))
+    mod.t = lm(log10(plotsub$spRich) ~ log10(plotsub$area))
+    mod.t.slope = summary(mod.t)$coef[2,"Estimate"]
+    mod.n= lm(log10(plotsub$notrans) ~ log10(plotsub$area))
+    mod.n.slope = summary(mod.n)$coef[2,"Estimate"]
+    print(mod.n.slope)
+    taxcolor = subset(taxcolors, taxa == as.character(plotsub$taxa)[1])
+    slopes = rbind(slopes, data.frame(datasetID = id,
                                     taxa = taxa,
                                     areaSlope = mod.t.slope, 
                                     areaSlope_noTrans = mod.n.slope))
+    null_5dB = rbind(null_5dB, c(r, id, site,mod.n.slope,mod.t.slope, as.numeric(length(notrans$propOcc))))
+    
+       }
+    }
+  }
 }
+
 slopes$bbs = 'no'
 
 all_slopes =  rbind(slopes, slopes_bbs)
+
+
+
+
+
+
+
+
+
+
 
 plot_relationship = merge(slopes, taxcolors, by = "taxa")
 slopes_bbs = merge(slopes_bbs, taxcolors, by = "taxa")
