@@ -401,7 +401,7 @@ propocc_data = get_propocc_data(datasetIDs)
 all_data = left_join(abund_data, propocc_data, by = c('datasetID', 'site', 'species'))
 
 
-null_5c = data.frame()
+null_5c = c()
 for (dataset in datasetIDs[,1]) {
   subdata = subset(all_data, datasetID == dataset)
   sites = unique(subdata$site)
@@ -427,8 +427,7 @@ for (dataset in datasetIDs[,1]) {
           TJs = c(TJs, T_J)
         }
       }
-      null_5c = rbind(null_5c, c(r, dataset, site, mean(TJs),
-                                 numnon = as.numeric(length(notrans))))
+      null_5c = rbind(null_5c, c(r, dataset, site, T_J, as.numeric(length(notrans$propOcc))))
       # null_5c = rbind(null_output, null_output.5)
     }
   }
