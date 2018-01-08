@@ -204,7 +204,7 @@ for(id in datasetIDs[,1]){
     size = length(notrans$propOcc) - length(trans$propOcc)
     for(r in 1:1000){
       print(r)
-      subsad = sample_n(notrans, size, replace = FALSE)
+      subsad = sample_n(notrans, abs(size), replace = FALSE)  #### what happens when numtrans > nontrans
       regroup = rbind(trans, subsad)
       logseries_weights_incl = regroup %>%
         group_by(datasetID, site) %>% 
@@ -222,7 +222,18 @@ for(id in datasetIDs[,1]){
   }
 }
 
+null_output = data.frame(null_output)
+colnames(null_output) = c("number", "datasetID", "site", "SAD_incl", "SAD_excl","Non_trans")
+null_output$number = as.numeric(null_output$number)
+null_output$datasetID = as.numeric(null_output$datasetID)
+null_output$site = as.character(null_output$site)
+null_output$SAD_incl = as.numeric(null_output$SAD_incl)
+null_output$SAD_excl = as.numeric(null_output$SAD_excl)
+null_output$Non_trans = as.numeric(null_output$Non_trans)
 
+null_5a_sum = null_output %>%
+  dplyr::group_by(datasetID, site) %>% 
+  dplyr::summarize(mean_incl = mean(SAD_incl), mean_excl = mean(SAD_excl))
 
 
 
