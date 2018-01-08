@@ -282,9 +282,11 @@ dev.off()
 ggsave(file="C:/Git/core-transient/output/plots/1a_hists.pdf", height = 10, width = 16)
 
 
+
 #### Figure 5b ####
 # read in route level ndvi and elevation data (radius = 40 km)
 # we want to agg by month here
+bbs_occ_2014 = read.csv("data/BBS/bbs_occ_2000_2014.csv", head = TRUE)
 gimms_ndvi = read.csv("output/tabular_data/gimms_ndvi_bbs_data.csv", header = TRUE)
 gimms_agg = gimms_ndvi %>% filter(month == c("may", "jun", "jul")) %>% 
   group_by(site_id)  %>%  summarise(ndvi=mean(ndvi))
@@ -294,34 +296,63 @@ lat_scale_bbs = filter(lat_scale_rich, datasetID == 1)
 lat_scale_bbs$site_id = sapply(strsplit(as.character(lat_scale_bbs$site), split='-', fixed=TRUE), function(x) (x[1]))
 lat_scale_bbs$site_id = as.integer(lat_scale_bbs$site_id)
 
-bbs_spRich = merge(allbbs, notransbbs[c("stateroute", "spRichnotrans")], by = "stateroute")
-bbs_spRich$site_id <- bbs_spRich$stateroute
-# merging ndvi and elevation to bbs data
-bbs_env = join(bbs_spRich, gimms_agg, type = "left")
-bbs_env = merge(bbs_env, lat_scale_bbs[,c("site_id", "elev.point", "elev.mean", "elev.var")], by = "site_id")
 
-# cor test not really working - need for loop?
-cor.test(bbs_env$spRich, bbs_env$ndvi)
-bar1 = cor.test(bbs_env$spRich, bbs_env$ndvi)$estimate
-CI1lower =  cor.test(bbs_env$spRich, bbs_env$ndvi)$conf.int[1]
-CI1upper = cor.test(bbs_env$spRich, bbs_env$ndvi)$conf.int[2]
-bar3 = cor.test(bbs_env$spRich, bbs_env$elev.mean)$estimate
-CI3lower = cor.test(bbs_env$spRich, bbs_env$elev.mean)$conf.int[1]
-CI3upper =  cor.test(bbs_env$spRich, bbs_env$elev.mean)$conf.int[2]
 
-bar2 = cor.test(bbs_env$spRichnotrans, bbs_env$ndvi)$estimate
-CI2lower = cor.test(bbs_env$spRichnotrans, bbs_env$ndvi)$conf.int[1]
-CI2upper =   cor.test(bbs_env$spRichnotrans, bbs_env$ndvi)$conf.int[2]
-bar4 = cor.test(bbs_env$spRichnotrans, bbs_env$elev.mean)$estimate
-CI4lower =  cor.test(bbs_env$spRichnotrans, bbs_env$elev.mean)$conf.int[1]
-CI4upper =  cor.test(bbs_env$spRichnotrans, bbs_env$elev.mean)$conf.int[2]
 
-bar5 = cor.test(bbs_env$spRich-bbs_env$spRichnotrans, bbs_env$ndvi)$estimate
-CI5lower = cor.test(bbs_env$spRich-bbs_env$spRichnotrans, bbs_env$ndvi)$conf.int[1]
-CI5upper =  cor.test(bbs_env$spRich-bbs_env$spRichnotrans, bbs_env$ndvi)$conf.int[2]
-bar6 = cor.test(bbs_env$spRich-bbs_env$spRichnotrans, bbs_env$elev.mean)$estimate
-CI6lower = cor.test(bbs_env$spRich-bbs_env$spRichnotrans, bbs_env$elev.mean)$conf.int[1]
-CI6upper =  cor.test(bbs_env$spRich-bbs_env$spRichnotrans, bbs_env$elev.mean)$conf.int[2]
+
+#### null model ####
+null_5b = c()
+sites = unique(bbs_occ_2014$stateroute)
+for(site in sites){
+  id = 1
+  sitedata = bbs_occ_2014[bbs_occ_2014$stateroute == site,]
+  notrans = sitedata[sitedata$occ > 1/3,]
+  trans = sitedata[sitedata$occ <= 1/3,]
+  size = abs(length(notrans$occ) - length(trans$occ))
+  for(r in 1:1000){
+    print(r)
+    subcor = sample_n(notrans, size, replace = FALSE)  
+    regroup = rbind(trans, subcor)
+    # calc bbs with and without trans
+    notransbbs = regroup %>% filter(occ > 1/3) %>% dplyr::count(stateroute) 
+    names(notransbbs) = c("site_id", "spRich")
+    
+    allbbs = regroup %>% dplyr::count(stateroute) 
+    names(allbbs) = c("site_id", "spRich")
+
+
+    bbs_spRich = merge(allbbs, notransbbs, by = "site_id")
+    colnames(bbs_spRich) = c("site_id", "spRich", "spRichnotrans")
+    # merging ndvi and elevation to bbs data
+    bbs_env = join(bbs_spRich, gimms_agg, type = "left")
+    bbs_env = merge(bbs_env, lat_scale_bbs[,c("site_id", "elev.point", "elev.mean", "elev.var")], by = "site_id")
+
+    bar1 = cor.test(bbs_env$spRich, bbs_env$ndvi)$estimate
+    CI1lower =  cor.test(bbs_env$spRich, bbs_env$ndvi)$conf.int[1]
+    CI1upper = cor.test(bbs_env$spRich, bbs_env$ndvi)$conf.int[2]
+    bar3 = cor.test(bbs_env$spRich, bbs_env$elev.mean)$estimate
+    CI3lower = cor.test(bbs_env$spRich, bbs_env$elev.mean)$conf.int[1]
+    CI3upper =  cor.test(bbs_env$spRich, bbs_env$elev.mean)$conf.int[2]
+
+    bar2 = cor.test(bbs_env$spRichnotrans, bbs_env$ndvi)$estimate
+    CI2lower = cor.test(bbs_env$spRichnotrans, bbs_env$ndvi)$conf.int[1]
+    CI2upper =   cor.test(bbs_env$spRichnotrans, bbs_env$ndvi)$conf.int[2]
+    bar4 = cor.test(bbs_env$spRichnotrans, bbs_env$elev.mean)$estimate
+    CI4lower =  cor.test(bbs_env$spRichnotrans, bbs_env$elev.mean)$conf.int[1]
+    CI4upper =  cor.test(bbs_env$spRichnotrans, bbs_env$elev.mean)$conf.int[2]
+
+    bar5 = cor.test(bbs_env$spRich-bbs_env$spRichnotrans, bbs_env$ndvi)$estimate
+    CI5lower = cor.test(bbs_env$spRich-bbs_env$spRichnotrans, bbs_env$ndvi)$conf.int[1]
+    CI5upper =  cor.test(bbs_env$spRich-bbs_env$spRichnotrans, bbs_env$ndvi)$conf.int[2]
+    bar6 = cor.test(bbs_env$spRich-bbs_env$spRichnotrans, bbs_env$elev.mean)$estimate
+    CI6lower = cor.test(bbs_env$spRich-bbs_env$spRichnotrans, bbs_env$elev.mean)$conf.int[1]
+    CI6upper =  cor.test(bbs_env$spRich-bbs_env$spRichnotrans, bbs_env$elev.mean)$conf.int[2]
+
+
+    null_5b = rbind(null_5b, c(r, id, site, bar1, CI1lower,CI1upper, bar3, CI3lower, CI3upper, bar2, CI2lower,CI2upper, bar4, CI4lower,CI4upper, bar5, CI5lower,CI5upper, bar6, CI6lower,CI6upper, numnon = as.numeric(length(notrans$occ))))
+  }
+}
+
 
 corr_res <- data.frame(All = c(bar1, bar3), Ntrans = c(bar2, bar4), Trans = c(bar5, bar6)) 
 corr_res$env = c("NDVI", "Elevation")
@@ -340,31 +371,6 @@ four_b <- l
 ggsave(file="C:/Git/core-transient/output/plots/5b_corrcoeff_NDVI.pdf", height = 5, width = 15)
 
 
-##### null model #####
-# calc bbs with and without trans
-null_output = data.frame()
-for (site in unique(bbs_abun_occ$stateroute)){
-  sitedata = bbs_abun_occ[bbs_abun_occ$stateroute == site,]
-  notrans = sitedata[sitedata$occupancy > 1/3,]
-  trans = sitedata[sitedata$occupancy <= 1/3,]
-  regroup = rbind(trans, sitedata)
-  for(r in 1:1000){
-    subdata = sample(notrans, length(notrans))
-    
-    bbs_spRich = merge(allbbs, notransbbs[c("stateroute", "spRichnotrans")], by = "stateroute")
-    bbs_spRich$site_id <- bbs_spRich$stateroute
-    # merging ndvi and elevation to bbs data
-    bbs_env = join(bbs_spRich, gimms_agg, type = "left")
-    bbs_env = merge(bbs_env, lat_scale_bbs[,c("site_id", "elev.point", "elev.mean", "elev.var")], by = "site_id")
-    
-    bar1 = cor.test(bbs_env$spRich, bbs_env$ndvi)$estimate
-    bar3 = cor.test(bbs_env$spRich, bbs_env$elev.mean)$estimate
-    bar2 = cor.test(bbs_env$spRichnotrans, bbs_env$ndvi)$estimate
-    
-    null_output = rbind(null_output, r, site, bar1, bar2, bar3)
-  }
-}
-
 #### test for fig 1 new #####
 mh = read.csv("data/raw_datasets/dataset_255RAW/MHfig1.csv", header = TRUE)
 mh$class = factor(mh$class, levels = c('trans','core'),ordered = TRUE)
@@ -373,7 +379,65 @@ ggplot(mh, aes(x=abunx, freqy,fill=factor(class))) + geom_bar(stat="identity", p
 
 ggsave(file="C:/Git/core-transient/output/plots/1b_M_H_hists.pdf", height = 10, width = 16)
 
+
 #### Figure 5c ####
+source('scripts/R-scripts/temporal_turnover.R')
+turnover = function(splist1, splist2) {
+  tot_uniq_sp = length(unique(c(splist1, splist2)))
+  shared_sp = length(splist1) + length(splist2) - tot_uniq_sp
+  Jturnover = 1 - shared_sp/tot_uniq_sp
+  return(Jturnover)
+}
+
+datasetIDs = dataformattingtable %>%
+  filter(format_flag == 1, 
+         countFormat %in% c('count', 'cover', 'density', 'abundance', 'presence', 'biomass')) %>% 
+  dplyr::select(dataset_ID)
+
+datasetIDs = subset(datasetIDs, datasetIDs != 1)
+
+abund_data = get_abund_data(datasetIDs)
+propocc_data = get_propocc_data(datasetIDs)
+all_data = left_join(abund_data, propocc_data, by = c('datasetID', 'site', 'species'))
+
+
+null_5c = data.frame()
+for (dataset in datasetIDs[,1]) {
+  subdata = subset(all_data, datasetID == dataset)
+  sites = unique(subdata$site)
+  print(paste("Calculating turnover: dataset", dataset))
+  for (site in sites) {
+    sitedata = subdata[subdata$site == site,]
+    notrans = sitedata[sitedata$propOcc > 1/3,]
+    trans = sitedata[sitedata$propOcc <= 1/3,]
+    years = as.numeric(unique(sitedata$year))
+    size = abs(length(notrans$propOcc) - length(trans$propOcc))
+    TJs = c()
+    TJ_notrans = c()
+    
+    for(r in 1:1000){
+      print(r)
+      subdata = sample_n(notrans, size, replace = FALSE) 
+      regroup = rbind(trans, sitedata)
+      if(length(years) > 0){
+        for (year in years[1:(length(years)-1)]) {
+          comm1 = unique(subdata$species[subdata$year == year])
+          comm2 = unique(subdata$species[subdata$year == year + 1])
+          T_J = turnover(comm1, comm2)
+          TJs = c(TJs, T_J)
+        }
+      }
+      null_5c = rbind(null_5c, c(r, dataset, site, mean(TJs),
+                                 numnon = as.numeric(length(notrans))))
+      # null_5c = rbind(null_output, null_output.5)
+    }
+  }
+}
+
+
+
+
+
 turnover = read.csv("output/tabular_data/temporal_turnover.csv", header = TRUE)
 turnover_taxa = merge(turnover,dataformattingtable[,c("dataset_ID", "taxa")], by.x = "datasetID", by.y = "dataset_ID")
 turnover_col = merge(turnover_taxa, taxcolors, by = "taxa")

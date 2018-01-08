@@ -57,11 +57,9 @@ write.csv(bbs_w_aou, "data/BBS/bbs_2000_2014.csv", row.names = FALSE)
 bbs_occ = bbs_w_aou %>% 
   dplyr::count(aou, stateroute) %>% 
   filter(n < 16) %>% 
-  dplyr::mutate(occ = n/15)
-
+  dplyr::mutate(occ = n/15) 
+ 
 write.csv(bbs_occ, "data/BBS/bbs_occ_2000_2014.csv", row.names = FALSE)
-
-
 
 #### getting spRich by route
 bbs_sprich = bbs_w_aou %>% group_by(aou,Year) %>%
@@ -94,7 +92,7 @@ write.csv(bbs_below, "data/BBS/bbs_allscales33.csv", row.names = FALSE)
 
 #### BBS prep to merge with different percent transient thresholds at route scale #####
 occ.summ = bbs_allscales33 %>% #occupancy
-  count(site, AOU) %>%
+  count(site) %>%
   mutate(occ = n/15, scale = scale, subrouteID = countColumns[1]) %>%
   group_by(stateroute) %>%
   summarize(meanOcc = mean(occ), 
