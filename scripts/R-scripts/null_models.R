@@ -168,12 +168,13 @@ for(id in datasetIDs[,1]){
   sites = unique(subdata$site)
   for(site in sites){
     sitedata = subdata[subdata$site == site,]
-    notrans = sitedata[sitedata$propOcc > 1/3,]
-    trans = sitedata[sitedata$propOcc <= 1/3,]
-    size = length(notrans$propOcc) - length(trans$propOcc)
+    notrans = na.omit(sitedata[sitedata$propOcc > 1/3,])
+    trans = na.omit(sitedata[sitedata$propOcc <= 1/3,])
+    size = abs(length(notrans$propOcc) - length(trans$propOcc))
+    if(size < length(notrans$propOcc)){
     for(r in 1:1000){
       print(r)
-      subsad = sample_n(notrans, abs(size), replace = FALSE)  #### what happens when numtrans > nontrans
+      subsad = sample_n(notrans, size, replace = FALSE)  
       regroup = rbind(trans, subsad)
       logseries_weights_incl = regroup %>%
         group_by(datasetID, site) %>% 
@@ -187,8 +188,9 @@ for(id in datasetIDs[,1]){
       logseries_weights = rbind(logseries_weights_incl, logseries_weights_excl)
       
       null_output = rbind(null_output, c(r, id, site, logseries_weights_incl[3], logseries_weights_excl[,3],numnon = as.numeric(length(notrans$propOcc))))
-    }
+   }
   }
+}
 }
 
 null_output = data.frame(null_output)
