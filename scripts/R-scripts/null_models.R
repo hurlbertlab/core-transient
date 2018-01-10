@@ -280,6 +280,7 @@ for(site in sites){
   notrans = sitedata[sitedata$occ > 1/3,]
   trans = sitedata[sitedata$occ <= 1/3,]
   size = abs(length(notrans$occ) - length(trans$occ))
+  if(size < length(notrans$occ)){
   for(r in 1:1000){
     print(r)
     subcor = sample_n(notrans, size, replace = FALSE)  
@@ -296,7 +297,7 @@ for(site in sites){
     colnames(bbs_spRich) = c("site_id", "spRich", "spRichnotrans")
     # merging ndvi and elevation to bbs data
     bbs_env = join(bbs_spRich, gimms_agg, type = "left")
-    bbs_env = merge(bbs_env, lat_scale_bbs[,c("site_id", "elev.point", "elev.mean", "elev.var")], by = "site_id")
+    bbs_env = join(bbs_env, unique(lat_scale_bbs[,c("site_id", "elev.point", "elev.mean", "elev.var")]), type = "left")
 
     bar1 = cor.test(bbs_env$spRich, bbs_env$ndvi)$estimate
     CI1lower =  cor.test(bbs_env$spRich, bbs_env$ndvi)$conf.int[1]
@@ -323,7 +324,7 @@ for(site in sites){
     null_5b = rbind(null_5b, c(r, id, site, bar1, CI1lower,CI1upper, bar3, CI3lower, CI3upper, bar2, CI2lower,CI2upper, bar4, CI4lower,CI4upper, bar5, CI5lower,CI5upper, bar6, CI6lower,CI6upper, numnon = as.numeric(length(notrans$occ))))
   }
 }
-
+}
 
 corr_res <- data.frame(All = c(bar1, bar3), Ntrans = c(bar2, bar4), Trans = c(bar5, bar6)) 
 corr_res$env = c("NDVI", "Elevation")
@@ -385,7 +386,7 @@ for (dataset in datasetIDs[,1]) {
     size = abs(length(notrans$propOcc) - length(trans$propOcc))
     TJs = c()
     TJ_notrans = c()
-    
+    if(size < length(notrans$propOcc)){
     for(r in 1:1000){
       print(r)
       subdata = sample_n(notrans, size, replace = FALSE) 
@@ -399,12 +400,11 @@ for (dataset in datasetIDs[,1]) {
         }
       }
       null_5c = rbind(null_5c, c(r, dataset, site, T_J, as.numeric(length(notrans$propOcc))))
-      # null_5c = rbind(null_output, null_output.5)
     }
   }
 }
 
-
+}
 
 ##### plot 5c ####
 
@@ -552,7 +552,7 @@ for(site in sites){
 
     for(id in scaleIDs){
     print(id)
-    plotsub = subset(occ_trans_area,datasetID == id) 
+    plotsub = subset(subsar,datasetID == id) 
     taxa = as.character(unique(plotsub$taxa))
     mod.t = lm(log10(plotsub$spRich) ~ log10(plotsub$area))
     mod.t.slope = summary(mod.t)$coef[2,"Estimate"]
@@ -576,15 +576,6 @@ slopes$bbs = 'no'
 all_slopes =  rbind(slopes, slopes_bbs)
 
 
-
-
-
-
-
-
-
-
-
 plot_relationship = merge(slopes, taxcolors, by = "taxa")
 slopes_bbs = merge(slopes_bbs, taxcolors, by = "taxa")
 
@@ -598,98 +589,3 @@ four_d <-p + geom_abline(intercept = 0,slope = 1, lwd =1.5,linetype="dashed") +g
 
 ggsave(file="C:/Git/core-transient/output/plots/5d_sparea.pdf", height = 10, width = 15)
 
-##### null model ######
-null_output = data.frame()
-for (dataset in datasetIDs){
-  subdata = subset(occ_trans_area, datasetID == dataset)
-  sites = unique(subdata$site)
-  print(paste("Calculating SAR: dataset", dataset))
-  for (site in sites) {
-    sitedata = subdata[subdata$site == site,]
-    notrans = sitedata[sitedata$propOcc > 1/3,]
-    trans = sitedata[sitedata$propOcc <= 1/3,]
-    years = as.numeric(unique(sitedata$year))
-    TJs = c()
-    TJ_notrans = c()
-    regroup = rbind(trans, subdata)
-    for(r in 1:1000){
-      
-    }
-  }
-}
-
-scaleIDs = unique(occ_trans_area$datasetID)
-
-scaleIDs = scaleIDs[! scaleIDs %in% c(279,225,248,254, 282,291)] # 248 tbd
-
-slopes = data.frame(datasetID = NULL,
-                    taxa = NULL,
-                    areaSlope = NULL,
-                    areaSlope_noTrans = NULL)
-for(id in scaleIDs){
-  print(id)
-  plotsub = subset(occ_trans_area,datasetID == id) 
-  taxa = as.character(unique(plotsub$taxa))
-  mod.t = lm(log10(plotsub$spRich) ~ log10(plotsub$area))
-  mod.t.slope = summary(mod.t)$coef[2,"Estimate"]
-  mod.n= lm(log10(plotsub$notrans) ~ log10(plotsub$area))
-  mod.n.slope = summary(mod.n)$coef[2,"Estimate"]
-  print(mod.n.slope)
-  taxcolor = subset(taxcolors, taxa == as.character(plotsub$taxa)[1])
-  slopes = rbind(slopes, data.frame(datasetID = id,
-                                    taxa = taxa,
-                                    areaSlope = mod.t.slope, 
-                                    areaSlope_noTrans = mod.n.slope))
-}
-slopes$bbs = 'no'
-
-all_slopes =  rbind(slopes, slopes_bbs)
-
-
-
-
-##### make a gridded plot #####
-get_legend<-function(myggplot){
-  tmp <- ggplot_gtable(ggplot_build(myggplot))
-  leg <- which(sapply(tmp$grobs, function(x) x$name) == "guide-box")
-  legend <- tmp$grobs[[leg]]
-  return(legend)
-}
-legenda <- get_legend(l)# + theme(legend.position="top")
-p1 = NULL
-pt1 <- plot_grid(k + theme(legend.position="none"),
-                 NULL,
-                 l + theme(legend.position="none"),
-                 align = 'hv',
-                 labels = c("A","", "B"),
-                 label_size = 36,
-                 hjust = -7,
-                 rel_widths = c(1, 0.05, 1),
-                 nrow = 1
-)
-p1 = plot_grid(pt1,legenda, ncol = 2, rel_widths = c(1, .1))
-
-# ggsave(file="C:/Git/core-transient/output/plots/5a_5b.pdf", height = 10, width = 15,p1)
-
-# c & d
-legendc <- get_legend(four_d)
-z <- plot_grid(four_c+ theme(legend.position="none"),
-               NULL,
-               four_d + theme(legend.position="none"),
-               align = 'hv',
-               labels = c("C","", "D"),
-               label_size = 36,
-               hjust = -7,
-               rel_widths = c(1, 0.05, 1),
-               nrow = 1)
-p2 = plot_grid(z,legendc, ncol = 2) 
-# ggsave(file="C:/Git/core-transient/output/plots/5c_5d.pdf", height = 12, width = 16,p2)
-
-all4 = plot_grid(pt1, NULL, z, align = "hv", nrow = 2,rel_heights = c(1,1), rel_widths = c(1, 0.05,1))
-all4
-
-#dev.off()
-
-
-
-ggsave(file="C:/Git/core-transient/output/plots/5a_5d.pdf", height = 16, width = 22,all4)
