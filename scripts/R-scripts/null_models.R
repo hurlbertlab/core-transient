@@ -442,7 +442,7 @@ ggsave(file="C:/Git/core-transient/output/plots/5s_brayturnover.pdf", height = 1
 
 
 ##### Figure 5d ##### only scaled vars
-bbs_below = read.csv("data/BBS/bbs_below.csv", header = TRUE)
+bbs_below = read.csv("Z:/Snell/data/bbs_below.csv", header = TRUE)
 
 null_5d = c()
 sites = unique(bbs_below$site)

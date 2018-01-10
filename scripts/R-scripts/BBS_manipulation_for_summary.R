@@ -79,7 +79,7 @@ bbs_below$propCore = bbs_below$pctCore
 bbs_below$propTrans = bbs_below$pctTran
 bbs_below$meanAbundance = bbs_below$aveN
 bbs_below = bbs_below[, c("datasetID","site","system","taxa","propCore","propTrans","meanAbundance", "area", "aou","n", "occ")]
-write.csv(bbs_below, "data/BBS/bbs_below.csv", row.names = FALSE)
+write.csv(bbs_below, "Z:/Snell/data/bbs_below.csv", row.names = FALSE)
 
 # BBS scales area
 numstops = c(5, 10, 25, 50)
