@@ -206,55 +206,7 @@ null_5a_sum = null_output %>%
   dplyr::group_by(datasetID, site) %>% 
   dplyr::summarize(mean_incl = mean(SAD_incl), mean_excl = mean(SAD_excl))
 
-
-
-#### plot 5a ####
-hist_top <- ggplot(fourataxa, aes(all_weight))+geom_histogram(binwidth = 0.05, fill = "dark orange2")+ theme(axis.ticks=element_blank(), panel.background=element_blank(),line = element_blank(),axis.text.x=element_blank(), axis.text.y=element_blank(), axis.title.x=element_blank(), axis.title.y=element_blank(), plot.margin = unit(c(1,-0.5,0,3), "cm"))
-empty <- ggplot()+geom_point(aes(1,1), colour="white")+ theme(axis.ticks=element_blank(), 
-                                                              panel.background=element_blank(), 
-                                                              line = element_blank(),
-                                                              axis.text.x=element_blank(), axis.text.y=element_blank(),           
-                                                              axis.title.x=element_blank(), axis.title.y=element_blank())
-hist_right <- ggplot(fourataxa, aes(excl_weight))+geom_histogram(binwidth = 0.05, fill = "yellow")+coord_flip() + theme(axis.ticks=element_blank(), panel.background=element_blank(),line = element_blank(),axis.text.x=element_blank(), axis.text.y=element_blank(), axis.title.x=element_blank(), axis.title.y=element_blank(), plot.margin = unit(c(-1,1,2,.5), "cm"))
-grid.arrange(hist_top, empty, k, hist_right, ncol=2, nrow=2, widths=c(5, 1), heights=c(1, 5))
-
-
-colscale = c("dark orange2","yellow")
-k = ggplot(logseries_weights, aes(x = treatment, y = weights, fill=factor(treatment))) +
-  geom_violin(linetype="blank") + xlab("Transient Status") + ylab("Proportion of Species") + scale_fill_manual(labels = c("All \n species","All species excluding transients"),values = colscale)+ theme_classic()+ ylim(0, 1) + theme(axis.text.x=element_text(size  =46, color = "black"), axis.ticks.x=element_blank(),axis.text.y=element_text(size=30, color = "black"),axis.title.x=element_text(size=46, color = "black"),axis.title.y=element_text(size=46,angle=90,vjust = 5))+ scale_x_discrete(breaks=c("All species","Excluding transients"),labels=c("All\n species","Excluding\n transients")) + xlab(NULL) + ylab("Akaike weight \n of logseries model") + theme(legend.position = "none")+ geom_text(x=1.4, y=0.8, size = 6, angle = 90, label="Log series")+ geom_text(x=1.4, y=0.2, size = 6,angle = 90, label="Log normal")+   geom_segment(aes(x = 1.5, y = 0.35, xend = 1.5, yend = 0.05), colour='black', size=0.5,arrow = arrow(length = unit(0.5, "cm")))+   geom_segment(aes(x = 1.5, y = 0.65, xend = 1.5, yend = 0.95), colour='black', size=0.5,arrow = arrow(length = unit(0.5, "cm")))
-
-ggsave(file="C:/Git/core-transient/output/plots/sad_fit_comparison.pdf", height = 5, width = 15)
-
-
-### base plot densities 8x11
-par(mar = c(5,5,5,5), cex = 1, oma = c(0,0,0,0), las = 1)
-hist(fourataxa$all_weight, 20, ylim = c(0,400), col = "dark orange", main = NULL, xlab = 'Akaike Weight', ylab = " Frequency (All Species)")
-par(new=T)
-hist(fourataxa$excl_weight, 20, col =rgb(1,1,0,alpha=0.5) , yaxt='n', xaxt = 'n', xlab = NULL, ylab = NULL, main = NULL)
-axis(4)
-mtext("Frequency (Excluding transients)", 4, las = 0, line = 3)
-# mtext("Frequency (Excluding Transients)", side = 4, line = 2, srt =90)
-
-freq = hist(logseries_weights$weights)
-
-#### ggplot fig1a #####
-colscale = c("dark orange2","yellow")
-k = ggplot(logseries_weights,aes(x=weights,fill=treatment))+geom_histogram(bins = 20, position = "identity", alpha = 0.7)+ xlab("Transient Status") + ylab("Proportion of Species") + scale_y_continuous(breaks=c(0,500,1000,1300)) + scale_fill_manual(labels = c("All species","All species excluding transients"),values = colscale)+ theme_classic() + theme(axis.text.x=element_blank(), axis.ticks.x=element_blank(),axis.text.y=element_text(size=30, color = "black"),axis.title.y=element_text(size=46,angle=90,vjust = 5),axis.title.x=element_text(size=46, vjust = -7))  + ylab("Frequency") + xlab("Akaike Weight") + theme(legend.position = "none") +theme(plot.margin=unit(c(0.35,1,2,1.7),"cm")) 
-pdf("output/plots/fig1a.pdf", height = 8, width = 10)
-k
-grid.text("lognormal",
-          x = unit(.24, "npc"), y = unit(0.2, "npc"), just = c("left", "bottom"), 
-          gp = gpar(fontface = "bold", fontsize = 18, col = "black"))
-grid.text("logseries",
-          x = unit(.95, "npc"), y = unit(0.2, "npc"), just = c("right", "bottom"), 
-          gp = gpar(fontface = "bold", fontsize = 18, col = "black"))
-dev.off()
-
-ggsave(file="C:/Git/core-transient/output/plots/1a_hists.pdf", height = 10, width = 16)
-
-
-
-#### Figure 5b ####
+#### NULL 5B #####
 # read in route level ndvi and elevation data (radius = 40 km)
 # we want to agg by month here
 bbs_occ_2014 = read.csv("data/BBS/bbs_occ_2000_2014.csv", head = TRUE)
@@ -268,42 +220,39 @@ lat_scale_bbs$site_id = sapply(strsplit(as.character(lat_scale_bbs$site), split=
 lat_scale_bbs$site_id = as.integer(lat_scale_bbs$site_id)
 
 
-
-
-
 #### null model ####
 null_5b = c()
-sites = unique(bbs_occ_2014$stateroute)[1:10]
-for(r in 1:1000){
- # print(r)
-  
+regroup = c()
+sites = unique(bbs_occ_2014$stateroute)[2:11]
+for(r in 1:10){
+  print(r)
   for(site in sites){
+    # print(site)
   id = 1
   sitedata = bbs_occ_2014[bbs_occ_2014$stateroute == site,]
   notrans = sitedata[sitedata$occ > 1/3,]
   trans = sitedata[sitedata$occ <= 1/3,]
   size = abs(length(notrans$occ) - length(trans$occ))
-  if(size < length(notrans$occ)){
- 
-    subcor = sample_n(notrans, size, replace = FALSE)  
-    regroup = rbind(trans, subcor)
-    bbs_sample = rbind(bbs_sample, regroup)
-    
- }
-}
-    # calc bbs with and without trans
-    notransbbs = bbs_sample %>% filter(occ > 1/3) %>% dplyr::count(stateroute) 
-    names(notransbbs) = c("site_id", "spRich")
-    allbbs = bbs_sample %>% dplyr::count(stateroute) 
-    names(allbbs) = c("site_id", "spRich")
 
+  if(size < length(notrans$occ)){
+    subcor = sample_n(notrans, size, replace = FALSE)  
+  }
+  regroup.5 = rbind(trans, subcor)
+  regroup = rbind(regroup, regroup.5)
+
+    # calc bbs with and without trans
+    notransbbs = regroup %>% filter(occ > 1/3) %>% dplyr::count(stateroute) 
+    names(notransbbs) = c("site_id", "spRich")
+    allbbs = regroup %>% dplyr::count(stateroute) 
+    names(allbbs) = c("site_id", "spRich")
 
     bbs_spRich = merge(allbbs, notransbbs, by = "site_id")
     colnames(bbs_spRich) = c("site_id", "spRich", "spRichnotrans")
+    
     # merging ndvi and elevation to bbs data
     bbs_env = join(bbs_spRich, gimms_agg, type = "left")
     bbs_env = join(bbs_env, unique(lat_scale_bbs[,c("site_id", "elev.point", "elev.mean", "elev.var")]), type = "left")
-
+  }
     bar1 = cor.test(bbs_env$spRich, bbs_env$ndvi)$estimate
     print(bar1)
     CI1lower =  cor.test(bbs_env$spRich, bbs_env$ndvi)$conf.int[1]
@@ -329,7 +278,6 @@ for(r in 1:1000){
 
     null_5b = rbind(null_5b, c(r, id, site, bar1, CI1lower,CI1upper, bar3, CI3lower, CI3upper, bar2, CI2lower,CI2upper, bar4, CI4lower,CI4upper, bar5, CI5lower,CI5upper, bar6, CI6lower,CI6upper, numnon = as.numeric(length(notrans$occ))))
     
-    bbs_sample = NULL
   }
 
 null_5b = data.frame(null_5b)
@@ -524,62 +472,74 @@ for(file in propOccfiles){
 }
 allpropOcc = data.frame(allpropOcc)
 
-null_5dB = c()
-for(id in datasetIDs[,1]){
-  subdata = subset(allpropOcc, datasetID == id)
-  sites = unique(subdata$site)
-  print(paste("Calculating SAR: dataset", dataset))
-for(site in sites){
-  sitedata = allpropOcc[allpropOcc$site == site,]
-  notrans = sitedata[sitedata$propOcc > 1/3,]
-  trans = sitedata[sitedata$propOcc <= 1/3,]
-  size = abs(length(notrans$propOcc) - length(trans$propOcc))
-  
-  # count up spRich with and without transients (for Fig 4)
-  notransrich = allpropOcc %>% filter(propOcc > 1/3) %>% dplyr::count(datasetID, site, scale)
-  allrich  = allpropOcc %>% dplyr::count(datasetID, site, scale)
-  # merge sp rich and minus trans sprich other datasets
-  notransrich$notrans = notransrich$n
 
-  datasetrich = merge(allrich, notransrich[,c("datasetID", "site", "scale","notrans")], by = c("datasetID", "site", "scale"), all.x = TRUE)
-  colnames(datasetrich)[4] <- "spRich" # rename a single column - make sure index is right
 
-  occ_trans_area = merge(areamerge[,c("datasetID", "site", "area")], datasetrich, by = c("datasetID", "site"))
-  occ_trans_area = merge(occ_trans_area, dataformattingtable[,c("dataset_ID", "taxa")], by.x = "datasetID", by.y = "dataset_ID")
-  scaleIDs = unique(occ_trans_area$datasetID)
 
-  scaleIDs = scaleIDs[! scaleIDs %in% c(279,225,248,254, 282,291)] # 248 tbd
+scaleIDs = unique(occ_trans_area$datasetID)
 
-  slopes = data.frame(datasetID = NULL,
+scaleIDs = scaleIDs[! scaleIDs %in% c(279,225,248,254, 282,291)] # 248 tbd
+
+slopes = data.frame(datasetID = NULL,
                     taxa = NULL,
                     areaSlope = NULL,
                     areaSlope_noTrans = NULL)
-
-      for(r in 1:1000){
-      print(r)
+null_5dB = c()
+occ_trans = c()
+for(r in 1:100)
+for(id in scaleIDs){
+  subdata = subset(allpropOcc, datasetID == id)
+  sites = unique(subdata$site)
+  print(paste("Calculating SAR: dataset", id))
+  for(site in sites){
+    sitedata = allpropOcc[allpropOcc$site == site,]
+    notrans = sitedata[sitedata$propOcc > 1/3,]
+    trans = sitedata[sitedata$propOcc <= 1/3,]
+    size = abs(length(notrans$propOcc) - length(trans$propOcc))
+  
+    if(size < length(notrans$propOcc)){
       subsar = sample_n(notrans, abs(size), replace = FALSE) 
       regroup = rbind(subsar, trans)
+    }
+  }
+  # count up spRich with and without transients (for Fig 4)
+    notransrich = allpropOcc %>% filter(propOcc > 1/3) %>% dplyr::count(datasetID, site, scale)
+    allrich  = allpropOcc %>% dplyr::count(datasetID, site, scale)
+  # merge sp rich and minus trans sprich other datasets
+    notransrich$notrans = notransrich$n
 
+    datasetrich = merge(allrich, notransrich[,c("datasetID", "site", "scale","notrans")], by = c("datasetID", "site", "scale"), all.x = TRUE)
+    colnames(datasetrich)[4] <- "spRich" # rename a single column - make sure index is right
+
+    occ_trans_area = merge(areamerge[,c("datasetID", "site", "area")], datasetrich, by = c("datasetID", "site"))
+    occ_trans_area = merge(occ_trans_area, dataformattingtable[,c("dataset_ID", "taxa")], by.x = "datasetID", by.y = "dataset_ID")
+    occ_trans_area = rbind(occ_trans, occ_trans_area)
+  
+    
+    plotsub = merge(regroup[, c("datasetID", "site", "species", "propOcc")], occ_trans_area, by = c("datasetID","site"))
+    
     for(id in scaleIDs){
-    print(id)
-    plotsub = subset(subsar,datasetID == id) 
-    taxa = as.character(unique(plotsub$taxa))
-    mod.t = lm(log10(plotsub$spRich) ~ log10(plotsub$area))
-    mod.t.slope = summary(mod.t)$coef[2,"Estimate"]
-    mod.n= lm(log10(plotsub$notrans) ~ log10(plotsub$area))
-    mod.n.slope = summary(mod.n)$coef[2,"Estimate"]
-    print(mod.n.slope)
-    taxcolor = subset(taxcolors, taxa == as.character(plotsub$taxa)[1])
-    slopes = rbind(slopes, data.frame(datasetID = id,
+      print(id)
+      plotsub = subset(occ_trans_area,datasetID == id)   
+      taxa = as.character(unique(plotsub$taxa))
+      mod.t = lm(log10(plotsub$spRich) ~ log10(plotsub$area))
+      mod.t.slope = summary(mod.t)$coef[2,"Estimate"]
+      mod.n= lm(log10(plotsub$notrans) ~ log10(plotsub$area))
+      mod.n.slope = summary(mod.n)$coef[2,"Estimate"]
+      print(mod.n.slope)
+      taxcolor = subset(taxcolors, taxa == as.character(plotsub$taxa)[1])
+      slopes = rbind(slopes, data.frame(datasetID = id,
                                     taxa = taxa,
                                     areaSlope = mod.t.slope, 
                                     areaSlope_noTrans = mod.n.slope))
-    null_5dB = rbind(null_5dB, c(r, id, site,mod.n.slope,mod.t.slope, as.numeric(length(notrans$propOcc))))
-    
+      
+      null_5dB = rbind(null_5dB, c(r, id, mod.n.slope,mod.t.slope, as.numeric(length(notrans$propOcc))))
        }
     }
   }
 }
+
+null_5dB = data.frame(null_5dB)
+colnames(null_5dB) = c("r", "datasetID", "all_area_slope", "notrans_area_slope", "numnon")
 
 slopes$bbs = 'no'
 
