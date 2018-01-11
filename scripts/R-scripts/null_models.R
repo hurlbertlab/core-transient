@@ -273,23 +273,28 @@ lat_scale_bbs$site_id = as.integer(lat_scale_bbs$site_id)
 
 #### null model ####
 null_5b = c()
-sites = unique(bbs_occ_2014$stateroute)
-for(site in sites){
+sites = unique(bbs_occ_2014$stateroute)[1:10]
+for(r in 1:1000){
+ # print(r)
+  
+  for(site in sites){
   id = 1
   sitedata = bbs_occ_2014[bbs_occ_2014$stateroute == site,]
   notrans = sitedata[sitedata$occ > 1/3,]
   trans = sitedata[sitedata$occ <= 1/3,]
   size = abs(length(notrans$occ) - length(trans$occ))
   if(size < length(notrans$occ)){
-  for(r in 1:1000){
-    print(r)
+ 
     subcor = sample_n(notrans, size, replace = FALSE)  
     regroup = rbind(trans, subcor)
-    # calc bbs with and without trans
-    notransbbs = regroup %>% filter(occ > 1/3) %>% dplyr::count(stateroute) 
-    names(notransbbs) = c("site_id", "spRich")
+    bbs_sample = rbind(bbs_sample, regroup)
     
-    allbbs = regroup %>% dplyr::count(stateroute) 
+ }
+}
+    # calc bbs with and without trans
+    notransbbs = bbs_sample %>% filter(occ > 1/3) %>% dplyr::count(stateroute) 
+    names(notransbbs) = c("site_id", "spRich")
+    allbbs = bbs_sample %>% dplyr::count(stateroute) 
     names(allbbs) = c("site_id", "spRich")
 
 
@@ -300,6 +305,7 @@ for(site in sites){
     bbs_env = join(bbs_env, unique(lat_scale_bbs[,c("site_id", "elev.point", "elev.mean", "elev.var")]), type = "left")
 
     bar1 = cor.test(bbs_env$spRich, bbs_env$ndvi)$estimate
+    print(bar1)
     CI1lower =  cor.test(bbs_env$spRich, bbs_env$ndvi)$conf.int[1]
     CI1upper = cor.test(bbs_env$spRich, bbs_env$ndvi)$conf.int[2]
     bar3 = cor.test(bbs_env$spRich, bbs_env$elev.mean)$estimate
@@ -322,9 +328,13 @@ for(site in sites){
 
 
     null_5b = rbind(null_5b, c(r, id, site, bar1, CI1lower,CI1upper, bar3, CI3lower, CI3upper, bar2, CI2lower,CI2upper, bar4, CI4lower,CI4upper, bar5, CI5lower,CI5upper, bar6, CI6lower,CI6upper, numnon = as.numeric(length(notrans$occ))))
+    
+    bbs_sample = NULL
   }
-}
-}
+
+null_5b = data.frame(null_5b)
+colnames(null_5b) = c("r", "datasetid", "stateroute", "all_est_ndvi1", "CI1lower","CI1upper", "all_est_elev3", "CI3lower", "CI3upper", "excl_est_ndvi2", "CI2lower","CI2upper", "excl_est_elev4", "CI4lower","CI4upper", "trans_est_ndvi5", "CI5lower","CI5upper", "trans_est_elev6", "CI6lower","CI6upper", "numnon")
+
 
 corr_res <- data.frame(All = c(bar1, bar3), Ntrans = c(bar2, bar4), Trans = c(bar5, bar6)) 
 corr_res$env = c("NDVI", "Elevation")
