@@ -162,6 +162,7 @@ colscale = c("azure4","#1D6A9B","turquoise2","gold2","purple4","red", "forestgre
 
 #### null model ####
 null_output = c()
+init.time = Sys.time()
 for(id in datasetIDs[,1]){
   print(id)
   subdata = subset(sad_data, datasetID == id)
@@ -172,8 +173,8 @@ for(id in datasetIDs[,1]){
     trans = na.omit(sitedata[sitedata$propOcc <= 1/3,])
     size = abs(length(notrans$propOcc) - length(trans$propOcc))
     if(size < length(notrans$propOcc)){
-    for(r in 1:1000){
-      print(r)
+    for(r in 1:100){
+      print(c(r, id))
       subsad = sample_n(notrans, size, replace = FALSE)  
       regroup = rbind(trans, subsad)
       logseries_weights_incl = regroup %>%
@@ -188,6 +189,13 @@ for(id in datasetIDs[,1]){
       logseries_weights = rbind(logseries_weights_incl, logseries_weights_excl)
       
       null_output = rbind(null_output, c(r, id, site, logseries_weights_incl[3], logseries_weights_excl[,3],numnon = as.numeric(length(notrans$propOcc))))
+      nwd = nrow(sad_data)
+      curr.time = Sys.time()
+      elapsed = curr.time - init.time
+      percelltime = elapsed/i
+      estimated.end = (nwd - i)*percelltime + curr.time
+      print(paste(i, "out of",nwd, "; current time:", curr.time,
+                  "; estimated end time:", estimated.end))
    }
   }
 }
@@ -347,8 +355,8 @@ for (dataset in datasetIDs[,1]) {
     TJs = c()
     TJ_notrans = c()
     if(size < length(notrans$propOcc)){
-    for(i in 100){
-      print(i)
+      for(i in 1:100){
+        print(i)
       subdata = sample_n(notrans, size, replace = FALSE) 
       regroup = rbind(trans, sitedata)
       if(length(years) > 0){
@@ -374,6 +382,9 @@ for (dataset in datasetIDs[,1]) {
 
 }
 
+null_5c = data.frame(null_5c)
+colnames(null_5c) = c("r", "datasetID", "site", "turnover", "numnon")
+write.csv(null_5c, "output/tabular_data/null_5c.csv", row.names = FALSE)
 ##### plot 5c ####
 
 turnover = read.csv("output/tabular_data/temporal_turnover.csv", header = TRUE)
