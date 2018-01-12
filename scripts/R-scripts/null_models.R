@@ -223,11 +223,11 @@ lat_scale_bbs$site_id = as.integer(lat_scale_bbs$site_id)
 #### null model ####
 null_5b = c()
 regroup = c()
-sites = unique(bbs_occ_2014$stateroute)[2:11]
+sites = unique(bbs_occ_2014$stateroute)[1:20]
 for(r in 1:10){
   print(r)
   for(site in sites){
-    # print(site)
+    print(site)
   id = 1
   sitedata = bbs_occ_2014[bbs_occ_2014$stateroute == site,]
   notrans = sitedata[sitedata$occ > 1/3,]
@@ -253,6 +253,7 @@ for(r in 1:10){
     bbs_env = join(bbs_spRich, gimms_agg, type = "left")
     bbs_env = join(bbs_env, unique(lat_scale_bbs[,c("site_id", "elev.point", "elev.mean", "elev.var")]), type = "left")
   }
+    regroup = c()
     bar1 = cor.test(bbs_env$spRich, bbs_env$ndvi)$estimate
     print(bar1)
     CI1lower =  cor.test(bbs_env$spRich, bbs_env$ndvi)$conf.int[1]
@@ -276,12 +277,12 @@ for(r in 1:10){
     CI6upper =  cor.test(bbs_env$spRich-bbs_env$spRichnotrans, bbs_env$elev.mean)$conf.int[2]
 
 
-    null_5b = rbind(null_5b, c(r, id, site, bar1, CI1lower,CI1upper, bar3, CI3lower, CI3upper, bar2, CI2lower,CI2upper, bar4, CI4lower,CI4upper, bar5, CI5lower,CI5upper, bar6, CI6lower,CI6upper, numnon = as.numeric(length(notrans$occ))))
+    null_5b = rbind(null_5b, c(r, id, bar1, CI1lower,CI1upper, bar3, CI3lower, CI3upper, bar2, CI2lower,CI2upper, bar4, CI4lower,CI4upper, bar5, CI5lower,CI5upper, bar6, CI6lower,CI6upper, numnon = as.numeric(length(notrans$occ))))
     
   }
 
 null_5b = data.frame(null_5b)
-colnames(null_5b) = c("r", "datasetid", "stateroute", "all_est_ndvi1", "CI1lower","CI1upper", "all_est_elev3", "CI3lower", "CI3upper", "excl_est_ndvi2", "CI2lower","CI2upper", "excl_est_elev4", "CI4lower","CI4upper", "trans_est_ndvi5", "CI5lower","CI5upper", "trans_est_elev6", "CI6lower","CI6upper", "numnon")
+colnames(null_5b) = c("r", "datasetid", "all_est_ndvi1", "CI1lower","CI1upper", "all_est_elev3", "CI3lower", "CI3upper", "excl_est_ndvi2", "CI2lower","CI2upper", "excl_est_elev4", "CI4lower","CI4upper", "trans_est_ndvi5", "CI5lower","CI5upper", "trans_est_elev6", "CI6lower","CI6upper", "numnon")
 
 
 corr_res <- data.frame(All = c(bar1, bar3), Ntrans = c(bar2, bar4), Trans = c(bar5, bar6)) 
@@ -332,6 +333,7 @@ all_data = left_join(abund_data, propocc_data, by = c('datasetID', 'site', 'spec
 
 
 null_5c = c()
+init.time = Sys.time()
 for (dataset in datasetIDs[,1]) {
   subdata = subset(all_data, datasetID == dataset)
   sites = unique(subdata$site)
@@ -345,8 +347,8 @@ for (dataset in datasetIDs[,1]) {
     TJs = c()
     TJ_notrans = c()
     if(size < length(notrans$propOcc)){
-    for(r in 1:1000){
-      print(r)
+    for(i in 100){
+      print(i)
       subdata = sample_n(notrans, size, replace = FALSE) 
       regroup = rbind(trans, sitedata)
       if(length(years) > 0){
@@ -357,7 +359,15 @@ for (dataset in datasetIDs[,1]) {
           TJs = c(TJs, T_J)
         }
       }
-      null_5c = rbind(null_5c, c(r, dataset, site, T_J, as.numeric(length(notrans$propOcc))))
+      nwd = nrow(all_data)
+      null_5c = rbind(null_5c, c(i, dataset, site, T_J, as.numeric(length(notrans$propOcc))))
+      curr.time = Sys.time()
+      elapsed = curr.time - init.time
+      percelltime = elapsed/i
+      estimated.end = (nwd - i)*percelltime + curr.time
+      print(paste(i, "out of",nwd, "; current time:", curr.time,
+           "; estimated end time:", estimated.end))
+
     }
   }
 }
