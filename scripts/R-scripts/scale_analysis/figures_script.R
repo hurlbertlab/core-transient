@@ -304,6 +304,15 @@ ggplot(scales_hetero, aes(x = scale, y = corr_r))+
 #starting at scale of 1 since that's lowest res we have for habhet across scales, 
 #rerun previous dep/ind loop with new mods
 
+
+scales_hetero2 = scales_hetero %>% 
+  filter(scale == 66) %>% 
+  filter(dep == "elev.var" | dep == "ndvi.var") 
+
+
+
+
+
 ####Plot stateroutes 1 by 1, pick out some emblematic "types"####
 bbs_allscales = na.omit(read.csv("C:/git/core-transient/data/BBS/bbs_allscales.csv", header = TRUE))
 focalrtes = unique(bbs_allscales$focalrte)
