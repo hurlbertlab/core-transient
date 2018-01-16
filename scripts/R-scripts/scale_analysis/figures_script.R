@@ -214,6 +214,11 @@ all_figplot = ggplot(all_fig, aes(occ, group = area, color = area))+
   stat_density(geom = "path", position = "identity", bw = "bcv", kernel = "gaussian", n = 4000, na.rm = TRUE)+
   labs(x = "Proportion of time present at site", y = "Probability Density", title = "All scales")+theme_classic()
 all_figplot
+#edit fig for manuscript -? 2-3 colors color ramp thru viridis 
+#chop 1-2 scales if needed 
+#thicken lines 
+#increase text size 5x or so 
+
 
 
 minplot = ggplot(min_out, aes(occ, group = area, color = area))+
