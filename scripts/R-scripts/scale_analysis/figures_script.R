@@ -210,9 +210,10 @@ write.csv(all_fig, "//bioark.ad.unc.edu/HurlbertLab/Jenkins/BBS scaled/all_figou
 all_fig = read.csv("//bioark.ad.unc.edu/HurlbertLab/Jenkins/BBS scaled/all_figoutput.csv", header = TRUE)
 #all_fig$area = as.factor(all_fig$area)
 
-all_figplot = ggplot(all_fig, aes(occ, group = area, color = area))+
-  stat_density(geom = "path", position = "identity", bw = "bcv", kernel = "gaussian", n = 4000, na.rm = TRUE)+
-  labs(x = "Proportion of time present at site", y = "Probability Density", title = "All scales")+theme_classic()
+all_figplot = ggplot(all_fig, aes(occ, group = factor(area), color = factor(area)))+
+  stat_density(geom = "path", position = "identity", bw = "bcv", kernel = "gaussian", n = 4000, na.rm = TRUE, size = 1.3)+
+  labs(x = "Proportion of time present at site", y = "Probability Density")+theme_classic()+
+  scale_color_viridis(discrete = TRUE)+theme(axis.title = element_text(size = 18))
 all_figplot
 #edit fig for manuscript -? 2-3 colors color ramp thru viridis 
 #chop 1-2 scales if needed 
