@@ -210,6 +210,9 @@ null_output$SAD_incl = as.numeric(null_output$SAD_incl)
 null_output$SAD_excl = as.numeric(null_output$SAD_excl)
 null_output$Non_trans = as.numeric(null_output$Non_trans)
 
+
+write.csv(null_output, "output/tabular_data/null_output_SAD_1000.csv", row.names = FALSE)
+
 null_5a_sum = null_output %>%
   dplyr::group_by(datasetID, site) %>% 
   dplyr::summarize(mean_incl = mean(SAD_incl), mean_excl = mean(SAD_excl))
