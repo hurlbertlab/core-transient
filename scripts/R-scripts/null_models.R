@@ -213,9 +213,13 @@ null_output$Non_trans = as.numeric(null_output$Non_trans)
 
 write.csv(null_output, "output/tabular_data/null_output_SAD_1000.csv", row.names = FALSE)
 
+null_output$combo = paste(null_output$datasetID, null_output$site, sep = "_")
+
 null_5a_sum = null_output %>%
   dplyr::group_by(datasetID, site) %>% 
-  dplyr::summarize(mean_incl = mean(SAD_incl), mean_excl = mean(SAD_excl))
+  dplyr::summarize(mean_incl = mean(SAD_incl), var_incl = var(SAD_incl), 
+                   mean_excl = mean(SAD_excl), var_excl = var(SAD_excl))
+
 
 #### NULL 5B #####
 # read in route level ndvi and elevation data (radius = 40 km)
@@ -313,13 +317,6 @@ four_b <- l
 ggsave(file="C:/Git/core-transient/output/plots/5b_corrcoeff_NDVI.pdf", height = 5, width = 15)
 
 
-#### test for fig 1 new #####
-mh = read.csv("data/raw_datasets/dataset_255RAW/MHfig1.csv", header = TRUE)
-mh$class = factor(mh$class, levels = c('trans','core'),ordered = TRUE)
-
-ggplot(mh, aes(x=abunx, freqy,fill=factor(class))) + geom_bar(stat="identity", position = "identity",color = "gray50", alpha = 0.5, lwd = 1.05)+ ylab("Frequency") + xlab ("Maximum abundance")  + scale_x_continuous(breaks = c(1,4, 8, 11, 15), labels = c("1","10","100","1,000","10,000"))+ scale_fill_manual(labels = c("Transient", "Core"),values = c("white","gray0"))+ theme_classic() + theme(axis.text.x=element_text(size=40, color = "black"),axis.text.y=element_text(size=40, color = "black"),axis.title.x=element_text(size=50, color = "black"),axis.title.y=element_text(size=50,angle=90,vjust = 3.5)) +theme(legend.justification=c(0, 1))+ guides(fill = guide_legend(keywidth = 3, keyheight = 3,title="")) +  theme(legend.text = element_text(size = 30)) #, legend.title = element_blank(), legend.key.height=unit(2, "points")) 
-
-ggsave(file="C:/Git/core-transient/output/plots/1b_M_H_hists.pdf", height = 10, width = 16)
 
 
 #### Figure 5c ####
@@ -358,14 +355,14 @@ for (dataset in datasetIDs[,1]) {
     TJs = c()
     TJ_notrans = c()
     if(size < length(notrans$propOcc)){
-      for(i in 1:100){
+      for(i in 1:1000){
         print(c(i, dataset, site))
       subturn = sample_n(notrans, size, replace = FALSE) 
       regroup = rbind(trans, subturn)
       if(length(years) > 0){
         for (year in years[1:(length(years)-1)]) {
-          comm1 = unique(subdata$species[subdata$year == year])
-          comm2 = unique(subdata$species[subdata$year == year + 1])
+          comm1 = unique(regroup$species[regroup$year == year])
+          comm2 = unique(regroup$species[regroup$year == year + 1])
           T_J = turnover(comm1, comm2)
           TJs = c(TJs, T_J)
         }
@@ -387,7 +384,13 @@ for (dataset in datasetIDs[,1]) {
 
 null_5c = data.frame(null_5c)
 colnames(null_5c) = c("r", "datasetID", "site", "turnover", "numnon")
-write.csv(null_5c, "output/tabular_data/null_5c.csv", row.names = FALSE)
+# write.csv(null_5c, "output/tabular_data/null_5c.csv", row.names = FALSE)
+
+
+null_5c_output = null_5c %>% group_by(datasetID, site) %>%
+  summarize(mean = mean(turnover), var = var(turnover))
+
+
 ##### plot 5c ####
 
 turnover = read.csv("output/tabular_data/temporal_turnover.csv", header = TRUE)
