@@ -359,9 +359,9 @@ for (dataset in datasetIDs[,1]) {
     TJ_notrans = c()
     if(size < length(notrans$propOcc)){
       for(i in 1:100){
-        print(i)
-      subdata = sample_n(notrans, size, replace = FALSE) 
-      regroup = rbind(trans, sitedata)
+        print(c(i, dataset, site))
+      subturn = sample_n(notrans, size, replace = FALSE) 
+      regroup = rbind(trans, subturn)
       if(length(years) > 0){
         for (year in years[1:(length(years)-1)]) {
           comm1 = unique(subdata$species[subdata$year == year])
