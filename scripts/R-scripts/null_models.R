@@ -220,6 +220,20 @@ null_5a_sum = null_output %>%
   dplyr::summarize(mean_incl = mean(SAD_incl), var_incl = var(SAD_incl), 
                    mean_excl = mean(SAD_excl), var_excl = var(SAD_excl))
 
+# read in output from figure 5 script
+logseries_weights = read.csv("output/tabular_data/logseries_weights.csv", header = TRUE)
+logseries_excl = subset(logseries_weights, treatment == "Excluding")
+sad_excl = merge(logseries_excl, null_5a_sum, by = c("datasetID", "site"))
+
+sad_excl_p = sad_excl %>% group_by(datasetID, site) %>%
+  tally(weights >= mean_excl)
+
+logseries_incl = subset(logseries_weights, treatment == "All")
+sad_incl = merge(logseries_incl, null_5a_sum, by = c("datasetID", "site"))
+
+sad_incl_p = sad_incl %>% group_by(datasetID, site) %>%
+  tally(weights >= mean_incl)
+
 
 #### NULL 5B #####
 # read in route level ndvi and elevation data (radius = 40 km)
