@@ -226,14 +226,15 @@ logseries_excl = subset(logseries_weights, treatment == "Excluding")
 sad_excl = merge(logseries_excl, null_5a_sum, by = c("datasetID", "site"))
 
 sad_excl_p = sad_excl %>% group_by(datasetID, site) %>%
-  tally(weights >= mean_excl)
+  tally(mean_excl >= weights)
+num_excl = subset(sad_excl_p, n == 1)
 
 logseries_incl = subset(logseries_weights, treatment == "All")
 sad_incl = merge(logseries_incl, null_5a_sum, by = c("datasetID", "site"))
 
 sad_incl_p = sad_incl %>% group_by(datasetID, site) %>%
-  tally(weights >= mean_incl)
-
+  tally(mean_incl >= weights)
+num_incl = subset(sad_incl_p, n == 1)
 
 #### NULL 5B #####
 # read in route level ndvi and elevation data (radius = 40 km)
@@ -400,9 +401,20 @@ null_5c = data.frame(null_5c)
 colnames(null_5c) = c("r", "datasetID", "site", "turnover", "numnon")
 # write.csv(null_5c, "output/tabular_data/null_5c.csv", row.names = FALSE)
 
-
 null_5c_output = null_5c %>% group_by(datasetID, site) %>%
   summarize(mean = mean(turnover), var = var(turnover))
+
+# read in output from figure 5 script
+turnover_output = read.csv("output/tabular_data/temporal_turnover.csv", header = TRUE)
+turnover_merge = merge(turnover_output, null_5c_output, by = c("datasetID", "site"))
+
+turnover_excl = turnover_merge %>% group_by(datasetID, site) %>%
+  tally(TJnotrans >= mean)
+num_excl_5c = subset(turnover_excl, n > 0)
+
+turnover_incl = turnover_merge %>% group_by(datasetID, site) %>%
+  tally(TJ >= mean)
+num_incl_5c = subset(turnover_incl, n > 0)
 
 
 ##### plot 5c ####
