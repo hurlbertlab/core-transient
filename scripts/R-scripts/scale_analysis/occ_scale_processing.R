@@ -446,7 +446,7 @@ bbs_allsub$focalrte = as.factor(bbs_allsub$focalrte)
 
 pred_plot = ggplot(bbs_allscales, aes(x = logA, y = meanOcc))+geom_line(aes(group = focalrte), color = "grey")+
   theme_classic()+geom_line(data = bbs_allsub, aes(x = logA, y = meanOcc, group = as.factor(focalrte), color = as.factor(focalrte)), size = 2)+ #geom_smooth(model = lm, color = 'red')+
-  labs(x = "Log Area", y = "Mean Community Occupancy") 
+  labs(x = "Log Area", y = "Mean Community Occupancy")+scale_color_viridis(discrete = TRUE) 
 pred_plot #remember to thicken black line 
 
 #bbs_allscales$preds2 = predict(mod2)

@@ -305,11 +305,16 @@ ggplot(scales_hetero, aes(x = scale, y = corr_r))+
 #rerun previous dep/ind loop with new mods
 
 
+#at top scales, with just variances - diamond shape figure that parallels prediction table (alt to outcome table)
 scales_hetero2 = scales_hetero %>% 
   filter(scale == 66) %>% 
-  filter(dep == "elev.var" | dep == "ndvi.var") 
+  filter(dep == "elev.var" | dep == "ndvi.var") %>% 
+  filter(ind == "OA.curvature" | ind == "OA.max" | ind == "OA.mid"| ind == "OA.min" | ind == "OA.slope")
 
-
+ggplot(scales_hetero2, aes(x = ind, y = corr_r))+
+  geom_pointrange(aes(color = dep, ymin = lowr, ymax = uppr))+geom_abline(intercept = 0, slope = 0)+
+  theme_classic()+scale_color_viridis(discrete = TRUE)+theme(axis.title = element_text(size = 18))+
+  labs(x = "Occupancy-scale parameters", y = "Pearson's correlation estimate")
 
 
 
@@ -329,6 +334,20 @@ for (r in focalrtes) {
 
 dev.off()
 
+
+
+####Plotting NULL all routes with 3 highlighted "types####
+bbs_allscales = read.csv("data/BBS/bbs_allscales.csv", header = TRUE)
+
+bbs_allsub = bbs_allscales %>% filter(focalrte == 33901 | focalrte == 72035 | focalrte == 60024)
+bbs_allsub$focalrte = as.factor(bbs_allsub$focalrte)
+#use this to assign diff colors for each factor level per what color scheme is ideal?
+
+
+pred_plot = ggplot(bbs_allscales, aes(x = logA, y = meanOcc))+geom_line(aes(group = focalrte), color = "grey")+
+  theme_classic()+geom_line(data = bbs_allsub, aes(x = logA, y = meanOcc, group = as.factor(focalrte), color = as.factor(focalrte)), size = 2)+ #geom_smooth(model = lm, color = 'red')+
+  labs(x = "Log Area", y = "Mean Community Occupancy")+scale_color_viridis(discrete = TRUE)+theme(axis.title = element_text(size = 18)) 
+pred_plot #remember to thicken black line 
 
 
 
