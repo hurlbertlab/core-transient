@@ -223,18 +223,25 @@ null_5a_sum = null_output %>%
 # read in output from figure 5 script
 logseries_weights = read.csv("output/tabular_data/logseries_weights.csv", header = TRUE)
 logseries_excl = subset(logseries_weights, treatment == "Excluding")
-sad_excl = merge(logseries_excl, null_5a_sum, by = c("datasetID", "site"))
+sad_excl = merge(logseries_excl, null_output, by = c("datasetID", "site"))
 
 sad_excl_p = sad_excl %>% group_by(datasetID, site) %>%
-  tally(mean_excl >= weights)
-num_excl = subset(sad_excl_p, n == 1)
+  tally(SAD_excl >= weights)
+num_excl = subset(sad_excl_p, n > 0)
 
 logseries_incl = subset(logseries_weights, treatment == "All")
-sad_incl = merge(logseries_incl, null_5a_sum, by = c("datasetID", "site"))
+sad_incl = merge(logseries_incl, null_output, by = c("datasetID", "site"))
 
 sad_incl_p = sad_incl %>% group_by(datasetID, site) %>%
-  tally(mean_incl >= weights)
-num_incl = subset(sad_incl_p, n == 1)
+  tally(SAD_incl >= weights)
+num_incl = subset(sad_incl_p, n > 0)
+
+
+hist(sad_excl_p$n, xlab = "", main = "Distribution of the number of null sites greater \n than logseries weights excluding transients")
+abline(v=mean(na.omit(logseries_excl$weights)), col = "blue", lwd = 2)
+
+hist(sad_incl_p$n, xlab = "", main = "Distribution of the number of null sites greater \n than logseries weights including transients")
+abline(v=mean(na.omit(logseries_incl$weights)), col = "blue", lwd = 2)
 
 #### NULL 5B #####
 # read in route level ndvi and elevation data (radius = 40 km)
