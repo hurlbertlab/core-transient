@@ -387,10 +387,16 @@ for (dataset in datasetIDs[,1]) {
           comm2 = unique(regroup$species[regroup$year == year + 1])
           T_J = turnover(comm1, comm2)
           TJs = c(TJs, T_J)
+          
+          notrans2 = regroup[regroup$propOcc > 1/3,]
+          comm1_noT = unique(notrans2$species[notrans2$year == year])
+          comm2_noT = unique(notrans2$species[notrans2$year == year + 1])
+          T_J_notran = turnover(comm1_noT, comm2_noT)
+          TJ_notrans = c(TJ_notrans, T_J_notran)
         }
       }
       nwd = nrow(all_data)
-      null_5c = rbind(null_5c, c(i, dataset, site, T_J, as.numeric(length(notrans$propOcc))))
+      null_5c = rbind(null_5c, c(i, dataset, site, T_J, T_J_notran, as.numeric(length(notrans$propOcc))))
       curr.time = Sys.time()
       elapsed = curr.time - init.time
       percelltime = elapsed/i
@@ -405,8 +411,8 @@ for (dataset in datasetIDs[,1]) {
 }
 
 null_5c = data.frame(null_5c)
-colnames(null_5c) = c("r", "datasetID", "site", "turnover", "numnon")
-# write.csv(null_5c, "output/tabular_data/null_5c.csv", row.names = FALSE)
+colnames(null_5c) = c("r", "datasetID", "site", "turnover","notransturn", "numnon")
+write.csv(null_5c, "output/tabular_data/null_5c.csv", row.names = FALSE)
 
 null_5c_output = null_5c %>% group_by(datasetID, site) %>%
   summarize(mean = mean(turnover), var = var(turnover))
@@ -416,7 +422,7 @@ turnover_output = read.csv("output/tabular_data/temporal_turnover.csv", header =
 turnover_merge = merge(turnover_output, null_5c, by = c("datasetID", "site"))
 
 turnover_excl = turnover_merge %>% group_by(datasetID, site) %>%
-  tally(TJnotrans >= turnover)
+  tally(TJnotrans >= notransturn)
 num_excl_5c = subset(turnover_excl, n > 0)
 
 turnover_incl = turnover_merge %>% group_by(datasetID, site) %>%
