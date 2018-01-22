@@ -217,20 +217,20 @@ null_output$combo = paste(null_output$datasetID, null_output$site, sep = "_")
 
 null_5a_sum = null_output %>%
   dplyr::group_by(datasetID, site) %>% 
-  dplyr::summarize(mean_incl = mean(SAD_incl), var_incl = var(SAD_incl), 
-                   mean_excl = mean(SAD_excl), var_excl = var(SAD_excl))
+  dplyr::summarize(SAD_incl = mean(SAD_incl), var_incl = var(SAD_incl), 
+                   SAD_excl = mean(SAD_excl), var_excl = var(SAD_excl))
 
 # read in output from figure 5 script
 logseries_weights = read.csv("output/tabular_data/logseries_weights.csv", header = TRUE)
 logseries_excl = subset(logseries_weights, treatment == "Excluding")
-sad_excl = merge(logseries_excl, null_output, by = c("datasetID", "site"))
+sad_excl = merge(logseries_excl, null_5a_sum, by = c("datasetID", "site"))
 
 sad_excl_p = sad_excl %>% group_by(datasetID, site) %>%
   tally(SAD_excl >= weights)
 num_excl = subset(sad_excl_p, n > 0)
 
 logseries_incl = subset(logseries_weights, treatment == "All")
-sad_incl = merge(logseries_incl, null_output, by = c("datasetID", "site"))
+sad_incl = merge(logseries_incl, null_5a_sum, by = c("datasetID", "site"))
 
 sad_incl_p = sad_incl %>% group_by(datasetID, site) %>%
   tally(SAD_incl >= weights)
