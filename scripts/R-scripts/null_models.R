@@ -413,16 +413,21 @@ null_5c_output = null_5c %>% group_by(datasetID, site) %>%
 
 # read in output from figure 5 script
 turnover_output = read.csv("output/tabular_data/temporal_turnover.csv", header = TRUE)
-turnover_merge = merge(turnover_output, null_5c_output, by = c("datasetID", "site"))
+turnover_merge = merge(turnover_output, null_5c, by = c("datasetID", "site"))
 
 turnover_excl = turnover_merge %>% group_by(datasetID, site) %>%
-  tally(TJnotrans >= mean)
+  tally(TJnotrans >= turnover)
 num_excl_5c = subset(turnover_excl, n > 0)
 
 turnover_incl = turnover_merge %>% group_by(datasetID, site) %>%
-  tally(TJ >= mean)
+  tally(TJ >= turnover)
 num_incl_5c = subset(turnover_incl, n > 0)
 
+hist(turnover_excl$n, xlab = "", main = "Distribution of turnover excluding transients")
+abline(v=mean(na.omit(logseries_excl$weights)), col = "blue", lwd = 2)
+
+hist(sad_incl_p$n, xlab = "", main = "Distribution of the number of null sites greater \n than logseries weights including transients")
+abline(v=mean(na.omit(logseries_incl$weights)), col = "blue", lwd = 2)
 
 ##### plot 5c ####
 
@@ -459,6 +464,11 @@ bray <-b + geom_abline(intercept = 0,slope = 1, lwd =1.5,linetype="dashed")+ geo
 ggsave(file="C:/Git/core-transient/output/plots/5s_brayturnover.pdf", height = 10, width = 15)
 
 
+hist(sad_excl_p$n, xlab = "", main = "Distribution of the number of null sites greater \n than logseries weights excluding transients")
+abline(v=mean(na.omit(logseries_excl$weights)), col = "blue", lwd = 2)
+
+hist(sad_incl_p$n, xlab = "", main = "Distribution of the number of null sites greater \n than logseries weights including transients")
+abline(v=mean(na.omit(logseries_incl$weights)), col = "blue", lwd = 2)
 ##### Figure 5d ##### only scaled vars
 bbs_below = read.csv("Z:/Snell/data/bbs_below.csv", header = TRUE)
 
