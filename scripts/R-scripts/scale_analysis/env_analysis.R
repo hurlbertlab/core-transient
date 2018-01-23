@@ -272,7 +272,7 @@ summary(min_mod4)
 #first need to make sure JUST looking at variance characterizing site, not means -> filter out 
 
 rsqrd_hetero = data.frame(dep = character(), ind = character(), 
-                          r2 = numeric(), adjr = numeric(), corr_r = numeric())
+                          r2 = numeric(), adjr = numeric(), corr_r = numeric(), uppr = numeric(), lowr = numeric())
 #modify to include plotting of obs values for each stateroute vs pred line 
 #and plot these with r squared vals as annotations to plots too 
 
@@ -286,7 +286,9 @@ for (d in 3:6) { #adjust columns appropriately -> make sure correct order of ind
                         ind = names(env_coefs)[i], 
                         r2 = summary(tempmod)$r.squared, 
                         adjr = summary(tempmod)$adj.r.squared, 
-                        corr_r = as.numeric(tempcor$estimate))
+                        corr_r = as.numeric(tempcor$estimate), 
+                        uppr = as.numeric(tempcor$conf.int[2]), 
+                        lowr = as.numeric(tempcor$conf.int[1]))
     
     # templot = ggplot(data = env_coefs, aes(x = env_coefs[,i], y = env_coefs[,d]))+geom_point()+
     #   geom_line(aes(y = predict(tempmod), color = 'Model'))+
@@ -303,7 +305,7 @@ for (d in 3:6) { #adjust columns appropriately -> make sure correct order of ind
 
 
 write.csv(rsqrd_hetero, "scripts/R-scripts/scale_analysis/rsqrd_hetero.csv", row.names = FALSE) 
-#updated 12/14 using corrected hab_het vals, only variances characterizing sites
+#updated 01/22 using corrected hab_het vals, only variances characterizing sites
 
 
 ####Visually Characterizing measures of habitat heterogeneity####
@@ -331,7 +333,8 @@ env_coefs = read.csv("scripts/R-scripts/scale_analysis/env_coefs.csv", header = 
 
 
 scales_hetero = data.frame(dep = character(), ind = character(), 
-                          r2 = numeric(), adjr = numeric(), corr_r = numeric(), scale = numeric())
+                          r2 = numeric(), adjr = numeric(), corr_r = numeric(), 
+                          uppr = numeric(), lowr = numeric(), scale = numeric())
 #modify to include plotting of obs values for each stateroute vs pred line 
 #and plot these with r squared vals as annotations to plots too 
 #setwd("C:/git/core-transient/output/plots/Molly_Plots/habhet/")
@@ -351,7 +354,9 @@ for (s in scales) {
                         ind = names(env_coefs2)[i], 
                         r2 = summary(tempmod)$r.squared, 
                         adjr = summary(tempmod)$adj.r.squared, 
-                        corr_r = as.numeric(tempcor$estimate), 
+                        corr_r = as.numeric(tempcor$estimate),
+                        uppr = as.numeric(tempcor$conf.int[2]),
+                        lowr = as.numeric(tempcor$conf.int[1]),
                         scale = s)
     
     # templot = ggplot(data = env_coefs, aes(x = env_coefs[,i], y = env_coefs[,d]))+geom_point()+
@@ -369,7 +374,7 @@ for (s in scales) {
 }
 
 write.csv(scales_hetero, "scripts/R-scripts/scale_analysis/scales_hetero.csv", row.names = FALSE) 
-#updated 12/14 using corrected hab_het vals, only variances characterizing sites
+#updated 01/22 using corrected hab_het vals, only variances characterizing sites
 
 
 
