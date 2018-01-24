@@ -212,7 +212,7 @@ null_output$Non_trans = as.numeric(null_output$Non_trans)
 
 
 write.csv(null_output, "output/tabular_data/null_output_SAD_1000.csv", row.names = FALSE)
-
+null_output = read.csv("output/tabular_data/null_output_SAD_1000.csv", header = TRUE)
 null_output$combo = paste(null_output$datasetID, null_output$site, sep = "_")
 
 null_5a_sum = null_output %>%
@@ -223,7 +223,7 @@ null_5a_sum = null_output %>%
 # read in output from figure 5 script
 logseries_weights = read.csv("output/tabular_data/logseries_weights.csv", header = TRUE)
 logseries_excl = subset(logseries_weights, treatment == "Excluding")
-sad_excl = merge(logseries_excl, null_5a_sum, by = c("datasetID", "site"))
+sad_excl = merge(logseries_excl, null_output, by = c("datasetID", "site"))
 
 sad_excl_p = sad_excl %>% group_by(datasetID, site) %>%
   tally(SAD_excl >= weights)
@@ -235,6 +235,18 @@ sad_incl = merge(logseries_incl, null_5a_sum, by = c("datasetID", "site"))
 sad_incl_p = sad_incl %>% group_by(datasetID, site) %>%
   tally(SAD_incl >= weights)
 num_incl = subset(sad_incl_p, n > 0)
+
+logseries_null = gather(null_output, "treatment","weights", c(SAD_excl,SAD_incl))
+logseries_null$treatment = factor(logseries_null$treatment, levels = c('SAD_incl','SAD_excl'),ordered = TRUE)
+logseries_null = subset(logseries_null, number == 1)
+#### ggplot fig1a #####
+
+colscale = c("dark orange2","yellow")
+k = ggplot(logseries_null,aes(x=weights,fill=treatment))+geom_histogram(bins = 20, position = "identity", alpha = 0.7)+ xlab("Transient Status") + ylab("Proportion of Species") + scale_y_continuous(breaks=c(0,500,1000)) + scale_fill_manual(labels = c("All species","Excluding transients"),values = colscale)+ theme_classic() + theme(axis.text.x=element_blank(), axis.ticks.x=element_blank(),axis.text.y=element_text(size=30, color = "black"),axis.title.y=element_text(size=46,angle=90,vjust = 5),axis.title.x=element_text(size=46, vjust = -7))  + ylab("Frequency") + xlab("Akaike Weight") + theme(legend.position = "none") +theme(plot.margin=unit(c(0.35,1,2,1.7),"cm")) 
+
+k
+
+ggsave(file="C:/Git/core-transient/output/plots/1a_null.pdf", height = 10, width = 16)
 
 
 hist(sad_excl_p$n, xlab = "", main = "Distribution of the number of null sites greater \n than logseries weights excluding transients")
@@ -413,6 +425,7 @@ for (dataset in datasetIDs[,1]) {
 null_5c = data.frame(null_5c)
 colnames(null_5c) = c("r", "datasetID", "site", "turnover","notransturn", "numnon")
 write.csv(null_5c, "output/tabular_data/null_5c.csv", row.names = FALSE)
+null_5c = read.csv("output/tabular_data/null_5c.csv", header = TRUE)
 
 null_5c_output = null_5c %>% group_by(datasetID, site) %>%
   summarize(mean = mean(turnover), var = var(turnover))
@@ -436,19 +449,10 @@ hist(sad_incl_p$n, xlab = "", main = "Distribution of the number of null sites g
 abline(v=mean(na.omit(logseries_incl$weights)), col = "blue", lwd = 2)
 
 ##### plot 5c ####
-
-turnover = read.csv("output/tabular_data/temporal_turnover.csv", header = TRUE)
-turnover_taxa = merge(turnover,dataformattingtable[,c("dataset_ID", "taxa")], by.x = "datasetID", by.y = "dataset_ID")
+null_5cplot = subset(null_5c, r == 1)
+turnover_taxa = merge(null_5cplot,dataformattingtable[,c("dataset_ID", "taxa")], by.x = "datasetID", by.y = "dataset_ID")
 turnover_col = merge(turnover_taxa, taxcolors, by = "taxa")
 
-bray_taxa = merge(bray_output,dataformattingtable[,c("dataset_ID", "taxa")], by.x = "datasetID", by.y = "dataset_ID")
-bray_col = merge(bray_taxa, taxcolors, by = "taxa")
-bray_col$bbs =ifelse(bray_col$datasetID == 1, "yes", "no")
-bray_bbs = filter(bray_col, bbs == "yes")
-bray_else = filter(bray_col, bbs == "no")
-
-bray_else$taxa = factor(bray_else$taxa,
-                        levels = c('Invertebrate','Fish','Plankton','Mammal','Plant','Bird'),ordered = TRUE)
 # bbs column for diff point symbols
 turnover_col$bbs =ifelse(turnover_col$datasetID == 1, "yes", "no")
 turnover_bbs = filter(turnover_col, bbs == "yes")
@@ -459,15 +463,10 @@ turnover_else$taxa = factor(turnover_else$taxa,
 
 colscale = c("gold2","turquoise2", "red", "purple4","forestgreen", "#1D6A9B") 
 
-m <- ggplot(turnover_bbs, aes(x = TJ, y = TJnotrans))
+m <- ggplot(turnover_bbs, aes(x = turnover, y = notransturn))
 four_c <-m + geom_abline(intercept = 0,slope = 1, lwd =1.5,linetype="dashed")+geom_point(data = turnover_bbs, aes(colour = taxa),size = 2)+geom_point(data = turnover_else, aes(colour = taxa), size = 5) + xlab("Turnover (all species)") + ylab("Turnover \n (excluding transients)")  + scale_colour_manual(breaks = turnover_col$taxa,values = colscale) + theme_classic() + theme(axis.text.x=element_text(size=30, color = "black"),axis.text.y=element_text(size=30, color = "black"),axis.ticks.x=element_blank(),axis.title.x=element_text(size=46, color = "black"),axis.title.y=element_text(size=46,angle=90,vjust = 5))+ guides(colour = guide_legend(title = "Taxa"))
 ggsave(file="C:/Git/core-transient/output/plots/5c_spturnover.pdf", height = 10, width = 15)
 
-
-
-b <- ggplot(bray_bbs, aes(x = TJ, y = TJnotrans))
-bray <-b + geom_abline(intercept = 0,slope = 1, lwd =1.5,linetype="dashed")+ geom_point(aes(colour = taxa),size = 2)+geom_point(data = bray_else, aes(colour = taxa), size = 5) + xlab("Bray-Curtis Index (all species)") + ylab("Bray-Curtis \n (excluding transients)")  + scale_colour_manual(breaks = bray_col$taxa,values = colscale) + theme_classic() + theme(axis.text.x=element_text(size=30, color = "black"),axis.text.y=element_text(size=30, color = "black"),axis.ticks.x=element_blank(),axis.title.x=element_text(size=40, color = "black", vjust = 2),axis.title.y=element_text(size=40,angle=90,vjust = 3))+ guides(colour = guide_legend(title = "Taxa"))
-ggsave(file="C:/Git/core-transient/output/plots/5s_brayturnover.pdf", height = 10, width = 15)
 
 
 hist(sad_excl_p$n, xlab = "", main = "Distribution of the number of null sites greater \n than logseries weights excluding transients")
