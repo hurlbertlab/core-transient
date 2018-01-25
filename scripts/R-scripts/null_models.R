@@ -215,6 +215,8 @@ write.csv(null_output, "output/tabular_data/null_output_SAD_1000.csv", row.names
 null_output = read.csv("output/tabular_data/null_output_SAD_1000.csv", header = TRUE)
 null_output$combo = paste(null_output$datasetID, null_output$site, sep = "_")
 
+null_output1 = subset(null_output, number == 1)
+
 null_5a_sum = null_output %>%
   dplyr::group_by(datasetID, site) %>% 
   dplyr::summarize(SAD_incl = mean(SAD_incl), var_incl = var(SAD_incl), 
@@ -254,6 +256,12 @@ abline(v=mean(na.omit(logseries_excl$weights)), col = "blue", lwd = 2)
 
 hist(sad_incl_p$n, xlab = "", main = "Distribution of the number of null sites greater \n than logseries weights including transients")
 abline(v=mean(na.omit(logseries_incl$weights)), col = "blue", lwd = 2)
+
+ks.test(null_output1$SAD_incl, logseries_excl$weights)
+# data:  null_output1$SAD_incl and logseries_excl$weights
+# D = 0.72217, p-value < 2.2e-16
+ks.test(null_output1$SAD_excl, logseries_incl$weights)
+# D = 0.59209, p-value < 2.2e-16
 
 #### NULL 5B #####
 # read in route level ndvi and elevation data (radius = 40 km)
@@ -448,6 +456,11 @@ abline(v=mean(na.omit(logseries_excl$weights)), col = "blue", lwd = 2)
 hist(sad_incl_p$n, xlab = "", main = "Distribution of the number of null sites greater \n than logseries weights including transients")
 abline(v=mean(na.omit(logseries_incl$weights)), col = "blue", lwd = 2)
 
+ks.test(null_5c$turnover, turnover_output$TJnotrans)
+# D = 0.40184, p-value < 2.2e-16
+ks.test(null_5c$notransturn, turnover_output$TJ)
+# D = 0.26901, p-value < 2.2e-16
+
 ##### plot 5c ####
 null_5cplot = subset(null_5c, r == 1)
 turnover_taxa = merge(null_5cplot,dataformattingtable[,c("dataset_ID", "taxa")], by.x = "datasetID", by.y = "dataset_ID")
@@ -458,13 +471,12 @@ turnover_col$bbs =ifelse(turnover_col$datasetID == 1, "yes", "no")
 turnover_bbs = filter(turnover_col, bbs == "yes")
 turnover_else = filter(turnover_col, bbs == "no")
 
-turnover_else$taxa = factor(turnover_else$taxa,
+turnover_col$taxa = factor(turnover_else$taxa,
                             levels = c('Invertebrate','Fish','Plankton','Mammal','Plant','Bird'),ordered = TRUE)
 
 colscale = c("gold2","turquoise2", "red", "purple4","forestgreen", "#1D6A9B") 
 
-m <- ggplot(turnover_bbs, aes(x = turnover, y = notransturn))
-four_c <-m + geom_abline(intercept = 0,slope = 1, lwd =1.5,linetype="dashed")+geom_point(data = turnover_bbs, aes(colour = taxa),size = 2)+geom_point(data = turnover_else, aes(colour = taxa), size = 5) + xlab("Turnover (all species)") + ylab("Turnover \n (excluding transients)")  + scale_colour_manual(breaks = turnover_col$taxa,values = colscale) + theme_classic() + theme(axis.text.x=element_text(size=30, color = "black"),axis.text.y=element_text(size=30, color = "black"),axis.ticks.x=element_blank(),axis.title.x=element_text(size=46, color = "black"),axis.title.y=element_text(size=46,angle=90,vjust = 5))+ guides(colour = guide_legend(title = "Taxa"))
+four_c <-  ggplot(turnover_col, aes(x = turnover, y = notransturn)) + geom_abline(intercept = 0,slope = 1, lwd =1.5,linetype="dashed")+geom_point(data = turnover_col, aes(colour = taxa),size = 5) + xlab("Turnover (all species)") + ylab("Turnover \n (excluding transients)")  + scale_colour_manual(breaks = turnover_col$taxa,values = colscale) + theme_classic() + theme(axis.text.x=element_text(size=30, color = "black"),axis.text.y=element_text(size=30, color = "black"),axis.ticks.x=element_blank(),axis.title.x=element_text(size=46, color = "black"),axis.title.y=element_text(size=46,angle=90,vjust = 5))+ guides(colour = guide_legend(title = "Taxa"))
 ggsave(file="C:/Git/core-transient/output/plots/5c_spturnover.pdf", height = 10, width = 15)
 
 
