@@ -93,7 +93,7 @@ subfocalspecies = unique(bbs_w_aou$aou)
 # Making pdf of ranges for each focal spp
 colscale = c("red", "gold","dark green")
 
-pdf('ind_spp_occ_maps.pdf', height = 8, width = 10)
+pdf('C:/Git/core-transient/ind_spp_occ_maps.pdf', height = 8, width = 10)
 mfrow(c(3,4))
 plot_list = list()
 for(sp in subfocalspecies){ 
