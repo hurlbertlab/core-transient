@@ -213,7 +213,7 @@ all_fig = read.csv("//bioark.ad.unc.edu/HurlbertLab/Jenkins/BBS scaled/all_figou
 all_figplot = ggplot(all_fig, aes(occ, group = factor(area), color = factor(area)))+
   stat_density(geom = "path", position = "identity", bw = "bcv", kernel = "gaussian", n = 4000, na.rm = TRUE, size = 1.3)+
   labs(x = "Proportion of time present at site", y = "Probability Density")+theme_classic()+
-  scale_color_viridis(discrete = TRUE)+theme(axis.title = element_text(size = 18))
+  scale_color_viridis(discrete = TRUE)+theme(axis.title = element_text(size = 18))+theme(legend.position = c(0.50, 0.50)) 
 all_figplot
 #edit fig for manuscript -? 2-3 colors color ramp thru viridis 
 #chop 1-2 scales if needed 
