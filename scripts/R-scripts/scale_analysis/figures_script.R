@@ -213,7 +213,7 @@ all_fig = read.csv("//bioark.ad.unc.edu/HurlbertLab/Jenkins/BBS scaled/all_figou
 all_figplot = ggplot(all_fig, aes(occ, group = factor(area), color = factor(area)))+
   stat_density(geom = "path", position = "identity", bw = "bcv", kernel = "gaussian", n = 4000, na.rm = TRUE, size = 1.3)+
   labs(x = "Proportion of time present at site", y = "Probability Density")+theme_classic()+
-  scale_color_viridis(discrete = TRUE)+theme(axis.title = element_text(size = 18))
+  scale_color_viridis(discrete = TRUE)+theme(axis.title = element_text(size = 18))+theme(legend.position = c(0.50, 0.50)) 
 all_figplot
 #edit fig for manuscript -? 2-3 colors color ramp thru viridis 
 #chop 1-2 scales if needed 
@@ -291,10 +291,16 @@ points(star2$Longi, star2$Lati, col = "black", pch = 17, cex = 2)
 #scales hetero derived at end of env_analysis script
 scales_hetero = read.csv("scripts/R-scripts/scale_analysis/scales_hetero.csv", header = TRUE)
 
+scales_hetero_v = scales_hetero %>% 
+  filter(dep == "elev.var" | dep == "ndvi.var") 
 
 #scale on x and r on y, panel by coef of interest, line color by var measure
-ggplot(scales_hetero, aes(x = scale, y = corr_r))+
-  geom_line(aes(color = dep))+facet_wrap(~ind)+theme_classic()
+ggplot(scales_hetero_v, aes(x = scale, y = corr_r))+
+  geom_line(aes(color = dep))+facet_wrap(~ind)+theme_classic()+
+  geom_abline(intercept = 0, slope = 0)+
+  theme_classic()+theme(axis.title = element_text(size = 18))+
+  labs(x = "Number of aggregated BBS Routes", y = "Pearson's correlation estimate")+theme(legend.position = c(0.80, 0.20)) 
+
 #I want a corr_r value for every dep and ind variable at every scale, for every focal
 #for every scale, for every focal route - will have a LOT - maybe just do a subset for meeting 
 
@@ -338,16 +344,22 @@ dev.off()
 
 ####Plotting NULL all routes with 3 highlighted "types####
 bbs_allscales = read.csv("data/BBS/bbs_allscales.csv", header = TRUE)
+coefs = read.csv("scripts/R-scripts/scale_analysis/coefs.csv", header = TRUE) #AUC etc.
 
-bbs_allsub = bbs_allscales %>% filter(focalrte == 33901 | focalrte == 72035 | focalrte == 60024)
+coefs_ranked = coefs %>% 
+  arrange(OA.curvature) #middle teal line should be least curvy 
+
+
+bbs_allsub = bbs_allscales %>% filter(focalrte == 33901 | focalrte == 72035 | focalrte == 44032)
 bbs_allsub$focalrte = as.factor(bbs_allsub$focalrte)
 #use this to assign diff colors for each factor level per what color scheme is ideal?
 
 
 pred_plot = ggplot(bbs_allscales, aes(x = logA, y = meanOcc))+geom_line(aes(group = focalrte), color = "grey")+
   theme_classic()+geom_line(data = bbs_allsub, aes(x = logA, y = meanOcc, group = as.factor(focalrte), color = as.factor(focalrte)), size = 2)+ #geom_smooth(model = lm, color = 'red')+
-  labs(x = "Log Area", y = "Mean Community Occupancy")+scale_color_viridis(discrete = TRUE)+theme(axis.title = element_text(size = 18)) 
-pred_plot #remember to thicken black line 
+  labs(x = "Log Area", y = "Mean Community Occupancy")+scale_color_viridis(discrete = TRUE)+
+  theme(axis.title = element_text(size = 18))+theme(legend.position = c(0.80, 0.25)) 
+pred_plot 
 
 
 
