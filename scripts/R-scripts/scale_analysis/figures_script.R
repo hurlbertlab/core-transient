@@ -299,7 +299,7 @@ ggplot(scales_hetero_v, aes(x = scale, y = corr_r))+
   geom_line(aes(color = dep))+facet_wrap(~ind)+theme_classic()+
   geom_abline(intercept = 0, slope = 0)+
   theme_classic()+theme(axis.title = element_text(size = 18))+
-  labs(x = "Number of aggregated BBS Routes", y = "Pearson's correlation estimate")
+  labs(x = "Number of aggregated BBS Routes", y = "Pearson's correlation estimate")+theme(legend.position = c(0.80, 0.20)) 
 
 #I want a corr_r value for every dep and ind variable at every scale, for every focal
 #for every scale, for every focal route - will have a LOT - maybe just do a subset for meeting 
