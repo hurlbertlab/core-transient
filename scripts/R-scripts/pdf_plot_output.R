@@ -94,21 +94,21 @@ subfocalspecies = unique(bbs_w_aou$aou)
 colscale = c("red", "gold","dark green")
 
 pdf('C:/Git/core-transient/ind_spp_occ_maps.pdf', height = 8, width = 10)
-mfrow(c(3,4))
+layout = matrix(c(3,3,3,3), nrow=2, byrow=TRUE)
+  #matrix(seq(1, 3 * ceiling(439/3)),
+              #  ncol = 3, nrow = ceiling(439/3))
 plot_list = list()
 for(sp in subfocalspecies){ 
   print(sp)
   plotsub = plotdata_all[plotdata_all$aou == sp,]
-  plot_list[[sp]] = ggplot(data = states) + 
+  plot_list[[sp]]  = ggplot(data = states) + 
     geom_polygon(aes(x = long, y = lat, group = group), color = "black", fill = "white") + 
     coord_fixed(1.3) +
     guides(fill=FALSE) + theme_classic() + 
     geom_point(data = plotsub, mapping = aes(x = longitude, y = latitude, col = category),  pch = 20, size = 5)+ scale_color_manual(labels = c("Transient","Intermediate", "core"),values = colscale) + xlab(plotsub$PRIMARY_COM_NAME)
   print (plot_list[[sp]])
-#  png(paste("plot_", sp, ".png", sep = ""), width=600, height=500, res=120) 
- # print(multiplot(plotlist=plot_list, cols=2))
 }
-
 dev.off()
+#ggsave("ind_spp_occ_maps.pdf", height = 8, width = 10)
 
-# make another plot to plot grids
+#multiplot(plotlist=plot_list, layout = layout)
