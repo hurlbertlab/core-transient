@@ -23,7 +23,7 @@ library(nlme)
 library(gridExtra)
 library(wesanderson)
 library(stats)
-
+library(viridis)
 
 # To run this script, you need temperature, precip, etc data, 
 # which are currently stored in the following directories off of github: 
@@ -41,40 +41,28 @@ levels(bbs_allscales$scale)
 unique(bbs_allscales$scale)
 
 
-mod1 = lm(meanOcc~logA, data = bbs_allscales) #expljkains ~75-80% of the variation in occ
-mod2 = lm(meanOcc~logN, data = bbs_allscales)
-summary(mod1)
+mod1 = lm(pctCore~logA, data = bbs_allscales) #72%
+mod2 = lm(pctCore~logN, data = bbs_allscales) #75%
+summary(mod2)
 
-plot(meanOcc~logA, data = bbs_allscales, xlab = "Log Area" , ylab = "Mean Temporal Occupancy")
-plot(meanOcc~logN, data = bbs_allscales, xlab = "Average Abundance" , ylab = "Mean Temporal Occupancy")
+plot(pctCore~logA, data = bbs_allscales, xlab = "Log Area" , ylab = "Percent Core Species in Community")
+plot(pctCore~logN, data = bbs_allscales, xlab = "Average Abundance" , ylab = "Percent Core Species in Community")
 #^^same pattern roughly; abundance describes ~same amt of variance as area so serves as a good proxy 
 
-plot(meanOcc~scale, data = bbs_allscales)
 
-#ALL files updated 09/20 ~3pm 
-#bbs_allscales$preds = predict(mod1)
-bbs_allsub = bbs_allscales %>% filter(focalrte == 33901 | focalrte == 72035 | focalrte == 60024)
+
+bbs_allsub = bbs_allscales %>% filter(focalrte == 33901 | focalrte == 72035 | focalrte == 44032)
 bbs_allsub$focalrte = as.factor(bbs_allsub$focalrte)
-#use this to assign neutral colors for each factor level per what color scheme is ideal?
+#use this to assign diff colors for each factor level per what color scheme is ideal?
 
 
-pred_plot = ggplot(bbs_allscales, aes(x = logA, y = meanOcc))+geom_line(aes(group = focalrte), color = "grey")+
-  theme_classic()+geom_line(data = bbs_allsub, aes(x = logA, y = meanOcc, group = as.factor(focalrte), color = as.factor(focalrte)), size = 2)+ #geom_smooth(model = lm, color = 'red')+
-  labs(x = "Log Area", y = "Mean Community Occupancy")+scale_color_viridis(discrete = TRUE) 
-pred_plot #remember to thicken black line 
+pred_plot = ggplot(bbs_allscales, aes(x = logA, y = pctCore))+geom_line(aes(group = focalrte), color = "grey")+
+  theme_classic()+geom_line(data = bbs_allsub, aes(x = logA, y = pctCore, group = as.factor(focalrte), color = as.factor(focalrte)), size = 2)+ #geom_smooth(model = lm, color = 'red')+
+  labs(x = "Log Area", y = "Percent Core Species in Community")+scale_color_viridis(discrete = TRUE)+
+  theme(axis.title = element_text(size = 18))+theme(legend.position = c(0.80, 0.25)) 
+pred_plot 
 
-#bbs_allscales$preds2 = predict(mod2)
-pred_plot2 = ggplot(bbs_allscales, aes(x = logN, y = meanOcc))+geom_line(aes(group = focalrte), color = "grey")+
-  theme_classic()+geom_line(data = bbs_allsub, aes(x = logN, y = meanOcc, group = as.factor(focalrte), color = as.factor(focalrte)), size = 2)+ #geom_smooth(model = lm, color = 'red')+
-  labs(x = "Log Abundance", y = "Mean Community Occupancy") 
-pred_plot2 #remember to thicken black line 
-
-abun_p = ggplot(bbs_allscales, aes(x = logA, y = meanOcc, colour = logN))+
-  geom_line(aes(group = focalrte))+
-  theme_classic()+ #geom_smooth(model = lm, color = 'red')+
-  labs(x = "Log Area", y = "Mean Community Occupancy")
-abun_p
-?geom_line 
+#reevaluate once new curviness vals extracted 
 
 
 
@@ -137,38 +125,16 @@ abun_p
 #Considering having a second df output from the creation of coefs that allows us to see how those individual deviances change 
 #esp across scales. 
 
-# setwd("C:/git/core-transient")
-#'#' Please download and install the following packages:
-library(raster)
-library(maps)
-library(sp)
-library(rgdal)
-library(maptools)
-library(rgeos)
-library(dplyr)
-library(fields)
-library(tidyr)
-library(ggplot2)
-library(nlme)
-library(gridExtra)
-library(wesanderson)
-library(stats)
-
-# To run this script, you need temperature, precip, etc data, 
-# which are currently stored in the following directories off of github: 
-
-# Data directories
-BBS = '//bioark.ad.unc.edu/HurlbertLab/Jenkins/BBS scaled/'
 
 ####Extract coefficients from scale-occupancy relationships for analysis####
-OA.df = data.frame(stateroute = numeric(), OA.min = numeric(), OA.max = numeric(), 
-                   OA.slope = numeric(), 
-                   OA.mid = numeric(), 
-                   OA.curvature = numeric())
-ON.df = data.frame(stateroute = numeric(), ON.min = numeric(), ON.max = numeric(), 
-                   ON.slope = numeric(), 
-                   ON.mid = numeric(), 
-                   ON.curvature = numeric())
+PCA.df = data.frame(stateroute = numeric(), PCA.min = numeric(), PCA.max = numeric(), 
+                   PCA.slope = numeric(), 
+                   PCA.mid = numeric(), 
+                   PCA.curvature = numeric())
+PCN.df = data.frame(stateroute = numeric(), PCN.min = numeric(), PCN.max = numeric(), 
+                   PCN.slope = numeric(), 
+                   PCN.mid = numeric(), 
+                   PCN.curvature = numeric())
 
 
 
@@ -189,159 +155,238 @@ stateroutes = unique(bbs_allscales$focalrte)
 
 for(s in stateroutes){
   logsub = subset(bbs_allscales, bbs_allscales$focalrte == s)  
-  #OA 
-  OAlog = lm(meanOcc ~ logA, data = logsub) #lm instead of nls, reg linear model
-  logsub$OApreds = predict(OAlog)
-  #OApred_df = data.frame(preds = predict(OAlog), scale = logsub$scale, logA = logsub$logA)  #get preds -> is predicting unique per scale, all clear
+  #PCA 
+  PCAlog = lm(pctCore ~ logA, data = logsub) #lm instead of nls, reg linear model
+  logsub$PCApreds = predict(PCAlog)
+  #PCApred_df = data.frame(preds = predict(PCAlog), scale = logsub$scale, logA = logsub$logA)  #get preds -> is predicting unique per scale, all clear
   #ACTUAL stats (for plotting data pts): 
-  OA.min = min(logsub$meanOcc[logsub$logA == min(logsub$logA)])
-  OA.max = logsub$meanOcc[logsub$logA == max(logsub$logA)]
-  OA.mid = min(logsub$logA[logsub$meanOcc >= 0.5]) 
-  OA.slope = ((OA.max - OA.min)/(max(logsub$logA[logsub$meanOcc == max(logsub$meanOcc)]) - min(logsub$logA[logsub$meanOcc == min(logsub$meanOcc)])))
+  PCA.min = min(logsub$pctCore[logsub$logA == min(logsub$logA)])
+  PCA.max = logsub$pctCore[logsub$logA == max(logsub$logA)]
+  PCA.mid = min(logsub$logA[logsub$pctCore >= 0.5]) 
+  PCA.slope = ((PCA.max - PCA.min)/(max(logsub$logA[logsub$pctCore == max(logsub$pctCore)]) - min(logsub$logA[logsub$pctCore == min(logsub$pctCore)])))
   #want the FIRST instance where it hits this range -> how? minimum scale at which it does that
   #save as an area, not a "scale" 
   
-  OA.vec = logsub$meanOcc #vector for a given focal rte s, actual value
-  OA.pvec = logsub$OApreds #vector for given focal rte s, pred values
-  OA.curvature =  sum(abs(OA.vec - OA.pvec)) 
+  PCA.vec = logsub$pctCore #vector for a given focal rte s, actual value
+  PCA.pvec = logsub$PCApreds #vector for given focal rte s, pred values
+  PCA.curvature =  sum(abs(PCA.vec - PCA.pvec)) 
   #AUC proxy - taking diff between actual and predicted mid vals at EVERY scale and adding together
-  OAmodel = data.frame(stateroute = s, OA.min, OA.max, OA.slope, 
-                       OA.mid, OA.curvature)
+  PCAmodel = data.frame(stateroute = s, PCA.min, PCA.max, PCA.slope, 
+                       PCA.mid, PCA.curvature)
   
-  OA.df = rbind(OA.df, OAmodel)
+  PCA.df = rbind(PCA.df, PCAmodel)
   #
   
-  #ON 
-  ONlog = lm(meanOcc ~ logN, data = logsub) #lm instead of nls, reg linear model
-  logsub$ONpreds = predict(ONlog)
-  #ONpred_df = data.frame(preds = predict(ONlog), scale = logsub$scale, logN = logsub$logN)  #get preds -> is predicting unique per scale, all clear
+  #PCN 
+  PCNlog = lm(pctCore ~ logN, data = logsub) #lm instead of nls, reg linear model
+  logsub$PCNpreds = predict(PCNlog)
+  #PCNpred_df = data.frame(preds = predict(PCNlog), scale = logsub$scale, logN = logsub$logN)  #get preds -> is predicting unique per scale, all clear
   #ACTUAL stats (for plotting data pts): 
-  ON.min = min(logsub$meanOcc[logsub$logN == min(logsub$logN)])
-  ON.max = logsub$meanOcc[logsub$logN == max(logsub$logN)]
-  ON.mid = min(logsub$logN[logsub$meanOcc >= 0.5]) 
-  ON.slope = ((ON.max - ON.min)/(max(logsub$logN[logsub$meanOcc == max(logsub$meanOcc)]) - min(logsub$logN[logsub$meanOcc == min(logsub$meanOcc)])))
+  PCN.min = min(logsub$pctCore[logsub$logN == min(logsub$logN)])
+  PCN.max = logsub$pctCore[logsub$logN == max(logsub$logN)]
+  PCN.mid = min(logsub$logN[logsub$pctCore >= 0.5]) 
+  PCN.slope = ((PCN.max - PCN.min)/(max(logsub$logN[logsub$pctCore == max(logsub$pctCore)]) - min(logsub$logN[logsub$pctCore == min(logsub$pctCore)])))
   #want the FIRST instance where it hits this range -> how? minimum scale at which it does that
   #save as an area, not a "scale" 
   
-  ON.vec = logsub$meanOcc #vector for a given focal rte s, actual value
-  ON.pvec = logsub$ONpreds #vector for given focal rte s, pred values
-  ON.curvature =  sum(abs(ON.vec - ON.pvec)) 
+  PCN.vec = logsub$pctCore #vector for a given focal rte s, actual value
+  PCN.pvec = logsub$PCNpreds #vector for given focal rte s, pred values
+  PCN.curvature =  sum(abs(PCN.vec - PCN.pvec)) 
   #NUC proxy - taking diff between actual and predicted mid vals at EVERY scale and adding together
-  ONmodel = data.frame(stateroute = s, ON.min, ON.max, ON.slope, 
-                       ON.mid, ON.curvature)
+  PCNmodel = data.frame(stateroute = s, PCN.min, PCN.max, PCN.slope, 
+                       PCN.mid, PCN.curvature)
   
-  ON.df = rbind(ON.df, ONmodel)
+  PCN.df = rbind(PCN.df, PCNmodel)
   #
 }  
 
 
 #join all together using inner_join by focal rte, not cbind 
-coefs = OA.df %>% 
-  inner_join(ON.df, OA.df, by = "stateroute")
+core_coefs = PCA.df %>% 
+  inner_join(PCN.df, PCA.df, by = "stateroute")
 
-write.csv(coefs, "scripts/R-scripts/scale_analysis/coefs.csv", row.names = FALSE) 
-#updated 11/21, removal of redundant coefs and inclusion of ON
+write.csv(core_coefs, "scripts/R-scripts/scale_analysis/core_coefs.csv", row.names = FALSE) 
+#updated 1/31, removal of redundant coefs and inclusion of ON
 
 
-####Plotting occupancy-scale relationships with observed and predicted values####
-#work in progress
-#do I want to plot slope and line of predicted values over the top of actual? should be an easy sub 
+####Env analysis####
+#Background data prep is just environmental data prep, nothing involving occupancy until env_all and core_coefs merge
 
+####abitat hetero measures and scale independent of coefs (for predictions)####   
+core_coefs = read.csv("scripts/R-scripts/scale_analysis/core_coefs.csv", header = TRUE) #AUC etc. 
+env_all = read.csv("scripts/R-scripts/scale_analysis/env_all.csv", header = TRUE) #AUC etc. 
+#calc areas of scales and run against logA consistently ? 
+
+env_all$area = env_all$scale #*40 etc etc etc
+
+####Coefs to habitat het####
+
+#coefs to top scale env characterizing data
+core_env_coefs = env_all %>%
+  inner_join(core_coefs, by = "stateroute") #and also join single rte
+
+#since now reflective of all scales, 62370 rows, 36 cols 
+write.csv(core_env_coefs, "scripts/R-scripts/scale_analysis/core_env_coefs.csv", row.names = FALSE)
+#updated 12/14
+
+
+####Coef & habitat heterogeneity models####
+core_env_coefs = read.csv("scripts/R-scripts/scale_analysis/core_env_coefs.csv", header = TRUE) #same # of cols as old 
+
+#check out cov matrix to inform model generation and predictions:
+covmatrix = round(cor(core_env_coefs[, 3:ncol(core_env_coefs)]), 2) #since clipped stateroute don't need to clip again - should I clip scale?
+covmatrix = as.data.frame(covmatrix)
+write.csv(covmatrix, "scripts/R-scripts/scale_analysis/core_covmatrix.csv", row.names = FALSE)
+#mean and var - interpret how covary with coefs and direction - i.e. ndvi mean covaries positively with pmin, 
+#but elev mean covaries negatively with pmin 
+#and both variances covary negatively with pmin 
+#ndvi mean covaries negatively with pthresh, elev mean positively
+#no other variables have this divergent relationship in directionality of covariance, 
+#ndvi var and elev var always in unison when strong
+#hab het variance measures: pslope and pthresh positive, pmin and pmax both negative covariance
+
+
+####UP NEXT: run series of models and reassess/renew plots from spring####
+# nested loop for examining variation in coefs/fitted curves explained by env heterogeneity 
+#so: response = coefficients = dependent; predictor = environmental heterogeneity = independent
+
+#first need to make sure JUST looking at variance characterizing site, not means -> filter out 
+
+core_rsqrd_hetero = data.frame(dep = character(), ind = character(), 
+                          r2 = numeric(), adjr = numeric(), corr_r = numeric(), uppr = numeric(), lowr = numeric())
+#modify to include plotting of obs values for each stateroute vs pred line 
+#and plot these with r squared vals as annotations to plots too 
+
+for (d in 3:6) { #adjust columns appropriately -> make sure correct order of ind and dep vars!
+  for (i in 8:17) {
+    tempmod = lm(core_env_coefs[,d] ~ core_env_coefs[,i])
+    tempcor = cor.test(core_env_coefs[,d], core_env_coefs[,i], method = "pearson")
+    
+    
+    tempdf = data.frame(dep = names(core_env_coefs)[d], 
+                        ind = names(core_env_coefs)[i], 
+                        r2 = summary(tempmod)$r.squared, 
+                        adjr = summary(tempmod)$adj.r.squared, 
+                        corr_r = as.numeric(tempcor$estimate), 
+                        uppr = as.numeric(tempcor$conf.int[2]), 
+                        lowr = as.numeric(tempcor$conf.int[1]))
+    
+    # templot = ggplot(data = env_coefs, aes(x = env_coefs[,i], y = env_coefs[,d]))+geom_point()+
+    #   geom_line(aes(y = predict(tempmod), color = 'Model'))+
+    #   labs(x = names(env_coefs)[i], y = names(env_coefs)[d])+guides(color = "none")+
+    #   annotate("text", x = 0.5*max(env_coefs[,i]), y = 0.5*max(env_coefs[,d]), 
+    #            label = paste("italic(R) ^ 2 ==", tempdf$r2, sep = ""), parse = TRUE, 
+    #            color = "red", size = 5.5) 
+    # ggsave(templot, filename=paste("env_coefs", names(env_coefs)[d], 
+    #                                names(env_coefs)[i],".png",sep=""))
+    
+    core_rsqrd_hetero = rbind(core_rsqrd_hetero, tempdf)
+  }
+}
+
+
+write.csv(core_rsqrd_hetero, "scripts/R-scripts/scale_analysis/core_rsqrd_hetero.csv", row.names = FALSE) 
+#updated 01/22 using corrected hab_het vals, only variances characterizing sites
+
+
+####Visually Characterizing measures of habitat heterogeneity####
+core_rsqrd_hetero = read.csv("scripts/R-scripts/scale_analysis/core_rsqrd_hetero.csv", header = TRUE)
+# hab_het = read.csv("scripts/R-scripts/scale_analysis/hab_het.csv", header = TRUE)
+
+r_plot = ggplot(data = core_rsqrd_hetero, aes(y = corr_r))+geom_col(aes(x=dep))+facet_wrap(~ind)+
+  theme_bw()
+r_plot 
+
+
+core_env_coefs = read.csv("scripts/R-scripts/scale_analysis/core_env_coefs.csv", header = TRUE)
+
+#scale on x and r on y, panel by coef of interest, line color by var measure
+
+# goal plot -> ggplot(envcoefs, aes(x = scale, y = corr_r))+geom_line(aes(color = dep))+facet_wrap(~ind)
+#I want a corr_r value for every dep and ind variable at every scale, for every focal
+#for every scale, for every focal route - will have a LOT - maybe just do a subset for meeting 
+
+#the correlation coefficients themselves won't change, bc representative of the overall 
+#occ-scale relationship, that's fine - the hab_het vals will change though bc measures 
+#at each scale 
+#starting at scale of 1 since that's lowest res we have for habhet across scales, 
+#rerun previous dep/ind loop with new mods
+
+
+core_scales_hetero = data.frame(dep = character(), ind = character(), 
+                           r2 = numeric(), adjr = numeric(), corr_r = numeric(), 
+                           uppr = numeric(), lowr = numeric(), scale = numeric())
+#modify to include plotting of obs values for each stateroute vs pred line 
+#and plot these with r squared vals as annotations to plots too 
+#setwd("C:/git/core-transient/output/plots/Molly_Plots/habhet/")
+scales = unique(core_env_coefs$scale)
+
+
+for (s in scales) {
+  env_coefs2 = core_env_coefs %>% 
+    filter(scale == s)
+  for (d in 3:6) { #adjust columns appropriately -> make sure correct order of ind and dep vars!
+    for (i in 8:17) {
+      tempmod = lm(env_coefs2[,d] ~ env_coefs2[,i])
+      tempcor = cor.test(env_coefs2[,d], env_coefs2[,i], method = "pearson")
+      
+      
+      tempdf = data.frame(dep = names(env_coefs2)[d], 
+                          ind = names(env_coefs2)[i], 
+                          r2 = summary(tempmod)$r.squared, 
+                          adjr = summary(tempmod)$adj.r.squared, 
+                          corr_r = as.numeric(tempcor$estimate),
+                          uppr = as.numeric(tempcor$conf.int[2]),
+                          lowr = as.numeric(tempcor$conf.int[1]),
+                          scale = s)
+      
+      # templot = ggplot(data = env_coefs, aes(x = env_coefs[,i], y = env_coefs[,d]))+geom_point()+
+      #   geom_line(aes(y = predict(tempmod), color = 'Model'))+
+      #   labs(x = names(env_coefs)[i], y = names(env_coefs)[d])+guides(color = "none")+
+      #   annotate("text", x = 0.5*max(env_coefs[,i]), y = 0.5*max(env_coefs[,d]), 
+      #            label = paste("italic(R) ^ 2 ==", tempdf$r2, sep = ""), parse = TRUE, 
+      #            color = "red", size = 5.5) 
+      # ggsave(templot, filename=paste("env_coefs", names(env_coefs)[d], 
+      #                                names(env_coefs)[i],".png",sep=""))
+      
+      core_scales_hetero = rbind(core_scales_hetero, tempdf)
+    }
+  }
+}
+
+write.csv(core_scales_hetero, "scripts/R-scripts/scale_analysis/core_scales_hetero.csv", row.names = FALSE) 
+#updated 01/22 using corrected hab_het vals, only variances characterizing sites
+
+#INTERPRETATION: 
+#elevation and ndvi at the highest scales explain more variation in the pmin and pthresh values 
+#compared to any other measures of habitat heterogeneity 
+#However, elevation explains more variation than ndvi at the top scales - AND 
+#the gulf between ndvi and elevation in terms of explanatory power widens at the larger scales 
+# - the two measures are closer together in importance at the lowest scales. 
+#NDVI variance at local scale actually has an 'outlier' point further above even local elev variation 
+#depending on which coefficient metric that corresponds to, it may be that ndvi explains more 
+#local variation in heterogeneity and variation at the lower scales of the occ-scale relationship 
+#while elevational heterogeneity explains variation at the higher scales of the occ-scale relationship?  
+
+
+
+####Alt figures for pct Core####
+
+####Plotting NULL all routes with 3 highlighted "types####
 bbs_allscales = read.csv("data/BBS/bbs_allscales.csv", header = TRUE)
-coefs = read.csv("scripts/R-scripts/scale_analysis/coefs.csv", header = TRUE)
-goodrtes = read.csv(paste(BBS, "good_rtes2.csv", sep = ""), header = TRUE)
+core_coefs = read.csv("scripts/R-scripts/scale_analysis/core_coefs.csv", header = TRUE) #AUC etc.
+
+coefs_ranked = core_coefs %>% 
+  arrange(PCA.curvature) #middle teal line should be least curvy 
 
 
-#merge longi and lati to bbs_allscales prior to east vs west plotting 
-bbs_allscales = bbs_allscales %>% 
-  left_join(goodrtes, by = c("focalrte" = "stateroute"))
+bbs_allsub = bbs_allscales %>% filter(focalrte == 33901 | focalrte == 72035 | focalrte == 88005) #no longer 44032!
+bbs_allsub$focalrte = as.factor(bbs_allsub$focalrte)
+#use this to assign diff colors for each factor level per what color scheme is ideal?
 
 
-#plot observed occ scale thresh or mid vals vs pthresh or pmid vals across scales 
-#subtract actual - pred to gen new column of AUC vals for each scale  
-
-#first plot freqs of occupancy vals with vals binned every .05 and .1 incremements for diff scales: 
-
-#First plots: scale = 1, x axis = meanOcc, y axis = freq of meanOcc vals (hist) 
-bbs_one = bbs_allscales %>% 
-  filter(scale == "seg50")
-
-one_rtfreq = ggplot(bbs_one, aes(x=meanOcc))+geom_histogram(bins = 30) + coord_cartesian(xlim = c(0, 0.95))
-one_rtfreq
-#compare btw/East vs West N. American routes, split in half and compare to predicted whiteboard sketches 
-#since statecode/focalrte names aren't assigned in order from East to West, filter by greater than or less than longitudinal cutoff 
-#add route coordinate data first and then filter based on that 
-
-
-
-bbs_one_E = bbs_one %>% 
-  filter(Longi > -100) #greater than -100 is -99, -98, -97 etc. 
-bbs_one_W = bbs_one %>% 
-  filter(Longi <= -100 ) #less than or equal to -100 is further away from 0 and further negative
-
-
-#plotting comparisons:
-one_rtfreqE = ggplot(bbs_one_E, aes(x=meanOcc))+geom_histogram(bins = 30) + coord_cartesian(xlim = c(0, 0.95), ylim = c(0, 80))+labs(title = "Single rte East") 
-one_rtfreqE
-
-one_rtfreqW = ggplot(bbs_one_W, aes(x=meanOcc))+geom_histogram(bins = 30) + coord_cartesian(xlim = c(0, 0.95), ylim = c(0, 80))+labs(title = "Single rte West") 
-one_rtfreqW
-
-
-#Secondary comparison plots: scale = 66, x-axis = meanOcc, y axis = freq of meanOcc vals (hist)
-bbs_top = bbs_allscales %>% 
-  filter(scale == "66")
-
-lndscpe_rtfreq = ggplot(bbs_top, aes(x=meanOcc))+geom_histogram(bins = 30)+coord_cartesian(xlim = c(0, 0.95), ylim = c(0, 80)) 
-lndscpe_rtfreq
-####YAAASSSS this is what I wanted to see ^^ 
-#top scales freq is tighter, but also way less normal
-
-bbs_top_E = bbs_top %>% 
-  filter(Longi > -100) 
-bbs_top_W = bbs_top %>% 
-  filter(Longi <= -100)
-
-#plotting comparisons: 
-
-lndscpe_rtfreqE = ggplot(bbs_top_E, aes(x=meanOcc))+geom_histogram(bins = 30)+coord_cartesian(xlim = c(0.5, 0.95), ylim = c(0, 80))+labs(title = "Landscape East") 
-lndscpe_rtfreqE
-
-lndscpe_rtfreqW = ggplot(bbs_top_W, aes(x=meanOcc))+geom_histogram(bins = 30)+coord_cartesian(xlim = c(0.5, 0.95), ylim = c(0, 80))+labs(title = "Landscape West")  
-lndscpe_rtfreqW
-
-#WOW LOOK AT THOSE DISCREPANCIES!!!!
-comparisons = grid.arrange(one_rtfreqE, one_rtfreqW, lndscpe_rtfreqE, lndscpe_rtfreqW)
-
-#left off and stopped here 09/10
-#now plot curvy vals at diff routes bc effectively summarizing area under curve across scales for each route 
-#but are we interested in SEEING the way that AUC varies across scales moreso than across longitudes 
-#so y axis = curvy, x axis = longitude (?) 
-
-#so AUC should vary with scale, but also with east vs west divide -> greater AUC vals in West = greater deviance from obs on avg
-#lati + longi + coefs 
-
-coefs = coefs %>% 
-  left_join(goodrtes, by = "stateroute")
-
-auc_plot = ggplot(coefs, aes(x = OA.AUC))+geom_histogram(bins = 30)
-auc_plot
-#looks pretty normal which is good, little to no area under curve means close good fit with some minor tendency towards overestimating and going too high 
-AUC_E = coefs %>% 
-  filter(Longi > -100) 
-AUC_W = coefs %>% 
-  filter(Longi <= -100)
-
-
-AUC_Eplot = ggplot(AUC_E, aes(x = OA.AUC))+geom_histogram(bins = 30)+
-  coord_cartesian(xlim = c(-6e-14, 6e-14), ylim = c(0, 75))+labs(y = "AUC East")
-AUC_Eplot #mirrors the first dist 
-
-AUC_Wplot = ggplot(AUC_W, aes(x = OA.AUC))+geom_histogram(bins = 30)+
-  coord_cartesian(xlim = c(-6e-14, 6e-14), ylim = c(0, 75))+labs(y = "AUC West")
-AUC_Wplot
-
-comp = grid.arrange(AUC_Eplot, AUC_Wplot)
-#bigger spread, def not normal dist if we narrowed down
-
-
+pred_plot = ggplot(bbs_allscales, aes(x = logA, y = pctCore))+geom_line(aes(group = focalrte), color = "grey")+
+  theme_classic()+geom_line(data = bbs_allsub, aes(x = logA, y = pctCore, group = as.factor(focalrte), color = as.factor(focalrte)), size = 2)+ #geom_smooth(model = lm, color = 'red')+
+  labs(x = "Log Area", y = "Percent Core Species in Community")+scale_color_viridis(discrete = TRUE)+
+  theme(axis.title = element_text(size = 18))+theme(legend.position = c(0.80, 0.25)) 
+pred_plot 
