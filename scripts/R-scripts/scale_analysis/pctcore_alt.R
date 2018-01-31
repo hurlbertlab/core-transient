@@ -23,7 +23,7 @@ library(nlme)
 library(gridExtra)
 library(wesanderson)
 library(stats)
-
+library(viridis)
 
 # To run this script, you need temperature, precip, etc data, 
 # which are currently stored in the following directories off of github: 
@@ -41,40 +41,28 @@ levels(bbs_allscales$scale)
 unique(bbs_allscales$scale)
 
 
-mod1 = lm(meanOcc~logA, data = bbs_allscales) #expljkains ~75-80% of the variation in occ
-mod2 = lm(meanOcc~logN, data = bbs_allscales)
-summary(mod1)
+mod1 = lm(pctCore~logA, data = bbs_allscales) #72%
+mod2 = lm(pctCore~logN, data = bbs_allscales) #75%
+summary(mod2)
 
-plot(meanOcc~logA, data = bbs_allscales, xlab = "Log Area" , ylab = "Mean Temporal Occupancy")
-plot(meanOcc~logN, data = bbs_allscales, xlab = "Average Abundance" , ylab = "Mean Temporal Occupancy")
+plot(pctCore~logA, data = bbs_allscales, xlab = "Log Area" , ylab = "Percent Core Species in Community")
+plot(pctCore~logN, data = bbs_allscales, xlab = "Average Abundance" , ylab = "Percent Core Species in Community")
 #^^same pattern roughly; abundance describes ~same amt of variance as area so serves as a good proxy 
 
-plot(meanOcc~scale, data = bbs_allscales)
 
-#ALL files updated 09/20 ~3pm 
-#bbs_allscales$preds = predict(mod1)
-bbs_allsub = bbs_allscales %>% filter(focalrte == 33901 | focalrte == 72035 | focalrte == 60024)
+
+bbs_allsub = bbs_allscales %>% filter(focalrte == 33901 | focalrte == 72035 | focalrte == 44032)
 bbs_allsub$focalrte = as.factor(bbs_allsub$focalrte)
-#use this to assign neutral colors for each factor level per what color scheme is ideal?
+#use this to assign diff colors for each factor level per what color scheme is ideal?
 
 
-pred_plot = ggplot(bbs_allscales, aes(x = logA, y = meanOcc))+geom_line(aes(group = focalrte), color = "grey")+
-  theme_classic()+geom_line(data = bbs_allsub, aes(x = logA, y = meanOcc, group = as.factor(focalrte), color = as.factor(focalrte)), size = 2)+ #geom_smooth(model = lm, color = 'red')+
-  labs(x = "Log Area", y = "Mean Community Occupancy")+scale_color_viridis(discrete = TRUE) 
-pred_plot #remember to thicken black line 
+pred_plot = ggplot(bbs_allscales, aes(x = logA, y = pctCore))+geom_line(aes(group = focalrte), color = "grey")+
+  theme_classic()+geom_line(data = bbs_allsub, aes(x = logA, y = pctCore, group = as.factor(focalrte), color = as.factor(focalrte)), size = 2)+ #geom_smooth(model = lm, color = 'red')+
+  labs(x = "Log Area", y = "Percent Core Species in Community")+scale_color_viridis(discrete = TRUE)+
+  theme(axis.title = element_text(size = 18))+theme(legend.position = c(0.80, 0.25)) 
+pred_plot 
 
-#bbs_allscales$preds2 = predict(mod2)
-pred_plot2 = ggplot(bbs_allscales, aes(x = logN, y = meanOcc))+geom_line(aes(group = focalrte), color = "grey")+
-  theme_classic()+geom_line(data = bbs_allsub, aes(x = logN, y = meanOcc, group = as.factor(focalrte), color = as.factor(focalrte)), size = 2)+ #geom_smooth(model = lm, color = 'red')+
-  labs(x = "Log Abundance", y = "Mean Community Occupancy") 
-pred_plot2 #remember to thicken black line 
-
-abun_p = ggplot(bbs_allscales, aes(x = logA, y = meanOcc, colour = logN))+
-  geom_line(aes(group = focalrte))+
-  theme_classic()+ #geom_smooth(model = lm, color = 'red')+
-  labs(x = "Log Area", y = "Mean Community Occupancy")
-abun_p
-?geom_line 
+#reevaluate once new curviness vals extracted 
 
 
 
@@ -137,38 +125,16 @@ abun_p
 #Considering having a second df output from the creation of coefs that allows us to see how those individual deviances change 
 #esp across scales. 
 
-# setwd("C:/git/core-transient")
-#'#' Please download and install the following packages:
-library(raster)
-library(maps)
-library(sp)
-library(rgdal)
-library(maptools)
-library(rgeos)
-library(dplyr)
-library(fields)
-library(tidyr)
-library(ggplot2)
-library(nlme)
-library(gridExtra)
-library(wesanderson)
-library(stats)
-
-# To run this script, you need temperature, precip, etc data, 
-# which are currently stored in the following directories off of github: 
-
-# Data directories
-BBS = '//bioark.ad.unc.edu/HurlbertLab/Jenkins/BBS scaled/'
 
 ####Extract coefficients from scale-occupancy relationships for analysis####
-OA.df = data.frame(stateroute = numeric(), OA.min = numeric(), OA.max = numeric(), 
-                   OA.slope = numeric(), 
-                   OA.mid = numeric(), 
-                   OA.curvature = numeric())
-ON.df = data.frame(stateroute = numeric(), ON.min = numeric(), ON.max = numeric(), 
-                   ON.slope = numeric(), 
-                   ON.mid = numeric(), 
-                   ON.curvature = numeric())
+PCA.df = data.frame(stateroute = numeric(), PCA.min = numeric(), PCA.max = numeric(), 
+                   PCA.slope = numeric(), 
+                   PCA.mid = numeric(), 
+                   PCA.curvature = numeric())
+PCN.df = data.frame(stateroute = numeric(), PCN.min = numeric(), PCN.max = numeric(), 
+                   PCN.slope = numeric(), 
+                   PCN.mid = numeric(), 
+                   PCN.curvature = numeric())
 
 
 
@@ -189,55 +155,55 @@ stateroutes = unique(bbs_allscales$focalrte)
 
 for(s in stateroutes){
   logsub = subset(bbs_allscales, bbs_allscales$focalrte == s)  
-  #OA 
-  OAlog = lm(meanOcc ~ logA, data = logsub) #lm instead of nls, reg linear model
-  logsub$OApreds = predict(OAlog)
-  #OApred_df = data.frame(preds = predict(OAlog), scale = logsub$scale, logA = logsub$logA)  #get preds -> is predicting unique per scale, all clear
+  #PCA 
+  PCAlog = lm(pctCore ~ logA, data = logsub) #lm instead of nls, reg linear model
+  logsub$PCApreds = predict(PCAlog)
+  #PCApred_df = data.frame(preds = predict(PCAlog), scale = logsub$scale, logA = logsub$logA)  #get preds -> is predicting unique per scale, all clear
   #ACTUAL stats (for plotting data pts): 
-  OA.min = min(logsub$meanOcc[logsub$logA == min(logsub$logA)])
-  OA.max = logsub$meanOcc[logsub$logA == max(logsub$logA)]
-  OA.mid = min(logsub$logA[logsub$meanOcc >= 0.5]) 
-  OA.slope = ((OA.max - OA.min)/(max(logsub$logA[logsub$meanOcc == max(logsub$meanOcc)]) - min(logsub$logA[logsub$meanOcc == min(logsub$meanOcc)])))
+  PCA.min = min(logsub$pctCore[logsub$logA == min(logsub$logA)])
+  PCA.max = logsub$pctCore[logsub$logA == max(logsub$logA)]
+  PCA.mid = min(logsub$logA[logsub$pctCore >= 0.5]) 
+  PCA.slope = ((PCA.max - PCA.min)/(max(logsub$logA[logsub$pctCore == max(logsub$pctCore)]) - min(logsub$logA[logsub$pctCore == min(logsub$pctCore)])))
   #want the FIRST instance where it hits this range -> how? minimum scale at which it does that
   #save as an area, not a "scale" 
   
-  OA.vec = logsub$meanOcc #vector for a given focal rte s, actual value
-  OA.pvec = logsub$OApreds #vector for given focal rte s, pred values
-  OA.curvature =  sum(abs(OA.vec - OA.pvec)) 
+  PCA.vec = logsub$pctCore #vector for a given focal rte s, actual value
+  PCA.pvec = logsub$PCApreds #vector for given focal rte s, pred values
+  PCA.curvature =  sum(abs(PCA.vec - PCA.pvec)) 
   #AUC proxy - taking diff between actual and predicted mid vals at EVERY scale and adding together
-  OAmodel = data.frame(stateroute = s, OA.min, OA.max, OA.slope, 
-                       OA.mid, OA.curvature)
+  PCAmodel = data.frame(stateroute = s, PCA.min, PCA.max, PCA.slope, 
+                       PCA.mid, PCA.curvature)
   
-  OA.df = rbind(OA.df, OAmodel)
+  PCA.df = rbind(PCA.df, PCAmodel)
   #
   
-  #ON 
-  ONlog = lm(meanOcc ~ logN, data = logsub) #lm instead of nls, reg linear model
-  logsub$ONpreds = predict(ONlog)
-  #ONpred_df = data.frame(preds = predict(ONlog), scale = logsub$scale, logN = logsub$logN)  #get preds -> is predicting unique per scale, all clear
+  #PCN 
+  PCNlog = lm(pctCore ~ logN, data = logsub) #lm instead of nls, reg linear model
+  logsub$PCNpreds = predict(PCNlog)
+  #PCNpred_df = data.frame(preds = predict(PCNlog), scale = logsub$scale, logN = logsub$logN)  #get preds -> is predicting unique per scale, all clear
   #ACTUAL stats (for plotting data pts): 
-  ON.min = min(logsub$meanOcc[logsub$logN == min(logsub$logN)])
-  ON.max = logsub$meanOcc[logsub$logN == max(logsub$logN)]
-  ON.mid = min(logsub$logN[logsub$meanOcc >= 0.5]) 
-  ON.slope = ((ON.max - ON.min)/(max(logsub$logN[logsub$meanOcc == max(logsub$meanOcc)]) - min(logsub$logN[logsub$meanOcc == min(logsub$meanOcc)])))
+  PCN.min = min(logsub$pctCore[logsub$logN == min(logsub$logN)])
+  PCN.max = logsub$pctCore[logsub$logN == max(logsub$logN)]
+  PCN.mid = min(logsub$logN[logsub$pctCore >= 0.5]) 
+  PCN.slope = ((PCN.max - PCN.min)/(max(logsub$logN[logsub$pctCore == max(logsub$pctCore)]) - min(logsub$logN[logsub$pctCore == min(logsub$pctCore)])))
   #want the FIRST instance where it hits this range -> how? minimum scale at which it does that
   #save as an area, not a "scale" 
   
-  ON.vec = logsub$meanOcc #vector for a given focal rte s, actual value
-  ON.pvec = logsub$ONpreds #vector for given focal rte s, pred values
-  ON.curvature =  sum(abs(ON.vec - ON.pvec)) 
+  PCN.vec = logsub$pctCore #vector for a given focal rte s, actual value
+  PCN.pvec = logsub$PCNpreds #vector for given focal rte s, pred values
+  PCN.curvature =  sum(abs(PCN.vec - PCN.pvec)) 
   #NUC proxy - taking diff between actual and predicted mid vals at EVERY scale and adding together
-  ONmodel = data.frame(stateroute = s, ON.min, ON.max, ON.slope, 
-                       ON.mid, ON.curvature)
+  PCNmodel = data.frame(stateroute = s, PCN.min, PCN.max, PCN.slope, 
+                       PCN.mid, PCN.curvature)
   
-  ON.df = rbind(ON.df, ONmodel)
+  PCN.df = rbind(PCN.df, PCNmodel)
   #
 }  
 
 
 #join all together using inner_join by focal rte, not cbind 
-coefs = OA.df %>% 
-  inner_join(ON.df, OA.df, by = "stateroute")
+coefs = PCA.df %>% 
+  inner_join(PCN.df, PCA.df, by = "stateroute")
 
 write.csv(coefs, "scripts/R-scripts/scale_analysis/coefs.csv", row.names = FALSE) 
 #updated 11/21, removal of redundant coefs and inclusion of ON
