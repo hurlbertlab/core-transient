@@ -112,13 +112,13 @@ bbs_occ_area = na.omit(bbs_occ_area)
 mod4a = lmer(pctTrans~(1|datasetID) * taxa * log10(area), data=bbs_occ_area)
 mod_a = lm(bbs_occ_area$pctTrans~predict(mod4a))
 summary(mod_a)
-
+rsquared(mod_a, aicc = FALSE)
 
 # pseudo r2 abun
 mod4b = lmer(pctTrans~(1|datasetID) * taxa * log10(meanAbundance), data=bbs_occ_area)
 mod_r = lm(bbs_occ_area$pctTrans~predict(mod4b))
 summary(mod_r)
-
+rsquared(mod_r, aicc = FALSE)
 
 # R2 area
 modar = lm(pctTrans~log10(area), data=bbs_occ_area)

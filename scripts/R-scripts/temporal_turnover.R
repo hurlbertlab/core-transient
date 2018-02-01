@@ -55,7 +55,7 @@ datasetIDs = dataformattingtable %>%
          countFormat %in% c('count', 'cover', 'density', 'abundance', 'presence', 'biomass')) %>% 
   dplyr::select(dataset_ID)
 
-datasetIDs = subset(datasetIDs, datasetIDs != 1)
+datasetIDs = unique(datasetIDs)
 
 abund_data = get_abund_data(datasetIDs)
 propocc_data = get_propocc_data(datasetIDs)
