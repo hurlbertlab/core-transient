@@ -241,6 +241,10 @@ num_incl = subset(sad_incl_p, n > 0)
 logseries_null = gather(null_output, "treatment","weights", c(SAD_excl,SAD_incl))
 logseries_null$treatment = factor(logseries_null$treatment, levels = c('SAD_incl','SAD_excl'),ordered = TRUE)
 logseries_null = subset(logseries_null, number == 1)
+
+##### need to merge logseries weights to null and plot 1 excl over null
+logseries_join = merge(logseries_null, logseries_weights, by = c("datasetID", "site"))
+
 #### ggplot fig1a #####
 
 colscale = c("dark orange2","yellow")
