@@ -491,8 +491,20 @@ turnover_else$taxa = factor(as.character(turnover_else$taxa),
 colscale = c("#1D6A9B","turquoise2","gold2", "purple4","red", "forestgreen") 
 
 m <- ggplot(turnover_bbs, aes(x = turnover, y = notransturn))
-four_c <-m + geom_abline(intercept = 0,slope = 1, lwd =1.5,linetype="dashed")+geom_point(data = turnover_bbs, aes(colour = taxa),size = 2)+geom_point(data = turnover_else, aes(colour = taxa), size = 5) + xlab("Turnover (all species)") + ylab("Turnover \n (excluding transients)")  + scale_colour_manual(breaks = turnover_col$taxa,values = colscale) + theme_classic() + theme(axis.text.x=element_text(size=30, color = "black"),axis.text.y=element_text(size=30, color = "black"),axis.ticks.x=element_blank(),axis.title.x=element_text(size=46, color = "black"),axis.title.y=element_text(size=46,angle=90,vjust = 5))+ guides(colour = guide_legend(title = "Taxa"))
+four_c <-m + geom_abline(intercept = 0,slope = 1, lwd =1.5,linetype="dashed")+geom_point(data = turnover_bbs, aes(colour = taxa),size = 2)+geom_point(data = turnover_else, aes(colour = taxa), size = 5) + xlab("Turnover (all species)") + ylab("Turnover \n (excluding non-transients)")  + scale_colour_manual(breaks = turnover_col$taxa,values = colscale) + theme_classic() + theme(axis.text.x=element_text(size=28, color = "black"),axis.text.y=element_text(size=28, color = "black"),axis.ticks.x=element_blank(),axis.title.x=element_text(size=42, color = "black"),axis.title.y=element_text(size=42,angle=90,vjust = 3))+ guides(colour = guide_legend(title = "Taxa"))
 ggsave(file="C:/Git/core-transient/output/plots/null_turnover.pdf", height = 10, width = 15)
+
+
+
+
+##### paired t-test #####
+df_ttest_5c = merge(null_5c, turnover_output, by = c("datasetID", "site"))
+
+t.test(df_ttest_5c$notransturn, 
+       df_ttest_5c$TJnotrans, 
+       paired=TRUE, 
+       conf.level=0.95)
+
 
 
 
