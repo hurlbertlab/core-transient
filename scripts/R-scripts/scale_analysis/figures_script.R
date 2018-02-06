@@ -282,8 +282,8 @@ star2 = bbs_thrd %>% filter(stateroute == "11244")
 
 plot(NorthAm, xlim = c(-160, -60), ylim = c(25, 70))
 points(bbs_latlon$Longi, bbs_latlon$Lati, col= "grey", pch=16)
-points(sites1$longitude, sites1$latitude, col = "lightseagreen", pch = 16)
-points(sites2$longitude, sites2$latitude, col = "goldenrod", pch = 16)
+points(sites1$longitude, sites1$latitude, col = "#FDE725FF", pch = 16)
+points(sites2$longitude, sites2$latitude, col = viridis(1, begin = 0.5, end = 1, option = "D"), pch = 16)
 points(star1$Longi, star1$Lati, col = "black", pch = 17, cex = 2)
 points(star2$Longi, star2$Lati, col = "black", pch = 17, cex = 2)
 
@@ -318,9 +318,15 @@ scales_hetero2 = scales_hetero %>%
   filter(ind == "OA.curvature" | ind == "OA.max" | ind == "OA.mid"| ind == "OA.min" | ind == "OA.slope")
 
 ggplot(scales_hetero2, aes(x = ind, y = corr_r))+
-  geom_pointrange(aes(color = dep, ymin = lowr, ymax = uppr))+geom_abline(intercept = 0, slope = 0)+
-  theme_classic()+scale_color_viridis(discrete = TRUE)+theme(axis.title = element_text(size = 18))+
-  labs(x = "Occupancy-scale parameters", y = "Pearson's correlation estimate")
+  geom_pointrange(aes(shape = dep, ymin = lowr, ymax = uppr))+geom_abline(intercept = 0, slope = 0)+
+  theme_classic()+theme(axis.title = element_text(size = 18))+
+  labs(x = "Occupancy-scale parameters", y = "Pearson's correlation estimate")+
+  scale_x_discrete(limit = c("OA.curvature","OA.max","OA.mid","OA.min","OA.slope"),
+                     labels = c("Curvature","Max","Scale 0.5", "Min", "Slope"))+
+  scale_shape_discrete(name="Habitat Heterogeneity",
+                      breaks=c("elev.var", "ndvi.var"),
+                      labels=c("Variance in Elevation", "Variance in NDVI"))
+
 
 
 
