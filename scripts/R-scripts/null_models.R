@@ -227,6 +227,17 @@ logseries_weights = read.csv("output/tabular_data/logseries_weights.csv", header
 logseries_excl = subset(logseries_weights, treatment == "Excluding")
 sad_excl = merge(logseries_excl, null_output, by = c("datasetID", "site"))
 
+
+logseries_excl = logseries_excl[,c("datasetID", "site", "weights", "treatment")]
+null_output$weights = null_output$SAD_excl
+null_output$treatment = "Null"
+null_output = filter(null_output, number == 1)
+null_output_excl = null_output[,c("datasetID", "site", "weights", "treatment")]
+
+SAD_excl = rbind(logseries_excl, null_output_excl)
+
+
+
 sad_excl_p = sad_excl %>% group_by(datasetID, site) %>%
   tally(SAD_excl >= weights)
 num_excl = subset(sad_excl_p, n > 0)
@@ -250,22 +261,14 @@ logseries_join = merge(logseries_null, logseries_weights, by = c("datasetID", "s
 colscale = c("dark orange2","yellow")
 k = ggplot(logseries_null,aes(x=weights,fill=treatment))+geom_histogram(bins = 20, position = "identity", alpha = 0.7)+ xlab("Transient Status") + ylab("Proportion of Species") + scale_y_continuous(breaks=c(0,500,1000)) + scale_fill_manual(labels = c("All species","Excluding transients"),values = colscale)+ theme_classic() + theme(axis.text.x=element_blank(), axis.ticks.x=element_blank(),axis.text.y=element_text(size=30, color = "black"),axis.title.y=element_text(size=46,angle=90,vjust = 5),axis.title.x=element_text(size=46, vjust = -7))  + ylab("Frequency") + xlab("Akaike Weight") + theme(legend.position = "none") +theme(plot.margin=unit(c(0.35,1,2,1.7),"cm")) 
 
-k
+excl = ggplot(SAD_excl,aes(x=weights,fill=treatment))+geom_histogram(bins = 20, position = "identity", alpha = 0.7)+ xlab("Transient Status") + ylab("Proportion of Species") + scale_y_continuous(breaks=c(0,500,1000, 1300)) + scale_fill_manual(labels = c("Excluding transients", "Excluding non-transients"),values = c("black", "gray"))+ theme_classic() + theme(axis.text.x=element_blank(), axis.ticks.x=element_blank(),axis.text.y=element_text(size=30, color = "black"),axis.title.y=element_text(size=46,angle=90,vjust = 8),axis.title.x=element_text(size=46, vjust = -7))  + ylab("Frequency") + xlab("Akaike Weight") +theme(plot.margin=unit(c(0.35,1,2,1.7),"cm")) + theme(legend.text = element_text(size = 15), legend.title = element_blank(), legend.position = "none")
 
 ggsave(file="C:/Git/core-transient/output/plots/1a_null.pdf", height = 10, width = 16)
 
 
-hist(sad_excl_p$n, xlab = "", main = "Distribution of the number of null sites greater \n than logseries weights excluding transients")
-abline(v=mean(na.omit(logseries_excl$weights)), col = "blue", lwd = 2)
+ks.test(logseries_excl$weights, null_output_excl$weights)
+# D = 0.24116, p-value < 2.2e-16
 
-hist(sad_incl_p$n, xlab = "", main = "Distribution of the number of null sites greater \n than logseries weights including transients")
-abline(v=mean(na.omit(logseries_incl$weights)), col = "blue", lwd = 2)
-
-ks.test(null_output1$SAD_incl, logseries_excl$weights)
-# data:  null_output1$SAD_incl and logseries_excl$weights
-# D = 0.72217, p-value < 2.2e-16
-ks.test(null_output1$SAD_excl, logseries_incl$weights)
-# D = 0.59209, p-value < 2.2e-16
 
 #### NULL 5B #####
 # read in route level ndvi and elevation data (radius = 40 km)
@@ -281,7 +284,7 @@ lat_scale_bbs$site_id = sapply(strsplit(as.character(lat_scale_bbs$site), split=
 lat_scale_bbs$site_id = as.integer(lat_scale_bbs$site_id)
 
 
-#### null model ####
+
 null_5b = c()
 regroup = c()
 sites = unique(bbs_occ_2014$stateroute)[1:20]
@@ -361,6 +364,8 @@ limits = aes(ymax = corr_res_long$CIupper, ymin=corr_res_long$CIlower)
 l = ggplot(data=corr_res_long, aes(factor(env), value, fill = class, alpha = 0.7))+ geom_bar(width = 0.8, position = position_dodge(width = 0.9), stat="identity")+ scale_fill_manual(values = c("All" = "dark orange2","Trans" = "#c51b8a","Ntrans" = "yellow"), labels = c("All species","Excluding transients", "Transients only"))+ geom_bar(data=corr_res_long, aes(factor(env), value, fill = class), width = 0.8, position = position_dodge(width = 0.9), stat="identity")+ geom_errorbar(aes(ymin = corr_res_long$CIlower, ymax = corr_res_long$CIupper), width =.1, position = position_dodge(.9))+ theme_classic() + theme(axis.text.x=element_text(size=46, color = "black", vjust = 5), axis.ticks.x=element_blank(),axis.text.y=element_text(size=30, color = "black"),axis.title.x=element_text(size=46, color = "black"),axis.title.y=element_text(size=46,angle=90,vjust = 2))+ xlab(NULL) + ylab(expression(paste(italic("r")))) + scale_y_continuous(breaks=c(-0.5,-0.3,-0.1,.1,.3,.5))+ guides(fill=guide_legend(title=NULL)) + theme(legend.text = element_text(size = 38), legend.title = element_blank(), legend.key.height=unit(2,"line")) + geom_hline(yintercept=0, lty = "dashed", lwd = 1.25) + theme(plot.margin=unit(c(1,1,2,1),"cm"))
 four_b <- l
 ggsave(file="C:/Git/core-transient/output/plots/5b_corrcoeff_NDVI.pdf", height = 5, width = 15)
+
+
 
 
 
