@@ -190,12 +190,12 @@ for(id in datasetIDs[,1]){
       
       null_output = rbind(null_output, c(r, id, site, logseries_weights_incl[3], logseries_weights_excl[,3],numnon = as.numeric(length(notrans$propOcc))))
       nwd = nrow(sad_data)
-      curr.time = Sys.time()
-      elapsed = curr.time - init.time
-      percelltime = elapsed/i
-      estimated.end = (nwd - i)*percelltime + curr.time
-      print(paste(i, "out of",nwd, "; current time:", curr.time,
-                  "; estimated end time:", estimated.end))
+      #curr.time = Sys.time()
+     # elapsed = curr.time - init.time
+      #percelltime = elapsed/i
+     # estimated.end = (nwd - i)*percelltime + curr.time
+     # print(paste(i, "out of",nwd, "; current time:", curr.time,
+                 # "; estimated end time:", estimated.end))
    }
   }
 }
@@ -232,6 +232,8 @@ null_output$weights = null_output$SAD_excl
 null_output$treatment = "Null"
 null_output = filter(null_output, number == 1)
 null_output_excl = null_output[,c("datasetID", "site", "weights", "treatment")]
+# removing BBS as a test
+null_output_excl = filter(null_output_excl, datasetID != 1)
 
 SAD_excl = rbind(logseries_excl, null_output_excl)
 
