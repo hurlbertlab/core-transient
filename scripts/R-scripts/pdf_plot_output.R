@@ -1,6 +1,6 @@
 # creating a propOcc plot for each dataset
 library(gtools)
-setwd("C:/git/core-transient")
+# setwd("C:/git/core-transient")
 # beta = matrix(NA, nrow = length(uniq2), ncol = 19)
 
 pdf('propOcc.pdf', height = 8, width = 10)
@@ -72,8 +72,10 @@ multiplot <- function(..., plotlist=NULL, file, cols=1, layout=NULL) {
   }
 }
 
-states <- map_data("state")
 
+
+
+# setwd("C:/git/Biotic-Interactions")
 bbs_occ = read.csv("data/2001_2015_bbs_occupancy.csv", header = TRUE)
 bbs_w_aou = bbs_occ %>% filter(aou > 2880) %>%
   filter(aou < 3650 | aou > 3810) %>%
@@ -92,6 +94,8 @@ plotdata_all = plotdata_AOU %>%
 subfocalspecies = unique(bbs_w_aou$aou)
 # Making pdf of ranges for each focal spp
 colscale = c("red", "gold","dark green")
+
+states <- map_data("state")
 
 pdf('C:/Git/core-transient/ind_spp_occ_maps.pdf', height = 8, width = 10)
 layout = matrix(c(3,3,3,3), nrow=2, byrow=TRUE)
