@@ -225,7 +225,6 @@ null_5a_sum = null_output %>%
 # read in output from figure 5 script
 logseries_weights = read.csv("output/tabular_data/logseries_weights.csv", header = TRUE)
 logseries_excl = subset(logseries_weights, treatment == "Excluding")
-sad_excl = merge(logseries_excl, null_output, by = c("datasetID", "site"))
 
 
 logseries_excl = logseries_excl[,c("datasetID", "site", "weights", "treatment")]
@@ -237,7 +236,7 @@ null_output_excl = null_output[,c("datasetID", "site", "weights", "treatment")]
 SAD_excl = rbind(logseries_excl, null_output_excl)
 
 
-
+sad_excl = merge(logseries_excl, null_output, by = c("datasetID", "site"))
 sad_excl_p = sad_excl %>% group_by(datasetID, site) %>%
   tally(SAD_excl >= weights)
 num_excl = subset(sad_excl_p, n > 0)
