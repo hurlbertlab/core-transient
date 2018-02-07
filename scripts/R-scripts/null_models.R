@@ -55,13 +55,13 @@ taxcolors = cbind(taxcolors, Type,symbols)
 # create bbs files
 bbs_count5a = dplyr::rename(bbs_count, year = Year, site = stateroute, species = aou, count = speciestotal)
 bbs_count5a$datasetID = 1
-write.csv(bbs_count5a, "data/standardized_datasets/dataset_1.csv", row.names = FALSE)
+# write.csv(bbs_count5a, "data/standardized_datasets/dataset_1.csv", row.names = FALSE)
 
 # bbs_abun_occ1 = subset(bbs_abun_occ, scale ==  50)
 bbs_occ_aou = dplyr::rename(bbs_occ_aou, site = stateroute, species = aou, propOcc = occ)
 bbs_occ_aou$datasetID  = 1
 bbs_occ5a = bbs_occ_aou[, c("datasetID", "site", "species", "propOcc")]
-write.csv(bbs_occ5a, "data/propOcc_datasets/propOcc_1.csv", row.names = FALSE)
+# write.csv(bbs_occ5a, "data/propOcc_datasets/propOcc_1.csv", row.names = FALSE)
 
 #' Get list of dataset IDS for datasets that meet criteria for analysis including:
 #' * Study wide criteria
@@ -417,15 +417,21 @@ for (dataset in datasetIDs[,1]) {
     notrans = sitedata[sitedata$propOcc > 1/3,]
     trans = sitedata[sitedata$propOcc <= 1/3,]
     years = as.numeric(unique(sitedata$year))
-    size = abs(length(notrans$propOcc) - length(trans$propOcc))
+    num_notrans = length(notrans$propOcc)
+    num_trans = length(trans$propOcc)
     TJs = c()
     TJ_notrans = c()
-    if(size < length(notrans$propOcc)){
-      for(i in 1:1000){
-        print(c(i, dataset, site))
-      subturn = sample_n(notrans, size, replace = FALSE) 
-      null_sample = rbind(trans, subturn)
+    
+    for(i in 1:100){
+      print(c(i, dataset, site))
+      if(num_notrans >= num_trans) {
+        null_sample = sample_n(notrans, num_notrans, replace = FALSE) %>%
+          rbind(trans)
+      } else {
+        null_sample = sample_n(trans, num_notrans, replace = FALSE)  
+      }
       if(length(years) > 0){
+        
         for (year in years[1:(length(years)-1)]) {
           comm1 = unique(null_sample$species[null_sample$year == year])
           comm2 = unique(null_sample$species[null_sample$year == year + 1])
@@ -440,7 +446,7 @@ for (dataset in datasetIDs[,1]) {
         }
       }
       nwd = nrow(all_data)
-      null_5c = rbind(null_5c, c(i, dataset, site, T_J, T_J_notran, as.numeric(length(notrans$propOcc))))
+      null_5c = rbind(null_5c, c(i, dataset, site, T_J, T_J_notran, num_notrans))
       curr.time = Sys.time()
       elapsed = curr.time - init.time
       percelltime = elapsed/i
@@ -452,7 +458,6 @@ for (dataset in datasetIDs[,1]) {
   }
 }
 
-}
 
 null_5c = data.frame(null_5c)
 colnames(null_5c) = c("r", "datasetID", "site", "turnover","notransturn", "numnon")
