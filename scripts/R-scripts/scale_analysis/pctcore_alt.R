@@ -390,3 +390,42 @@ pred_plot = ggplot(bbs_allscales, aes(x = logA, y = pctCore))+geom_line(aes(grou
   labs(x = "Log Area", y = "Percent Core Species in Community")+scale_color_viridis(discrete = TRUE)+
   theme(axis.title = element_text(size = 18))+theme(legend.position = c(0.80, 0.25)) 
 pred_plot 
+
+####Corrr_confints alternate with pctCore scale relationship coefs in lieu of original coefs####
+core_scales_hetero = read.csv("scripts/R-scripts/scale_analysis/core_scales_hetero.csv", header = TRUE)
+
+scales_hetero_v = core_scales_hetero %>% 
+  filter(dep == "elev.var" | dep == "ndvi.var") 
+
+#scale on x and r on y, panel by coef of interest, line color by var measure
+ggplot(scales_hetero_v, aes(x = scale, y = corr_r))+
+  geom_line(aes(color = dep))+facet_wrap(~ind)+theme_classic()+
+  geom_abline(intercept = 0, slope = 0)+
+  theme_classic()+theme(axis.title = element_text(size = 18))+
+  labs(x = "Number of aggregated BBS Routes", y = "Pearson's correlation estimate")+theme(legend.position = c(0.80, 0.20)) 
+
+#I want a corr_r value for every dep and ind variable at every scale, for every focal
+#for every scale, for every focal route - will have a LOT - maybe just do a subset for meeting 
+
+#the correlation coefficients themselves won't change, bc representative of the overall 
+#occ-scale relationship, that's fine - the hab_het vals will change though bc measures 
+#at each scale 
+#starting at scale of 1 since that's lowest res we have for habhet across scales, 
+#rerun previous dep/ind loop with new mods
+
+
+#at top scales, with just variances - diamond shape figure that parallels prediction table (alt to outcome table)
+scales_hetero2 = core_scales_hetero %>% 
+  filter(scale == 66) %>% 
+  filter(dep == "elev.var" | dep == "ndvi.var") %>% 
+  filter(ind == "PCA.curvature" | ind == "PCA.max" | ind == "PCA.mid"| ind == "PCA.min" | ind == "PCA.slope")
+
+ggplot(scales_hetero2, aes(x = ind, y = corr_r))+
+  geom_pointrange(aes(shape = dep, ymin = lowr, ymax = uppr))+geom_abline(intercept = 0, slope = 0)+
+  theme_classic()+theme(axis.title = element_text(size = 18))+
+  labs(x = "Occupancy-scale parameters", y = "Pearson's correlation estimate")+
+  scale_x_discrete(limit = c("PCA.curvature","PCA.max","PCA.mid","PCA.min","PCA.slope"),
+                   labels = c("Curvature","Max","Scale 0.5", "Min", "Slope"))+
+  scale_shape_discrete(name="Habitat Heterogeneity",
+                       breaks=c("elev.var", "ndvi.var"),
+                       labels=c("Variance in Elevation", "Variance in NDVI"))
