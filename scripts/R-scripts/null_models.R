@@ -424,19 +424,16 @@ for (dataset in datasetIDs[,1]) {
     
     for(i in 1:100){
       print(c(i, dataset, site))
-      if(num_notrans >= num_trans) {
+      if(num_notrans >= num_trans & length(years) > 0) {
         null_sample = sample_n(notrans, num_notrans, replace = FALSE) %>%
           rbind(trans)
       } else {
         null_sample = sample_n(trans, num_notrans, replace = FALSE)  
       }
-      if(length(years) > 0){
+      
+     # if(length(years) > 0){
         
         for (year in years[1:(length(years)-1)]) {
-          comm1 = unique(null_sample$species[null_sample$year == year])
-          comm2 = unique(null_sample$species[null_sample$year == year + 1])
-          T_J = turnover(comm1, comm2)
-          TJs = c(TJs, T_J)
           
           notrans2 = null_sample[null_sample$propOcc > 1/3,]
           comm1_noT = unique(notrans2$species[notrans2$year == year])
@@ -445,18 +442,18 @@ for (dataset in datasetIDs[,1]) {
           TJ_notrans = c(TJ_notrans, T_J_notran)
         }
       }
+      
+      null_5c = rbind(null_5c, c(i, dataset, site, T_J_notran, num_notrans))
       nwd = nrow(all_data)
-      null_5c = rbind(null_5c, c(i, dataset, site, T_J, T_J_notran, num_notrans))
       curr.time = Sys.time()
       elapsed = curr.time - init.time
       percelltime = elapsed/i
       estimated.end = (nwd - i)*percelltime + curr.time
       print(paste(i, "out of",nwd, "; current time:", curr.time,
            "; estimated end time:", estimated.end))
-
-    }
-  }
-}
+    } # end r loop
+  } # end site loop
+ # end dataset loop
 
 
 null_5c = data.frame(null_5c)
