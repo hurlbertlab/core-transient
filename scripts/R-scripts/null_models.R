@@ -164,31 +164,31 @@ colscale = c("azure4","#1D6A9B","turquoise2","gold2","purple4","red", "forestgre
 null_output = c()
 init.time = Sys.time()
 for(id in datasetIDs[,1]){
-  print(id)
   subdata = subset(sad_data, datasetID == id)
   sites = unique(subdata$site)
   for(site in sites){
     sitedata = subdata[subdata$site == site,]
     notrans = na.omit(sitedata[sitedata$propOcc > 1/3,])
     trans = na.omit(sitedata[sitedata$propOcc <= 1/3,])
-    size = abs(length(notrans$propOcc) - length(trans$propOcc))
-    if(size < length(notrans$propOcc)){
+    num_notrans = length(notrans$propOcc)
+    num_trans = length(trans$propOcc)
+    
     for(r in 1:100){
-      print(c(r, id))
-      subsad = sample_n(notrans, size, replace = FALSE)  
-      regroup = rbind(trans, subsad)
-      logseries_weights_incl = regroup %>%
-        group_by(datasetID, site) %>% 
-        dplyr::summarize(weights = get_logseries_weight(abunds), treatment = 'All')
+      print(c(r, id, Sys.time()))
       
-      logseries_weights_excl = regroup %>%
+      if(num_notrans >= num_trans) {
+        null_sample = sample_n(notrans, num_notrans - num_trans, replace = FALSE) %>%
+          rbind(trans)
+      } else {
+        null_sample = sample_n(trans, num_notrans, replace = FALSE)  
+      }
+
+      logseries_weights_excl = null_sample %>%
         filter(propOcc > 1/3) %>%
         group_by(datasetID, site) %>% 
         dplyr::summarize(weights = get_logseries_weight(abunds), treatment = 'Excluding')
       
-      logseries_weights = rbind(logseries_weights_incl, logseries_weights_excl)
-      
-      null_output = rbind(null_output, c(r, id, site, logseries_weights_incl[3], logseries_weights_excl[,3],numnon = as.numeric(length(notrans$propOcc))))
+      null_output = rbind(null_output, c(r, id, site, logseries_weights_excl[,3], num_notrans))
       nwd = nrow(sad_data)
       #curr.time = Sys.time()
      # elapsed = curr.time - init.time
@@ -196,17 +196,16 @@ for(id in datasetIDs[,1]){
      # estimated.end = (nwd - i)*percelltime + curr.time
      # print(paste(i, "out of",nwd, "; current time:", curr.time,
                  # "; estimated end time:", estimated.end))
-   }
-  }
-}
-}
+    } # end r loop
+  } # end site loop
+} # end dataset loop
+
 
 null_output = data.frame(null_output)
-colnames(null_output) = c("number", "datasetID", "site", "SAD_incl", "SAD_excl","Non_trans")
+colnames(null_output) = c("number", "datasetID", "site", "SAD_excl","Non_trans")
 null_output$number = as.numeric(null_output$number)
 null_output$datasetID = as.numeric(null_output$datasetID)
 null_output$site = as.character(null_output$site)
-null_output$SAD_incl = as.numeric(null_output$SAD_incl)
 null_output$SAD_excl = as.numeric(null_output$SAD_excl)
 null_output$Non_trans = as.numeric(null_output$Non_trans)
 
@@ -287,7 +286,7 @@ lat_scale_bbs$site_id = as.integer(lat_scale_bbs$site_id)
 
 
 null_5b = c()
-regroup = c()
+null_sample = c()
 sites = unique(bbs_occ_2014$stateroute)[1:20]
 for(r in 1:10){
   print(r)
@@ -302,13 +301,13 @@ for(r in 1:10){
   if(size < length(notrans$occ)){
     subcor = sample_n(notrans, size, replace = FALSE)  
   }
-  regroup.5 = rbind(trans, subcor)
-  regroup = rbind(regroup, regroup.5)
+  null_sample.5 = rbind(trans, subcor)
+  null_sample = rbind(null_sample, null_sample.5)
 
     # calc bbs with and without trans
-    notransbbs = regroup %>% filter(occ > 1/3) %>% dplyr::count(stateroute) 
+    notransbbs = null_sample %>% filter(occ > 1/3) %>% dplyr::count(stateroute) 
     names(notransbbs) = c("site_id", "spRich")
-    allbbs = regroup %>% dplyr::count(stateroute) 
+    allbbs = null_sample %>% dplyr::count(stateroute) 
     names(allbbs) = c("site_id", "spRich")
 
     bbs_spRich = merge(allbbs, notransbbs, by = "site_id")
@@ -318,7 +317,7 @@ for(r in 1:10){
     bbs_env = join(bbs_spRich, gimms_agg, type = "left")
     bbs_env = join(bbs_env, unique(lat_scale_bbs[,c("site_id", "elev.point", "elev.mean", "elev.var")]), type = "left")
   }
-    regroup = c()
+    null_sample = c()
     bar1 = cor.test(bbs_env$spRich, bbs_env$ndvi)$estimate
     print(bar1)
     CI1lower =  cor.test(bbs_env$spRich, bbs_env$ndvi)$conf.int[1]
@@ -425,15 +424,15 @@ for (dataset in datasetIDs[,1]) {
       for(i in 1:1000){
         print(c(i, dataset, site))
       subturn = sample_n(notrans, size, replace = FALSE) 
-      regroup = rbind(trans, subturn)
+      null_sample = rbind(trans, subturn)
       if(length(years) > 0){
         for (year in years[1:(length(years)-1)]) {
-          comm1 = unique(regroup$species[regroup$year == year])
-          comm2 = unique(regroup$species[regroup$year == year + 1])
+          comm1 = unique(null_sample$species[null_sample$year == year])
+          comm2 = unique(null_sample$species[null_sample$year == year + 1])
           T_J = turnover(comm1, comm2)
           TJs = c(TJs, T_J)
           
-          notrans2 = regroup[regroup$propOcc > 1/3,]
+          notrans2 = null_sample[null_sample$propOcc > 1/3,]
           comm1_noT = unique(notrans2$species[notrans2$year == year])
           comm2_noT = unique(notrans2$species[notrans2$year == year + 1])
           T_J_notran = turnover(comm1_noT, comm2_noT)
@@ -533,7 +532,7 @@ for(site in sites){
     for(r in 1:1000){
       print(r)
       subsar = sample_n(notrans, abs(size), replace = FALSE) 
-      regroup = rbind(subsar, trans)
+      null_sample = rbind(subsar, trans)
     
       notransbbsscale = bbs_below %>% filter(occ > 1/3) %>% dplyr::count(site)
       names(notransbbsscale) = c("site","notrans")
@@ -618,7 +617,7 @@ for(id in scaleIDs){
   
     if(size < length(notrans$propOcc)){
       subsar = sample_n(notrans, abs(size), replace = FALSE) 
-      regroup = rbind(subsar, trans)
+      null_sample = rbind(subsar, trans)
     }
   }
   # count up spRich with and without transients (for Fig 4)
@@ -635,7 +634,7 @@ for(id in scaleIDs){
     occ_trans_area = rbind(occ_trans, occ_trans_area)
   
     
-    plotsub = merge(regroup[, c("datasetID", "site", "species", "propOcc")], occ_trans_area, by = c("datasetID","site"))
+    plotsub = merge(null_sample[, c("datasetID", "site", "species", "propOcc")], occ_trans_area, by = c("datasetID","site"))
     
     for(id in scaleIDs){
       print(id)
