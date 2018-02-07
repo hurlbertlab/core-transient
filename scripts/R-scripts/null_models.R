@@ -461,7 +461,7 @@ for (dataset in datasetIDs[,1]) {
 
 null_5c = data.frame(null_5c)
 colnames(null_5c) = c("r", "datasetID", "site", "turnover","notransturn", "numnon")
-write.csv(null_5c, "output/tabular_data/null_5c.csv", row.names = FALSE)
+# write.csv(null_5c, "output/tabular_data/null_5c.csv", row.names = FALSE)
 null_5c = read.csv("output/tabular_data/null_5c.csv", header = TRUE)
 
 null_5c_output = null_5c %>% group_by(datasetID, site) %>%
