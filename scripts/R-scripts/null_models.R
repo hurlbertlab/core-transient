@@ -223,45 +223,25 @@ null_5a_sum = null_output %>%
 
 # read in output from figure 5 script
 logseries_weights = read.csv("output/tabular_data/logseries_weights.csv", header = TRUE)
-logseries_excl = subset(logseries_weights, treatment == "Excluding")
+logseries_all = subset(logseries_weights, treatment == "All")
 
 
-logseries_excl = logseries_excl[,c("datasetID", "site", "weights", "treatment")]
+logseries_all = logseries_all[,c("datasetID", "site", "weights", "treatment")]
 null_output$weights = null_output$SAD_excl
 null_output$treatment = "Null"
 null_output = filter(null_output, number == 1)
 null_output_excl = null_output[,c("datasetID", "site", "weights", "treatment")]
 # removing BBS as a test
-null_output_excl = filter(null_output_excl, datasetID != 1)
+# null_output_excl = filter(null_output_excl, datasetID != 1)
 
-SAD_excl = rbind(logseries_excl, null_output_excl)
-
-
-sad_excl = merge(logseries_excl, null_output, by = c("datasetID", "site"))
-sad_excl_p = sad_excl %>% group_by(datasetID, site) %>%
-  tally(SAD_excl >= weights)
-num_excl = subset(sad_excl_p, n > 0)
-
-logseries_incl = subset(logseries_weights, treatment == "All")
-sad_incl = merge(logseries_incl, null_5a_sum, by = c("datasetID", "site"))
-
-sad_incl_p = sad_incl %>% group_by(datasetID, site) %>%
-  tally(SAD_incl >= weights)
-num_incl = subset(sad_incl_p, n > 0)
-
-logseries_null = gather(null_output, "treatment","weights", c(SAD_excl,SAD_incl))
-logseries_null$treatment = factor(logseries_null$treatment, levels = c('SAD_incl','SAD_excl'),ordered = TRUE)
-logseries_null = subset(logseries_null, number == 1)
-
-##### need to merge logseries weights to null and plot 1 excl over null
-logseries_join = merge(logseries_null, logseries_weights, by = c("datasetID", "site"))
+SAD_plot = rbind(logseries_all, null_output_excl)
 
 #### ggplot fig1a #####
 
 colscale = c("dark orange2","yellow")
-k = ggplot(logseries_null,aes(x=weights,fill=treatment))+geom_histogram(bins = 20, position = "identity", alpha = 0.7)+ xlab("Transient Status") + ylab("Proportion of Species") + scale_y_continuous(breaks=c(0,500,1000)) + scale_fill_manual(labels = c("All species","Excluding transients"),values = colscale)+ theme_classic() + theme(axis.text.x=element_blank(), axis.ticks.x=element_blank(),axis.text.y=element_text(size=30, color = "black"),axis.title.y=element_text(size=46,angle=90,vjust = 5),axis.title.x=element_text(size=46, vjust = -7))  + ylab("Frequency") + xlab("Akaike Weight") + theme(legend.position = "none") +theme(plot.margin=unit(c(0.35,1,2,1.7),"cm")) 
+# k = ggplot(logseries_null,aes(x=weights,fill=treatment))+geom_histogram(bins = 20, position = "identity", alpha = 0.7)+ xlab("Transient Status") + ylab("Proportion of Species") + scale_y_continuous(breaks=c(0,500,1000)) + scale_fill_manual(labels = c("All species","Excluding transients"),values = colscale)+ theme_classic() + theme(axis.text.x=element_blank(), axis.ticks.x=element_blank(),axis.text.y=element_text(size=30, color = "black"),axis.title.y=element_text(size=46,angle=90,vjust = 5),axis.title.x=element_text(size=46, vjust = -7))  + ylab("Frequency") + xlab("Akaike Weight") + theme(legend.position = "none") +theme(plot.margin=unit(c(0.35,1,2,1.7),"cm")) 
 
-excl = ggplot(SAD_excl,aes(x=weights,fill=treatment))+geom_histogram(bins = 20, position = "identity", alpha = 0.7)+ xlab("Transient Status") + ylab("Proportion of Species") + scale_y_continuous(breaks=c(0,500,1000, 1300)) + scale_fill_manual(labels = c("Excluding transients", "Excluding non-transients"),values = c("black", "gray"))+ theme_classic() + theme(axis.text.x=element_blank(), axis.ticks.x=element_blank(),axis.text.y=element_text(size=30, color = "black"),axis.title.y=element_text(size=46,angle=90,vjust = 8),axis.title.x=element_text(size=46, vjust = -7))  + ylab("Frequency") + xlab("Akaike Weight") +theme(plot.margin=unit(c(0.35,1,2,1.7),"cm")) + theme(legend.text = element_text(size = 15), legend.title = element_blank(), legend.position = "none")
+excl = ggplot(SAD_plot,aes(x=weights,fill=treatment))+geom_histogram(bins = 20, position = "identity", alpha = 0.7)+ xlab("Transient Status") + ylab("Proportion of Species") + scale_y_continuous(breaks=c(0,500,1000, 1300)) + scale_fill_manual(labels = c("Excluding transients", "Excluding non-transients"),values = c("black", "gray"))+ theme_classic() + theme(axis.text.x=element_blank(), axis.ticks.x=element_blank(),axis.text.y=element_text(size=30, color = "black"),axis.title.y=element_text(size=46,angle=90,vjust = 8),axis.title.x=element_text(size=46, vjust = -7))  + ylab("Frequency") + xlab("Akaike Weight") +theme(plot.margin=unit(c(0.35,1,2,1.7),"cm")) + theme(legend.text = element_text(size = 15), legend.title = element_blank(), legend.position = "none")
 
 ggsave(file="C:/Git/core-transient/output/plots/1a_null.pdf", height = 10, width = 16)
 
