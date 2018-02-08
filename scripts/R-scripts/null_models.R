@@ -210,8 +210,8 @@ null_output$SAD_excl = as.numeric(null_output$SAD_excl)
 null_output$Non_trans = as.numeric(null_output$Non_trans)
 
 
-write.csv(null_output, "output/tabular_data/null_output_SAD_1000.csv", row.names = FALSE)
-null_output = read.csv("output/tabular_data/null_output_SAD_1000.csv", header = TRUE)
+write.csv(null_output, "output/tabular_data/null_output_SAD_100.csv", row.names = FALSE)
+null_output = read.csv("output/tabular_data/null_output_SAD_100.csv", header = TRUE)
 null_output$combo = paste(null_output$datasetID, null_output$site, sep = "_")
 
 null_output1 = subset(null_output, number == 1)
@@ -241,13 +241,14 @@ SAD_plot = rbind(logseries_all, null_output_excl)
 colscale = c("dark orange2","yellow")
 # k = ggplot(logseries_null,aes(x=weights,fill=treatment))+geom_histogram(bins = 20, position = "identity", alpha = 0.7)+ xlab("Transient Status") + ylab("Proportion of Species") + scale_y_continuous(breaks=c(0,500,1000)) + scale_fill_manual(labels = c("All species","Excluding transients"),values = colscale)+ theme_classic() + theme(axis.text.x=element_blank(), axis.ticks.x=element_blank(),axis.text.y=element_text(size=30, color = "black"),axis.title.y=element_text(size=46,angle=90,vjust = 5),axis.title.x=element_text(size=46, vjust = -7))  + ylab("Frequency") + xlab("Akaike Weight") + theme(legend.position = "none") +theme(plot.margin=unit(c(0.35,1,2,1.7),"cm")) 
 
-excl = ggplot(SAD_plot,aes(x=weights,fill=treatment))+geom_histogram(bins = 20, position = "identity", alpha = 0.7)+ xlab("Transient Status") + ylab("Proportion of Species") + scale_y_continuous(breaks=c(0,500,1000, 1300)) + scale_fill_manual(labels = c("Excluding transients", "Excluding non-transients"),values = c("black", "gray"))+ theme_classic() + theme(axis.text.x=element_blank(), axis.ticks.x=element_blank(),axis.text.y=element_text(size=30, color = "black"),axis.title.y=element_text(size=46,angle=90,vjust = 8),axis.title.x=element_text(size=46, vjust = -7))  + ylab("Frequency") + xlab("Akaike Weight") +theme(plot.margin=unit(c(0.35,1,2,1.7),"cm")) + theme(legend.text = element_text(size = 15), legend.title = element_blank(), legend.position = "none")
+excl = ggplot(SAD_plot,aes(x=weights,fill=treatment))+geom_histogram(bins = 20, position = "identity", alpha = 0.7)+ xlab("Transient Status") + ylab("Proportion of Species") + scale_y_continuous(breaks=c(0,500,1000, 1300)) + scale_fill_manual(labels = c("All species", "Excluding non-transients"),values = c("black", "gray"))+ theme_classic() + theme(axis.text.x=element_blank(), axis.ticks.x=element_blank(),axis.text.y=element_text(size=30, color = "black"),axis.title.y=element_text(size=46,angle=90,vjust = 8),axis.title.x=element_text(size=46, vjust = -7))  + ylab("Frequency") + xlab("Akaike Weight") +theme(plot.margin=unit(c(0.35,1,2,1.7),"cm")) + theme(legend.text = element_text(size = 15), legend.title = element_blank(), legend.position = "none")
 
 ggsave(file="C:/Git/core-transient/output/plots/1a_null.pdf", height = 10, width = 16)
 
 
-ks.test(logseries_excl$weights, null_output_excl$weights)
-# D = 0.24116, p-value < 2.2e-16
+ks.test(logseries_all$weights, null_output_excl$weights)
+# D = 0.24116, p-value < 2.2e-16 diff between true and null
+# D = 0.63701, p-value < 2.2e-16 diff between all and null
 
 
 #### NULL 5B #####
@@ -434,12 +435,12 @@ for (dataset in datasetIDs[,1]) {
 
 null_5c = data.frame(null_5c)
 colnames(null_5c) = c("r", "datasetID", "site", "notransturn", "numnon")
-# write.csv(null_5c, "output/tabular_data/null_5c.csv", row.names = FALSE)
-null_5c = read.csv("output/tabular_data/null_5c.csv", header = TRUE)
+# write.csv(null_5c, "output/tabular_data/null_5c100.csv", row.names = FALSE)
+null_5c = read.csv("output/tabular_data/null_5c100.csv", header = TRUE)
 
 # read in output from figure 5 script
 turnover_output = read.csv("output/tabular_data/temporal_turnover.csv", header = TRUE)
-turnover_merge = merge(turnover_output, null_5c, by = c("datasetID", "site"))
+null_5cplot = merge(turnover_output, null_5c, by = c("datasetID", "site"))
 
 turnover_excl = turnover_merge %>% group_by(datasetID, site) %>%
   tally(TJnotrans >= notransturn)
@@ -452,7 +453,7 @@ num_incl_5c = subset(turnover_incl, n > 0)
 
 ##### plot 5c ####
 taxcolors = read.csv("output/tabular_data/taxcolors.csv", header = TRUE)
-null_5cplot = subset(null_5c, r == 1)
+null_5cplot = subset(null_5cplot, r == 1)
 turnover_taxa = merge(null_5cplot,dataformattingtable[,c("dataset_ID", "taxa")], by.x = "datasetID", by.y = "dataset_ID")
 turnover_col = merge(turnover_taxa, taxcolors, by = "taxa")
 
@@ -466,9 +467,9 @@ turnover_else$taxa = factor(as.character(turnover_else$taxa),
 
 colscale = c("#1D6A9B","turquoise2","gold2", "purple4","red", "forestgreen") 
 
-m <- ggplot(turnover_bbs, aes(x = turnover, y = notransturn))
+m <- ggplot(turnover_bbs, aes(x = TJ, y = notransturn))
 four_c <- m + geom_abline(intercept = 0,slope = 1, lwd =1.5,linetype="dashed")+geom_point(data = turnover_bbs, aes(colour = taxa),size = 2)+geom_point(data = turnover_else, aes(colour = taxa), size = 5) + xlab("Turnover (all species)") + ylab("Turnover \n (excluding non-transients)")  + scale_colour_manual(breaks = turnover_col$taxa,values = colscale) + theme_classic() + theme(axis.text.x=element_text(size=28, color = "black"),axis.text.y=element_text(size=28, color = "black"),axis.ticks.x=element_blank(),axis.title.x=element_text(size=42, color = "black"),axis.title.y=element_text(size=42,angle=90,vjust = 3))+ guides(colour = guide_legend(title = "Taxa"))
-ggsave(file="C:/Git/core-transient/output/plots/null_turnover.pdf", height = 10, width = 15)
+ggsave(file="C:/Git/core-transient/output/plots/null_turnover_2.pdf", height = 10, width = 15)
 
 
 
