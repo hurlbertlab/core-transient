@@ -399,19 +399,16 @@ for (dataset in datasetIDs[,1]) {
     years = as.numeric(unique(sitedata$year))
     num_notrans = length(notrans$propOcc)
     num_trans = length(trans$propOcc)
-    TJs = c()
     TJ_notrans = c()
     
     for(i in 1:100){
       print(c(i, dataset, site))
       if(num_notrans >= num_trans & length(years) > 0) {
-        null_sample = sample_n(notrans, num_notrans, replace = FALSE) %>%
+        null_sample = sample_n(notrans, num_notrans - num_trans, replace = FALSE) %>%
           rbind(trans)
       } else {
         null_sample = sample_n(trans, num_notrans, replace = FALSE)  
       }
-      
-     # if(length(years) > 0){
         
         for (year in years[1:(length(years)-1)]) {
           
@@ -421,7 +418,6 @@ for (dataset in datasetIDs[,1]) {
           T_J_notran = turnover(comm1_noT, comm2_noT)
           TJ_notrans = c(TJ_notrans, T_J_notran)
         }
-      }
       
       null_5c = rbind(null_5c, c(i, dataset, site, T_J_notran, num_notrans))
       nwd = nrow(all_data)
@@ -433,16 +429,13 @@ for (dataset in datasetIDs[,1]) {
            "; estimated end time:", estimated.end))
     } # end r loop
   } # end site loop
- # end dataset loop
+} # end dataset loop
 
 
 null_5c = data.frame(null_5c)
-colnames(null_5c) = c("r", "datasetID", "site", "turnover","notransturn", "numnon")
+colnames(null_5c) = c("r", "datasetID", "site", "notransturn", "numnon")
 # write.csv(null_5c, "output/tabular_data/null_5c.csv", row.names = FALSE)
 null_5c = read.csv("output/tabular_data/null_5c.csv", header = TRUE)
-
-null_5c_output = null_5c %>% group_by(datasetID, site) %>%
-  summarize(mean = mean(turnover), var = var(turnover))
 
 # read in output from figure 5 script
 turnover_output = read.csv("output/tabular_data/temporal_turnover.csv", header = TRUE)
@@ -456,13 +449,9 @@ turnover_incl = turnover_merge %>% group_by(datasetID, site) %>%
   tally(TJ >= turnover)
 num_incl_5c = subset(turnover_incl, n > 0)
 
-hist(turnover_excl$n, xlab = "", main = "Distribution of turnover excluding transients")
-abline(v=mean(na.omit(logseries_excl$weights)), col = "blue", lwd = 2)
-
-hist(sad_incl_p$n, xlab = "", main = "Distribution of the number of null sites greater \n than logseries weights including transients")
-abline(v=mean(na.omit(logseries_incl$weights)), col = "blue", lwd = 2)
 
 ##### plot 5c ####
+taxcolors = read.csv("output/tabular_data/taxcolors.csv", header = TRUE)
 null_5cplot = subset(null_5c, r == 1)
 turnover_taxa = merge(null_5cplot,dataformattingtable[,c("dataset_ID", "taxa")], by.x = "datasetID", by.y = "dataset_ID")
 turnover_col = merge(turnover_taxa, taxcolors, by = "taxa")
@@ -478,7 +467,7 @@ turnover_else$taxa = factor(as.character(turnover_else$taxa),
 colscale = c("#1D6A9B","turquoise2","gold2", "purple4","red", "forestgreen") 
 
 m <- ggplot(turnover_bbs, aes(x = turnover, y = notransturn))
-four_c <-m + geom_abline(intercept = 0,slope = 1, lwd =1.5,linetype="dashed")+geom_point(data = turnover_bbs, aes(colour = taxa),size = 2)+geom_point(data = turnover_else, aes(colour = taxa), size = 5) + xlab("Turnover (all species)") + ylab("Turnover \n (excluding non-transients)")  + scale_colour_manual(breaks = turnover_col$taxa,values = colscale) + theme_classic() + theme(axis.text.x=element_text(size=28, color = "black"),axis.text.y=element_text(size=28, color = "black"),axis.ticks.x=element_blank(),axis.title.x=element_text(size=42, color = "black"),axis.title.y=element_text(size=42,angle=90,vjust = 3))+ guides(colour = guide_legend(title = "Taxa"))
+four_c <- m + geom_abline(intercept = 0,slope = 1, lwd =1.5,linetype="dashed")+geom_point(data = turnover_bbs, aes(colour = taxa),size = 2)+geom_point(data = turnover_else, aes(colour = taxa), size = 5) + xlab("Turnover (all species)") + ylab("Turnover \n (excluding non-transients)")  + scale_colour_manual(breaks = turnover_col$taxa,values = colscale) + theme_classic() + theme(axis.text.x=element_text(size=28, color = "black"),axis.text.y=element_text(size=28, color = "black"),axis.ticks.x=element_blank(),axis.title.x=element_text(size=42, color = "black"),axis.title.y=element_text(size=42,angle=90,vjust = 3))+ guides(colour = guide_legend(title = "Taxa"))
 ggsave(file="C:/Git/core-transient/output/plots/null_turnover.pdf", height = 10, width = 15)
 
 
