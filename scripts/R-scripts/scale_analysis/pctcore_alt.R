@@ -372,6 +372,16 @@ write.csv(core_scales_hetero, "scripts/R-scripts/scale_analysis/core_scales_hete
 
 ####Alt figures for pct Core####
 
+####Plotting how distributions change across scale, using area####
+all_fig = read.csv("//bioark.ad.unc.edu/HurlbertLab/Jenkins/BBS scaled/all_figoutput.csv", header = TRUE)
+#all_fig$area = as.factor(all_fig$area)
+
+all_figplot = ggplot(all_fig, aes(occ, group = factor(round(area, digits = 2)), color = factor(round(area, digits = 2))))+
+  stat_density(geom = "path", position = "identity", bw = "bcv", kernel = "gaussian", n = 4000, na.rm = TRUE, size = 1.3)+
+  labs(x = "Proportion of time present at site", y = "Probability Density")+theme_classic()+
+  scale_color_viridis(discrete = TRUE, name = "Spatial Scale in km2")+theme(axis.title = element_text(size = 18))+theme(legend.position = c(0.50, 0.50))
+all_figplot
+
 ####Plotting NULL all routes with 3 highlighted "types####
 bbs_allscales = read.csv("data/BBS/bbs_allscales.csv", header = TRUE)
 core_coefs = read.csv("scripts/R-scripts/scale_analysis/core_coefs.csv", header = TRUE) #AUC etc.
@@ -380,14 +390,14 @@ coefs_ranked = core_coefs %>%
   arrange(PCA.curvature) #middle teal line should be least curvy 
 
 
-bbs_allsub = bbs_allscales %>% filter(focalrte == 33901 | focalrte == 72035 | focalrte == 88005) #no longer 44032!
+bbs_allsub = bbs_allscales %>% filter(focalrte == 33901 | focalrte == 88005 | focalrte == 72035) #no longer 44032!
 bbs_allsub$focalrte = as.factor(bbs_allsub$focalrte)
 #use this to assign diff colors for each factor level per what color scheme is ideal?
 
 
 pred_plot = ggplot(bbs_allscales, aes(x = logA, y = pctCore))+geom_line(aes(group = focalrte), color = "grey")+
   theme_classic()+geom_line(data = bbs_allsub, aes(x = logA, y = pctCore, group = as.factor(focalrte), color = as.factor(focalrte)), size = 2)+ #geom_smooth(model = lm, color = 'red')+
-  labs(x = "Log Area", y = "Percent Core Species in Community")+scale_color_viridis(discrete = TRUE)+
+  labs(x = "Log Area", y = "Percent Core Species in Community")+scale_color_viridis(discrete = TRUE, name = "BBS route")+
   theme(axis.title = element_text(size = 18))+theme(legend.position = c(0.80, 0.25)) 
 pred_plot 
 
