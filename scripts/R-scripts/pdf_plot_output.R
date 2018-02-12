@@ -1,5 +1,6 @@
 # creating a propOcc plot for each dataset
 library(gtools)
+library(maps)
 # setwd("C:/git/core-transient")
 # beta = matrix(NA, nrow = length(uniq2), ncol = 19)
 
@@ -95,13 +96,15 @@ subfocalspecies = unique(bbs_w_aou$aou)
 # Making pdf of ranges for each focal spp
 colscale = c("red", "gold","dark green")
 
-states <- map_data("state")
+states <- ggplot2::map_data("state")
 
 pdf('C:/Git/core-transient/ind_spp_occ_maps.pdf', height = 8, width = 10)
 layout = matrix(c(3,3,3,3), nrow=2, byrow=TRUE)
   #matrix(seq(1, 3 * ceiling(439/3)),
               #  ncol = 3, nrow = ceiling(439/3))
 plot_list = list()
+south_plotsub = c()
+
 for(sp in subfocalspecies){ 
   print(sp)
   plotsub = plotdata_all[plotdata_all$aou == sp,]
@@ -111,6 +114,8 @@ for(sp in subfocalspecies){
     guides(fill=FALSE) + theme_classic() + 
     geom_point(data = plotsub, mapping = aes(x = longitude, y = latitude, col = category),  pch = 20, size = 5)+ scale_color_manual(labels = c("Transient","Intermediate", "core"),values = colscale) + xlab(plotsub$PRIMARY_COM_NAME)
   print (plot_list[[sp]])
+  south_sub = plotsub[which(plotsub$latitude <= quantile(plotsub$latitude, 0.25)),]
+  south_plotsub = rbind(south_plotsub, south_sub)
 }
 dev.off()
 #ggsave("ind_spp_occ_maps.pdf", height = 8, width = 10)
