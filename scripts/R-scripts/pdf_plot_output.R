@@ -1,6 +1,8 @@
 # creating a propOcc plot for each dataset
 library(gtools)
 library(maps)
+library(dplyr)
+library(ggplot2)
 # setwd("C:/git/core-transient")
 # beta = matrix(NA, nrow = length(uniq2), ncol = 19)
 
@@ -87,16 +89,19 @@ bbs_w_aou = bbs_occ %>% filter(aou > 2880) %>%
 latlongs = read.csv("data/latlong_rtes.csv", header = TRUE)
 AOU = read.csv("data/Bird_Taxonomy.csv", header = TRUE) # taxonomy data
 
-plotdata = merge(bbs_w_aou, latlongs, by = "stateroute") 
-plotdata_AOU = merge(plotdata, AOU[,c("AOU_OUT", "PRIMARY_COM_NAME")], by.x = "aou", by.y = "AOU_OUT")
+bi_all_exp_pres = read.csv("data/all_expected_pres.csv", header = TRUE)
+bi_all_exp_pres = bi_all_exp_pres[,c("Species","stateroute","FocalOcc")]
+
+plotdata = merge(bi_all_exp_pres, latlongs, by = "stateroute") 
+plotdata_AOU = merge(plotdata, AOU[,c("AOU_OUT", "PRIMARY_COM_NAME")], by.x = "Species", by.y = "AOU_OUT")
 plotdata_all = plotdata_AOU %>%
-  mutate(category=cut(occ, breaks=c(0, 0.34, 0.67, 1), labels=c("transient","intermediate","core")))
+  mutate(category=cut(FocalOcc, breaks=c(0, 0.34, 0.67, 1), labels=c("transient","intermediate","core")))
 
 subfocalspecies = unique(bbs_w_aou$aou)
 # Making pdf of ranges for each focal spp
 colscale = c("red", "gold","dark green")
 
-states <- ggplot2::map_data("state")
+states <- ggplot2::map_data("state") 
 
 pdf('C:/Git/core-transient/ind_spp_occ_maps.pdf', height = 8, width = 10)
 layout = matrix(c(3,3,3,3), nrow=2, byrow=TRUE)
@@ -107,7 +112,7 @@ south_plotsub = c()
 
 for(sp in subfocalspecies){ 
   print(sp)
-  plotsub = plotdata_all[plotdata_all$aou == sp,]
+  plotsub = plotdata_all[plotdata_all$Species == sp,]
   plot_list[[sp]]  = ggplot(data = states) + 
     geom_polygon(aes(x = long, y = lat, group = group), color = "black", fill = "white") + 
     coord_fixed(1.3) +
@@ -120,4 +125,18 @@ for(sp in subfocalspecies){
 dev.off()
 #ggsave("ind_spp_occ_maps.pdf", height = 8, width = 10)
 
-#multiplot(plotlist=plot_list, layout = layout)
+south_transients = south_plotsub %>%
+  group_by(Species, PRIMARY_COM_NAME) %>%
+  tally(category == "transient") 
+colnames(south_transients) = c("aou","common name", "trans") 
+
+south_nontransients = south_plotsub %>%
+  group_by(Species) %>%
+  tally(category != "transient")
+colnames(south_nontransients) = c("aou","nons") 
+  
+prop_trans = merge(south_nontransients, south_transients, by = "aou")  
+prop_trans$sum = prop_trans$nons + prop_trans$trans
+prop_trans$ratio = prop_trans$trans/prop_trans$sum
+  
+  
