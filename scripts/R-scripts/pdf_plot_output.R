@@ -139,4 +139,18 @@ prop_trans = merge(south_nontransients, south_transients, by = "aou")
 prop_trans$sum = prop_trans$nons + prop_trans$trans
 prop_trans$ratio = prop_trans$trans/prop_trans$sum
   
-  
+count2 = dplyr::filter(prop_trans,ratio >= 0.49)
+envoutput = read.csv("data/envoutput.csv", header= TRUE)
+
+
+
+
+
+
+
+
+
+
+
+
+
