@@ -222,7 +222,7 @@ all_figplot
 
 
 
-minplot = ggplot(min_out, aes(occ, group = area, color = area))+
+minplot = ggplot(min_out, aes(occ, group = scale, color = scale))+
   stat_density(geom = "path", position = "identity", bw = "bcv", kernel = "gaussian", n = 4000, na.rm = TRUE)+
   labs(x = "Proportion of time present at site", y = "Probability Density", title = "Local scales")+theme_classic()
 minplot
@@ -368,4 +368,46 @@ pred_plot = ggplot(bbs_allscales, aes(x = logA, y = meanOcc))+geom_line(aes(grou
 pred_plot 
 
 
+####Dummy data and predicted vals for adapted Coyle et al. distribution figure, Figure 1####
+#base fig1a 
+min_out = read.csv("//bioark.ad.unc.edu/HurlbertLab/Jenkins/BBS scaled/min_out.csv", header = TRUE)
+
+#filter to scale == 50, check
+single_rte = min_out %>% 
+  filter(scale == "50") %>% 
+  mutate(area = scale*(pi*(0.4^2)))
+
+minplot = ggplot(single_rte, aes(occ))+
+  stat_density(geom = "path", position = "identity", bw = "bcv", kernel = "gaussian", n = 4000, na.rm = TRUE, size = 1.3)+
+  labs(x = "Proportion of time present at site", y = "Probability Density")+theme_classic()+
+  coord_cartesian(xlim = c(0, 1), ylim = c(0, 2.5))+
+  theme(axis.title = element_text(size = 18))+theme(legend.position = c(0.50, 0.50))
+minplot
+
+##dummy data 
+local_dummy = single_rte %>% 
+  mutate(occ2 = 1-occ,
+         scale = 5) %>% 
+  select(-occ) %>% 
+  rename(occ = occ2) %>% 
+  mutate(area = scale*(pi*(0.4^2))) #make it so occ vals greater than 0.5 are converted to 0.1
+  
+big_dummy = single_rte %>% 
+  mutate(scale = 66, 
+         occ2 = occ+0.2,
+         area = scale*50*(pi*(0.4^2))) %>% 
+  select(-occ) %>% 
+  rename(occ = occ2) %>%
+  filter(occ < 1.0)
+
+pred_dist_df = rbind(single_rte, local_dummy)
+pred_dist = rbind(pred_dist_df, big_dummy)
+
+
+all_predplot = ggplot(pred_dist, aes(occ, group = factor(area), color = factor(area)))+
+  stat_density(geom = "path", position = "identity", bw = "bcv", kernel = "gaussian", n = 4000, na.rm = TRUE, size = 1.3)+
+  labs(x = "Proportion of time present at site", y = "Probability Density")+theme_classic()+
+  scale_color_viridis(discrete = TRUE)+theme(axis.title = element_text(size = 18))+theme(legend.position = c(0.50, 0.50))+
+  coord_cartesian(xlim = c(0, 1), ylim = c(0, 2.5))
+all_predplot
 
