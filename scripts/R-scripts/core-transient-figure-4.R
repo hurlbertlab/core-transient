@@ -21,7 +21,8 @@ library(raster)
 library(dplyr)
 library(digest)
 library(Hmisc)
-
+library(piecewiseSEM)
+library(MuMIn)
 
 source('scripts/R-scripts/core-transient_functions.R')
 
@@ -65,7 +66,7 @@ areamerge1  = areamerge.5 [, c("datasetID", "site", "taxa", "pctTrans", "area")]
 # read in bbs abundance data
 bbs_area = bbs_abun[, c("datasetID", "site", "taxa", "pctTrans", "area")]
 areamerge = rbind(bbs_area,areamerge1)
-write.csv(areamerge, "output/tabular_data/areamerge.csv", row.names = FALSE)
+# write.csv(areamerge, "output/tabular_data/areamerge.csv", row.names = FALSE)
 
 #### Figures 4a-4c panel plot #####
 scaleIDs = filter(dataformattingtable, spatial_scale_variable == 'Y',
@@ -88,7 +89,7 @@ predmod4c = merTools::predictInterval(mod4c, occ_sub_pred, n.sims=1000)
 
 # matching by predicted output vals based on occ_sub_pred
 predmod4c$taxa = c("Bird","Invertebrate", "Plant", "Mammal","Fish", "Plankton", "Benthos") 
-write.csv(predmod4c, "output/tabular_data/predmod4c.csv", row.names = FALSE)
+# write.csv(predmod4c, "output/tabular_data/predmod4c.csv", row.names = FALSE)
 
 predmod = merge(predmod4c, taxcolors, by = "taxa")
 
@@ -110,15 +111,16 @@ predmod4d$order = c(1:3)
 bbs_occ_area = merge(bbs_occ_pred, areamerge[,c("datasetID", "site", "area")], by = c("datasetID", "site"))
 bbs_occ_area = na.omit(bbs_occ_area)
 mod4a = lmer(pctTrans~(1|datasetID) * taxa * log10(area), data=bbs_occ_area)
+r.squaredGLMM(mod4a)
 mod_a = lm(bbs_occ_area$pctTrans~predict(mod4a))
 summary(mod_a)
-rsquared(mod_a, aicc = FALSE)
+rsquared(mod4a, aicc = FALSE)
 
 # pseudo r2 abun
 mod4b = lmer(pctTrans~(1|datasetID) * taxa * log10(meanAbundance), data=bbs_occ_area)
 mod_r = lm(bbs_occ_area$pctTrans~predict(mod4b))
 summary(mod_r)
-rsquared(mod_r, aicc = FALSE)
+rsquared(mod4b, aicc = FALSE)
 
 # R2 area
 modar = lm(pctTrans~log10(area), data=bbs_occ_area)
@@ -126,7 +128,10 @@ summary(modar)
 
 mod6 = lm(pctTrans~log10(meanAbundance), data=bbs_occ_area)
 summary(mod6)
-
+# The marginal R squared values are those associated with your fixed effects, 
+# the conditional ones are those of your fixed effects plus the random effects. 
+# Usually we will be interested in the marginal effects.
+# https://ecologyforacrowdedplanet.wordpress.com/2013/08/27/r-squared-in-mixed-models-the-easy-way/
 
 
 #### panel plot ####
