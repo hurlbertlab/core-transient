@@ -427,8 +427,8 @@ pred_dist = cbind(preds, big)
   
 all_predplot = ggplot(pred_dist, aes(occ))+
   stat_density(geom = "path", position = "identity", bw = "bcv", kernel = "gaussian", n = 4000, na.rm = TRUE, size = 1.3, color = "black")+
-  stat_density(aes(local), geom = "path", position = "identity", bw = "bcv", kernel = "gaussian", n = 4000, na.rm = TRUE, size = 1.3, color = "blue")+
-  stat_density(aes(big), geom = "path", position = "identity", bw = "bcv", kernel = "gaussian", n = 4000, na.rm = TRUE, size = 1.3, color = "green")+
+  stat_density(aes(local), geom = "path", position = "identity", bw = "bcv", kernel = "gaussian", n = 4000, na.rm = TRUE, size = 1.3, color = "#FDE725FF")+
+  stat_density(aes(big), geom = "path", position = "identity", bw = "bcv", kernel = "gaussian", n = 4000, na.rm = TRUE, size = 1.3, color = "#55C667FF")+
   labs(x = "Proportion of time present at site", y = "Probability Density")+theme_classic()+
   theme(axis.title = element_text(size = 18))
   #coord_cartesian(xlim = c(0, 1), ylim = c(0, 2.5))
