@@ -21,6 +21,7 @@ library(raster)
 library(dplyr)
 library(digest)
 library(Hmisc)
+library(piecewiseSEM)
 
 
 source('scripts/R-scripts/core-transient_functions.R')
@@ -153,7 +154,9 @@ lower = range(xhat)[1]
 upper = range(xhat)[2]
 
 
-plot(NA, xlim = c(-2, 8), ylim = c(0,1), col = as.character(taxcolor$color), xlab = expression("log"[10]*" Area (m"^2*")"), ylab = "% Transients", cex.lab = 2,frame.plot=FALSE, xaxt = "n", yaxt = "n", mgp = c(3.25,1,0))
+plot(NA, xlim = c(-2, 8), ylim = c(0,1), xlab = expression("log"[10]*" Area (m"^2*")"), 
+     ylab = "% Transients", cex.lab = 2, frame.plot=FALSE, xaxt = "n", yaxt = "n", 
+     mgp = c(3.25,1,0))
 axis(1, cex.axis =  1.5)
 axis(2, cex.axis =  1.5)
 b1 = for(id in scaleIDs){
