@@ -382,6 +382,72 @@ pred_plot = ggplot(bbs_allscales, aes(x = logA, y = meanOcc))+geom_line(aes(grou
   theme(axis.title = element_text(size = 18))+theme(legend.position = c(0.80, 0.25)) 
 pred_plot 
 
+#pctcore version 
+####Plotting NULL all routes with 3 highlighted "types####
+bbs_allscales = read.csv("data/BBS/bbs_allscales.csv", header = TRUE)
+core_coefs = read.csv("scripts/R-scripts/scale_analysis/core_coefs.csv", header = TRUE) #AUC etc.
+
+coefs_ranked = core_coefs %>% 
+  arrange(PCA.curvature) #middle teal line should be least curvy
+
+
+#compare rtes in homogeneous vs heterogeneous regions, illustrate in color to prove point 
+env_all = read.csv("scripts/R-scripts/scale_analysis/env_all.csv", header = TRUE) #AUC etc.
+ndvi_ranked = env_all %>% 
+  group_by(stateroute) %>% 
+  summarize(ndvi_m = mean(ndvi.var)) %>%
+  arrange(desc(ndvi_m)) 
+#lowest var in NDVI: rtes 72151, 72049, 72052, #mostly 72's and 2,000's 
+#highest var in NDVI: rtes 14059, 14140, 69253, 69021, 85011
+
+elev_ranked = env_all %>% 
+  group_by(stateroute) %>% 
+  summarize(elev_m = mean(elev.var)) %>%
+  arrange(desc(elev_m))
+#lowest var in elev: rtes 34031, 34027, 34028, mostly 34's, 35010, 49036
+#highest var in elev: rtes 17221, 6014, 6012, 17044, 6071, 85169, 14059 mostly 14's, 17's, and 6,000's
+
+central = bbs_allscales %>% 
+  group_by(logA) %>%
+  summarize(pctC_avg = mean(pctCore, na.rm = TRUE)) %>%
+  mutate(focalrte = "999",
+         logA = round(logA, digits = 2)) %>%
+  group_by(logA) %>% 
+  summarize(pctC_avg2 = mean(pctC_avg, na.rm = TRUE))
+
+
+bbs_allsub = bbs_allscales %>% filter(focalrte == 72151 | focalrte == 14059) #(low habhet, high habhet)
+bbs_allsub$focalrte = as.factor(bbs_allsub$focalrte)
+#use this to assign diff colors for each factor level per what color scheme is ideal?
+
+
+pred_plot = ggplot(bbs_allscales, aes(x = logA, y = pctCore))+geom_line(aes(group = focalrte), color = "grey")+
+  theme_classic()+
+  geom_line(data = bbs_allsub, aes(x = logA, y = pctCore, group = as.factor(focalrte), color = as.factor(focalrte)), size = 2)+ #geom_smooth(model = lm, color = 'red')+
+  geom_line(data= central, aes(x = logA, y = pctC_avg2), color = "black", size = 2)+
+  labs(x = "Log Area", y = "Proportion Core Species in Community")+scale_color_viridis(discrete = TRUE, name = "BBS route")+
+  theme(axis.title = element_text(size = 18))+theme(legend.position = c(0.80, 0.25)) 
+pred_plot #yellow = high variation in habhet, purple = low variation, low habhet 
+
+
+central2 = bbs_allscales %>% 
+  group_by(logN) %>%
+  summarize(pctC_avg = mean(pctCore, na.rm = TRUE)) %>%
+  mutate(focalrte = "999",
+         logN = round(logN, digits = 2)) %>%
+  group_by(logN) %>% 
+  summarize(pctC_avg2 = mean(pctC_avg, na.rm = TRUE))
+
+pred_abuns = ggplot(bbs_allscales, aes(x = logN, y = pctCore))+geom_line(aes(group = focalrte), color = "grey")+
+  theme_classic()+
+  geom_line(data = bbs_allsub, aes(x = logN, y = pctCore, group = as.factor(focalrte), color = as.factor(focalrte)), size = 2)+ #geom_smooth(model = lm, color = 'red')+
+  geom_line(data= central2, aes(x = logN, y = pctC_avg2), color = "black", size = 2)+
+  labs(x = "Log Abundance", y = "")+scale_color_viridis(discrete = TRUE, name = "BBS route")+
+  theme(axis.title = element_text(size = 18))+theme(legend.position = c(0.80, 0.25)) 
+pred_abuns 
+
+p1 = grid.arrange(pred_plot, pred_abuns, ncol = 2)
+
 
 ####Dummy data and predicted vals for adapted Coyle et al. distribution figure, Figure 1####
 #base fig1a 
