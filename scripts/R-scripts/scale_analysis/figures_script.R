@@ -1,7 +1,7 @@
 #Figures and tables 
 #wd1: setwd("C:/git/core-transient")
 #wd2: setwd("\\bioark.ad.unc.edu\HurlbertLab\Jenkins\Final folder") 
-
+library(viridis)
 library(tidyverse)
 library(raster)
 library(maps)
@@ -292,14 +292,29 @@ points(star2$Longi, star2$Lati, col = "black", pch = 17, cex = 2)
 scales_hetero = read.csv("scripts/R-scripts/scale_analysis/scales_hetero.csv", header = TRUE)
 
 scales_hetero_v = scales_hetero %>% 
-  filter(dep == "elev.var" | dep == "ndvi.var") 
+  filter(dep == "elev.var" | dep == "ndvi.var")%>%
+  filter(ind == "OA.curvature" | ind == "OA.max" | ind == "OA.mid"| ind == "OA.min" | ind == "OA.slope")
+
+coef_labels = c(OA.curvature = "Curvature",OA.max= "Max", OA.mid= "Scale 0.5" , OA.min= "Min", OA.slope= "Slope")
+
+scales_hetero_v$dep = factor(scales_hetero_v$dep, 
+                                levels=c("elev.var", "ndvi.var"),
+                                labels=c("Variance in Elevation", "Variance in NDVI"))
 
 #scale on x and r on y, panel by coef of interest, line color by var measure
 ggplot(scales_hetero_v, aes(x = scale, y = corr_r))+
-  geom_line(aes(color = dep))+facet_wrap(~ind)+theme_classic()+
+  geom_line(aes(color = dep), size = 1.4)+facet_wrap(~ind, labeller = labeller(ind = coef_labels))+
+  theme_classic()+
   geom_abline(intercept = 0, slope = 0)+
-  theme_classic()+theme(axis.title = element_text(size = 18))+
-  labs(x = "Number of aggregated BBS Routes", y = "Pearson's correlation estimate")+theme(legend.position = c(0.80, 0.20)) 
+  theme_classic()+theme(text = element_text(size = 18))+
+  labs(color = "Habitat Heterogeneity", x = "Number of aggregated BBS Routes", y = "Pearson's correlation estimate")+theme(legend.position = c(0.80, 0.20))+
+  scale_color_viridis(begin = 0, end = 0.7, discrete = TRUE, option = "D") 
+
+
+
+# scale_shape_discrete(name="Habitat Heterogeneity",
+#                      breaks=c("elev.var", "ndvi.var"),
+#                      labels=c("Variance in Elevation", "Variance in NDVI"))+
 
 #I want a corr_r value for every dep and ind variable at every scale, for every focal
 #for every scale, for every focal route - will have a LOT - maybe just do a subset for meeting 
@@ -318,8 +333,8 @@ scales_hetero2 = scales_hetero %>%
   filter(ind == "OA.curvature" | ind == "OA.max" | ind == "OA.mid"| ind == "OA.min" | ind == "OA.slope")
 
 ggplot(scales_hetero2, aes(x = ind, y = corr_r))+
-  geom_pointrange(aes(shape = dep, ymin = lowr, ymax = uppr))+geom_abline(intercept = 0, slope = 0)+
-  theme_classic()+theme(axis.title = element_text(size = 18))+
+  geom_pointrange(aes(shape = dep, ymin = lowr, ymax = uppr), size = 1.2, position = position_jitter())+geom_abline(intercept = 0, slope = 0)+
+  theme_classic()+theme(axis.title = element_text(size = 18), axis.text = element_text(size = 16))+
   labs(x = "Occupancy-scale parameters", y = "Pearson's correlation estimate")+
   scale_x_discrete(limit = c("OA.curvature","OA.max","OA.mid","OA.min","OA.slope"),
                      labels = c("Curvature","Max","Scale 0.5", "Min", "Slope"))+
