@@ -429,7 +429,7 @@ pred_plot = ggplot(bbs_allscales, aes(x = logA, y = pctCore))+geom_line(aes(grou
   geom_line(data = bbs_allsub, aes(x = logA, y = pctCore, group = as.factor(focalrte), color = as.factor(focalrte)), size = 2)+ #geom_smooth(model = lm, color = 'red')+
   geom_line(data= central, aes(x = logA, y = pctC_avg2), color = "black", size = 2)+
   labs(x = "Log Area", y = "Proportion Core Species in Community")+scale_color_viridis(discrete = TRUE, name = "BBS route")+
-  theme(text = element_text(size = 16))+theme(legend.position = c(0.75, 0.20)) 
+  theme(text = element_text(size = 16))+theme(legend.position = c(0.78, 0.20)) 
 pred_plot #yellow = high variation in habhet, purple = low variation, low habhet 
 
 
@@ -449,7 +449,7 @@ pred_abuns = ggplot(bbs_allscales, aes(x = logN, y = pctCore))+geom_line(aes(gro
   theme(text = element_text(size = 16))+theme(legend.position = "none") 
 pred_abuns 
 
-p1 = grid.arrange(pred_abuns, pred_plot, ncol = 2)
+p1 = grid.arrange(pred_abuns, pred_plot, nrow = 2)
 
 
 ####Dummy data and predicted vals for adapted Coyle et al. distribution figure, Figure 1####
