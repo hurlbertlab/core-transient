@@ -398,8 +398,16 @@ bbs_allsub$focalrte = as.factor(bbs_allsub$focalrte)
 pred_plot = ggplot(bbs_allscales, aes(x = logA, y = pctCore))+geom_line(aes(group = focalrte), color = "grey")+
   theme_classic()+geom_line(data = bbs_allsub, aes(x = logA, y = pctCore, group = as.factor(focalrte), color = as.factor(focalrte)), size = 2)+ #geom_smooth(model = lm, color = 'red')+
   labs(x = "Log Area", y = "Percent Core Species in Community")+scale_color_viridis(discrete = TRUE, name = "BBS route")+
-  theme(axis.title = element_text(size = 18))+theme(legend.position = c(0.80, 0.25)) 
+  theme(axis.title = element_text(size = 18))+theme(legend.position = "none") 
 pred_plot 
+
+pred_abuns = ggplot(bbs_allscales, aes(x = logN, y = pctCore))+geom_line(aes(group = focalrte), color = "grey")+
+  theme_classic()+geom_line(data = bbs_allsub, aes(x = logN, y = pctCore, group = as.factor(focalrte), color = as.factor(focalrte)), size = 2)+ #geom_smooth(model = lm, color = 'red')+
+  labs(x = "Log Abundance", y = "")+scale_color_viridis(discrete = TRUE, name = "BBS route")+
+  theme(axis.title = element_text(size = 18))+theme(legend.position = c(0.80, 0.25)) 
+pred_abuns 
+
+p1 = grid.arrange(pred_plot, pred_abuns, ncol = 2)
 
 ####Corrr_confints alternate with pctCore scale relationship coefs in lieu of original coefs####
 core_scales_hetero = read.csv("scripts/R-scripts/scale_analysis/core_scales_hetero.csv", header = TRUE)
