@@ -253,7 +253,7 @@ areamerge_fig = na.omit(areamerge_fig)
 all = lmer(pctTrans ~ log10(area) * taxa + (log10(area) | datasetID), data = bbs_occ_area)
 
 xnew = range(log10(areamerge_fig$area))
-xhat <- predict(all, newdata = data.frame((xnew)))
+xhat <- predict(all, newdata = data.frame(xnew))
 xhats = range(xhat)
 lower = range(xhat)[1]
 upper = range(xhat)[2]
@@ -268,7 +268,7 @@ b1 = for(id in scaleIDs){
   print(id)
   plotsub = subset(areamerge_fig,datasetID == id)
   taxa = as.character(unique(plotsub$taxa))
-  mod4 = lmer(pctTrans ~ log10(area) * taxa + (log10(area) | datasetID), data = plotsub)
+  mod4 = lm(plotsub$pctTrans ~ log10(plotsub$area))
   mod4.slope = summary(mod4)$coef[2,"Estimate"]
   mod4.coef1 = summary(mod4$coef[1])[3]
   xnew = range(log10(plotsub$area))
