@@ -416,17 +416,20 @@ central = bbs_allscales %>%
   summarize(pctC_avg2 = mean(pctC_avg, na.rm = TRUE))
 
 
-bbs_allsub = bbs_allscales %>% filter(focalrte == 72151 | focalrte == 14059) #(low habhet, high habhet)
-bbs_allsub$focalrte = as.factor(bbs_allsub$focalrte)
+bbs_allsub = bbs_allscales %>% filter(focalrte == 72151 | focalrte == 14059 | focalrte == 34031 | focalrte == 17221) #(low habhet, high habhet)
+bbs_allsub$focalrte = factor(bbs_allsub$focalrte,
+                             levels=c("72151", "14059", "34031", "17221"),
+                             labels=c("Low Variance in NDVI (Pennsylvania)", "High Variance in NDVI (California)",
+                                      "Low Variance in Elevation (Illinois)", "High Variance in Elevation (Colorado)"))
 #use this to assign diff colors for each factor level per what color scheme is ideal?
-
+#72 is PA, 14 is Cali, 34 is Illinois, 17 is Colorado 
 
 pred_plot = ggplot(bbs_allscales, aes(x = logA, y = pctCore))+geom_line(aes(group = focalrte), color = "grey")+
   theme_classic()+
   geom_line(data = bbs_allsub, aes(x = logA, y = pctCore, group = as.factor(focalrte), color = as.factor(focalrte)), size = 2)+ #geom_smooth(model = lm, color = 'red')+
   geom_line(data= central, aes(x = logA, y = pctC_avg2), color = "black", size = 2)+
   labs(x = "Log Area", y = "Proportion Core Species in Community")+scale_color_viridis(discrete = TRUE, name = "BBS route")+
-  theme(axis.title = element_text(size = 18))+theme(legend.position = c(0.80, 0.25)) 
+  theme(text = element_text(size = 16))+theme(legend.position = c(0.75, 0.20)) 
 pred_plot #yellow = high variation in habhet, purple = low variation, low habhet 
 
 
@@ -443,10 +446,10 @@ pred_abuns = ggplot(bbs_allscales, aes(x = logN, y = pctCore))+geom_line(aes(gro
   geom_line(data = bbs_allsub, aes(x = logN, y = pctCore, group = as.factor(focalrte), color = as.factor(focalrte)), size = 2)+ #geom_smooth(model = lm, color = 'red')+
   geom_line(data= central2, aes(x = logN, y = pctC_avg2), color = "black", size = 2)+
   labs(x = "Log Abundance", y = "")+scale_color_viridis(discrete = TRUE, name = "BBS route")+
-  theme(axis.title = element_text(size = 18))+theme(legend.position = c(0.80, 0.25)) 
+  theme(text = element_text(size = 16))+theme(legend.position = "none") 
 pred_abuns 
 
-p1 = grid.arrange(pred_plot, pred_abuns, ncol = 2)
+p1 = grid.arrange(pred_abuns, pred_plot, ncol = 2)
 
 
 ####Dummy data and predicted vals for adapted Coyle et al. distribution figure, Figure 1####
