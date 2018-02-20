@@ -249,14 +249,22 @@ pdf('output/plots/4a_4d_pred.pdf', height = 10, width = 14)
 par(mfrow = c(2, 2), mar = c(5,5,1,1), cex = 1, oma = c(0,0,0,0), las = 1)
 palette(colors7)
 
-areamerge_fig = na.omit(areamerge_fig)
-all = lmer(pctTrans ~ log10(area) * taxa + (log10(area) | datasetID), data = bbs_occ_area)
+all = lmer(bbs_occ_area$pctTrans ~ log10(bbs_occ_area$area) * bbs_occ_area$taxa + (log10(bbs_occ_area$area) | bbs_occ_area$datasetID), data = bbs_occ_area)
 
-xnew = range(log10(areamerge_fig$area))
-xhat <- predict(all, newdata = data.frame(xnew))
-xhats = range(xhat)
-lower = range(xhat)[1]
-upper = range(xhat)[2]
+xnew = range(log10(bbs_occ_area$area))
+bbs_occ_area$preds <- predict(all, newdata = data.frame(xnew))
+
+
+range_predict = data.frame(datasetID = NULL, lower = NULL, upper = NULL)
+for(id in unique(bbs_occ_area$datasetID)){
+  sub =  subset(bbs_occ_area, datasetID == id)
+  range = range(sub$area)
+  range_predict = rbind(range_predict, data.frame(datasetID = id,
+                                    lower = range[1], 
+                                    upper = range[2]))
+}
+range_predict = unique(range_predict)
+area_plot = merge(bbs_occ_area, range_predict, by = "datasetID")
 
 
 plot(NA, xlim = c(-2, 8), ylim = c(0,1), xlab = expression("log"[10]*" Area (m"^2*")"), 
@@ -264,23 +272,12 @@ plot(NA, xlim = c(-2, 8), ylim = c(0,1), xlab = expression("log"[10]*" Area (m"^
      mgp = c(3.25,1,0))
 axis(1, cex.axis =  1.5)
 axis(2, cex.axis =  1.5)
-b1 = for(id in scaleIDs){
+b1 = for(id in unique(area_plot$datasetID)){
   print(id)
-  plotsub = subset(areamerge_fig,datasetID == id)
+  plotsub = subset(area_plot,datasetID == id)
   taxa = as.character(unique(plotsub$taxa))
-  mod4 = lm(plotsub$pctTrans ~ log10(plotsub$area))
-  mod4.slope = summary(mod4)$coef[2,"Estimate"]
-  mod4.coef1 = summary(mod4$coef[1])[3]
-  xnew = range(log10(plotsub$area))
-  xhat <- predict(mod4, newdata = data.frame((xnew)))
-  xhats = range(xhat)
-  lower = range(xhat)[1]
-  upper = range(xhat)[2]
-  print(xhats)
   taxcolor = subset(taxcolors, taxa == as.character(plotsub$taxa)[1])
-  y= summary(mod4)$coef[1]+ (xhats)*summary(mod4)$coef[2]
-  area_plot  = rbind(area_plot , c(id, lower,upper, mod4.slope,taxa))
-  lines(log10(plotsub$area), fitted(mod4), col=as.character(taxcolor$color),lwd=4)
+  segments(plotsub$lower, 0, x1 = plotsub$upper, y1 = 0)
   # points(log10(plotsub$area), plotsub$pctTrans)
   par(new=TRUE)
 }
