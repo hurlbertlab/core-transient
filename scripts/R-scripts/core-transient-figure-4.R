@@ -290,11 +290,24 @@ par(new= FALSE)
 
 
 # B
-bbs_occ = na.omit(bbs_occ)
-occ_all = lm(bbs_occ$pctTrans ~ log10(bbs_occ$meanAbundance))
-xnew = range(log10(bbs_occ$meanAbundance))
-xhat <- predict(occ_all, newdata = data.frame((xnew)))
-xhats = range(xhat)
+all = lmer(bbs_occ_area$pctTrans ~ log10(bbs_occ_area$meanAbundance) * bbs_occ_area$taxa + (log10(bbs_occ_area$meanAbundance) | bbs_occ_area$datasetID), data = bbs_occ_area)
+
+xnew = range(log10(bbs_occ_area$meanAbundance))
+bbs_occ_area$preds <- predict(all, newdata = data.frame(xnew))
+
+
+range_predict = data.frame(datasetID = NULL, lower = NULL, upper = NULL)
+
+
+for(id in scaleIDs){
+  sub =  subset(bbs_occ_area, datasetID == id)
+  range = range(sub$meanAbundance)
+  range_predict = rbind(range_predict, data.frame(datasetID = id,
+                                                  lower = range[1], 
+                                                  upper = range[2]))
+}
+range_predict = unique(range_predict)
+bbs_occ = merge(bbs_occ_area, range_predict, by = "datasetID")
 
 plot(NA, xlim = c(0, 7), ylim = c(0,1), col = as.character(taxcolor$color), xlab = expression("log"[10]*" Community Size"), ylab = "% Transients", cex.lab = 2,frame.plot=FALSE, yaxt = "n", xaxt = "n", mgp = c(3.25,1,0))
 axis(1, cex.axis =  1.5)
@@ -302,21 +315,15 @@ axis(2, cex.axis =  1.5)
 b2 = for(id in scaleIDs){
   print(id)
   plotsub = subset(bbs_occ,datasetID == id)
-  mod4 = lm(plotsub$pctTrans ~ log10(plotsub$meanAbundance))
-  xnew = range(log10(plotsub$meanAbundance))
-  xhat <- predict(mod4, newdata = data.frame((xnew)))
-  xhats = range(xhat)
-  print(xhats)
+  taxa = as.character(unique(plotsub$taxa))
   taxcolor = subset(taxcolors, taxa == as.character(plotsub$taxa)[1])
-  y=summary(mod4)$coef[1] + (xhats)*summary(mod4)$coef[2]
-  lines(log10(plotsub$meanAbundance), fitted(mod4), col=as.character(taxcolor$color),lwd=4)
-  # points(log10(plotsub$meanAbundance), plotsub$pctTrans)
+  segments(log10(plotsub$lower), range(plotsub$preds)[1], x1 = log10(plotsub$upper), range(plotsub$preds)[2], col = as.character(taxcolor$color), lwd = 4)
+  # points(log10(plotsub$area), plotsub$pctTrans)
   par(new=TRUE)
 }
-abline(v = log10(102), lty = 'dotted', lwd = 2) 
-par(new=TRUE)
+segments(range(log10(bbs_occ$lower))[1], range(bbs_occ$preds)[1], x1 = range(log10(bbs_occ$upper))[2], range(bbs_occ$preds)[2], col = "black", lwd = 4)
 title(outer=FALSE,adj=0.02,main="B",cex.main=2,col="black",font=2,line=-1)
-lines(log10(bbs_occ$meanAbundance), fitted(occ_all), col="black",lwd=3)
+par(new= FALSE)
 legend('topright', legend = as.character(taxcolors$taxa), lty=1,lwd=3,col = as.character(taxcolors$color), cex = 1.5, bty = "n")
 par(new = FALSE)
 
