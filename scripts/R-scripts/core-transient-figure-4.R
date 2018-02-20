@@ -256,7 +256,9 @@ bbs_occ_area$preds <- predict(all, newdata = data.frame(xnew))
 
 
 range_predict = data.frame(datasetID = NULL, lower = NULL, upper = NULL)
-for(id in unique(bbs_occ_area$datasetID)){
+
+
+for(id in scaleIDs){
   sub =  subset(bbs_occ_area, datasetID == id)
   range = range(sub$area)
   range_predict = rbind(range_predict, data.frame(datasetID = id,
@@ -266,26 +268,28 @@ for(id in unique(bbs_occ_area$datasetID)){
 range_predict = unique(range_predict)
 area_plot = merge(bbs_occ_area, range_predict, by = "datasetID")
 
-
+# A
 plot(NA, xlim = c(-2, 8), ylim = c(0,1), xlab = expression("log"[10]*" Area (m"^2*")"), 
      ylab = "% Transients", cex.lab = 2, frame.plot=FALSE, xaxt = "n", yaxt = "n", 
      mgp = c(3.25,1,0))
 axis(1, cex.axis =  1.5)
 axis(2, cex.axis =  1.5)
-b1 = for(id in unique(area_plot$datasetID)){
+b1 = for(id in scaleIDs){
   print(id)
   plotsub = subset(area_plot,datasetID == id)
   taxa = as.character(unique(plotsub$taxa))
   taxcolor = subset(taxcolors, taxa == as.character(plotsub$taxa)[1])
-  segments(plotsub$lower, 0, x1 = plotsub$upper, y1 = 0)
+  segments(log10(plotsub$lower), range(plotsub$preds)[1], x1 = log10(plotsub$upper), range(plotsub$preds)[2], col = as.character(taxcolor$color), lwd = 4)
   # points(log10(plotsub$area), plotsub$pctTrans)
   par(new=TRUE)
 }
-lines(log10(areamerge_fig$area), fitted(all), col="black", lwd=3)
+segments(range(log10(area_plot$lower))[1], range(area_plot$preds)[1], x1 = range(log10(area_plot$upper))[2], range(area_plot$preds)[2], col = "black", lwd = 4)
 title(outer=FALSE,adj=0.02,main="A",cex.main=2,col="black",font=2,line=-1)
 par(new= FALSE)
 
 
+
+# B
 bbs_occ = na.omit(bbs_occ)
 occ_all = lm(bbs_occ$pctTrans ~ log10(bbs_occ$meanAbundance))
 xnew = range(log10(bbs_occ$meanAbundance))
