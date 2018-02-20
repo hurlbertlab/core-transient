@@ -365,7 +365,7 @@ dev.off()
 
 ####Plotting NULL all routes with 3 highlighted "types####
 bbs_allscales = read.csv("data/BBS/bbs_allscales.csv", header = TRUE)
-coefs = read.csv("scripts/R-scripts/scale_analysis/coefs.csv", header = TRUE) #AUC etc.
+coefs = read.csv("scripts/R-scripts/scale_analysis/intermed/coefs.csv", header = TRUE) #AUC etc.
 
 coefs_ranked = coefs %>% 
   arrange(OA.curvature) #middle teal line should be least curvy 
@@ -385,14 +385,14 @@ pred_plot
 #pctcore version 
 ####Plotting NULL all routes with 3 highlighted "types####
 bbs_allscales = read.csv("data/BBS/bbs_allscales.csv", header = TRUE)
-core_coefs = read.csv("scripts/R-scripts/scale_analysis/core_coefs.csv", header = TRUE) #AUC etc.
+core_coefs = read.csv("scripts/R-scripts/scale_analysis/intermed/core_coefs.csv", header = TRUE) #AUC etc.
 
 coefs_ranked = core_coefs %>% 
   arrange(PCA.curvature) #middle teal line should be least curvy
 
 
 #compare rtes in homogeneous vs heterogeneous regions, illustrate in color to prove point 
-env_all = read.csv("scripts/R-scripts/scale_analysis/env_all.csv", header = TRUE) #AUC etc.
+env_all = read.csv("scripts/R-scripts/scale_analysis/intermed/env_all.csv", header = TRUE) #AUC etc.
 ndvi_ranked = env_all %>% 
   group_by(stateroute) %>% 
   summarize(ndvi_m = mean(ndvi.var)) %>%
@@ -416,7 +416,7 @@ central = bbs_allscales %>%
   summarize(pctC_avg2 = mean(pctC_avg, na.rm = TRUE))
 
 
-bbs_allsub = bbs_allscales %>% filter(focalrte == 72151 | focalrte == 14059 | focalrte == 34031 | focalrte == 17221) #(low habhet, high habhet)
+bbs_allsub = bbs_allscales %>% filter(focalrte == 34031 | focalrte == 34027 | focalrte == 17221 | focalrte == 6014) #(low habhet, high habhet)
 bbs_allsub$focalrte = factor(bbs_allsub$focalrte,
                              levels=c("72151", "14059", "34031", "17221"),
                              labels=c("Low Variance in NDVI (Pennsylvania)", "High Variance in NDVI (California)",
