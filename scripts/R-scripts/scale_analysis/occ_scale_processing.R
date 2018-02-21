@@ -427,9 +427,9 @@ levels(bbs_allscales$scale)
 unique(bbs_allscales$scale)
 
 
-mod1 = lm(meanOcc~logA, data = bbs_allscales) #expljkains ~75-80% of the variation in occ
-mod2 = lm(meanOcc~logN, data = bbs_allscales)
-summary(mod1)
+mod1 = lm(pctCore~logA, data = bbs_allscales) #expljkains ~75-80% of the variation in occ
+mod2 = lm(pctCore~logN, data = bbs_allscales)
+summary(mod2)
 
 plot(meanOcc~logA, data = bbs_allscales, xlab = "Log Area" , ylab = "Mean Temporal Occupancy")
 plot(meanOcc~logN, data = bbs_allscales, xlab = "Average Abundance" , ylab = "Mean Temporal Occupancy")
