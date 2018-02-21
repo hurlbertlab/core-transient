@@ -249,10 +249,17 @@ pdf('output/plots/4a_4d_pred.pdf', height = 10, width = 14)
 par(mfrow = c(2, 2), mar = c(5,5,1,1), cex = 1, oma = c(0,0,0,0), las = 1)
 palette(colors7)
 
-all = lmer(bbs_occ_area$pctTrans ~ log10(bbs_occ_area$area) * bbs_occ_area$taxa + (log10(bbs_occ_area$area) | bbs_occ_area$datasetID), data = bbs_occ_area)
+areaModel = lmer(pctTrans ~ log10(area) * taxa + (log10(area) | datasetID), data = bbs_occ_area)
 
-xnew = range(log10(bbs_occ_area$area))
-bbs_occ_area$preds <- predict(all, newdata = data.frame(xnew))
+dats = bbs_occ_area %>% 
+  group_by(datasetID, taxa) %>% 
+  dplyr::summarize(minA = min(area), maxA = max(area), minAb = min(meanAbundance), maxAb = max(meanAbundance))
+
+minA  = dplyr::select(dats, datasetID, taxa, minA) %>% dplyr::rename(area = minA)
+maxA  = dplyr::select(dats, datasetID, taxa, maxA) %>% dplyr::rename(area = maxA)
+
+dats$minApred <- merTools::predictInterval(areaModel, minA)$fit
+dats$maxApred <- merTools::predictInterval(areaModel, maxA)$fit
 
 
 range_predict = data.frame(datasetID = NULL, lower = NULL, upper = NULL)
@@ -290,24 +297,26 @@ par(new= FALSE)
 
 
 # B
-all = lmer(bbs_occ_area$pctTrans ~ log10(bbs_occ_area$meanAbundance) * bbs_occ_area$taxa + (log10(bbs_occ_area$meanAbundance) | bbs_occ_area$datasetID), data = bbs_occ_area)
+abunModel = lmer(pctTrans ~ log10(meanAbundance) * taxa + (log10(meanAbundance) | datasetID), data = bbs_occ_area)
 
-xnew = range(log10(bbs_occ_area$meanAbundance))
-bbs_occ_area$preds <- predict(all, newdata = data.frame(xnew))
+dats = bbs_occ_area %>% 
+  group_by(datasetID, taxa) %>% 
+  dplyr::summarize(minA = min(area), maxA = max(area), minAb = min(meanAbundance), maxAb = max(meanAbundance))
+
+minAb  = dplyr::select(dats, datasetID, taxa, minAb) %>% dplyr::rename(meanAbundance = minAb)
+maxAb  = dplyr::select(dats, datasetID, taxa, maxAb) %>% dplyr::rename(meanAbundance = maxAb)
+
+dats$minAbpred <- merTools::predictInterval(abunModel, minAb)$fit
+dats$maxAbpred <- merTools::predictInterval(abunModel, maxAb)$fit
 
 
-range_predict = data.frame(datasetID = NULL, lower = NULL, upper = NULL)
 
 
-for(id in scaleIDs){
-  sub =  subset(bbs_occ_area, datasetID == id)
-  range = range(sub$meanAbundance)
-  range_predict = rbind(range_predict, data.frame(datasetID = id,
-                                                  lower = range[1], 
-                                                  upper = range[2]))
-}
-range_predict = unique(range_predict)
-bbs_occ = merge(bbs_occ_area, range_predict, by = "datasetID")
+
+
+
+
+bbs_occ = merge(bbs_occ_area, dats, by = "datasetID") #merge colors
 
 plot(NA, xlim = c(0, 7), ylim = c(0,1), col = as.character(taxcolor$color), xlab = expression("log"[10]*" Community Size"), ylab = "% Transients", cex.lab = 2,frame.plot=FALSE, yaxt = "n", xaxt = "n", mgp = c(3.25,1,0))
 axis(1, cex.axis =  1.5)
