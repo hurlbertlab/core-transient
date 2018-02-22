@@ -16,6 +16,7 @@ library(stats)
 library(gimms)
 library(devtools)
 library(geometry)
+library(zoo)
 
 #Figure 1: Bimodal dist images; number of spp on y vs # years present  
 #A: original bimodal dist 
@@ -385,6 +386,9 @@ pred_plot
 #pctcore version 
 ####Plotting NULL all routes with 3 highlighted "types####
 bbs_allscales = read.csv("data/BBS/bbs_allscales.csv", header = TRUE)
+bbs_allscales = bbs_allscales %>% 
+  dplyr::filter(logN != "NA")
+
 core_coefs = read.csv("scripts/R-scripts/scale_analysis/intermed/core_coefs.csv", header = TRUE) #AUC etc.
 
 coefs_ranked = core_coefs %>% 
@@ -404,23 +408,27 @@ elev_ranked = env_all %>%
   group_by(stateroute) %>% 
   summarize(elev_m = mean(elev.var)) %>%
   arrange(desc(elev_m))
-#lowest var in elev: rtes 34031, 34027, 34028, mostly 34's, 35010, 49036
-#highest var in elev: rtes 17221, 6014, 6012, 17044, 6071, 85169, 14059 mostly 14's, 17's, and 6,000's
+#lowest var in elev: rtes 34027 (best, closest to normal avgs), mostly 34's, 35010, 
+#highest var in elev: rtes 17221, 6012, 17044, 6071, 85169, 14059 mostly 14's, 17's, and 6,000's
 
-central = bbs_allscales %>% 
+central = bbs_allscales %>%
   group_by(logA) %>%
-  summarize(pctC_avg = mean(pctCore, na.rm = TRUE)) %>%
-  mutate(focalrte = "999",
-         logA = round(logA, digits = 2)) %>%
-  group_by(logA) %>% 
+  summarize(pctC_avg = mean(pctCore)) %>%
+  mutate(logA = round(logA, digits = 2)) %>%
+  group_by(logA) %>%
   summarize(pctC_avg2 = mean(pctC_avg, na.rm = TRUE))
 
+# central = bbs_allscales %>% 
+#   group_by(scale) %>%
+#   arrange(scale, logA) %>% 
+#   mutate(pctC_avg = rollmean(pctCore, 3, na.pad = TRUE))
 
-bbs_allsub = bbs_allscales %>% filter(focalrte == 34031 | focalrte == 34027 | focalrte == 17221 | focalrte == 6014) #(low habhet, high habhet)
+
+bbs_allsub = bbs_allscales %>% filter(focalrte == 35010 | focalrte == 17044 | focalrte == 85169) #(low habhet, high habhet)
 bbs_allsub$focalrte = factor(bbs_allsub$focalrte,
-                             levels=c("72151", "14059", "34031", "17221"),
-                             labels=c("Low Variance in NDVI (Pennsylvania)", "High Variance in NDVI (California)",
-                                      "Low Variance in Elevation (Illinois)", "High Variance in Elevation (Colorado)"))
+                             levels=c("35010", "17044", "85169"),
+                             labels=c("Low Variance in Elevation (Indiana)",
+                                      "High Variance in Elevation (Colorado)", "High Variance in Elevation (Utah)"))
 #use this to assign diff colors for each factor level per what color scheme is ideal?
 #72 is PA, 14 is Cali, 34 is Illinois, 17 is Colorado 
 
@@ -433,13 +441,13 @@ pred_plot = ggplot(bbs_allscales, aes(x = logA, y = pctCore))+geom_line(aes(grou
 pred_plot #yellow = high variation in habhet, purple = low variation, low habhet 
 
 
-central2 = bbs_allscales %>% 
+central2 = bbs_allscales %>%
   group_by(logN) %>%
-  summarize(pctC_avg = mean(pctCore, na.rm = TRUE)) %>%
-  mutate(focalrte = "999",
-         logN = round(logN, digits = 2)) %>%
-  group_by(logN) %>% 
+  summarize(pctC_avg = mean(pctCore)) %>%
+  mutate(logN = round(logN, digits = 1)) %>%
+  group_by(logN) %>%
   summarize(pctC_avg2 = mean(pctC_avg, na.rm = TRUE))
+
 
 pred_abuns = ggplot(bbs_allscales, aes(x = logN, y = pctCore))+geom_line(aes(group = focalrte), color = "grey")+
   theme_classic()+
@@ -449,7 +457,7 @@ pred_abuns = ggplot(bbs_allscales, aes(x = logN, y = pctCore))+geom_line(aes(gro
   theme(text = element_text(size = 16))+theme(legend.position = "none") 
 pred_abuns 
 
-p1 = grid.arrange(pred_abuns, pred_plot, nrow = 2)
+p1 = grid.arrange(pred_plot, pred_abuns, ncol = 2)
 
 
 ####Dummy data and predicted vals for adapted Coyle et al. distribution figure, Figure 1####
