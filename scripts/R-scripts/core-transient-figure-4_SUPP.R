@@ -94,8 +94,9 @@ bbs_occ = bbs_occ[!bbs_occ$site %in% c("53800-5-6", "53800-25-2"),]
 #### Fig 3c/d predicted model ####
 bbs_occ_pred = bbs_occ[!bbs_occ$datasetID %in% c(207, 210, 217, 218, 222, 223, 225, 238, 241, 258, 282, 322, 280,317),]
 bbs_occ_pred = na.omit(bbs_occ_pred)
-mod3c = lmer(pctTrans25~(1|datasetID) * taxa * log10(meanAbundance), data=bbs_occ_pred)
+mod3c = lmer(pctTrans25~log10(meanAbundance) * taxa + (log10(meanAbundance)|datasetID), data=bbs_occ_pred)
 summary(mod3c)
+r.squaredGLMM(mod3c)
 occ_sub_pred = data.frame(datasetID = 999, taxa = unique(bbs_occ_pred$taxa), meanAbundance =  102) # 102 is median abun for data frame (median(bbs_occ_pred$meanAbundance))
 # to test: test = filter(occ_sub_pred, taxa == "Invertebrate")
 predmod3c = merTools::predictInterval(mod3c, occ_sub_pred, n.sims=1000)
@@ -109,7 +110,7 @@ predmod$taxorder = c(1,4,6,3,2,5,7)
 
 # 3d
 ecosys = merge(bbs_occ_pred, dataformattingtable[,c("dataset_ID", "system")], by.y = "dataset_ID", by.x = "datasetID")
-mod3d = lmer(pctTrans25~(1|datasetID) * system * log10(as.numeric(meanAbundance)), data=ecosys)
+mod3d = lmer(pctTrans25~log10(meanAbundance) * system + (log10(meanAbundance)|datasetID), data=ecosys)
 summary(mod3d)
 occ_pred_3d = data.frame(datasetID = 999, system = unique(ecosys$system), meanAbundance =  102) # 102 is median abun for data frame (median(bbs_occ_pred$meanAbundance))
 predmod3d = merTools::predictInterval(mod3d, occ_pred_3d, n.sims=1000)
@@ -118,51 +119,79 @@ predmod3d$order = c(1,2,3)
 #### panel plot ####
 areaids = unique(areamerge$datasetID)
 areaids = areaids[! areaids %in% c(222)] 
-area_plot = data.frame()
+
+areaModel = lmer(pctTrans25 ~ log10(area) * taxa + (log10(area) | datasetID), data = areamerge)
+r.squaredGLMM(areaModel)
+
+dats = areamerge %>% 
+  group_by(datasetID, taxa) %>% 
+  dplyr::summarize(minA = min(area), maxA = max(area))
+dats = data.frame(dats)
+
+minA  = dplyr::select(dats, datasetID, taxa, minA) %>% dplyr::rename(area = minA)
+maxA  = dplyr::select(dats, datasetID, taxa, maxA) %>% dplyr::rename(area = maxA)
+
+dats$minApred <- merTools::predictInterval(areaModel, minA)$fit
+dats$maxApred <- merTools::predictInterval(areaModel, maxA)$fit
+dats$taxa <- NULL
+
+area_plot = merge(areamerge, dats, by = "datasetID")
+
 pdf('output/plots/3a_3d_25SUPP.pdf', height = 10, width = 12)
 par(mfrow = c(2, 2), mar = c(5,5,1,1), cex = 1, oma = c(0,0,0,0), las = 1)
 palette(colors7)
 
-plot(NA, xlim = c(-2, 7), ylim = c(0,1), col = as.character(taxcolor$color), xlab = expression("log"[10]*" Area"), ylab = "% Transients", cex.lab = 2,frame.plot=FALSE)
+# A
+plot(NA, xlim = c(-2, 8), ylim = c(0,1), xlab = expression("log"[10]*" Area (m"^2*")"), 
+     ylab = "% Transients", cex.lab = 2, frame.plot=FALSE, xaxt = "n", yaxt = "n", 
+     mgp = c(3.25,1,0))
+axis(1, cex.axis =  1.5)
+axis(2, cex.axis =  1.5)
 b1 = for(id in scaleIDs){
   print(id)
-  plotsub = subset(areamerge,datasetID == id)
-  print(plotsub$taxa)
+  plotsub = subset(area_plot,datasetID == id)
   taxa = as.character(unique(plotsub$taxa))
-  mod3 = lm(plotsub$pctTrans25 ~ log10(plotsub$area))
-  mod3.slope = summary(mod3)$coef[2,"Estimate"]
-  mod3.coef1 = summary(mod3$coef[1])
-  xnew = range(log10(plotsub$area))
-  xhat <- predict(mod3, newdata = data.frame((xnew)))
-  xhats = range(xhat)
-  print(xhats)
   taxcolor = subset(taxcolors, taxa == as.character(plotsub$taxa)[1])
-  y=summary(mod3)$coef[1] + (xhats)*summary(mod3)$coef[2]
-  area_plot  = rbind(area_plot , c(id, xhats, mod3.slope,mod3.coef1,y,taxa))
-  lines(log10(plotsub$area), fitted(mod3), col=as.character(taxcolor$color),lwd=4)
+  segments(log10(plotsub$minA), plotsub$minApred, log10(plotsub$maxA), plotsub$maxApred, col = as.character(taxcolor$color), lwd = 4)
   par(new=TRUE)
 }
+segments(6.702913, range(area_plot$minApred)[1],-1.397940, range(area_plot$maxApred)[2], col = "black", lwd = 4) # range(log10(area_plot$maxA))
 title(outer=FALSE,adj=0.02,main="A",cex.main=2,col="black",font=2,line=-1)
 par(new= FALSE)
 
-plot(NA, xlim = c(0, 7), ylim = c(0,1), col = as.character(taxcolor$color), xlab = expression("log"[10]*" Community Size"), ylab = "% Transients", cex.lab = 2,frame.plot=FALSE)
+
+abunModel = lmer(pctTrans25 ~ log10(meanAbundance) * taxa + (log10(meanAbundance) | datasetID), data = bbs_occ)
+
+dats = bbs_occ %>% 
+  group_by(datasetID, taxa) %>% 
+  dplyr::summarize(minAb = min(meanAbundance), maxAb = max(meanAbundance))
+dats = data.frame(dats)
+
+minAb  = dplyr::select(dats, datasetID, taxa, minAb) %>% dplyr::rename(meanAbundance = minAb)
+maxAb  = dplyr::select(dats, datasetID, taxa, maxAb) %>% dplyr::rename(meanAbundance = maxAb)
+
+dats$minAbpred <- merTools::predictInterval(abunModel, minAb)$fit
+dats$maxAbpred <- merTools::predictInterval(abunModel, maxAb)$fit
+dats$taxa = NULL
+
+bbs_occ = merge(bbs_occ, dats, by = "datasetID")
+
+plot(NA, xlim = c(0, 7), ylim = c(0,1), col = as.character(taxcolor$color), xlab = expression("log"[10]*" Community Size"), ylab = "% Transients", cex.lab = 2,frame.plot=FALSE, yaxt = "n", xaxt = "n", mgp = c(3.25,1,0))
+axis(1, cex.axis =  1.5)
+axis(2, cex.axis =  1.5)
 b2 = for(id in scaleIDs){
   print(id)
   plotsub = subset(bbs_occ,datasetID == id)
-  mod3 = lm(plotsub$pctTrans25 ~ log10(plotsub$meanAbundance))
-  xnew = range(log10(plotsub$meanAbundance))
-  xhat <- predict(mod3, newdata = data.frame((xnew)))
-  xhats = range(xhat)
-  print(xhats)
+  taxa = as.character(unique(plotsub$taxa))
   taxcolor = subset(taxcolors, taxa == as.character(plotsub$taxa)[1])
-  y=summary(mod3)$coef[1] + (xhats)*summary(mod3)$coef[2]
-  lines(log10(plotsub$meanAbundance), fitted(mod3), col=as.character(taxcolor$color),lwd=4)
+  segments(log10(plotsub$minAb), plotsub$minAbpred, log10(plotsub$maxAb), plotsub$maxAbpred, col = as.character(taxcolor$color), lwd = 4)
   par(new=TRUE)
 }
+segments(6.470117, range(bbs_occ$minAbpred)[1],0.5246248, range(bbs_occ$maxAbpred)[2], col = "black", lwd = 4)
 abline(v = log10(102), lty = 'dotted', lwd = 2) 
-par(new=TRUE)
 title(outer=FALSE,adj=0.02,main="B",cex.main=2,col="black",font=2,line=-1)
-legend('topright', legend = as.character(taxcolors$taxa), lty=1,lwd=3,col = as.character(taxcolors$color), cex = 1.25, bty = "n")
+par(new= FALSE)
+legend('topright', legend = as.character(taxcolors$taxa), lty=1,lwd=3,col = as.character(taxcolors$color), cex = 1.5, bty = "n")
 par(new = FALSE)
 
 b3 = barplot(predmod$fit[predmod$taxorder], cex.names = 2,col = c(colors()[17], "gold2", "turquoise2","red","forestgreen","purple4","#1D6A9B"), ylim = c(0, 1.05))
@@ -235,7 +264,7 @@ bbs_occ = bbs_occ[!bbs_occ$site %in% c("53800-5-6", "53800-25-2"),]
 #### Fig 3c/d predicted model ####
 bbs_occ_pred = bbs_occ[!bbs_occ$datasetID %in% c(207, 210, 217, 218, 222, 223, 225, 238, 241, 258, 282, 322, 280,317),]
 bbs_occ_pred = na.omit(bbs_occ_pred)
-mod3c = lmer(pctTrans10~(1|datasetID) * taxa * log10(meanAbundance), data=bbs_occ_pred)
+mod3c = lmer(pctTrans10~log10(meanAbundance) * taxa + (log10(meanAbundance) | datasetID), data=bbs_occ_pred)
 summary(mod3c)
 occ_sub_pred = data.frame(datasetID = 999, taxa = unique(bbs_occ_pred$taxa), meanAbundance =  102) # 102 is median abun for data frame (median(bbs_occ_pred$meanAbundance))
 # to test: test = filter(occ_sub_pred, taxa == "Invertebrate")
@@ -250,7 +279,7 @@ predmod$taxorder = c(1,4,3,6,7,5,2)
 
 # 3d
 ecosys = merge(bbs_occ_pred, dataformattingtable[,c("dataset_ID", "system")], by.y = "dataset_ID", by.x = "datasetID")
-mod3d = lmer(pctTrans10~(1|datasetID) * system * log10(as.numeric(meanAbundance)), data=ecosys)
+mod3d = lmer(pctTrans10~log10(meanAbundance) * system + (log10(meanAbundance) | datasetID), data=ecosys)
 summary(mod3d)
 occ_pred_3d = data.frame(datasetID = 999, system = unique(ecosys$system), meanAbundance =  102) # 102 is median abun for data frame (median(bbs_occ_pred$meanAbundance))
 predmod3d = merTools::predictInterval(mod3d, occ_pred_3d, n.sims=1000)
@@ -263,46 +292,78 @@ pdf('output/plots/3a_3d_10SUPP.pdf', height = 10, width = 12)
 par(mfrow = c(2, 2), mar = c(5,5,1,1), cex = 1, oma = c(0,0,0,0), las = 1)
 palette(colors7)
 
+areaids = unique(areamerge$datasetID)
+areaids = areaids[! areaids %in% c(222)] 
 
-plot(NA, xlim = c(-2, 7), ylim = c(0,1), col = as.character(taxcolor$color), xlab = expression("log"[10]*" Area"), ylab = "% Transients", cex.lab = 2,frame.plot=FALSE)
+areaModel = lmer(pctTrans10 ~ log10(area) * taxa + (log10(area) | datasetID), data = areamerge)
+r.squaredGLMM(areaModel)
+
+dats = areamerge %>% 
+  group_by(datasetID, taxa) %>% 
+  dplyr::summarize(minA = min(area), maxA = max(area))
+dats = data.frame(dats)
+
+minA  = dplyr::select(dats, datasetID, taxa, minA) %>% dplyr::rename(area = minA)
+maxA  = dplyr::select(dats, datasetID, taxa, maxA) %>% dplyr::rename(area = maxA)
+
+dats$minApred <- merTools::predictInterval(areaModel, minA)$fit
+dats$maxApred <- merTools::predictInterval(areaModel, maxA)$fit
+dats$taxa <- NULL
+
+area_plot = merge(areamerge, dats, by = "datasetID")
+
+# A
+plot(NA, xlim = c(-2, 8), ylim = c(0,1), xlab = expression("log"[10]*" Area (m"^2*")"), 
+     ylab = "% Transients", cex.lab = 2, frame.plot=FALSE, xaxt = "n", yaxt = "n", 
+     mgp = c(3.25,1,0))
+axis(1, cex.axis =  1.5)
+axis(2, cex.axis =  1.5)
 b1 = for(id in scaleIDs){
   print(id)
-  plotsub = subset(areamerge,datasetID == id)
+  plotsub = subset(area_plot,datasetID == id)
   taxa = as.character(unique(plotsub$taxa))
-  mod3 = lm(plotsub$pctTrans10 ~ log10(plotsub$area))
-  mod3.slope = summary(mod3)$coef[2,"Estimate"]
-  mod3.coef1 = summary(mod3$coef[1])
-  xnew = range(log10(plotsub$area))
-  xhat <- predict(mod3, newdata = data.frame((xnew)))
-  xhats = range(xhat)
-  print(xhats)
   taxcolor = subset(taxcolors, taxa == as.character(plotsub$taxa)[1])
-  y=summary(mod3)$coef[1] + (xhats)*summary(mod3)$coef[2]
-  area_plot  = rbind(area_plot , c(id, xhats, mod3.slope,mod3.coef1,y,taxa))
-  lines(log10(plotsub$area), fitted(mod3), col=as.character(taxcolor$color),lwd=4)
+  segments(log10(plotsub$minA), plotsub$minApred, log10(plotsub$maxA), plotsub$maxApred, col = as.character(taxcolor$color), lwd = 4)
   par(new=TRUE)
 }
+segments(6.702913, range(area_plot$minApred)[1],-1.397940, range(area_plot$maxApred)[2], col = "black", lwd = 4) # range(log10(area_plot$maxA))
 title(outer=FALSE,adj=0.02,main="A",cex.main=2,col="black",font=2,line=-1)
 par(new= FALSE)
 
-plot(NA, xlim = c(0, 7), ylim = c(0,1), col = as.character(taxcolor$color), xlab = expression("log"[10]*" Community Size"), ylab = "% Transients", cex.lab = 2,frame.plot=FALSE)
-b2 = for(id in areaids){
+
+abunModel = lmer(pctTrans25 ~ log10(meanAbundance) * taxa + (log10(meanAbundance) | datasetID), data = bbs_occ)
+r.squaredGLMM(abunModel)
+
+dats = bbs_occ %>% 
+  group_by(datasetID, taxa) %>% 
+  dplyr::summarize(minAb = min(meanAbundance), maxAb = max(meanAbundance))
+dats = data.frame(dats)
+
+minAb  = dplyr::select(dats, datasetID, taxa, minAb) %>% dplyr::rename(meanAbundance = minAb)
+maxAb  = dplyr::select(dats, datasetID, taxa, maxAb) %>% dplyr::rename(meanAbundance = maxAb)
+
+dats$minAbpred <- merTools::predictInterval(abunModel, minAb)$fit
+dats$maxAbpred <- merTools::predictInterval(abunModel, maxAb)$fit
+dats$taxa = NULL
+
+bbs_occ = merge(bbs_occ, dats, by = "datasetID")
+
+plot(NA, xlim = c(0, 7), ylim = c(0,1), col = as.character(taxcolor$color), xlab = expression("log"[10]*" Community Size"), ylab = "% Transients", cex.lab = 2,frame.plot=FALSE, yaxt = "n", xaxt = "n", mgp = c(3.25,1,0))
+axis(1, cex.axis =  1.5)
+axis(2, cex.axis =  1.5)
+b2 = for(id in scaleIDs){
   print(id)
   plotsub = subset(bbs_occ,datasetID == id)
-  mod3 = lm(plotsub$pctTrans10 ~ log10(plotsub$meanAbundance))
-  xnew = range(log10(plotsub$meanAbundance))
-  xhat <- predict(mod3, newdata = data.frame((xnew)))
-  xhats = range(xhat)
-  print(xhats)
+  taxa = as.character(unique(plotsub$taxa))
   taxcolor = subset(taxcolors, taxa == as.character(plotsub$taxa)[1])
-  y=summary(mod3)$coef[1] + (xhats)*summary(mod3)$coef[2]
-  lines(log10(plotsub$meanAbundance), fitted(mod3), col=as.character(taxcolor$color),lwd=4)
+  segments(log10(plotsub$minAb), plotsub$minAbpred, log10(plotsub$maxAb), plotsub$maxAbpred, col = as.character(taxcolor$color), lwd = 4)
   par(new=TRUE)
 }
+segments(6.470117, range(bbs_occ$minAbpred)[1],0.5246248, range(bbs_occ$maxAbpred)[2], col = "black", lwd = 4)
 abline(v = log10(102), lty = 'dotted', lwd = 2) 
-par(new=TRUE)
 title(outer=FALSE,adj=0.02,main="B",cex.main=2,col="black",font=2,line=-1)
-legend('topright', legend = as.character(taxcolors$taxa), lty=1,lwd=3,col = as.character(taxcolors$color), cex = 1.25, bty = "n")
+par(new= FALSE)
+legend('topright', legend = as.character(taxcolors$taxa), lty=1,lwd=3,col = as.character(taxcolors$color), cex = 1.5, bty = "n")
 par(new = FALSE)
 
 b3 = barplot(predmod$fit[predmod$taxorder], cex.names = 2,col = c(colors()[17],"gold2", "turquoise2","red","forestgreen","purple4","#1D6A9B"), ylim = c(0, 1))

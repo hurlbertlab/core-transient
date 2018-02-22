@@ -140,10 +140,6 @@ areamerge_fig = read.csv("output/tabular_data/areafig.csv", header = TRUE)
 area.5 = merge(occ_taxa[,c("datasetID", "site", "pctTrans")], areamerge_fig, by = c("datasetID", "site"), na.rm = TRUE)
 area.5  = area.5 [, c("datasetID", "site", "taxa", "pctTrans", "area")]
 areamerge_fig = rbind(bbs_area,area.5)
-# areamerge %>%
-#  dplyr::filter(datasetID == c(277, 280, 314)) %>%
-#  summarise(volchange = area^(2/3))
-  
   
 pdf('output/plots/4a_4d.pdf', height = 10, width = 14)
 par(mfrow = c(2, 2), mar = c(5,5,1,1), cex = 1, oma = c(0,0,0,0), las = 1)
@@ -244,6 +240,7 @@ write.csv(area_plot, "output/tabular_data/fig_4a_output.csv", row.names =FALSE)
 
 
 
+
 ###### panel plot pred model ######
 pdf('output/plots/4a_4d_pred.pdf', height = 10, width = 14)
 par(mfrow = c(2, 2), mar = c(5,5,1,1), cex = 1, oma = c(0,0,0,0), las = 1)
@@ -254,26 +251,16 @@ areaModel = lmer(pctTrans ~ log10(area) * taxa + (log10(area) | datasetID), data
 dats = bbs_occ_area %>% 
   group_by(datasetID, taxa) %>% 
   dplyr::summarize(minA = min(area), maxA = max(area), minAb = min(meanAbundance), maxAb = max(meanAbundance))
+dats = data.frame(dats)
 
 minA  = dplyr::select(dats, datasetID, taxa, minA) %>% dplyr::rename(area = minA)
 maxA  = dplyr::select(dats, datasetID, taxa, maxA) %>% dplyr::rename(area = maxA)
 
 dats$minApred <- merTools::predictInterval(areaModel, minA)$fit
 dats$maxApred <- merTools::predictInterval(areaModel, maxA)$fit
+dats$taxa <- NULL
 
-
-range_predict = data.frame(datasetID = NULL, lower = NULL, upper = NULL)
-
-
-for(id in scaleIDs){
-  sub =  subset(bbs_occ_area, datasetID == id)
-  range = range(sub$area)
-  range_predict = rbind(range_predict, data.frame(datasetID = id,
-                                    lower = range[1], 
-                                    upper = range[2]))
-}
-range_predict = unique(range_predict)
-area_plot = merge(bbs_occ_area, range_predict, by = "datasetID")
+area_plot = merge(bbs_occ_area, dats, by = "datasetID")
 
 # A
 plot(NA, xlim = c(-2, 8), ylim = c(0,1), xlab = expression("log"[10]*" Area (m"^2*")"), 
@@ -286,15 +273,12 @@ b1 = for(id in scaleIDs){
   plotsub = subset(area_plot,datasetID == id)
   taxa = as.character(unique(plotsub$taxa))
   taxcolor = subset(taxcolors, taxa == as.character(plotsub$taxa)[1])
-  segments(log10(plotsub$lower), range(plotsub$preds)[1], x1 = log10(plotsub$upper), range(plotsub$preds)[2], col = as.character(taxcolor$color), lwd = 4)
-  # points(log10(plotsub$area), plotsub$pctTrans)
+  segments(log10(plotsub$minA), plotsub$minApred, x1 = log10(plotsub$maxA), plotsub$maxApred, col = as.character(taxcolor$color), lwd = 4)
   par(new=TRUE)
 }
-segments(range(log10(area_plot$lower))[1], range(area_plot$preds)[1], x1 = range(log10(area_plot$upper))[2], range(area_plot$preds)[2], col = "black", lwd = 4)
+segments(6.7029128, range(area_plot$minApred)[1],-1.346787, range(area_plot$maxApred)[2], col = "black", lwd = 4) # range(log10(area_plot$maxA))
 title(outer=FALSE,adj=0.02,main="A",cex.main=2,col="black",font=2,line=-1)
 par(new= FALSE)
-
-
 
 # B
 abunModel = lmer(pctTrans ~ log10(meanAbundance) * taxa + (log10(meanAbundance) | datasetID), data = bbs_occ_area)
@@ -302,21 +286,16 @@ abunModel = lmer(pctTrans ~ log10(meanAbundance) * taxa + (log10(meanAbundance) 
 dats = bbs_occ_area %>% 
   group_by(datasetID, taxa) %>% 
   dplyr::summarize(minA = min(area), maxA = max(area), minAb = min(meanAbundance), maxAb = max(meanAbundance))
+dats = data.frame(dats)
 
 minAb  = dplyr::select(dats, datasetID, taxa, minAb) %>% dplyr::rename(meanAbundance = minAb)
 maxAb  = dplyr::select(dats, datasetID, taxa, maxAb) %>% dplyr::rename(meanAbundance = maxAb)
 
 dats$minAbpred <- merTools::predictInterval(abunModel, minAb)$fit
 dats$maxAbpred <- merTools::predictInterval(abunModel, maxAb)$fit
+dats$taxa = NULL
 
-
-
-
-
-
-
-
-bbs_occ = merge(bbs_occ_area, dats, by = "datasetID") #merge colors
+bbs_occ = merge(bbs_occ_area, dats, by = "datasetID")
 
 plot(NA, xlim = c(0, 7), ylim = c(0,1), col = as.character(taxcolor$color), xlab = expression("log"[10]*" Community Size"), ylab = "% Transients", cex.lab = 2,frame.plot=FALSE, yaxt = "n", xaxt = "n", mgp = c(3.25,1,0))
 axis(1, cex.axis =  1.5)
@@ -326,23 +305,24 @@ b2 = for(id in scaleIDs){
   plotsub = subset(bbs_occ,datasetID == id)
   taxa = as.character(unique(plotsub$taxa))
   taxcolor = subset(taxcolors, taxa == as.character(plotsub$taxa)[1])
-  segments(log10(plotsub$lower), range(plotsub$preds)[1], x1 = log10(plotsub$upper), range(plotsub$preds)[2], col = as.character(taxcolor$color), lwd = 4)
-  # points(log10(plotsub$area), plotsub$pctTrans)
+  segments(log10(plotsub$minAb), plotsub$minAbpred, log10(plotsub$maxAb), plotsub$maxAbpred, col = as.character(taxcolor$color), lwd = 4)
   par(new=TRUE)
 }
-segments(range(log10(bbs_occ$lower))[1], range(bbs_occ$preds)[1], x1 = range(log10(bbs_occ$upper))[2], range(bbs_occ$preds)[2], col = "black", lwd = 4)
+segments(6.470117, range(bbs_occ$minAbpred)[1],0.243038, range(bbs_occ$maxAbpred)[2], col = "black", lwd = 4)
+abline(v = log10(102), lty = 'dotted', lwd = 2) 
 title(outer=FALSE,adj=0.02,main="B",cex.main=2,col="black",font=2,line=-1)
 par(new= FALSE)
 legend('topright', legend = as.character(taxcolors$taxa), lty=1,lwd=3,col = as.character(taxcolors$color), cex = 1.5, bty = "n")
 par(new = FALSE)
 
-b4 = barplot(predmod$fit[predmod$order], cex.names = 2,col = c(colors()[17],"gold2", "turquoise2","red","forestgreen","purple4","#1D6A9B"), ylim = c(0, 1.1), yaxt = "n")
+
+b3 = barplot(predmod$fit[predmod$order], cex.names = 2,col = c(colors()[17],"gold2", "turquoise2","red","forestgreen","purple4","#1D6A9B"), ylim = c(0, 1.1), yaxt = "n")
 axis(2, cex.axis = 1.5)
 Hmisc::errbar(c(0.7, 1.9, 3.1, 4.3, 5.5, 6.7, 7.9), predmod$fit[predmod$order], predmod$upr[predmod$order], predmod$lwr[predmod$order], add= TRUE, lwd = 1.25, pch = 3)
 mtext("% Transients", 2, cex = 2, las = 0, line = 3, mgp = c(3.25,1,0))
 title(outer=FALSE,adj=0.02,main="C",cex.main=2,col="black",font=2,line=-1)
 
-b4 = barplot(predmod4d$fit[predmod4d$order], cex.names = 1.5,col = c('burlywood','skyblue','navy'), ylim = c(0, 0.8), yaxt = "n")
+b4 = barplot(predmod4d$fit[predmod4d$order], cex.names = 1.5,col = c('burlywood','skyblue','navy'), ylim = c(0, 1), yaxt = "n")
 axis(2, cex.axis = 1.5)
 Hmisc::errbar(c(0.7, 1.9, 3.1), predmod4d$fit[predmod4d$order], predmod4d$upr[predmod4d$order], predmod4d$lwr[predmod4d$order], add= TRUE, lwd = 1.25, pch = 3)
 mtext("% Transients", 2, cex = 2, las = 0, line = 3, mgp = c(3.25,1,0))
