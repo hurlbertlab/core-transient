@@ -318,6 +318,8 @@ bray_else$taxa = factor(bray_else$taxa,
 turnover_col$bbs =ifelse(turnover_col$datasetID == 1, "yes", "no")
 turnover_bbs = filter(turnover_col, bbs == "yes")
 turnover_else = filter(turnover_col, bbs == "no")
+turnover_col$diff = turnover_col$TJnotrans-turnover_col$TJ
+hist(turnover_col$diff, xlab = "Excluding transients - All Species")
 
 turnover_else$taxa = factor(turnover_else$taxa,
                             levels = c('Invertebrate','Fish','Plankton','Mammal','Plant','Bird'),ordered = TRUE)
@@ -416,6 +418,9 @@ slopes$bbs = 'no'
 all_slopes =  rbind(slopes, slopes_bbs)
 
 plot_relationship = merge(slopes, taxcolors, by = "taxa")
+plot_relationship$diff = plot_relationship$areaSlope_noTrans-plot_relationship$areaSlope
+hist(plot_relationship$diff, xlab = "Excluding transients - All Species")
+
 slopes_bbs = merge(slopes_bbs, taxcolors, by = "taxa")
 
 plot_relationship$taxa = factor(plot_relationship$taxa,
