@@ -18,7 +18,6 @@ library(sp)
 library(rgdal)
 library(raster)
 library(dplyr)
-library(merTools)
 library(digest)
 
 
@@ -282,7 +281,7 @@ make.cir = function(p,r){
 }
 
 routes.laea@data$dId_site = paste(routes.laea@data$datasetID, routes.laea@data$site, sep = "_")
-routes.laea@data$unique = 1:16602
+routes.laea@data$unique = 1:16618
 
 
 #Draw circles around all routes 
@@ -339,7 +338,7 @@ write.csv(lat_scale_rich, "output/tabular_data/lat_scale_rich.csv", row.names = 
 
 
 # Model -  want 5 km radius here!!!!
-mod1 = lmer(propTrans ~ (1|taxa) * log10(meanAbundance) * log10(elev.var), data=lat_scale_rich) 
+mod1 = lmer(propTrans ~ (1|datasetID) * log10(meanAbundance) * log10(elev.var) * taxa, data=lat_scale_rich) 
 summary(mod1)
 coefs <- data.frame(coef(summary(mod1)))
 coefs$p.z <- 2 * (1 - pnorm(abs(coefs$t.value)))
@@ -357,3 +356,11 @@ hist(mod1test$propTrans)
 transmod = lm(pTrans~taxa, data = CT_long)
 summary(transmod)
 
+summ$scale = 1
+summ$n = 1
+summ_cut = summ[,c("datasetID", "site", "scale", "n")]
+bbs_occ_scale$datasetID = 1
+bbs_occ_scale$n = bbs_occ_scale$spRich
+bbs_all = bbs_occ_scale[,c("datasetID", "site", "scale", "n")]
+new_df = rbind(allrich, summ_cut, bbs_all)
+new = data.frame(table(new_df$datasetID))
