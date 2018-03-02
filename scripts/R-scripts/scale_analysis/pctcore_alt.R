@@ -373,13 +373,16 @@ write.csv(core_scales_hetero, "scripts/R-scripts/scale_analysis/core_scales_hete
 ####Alt figures for pct Core####
 
 ####Plotting how distributions change across scale, using area####
-all_fig = read.csv("//bioark.ad.unc.edu/HurlbertLab/Jenkins/BBS scaled/all_figoutput.csv", header = TRUE)
+all_fig = read.csv("//bioark.ad.unc.edu/HurlbertLab/Jenkins/Intermediate scripts/BBS scaled/all_figoutput.csv", header = TRUE)
 #all_fig$area = as.factor(all_fig$area)
 
-all_figplot = ggplot(all_fig, aes(occ, group = factor(round(area, digits = 2)), color = factor(round(area, digits = 2))))+
+all_figplot = ggplot(all_fig, aes(occ, group = factor(signif(area, digits = 2)), color = factor(signif(area, digits = 2))))+
   stat_density(geom = "path", position = "identity", bw = "bcv", kernel = "gaussian", n = 4000, na.rm = TRUE, size = 1.3)+
   labs(x = "Proportion of time present at site", y = "Probability Density")+theme_classic()+
-  scale_color_viridis(discrete = TRUE, name = "Spatial Scale in km2")+theme(axis.title = element_text(size = 18))+theme(legend.position = c(0.50, 0.50))
+  scale_color_viridis(discrete = TRUE, name = expression("Spatial Scale in km"^{2}))+
+  theme(axis.title = element_text(size = 18), axis.text = element_text(size = 16))+
+  theme(legend.text = element_text(size = 16), legend.title = element_text(size = 16))+
+  theme(legend.position = c(0.50, 0.50))
 all_figplot
 
 ####Plotting NULL all routes with 3 highlighted "types####
@@ -397,7 +400,7 @@ bbs_allsub$focalrte = as.factor(bbs_allsub$focalrte)
 
 pred_plot = ggplot(bbs_allscales, aes(x = logA, y = pctCore))+geom_line(aes(group = focalrte), color = "grey")+
   theme_classic()+geom_line(data = bbs_allsub, aes(x = logA, y = pctCore, group = as.factor(focalrte), color = as.factor(focalrte)), size = 2)+ #geom_smooth(model = lm, color = 'red')+
-  labs(x = "Log Area", y = "Percent Core Species in Community")+scale_color_viridis(discrete = TRUE, name = "BBS route")+
+  labs(x = "Log Area", y = "Proportion Core Species in Community")+scale_color_viridis(discrete = TRUE, name = "BBS route")+
   theme(axis.title = element_text(size = 18))+theme(legend.position = "none") 
 pred_plot 
 
@@ -419,7 +422,7 @@ scales_hetero_v = core_scales_hetero %>%
 ggplot(scales_hetero_v, aes(x = scale, y = corr_r))+
   geom_line(aes(color = dep))+facet_wrap(~ind)+theme_classic()+
   geom_abline(intercept = 0, slope = 0)+
-  theme_classic()+theme(axis.title = element_text(size = 18))+
+  theme_classic()+theme(axis.title = element_text(size = 18), axis.text = element_text(size = 16))+
   labs(x = "Number of aggregated BBS Routes", y = "Pearson's correlation estimate")+theme(legend.position = c(0.80, 0.20)) 
 
 #I want a corr_r value for every dep and ind variable at every scale, for every focal
@@ -440,10 +443,10 @@ scales_hetero2 = core_scales_hetero %>%
 
 ggplot(scales_hetero2, aes(x = ind, y = corr_r))+
   geom_pointrange(aes(shape = dep, ymin = lowr, ymax = uppr))+geom_abline(intercept = 0, slope = 0)+
-  theme_classic()+theme(axis.title = element_text(size = 18))+
+  theme_classic()+theme(axis.title = element_text(size = 18), axis.text = element_text(size = 16))+
   labs(x = "Occupancy-scale parameters", y = "Pearson's correlation estimate")+
   scale_x_discrete(limit = c("PCA.curvature","PCA.max","PCA.mid","PCA.min","PCA.slope"),
                    labels = c("Curvature","Max","Scale 0.5", "Min", "Slope"))+
   scale_shape_discrete(name="Habitat Heterogeneity",
                        breaks=c("elev.var", "ndvi.var"),
-                       labels=c("Variance in Elevation", "Variance in NDVI"))
+                       labels=c("Elevation", "NDVI"))
