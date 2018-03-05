@@ -29,7 +29,7 @@ library(zoo)
 #individual occ values for spp at each stateroute across the 15 year window 
 
 
-BBS = '//bioark.ad.unc.edu/HurlbertLab/Jenkins/BBS scaled/'
+BBS = '//bioark.ad.unc.edu/HurlbertLab/Jenkins/Intermediate scripts/BBS scaled/'
 
 fifty_allyears = read.csv(paste(BBS, "fifty_allyears.csv", sep = ""), header = TRUE) #using updated version, 50 stop data, 07/12
 bbs_allscales = read.csv("data/BBS/bbs_allscales.csv", header = TRUE)
@@ -208,18 +208,17 @@ write.csv(all_fig, "//bioark.ad.unc.edu/HurlbertLab/Jenkins/BBS scaled/all_figou
 
 
 ####Plotting how distributions change across scale, using area####
-all_fig = read.csv("//bioark.ad.unc.edu/HurlbertLab/Jenkins/BBS scaled/all_figoutput.csv", header = TRUE)
+all_fig = read.csv("//bioark.ad.unc.edu/HurlbertLab/Jenkins/Intermediate scripts/BBS scaled/all_figoutput.csv", header = TRUE)
 #all_fig$area = as.factor(all_fig$area)
 
-all_figplot = ggplot(all_fig, aes(occ, group = factor(area), color = factor(area)))+
+all_figplot = ggplot(all_fig, aes(occ, group = factor(signif(area, digits = 2)), color = factor(signif(area, digits = 2))))+
   stat_density(geom = "path", position = "identity", bw = "bcv", kernel = "gaussian", n = 4000, na.rm = TRUE, size = 1.3)+
   labs(x = "Proportion of time present at site", y = "Probability Density")+theme_classic()+
-  scale_color_viridis(discrete = TRUE)+theme(axis.title = element_text(size = 18))+theme(legend.position = c(0.50, 0.50)) 
+  scale_color_viridis(discrete = TRUE, name = expression("Spatial Scale in km"^{2}))+
+  theme(axis.title = element_text(size = 18), axis.text = element_text(size = 16))+
+  theme(legend.text = element_text(size = 16), legend.title = element_text(size = 16))+
+  theme(legend.position = c(0.50, 0.50))
 all_figplot
-#edit fig for manuscript -? 2-3 colors color ramp thru viridis 
-#chop 1-2 scales if needed 
-#thicken lines 
-#increase text size 5x or so 
 
 
 
@@ -256,7 +255,7 @@ plot(bbs_allscales$meanOcc~bbs_allscales$logN)
 NorthAm = readOGR(dsn = "//bioark.ad.unc.edu/HurlbertLab/GIS/geography", layer = "continent")
 NorthAm2 = spTransform(NorthAm, CRS("+proj=laea +lat_0=45.235 +lon_0=-106.675 +units=km"))
 bbs_latlon = read.csv(paste(BBS, "good_rtes2.csv", sep = ""), header = TRUE)
-dist.df = read.csv("scripts/R-scripts/scale_analysis/dist_df.csv", header = TRUE)
+dist.df = read.csv("scripts/R-scripts/scale_analysis/intermed/dist_df.csv", header = TRUE)
 dist.df_sub = dist.df %>% 
   filter(rte1 == "2001")%>% 
   top_n(66, desc(dist)) %>% #fixed ordering by including arrange parm, 
@@ -290,21 +289,23 @@ points(star2$Longi, star2$Lati, col = "black", pch = 17, cex = 2)
 
 ####Results section figs####
 #scales hetero derived at end of env_analysis script
-scales_hetero = read.csv("scripts/R-scripts/scale_analysis/scales_hetero.csv", header = TRUE)
+scales_hetero = read.csv("scripts/R-scripts/scale_analysis/intermed/scales_hetero.csv", header = TRUE)
 
 scales_hetero_v = scales_hetero %>% 
-  filter(dep == "elev.var" | dep == "ndvi.var")%>%
+  filter(dep == "elev.var" | dep == "ndvi.var") %>%
   filter(ind == "OA.curvature" | ind == "OA.max" | ind == "OA.mid"| ind == "OA.min" | ind == "OA.slope")
 
-coef_labels = c(OA.curvature = "Curvature",OA.max= "Max", OA.mid= "Scale 0.5" , OA.min= "Min", OA.slope= "Slope")
+scales_hetero_v$ind = factor(scales_hetero_v$ind, 
+                             levels = c("OA.min","OA.mid", "OA.slope","OA.curvature", "OA.max"),
+                             labels = c("Min", as.character(expression("Scale"[50])), "Slope", "Curvature", "Max"))
 
 scales_hetero_v$dep = factor(scales_hetero_v$dep, 
                                 levels=c("elev.var", "ndvi.var"),
-                                labels=c("Variance in Elevation", "Variance in NDVI"))
+                                labels=c("Elevation", "NDVI"))
 
 #scale on x and r on y, panel by coef of interest, line color by var measure
 ggplot(scales_hetero_v, aes(x = scale, y = corr_r))+
-  geom_line(aes(color = dep), size = 1.4)+facet_wrap(~ind, labeller = labeller(ind = coef_labels))+
+  geom_line(aes(color = dep), size = 1.4)+facet_wrap(~ind, labeller = label_parsed)+
   theme_classic()+
   geom_abline(intercept = 0, slope = 0)+
   theme_classic()+theme(text = element_text(size = 18))+
@@ -334,14 +335,14 @@ scales_hetero2 = scales_hetero %>%
   filter(ind == "OA.curvature" | ind == "OA.max" | ind == "OA.mid"| ind == "OA.min" | ind == "OA.slope")
 
 ggplot(scales_hetero2, aes(x = ind, y = corr_r))+
-  geom_pointrange(aes(shape = dep, ymin = lowr, ymax = uppr), size = 1.2, position = position_jitter())+geom_abline(intercept = 0, slope = 0)+
-  theme_classic()+theme(axis.title = element_text(size = 18), axis.text = element_text(size = 16))+
+  geom_pointrange(aes(shape = dep, ymin = lowr, ymax = uppr), size = 1.2, position = position_dodge(width = 0.35))+geom_abline(intercept = 0, slope = 0)+
+  theme_classic()+theme(axis.title = element_text(size = 18), axis.text = element_text(size = 16), legend.position = c(0.55, 0.25), legend.text = element_text(size = 16), legend.title = element_text(size = 16))+
   labs(x = "Occupancy-scale parameters", y = "Pearson's correlation estimate")+
-  scale_x_discrete(limit = c("OA.curvature","OA.max","OA.mid","OA.min","OA.slope"),
-                     labels = c("Curvature","Max","Scale 0.5", "Min", "Slope"))+
+  scale_x_discrete(limit = c("OA.min", "OA.mid","OA.slope","OA.curvature","OA.max"),
+                     labels = c("Min", expression("Scale"[50]),"Slope","Curvature","Max"))+
   scale_shape_discrete(name="Habitat Heterogeneity",
                       breaks=c("elev.var", "ndvi.var"),
-                      labels=c("Variance in Elevation", "Variance in NDVI"))
+                      labels=c("Elevation", "NDVI"))
 
 
 
@@ -424,11 +425,11 @@ central = bbs_allscales %>%
 #   mutate(pctC_avg = rollmean(pctCore, 3, na.pad = TRUE))
 
 
-bbs_allsub = bbs_allscales %>% filter(focalrte == 35010 | focalrte == 17044 | focalrte == 85169) #(low habhet, high habhet)
+bbs_allsub = bbs_allscales %>% filter(focalrte == 34054 | focalrte == 85169) #(low habhet, high habhet)
 bbs_allsub$focalrte = factor(bbs_allsub$focalrte,
-                             levels=c("35010", "17044", "85169"),
-                             labels=c("Low Variance in Elevation (Indiana)",
-                                      "High Variance in Elevation (Colorado)", "High Variance in Elevation (Utah)"))
+                             levels=c("34054", "85169"),
+                             labels=c("Low Heterogeneity",
+                                      "High Heterogeneity"))
 #use this to assign diff colors for each factor level per what color scheme is ideal?
 #72 is PA, 14 is Cali, 34 is Illinois, 17 is Colorado 
 
@@ -436,8 +437,10 @@ pred_plot = ggplot(bbs_allscales, aes(x = logA, y = pctCore))+geom_line(aes(grou
   theme_classic()+
   geom_line(data = bbs_allsub, aes(x = logA, y = pctCore, group = as.factor(focalrte), color = as.factor(focalrte)), size = 2)+ #geom_smooth(model = lm, color = 'red')+
   geom_line(data= central, aes(x = logA, y = pctC_avg2), color = "black", size = 2)+
-  labs(x = "Log Area", y = "Proportion Core Species in Community")+scale_color_viridis(discrete = TRUE, name = "BBS route")+
-  theme(text = element_text(size = 16))+theme(legend.position = c(0.78, 0.20)) 
+  labs(x = "Log Area", y = "Proportion Core Species in Community")+
+  scale_color_viridis(discrete = TRUE, name = "", option = "B", begin = 0.75, end = .9)+
+  theme(axis.title = element_text(size = 18), axis.text = element_text(size = 16), legend.text = element_text(size = 16), legend.title = element_text(size = 16))+
+  theme(legend.position = c(0.78, 0.20)) 
 pred_plot #yellow = high variation in habhet, purple = low variation, low habhet 
 
 
@@ -453,8 +456,8 @@ pred_abuns = ggplot(bbs_allscales, aes(x = logN, y = pctCore))+geom_line(aes(gro
   theme_classic()+
   geom_line(data = bbs_allsub, aes(x = logN, y = pctCore, group = as.factor(focalrte), color = as.factor(focalrte)), size = 2)+ #geom_smooth(model = lm, color = 'red')+
   geom_line(data= central2, aes(x = logN, y = pctC_avg2), color = "black", size = 2)+
-  labs(x = "Log Abundance", y = "")+scale_color_viridis(discrete = TRUE, name = "BBS route")+
-  theme(text = element_text(size = 16))+theme(legend.position = "none") 
+  labs(x = "Log Abundance", y = "")+scale_color_viridis(discrete = TRUE, name = "", option = "B", begin = 0.75, end = .9)+
+  theme(axis.title = element_text(size = 18), axis.text = element_text(size = 16))+theme(legend.position = "none") 
 pred_abuns 
 
 p1 = grid.arrange(pred_plot, pred_abuns, ncol = 2)
@@ -462,7 +465,7 @@ p1 = grid.arrange(pred_plot, pred_abuns, ncol = 2)
 
 ####Dummy data and predicted vals for adapted Coyle et al. distribution figure, Figure 1####
 #base fig1a 
-min_out = read.csv("//bioark.ad.unc.edu/HurlbertLab/Jenkins/BBS scaled/min_out.csv", header = TRUE)
+min_out = read.csv("//bioark.ad.unc.edu/HurlbertLab/Jenkins/Intermediate scripts/BBS scaled/min_out.csv", header = TRUE)
 
 #filter to scale == 50, check
 single_rte = min_out %>% 
@@ -522,7 +525,7 @@ all_predplot = ggplot(pred_dist, aes(occ))+
   stat_density(aes(local), geom = "path", position = "identity", bw = "bcv", kernel = "gaussian", n = 4000, na.rm = TRUE, size = 1.3, color = "#FDE725FF")+
   stat_density(aes(big), geom = "path", position = "identity", bw = "bcv", kernel = "gaussian", n = 4000, na.rm = TRUE, size = 1.3, color = "#55C667FF")+
   labs(x = "Proportion of time present at site", y = "Probability Density")+theme_classic()+
-  theme(axis.title = element_text(size = 18))
+  theme(axis.title = element_text(size = 18), axis.text = element_text(size = 16))
   #coord_cartesian(xlim = c(0, 1), ylim = c(0, 2.5))
 all_predplot
 

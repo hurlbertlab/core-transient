@@ -1,0 +1,217 @@
+---
+title: "Logistic_function_trblsht"
+author: "Molly Jenkins"
+date: "March 5, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Last attempted logistic function using TryCatch, nls, SSlogis from July
+
+### Problems: 
+Previous biggest issues were getting the function to work at all and trying to describe transient species. Since then I've been focusing on core species alone as the category of interest. I don't have to worry about trying to describe the transients here anymore, perhaps making for better outcomes. 
+
+Currently, I extract five parameters from the scaling relationship for each stateroute, allowing those parameters to let the trends in the observed data speak for themselves. However, our curvature parameter is reliant on taking the differences between our observed values and the predicted values generated from a linear model. This isn't entirely appropriate given that our relationship is decidedly nonlinear. 
+
+Here, i takes the place of our midpoint/scale50 parameters (midpoint was scrapped for redundancy with scale50)
+i stands for "inflexion point"
+
+A stands for Asymptote and describes the point at which the relationship asymptotes out at 
+
+k is a scaling parameter and describes the slope of the relationship at inflexion point i 
+
+Together these three parameters describe the relationship between core species and scale in a manner similar but different than our current approach. Our goal is to derive estimates for these three parameters for every focal route sampled. 
+
+Do I need or want r2 or predicted vals for every focal route to provide an estimate of how well or how poorly that route fit the model, and to see if bad fits corresponded with high habhet? In lieu of "curvature" AUC proxy I mean. 
+
+Can I have it both ways? Can I get r2 vals from nls base mods and then just extract observed data parms and derive curvature vals from that, and not scrap my observed parms? 
+
+```{r setup, echo = FALSE}
+
+setwd("C:/git/core-transient")
+#'#' Please download and install the following packages:
+library(raster)
+library(maps)
+library(sp)
+library(rgdal)
+library(maptools)
+library(rgeos)
+library(dplyr)
+library(fields)
+library(tidyr)
+library(ggplot2)
+library(nlme)
+library(gridExtra)
+library(wesanderson)
+library(stats)
+
+# To run this script, you need temperature, precip, etc data, 
+# which are currently stored in the following directories off of github: 
+
+# Data directories
+BBS = '//bioark.ad.unc.edu/HurlbertLab/Jenkins/BBS scaled/'
+
+```
+
+
+
+```{r}
+bbs_allscales = read.csv("data/BBS/bbs_allscales.csv", header = TRUE)
+
+
+####Cross-scale analysis and visualization####
+mod1 = lm(pctCore~logA, data = bbs_allscales) #explains ~72% of the variation in occ
+mod2 = lm(pctCore~logN, data = bbs_allscales)
+summary(mod1)
+
+#compare to an NLS model 
+mod3 = nls(pctCore ~ SSlogis(logA, Asym, xmid, scal), data = bbs_allscales)
+mod4 = nls(pctCore ~ SSlogis(logN, Asym, xmid, scal), data = bbs_allscales)
+summary(mod3)
+
+plot(pctCore~logA, data = bbs_allscales, xlab = "Log Area" , ylab = "Proportion Core Species in Community")
+plot(pctCore~logN, data = bbs_allscales, xlab = "Log Abundance" , ylab = "Proportion Core Species in Community")
+#^^same pattern roughly; abundance describes ~same amt of variance as area so serves as a good proxy 
+
+bbs_allscales$CApreds = predict(mod3, bbs_allscales)
+bbs_allscales$CNpreds = predict(mod4, bbs_allscales) #gave me unique preds for all stateroute and scale combos so...
+#use predicted values to bootstrap r2 overall but also individually for each route between observed and predicted 
+#doing this separately from coef extraction otherwise will be too complicated! 
+
+
+#these are for the whole thing tho, not each route individually 
+CA_i = summary(mod3)$coefficients["xmid", "Estimate"] #in terms of the LOG AREA value...? since referring to x axis explicitly
+CA_A = summary(mod3)$coefficients["Asym", "Estimate"] #in terms of the OCCUPANCY
+CA_k = summary(mod3)$coefficients["scal", "Estimate"] #in terms of the OCCUPANCY 
+```
+
+
+## Extracting parms for individual stateroutes 
+
+```{r}
+####Extract coefficients from scale-occupancy relationships for each route####
+CA.df = data.frame(stateroute = numeric(), CA.A= numeric(), CA.i = numeric(), CA.k = numeric(), CA.r2 = numeric())
+CN.df = data.frame(stateroute = numeric(), CN.A= numeric(), CN.i = numeric(), CN.k = numeric(), CN.r2 = numeric())
+
+warnings = data.frame(stateroute = numeric(), warning = character())
+stateroutes = unique(bbs_allscales$focalrte) #this stuff is the same, looks normal ^
+
+
+#06/19 version of tryCatch
+for(s in stateroutes){
+  logsub = subset(bbs_allscales, bbs_allscales$focalrte == s)  
+  #fitting the log curve for area (for each route)
+  
+ #CA - Core spp prop vs log area
+  CAmodel = tryCatch({
+    CAlog = nls(pctCore ~ SSlogis(logA, Asym, xmid, scal), data = logsub)
+    # CApred = predict(CAlog)
+    # CAlm.r2 = lm(logsub$pctCore ~ CApred)
+    
+    CA.i <- summary(CAlog)$coefficients["xmid","Estimate"]
+    CA.A <- summary(CAlog)$coefficients["Asym","Estimate"]
+    CA.k <- summary(CAlog)$coefficients["scal","Estimate"]
+    # CA.r2 <- summary(CAlm.r2)$r.squared
+    data.frame(stateroute = s, CA.A, CA.i, CA.k)
+    
+  }, warning = function(w) {
+    warnings = rbind(warnings, data.frame(stateroute = s, warning = w))
+  }, error = function(e) {
+    CA.i <- NA
+    CA.A <- NA
+    CA.k <- NA
+    # CA.r2 <- NA
+    temp = data.frame(stateroute = s, CA.A, CA.i, CA.k)
+    return(temp)
+    
+  })
+  CA.df = rbind(CA.df, CAmodel)
+  
+  #CN - prop core spp vs log abundance 
+  CNmodel = tryCatch({
+    CNlog = nls(pctCore ~ SSlogis(logN, Asym, xmid, scal), data = logsub)
+    CNpred = predict(CNlog)
+    # CNlm.r2 = lm(logsub$pctCore ~ CNpred) #bootstraping r2 vals for CNlog since not in summary stats
+    
+    CN.i <- summary(CNlog)$coefficients["xmid","Estimate"]
+    CN.A <- summary(CAlog)$coefficients["Asym","Estimate"]
+    CN.k <- summary(CNlog)$coefficients["scal","Estimate"]
+    # CN.r2 <- summary(CNlm.r2)$r.squared
+    data.frame(stateroute = s, CN.A, CN.i, CN.k)
+    
+  }, warning = function(w) {
+    warnings = rbind(warnings, data.frame(stateroute = s, warning = w))
+  }, error = function(e) {
+    CN.i <- NA
+    CN.A <- NA
+    CN.k <- NA
+    # CN.r2 <- NA
+    temp = data.frame(stateroute = s, CN.A, CN.i, CN.k)
+    return(temp)
+    
+  })
+  CN.df = rbind(CN.df, CNmodel)
+  
+}
+
+#join all together using inner_join by focal rte, not cbind 
+coefs_logis = CA.df %>% 
+  inner_join(CN.df, CA.df, by = "stateroute") 
+  
+
+write.csv(coefs_logis, "C:/git/core-transient/scripts/R-scripts/scale_analysis/coefs_logis.csv", row.names = FALSE) #updated 03/05/2018
+
+
+####Plotting occupancy-scale relationships with observed and predicted values####
+bbs_allscales = read.csv("data/BBS/bbs_allscales.csv", header = TRUE)
+coefs_logis = read.csv("scripts/R-scripts/scale_analysis/coefs_logis.csv", header = TRUE)
+
+
+
+
+
+#function for extracting predicted values from models built with observed data
+logistic_fcn = function(x, Asym, xmid, scal) {
+  out = Asym/(1 + exp((xmid - x)/scal))
+  return(out)
+}
+
+preds.df = data.frame(stateroute = numeric(), logA = numeric(), logN = numeric(),
+                      CApreds = numeric(), CNpreds = numeric())
+
+
+coef_join = coefs %>% inner_join(bbs_allscales, by = c("stateroute"="focalrte"))
+stateroutes = unique(bbs_allscales3$focalrte)
+
+#extracting predicted values and plotting in same loop
+for (s in stateroutes) {
+  theme_set(theme_bw()+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()))
+  coef_sub = subset(coef_join, coef_join$stateroute == s)
+  logA = coef_sub$logA
+  
+ #CA
+  CApreds = logistic_fcn(coef_sub[,33], coef_sub[,10], coef_sub[,11], coef_sub[,12])
+   plot1_2= ggplot(coef_sub, aes(x = logA, y = pctCore))+geom_point(colour = "turquoise")+
+     geom_line(aes(x = logA, y = CApreds), color = "navy")+labs(x = "Log area", y = "% Core Occupancy")+
+     coord_cartesian(ylim = c(0, 1))
+   
+  #aveN
+  #CN
+  CNpreds = logistic_fcn(coef_sub[,34], coef_sub[,14], coef_sub[,15], coef_sub[,16])
+   plot2_2= ggplot(coef_sub, aes(x = logN, y = pctCore))+geom_point(colour = "turquoise")+
+     geom_line(aes(x = logN, y = CNpreds), color = "navy")+labs(x = "Log abundance", y = "% Core Occupancy")+
+     coord_cartesian(ylim = c(0, 1))
+
+  #storing preds:
+  temp.df = data.frame(stateroute = s, logA = logA, logN = logN, 
+                       CApreds = CApreds, CNpreds = CNpreds)
+  preds.df = rbind(preds.df, temp.df)
+  
+}
+write.csv(preds.df, "C:/git/core-transient/scripts/R-scripts/scale_analysis/preds.csv", row.names = FALSE)
+```
+
+
