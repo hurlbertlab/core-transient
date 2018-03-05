@@ -27,6 +27,37 @@ Together these three parameters describe the relationship between core species a
 
 Do I need or want r2 or predicted vals for every focal route to provide an estimate of how well or how poorly that route fit the model, and to see if bad fits corresponded with high habhet? In lieu of "curvature" AUC proxy I mean. 
 
+Can I have it both ways? Can I get r2 vals from nls base mods and then just extract observed data parms and derive curvature vals from that, and not scrap my observed parms? 
+
+```{r setup, echo = FALSE}
+
+setwd("C:/git/core-transient")
+#'#' Please download and install the following packages:
+library(raster)
+library(maps)
+library(sp)
+library(rgdal)
+library(maptools)
+library(rgeos)
+library(dplyr)
+library(fields)
+library(tidyr)
+library(ggplot2)
+library(nlme)
+library(gridExtra)
+library(wesanderson)
+library(stats)
+
+# To run this script, you need temperature, precip, etc data, 
+# which are currently stored in the following directories off of github: 
+
+# Data directories
+BBS = '//bioark.ad.unc.edu/HurlbertLab/Jenkins/BBS scaled/'
+
+```
+
+
+
 ```{r}
 bbs_allscales = read.csv("data/BBS/bbs_allscales.csv", header = TRUE)
 
