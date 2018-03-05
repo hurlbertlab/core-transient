@@ -435,7 +435,7 @@ bbs_below_avgs = bbs_below %>%
             pctTran = mean(pctTran), 
             aveN = mean(aveN))
 
-# write.csv(bbs_below_avgs, paste(BBS, "bbs_below_avgs.csv", sep = ""), row.names = FALSE)
+write.csv(bbs_below_avgs, paste(BBS, "bbs_below_avgs_75.csv", sep = ""), row.names = FALSE)
 # write.csv(bbs_below_avgs, "data/BBS/bbs_below_avgs.csv", row.names = FALSE)
 # successfully stored both avgs and new in bioark and data folder since small enough
 
@@ -530,9 +530,9 @@ for (r in uniqrtes) { #for each focal route
 bbs_above = as.data.frame(output)
 #Calc area for above route scale
 #bbs_above$area = bbs_above_v2$numrtes*50*(pi*(0.4^2)) #number of routes * fifty stops * area in sq km of a stop 
-write.csv(bbs_above, paste(BBS, "bbs_above.csv", sep = ""), row.names = FALSE)
+write.csv(bbs_above_75, paste(BBS, "bbs_above.csv", sep = ""), row.names = FALSE)
 #updated 09/20 evening locally and on BioArk; not sure if data folder will reject on git
-write.csv(bbs_above, "data/BBS/bbs_above.csv", row.names = FALSE)
+#write.csv(bbs_above, "data/BBS/bbs_above.csv", row.names = FALSE)
 #updated 09/20
 
 
