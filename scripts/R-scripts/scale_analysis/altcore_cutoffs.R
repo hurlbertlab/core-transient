@@ -315,11 +315,6 @@ library(viridis)
 BBS = '//bioark.ad.unc.edu/HurlbertLab/Jenkins/Intermediate scripts/BBS scaled/'
 
 
-####3/4 & 1/4####
-####Below-and-at-BBS scale calcs of occ with core and transient designations of 3/4 and 1/4####
-BBS = '//bioark.ad.unc.edu/HurlbertLab/Jenkins/Intermediate scripts/BBS scaled/'
-
-
 #modify below code to rerun for bbs below 
 
 occ_counts2 = function(countData, countColumns, scale) {
