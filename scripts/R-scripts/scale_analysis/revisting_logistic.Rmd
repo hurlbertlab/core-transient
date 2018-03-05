@@ -1,0 +1,221 @@
+---
+title: "Logistic_function_trblsht"
+author: "Molly Jenkins"
+date: "March 5, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Logistic function using TryCatch, nls, SSlogis from June:
+
+```{r}
+####filter out stateroutes that are one-sided in scale####
+#in terms of their representation of below vs above scale (should have both, not one alone)
+bbs_allscales = read.csv("data/BBS/bbs_allscales.csv", header = TRUE)
+
+####Cross-scale analysis and visualization####
+mod1 = lm(meanOcc~logA, data = bbs_allscales) #replace meanOcc with pctCore
+mod2 = lm(meanOcc~logN, data = bbs_allscales)
+summary(mod1)
+
+plot(meanOcc~logA, data = bbs_allscales3, xlab = "Log Area" , ylab = "Mean Temporal Occupancy")
+plot(meanOcc~logN, data = bbs_allscales3, xlab = "Average Abundance" , ylab = "Mean Temporal Occupancy")
+#^^same pattern roughly; abundance describes ~same amt of variance as area so serves as a good proxy 
+
+
+####Extract coefficients from scale-occupancy relationships for analysis####
+OA.df = data.frame(stateroute = numeric(), OA.A= numeric(), OA.i = numeric(), OA.k = numeric(), OA.r2 = numeric())
+ON.df = data.frame(stateroute = numeric(), ON.A= numeric(), ON.i = numeric(), ON.k = numeric(), ON.r2 = numeric())
+CA.df = data.frame(stateroute = numeric(), CA.A= numeric(), CA.i = numeric(), CA.k = numeric(), CA.r2 = numeric())
+CN.df = data.frame(stateroute = numeric(), CN.A= numeric(), CN.i = numeric(), CN.k = numeric(), CN.r2 = numeric())
+
+warnings = data.frame(stateroute = numeric(), warning = character())
+stateroutes = unique(bbs_allscales3$focalrte) #this stuff is the same, looks normal ^
+
+
+#06/19 version of tryCatch
+for(s in stateroutes){
+  logsub = subset(bbs_allscales3, bbs_allscales3$focalrte == s)  
+  #fitting the log curve for area (for each route)
+  
+  #OA 
+  OAmodel = tryCatch({
+    OAlog = nls(meanOcc ~ SSlogis(logA, Asym, xmid, scal), data = logsub)
+    OApred = predict(OAlog)
+    OAlm.r2 = lm(logsub$meanOcc ~ OApred)
+    OA.i <- summary(OAlog)$coefficients["xmid","Estimate"]
+    OA.A <- summary(OAlog)$coefficients["Asym","Estimate"]
+    OA.k <- summary(OAlog)$coefficients["scal","Estimate"]
+    OA.r2 <- summary(OAlm.r2)$r.squared
+    data.frame(stateroute = s, OA.A, OA.i, OA.k, OA.r2)
+    
+  }, warning = function(w) {
+    warnings = rbind(warnings, data.frame(stateroute = s, warning = w))
+  }, error = function(e) {
+    OA.i <- NA
+    OA.A <- NA
+    OA.k <- NA
+    OA.r2 <- NA
+    temp = data.frame(stateroute = s, OA.A, OA.i, OA.k, OA.r2)
+    return(temp)
+    
+  })
+  OA.df = rbind(OA.df, OAmodel)
+
+  #ON 
+  ONmodel = tryCatch({
+    ONlog = nls(meanOcc ~ SSlogis(logN, Asym, xmid, scal), data = logsub)
+    ONpred = predict(ONlog)
+    ONlm.r2 = lm(logsub$meanOcc ~ ONpred)
+    
+    ON.i <- summary(ONlog)$coefficients["xmid","Estimate"]
+    ON.A <- summary(OAlog)$coefficients["Asym","Estimate"]
+    ON.k <- summary(ONlog)$coefficients["scal","Estimate"]
+    ON.r2 <- summary(ONlm.r2)$r.squared
+    data.frame(stateroute = s, ON.A, ON.i, ON.k, ON.r2)
+    
+  }, warning = function(w) {
+    warnings = rbind(warnings, data.frame(stateroute = s, warning = w))
+  }, error = function(e) {
+    ON.i <- NA
+    ON.A <- NA
+    ON.k <- NA
+    ON.r2 <- NA
+    temp = data.frame(stateroute = s, ON.A, ON.i, ON.k, ON.r2)
+    return(temp)
+    
+  })
+  ON.df = rbind(ON.df, ONmodel)
+  
+  #CA
+  CAmodel = tryCatch({
+    CAlog = nls(pctCore ~ SSlogis(logA, Asym, xmid, scal), data = logsub)
+    CApred = predict(CAlog)
+    CAlm.r2 = lm(logsub$pctCore ~ CApred)
+    
+    CA.i <- summary(CAlog)$coefficients["xmid","Estimate"]
+    CA.A <- summary(CAlog)$coefficients["Asym","Estimate"]
+    CA.k <- summary(CAlog)$coefficients["scal","Estimate"]
+    CA.r2 <- summary(CAlm.r2)$r.squared
+    data.frame(stateroute = s, CA.A, CA.i, CA.k, CA.r2)
+  }, warning = function(w) {
+    warnings = rbind(warnings, data.frame(stateroute = s, warning = w))
+  }, error = function(e) {
+    CA.i <- NA
+    CA.A <- NA
+    CA.k <- NA
+    CA.r2 <- NA
+    temp = data.frame(stateroute = s, CA.A, CA.i, CA.k, CA.r2)
+    return(temp)
+    
+  })
+  CA.df = rbind(CA.df, CAmodel)
+  
+  #CN
+  CNmodel = tryCatch({
+    CNlog = nls(pctCore ~ SSlogis(logN, Asym, xmid, scal), data = logsub)
+    CNpred = predict(CNlog)
+    CNlm.r2 = lm(logsub$pctCore ~ CNpred) #bootstraping r2 vals for CNlog since not in summary stats
+    
+    CN.i <- summary(CNlog)$coefficients["xmid","Estimate"]
+    CN.A <- summary(CAlog)$coefficients["Asym","Estimate"]
+    CN.k <- summary(CNlog)$coefficients["scal","Estimate"]
+    CN.r2 <- summary(CNlm.r2)$r.squared
+    data.frame(stateroute = s, CN.A, CN.i, CN.k, CN.r2)
+    
+  }, warning = function(w) {
+    warnings = rbind(warnings, data.frame(stateroute = s, warning = w))
+  }, error = function(e) {
+    CN.i <- NA
+    CN.A <- NA
+    CN.k <- NA
+    CN.r2 <- NA
+    temp = data.frame(stateroute = s, CN.A, CN.i, CN.k, CN.r2)
+    return(temp)
+    
+  })
+  CN.df = rbind(CN.df, CNmodel)
+  
+}
+
+#join all together using inner_join by focal rte, not cbind 
+coefs = OA.df %>% 
+  inner_join(ON.df, OA.df, by = "stateroute") %>% 
+  inner_join(CA.df, OA.df, by = "stateroute") %>% 
+  inner_join(CN.df, OA.df, by = "stateroute") 
+  
+```
+
+## Alternate code using simple self-coded logistic function to generate predicted vals from which I can bootstrap R2 vals? 
+
+```{r}
+logistic_fcn = function(x, Asym, xmid, scal) {
+  out = Asym/(1 + exp((xmid - x)/scal))
+  return(out)
+}
+
+preds.df = data.frame(stateroute = numeric(), logA = numeric(),
+                      logN = numeric(), 
+                      OApreds= numeric(), ONpreds = numeric(), 
+                      CApreds = numeric(), CNpreds = numeric())
+
+
+coef_join = coefs %>% inner_join(bbs_allscales3, by = c("stateroute"="focalrte"))
+stateroutes = unique(bbs_allscales3$focalrte)
+
+#extracting predicted values and plotting in same loop
+for (s in stateroutes) {
+  theme_set(theme_bw()+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()))
+  coef_sub = subset(coef_join, coef_join$stateroute == s)
+  logA = coef_sub$logA
+  
+  #OA
+  OApreds = logistic_fcn(coef_sub[,33], coef_sub[,2], coef_sub[,3], coef_sub[,4]) 
+   plot1 = ggplot(coef_sub, aes(x = logA, y = meanOcc))+geom_point(colour = "firebrick")+
+     geom_line(aes(x = logA, y = OApreds), color = "navy") +labs(x = "Log area", y = "Mean % Occupancy")+
+     coord_cartesian(ylim = c(0, 1))
+  
+  
+  #ON
+  ONpreds = logistic_fcn(coef_sub[,34], coef_sub[,6], coef_sub[,7], coef_sub[,8])
+   plot2 = ggplot(coef_sub, aes(x = logN, y = meanOcc))+geom_point(colour = "firebrick")+
+     geom_line(aes(x = logN, y = ONpreds), color = "navy") +labs(x = "Log abundance", y = "Mean % Occupancy")+
+     coord_cartesian(ylim = c(0, 1))
+   
+ 
+  #CA
+  CApreds = logistic_fcn(coef_sub[,33], coef_sub[,10], coef_sub[,11], coef_sub[,12])
+   plot1_2= ggplot(coef_sub, aes(x = logA, y = pctCore))+geom_point(colour = "turquoise")+
+     geom_line(aes(x = logA, y = CApreds), color = "navy")+labs(x = "Log area", y = "% Core Occupancy")+
+     coord_cartesian(ylim = c(0, 1))
+   
+  #aveN
+  #CN
+  CNpreds = logistic_fcn(coef_sub[,34], coef_sub[,14], coef_sub[,15], coef_sub[,16])
+   plot2_2= ggplot(coef_sub, aes(x = logN, y = pctCore))+geom_point(colour = "turquoise")+
+     geom_line(aes(x = logN, y = CNpreds), color = "navy")+labs(x = "Log abundance", y = "% Core Occupancy")+
+     coord_cartesian(ylim = c(0, 1))
+   #storing plots
+  predplot = grid.arrange(plot1, plot2, plot1_2, plot2_2, plot1_3, plot2_3,
+                           ncol=2, top = paste("predplot_", s, sep = ""))
+  #storing preds:
+  temp.df = data.frame(stateroute = s, logA = logA, 
+                       OApreds= OApreds , ONpreds = ONpreds, 
+                       CApreds = CApreds, CNpreds = CNpreds,
+                       TApreds = TApreds, TNpreds = TNpreds)
+  preds.df = rbind(preds.df, temp.df)
+  
+}
+```
+
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
