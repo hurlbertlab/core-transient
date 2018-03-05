@@ -108,22 +108,23 @@ for(s in stateroutes){
  #CA - Core spp prop vs log area
   CAmodel = tryCatch({
     CAlog = nls(pctCore ~ SSlogis(logA, Asym, xmid, scal), data = logsub)
-    CApred = predict(CAlog)
-    CAlm.r2 = lm(logsub$pctCore ~ CApred)
+    # CApred = predict(CAlog)
+    # CAlm.r2 = lm(logsub$pctCore ~ CApred)
     
     CA.i <- summary(CAlog)$coefficients["xmid","Estimate"]
     CA.A <- summary(CAlog)$coefficients["Asym","Estimate"]
     CA.k <- summary(CAlog)$coefficients["scal","Estimate"]
-    CA.r2 <- summary(CAlm.r2)$r.squared
-    data.frame(stateroute = s, CA.A, CA.i, CA.k, CA.r2)
+    # CA.r2 <- summary(CAlm.r2)$r.squared
+    data.frame(stateroute = s, CA.A, CA.i, CA.k)
+    
   }, warning = function(w) {
     warnings = rbind(warnings, data.frame(stateroute = s, warning = w))
   }, error = function(e) {
     CA.i <- NA
     CA.A <- NA
     CA.k <- NA
-    CA.r2 <- NA
-    temp = data.frame(stateroute = s, CA.A, CA.i, CA.k, CA.r2)
+    # CA.r2 <- NA
+    temp = data.frame(stateroute = s, CA.A, CA.i, CA.k)
     return(temp)
     
   })
@@ -133,13 +134,13 @@ for(s in stateroutes){
   CNmodel = tryCatch({
     CNlog = nls(pctCore ~ SSlogis(logN, Asym, xmid, scal), data = logsub)
     CNpred = predict(CNlog)
-    CNlm.r2 = lm(logsub$pctCore ~ CNpred) #bootstraping r2 vals for CNlog since not in summary stats
+    # CNlm.r2 = lm(logsub$pctCore ~ CNpred) #bootstraping r2 vals for CNlog since not in summary stats
     
     CN.i <- summary(CNlog)$coefficients["xmid","Estimate"]
     CN.A <- summary(CAlog)$coefficients["Asym","Estimate"]
     CN.k <- summary(CNlog)$coefficients["scal","Estimate"]
-    CN.r2 <- summary(CNlm.r2)$r.squared
-    data.frame(stateroute = s, CN.A, CN.i, CN.k, CN.r2)
+    # CN.r2 <- summary(CNlm.r2)$r.squared
+    data.frame(stateroute = s, CN.A, CN.i, CN.k)
     
   }, warning = function(w) {
     warnings = rbind(warnings, data.frame(stateroute = s, warning = w))
@@ -147,8 +148,8 @@ for(s in stateroutes){
     CN.i <- NA
     CN.A <- NA
     CN.k <- NA
-    CN.r2 <- NA
-    temp = data.frame(stateroute = s, CN.A, CN.i, CN.k, CN.r2)
+    # CN.r2 <- NA
+    temp = data.frame(stateroute = s, CN.A, CN.i, CN.k)
     return(temp)
     
   })
@@ -157,17 +158,19 @@ for(s in stateroutes){
 }
 
 #join all together using inner_join by focal rte, not cbind 
-coefs = CA.df %>% 
+coefs_logis = CA.df %>% 
   inner_join(CN.df, CA.df, by = "stateroute") 
   
 
-write.csv(coefs, "C:/git/core-transient/scripts/R-scripts/scale_analysis/coefs.csv", row.names = FALSE) #updated 06/19
-#exp mods have much better r2 vals for pctTran than power 
+write.csv(coefs_logis, "C:/git/core-transient/scripts/R-scripts/scale_analysis/coefs_logis.csv", row.names = FALSE) #updated 03/05/2018
+
 
 ####Plotting occupancy-scale relationships with observed and predicted values####
 bbs_allscales = read.csv("data/BBS/bbs_allscales.csv", header = TRUE)
+coefs_logis = read.csv("scripts/R-scripts/scale_analysis/coefs_logis.csv", header = TRUE)
 
-coefs = read.csv("scripts/R-scripts/scale_analysis/coefs.csv", header = TRUE)
+
+
 
 
 #function for extracting predicted values from models built with observed data
