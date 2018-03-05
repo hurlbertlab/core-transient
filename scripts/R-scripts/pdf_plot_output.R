@@ -97,7 +97,7 @@ plotdata_AOU = merge(plotdata, AOU[,c("AOU_OUT", "PRIMARY_COM_NAME")], by.x = "S
 plotdata_all = plotdata_AOU %>%
   mutate(category=cut(FocalOcc, breaks=c(0, 0.34, 0.67, 1), labels=c("transient","intermediate","core")))
 
-subfocalspecies = unique(bbs_w_aou$aou)
+subfocalspecies = unique(plotdata_all$Species)
 # Making pdf of ranges for each focal spp
 colscale = c("red", "gold","dark green")
 
@@ -147,10 +147,88 @@ bi_prop_trans = merge(prop_trans, envoutput, by.x = "aou", by.y = "FocalAOU")
 whats_left = filter(bi_prop_trans, ratio >= 0.49 & COMP >= 0.49)
 
 
+library(maps)
+library(rgdal)
+library(shapefiles)
+library(maptools)
+library(raster)
+library(rgeos)
+library(gtools)
+library(sp)
+library(tidyr)
+library(dplyr)
+
+# setwd("C:/git/Biotic-Interactions")
+# read in temporal occupancy data from BI occ script
+temp_occ = read.csv("data/bbs_sub1.csv", header=TRUE)
+temp_occ$Aou[temp_occ$Aou == 4810] = 4812
+# read in lat long data
+bbs_routes = read.csv("data/latlong_rtes.csv",header =TRUE)
+# read in bird range shps
+shapefile_path = 'Z:/GIS/birds/All/All/'
+
+all_spp_list = list.files(shapefile_path)
 
 
 
+# read in new_spec_weights file created in data cleaning code
+new_spec_weights=read.csv("data/new_spec_weights.csv", header=TRUE)
+new_spec_weights$focalAOU = as.numeric(new_spec_weights$focalAOU)
+new_spec_weights$compAOU = as.numeric(new_spec_weights$CompAOU)
+pigeon = new_spec_weights[c(6),]
 
+# for loop to select a genus_spp from pairwise table, read in shp, subset to permanent habitat, plot focal distribution
+filesoutput = c()
+# dropping non-intersecting polygons
+focal_spp = unique(new_spec_weights$focalcat)
+new_spec_weights = new_spec_weights[-c(6),]
+
+
+intl_proj = CRS("+proj=longlat +datum=WGS84")
+sp_proj = CRS("+proj=laea +lat_0=40 +lon_0=-100 +units=km")
+
+######## Calculating centroids for each species - using whole range #####
+pdf('C:/Git/core-transient/buffer_maps.pdf', height = 8, width = 10)
+layout = matrix(c(3,3,3,3), nrow=2, byrow=TRUE)
+centroid = c()
+for (sp in subfocalspecies){
+  print(sp)
+  plotsub = plotdata_all[plotdata_all$Species == sp,]
+  coordinates(plotsub) = c("longitude", "latitude")
+  proj4string(plotsub) <- CRS("+proj=moll +lon_0=0 +x_0=0 +y_0=0 +ellps=WGS84")
+  plotsub = spTransform(plotsub, CRS("+proj=laea +lat_0=40 +lon_0=-100 +units=km"))
+  t1 = all_spp_list[grep(sp, all_spp_list)]
+  t2 = t1[grep('.shp', t1)]
+  t3 = strsplit(t2, ".shp")
+  
+  test.poly <- readShapePoly(paste(shapefile_path, t3, sep = "")) # reads in species-specific shapefile
+  proj4string(test.poly) <- intl_proj
+  colors = c("blue", "yellow", "green", "red", "purple")
+  # subset to just permanent or breeding residents
+  sporigin = test.poly[test.poly@data$SEASONAL == 1|test.poly@data$SEASONAL == 2|test.poly@data$SEASONAL ==5,]
+  sporigin = spTransform(sporigin, CRS("+proj=laea +lat_0=40 +lon_0=-100 +units=km"))
+  #plot(sporigin, col = colors, border = NA)
+  srange = gBuffer(sporigin, byid=FALSE, id=NULL, width= -100)
+  sbuffer = gDifference(sporigin, srange, byid = FALSE, id=NULL) 
+  trueCentroid = gCentroid(sporigin)
+  coord = coordinates(spTransform(trueCentroid, CRS("+proj=longlat +datum=WGS84")))
+  sporigin = tidy(sporigin)
+  
+  ggplot(data = sporigin) + 
+    geom_polygon(aes(x = long, y = lat, group = group), color = "black", fill = "white") +
+    coord_fixed(1.3) +
+    guides(fill=FALSE) + theme_classic() + 
+    geom_point(data = as.data.frame(coordinates(plotsub)), mapping = aes(x = longitude, y = latitude),  pch = 20, size = 5)+ scale_color_manual(labels = c("Transient","Intermediate", "core"),values = colscale) + xlab(plotsub$PRIMARY_COM_NAME)
+  centroid = rbind(centroid, c(sp, coord))
+}
+dev.off()
+
+
+centroid = data.frame(centroid)
+names(centroid) = c("Species", "FocalAOU", "Long", "Lat")
+centroid$Lat = as.numeric(paste(centroid$Lat))
+centroid$Long = as.numeric(paste(centroid$Long))
+write.csv(centroid,"data/centroid.csv",row.names=FALSE)
 
 
 
