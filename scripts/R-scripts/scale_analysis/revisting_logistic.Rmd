@@ -7,7 +7,9 @@ output: html_document
 ## Last attempted logistic function using TryCatch, nls, SSlogis from July
 
 ### Problems: 
-For starters, I am having a lot of trouble wrapping my head around the logistic function, its inputs, and what is being done with them. So a good brief overview in SSlogis and nls-type math would be great. I've tried to teach myself, but that has only gotten me so far!  
+For a quick project recap, my project is focusing on the proportion of core species in avian communities across a gradient of spatial scales using BBS data. It's a positive decelerating curve, and the data speak for themselves quite well. However! 
+
+I am having a lot of trouble wrapping my head around the logistic function, its inputs, and what is being done with them. So a good brief overview in SSlogis and nls-type math would be great. I've tried to teach myself, but that has only gotten me so far!  
 
 Our previous biggest issues were 1) getting the function to work at all and 2) trying to describe transient species. Since then I've been focusing on core species alone as the category of interest. I don't have to worry about trying to describe the transients here anymore, perhaps making for better outcomes. While the function technically works, it doesn't actually work in that I keep getting wacky parameter estimates for my Asymptote, xmid-inflexion point, and scale (slope at inflexion point) parameters. I revisit this in further detail below.   
 
