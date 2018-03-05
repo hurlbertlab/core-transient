@@ -11,7 +11,21 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Last attempted logistic function using TryCatch, nls, SSlogis from July
 
-Previous biggest issues were getting the function to work at all and trying to describe transients. Since I'm focusing on core species, I don't have to worry about trying to describe the transients here anymore, perhaps making for better outcomes. 
+### Problems: 
+Previous biggest issues were getting the function to work at all and trying to describe transient species. Since then I've been focusing on core species alone as the category of interest. I don't have to worry about trying to describe the transients here anymore, perhaps making for better outcomes. 
+
+Currently, I extract five parameters from the scaling relationship for each stateroute, allowing those parameters to let the trends in the observed data speak for themselves. However, our curvature parameter is reliant on taking the differences between our observed values and the predicted values generated from a linear model. This isn't entirely appropriate given that our relationship is decidedly nonlinear. 
+
+Here, i takes the place of our midpoint/scale50 parameters (midpoint was scrapped for redundancy with scale50)
+i stands for "inflexion point"
+
+A stands for Asymptote and describes the point at which the relationship asymptotes out at 
+
+k is a scaling parameter and describes the slope of the relationship at inflexion point i 
+
+Together these three parameters describe the relationship between core species and scale in a manner similar but different than our current approach. Our goal is to derive estimates for these three parameters for every focal route sampled. 
+
+Do I need or want r2 or predicted vals for every focal route to provide an estimate of how well or how poorly that route fit the model, and to see if bad fits corresponded with high habhet? In lieu of "curvature" AUC proxy I mean. 
 
 ```{r}
 bbs_allscales = read.csv("data/BBS/bbs_allscales.csv", header = TRUE)
