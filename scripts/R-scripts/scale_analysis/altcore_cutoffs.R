@@ -530,7 +530,7 @@ for (r in uniqrtes) { #for each focal route
 bbs_above = as.data.frame(output)
 #Calc area for above route scale
 #bbs_above$area = bbs_above_v2$numrtes*50*(pi*(0.4^2)) #number of routes * fifty stops * area in sq km of a stop 
-write.csv(bbs_above_75, paste(BBS, "bbs_above.csv", sep = ""), row.names = FALSE)
+write.csv(bbs_above, paste(BBS, "bbs_above_75.csv", sep = ""), row.names = FALSE)
 #updated 09/20 evening locally and on BioArk; not sure if data folder will reject on git
 #write.csv(bbs_above, "data/BBS/bbs_above.csv", row.names = FALSE)
 #updated 09/20
