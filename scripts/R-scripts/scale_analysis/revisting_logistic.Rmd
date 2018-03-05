@@ -63,80 +63,49 @@ bbs_allscales = read.csv("data/BBS/bbs_allscales.csv", header = TRUE)
 
 
 ####Cross-scale analysis and visualization####
-mod1 = lm(meanOcc~logA, data = bbs_allscales) #explains ~50% of the variation in occ
-mod2 = lm(meanOcc~logN, data = bbs_allscales)
+mod1 = lm(pctCore~logA, data = bbs_allscales) #explains ~72% of the variation in occ
+mod2 = lm(pctCore~logN, data = bbs_allscales)
 summary(mod1)
 
-plot(meanOcc~logA, data = bbs_allscales, xlab = "Log Area" , ylab = "Mean Temporal Occupancy")
-plot(meanOcc~logN, data = bbs_allscales, xlab = "Log Abundance" , ylab = "Mean Temporal Occupancy")
+#compare to an NLS model 
+mod3 = nls(pctCore ~ SSlogis(logA, Asym, xmid, scal), data = bbs_allscales)
+mod4 = nls(pctCore ~ SSlogis(logN, Asym, xmid, scal), data = bbs_allscales)
+summary(mod3)
+
+plot(pctCore~logA, data = bbs_allscales, xlab = "Log Area" , ylab = "Proportion Core Species in Community")
+plot(pctCore~logN, data = bbs_allscales, xlab = "Log Abundance" , ylab = "Proportion Core Species in Community")
 #^^same pattern roughly; abundance describes ~same amt of variance as area so serves as a good proxy 
 
+bbs_allscales$CApreds = predict(mod3, bbs_allscales)
+bbs_allscales$CNpreds = predict(mod4, bbs_allscales) #gave me unique preds for all stateroute and scale combos so...
+#use predicted values to bootstrap r2 overall but also individually for each route between observed and predicted 
+#doing this separately from coef extraction otherwise will be too complicated! 
 
-####Extract coefficients from scale-occupancy relationships for analysis####
-OA.df = data.frame(stateroute = numeric(), OA.A= numeric(), OA.i = numeric(), OA.k = numeric(), OA.r2 = numeric())
-ON.df = data.frame(stateroute = numeric(), ON.A= numeric(), ON.i = numeric(), ON.k = numeric(), ON.r2 = numeric())
+
+#these are for the whole thing tho, not each route individually 
+CA_i = summary(mod3)$coefficients["xmid", "Estimate"] #in terms of the LOG AREA value...? since referring to x axis explicitly
+CA_A = summary(mod3)$coefficients["Asym", "Estimate"] #in terms of the OCCUPANCY
+CA_k = summary(mod3)$coefficients["scal", "Estimate"] #in terms of the OCCUPANCY 
+```
+
+
+## Extracting parms for individual stateroutes 
+
+```{r}
+####Extract coefficients from scale-occupancy relationships for each route####
 CA.df = data.frame(stateroute = numeric(), CA.A= numeric(), CA.i = numeric(), CA.k = numeric(), CA.r2 = numeric())
 CN.df = data.frame(stateroute = numeric(), CN.A= numeric(), CN.i = numeric(), CN.k = numeric(), CN.r2 = numeric())
 
 warnings = data.frame(stateroute = numeric(), warning = character())
-stateroutes = unique(bbs_allscales3$focalrte) #this stuff is the same, looks normal ^
+stateroutes = unique(bbs_allscales$focalrte) #this stuff is the same, looks normal ^
 
 
 #06/19 version of tryCatch
 for(s in stateroutes){
-  logsub = subset(bbs_allscales3, bbs_allscales3$focalrte == s)  
+  logsub = subset(bbs_allscales, bbs_allscales$focalrte == s)  
   #fitting the log curve for area (for each route)
   
-  #OA 
-  OAmodel = tryCatch({
-    OAlog = nls(meanOcc ~ SSlogis(logA, Asym, xmid, scal), data = logsub)
-    OApred = predict(OAlog)
-    OAlm.r2 = lm(logsub$meanOcc ~ OApred)
-    OA.i <- summary(OAlog)$coefficients["xmid","Estimate"]
-    OA.A <- summary(OAlog)$coefficients["Asym","Estimate"]
-    OA.k <- summary(OAlog)$coefficients["scal","Estimate"]
-    OA.r2 <- summary(OAlm.r2)$r.squared
-    data.frame(stateroute = s, OA.A, OA.i, OA.k, OA.r2)
-    
-  }, warning = function(w) {
-    warnings = rbind(warnings, data.frame(stateroute = s, warning = w))
-  }, error = function(e) {
-    OA.i <- NA
-    OA.A <- NA
-    OA.k <- NA
-    OA.r2 <- NA
-    temp = data.frame(stateroute = s, OA.A, OA.i, OA.k, OA.r2)
-    return(temp)
-    
-  })
-  OA.df = rbind(OA.df, OAmodel)
-
-  #ON 
-  ONmodel = tryCatch({
-    ONlog = nls(meanOcc ~ SSlogis(logN, Asym, xmid, scal), data = logsub)
-    ONpred = predict(ONlog)
-    ONlm.r2 = lm(logsub$meanOcc ~ ONpred)
-    
-    ON.i <- summary(ONlog)$coefficients["xmid","Estimate"]
-    ON.A <- summary(OAlog)$coefficients["Asym","Estimate"]
-    ON.k <- summary(ONlog)$coefficients["scal","Estimate"]
-    ON.r2 <- summary(ONlm.r2)$r.squared
-    data.frame(stateroute = s, ON.A, ON.i, ON.k, ON.r2)
-    
-  }, warning = function(w) {
-    warnings = rbind(warnings, data.frame(stateroute = s, warning = w))
-  }, error = function(e) {
-    ON.i <- NA
-    ON.A <- NA
-    ON.k <- NA
-    ON.r2 <- NA
-    temp = data.frame(stateroute = s, ON.A, ON.i, ON.k, ON.r2)
-    return(temp)
-    
-  })
-  ON.df = rbind(ON.df, ONmodel)
-  
-  #CA
+ #CA - Core spp prop vs log area
   CAmodel = tryCatch({
     CAlog = nls(pctCore ~ SSlogis(logA, Asym, xmid, scal), data = logsub)
     CApred = predict(CAlog)
@@ -160,7 +129,7 @@ for(s in stateroutes){
   })
   CA.df = rbind(CA.df, CAmodel)
   
-  #CN
+  #CN - prop core spp vs log abundance 
   CNmodel = tryCatch({
     CNlog = nls(pctCore ~ SSlogis(logN, Asym, xmid, scal), data = logsub)
     CNpred = predict(CNlog)
@@ -188,27 +157,15 @@ for(s in stateroutes){
 }
 
 #join all together using inner_join by focal rte, not cbind 
-coefs = OA.df %>% 
-  inner_join(ON.df, OA.df, by = "stateroute") %>% 
-  inner_join(CA.df, OA.df, by = "stateroute") %>% 
-  inner_join(CN.df, OA.df, by = "stateroute") %>% 
-  inner_join(TA.df, OA.df, by = "stateroute") %>% 
-  inner_join(TN.df, OA.df, by = "stateroute")  
+coefs = CA.df %>% 
+  inner_join(CN.df, CA.df, by = "stateroute") 
+  
 
 write.csv(coefs, "C:/git/core-transient/scripts/R-scripts/scale_analysis/coefs.csv", row.names = FALSE) #updated 06/19
 #exp mods have much better r2 vals for pctTran than power 
 
 ####Plotting occupancy-scale relationships with observed and predicted values####
 bbs_allscales = read.csv("data/BBS/bbs_allscales.csv", header = TRUE)
-bbs_allscales$logA = log10(bbs_allscales$area)
-bbs_allscales$logN = log10(bbs_allscales$aveN)
-bbs_allscales$lnA = log(bbs_allscales$area) #log is the natural log 
-bbs_allscales$lnN = log(bbs_allscales$aveN) #rerun plots with this?
-####filter out stateroutes that are one-sided in scale####
-#in terms of their representation of below vs above scale (should have both, not one alone)
-bbs_allscales2 = bbs_allscales %>% count(focalrte) %>% filter(n == 83) %>% data.frame() 
-bbs_allscales3 = filter(bbs_allscales, focalrte %in% bbs_allscales2$focalrte)
-
 
 coefs = read.csv("scripts/R-scripts/scale_analysis/coefs.csv", header = TRUE)
 
@@ -219,14 +176,11 @@ logistic_fcn = function(x, Asym, xmid, scal) {
   return(out)
 }
 
-preds.df = data.frame(stateroute = numeric(), logA = numeric(), 
-                      OApreds= numeric(), ONpreds = numeric(), 
-                      CApreds = numeric(), CNpreds = numeric(),
-                      TApreds = numeric(), TNpreds = numeric())
+preds.df = data.frame(stateroute = numeric(), logA = numeric(), logN = numeric(),
+                      CApreds = numeric(), CNpreds = numeric())
 
 
-pdf("output/plots/Molly Plots/BBS_scaleplots.pdf", onefile = TRUE)
-coef_join = coefs %>% inner_join(bbs_allscales3, by = c("stateroute"="focalrte"))
+coef_join = coefs %>% inner_join(bbs_allscales, by = c("stateroute"="focalrte"))
 stateroutes = unique(bbs_allscales3$focalrte)
 
 #extracting predicted values and plotting in same loop
@@ -235,21 +189,7 @@ for (s in stateroutes) {
   coef_sub = subset(coef_join, coef_join$stateroute == s)
   logA = coef_sub$logA
   
-  #OA
-  OApreds = logistic_fcn(coef_sub[,33], coef_sub[,2], coef_sub[,3], coef_sub[,4]) 
-   plot1 = ggplot(coef_sub, aes(x = logA, y = meanOcc))+geom_point(colour = "firebrick")+
-     geom_line(aes(x = logA, y = OApreds), color = "navy") +labs(x = "Log area", y = "Mean % Occupancy")+
-     coord_cartesian(ylim = c(0, 1))
-  
-  
-  #ON
-  ONpreds = logistic_fcn(coef_sub[,34], coef_sub[,6], coef_sub[,7], coef_sub[,8])
-   plot2 = ggplot(coef_sub, aes(x = logN, y = meanOcc))+geom_point(colour = "firebrick")+
-     geom_line(aes(x = logN, y = ONpreds), color = "navy") +labs(x = "Log abundance", y = "Mean % Occupancy")+
-     coord_cartesian(ylim = c(0, 1))
-   
- 
-  #CA
+ #CA
   CApreds = logistic_fcn(coef_sub[,33], coef_sub[,10], coef_sub[,11], coef_sub[,12])
    plot1_2= ggplot(coef_sub, aes(x = logA, y = pctCore))+geom_point(colour = "turquoise")+
      geom_line(aes(x = logA, y = CApreds), color = "navy")+labs(x = "Log area", y = "% Core Occupancy")+
@@ -262,40 +202,13 @@ for (s in stateroutes) {
      geom_line(aes(x = logN, y = CNpreds), color = "navy")+labs(x = "Log abundance", y = "% Core Occupancy")+
      coord_cartesian(ylim = c(0, 1))
 
-  #using exponential function since higher explanatory power than pwr function
-  #TA
-  TApreds =  coef_sub[,35]*(coef_sub[,18]) #35 = optimum; replacing ^ with * bc natural log, removing -1
-  plot1_3 = ggplot(coef_sub, aes(x = lnA, y = log(pctTran)))+geom_point(colour = "olivedrab")+
-    geom_line(aes(x = lnA, y = log(TApreds)), color = "navy") +labs(x = "Log area", y = "% Transient Occupancy")+
-    coord_cartesian(ylim = c(-4, 1)) #FIX
-  
-  #TN
-  TNpreds = coef_sub[,36]*(coef_sub[,22])
-  plot2_3 = ggplot(coef_sub, aes(x = lnN, y = log(pctTran)))+geom_point(colour = "olivedrab")+
-    geom_line(aes(x = lnN, y = TNpreds), color = "navy")+labs(x = "Log abundance", y = "% Transient Occupancy")+
-    coord_cartesian(ylim = c(-4, 1))
-
-  #storing plots
-  predplot = grid.arrange(plot1, plot2, plot1_2, plot2_2, plot1_3, plot2_3,
-                           ncol=2, top = paste("predplot_", s, sep = ""))
   #storing preds:
-  temp.df = data.frame(stateroute = s, logA = logA, 
-                       OApreds= OApreds , ONpreds = ONpreds, 
-                       CApreds = CApreds, CNpreds = CNpreds,
-                       TApreds = TApreds, TNpreds = TNpreds)
+  temp.df = data.frame(stateroute = s, logA = logA, logN = logN, 
+                       CApreds = CApreds, CNpreds = CNpreds)
   preds.df = rbind(preds.df, temp.df)
   
 }
-dev.off()
 write.csv(preds.df, "C:/git/core-transient/scripts/R-scripts/scale_analysis/preds.csv", row.names = FALSE)
 ```
 
 
-
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
-```
-
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
