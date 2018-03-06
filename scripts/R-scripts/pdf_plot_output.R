@@ -38,6 +38,7 @@ library(ggplot2)
 library(ggmap)
 library(maps)
 library(dplyr)
+library(tidyr)
 
 multiplot <- function(..., plotlist=NULL, file, cols=1, layout=NULL) {
   library(grid)
