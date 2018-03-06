@@ -289,14 +289,14 @@ points(star2$Longi, star2$Lati, col = "black", pch = 17, cex = 2)
 
 ####Results section figs####
 #scales hetero derived at end of env_analysis script
-scales_hetero = read.csv("scripts/R-scripts/scale_analysis/intermed/scales_hetero.csv", header = TRUE)
+scales_hetero = read.csv("scripts/R-scripts/scale_analysis/core_scales_hetero.csv", header = TRUE) #pulling from core output
 
 scales_hetero_v = scales_hetero %>% 
   filter(dep == "elev.var" | dep == "ndvi.var") %>%
-  filter(ind == "OA.curvature" | ind == "OA.max" | ind == "OA.mid"| ind == "OA.min" | ind == "OA.slope")
+  filter(ind == "PCA.curvature" | ind == "PCA.max" | ind == "PCA.mid"| ind == "PCA.min" | ind == "PCA.slope")
 
 scales_hetero_v$ind = factor(scales_hetero_v$ind, 
-                             levels = c("OA.min","OA.mid", "OA.slope","OA.curvature", "OA.max"),
+                             levels = c("PCA.min","PCA.mid", "PCA.slope","PCA.curvature", "PCA.max"),
                              labels = c("Min", as.character(expression("Scale"[50])), "Slope", "Curvature", "Max"))
 
 scales_hetero_v$dep = factor(scales_hetero_v$dep, 
@@ -332,13 +332,13 @@ ggplot(scales_hetero_v, aes(x = scale, y = corr_r))+
 scales_hetero2 = scales_hetero %>% 
   filter(scale == 66) %>% 
   filter(dep == "elev.var" | dep == "ndvi.var") %>% 
-  filter(ind == "OA.curvature" | ind == "OA.max" | ind == "OA.mid"| ind == "OA.min" | ind == "OA.slope")
+  filter(ind == "PCA.curvature" | ind == "PCA.max" | ind == "PCA.mid"| ind == "PCA.min" | ind == "PCA.slope")
 
 ggplot(scales_hetero2, aes(x = ind, y = corr_r))+
   geom_pointrange(aes(shape = dep, ymin = lowr, ymax = uppr), size = 1.2, position = position_dodge(width = 0.35))+geom_abline(intercept = 0, slope = 0)+
   theme_classic()+theme(axis.title = element_text(size = 18), axis.text = element_text(size = 16), legend.position = c(0.55, 0.25), legend.text = element_text(size = 16), legend.title = element_text(size = 16))+
   labs(x = "Occupancy-scale parameters", y = "Pearson's correlation estimate")+
-  scale_x_discrete(limit = c("OA.min", "OA.mid","OA.slope","OA.curvature","OA.max"),
+  scale_x_discrete(limit = c("PCA.min", "PCA.mid","PCA.slope","PCA.curvature","PCA.max"),
                      labels = c("Min", expression("Scale"[50]),"Slope","Curvature","Max"))+
   scale_shape_discrete(name="Habitat Heterogeneity",
                       breaks=c("elev.var", "ndvi.var"),
