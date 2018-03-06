@@ -562,7 +562,28 @@ bbs_above$scale = as.factor(bbs_above$scale)
 
 
 bbs_allscales_75.25 = rbind(bbs_below2, bbs_above) #rbind ok since all share column names
-#write.csv(bbs_allscales_75.25, paste(BBS, "bbs_above_75_25.csv", sep = ""), row.names = FALSE) #saved 03/06
+write.csv(bbs_allscales_75.25, paste(BBS, "bbs_allscales_75.csv", sep = ""), row.names = FALSE) #saved 03/06
+
+####Viewing outcomes####
+bbs_allscales = read.csv(paste(BBS, "bbs_allscales_75.csv", sep = ""), header = TRUE)
+bbs_allscales$logA = log10(bbs_allscales$area)
+bbs_allscales$logN = log10(bbs_allscales$aveN)
+
+unique(bbs_allscales$scale) #looks good
+
+
+mod1 = lm(pctCore~logA, data = bbs_allscales) #expljkains ~75-80% of the variation in occ
+mod2 = lm(pctCore~logN, data = bbs_allscales)
+summary(mod2)
+
+plot(meanOcc~logA, data = bbs_allscales, xlab = "Log Area" , ylab = "Mean Temporal Occupancy")
+plot(meanOcc~logN, data = bbs_allscales, xlab = "Average Abundance" , ylab = "Mean Temporal Occupancy")
+
+plot(pctCore~logA, data = bbs_allscales, xlab = "Log Area" , ylab = "Proportion Core")
+plot(pctCore~logN, data = bbs_allscales, xlab = "Average Abundance" , ylab = "Proportion Core")
+
+
+
 ######################################################################################################################
 
 ####4/5 & 1/5#### 
@@ -837,8 +858,25 @@ bbs_above$scale = as.factor(bbs_above$scale)
 
 
 bbs_allscales_20.80 = rbind(bbs_below2, bbs_above) #rbind ok since all share column names
-write.csv(bbs_allscales_20.80, paste(BBS, "bbs_above_75_25.csv", sep = ""), row.names = FALSE) #saved 03/06
+write.csv(bbs_allscales_20.80, paste(BBS, "bbs_allscales_80.csv", sep = ""), row.names = FALSE) #saved 03/06
 
+####Viewing outcomes####
+bbs_allscales = read.csv(paste(BBS, "bbs_allscales_80.csv", sep = ""), header = TRUE)
+bbs_allscales$logA = log10(bbs_allscales$area)
+bbs_allscales$logN = log10(bbs_allscales$aveN)
+
+unique(bbs_allscales$scale) #looks good
+
+
+mod1 = lm(pctCore~logA, data = bbs_allscales) #expljkains ~75-80% of the variation in occ
+mod2 = lm(pctCore~logN, data = bbs_allscales)
+summary(mod2)
+
+plot(meanOcc~logA, data = bbs_allscales, xlab = "Log Area" , ylab = "Mean Temporal Occupancy")
+plot(meanOcc~logN, data = bbs_allscales, xlab = "Average Abundance" , ylab = "Mean Temporal Occupancy")
+
+plot(pctCore~logA, data = bbs_allscales, xlab = "Log Area" , ylab = "Proportion Core")
+plot(pctCore~logN, data = bbs_allscales, xlab = "Average Abundance" , ylab = "Proportion Core")
 
 ######################################################################################################################
 
