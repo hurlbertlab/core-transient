@@ -214,7 +214,7 @@ write.csv(core_coefs, "scripts/R-scripts/scale_analysis/core_coefs.csv", row.nam
 
 ####abitat hetero measures and scale independent of coefs (for predictions)####   
 core_coefs = read.csv("scripts/R-scripts/scale_analysis/core_coefs.csv", header = TRUE) #AUC etc. 
-env_all = read.csv("scripts/R-scripts/scale_analysis/env_all.csv", header = TRUE) #AUC etc. 
+env_all = read.csv("scripts/R-scripts/scale_analysis/intermed/env_all.csv", header = TRUE) #AUC etc. 
 #calc areas of scales and run against logA consistently ? 
 
 env_all$area = env_all$scale #*40 etc etc etc
