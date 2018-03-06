@@ -576,11 +576,11 @@ mod1 = lm(pctCore~logA, data = bbs_allscales) #expljkains ~75-80% of the variati
 mod2 = lm(pctCore~logN, data = bbs_allscales)
 summary(mod2)
 
-plot(meanOcc~logA, data = bbs_allscales, xlab = "Log Area" , ylab = "Mean Temporal Occupancy")
-plot(meanOcc~logN, data = bbs_allscales, xlab = "Average Abundance" , ylab = "Mean Temporal Occupancy")
+plot(meanOcc~logA, data = bbs_allscales, xlab = "Log Area" , ylab = "Mean Temporal Occupancy", main = "75/25 CT Distinction")
+plot(meanOcc~logN, data = bbs_allscales, xlab = "Average Abundance" , ylab = "Mean Temporal Occupancy", main = "75/25 CT Distinction")
 
-plot(pctCore~logA, data = bbs_allscales, xlab = "Log Area" , ylab = "Proportion Core")
-plot(pctCore~logN, data = bbs_allscales, xlab = "Average Abundance" , ylab = "Proportion Core")
+plot(pctCore~logA, data = bbs_allscales, xlab = "Log Area" , ylab = "Proportion Core", main = "75/25 CT Distinction")
+plot(pctCore~logN, data = bbs_allscales, xlab = "Average Abundance" , ylab = "Proportion Core", main = "75/25 CT Distinction")
 
 
 
@@ -872,11 +872,11 @@ mod1 = lm(pctCore~logA, data = bbs_allscales) #expljkains ~75-80% of the variati
 mod2 = lm(pctCore~logN, data = bbs_allscales)
 summary(mod2)
 
-plot(meanOcc~logA, data = bbs_allscales, xlab = "Log Area" , ylab = "Mean Temporal Occupancy")
-plot(meanOcc~logN, data = bbs_allscales, xlab = "Average Abundance" , ylab = "Mean Temporal Occupancy")
+plot(meanOcc~logA, data = bbs_allscales, xlab = "Log Area" , ylab = "Mean Temporal Occupancy", main = "80/20 CT Distinction")
+plot(meanOcc~logN, data = bbs_allscales, xlab = "Average Abundance" , ylab = "Mean Temporal Occupancy", main = "80/20 CT Distinction")
 
-plot(pctCore~logA, data = bbs_allscales, xlab = "Log Area" , ylab = "Proportion Core")
-plot(pctCore~logN, data = bbs_allscales, xlab = "Average Abundance" , ylab = "Proportion Core")
+plot(pctCore~logA, data = bbs_allscales, xlab = "Log Area" , ylab = "Proportion Core", main = "80/20 CT Distinction")
+plot(pctCore~logN, data = bbs_allscales, xlab = "Average Abundance" , ylab = "Proportion Core", main = "80/20 CT Distinction")
 
 ######################################################################################################################
 
