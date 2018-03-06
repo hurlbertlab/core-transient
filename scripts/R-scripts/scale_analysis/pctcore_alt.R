@@ -169,7 +169,7 @@ for(s in stateroutes){
   
   PCA.vec = logsub$pctCore #vector for a given focal rte s, actual value
   PCA.pvec = logsub$PCApreds #vector for given focal rte s, pred values
-  PCA.curvature =  sum(abs(PCA.vec - PCA.pvec)) 
+  PCA.curvature =  sum(PCA.vec - PCA.pvec) 
   #AUC proxy - taking diff between actual and predicted mid vals at EVERY scale and adding together
   PCAmodel = data.frame(stateroute = s, PCA.min, PCA.max, PCA.slope, 
                        PCA.mid, PCA.curvature)
@@ -191,7 +191,7 @@ for(s in stateroutes){
   
   PCN.vec = logsub$pctCore #vector for a given focal rte s, actual value
   PCN.pvec = logsub$PCNpreds #vector for given focal rte s, pred values
-  PCN.curvature =  sum(abs(PCN.vec - PCN.pvec)) 
+  PCN.curvature =  sum(PCN.vec - PCN.pvec)
   #NUC proxy - taking diff between actual and predicted mid vals at EVERY scale and adding together
   PCNmodel = data.frame(stateroute = s, PCN.min, PCN.max, PCN.slope, 
                        PCN.mid, PCN.curvature)
