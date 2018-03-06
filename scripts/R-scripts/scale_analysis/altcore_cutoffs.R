@@ -38,6 +38,7 @@ library(viridis)
 # Data directories
 BBS = '//bioark.ad.unc.edu/HurlbertLab/Jenkins/Intermediate scripts/BBS scaled/'
 
+
 #modify below code to rerun for bbs below 
 
 occ_counts2 = function(countData, countColumns, scale) {
@@ -158,7 +159,7 @@ bbs_below_avgs = bbs_below %>%
             pctTran = mean(pctTran), 
             aveN = mean(aveN))
 
-# write.csv(bbs_below_avgs, paste(BBS, "bbs_below_avgs.csv", sep = ""), row.names = FALSE)
+write.csv(bbs_below_avgs, paste(BBS, "bbs_below_avgs.csv", sep = ""), row.names = FALSE)
 # write.csv(bbs_below_avgs, "data/BBS/bbs_below_avgs.csv", row.names = FALSE)
 # successfully stored both avgs and new in bioark and data folder since small enough
 
@@ -253,20 +254,20 @@ for (r in uniqrtes) { #for each focal route
 bbs_above = as.data.frame(output)
 #Calc area for above route scale
 #bbs_above$area = bbs_above_v2$numrtes*50*(pi*(0.4^2)) #number of routes * fifty stops * area in sq km of a stop 
-write.csv(bbs_above, paste(BBS, "bbs_above.csv", sep = ""), row.names = FALSE)
+write.csv(bbs_above, paste(BBS, "bbs_above_75.csv", sep = ""), row.names = FALSE)
 #updated 09/20 evening locally and on BioArk; not sure if data folder will reject on git
-write.csv(bbs_above, "data/BBS/bbs_above.csv", row.names = FALSE)
+#write.csv(bbs_above, "data/BBS/bbs_above.csv", row.names = FALSE)
 #updated 09/20
 
 
 
 
 ####Merging across scales####
-bbs_above = read.csv(paste(BBS, "bbs_above.csv", sep = ""), header = TRUE)
-bbs_below = read.csv(paste(BBS, "bbs_below_avgs.csv", sep = ""), header = TRUE)
+bbs_above = read.csv(paste(BBS, "bbs_above_75.csv", sep = ""), header = TRUE)
+bbs_below = read.csv(paste(BBS, "bbs_below_avgs_75.csv", sep = ""), header = TRUE)
 
 #adding maxRadius column to bbs_below w/NA's + renaming and rearranging columns accordingly, creating area cols
-bbs_below = bbs_below %>% 
+bbs_below2 = bbs_below %>% 
   mutate(maxdist = c("NA")) %>%
   select(focalrte, scale, everything()) %>%
   mutate(area = bbs_below$scale*(pi*(0.4^2)), 
@@ -283,8 +284,8 @@ bbs_above = bbs_above %>%
 bbs_above$scale = as.factor(bbs_above$scale)
 
 
-bbs_allscales = rbind(bbs_below, bbs_above) #rbind ok since all share column names
-
+bbs_allscales_75.25 = rbind(bbs_below2, bbs_above) #rbind ok since all share column names
+#write.csv(bbs_allscales_75.25, paste(BBS, "bbs_above_75_25.csv", sep = ""), row.names = FALSE) #saved 03/06
 
 
 ##################################################################################################################
@@ -539,11 +540,11 @@ write.csv(bbs_above, paste(BBS, "bbs_above_75.csv", sep = ""), row.names = FALSE
 
 
 ####Merging across scales####
-bbs_above = read.csv(paste(BBS, "bbs_above.csv", sep = ""), header = TRUE)
-bbs_below = read.csv(paste(BBS, "bbs_below_avgs.csv", sep = ""), header = TRUE)
+bbs_above = read.csv(paste(BBS, "bbs_above_75.csv", sep = ""), header = TRUE)
+bbs_below = read.csv(paste(BBS, "bbs_below_avgs_75.csv", sep = ""), header = TRUE)
 
 #adding maxRadius column to bbs_below w/NA's + renaming and rearranging columns accordingly, creating area cols
-bbs_below = bbs_below %>% 
+bbs_below2 = bbs_below %>% 
   mutate(maxdist = c("NA")) %>%
   select(focalrte, scale, everything()) %>%
   mutate(area = bbs_below$scale*(pi*(0.4^2)), 
@@ -560,12 +561,11 @@ bbs_above = bbs_above %>%
 bbs_above$scale = as.factor(bbs_above$scale)
 
 
-bbs_allscales = rbind(bbs_below, bbs_above) #rbind ok since all share column names
-
+bbs_allscales_75.25 = rbind(bbs_below2, bbs_above) #rbind ok since all share column names
+#write.csv(bbs_allscales_75.25, paste(BBS, "bbs_above_75_25.csv", sep = ""), row.names = FALSE) #saved 03/06
 ######################################################################################################################
 
 ####4/5 & 1/5#### 
-
 # setwd("C:/git/core-transient")
 #'#' Please download and install the following packages:
 library(raster)
@@ -704,14 +704,14 @@ bbs_below = as.data.frame(output)
 
 #NOW I can average for unique scale-route combo (currently duplicates based on segments)
 
-bbs_below_avgs = bbs_below %>% 
+bbs_below_avgs_20.80 = bbs_below %>% 
   group_by(focalrte, scale) %>% 
   summarize(meanOcc = mean(meanOcc), 
             pctCore = mean(pctCore), 
             pctTran = mean(pctTran), 
             aveN = mean(aveN))
 
-# write.csv(bbs_below_avgs, paste(BBS, "bbs_below_avgs.csv", sep = ""), row.names = FALSE)
+write.csv(bbs_below_avgs_20.80, paste(BBS, "bbs_below_avgs_20_80.csv", sep = ""), row.names = FALSE)
 # write.csv(bbs_below_avgs, "data/BBS/bbs_below_avgs.csv", row.names = FALSE)
 # successfully stored both avgs and new in bioark and data folder since small enough
 
@@ -803,23 +803,23 @@ for (r in uniqrtes) { #for each focal route
 # may need to transpose rows to columns 
 
 
-bbs_above = as.data.frame(output)
+bbs_above_20.80 = as.data.frame(output)
 #Calc area for above route scale
 #bbs_above$area = bbs_above_v2$numrtes*50*(pi*(0.4^2)) #number of routes * fifty stops * area in sq km of a stop 
-write.csv(bbs_above, paste(BBS, "bbs_above.csv", sep = ""), row.names = FALSE)
+write.csv(bbs_above_20.80, paste(BBS, "bbs_above_20_80.csv", sep = ""), row.names = FALSE)
 #updated 09/20 evening locally and on BioArk; not sure if data folder will reject on git
-write.csv(bbs_above, "data/BBS/bbs_above.csv", row.names = FALSE)
+#write.csv(bbs_above, "data/BBS/bbs_above.csv", row.names = FALSE)
 #updated 09/20
 
 
 
 
 ####Merging across scales####
-bbs_above = read.csv(paste(BBS, "bbs_above.csv", sep = ""), header = TRUE)
-bbs_below = read.csv(paste(BBS, "bbs_below_avgs.csv", sep = ""), header = TRUE)
+bbs_above = read.csv(paste(BBS, "bbs_above_20_80.csv", sep = ""), header = TRUE)
+bbs_below = read.csv(paste(BBS, "bbs_below_avgs_20_80.csv", sep = ""), header = TRUE)
 
 #adding maxRadius column to bbs_below w/NA's + renaming and rearranging columns accordingly, creating area cols
-bbs_below = bbs_below %>% 
+bbs_below2 = bbs_below %>% 
   mutate(maxdist = c("NA")) %>%
   select(focalrte, scale, everything()) %>%
   mutate(area = bbs_below$scale*(pi*(0.4^2)), 
@@ -836,9 +836,8 @@ bbs_above = bbs_above %>%
 bbs_above$scale = as.factor(bbs_above$scale)
 
 
-bbs_allscales = rbind(bbs_below, bbs_above) #rbind ok since all share column names
-
-
+bbs_allscales_20.80 = rbind(bbs_below2, bbs_above) #rbind ok since all share column names
+write.csv(bbs_allscales_20.80, paste(BBS, "bbs_above_75_25.csv", sep = ""), row.names = FALSE) #saved 03/06
 
 
 ######################################################################################################################
