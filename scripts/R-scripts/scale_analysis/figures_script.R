@@ -211,7 +211,9 @@ write.csv(all_fig, "//bioark.ad.unc.edu/HurlbertLab/Jenkins/BBS scaled/all_figou
 all_fig = read.csv("//bioark.ad.unc.edu/HurlbertLab/Jenkins/Intermediate scripts/BBS scaled/all_figoutput.csv", header = TRUE)
 #all_fig$area = as.factor(all_fig$area)
 
-all_figplot = ggplot(all_fig, aes(occ, group = factor(signif(area, digits = 2)), color = factor(signif(area, digits = 2))))+
+all_figplot = ggplot(all_fig, aes(occ, group = factor(signif(area, digits = 2), 
+                                                      labels = c("2.5, 5 point count stops", "5", "13", "25, 1 BBS route", "50", "100", "200", "400", "800", "1700, 66 aggregate BBS routes")), 
+                                  color = factor(signif(area, digits = 2))))+
   stat_density(geom = "path", position = "identity", bw = "bcv", kernel = "gaussian", n = 4000, na.rm = TRUE, size = 1.3)+
   labs(x = "Proportion of time present at site", y = "Probability Density")+theme_classic()+
   scale_color_viridis(discrete = TRUE, name = expression("Spatial Scale in km"^{2}))+
@@ -417,31 +419,35 @@ central = bbs_allscales %>%
   summarize(pctC_avg = mean(pctCore)) %>%
   mutate(logA = round(logA, digits = 2)) %>%
   group_by(logA) %>%
-  summarize(pctC_avg2 = mean(pctC_avg, na.rm = TRUE))
+  summarize(pctCore = mean(pctC_avg, na.rm = TRUE)) %>% 
+  mutate(focalrte = "99999")
 
-# central = bbs_allscales %>% 
-#   group_by(scale) %>%
-#   arrange(scale, logA) %>% 
-#   mutate(pctC_avg = rollmean(pctCore, 3, na.pad = TRUE))
+#I need to make a focal rte dummy variable that says focalrte == "99999" with the titular level and a label of "mean" 
+# bbs_allscales$cen = rollmean(bbs_allscales$pctCore, k = 5, fill = "extend")
 
+bbs_allsub = bbs_allscales %>% 
+  filter(focalrte == 34054 | focalrte == 85169) %>%
+  dplyr::select(focalrte, logA, pctCore)
 
-bbs_allsub = bbs_allscales %>% filter(focalrte == 34054 | focalrte == 85169) #(low habhet, high habhet)
-bbs_allsub$focalrte = factor(bbs_allsub$focalrte,
-                             levels=c("34054", "85169"),
-                             labels=c("Low Heterogeneity",
+bbs_allsub2 = rbind(bbs_allsub, central)
+  
+bbs_allsub2$focalrte = factor(bbs_allsub2$focalrte,
+                             levels=c( "99999","34054", "85169"),
+                             labels=c("Mean",
+                                      "Low Heterogeneity",
                                       "High Heterogeneity"))
 #use this to assign diff colors for each factor level per what color scheme is ideal?
 #72 is PA, 14 is Cali, 34 is Illinois, 17 is Colorado 
 
 pred_plot = ggplot(bbs_allscales, aes(x = logA, y = pctCore))+geom_line(aes(group = focalrte), color = "grey")+
   theme_classic()+
-  geom_line(data = bbs_allsub, aes(x = logA, y = pctCore, group = as.factor(focalrte), color = as.factor(focalrte)), size = 2)+ #geom_smooth(model = lm, color = 'red')+
-  geom_line(data= central, aes(x = logA, y = pctC_avg2), color = "black", size = 2)+
-  labs(x = "Log Area", y = "Proportion Core Species in Community")+
-  scale_color_viridis(discrete = TRUE, name = "", option = "B", begin = 0.75, end = .9)+
+  geom_line(data = bbs_allsub2, aes(x = logA, y = pctCore, group = as.factor(focalrte), color = as.factor(focalrte)), size = 2)+ #geom_smooth(model = lm, color = 'red')+
+  labs(x = "Log Area", y = "")+
+  scale_color_viridis(discrete = TRUE, name = "", option = "B", begin = 0.05, end = .75)+
   theme(axis.title = element_text(size = 18), axis.text = element_text(size = 16), legend.text = element_text(size = 16), legend.title = element_text(size = 16))+
   theme(legend.position = c(0.78, 0.20)) 
 pred_plot #yellow = high variation in habhet, purple = low variation, low habhet 
+
 
 
 central2 = bbs_allscales %>%
@@ -449,19 +455,42 @@ central2 = bbs_allscales %>%
   summarize(pctC_avg = mean(pctCore)) %>%
   mutate(logN = round(logN, digits = 1)) %>%
   group_by(logN) %>%
-  summarize(pctC_avg2 = mean(pctC_avg, na.rm = TRUE))
+  summarize(pctCore = mean(pctC_avg, na.rm = TRUE)) %>% 
+  mutate(focalrte = "99999")
 
+#I need to make a focal rte dummy variable that says focalrte == "99999" with the titular level and a label of "mean" 
+# bbs_allscales$cen = rollmean(bbs_allscales$pctCore, k = 5, fill = "extend")
+
+bbs_allsub = bbs_allscales %>% 
+  filter(focalrte == 34054 | focalrte == 85169) %>%
+  dplyr::select(focalrte, logN, pctCore)
+
+bbs_allsub3 = rbind(bbs_allsub, central2)
+
+bbs_allsub3$focalrte = factor(bbs_allsub3$focalrte,
+                              levels=c( "99999","34054", "85169"),
+                              labels=c("Mean",
+                                       "Low Heterogeneity",
+                                       "High Heterogeneity"))
+#use this to assign diff colors for each factor level per what color scheme is ideal?
+#72 is PA, 14 is Cali, 34 is Illinois, 17 is Colorado 
 
 pred_abuns = ggplot(bbs_allscales, aes(x = logN, y = pctCore))+geom_line(aes(group = focalrte), color = "grey")+
   theme_classic()+
-  geom_line(data = bbs_allsub, aes(x = logN, y = pctCore, group = as.factor(focalrte), color = as.factor(focalrte)), size = 2)+ #geom_smooth(model = lm, color = 'red')+
-  geom_line(data= central2, aes(x = logN, y = pctC_avg2), color = "black", size = 2)+
-  labs(x = "Log Abundance", y = "")+scale_color_viridis(discrete = TRUE, name = "", option = "B", begin = 0.75, end = .9)+
-  theme(axis.title = element_text(size = 18), axis.text = element_text(size = 16))+theme(legend.position = "none") 
-pred_abuns 
+  geom_line(data = bbs_allsub3, aes(x = logN, y = pctCore, group = as.factor(focalrte), color = as.factor(focalrte)), size = 2)+ #geom_smooth(model = lm, color = 'red')+
+  labs(x = "Log Abundance", y = "")+
+  scale_color_viridis(discrete = TRUE, name = "", option = "B", begin = 0.05, end = .75)+
+  theme(axis.title = element_text(size = 18), axis.text = element_text(size = 16), legend.text = element_text(size = 16), legend.title = element_text(size = 16))+
+  theme(legend.position = "none") 
+pred_abuns #yellow = high variation in habhet, purple = low variation, low habhet 
 
-p1 = grid.arrange(pred_plot, pred_abuns, ncol = 2)
 
+p1 = grid.arrange(pred_plot, pred_abuns, nrow = 2, 
+                  left = textGrob("Proportion Core Species in Community", 
+                                  rot = 90, vjust = 1, gp = gpar(cex = 1.5)))
+
+# gp = gpar(fontface = "bold", cex = 1.5)),
+# left = textGrob("Global Y-axis Label", rot = 90, vjust = 1)
 
 ####Dummy data and predicted vals for adapted Coyle et al. distribution figure, Figure 1####
 #base fig1a 
@@ -514,18 +543,25 @@ minplot
 # double_dist2 = as.data.frame(rbind(single_half_big, single_half_big))   
 # pred_dist = rbind(doubl_dist, double_dist2) 
 
-local = rbinom(n = 76889, size = 1, prob = 10/100)
-big = rbinom(n = 76889, size = 1, prob = 85/100)
+local = rollmean(rexp(n = 76889, rate = 15), k = 5, fill = "extend")
+big = rollmean(rexp(n = 76889, rate= 99/100), k = 2000, fill = "extend")
 
 preds = cbind(single_rte, local)
 pred_dist = cbind(preds, big)
+# pred_central = pred_dist %>%
+#   group_by(occ) %>%
+#   summarize(local2 = mean(local)) %>%
+#   mutate(occ = round(occ, digits = 2)) %>%
+#   group_by(occ) %>%
+#   summarize(local3 = mean(local2, na.rm = TRUE))
+
   
 all_predplot = ggplot(pred_dist, aes(occ))+
-  stat_density(geom = "path", position = "identity", bw = "bcv", kernel = "gaussian", n = 4000, na.rm = TRUE, size = 1.3, color = "black")+
-  stat_density(aes(local), geom = "path", position = "identity", bw = "bcv", kernel = "gaussian", n = 4000, na.rm = TRUE, size = 1.3, color = "#FDE725FF")+
-  stat_density(aes(big), geom = "path", position = "identity", bw = "bcv", kernel = "gaussian", n = 4000, na.rm = TRUE, size = 1.3, color = "#55C667FF")+
+  stat_density(geom = "path", position = "identity", bw = "bcv", kernel = "gaussian", n = 4000, na.rm = TRUE, size = 1.5, color = "black")+
+  stat_density(aes(local), geom = "path", position = "identity", bw = "bcv", kernel = "gaussian", n = 4000, na.rm = TRUE, size = 1.5, color = "#FDE725FF")+
+  stat_density(aes(big), geom = "path", position = "identity", bw = "bcv", kernel = "gaussian", n = 4000, na.rm = TRUE, size = 1.5, color = "#55C667FF")+
   labs(x = "Proportion of time present at site", y = "Probability Density")+theme_classic()+
   theme(axis.title = element_text(size = 18), axis.text = element_text(size = 16))+ 
-  coord_cartesian(xlim = c(0.1, 0.9), ylim = c(0, 3))
+  coord_cartesian(xlim = c(0.1, 0.94), ylim = c(0, 2.5))
 all_predplot
 
