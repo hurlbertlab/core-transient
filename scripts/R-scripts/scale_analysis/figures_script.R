@@ -227,7 +227,6 @@ all_figplot = ggplot(all_fig, aes(occ, group = area_f, color = area_f))+
 all_figplot
 
 
-
 minplot = ggplot(min_out, aes(occ, group = scale, color = scale))+
   stat_density(geom = "path", position = "identity", bw = "bcv", kernel = "gaussian", n = 4000, na.rm = TRUE)+
   labs(x = "Proportion of time present at site", y = "Probability Density", title = "Local scales")+theme_classic()
