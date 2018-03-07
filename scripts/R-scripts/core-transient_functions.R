@@ -903,3 +903,93 @@ ct.hist = function(site) {
           plot.margin = unit(c(.5,.5,1.5,1), "lines"))
   return(out.plot)
 }
+
+
+#------------------------------------------------------------------------------------------------------*
+# ---- For SADs  ----
+#======================================================================================================*
+
+#' Get list of dataset IDS for datasets that meet criteria for analysis including:
+#' * Study wide criteria
+#' * Has raw abundance data (not cover or density)
+get_valid_datasetIDs = function(){
+  dataformattingtable = read.csv('data_formatting_table.csv')
+  datasetIDs = dataformattingtable %>%
+    filter(format_flag == 1, countFormat %in% c('count', 'abundance')) %>% 
+    # Remove count datasets with decimal values
+    filter(!dataset_ID %in% c(226, 228, 247, 264, 298, 299, 300, 301)) %>%
+    # exclude BBS for now and analyze it separately
+    # filter(dataset_ID !=1) %>% 
+    dplyr::select(dataset_ID)
+}
+
+
+#' Get table of species abundances
+#' 
+get_abund_data  = function(datasetIDs){
+  datasetIDs = datasetIDs$dataset_ID
+  dataset_path = 'data/standardized_datasets/'
+  abund_data = data.frame()
+  for (dataset in datasetIDs){
+    filename = paste('dataset_', dataset, '.csv', sep = '')
+    print(paste("Loading:", filename))
+    site_data = read.csv(file.path(dataset_path, filename), stringsAsFactors = FALSE, fileEncoding = 'latin1')
+    abund_data = rbind(abund_data, site_data)
+  }
+  # Strip zeros which are included to document a sampling event occurred
+  abund_data = abund_data[abund_data$count != 0,]
+  return(abund_data)
+}
+
+#' Get table of species proportional occupancies
+#' 
+get_propocc_data  = function(datasetIDs){
+  datasetIDs = datasetIDs$dataset_ID
+  dataset_path = 'data/propOcc_datasets/'
+  propocc_data = data.frame()
+  for (dataset in datasetIDs){
+    filename = paste('propOcc_', dataset, '.csv', sep = '')
+    print(paste("Loading:", filename))
+    site_data = read.csv(file.path(dataset_path, filename), stringsAsFactors = FALSE, fileEncoding = 'latin1')
+    propocc_data = rbind(propocc_data, site_data)
+  }
+  return(propocc_data)
+}
+
+
+#' Sum the abundances for each species-site combination across years
+sum_abunds = function(abund_data){
+  summed_abunds = abund_data %>%
+    group_by(datasetID, site, species) %>%
+    dplyr::summarize(abunds = sum(count)) %>%
+    filter(abunds != 0)
+  return(summed_abunds)
+}
+
+#' Get the AICc weight for the log-series compared to the Poisson log-normal
+#' abundance distribution
+#' 
+#' @param abunds vector of abundances
+#' 
+#' @return vector of weights for the log-series
+#' 
+#' @examples 
+#' get_sad_weights(c(10, 20, 5, 1, 1, 2, 3, 7))
+get_logseries_weight = function(abunds){
+  stopifnot(all(abunds == floor(abunds))) # Check that all values are counts
+  abunds = abunds[abunds != 0] # SADs are fit only on species that are present
+  tryCatch({
+    fits = c(fitsad(abunds, 'ls'), fitsad(abunds, 'poilog'))
+    aics = sapply(fits, AICc)
+    min_aic = min(aics)
+    deltas = aics - min_aic
+    rellike = exp(-0.5 * deltas)
+    weights = rellike / sum(rellike)
+    logseries_weight = weights[1]
+    return(logseries_weight)
+  }, error = function(e) {
+    logseries_weight = NA
+    return(logseries_weight)
+  }
+  )
+}

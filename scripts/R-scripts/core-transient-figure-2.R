@@ -144,7 +144,7 @@ mtext("Datasets", 2, cex = 1.25, las = 0, line = 2.5)
 title(outer=FALSE,adj=1,main="A",cex.main=1.5,col="black",font=2,line=-0.1)
 barplot(log10(sitesBySystem$Freq), col = c('burlywood','skyblue', 'navy'), cex.names = 1, 
         xaxt = "n",yaxt = "n", ylim = c(0,4)) 
-axis(side = 2, 0:3,labels=c("1","10","100","500"))
+axis(side = 2, 0:3,labels=c("1","10","100","1000"))
 mtext(expression("Assemblages"), 2, cex = 1.25, las = 0, line = 3.5) # log[10]*
 title(outer=FALSE,adj=1,main="B",cex.main=1.5,col="black",font=2,line=-0.1)
 bar1 = barplot(dsetsByTaxa[taxorder], xaxt = "n", axisnames = F,
