@@ -338,7 +338,10 @@ write.csv(lat_scale_rich, "output/tabular_data/lat_scale_rich.csv", row.names = 
 
 
 # Model -  want 5 km radius here!!!!
-mod1 = lmer(propTrans ~ (1|datasetID) * log10(meanAbundance) * log10(elev.var) * taxa, data=lat_scale_rich) 
+# same model structure (but only terrestrial datasets, not necessarily hierarchically scaled datasets) as used in 
+# core-transient-figure-4.R, but adding an elevational variance term
+mod1 = lmer(propTrans ~ (log10(meanAbundance)|datasetID) + log10(meanAbundance) * taxa +  log10(elev.var) , data=lat_scale_rich) 
+
 summary(mod1)
 coefs <- data.frame(coef(summary(mod1)))
 coefs$p.z <- 2 * (1 - pnorm(abs(coefs$t.value)))

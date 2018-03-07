@@ -174,7 +174,7 @@ for(id in datasetIDs[,1]){
     num_trans = length(trans$propOcc)
     
     for(r in 1:100){
-      print(c(r, id, Sys.time()))
+      print(paste(id, site, r, Sys.Date()))
       
       if(num_notrans >= num_trans) {
         null_sample = sample_n(notrans, num_notrans - num_trans, replace = FALSE) %>%
