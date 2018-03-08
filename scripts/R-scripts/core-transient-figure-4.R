@@ -5,8 +5,6 @@
 # Input files are named propOcc_XXX.csv where
 # XXX is the dataset ID.
 
-setwd("C:/git/core-transient")
-
 library(lme4)
 library(plyr) # for core-transient functions
 library(ggplot2)
