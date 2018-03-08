@@ -214,7 +214,7 @@ null_output$Non_trans = as.numeric(null_output$Non_trans)
 null_output = read.csv("output/tabular_data/null_output_SAD_100.csv", header = TRUE)
 null_output$combo = paste(null_output$datasetID, null_output$site, sep = "_")
 
-null_output1 = subset(null_output, number == 1)
+# null_output1 = subset(null_output, number == 1)
 
 null_5a_sum = null_output %>%
   dplyr::group_by(datasetID, site) %>% 
@@ -228,7 +228,7 @@ logseries_all = subset(logseries_weights, treatment == "All")
 logseries_all = logseries_all[,c("datasetID", "site", "weights", "treatment")]
 null_output$weights = null_output$SAD_excl
 null_output$treatment = "Null"
-null_output = filter(null_output, number == 1)
+null_output = filter(null_output, number == 10)
 null_output_excl = null_output[,c("datasetID", "site", "weights", "treatment")]
 # removing BBS as a test
 # null_output_excl = filter(null_output_excl, datasetID != 1)
@@ -236,6 +236,9 @@ null_output_excl = null_output[,c("datasetID", "site", "weights", "treatment")]
 SAD_plot = rbind(logseries_all, null_output_excl)
 
 #### ggplot fig1a #####
+
+colscale = c("dark orange2","yellow")
+
 excl = ggplot(SAD_plot,aes(x=weights,fill=treatment))+geom_histogram(bins = 20, position = "identity", alpha = 0.7)+ xlab("Transient Status") + ylab("Proportion of Species") + scale_y_continuous(breaks=c(0,500,1000, 1300)) + scale_fill_manual(labels = c("All species", "Excluding non-transients"),values = c("black", "gray"))+ theme_classic() + theme(axis.text.x=element_blank(), axis.ticks.x=element_blank(),axis.text.y=element_text(size=30, color = "black"),axis.title.y=element_text(size=46,angle=90,vjust = 8),axis.title.x=element_text(size=46, vjust = -7))  + ylab("Frequency") + xlab("Akaike Weight") +theme(plot.margin=unit(c(0.35,1,2,1.7),"cm")) + theme(legend.text = element_text(size = 15), legend.title = element_blank(), legend.position = "none")
 
 ggsave(file="C:/Git/core-transient/output/plots/1a_null.pdf", height = 10, width = 16)
