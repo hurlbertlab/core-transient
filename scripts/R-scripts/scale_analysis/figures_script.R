@@ -210,10 +210,14 @@ write.csv(all_fig, "//bioark.ad.unc.edu/HurlbertLab/Jenkins/BBS scaled/all_figou
 ####Plotting how distributions change across scale, using area####
 all_fig = read.csv("//bioark.ad.unc.edu/HurlbertLab/Jenkins/Intermediate scripts/BBS scaled/all_figoutput.csv", header = TRUE)
 #all_fig$area = as.factor(all_fig$area)
+all_fig$area_f = factor(signif(all_fig$area, digits = 2),
+                         levels = c(2.5, 5, 13, 25, 50, 100, 200, 400, 800, 1700),
+                         labels = c("2.5, 5 point count stops", "5", "13", "25, 1 BBS route", "50", "100", "200", "400", "800", "1700, 66 aggregate BBS routes")) 
 
-all_figplot = ggplot(all_fig, aes(occ, group = factor(signif(area, digits = 2), 
-                                                      labels = c("2.5, 5 point count stops", "5", "13", "25, 1 BBS route", "50", "100", "200", "400", "800", "1700, 66 aggregate BBS routes")), 
-                                  color = factor(signif(area, digits = 2))))+
+  
+  
+  
+all_figplot = ggplot(all_fig, aes(occ, group = area_f, color = area_f))+
   stat_density(geom = "path", position = "identity", bw = "bcv", kernel = "gaussian", n = 4000, na.rm = TRUE, size = 1.3)+
   labs(x = "Proportion of time present at site", y = "Probability Density")+theme_classic()+
   scale_color_viridis(discrete = TRUE, name = expression("Spatial Scale in km"^{2}))+
@@ -221,7 +225,6 @@ all_figplot = ggplot(all_fig, aes(occ, group = factor(signif(area, digits = 2),
   theme(legend.text = element_text(size = 16), legend.title = element_text(size = 16))+
   theme(legend.position = c(0.50, 0.50))
 all_figplot
-
 
 
 minplot = ggplot(min_out, aes(occ, group = scale, color = scale))+
