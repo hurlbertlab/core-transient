@@ -470,8 +470,8 @@ m <- ggplot(turnover_bbs, aes(x = TJ, y = notransturn))
 four_c <- m + geom_abline(intercept = 0,slope = 1, lwd =1.5,linetype="dashed")+geom_point(data = turnover_bbs, aes(colour = taxa),size = 2)+geom_point(data = turnover_else, aes(colour = taxa), size = 5) + xlab("Turnover (all species)") + ylab("Turnover \n (excluding non-transients)")  + scale_colour_manual(breaks = turnover_col$taxa,values = colscale) + theme_classic() + theme(axis.text.x=element_text(size=28, color = "black"),axis.text.y=element_text(size=28, color = "black"),axis.ticks.x=element_blank(),axis.title.x=element_text(size=42, color = "black"),axis.title.y=element_text(size=42,angle=90,vjust = 3))+ guides(colour = guide_legend(title = "Taxa"))
 ggsave(file="C:/Git/core-transient/output/plots/null_turnover_2.pdf", height = 10, width = 15)
 
-turnover_col$diff = turnover_col$TJnotrans-turnover_col$TJ
-hist(turnover_col$diff, xlab = "Excluding transients - All Species")
+turnover_taxa$diff = turnover_taxa$notransturn-turnover_taxa$TJ
+hist(turnover_taxa$diff, xlab = "Excluding null transients - All species", cex.lab=1.5, cex.axis=1.5)
 
 ##### paired t-test #####
 df_ttest_5c = merge(null_5c, turnover_output, by = c("datasetID", "site"))

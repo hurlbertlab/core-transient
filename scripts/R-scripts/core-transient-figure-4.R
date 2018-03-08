@@ -367,6 +367,163 @@ legend('topright', legend = as.character(taxcolors$taxa), lty=1,lwd=3,col = as.c
 L = legend('topright', legend = as.character(taxcolors$taxa), lty=1,lwd=3,col = as.character(taxcolors$color), cex = 1.35)
 dev.off()
 
+
+####### elev heterogeneity model ################
+latlongs = read.csv("data/latlongs/latlongs.csv", header =TRUE)
+
+# merge multiple lat long file to propOcc to get naming convention correct
+latlong_w_sites = merge(latlongs, summ[,c("datasetID", "site", "propTrans")], by = c("datasetID", "site"), all.x = TRUE) 
+
+#drop BBS and add in below scale
+latlong_w_sites = subset(latlong_w_sites, !datasetID == 1)
+
+# reformat non multi grain lat longs
+dft = subset(dataformattingtable, countFormat == "count" & format_flag == 1) # only want count data for model
+dft = subset(dft, !dataset_ID %in% c(1,247,248,269,289,315))
+dft = dft[,c("CentralLatitude", "CentralLongitude","dataset_ID", "taxa")]
+names(dft) <- c("Lat","Lon", "datasetID", "taxa")
+dft2 = merge(dft, summ[, c("datasetID","site","propTrans")], by = "datasetID")
+
+# combining all lat longs, including scaled up data
+all_latlongs.5 = rbind(dft2, latlong_w_sites)
+
+# rbind in new BBS data
+bbs_be_lat = read.csv("data/BBS/bbs_be_lat.csv", header = TRUE)
+# rbind new bbs data to lat longs
+all_latlongs =  rbind(bbs_be_lat, all_latlongs.5)
+all_latlongs = na.omit(all_latlongs)
+
+# Makes routes into a spatialPointsDataframe
+coordinates(all_latlongs)=c('Lon','Lat')
+projection(all_latlongs) = CRS("+proj=longlat +ellps=WGS84")
+prj.string <- CRS("+proj=laea +lat_0=45.235 +lon_0=-106.675 +units=km")
+# "+proj=laea +lat_0=45.235 +lon_0=-106.675 +units=km"
+# Transforms routes to an equal-area projection - see previously defined prj.string
+routes.laea = spTransform(all_latlongs, CRS("+proj=laea +lat_0=45.235 +lon_0=-106.675 +units=km"))
+
+##### extracting elevation data ####
+# A function that draws a circle of radius r around a point: p (x,y)
+RADIUS = 40
+
+make.cir = function(p,r){
+  points=c()
+  for(i in 1:360){
+    theta = i*2*pi/360
+    y = p[2] + r*cos(theta)
+    x = p[1] + r*sin(theta)
+    points = rbind(points,c(x,y))
+  }
+  points=rbind(points,points[1,])
+  circle=Polygon(points,hole=F)
+  circle
+}
+
+routes.laea@data$dId_site = paste(routes.laea@data$datasetID, routes.laea@data$site, sep = "_")
+routes.laea@data$unique = 1:16618
+
+
+#Draw circles around all routes 
+circs = sapply(1:nrow(routes.laea@data), function(x){
+  circ =  make.cir(routes.laea@coords[x,],RADIUS)
+  circ = Polygons(list(circ),ID=routes.laea$unique[x]) 
+}
+)
+
+circs.sp = SpatialPolygons(circs, proj4string=CRS("+proj=laea +lat_0=45.235 +lon_0=-106.675 +units=km"))
+
+# Check that circle locations look right
+plot(circs.sp, add = TRUE)
+
+# read in elevation raster at 1 km resolution
+elev <- raster("Z:/GIS/DEM/sdat_10003_1_20170424_102000103.tif")
+NorthAm = readOGR("Z:/GIS/geography", "continent")
+NorthAm2 = spTransform(NorthAm, CRS("+proj=laea +lat_0=45.235 +lon_0=-106.675 +units=km"))
+
+plot(elevNA2)
+plot(NorthAm2)
+
+clip<-function(raster,shape) {
+  a1_crop<-crop(raster,shape)
+  step1<-rasterize(shape,a1_crop)
+  a1_crop*step1}
+
+
+elevNA2 = projectRaster(elev, crs = prj.string) #UNMASKED!
+elevNA3 <- raster::mask(elevNA2, NorthAm2)
+
+test = clip(elevNA2, NorthAm2)
+
+elev.point = raster::extract(elevNA3, routes.laea)
+elev.mean = raster::extract(elevNA3, circs.sp, fun = mean, na.rm=T)
+elev.var = raster::extract(elevNA3, circs.sp, fun = var, na.rm=T)
+
+env_elev = data.frame(unique = routes.laea@data$unique, elev.point = elev.point, elev.mean = elev.mean, elev.var = elev.var)
+
+
+lat_scale_elev = merge(routes.laea, env_elev, by = c("unique")) # checked to make sure order lined up, d/n seem to be another way to merge since DID keeps getting lost
+lat_scale_elev = data.frame(lat_scale_elev)
+
+# lat_scale_elev = subset(lat_scale_elev, unique < 26)
+# lat_scale_elev$stateroute = strsplit(as.character(lat_scale_elev$site), "-")
+# lat_scale_elev$stateroute = lapply(lat_scale_elev$stateroute, "[[", 1) 
+# lat_scale_elev$stateroute = unlist(lat_scale_elev$stateroute)
+# lat_scale_elev$stateroute = as.numeric(lat_scale_elev$stateroute)
+
+lat_scale_rich = merge(lat_scale_elev, summ[,c("datasetID","site", "meanAbundance")], by = c("datasetID", "site"), all.x = TRUE)
+#  "spRichTrans", 
+write.csv(lat_scale_rich, "output/tabular_data/lat_scale_rich.csv", row.names = F)
+# lat_scale_rich = read.csv("output/tabular_data/lat_scale_rich.csv", header = TRUE)
+
+
+# Model -  want 5 km radius here!!!!
+# same model structure (but only terrestrial datasets, not necessarily hierarchically scaled datasets) as used in 
+# core-transient-figure-4.R, but adding an elevational variance term
+mod1 = lmer(propTrans ~ (log10(meanAbundance)|datasetID) + log10(meanAbundance) * taxa +  log10(elev.var) , data=lat_scale_rich) 
+
+summary(mod1)
+coefs <- data.frame(coef(summary(mod1)))
+coefs$p.z <- 2 * (1 - pnorm(abs(coefs$t.value)))
+
+ggplot(data=lat_scale_rich, aes(elev.var,propTrans)) +geom_point(aes(color = as.factor(lat_scale_rich$taxa)), size = 3) + xlab("Elevation Variance")+ ylab("% Transient")+ theme_classic()
+
+# visualizing model results
+mod1test = subset(lat_scale_rich, lat_scale_rich$datasetID == 1)
+mod1test$scale =  strsplit(mod1test$site,"-")
+mod1test$scaled = sapply(mod1test$scale, "[[", 2) # selects the second element in a list
+ggplot(data=mod1test, aes(elev.var,propTrans)) + geom_point(aes(color = as.factor(as.numeric(mod1test$scaled))), size = 3)+ xlab("Elevation Variance")+ ylab("BBS Scaled % Transient")  + theme_classic() 
+hist(mod1test$propTrans)
+
+# simple linear model based on data in Fig 2b of % transient ~ taxonomic group, just to have a p-value associated with the statement "The proportion of an assemblage made up of transient species varied strongly across taxonomic group."
+transmod = lm(pTrans~taxa, data = CT_long)
+summary(transmod)
+
+summ$scale = 1
+summ$n = 1
+summ_cut = summ[,c("datasetID", "site", "scale", "n")]
+bbs_occ_scale$datasetID = 1
+bbs_occ_scale$n = bbs_occ_scale$spRich
+bbs_all = bbs_occ_scale[,c("datasetID", "site", "scale", "n")]
+new_df = rbind(allrich, summ_cut, bbs_all)
+new = data.frame(table(new_df$datasetID))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 #### Supplemental core and scale ####
 pdf('output/plots/supp_sara_scale_core_reg.pdf', height = 6, width = 7.5)
 par(mfrow = c(1, 1), mar = c(6, 6, 1, 1), mgp = c(4, 1, 0), 
