@@ -236,10 +236,6 @@ null_output_excl = null_output[,c("datasetID", "site", "weights", "treatment")]
 SAD_plot = rbind(logseries_all, null_output_excl)
 
 #### ggplot fig1a #####
-
-colscale = c("dark orange2","yellow")
-# k = ggplot(logseries_null,aes(x=weights,fill=treatment))+geom_histogram(bins = 20, position = "identity", alpha = 0.7)+ xlab("Transient Status") + ylab("Proportion of Species") + scale_y_continuous(breaks=c(0,500,1000)) + scale_fill_manual(labels = c("All species","Excluding transients"),values = colscale)+ theme_classic() + theme(axis.text.x=element_blank(), axis.ticks.x=element_blank(),axis.text.y=element_text(size=30, color = "black"),axis.title.y=element_text(size=46,angle=90,vjust = 5),axis.title.x=element_text(size=46, vjust = -7))  + ylab("Frequency") + xlab("Akaike Weight") + theme(legend.position = "none") +theme(plot.margin=unit(c(0.35,1,2,1.7),"cm")) 
-
 excl = ggplot(SAD_plot,aes(x=weights,fill=treatment))+geom_histogram(bins = 20, position = "identity", alpha = 0.7)+ xlab("Transient Status") + ylab("Proportion of Species") + scale_y_continuous(breaks=c(0,500,1000, 1300)) + scale_fill_manual(labels = c("All species", "Excluding non-transients"),values = c("black", "gray"))+ theme_classic() + theme(axis.text.x=element_blank(), axis.ticks.x=element_blank(),axis.text.y=element_text(size=30, color = "black"),axis.title.y=element_text(size=46,angle=90,vjust = 8),axis.title.x=element_text(size=46, vjust = -7))  + ylab("Frequency") + xlab("Akaike Weight") +theme(plot.margin=unit(c(0.35,1,2,1.7),"cm")) + theme(legend.text = element_text(size = 15), legend.title = element_blank(), legend.position = "none")
 
 ggsave(file="C:/Git/core-transient/output/plots/1a_null.pdf", height = 10, width = 16)
