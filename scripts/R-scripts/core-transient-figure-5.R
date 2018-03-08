@@ -145,7 +145,7 @@ get_logseries_weight = function(abunds){
   abunds = abunds[abunds != 0] # SADs are fit only on species that are present
   tryCatch({
     fits = c(fitsad(abunds, 'ls'), fitsad(abunds, 'poilog'))
-    aics = sapply(fits, AICc)
+    aics = sapply(fits, sads::AICc)
     min_aic = min(aics)
     deltas = aics - min_aic
     rellike = exp(-0.5 * deltas)
@@ -176,7 +176,7 @@ logseries_weights_excl = sad_data %>%
 
 
 logseries_weights = rbind(logseries_weights_incl, logseries_weights_excl)
-write.csv(logseries_weights, "output/tabular_data/logseries_weights.csv")
+# write.csv(logseries_weights, "output/tabular_data/logseries_weights.csv")
 logseries_weights = read.csv("output/tabular_data/logseries_weights.csv", header = TRUE)
 
 d = merge(logseries_weights_incl, logseries_weights_excl, by = c("datasetID", "site"), all.x = TRUE)
