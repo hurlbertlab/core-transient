@@ -319,7 +319,7 @@ turnover_col$bbs =ifelse(turnover_col$datasetID == 1, "yes", "no")
 turnover_bbs = filter(turnover_col, bbs == "yes")
 turnover_else = filter(turnover_col, bbs == "no")
 turnover_col$diff = turnover_col$TJnotrans-turnover_col$TJ
-hist(turnover_col$diff, xlab = "Excluding transients - All species",, cex.lab=1.5, cex.axis=1.5)
+hist(turnover_col$diff, xlab = "Excluding transients - All species", cex.lab=1.5, cex.axis=1.5)
 
 turnover_else$taxa = factor(turnover_else$taxa,
                             levels = c('Invertebrate','Fish','Plankton','Mammal','Plant','Bird'),ordered = TRUE)
