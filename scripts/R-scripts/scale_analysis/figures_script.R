@@ -546,11 +546,15 @@ minplot
 # double_dist2 = as.data.frame(rbind(single_half_big, single_half_big))   
 # pred_dist = rbind(doubl_dist, double_dist2) 
 
-local = rollmean(rexp(n = 76889, rate = 15), k = 5, fill = "extend")
-big = rollmean(rexp(n = 76889, rate= 99/100), k = 2000, fill = "extend")
+local = rollmean(rexp(n = 76889, rate = 12), k = 5, fill = "extend")
+big = rollmean(rexp(n = 76889, rate= 139/144), k = 3000, fill = "extend")
+
+big2 = local+0.92
+# big2 = floor(big2)
+
 
 preds = cbind(single_rte, local)
-pred_dist = cbind(preds, big)
+pred_dist = cbind(preds, big2)
 # pred_central = pred_dist %>%
 #   group_by(occ) %>%
 #   summarize(local2 = mean(local)) %>%
@@ -561,10 +565,10 @@ pred_dist = cbind(preds, big)
   
 all_predplot = ggplot(pred_dist, aes(occ))+
   stat_density(geom = "path", position = "identity", bw = "bcv", kernel = "gaussian", n = 4000, na.rm = TRUE, size = 1.5, color = "black")+
-  stat_density(aes(local), geom = "path", position = "identity", bw = "bcv", kernel = "gaussian", n = 4000, na.rm = TRUE, size = 1.5, color = "#FDE725FF")+
-  stat_density(aes(big), geom = "path", position = "identity", bw = "bcv", kernel = "gaussian", n = 4000, na.rm = TRUE, size = 1.5, color = "#55C667FF")+
+  stat_density(aes(local), geom = "path", position = "identity", bw = "bcv", kernel = "gaussian", n = 4000, na.rm = TRUE, size = 1.5, color = "#287D8EFF", linetype = "dashed")+
+  stat_density(aes(big2), geom = "path", position = "identity", bw = "bcv", kernel = "gaussian", n = 4000, na.rm = TRUE, size = 1.5, color = "#FDE725FF", linetype = "dashed")+
   labs(x = "Proportion of time present at site", y = "Probability Density")+theme_classic()+
   theme(axis.title = element_text(size = 18), axis.text = element_text(size = 16))+ 
-  coord_cartesian(xlim = c(0.1, 0.94), ylim = c(0, 2.5))
+  coord_cartesian(xlim = c(0.11, .95), ylim = c(0, 5.5))
 all_predplot
 

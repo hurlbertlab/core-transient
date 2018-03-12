@@ -40,7 +40,6 @@ fifty_allyears = read.csv(paste(BBS, "fifty_allyears.csv", sep = ""), header = T
 fifty_bestAous = fifty_allyears %>% 
   filter(AOU > 2880 & !(AOU >= 3650 & AOU <= 3810) & !(AOU >= 3900 & AOU <= 3910) & 
            !(AOU >= 4160 & AOU <= 4210) & AOU != 7010) #leaving out owls, waterbirds as less reliable data
-
 #occ_counts function for calculating occupancy at any scale
 #countcolumns can refer to the stops in a stateroute OR 
 #it can refer to the associated secondary routes to aggregate across 
@@ -223,6 +222,7 @@ plot(meanOcc~log(aveN), data = bbs_below_new, xlab = "Average Abundance" , ylab 
 plot(meanOcc~log(aveN), data = bbs_below, xlab = "Average Abundance" , ylab = "Mean Temporal Occupancy")
 
 comp = gridExtra::grid.arrange(g1, g2)
+
 ####Data prep for calculating occupancy above the scale of a BBS route####
 #Revised calcs workspace 
 #sort out bbs_below to ONLY those routes at 50-stop scale (occ calc'd for a single route)
@@ -272,15 +272,22 @@ bbs_above_guide = data.frame(output)
 write.csv(bbs_above_guide, "scripts/R-scripts/scale_analysis/bbs_above_guide.csv", row.names = FALSE)
 
 ####Calculating occupancy scales 2:66 loop####
-dist.df = read.csv("scripts/R-scripts/scale_analysis/dist_df.csv", header = TRUE)
-bbs_above_guide = read.csv("scripts/R-scripts/scale_analysis/bbs_above_guide.csv", header = TRUE)
+dist.df = read.csv("scripts/R-scripts/scale_analysis/intermed/dist_df.csv", header = TRUE)
+bbs_above_guide = read.csv("scripts/R-scripts/scale_analysis/intermed/bbs_above_guide.csv", header = TRUE)
 #groupcounts for each AOU for each year at scale of ONE stateroute 
 
+#filter out to only routes that are up to 1000km radius away from each other before analyses 
+far = dist.df %>% arrange(rte1, dist) %>% group_by(rte1) %>% slice(66)
+hist(far$dist)
+far2 = far %>% filter(dist < 1000)
+
+bbs_above_guide = bbs_above_guide %>% filter(stateroute %in% far2$rte1)
+write.csv(bbs_above_guide, "data/BBS/bbs_above_guide.csv", row.names = FALSE)
 
 #go one step at a time, logically -> don't rush thru recreating the loop 
 
 #need to make sure NOT running thru 66 times on the same site and scale 
-uniqrtes = unique(bbs_above_guide$stateroute) #all routes present are unique, still 953 which is great
+uniqrtes = unique(bbs_above_guide$stateroute) #all routes present are unique, still 968 which is great
 numrtes = 2:66 # based on min common number in top 6 grid cells, see grid_sampling_justification script 
 output = data.frame(focalrte = NULL,
                     scale = NULL, 
@@ -303,7 +310,7 @@ for (r in uniqrtes) { #for each focal route
       #remove/skip top row 
       arrange(dist) %>%
       slice(1:nu) %>% 
-      select(everything()) %>% data.frame()
+      dplyr::select(everything()) %>% data.frame()
     
     #takes varying list from above and uses it to subset the bbs data so that occ can be calculated for the cluster 
     
@@ -322,7 +329,7 @@ for (r in uniqrtes) { #for each focal route
       #increased likelihood that AOU will be present -> OH! I don't want stateroute in here! it doesn't matter! 
       #it just matters that it shows up in the cluster at all, not just the stateroutes that go in
       #how many years does each AOU show up in the cluster 
-      select(year, AOU) %>% #duplicates remnant of distinct secondary routes - finally ID'd bug
+      dplyr::select(year, AOU) %>% #duplicates remnant of distinct secondary routes - finally ID'd bug
       distinct() %>% #removing duplicates 09/20
       count(AOU) %>% #how many times does that AOU show up in that clustr that year 
       mutate(occ = n/15, scale = nu) %>% #, subrouteID = countColumns[1]) #%>% countColumns not needed bc already pared down
