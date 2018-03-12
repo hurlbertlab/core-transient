@@ -71,6 +71,18 @@ for (scale in c_scales) {
 bbs_below_guide = data.frame(output)
 write.csv(bbs_below_guide, paste(BBS, "bbs_below_guide.csv", sep = ""), row.names = FALSE)
 
+####Paring down to 968 routes####
+dist.df = read.csv("scripts/R-scripts/scale_analysis/intermed/dist_df.csv", header = TRUE)
+bbs_below_guide = read.csv(paste(BBS, "bbs_below_guide.csv", sep = ""), header = TRUE)
+#groupcounts for each AOU for each year at scale of ONE stateroute 
+
+#filter out to only routes that are up to 1000km radius away from each other before analyses 
+far = dist.df %>% arrange(rte1, dist) %>% group_by(rte1) %>% slice(66)
+hist(far$dist)
+far2 = far %>% filter(dist < 1000)
+
+bbs_below_guide = bbs_below_guide %>% filter(stateroute %in% far2$rte1)
+
 #tested, works 
 test = bbs_below_guide %>% filter(scale == "25")
 unique(test$seg)
@@ -78,7 +90,7 @@ unique(test$seg)
 
 
 #I can group by scale and segment and THEN take means of segments
-
+require(tidyverse)
 #need to make sure NOT running thru 66 times on the same site and scale 
 uniqrtes = unique(bbs_below_guide$stateroute) #all routes present are unique, still 953 which is great
 scale = unique(bbs_below_guide$scale)
@@ -115,7 +127,7 @@ for (r in uniqrtes) { #for each focal route
         #increased likelihood that AOU will be present -> OH! I don't want stateroute in here! it doesn't matter! 
         #it just matters that it shows up in the cluster at all, not just the stateroutes that go in
         #how many years does each AOU show up in the cluster 
-        select(year, AOU) %>% #duplicates remnant of distinct secondary routes - finally ID'd bug
+        dplyr::select(year, AOU) %>% #duplicates remnant of distinct secondary routes - finally ID'd bug
         distinct() %>% #removing duplicates 09/20
         count(AOU) %>% #how many times does that AOU show up in that clustr that year 
         mutate(occ = n/15, scale = nu) %>% #, subrouteID = countColumns[1]) #%>% countColumns not needed bc already pared down
@@ -170,6 +182,12 @@ dist.df = read.csv("scripts/R-scripts/scale_analysis/intermed/dist_df.csv", head
 bbs_above_guide = read.csv("scripts/R-scripts/scale_analysis/intermed/bbs_above_guide.csv", header = TRUE)
 #groupcounts for each AOU for each year at scale of ONE stateroute 
 
+#filter out to only routes that are up to 1000km radius away from each other before analyses 
+far = dist.df %>% arrange(rte1, dist) %>% group_by(rte1) %>% slice(66)
+hist(far$dist)
+far2 = far %>% filter(dist < 1000)
+
+bbs_above_guide = bbs_above_guide %>% filter(stateroute %in% far2$rte1)
 
 #go one step at a time, logically -> don't rush thru recreating the loop 
 
