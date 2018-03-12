@@ -215,7 +215,7 @@ for (r in uniqrtes) { #for each focal route
       #remove/skip top row 
       arrange(dist) %>%
       slice(1:nu) %>% 
-      select(everything()) %>% data.frame()
+      dplyr::select(everything()) %>% data.frame()
     
     #takes varying list from above and uses it to subset the bbs data so that occ can be calculated for the cluster 
     
@@ -234,7 +234,7 @@ for (r in uniqrtes) { #for each focal route
       #increased likelihood that AOU will be present -> OH! I don't want stateroute in here! it doesn't matter! 
       #it just matters that it shows up in the cluster at all, not just the stateroutes that go in
       #how many years does each AOU show up in the cluster 
-      select(year, AOU) %>% #duplicates remnant of distinct secondary routes - finally ID'd bug
+      dplyr::select(year, AOU) %>% #duplicates remnant of distinct secondary routes - finally ID'd bug
       distinct() %>% #removing duplicates 09/20
       count(AOU) %>% #how many times does that AOU show up in that clustr that year 
       mutate(occ = n/15, scale = nu) %>% #, subrouteID = countColumns[1]) #%>% countColumns not needed bc already pared down
@@ -272,7 +272,7 @@ for (r in uniqrtes) { #for each focal route
 bbs_above = as.data.frame(output)
 #Calc area for above route scale
 #bbs_above$area = bbs_above_v2$numrtes*50*(pi*(0.4^2)) #number of routes * fifty stops * area in sq km of a stop 
-write.csv(bbs_above, paste(BBS, "bbs_above_75.csv", sep = ""), row.names = FALSE)
+write.csv(bbs_above, paste(BBS, "bbs_above.csv", sep = ""), row.names = FALSE)
 #updated 09/20 evening locally and on BioArk; not sure if data folder will reject on git
 #write.csv(bbs_above, "data/BBS/bbs_above.csv", row.names = FALSE)
 #updated 09/20
@@ -281,13 +281,13 @@ write.csv(bbs_above, paste(BBS, "bbs_above_75.csv", sep = ""), row.names = FALSE
 
 
 ####Merging across scales####
-bbs_above = read.csv(paste(BBS, "bbs_above_75.csv", sep = ""), header = TRUE)
-bbs_below = read.csv(paste(BBS, "bbs_below_avgs_75.csv", sep = ""), header = TRUE)
+bbs_above = read.csv(paste(BBS, "bbs_above.csv", sep = ""), header = TRUE)
+bbs_below = read.csv(paste(BBS, "bbs_below_avgs.csv", sep = ""), header = TRUE)
 
 #adding maxRadius column to bbs_below w/NA's + renaming and rearranging columns accordingly, creating area cols
 bbs_below2 = bbs_below %>% 
   mutate(maxdist = c("NA")) %>%
-  select(focalrte, scale, everything()) %>%
+  dplyr::select(focalrte, scale, everything()) %>%
   mutate(area = bbs_below$scale*(pi*(0.4^2)), 
          scale = paste("seg", scale, sep = ""))
 
@@ -302,9 +302,9 @@ bbs_above = bbs_above %>%
 bbs_above$scale = as.factor(bbs_above$scale)
 
 
-bbs_allscales_75.25 = rbind(bbs_below2, bbs_above) #rbind ok since all share column names
-#write.csv(bbs_allscales_75.25, paste(BBS, "bbs_above_75_25.csv", sep = ""), row.names = FALSE) #saved 03/06
-
+bbs_allscales = rbind(bbs_below2, bbs_above) #rbind ok since all share column names
+write.csv(bbs_allscales, paste(BBS, "bbs_allscales.csv", sep = ""), row.names = FALSE) #saved 03/06
+write.csv(bbs_allscales, "data/BBS/bbs_allscales_new.csv", row.names = FALSE)
 
 ##################################################################################################################
 ####3/4 & 1/4####
