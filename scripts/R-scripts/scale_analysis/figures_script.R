@@ -180,9 +180,9 @@ write.csv(max_out, "//bioark.ad.unc.edu/HurlbertLab/Jenkins/BBS scaled/max_out.c
 
 
 #read in min and single route scale occ density data 
-min_out = read.csv("//bioark.ad.unc.edu/HurlbertLab/Jenkins/BBS scaled/min_out.csv", header = TRUE)
+min_out = read.csv("//bioark.ad.unc.edu/HurlbertLab/Jenkins/Intermediate scripts/BBS scaled/min_out.csv", header = TRUE)
 #scales 2:66 agg routes 
-max_out = read.csv("//bioark.ad.unc.edu/HurlbertLab/Jenkins/BBS scaled/max_out.csv", header = TRUE)
+max_out = read.csv("//bioark.ad.unc.edu/HurlbertLab/Jenkins/Intermediate scripts/BBS scaled/max_out.csv", header = TRUE)
 #updated 12/12 
 
 
@@ -201,9 +201,19 @@ max_out = max_out %>%
   dplyr::select(stateroute, AOU, occ, area)
 
 
+dist.df = read.csv("scripts/R-scripts/scale_analysis/intermed/dist_df.csv", header = TRUE)
+#groupcounts for each AOU for each year at scale of ONE stateroute 
+#filter out to only routes that are up to 1000km radius away from each other before analyses 
+far = dist.df %>% arrange(rte1, dist) %>% group_by(rte1) %>% slice(66)
+hist(far$dist)
+far2 = far %>% filter(dist < 1000)
 
-all_fig = rbind(max_out, min_out)
-write.csv(all_fig, "//bioark.ad.unc.edu/HurlbertLab/Jenkins/BBS scaled/all_figoutput.csv", row.names = FALSE)
+min_out2 = min_out %>% filter(stateroute %in% far2$rte1)
+max_out2 = max_out %>% filter(stateroute %in% far2$rte1)
+
+all_fig = rbind(max_out2, min_out2)
+length(unique(all_fig$stateroute)) #968, as it should be 
+write.csv(all_fig, paste(BBS, "all_figoutput.csv", sep = ""), row.names = FALSE)
 #stored in bioark folder 
 
 
@@ -267,7 +277,7 @@ dist.df_sub = dist.df %>%
   arrange(dist) 
 
 dist.df_sub2 = dist.df %>% 
-  filter(rte1 == "11244") %>%
+  filter(rte1 == "89152") %>%
   top_n(66, desc(dist)) %>% #fixed ordering by including arrange parm, 
   arrange(dist) 
 
@@ -283,9 +293,9 @@ bbs_thrd = filter(bbs_latlon, stateroute %in% dist.df_sub2$rte2)
 sites1 = data.frame(longitude = bbs_secnd$Longi, latitude = bbs_secnd$Lati) 
 sites2 = data.frame(longitude = bbs_thrd$Longi, latitude = bbs_thrd$Lati) 
 star1 = bbs_secnd %>% filter(stateroute == "2001")
-star2 = bbs_thrd %>% filter(stateroute == "11244")
+star2 = bbs_thrd %>% filter(stateroute == "89152")
 
-plot(NorthAm, xlim = c(-160, -60), ylim = c(25, 70))
+plot(NorthAm, xlim = c(-160, -60), ylim = c(25, 65))
 points(bbs_latlon$Longi, bbs_latlon$Lati, col= "grey", pch=16)
 points(sites1$longitude, sites1$latitude, col = "#FDE725FF", pch = 16)
 points(sites2$longitude, sites2$latitude, col = viridis(1, begin = 0.5, end = 1, option = "D"), pch = 16)
@@ -314,7 +324,7 @@ ggplot(scales_hetero_v, aes(x = scale, y = corr_r))+
   theme_classic()+
   geom_abline(intercept = 0, slope = 0)+
   theme_classic()+theme(text = element_text(size = 18))+
-  labs(color = "Habitat Heterogeneity", x = "Number of aggregated BBS Routes", y = "Pearson's correlation estimate")+theme(legend.position = c(0.80, 0.20))+
+  labs(color = "Environmental Heterogeneity", x = "Number of aggregated BBS Routes", y = "Pearson's correlation estimate")+theme(legend.position = c(0.84, 0.20))+
   scale_color_viridis(begin = 0, end = 0.7, discrete = TRUE, option = "D") 
 
 
@@ -340,15 +350,16 @@ scales_hetero2 = scales_hetero %>%
   filter(ind == "PCA.curvature" | ind == "PCA.max" | ind == "PCA.mid"| ind == "PCA.min" | ind == "PCA.slope")
 
 ggplot(scales_hetero2, aes(x = ind, y = corr_r))+
-  geom_pointrange(aes(shape = dep, ymin = lowr, ymax = uppr), size = 1.2, position = position_dodge(width = 0.35))+geom_abline(intercept = 0, slope = 0)+
+  geom_pointrange(aes(color = dep, ymin = lowr, ymax = uppr), size = 1.2, position = position_dodge(width = 0.35))+geom_abline(intercept = 0, slope = 0)+
   theme_classic()+theme(axis.title = element_text(size = 18), axis.text = element_text(size = 16), legend.position = c(0.55, 0.25), legend.text = element_text(size = 16), legend.title = element_text(size = 16))+
   labs(x = "Occupancy-scale parameters", y = "Pearson's correlation estimate")+
   scale_x_discrete(limit = c("PCA.min", "PCA.mid","PCA.slope","PCA.curvature","PCA.max"),
-                     labels = c("Min", expression("Scale"[50]),"Slope","Curvature","Max"))+
-  scale_shape_discrete(name="Habitat Heterogeneity",
-                      breaks=c("elev.var", "ndvi.var"),
-                      labels=c("Elevation", "NDVI"))
-
+                   labels = c("Min", expression("Scale"[50]),"Slope","Curvature","Max"))+
+  scale_y_continuous(breaks = c(-0.6, -0.4, -0.2, 0, 0.2, 0.4))+
+  scale_color_manual(name = "Environmental Heterogeneity",
+                     values=c("#440154FF", "#55C667FF"),
+                     labels = c("Elevation", "NDVI"))
+#likely #440154FF purple and #55C667FF
 
 
 
@@ -443,12 +454,12 @@ bbs_allsub2$focalrte = factor(bbs_allsub2$focalrte,
 #72 is PA, 14 is Cali, 34 is Illinois, 17 is Colorado 
 
 pred_plot = ggplot(bbs_allscales, aes(x = logA, y = pctCore))+geom_line(aes(group = focalrte), color = "grey")+
-  theme_classic()+
+  theme_classic()+geom_abline(aes(intercept = 0.5, slope = 0), linetype = "dashed")+
   geom_line(data = bbs_allsub2, aes(x = logA, y = pctCore, group = as.factor(focalrte), color = as.factor(focalrte)), size = 2)+ #geom_smooth(model = lm, color = 'red')+
-  labs(x = "Log Area", y = "")+
+  labs(x = "Log Area", y = "", title = "A")+
   scale_color_viridis(discrete = TRUE, name = "", option = "B", begin = 0.05, end = .75)+
-  theme(axis.title = element_text(size = 18), axis.text = element_text(size = 16), legend.text = element_text(size = 16), legend.title = element_text(size = 16))+
-  theme(legend.position = c(0.78, 0.20)) 
+  theme(plot.title = element_text(size = 20), axis.title = element_text(size = 18), axis.text = element_text(size = 16), legend.text = element_text(size = 14), legend.title = element_text(size = 14))+
+  theme(legend.position = c(0.74, 0.18)) 
 pred_plot #yellow = high variation in habhet, purple = low variation, low habhet 
 
 
@@ -479,16 +490,16 @@ bbs_allsub3$focalrte = factor(bbs_allsub3$focalrte,
 #72 is PA, 14 is Cali, 34 is Illinois, 17 is Colorado 
 
 pred_abuns = ggplot(bbs_allscales, aes(x = logN, y = pctCore))+geom_line(aes(group = focalrte), color = "grey")+
-  theme_classic()+
+  theme_classic()+geom_abline(aes(intercept = 0.5, slope = 0), linetype = "dashed")+
   geom_line(data = bbs_allsub3, aes(x = logN, y = pctCore, group = as.factor(focalrte), color = as.factor(focalrte)), size = 2)+ #geom_smooth(model = lm, color = 'red')+
-  labs(x = "Log Abundance", y = "")+
+  labs(x = "Log Community size", y = "", title = "B")+
   scale_color_viridis(discrete = TRUE, name = "", option = "B", begin = 0.05, end = .75)+
-  theme(axis.title = element_text(size = 18), axis.text = element_text(size = 16), legend.text = element_text(size = 16), legend.title = element_text(size = 16))+
+  theme(plot.title = element_text(size = 20), axis.title = element_text(size = 18), axis.text = element_text(size = 16), legend.text = element_text(size = 14), legend.title = element_text(size = 14))+
   theme(legend.position = "none") 
 pred_abuns #yellow = high variation in habhet, purple = low variation, low habhet 
 
 
-p1 = grid.arrange(pred_plot, pred_abuns, nrow = 2, 
+p1 = grid.arrange(pred_plot, pred_abuns, ncol = 2, 
                   left = textGrob("Proportion Core Species in Community", 
                                   rot = 90, vjust = 1, gp = gpar(cex = 1.5)))
 

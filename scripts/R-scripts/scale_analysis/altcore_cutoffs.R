@@ -303,8 +303,14 @@ bbs_above$scale = as.factor(bbs_above$scale)
 
 
 bbs_allscales = rbind(bbs_below2, bbs_above) #rbind ok since all share column names
-write.csv(bbs_allscales, paste(BBS, "bbs_allscales.csv", sep = ""), row.names = FALSE) #saved 03/06
-write.csv(bbs_allscales, "data/BBS/bbs_allscales_new.csv", row.names = FALSE)
+
+bbs_allscales$logA = log10(bbs_allscales$area)
+bbs_allscales$logN = log10(bbs_allscales$aveN)
+bbs_allscales$lnA = log(bbs_allscales$area) #log is the natural log 
+bbs_allscales$lnN = log(bbs_allscales$aveN)
+
+write.csv(bbs_allscales, paste(BBS, "bbs_allscales.csv", sep = ""), row.names = FALSE) #saved 03/12
+write.csv(bbs_allscales, "data/BBS/bbs_allscales.csv", row.names = FALSE)
 
 ##################################################################################################################
 ####3/4 & 1/4####

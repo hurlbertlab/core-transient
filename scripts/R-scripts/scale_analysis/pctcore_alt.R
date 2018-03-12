@@ -32,7 +32,7 @@ library(viridis)
 tempdatadir = '//bioark.ad.unc.edu/HurlbertLab/GIS/ClimateData/BIOCLIM_meanTemp/'
 precipdata = '//bioark.ad.unc.edu/HurlbertLab/GIS/ClimateData/2-25-2011/prec/'
 ndvidata = "//bioark.ad.unc.edu/HurlbertLab/GIS/MODIS NDVI/"
-BBS = '//bioark.ad.unc.edu/HurlbertLab/Jenkins/BBS scaled/'
+BBS = '//bioark.ad.unc.edu/HurlbertLab/Jenkins/Intermediate scripts/BBS scaled/'
 
 
 ####Cross-scale analysis and visualization####
@@ -41,9 +41,9 @@ levels(bbs_allscales$scale)
 unique(bbs_allscales$scale)
 
 
-mod1 = lm(pctCore~logA, data = bbs_allscales) #72%
-mod2 = lm(pctCore~logN, data = bbs_allscales) #75%
-summary(mod2)
+mod1 = lm(pctCore~logA, data = bbs_allscales) #89%
+mod2 = lm(pctCore~logN, data = bbs_allscales) #90%
+summary(mod1)
 
 plot(pctCore~logA, data = bbs_allscales, xlab = "Log Area" , ylab = "Percent Core Species in Community")
 plot(pctCore~logN, data = bbs_allscales, xlab = "Average Abundance" , ylab = "Percent Core Species in Community")
