@@ -184,7 +184,6 @@ for(id in datasetIDs[,1]){
       }
 
       logseries_weights_excl = null_sample %>%
-        filter(propOcc > 1/3) %>%
         group_by(datasetID, site) %>% 
         dplyr::summarize(weights = get_logseries_weight(abunds), treatment = 'Excluding')
       
