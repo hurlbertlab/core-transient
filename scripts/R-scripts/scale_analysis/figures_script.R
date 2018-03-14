@@ -223,12 +223,31 @@ all_fig = read.csv("//bioark.ad.unc.edu/HurlbertLab/Jenkins/Intermediate scripts
 all_fig$area_f = factor(signif(all_fig$area, digits = 2),
                          levels = c(2.5, 5, 13, 25, 50, 100, 200, 400, 800, 1700),
                          labels = c("2.5, 5 point count stops", "5", "13", "25, 1 BBS route", "50", "100", "200", "400", "800", "1700, 66 aggregate BBS routes")) 
+all_fig = all_fig %>% 
+  #first I have to take levels for area_f and lump everything together that isn't 50/25, 1 BBS route
+  mutate(area_spec = as.numeric(area_f))
+
+all_fig$area_spec[all_fig$area_spec != 4] <- 0
+
+all_fig$area_spec = factor(all_fig$area_spec)
 
   
-  
-  
-all_figplot = ggplot(all_fig, aes(occ, group = area_f, color = area_f))+
+all_figplot = ggplot(all_fig, aes(occ, group = area_f, color = area_f, linetype = area_spec))+
   stat_density(geom = "path", position = "identity", bw = "bcv", kernel = "gaussian", n = 4000, na.rm = TRUE, size = 1.3)+
+  #stat_density(singlerte, aes(occ), geom = "path", position = "identity", bw = "bcv", kernel = "gaussian", n = 4000, na.rm = TRUE, size = 1.6)+
+  labs(x = "Proportion of time present at site", y = "Probability Density")+theme_classic()+
+  scale_color_viridis(discrete = TRUE, name = expression("Spatial Scale in km"^{2}))+
+  theme(axis.title = element_text(size = 18), axis.text = element_text(size = 16))+
+  theme(legend.text = element_text(size = 16), legend.title = element_text(size = 16))+
+  theme(legend.position = c(0.50, 0.50))+guides(linetype = FALSE)
+all_figplot
+
+
+#make a new variable factor for linetype and then call up as linetype arg so no multiple stat density calls!!! 
+
+all_figplot = ggplot(all_fig)+
+  stat_density(aes(occ, group = area_f, color = area_f, linetype = "solid"), geom = "path", position = "identity", bw = "bcv", kernel = "gaussian", n = 4000, na.rm = TRUE, size = 1.3)+
+  stat_density(aes(occ_1, group = area_f, color = area_f, linetype = "dashed"), geom = "path", position = "identity", bw = "bcv", kernel = "gaussian", n = 4000, na.rm = TRUE, size = 1.6)+
   labs(x = "Proportion of time present at site", y = "Probability Density")+theme_classic()+
   scale_color_viridis(discrete = TRUE, name = expression("Spatial Scale in km"^{2}))+
   theme(axis.title = element_text(size = 18), axis.text = element_text(size = 16))+
@@ -236,8 +255,19 @@ all_figplot = ggplot(all_fig, aes(occ, group = area_f, color = area_f))+
   theme(legend.position = c(0.50, 0.50))
 all_figplot
 
+#attempts to make 50 stop single rte density line different linetype met with resistance 
+#as continuous variable linetypes can't be customized manually...
 
-minplot = ggplot(min_out, aes(occ, group = scale, color = scale))+
+# lins = c("2.5, 5 point count stops" = "solid", "5" = "solid", "13"= "solid", "25" = "solid",
+#          "50"= "dotted", "100"= "solid", "200"= "solid", "400"= "solid", "800"= "solid", "1700, 66 aggregate BBS routes"= "solid")
+# all_figplot + scale_linetype_manual(values= lins)
+# 
+# scale_linetype_manual(values = c(rep("solid", 10), rep("dashed", 6))) +
+#   scale_color_manual(values = c(brewer.pal(10, "Set3"), brewer.pal(6, "Set3")))
+# scale_color_viridis(discrete = TRUE, option = "B", end = 0.9, name = expression("Spatial Scale in km"^{2}))+
+
+  
+minplot = ggplot(min_out, aes(occ, group = factor(signif(min_out$area, digits = 2)), color = factor(signif(min_out$area, digits = 2))))+
   stat_density(geom = "path", position = "identity", bw = "bcv", kernel = "gaussian", n = 4000, na.rm = TRUE)+
   labs(x = "Proportion of time present at site", y = "Probability Density", title = "Local scales")+theme_classic()
 minplot
@@ -312,7 +342,7 @@ scales_hetero_v = scales_hetero %>%
 
 scales_hetero_v$ind = factor(scales_hetero_v$ind, 
                              levels = c("PCA.min","PCA.mid", "PCA.slope","PCA.curvature", "PCA.max"),
-                             labels = c("Min", as.character(expression("Scale"[50])), "Slope", "Curvature", "Max"))
+                             labels = c(as.character(expression("p"["min"])), as.character(expression("Scale"[50])), "Slope", "Curvature", as.character(expression("p"["max"]))))
 
 scales_hetero_v$dep = factor(scales_hetero_v$dep, 
                                 levels=c("elev.var", "ndvi.var"),
@@ -354,7 +384,7 @@ ggplot(scales_hetero2, aes(x = ind, y = corr_r))+
   theme_classic()+theme(axis.title = element_text(size = 18), axis.text = element_text(size = 16), legend.position = c(0.55, 0.25), legend.text = element_text(size = 16), legend.title = element_text(size = 16))+
   labs(x = "Occupancy-scale parameters", y = "Pearson's correlation estimate")+
   scale_x_discrete(limit = c("PCA.min", "PCA.mid","PCA.slope","PCA.curvature","PCA.max"),
-                   labels = c("Min", expression("Scale"[50]),"Slope","Curvature","Max"))+
+                   labels = c(expression("p"["min"]), expression("Scale"[50]),"Slope","Curvature",expression("p"["max"])))+
   scale_y_continuous(breaks = c(-0.6, -0.4, -0.2, 0, 0.2, 0.4))+
   scale_color_manual(name = "Environmental Heterogeneity",
                      values=c("#440154FF", "#55C667FF"),
@@ -428,7 +458,7 @@ elev_ranked = env_all %>%
 #lowest var in elev: rtes 34027 (best, closest to normal avgs), mostly 34's, 35010, 
 #highest var in elev: rtes 17221, 6012, 17044, 6071, 85169, 14059 mostly 14's, 17's, and 6,000's
 
-central = bbs_allscales %>%
+central = bbs_allscales %>% #83% at largest
   group_by(logA) %>%
   summarize(pctC_avg = mean(pctCore)) %>%
   mutate(logA = round(logA, digits = 2)) %>%
@@ -464,7 +494,7 @@ pred_plot #yellow = high variation in habhet, purple = low variation, low habhet
 
 
 
-central2 = bbs_allscales %>%
+central2 = bbs_allscales %>% #84% at largest
   group_by(logN) %>%
   summarize(pctC_avg = mean(pctCore)) %>%
   mutate(logN = round(logN, digits = 1)) %>%
@@ -557,8 +587,8 @@ minplot
 # double_dist2 = as.data.frame(rbind(single_half_big, single_half_big))   
 # pred_dist = rbind(doubl_dist, double_dist2) 
 
-local = rollmean(rexp(n = 76889, rate = 12), k = 5, fill = "extend")
-big = rollmean(rexp(n = 76889, rate= 139/144), k = 3000, fill = "extend")
+local = rollmean(rexp(n = 75045, rate = 12), k = 5, fill = "extend")
+big = rollmean(rexp(n = 75045, rate= 139/144), k = 3000, fill = "extend")
 
 big2 = local+0.92
 # big2 = floor(big2)
@@ -580,6 +610,7 @@ all_predplot = ggplot(pred_dist, aes(occ))+
   stat_density(aes(big2), geom = "path", position = "identity", bw = "bcv", kernel = "gaussian", n = 4000, na.rm = TRUE, size = 1.5, color = "#FDE725FF", linetype = "dashed")+
   labs(x = "Proportion of time present at site", y = "Probability Density")+theme_classic()+
   theme(axis.title = element_text(size = 18), axis.text = element_text(size = 16))+ 
-  coord_cartesian(xlim = c(0.11, .95), ylim = c(0, 5.5))
+  coord_cartesian(xlim = c(0.11, .95), ylim = c(0, 5.5))+geom_segment(aes(x = 0.33, y = 0, xend = 0.33, yend = 1.6), linetype = "dotted", size = 1)+
+  geom_segment(aes(x = 0.67, y = 0, xend = 0.67, yend = 1.6), linetype = "dotted", size = 1)
 all_predplot
 

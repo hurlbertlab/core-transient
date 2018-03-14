@@ -1212,10 +1212,17 @@ BBS = '//bioark.ad.unc.edu/HurlbertLab/Jenkins/Intermediate scripts/BBS scaled/'
 
 fifty_allyears = read.csv(paste(BBS, "fifty_allyears.csv", sep = ""), header = TRUE) #using updated version, 50 stop data, 07/12
 bbs_allscales = read.csv("data/BBS/bbs_allscales.csv", header = TRUE)
+#Paring down to 968 routes#
+dist.df = read.csv("scripts/R-scripts/scale_analysis/intermed/dist_df.csv", header = TRUE)
+#filter out to only routes that are up to 1000km radius away from each other before analyses 
+far = dist.df %>% arrange(rte1, dist) %>% group_by(rte1) %>% slice(66)
+hist(far$dist)
+far2 = far %>% filter(dist < 1000)
 
 fifty_bestAous = fifty_allyears %>% 
   filter(AOU > 2880 & !(AOU >= 3650 & AOU <= 3810) & !(AOU >= 3900 & AOU <= 3910) & 
-           !(AOU >= 4160 & AOU <= 4210) & AOU != 7010) #leaving out owls, waterbirds as less reliable data
+           !(AOU >= 4160 & AOU <= 4210) & AOU != 7010) %>% #leaving out owls, waterbirds as less reliable data
+  filter(stateroute %in% far2$rte1)
 
 #occ_counts function for calculating occupancy at any scale
 #countcolumns can refer to the stops in a stateroute OR 
@@ -1256,7 +1263,7 @@ for (s in b_scales) {
 
 min_dist = output
 #transformation into matrix unnecessary with ggplot version 
-#write.csv(min_dist, "//bioark.ad.unc.edu/HurlbertLab/Jenkins/BBS scaled/min_dist.csv", row.names = FALSE)
+#write.csv(min_dist, paste(BBS, "min_dist.csv", sep = ""), row.names = FALSE)
 min_dist = read.csv("//bioark.ad.unc.edu/HurlbertLab/Jenkins/BBS scaled/min_dist.csv", header = TRUE)
 
 
@@ -1284,7 +1291,7 @@ min_dist3 = min_dist %>%
   summarise(occ = mean(occ)) %>% dplyr::select(everything()) 
 
 min_out = as.data.frame(min_dist3)
-#write.csv(min_out, "//bioark.ad.unc.edu/HurlbertLab/Jenkins/BBS scaled/min_out.csv", row.names = FALSE)
+write.csv(min_out, "//bioark.ad.unc.edu/HurlbertLab/Jenkins/Intermediate scripts/BBS scaled/min_out.csv", row.names = FALSE)
 
 fig1b = ggplot(min_dist3, aes(occ, group = scale, color = scale))+
   geom_density(kernel = "gaussian", n = 2000, na.rm = TRUE)+
@@ -1293,9 +1300,14 @@ fig1b = ggplot(min_dist3, aes(occ, group = scale, color = scale))+
 fig1b 
 
 ####Fig 1c: distribution at the maximum scale####
-dist.df = read.csv("scripts/R-scripts/scale_analysis/dist_df.csv", header = TRUE)
-bbs_above_guide = read.csv("scripts/R-scripts/scale_analysis/bbs_above_guide.csv", header = TRUE)
+dist.df = read.csv("scripts/R-scripts/scale_analysis/intermed/dist_df.csv", header = TRUE)
+bbs_above_guide = read.csv("scripts/R-scripts/scale_analysis/intermed/bbs_above_guide.csv", header = TRUE)
 #groupcounts for each AOU for each year at scale of ONE stateroute 
+far = dist.df %>% arrange(rte1, dist) %>% group_by(rte1) %>% slice(66)
+hist(far$dist)
+far2 = far %>% filter(dist < 1000)
+
+bbs_above_guide = bbs_above_guide %>% filter(stateroute %in% far2$rte1)
 
 #occ_counts function for calculating occupancy at any scale
 #countcolumns can refer to the stops in a stateroute OR 
@@ -1340,7 +1352,7 @@ fig1c = ggplot(max_out, aes(occ))+
 #so it was the limits giving me crap in the original 
 fig1c
 
-write.csv(max_out, "//bioark.ad.unc.edu/HurlbertLab/Jenkins/BBS scaled/max_out.csv", row.names = FALSE)
+write.csv(max_out, "//bioark.ad.unc.edu/HurlbertLab/Jenkins/Intermediate scripts/BBS scaled/max_out.csv", row.names = FALSE)
 
 ####Figure 4 all graphs overlay####
 ## merge output, min, and max into single df while adding new column delineating which 
@@ -1348,10 +1360,10 @@ write.csv(max_out, "//bioark.ad.unc.edu/HurlbertLab/Jenkins/BBS scaled/max_out.c
 ## overlaid on single density plot 
 
 #read in min and single route scale occ density data 
-min_out = read.csv("//bioark.ad.unc.edu/HurlbertLab/Jenkins/BBS scaled/min_out.csv", header = TRUE)
+min_out = read.csv("//bioark.ad.unc.edu/HurlbertLab/Jenkins/Intermediate scripts/BBS scaled/min_out.csv", header = TRUE) #updated version
 #scales 2:66 agg routes 
-max_out = read.csv("//bioark.ad.unc.edu/HurlbertLab/Jenkins/BBS scaled/max_out.csv", header = TRUE)
-#updated 12/12 
+max_out = read.csv("//bioark.ad.unc.edu/HurlbertLab/Jenkins/Intermediate scripts/BBS scaled/max_out.csv", header = TRUE)
+#updated 03/13 
 
 
 #organize by scales; label and differentiate scales so that below-rtes are appropriately smaller
@@ -1371,8 +1383,8 @@ max_out = max_out %>%
 
 
 all_fig = rbind(max_out, min_out)
-write.csv(all_fig, "//bioark.ad.unc.edu/HurlbertLab/Jenkins/BBS scaled/all_figoutput.csv", row.names = FALSE)
-#stored in bioark folder 
+write.csv(all_fig, "//bioark.ad.unc.edu/HurlbertLab/Jenkins/Intermediate scripts/BBS scaled/all_figoutput.csv", row.names = FALSE)
+#stored in bioark folder updated 03/13
 
 
 ####Plotting how distributions change across scale, using area####
