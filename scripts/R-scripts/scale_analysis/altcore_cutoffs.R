@@ -71,6 +71,18 @@ for (scale in c_scales) {
 bbs_below_guide = data.frame(output)
 write.csv(bbs_below_guide, paste(BBS, "bbs_below_guide.csv", sep = ""), row.names = FALSE)
 
+####Paring down to 968 routes####
+dist.df = read.csv("scripts/R-scripts/scale_analysis/intermed/dist_df.csv", header = TRUE)
+bbs_below_guide = read.csv(paste(BBS, "bbs_below_guide.csv", sep = ""), header = TRUE)
+#groupcounts for each AOU for each year at scale of ONE stateroute 
+
+#filter out to only routes that are up to 1000km radius away from each other before analyses 
+far = dist.df %>% arrange(rte1, dist) %>% group_by(rte1) %>% slice(66)
+hist(far$dist)
+far2 = far %>% filter(dist < 1000)
+
+bbs_below_guide = bbs_below_guide %>% filter(stateroute %in% far2$rte1)
+
 #tested, works 
 test = bbs_below_guide %>% filter(scale == "25")
 unique(test$seg)
@@ -78,7 +90,7 @@ unique(test$seg)
 
 
 #I can group by scale and segment and THEN take means of segments
-
+require(tidyverse)
 #need to make sure NOT running thru 66 times on the same site and scale 
 uniqrtes = unique(bbs_below_guide$stateroute) #all routes present are unique, still 953 which is great
 scale = unique(bbs_below_guide$scale)
@@ -115,7 +127,7 @@ for (r in uniqrtes) { #for each focal route
         #increased likelihood that AOU will be present -> OH! I don't want stateroute in here! it doesn't matter! 
         #it just matters that it shows up in the cluster at all, not just the stateroutes that go in
         #how many years does each AOU show up in the cluster 
-        select(year, AOU) %>% #duplicates remnant of distinct secondary routes - finally ID'd bug
+        dplyr::select(year, AOU) %>% #duplicates remnant of distinct secondary routes - finally ID'd bug
         distinct() %>% #removing duplicates 09/20
         count(AOU) %>% #how many times does that AOU show up in that clustr that year 
         mutate(occ = n/15, scale = nu) %>% #, subrouteID = countColumns[1]) #%>% countColumns not needed bc already pared down
@@ -170,6 +182,12 @@ dist.df = read.csv("scripts/R-scripts/scale_analysis/intermed/dist_df.csv", head
 bbs_above_guide = read.csv("scripts/R-scripts/scale_analysis/intermed/bbs_above_guide.csv", header = TRUE)
 #groupcounts for each AOU for each year at scale of ONE stateroute 
 
+#filter out to only routes that are up to 1000km radius away from each other before analyses 
+far = dist.df %>% arrange(rte1, dist) %>% group_by(rte1) %>% slice(66)
+hist(far$dist)
+far2 = far %>% filter(dist < 1000)
+
+bbs_above_guide = bbs_above_guide %>% filter(stateroute %in% far2$rte1)
 
 #go one step at a time, logically -> don't rush thru recreating the loop 
 
@@ -197,7 +215,7 @@ for (r in uniqrtes) { #for each focal route
       #remove/skip top row 
       arrange(dist) %>%
       slice(1:nu) %>% 
-      select(everything()) %>% data.frame()
+      dplyr::select(everything()) %>% data.frame()
     
     #takes varying list from above and uses it to subset the bbs data so that occ can be calculated for the cluster 
     
@@ -216,7 +234,7 @@ for (r in uniqrtes) { #for each focal route
       #increased likelihood that AOU will be present -> OH! I don't want stateroute in here! it doesn't matter! 
       #it just matters that it shows up in the cluster at all, not just the stateroutes that go in
       #how many years does each AOU show up in the cluster 
-      select(year, AOU) %>% #duplicates remnant of distinct secondary routes - finally ID'd bug
+      dplyr::select(year, AOU) %>% #duplicates remnant of distinct secondary routes - finally ID'd bug
       distinct() %>% #removing duplicates 09/20
       count(AOU) %>% #how many times does that AOU show up in that clustr that year 
       mutate(occ = n/15, scale = nu) %>% #, subrouteID = countColumns[1]) #%>% countColumns not needed bc already pared down
@@ -254,7 +272,7 @@ for (r in uniqrtes) { #for each focal route
 bbs_above = as.data.frame(output)
 #Calc area for above route scale
 #bbs_above$area = bbs_above_v2$numrtes*50*(pi*(0.4^2)) #number of routes * fifty stops * area in sq km of a stop 
-write.csv(bbs_above, paste(BBS, "bbs_above_75.csv", sep = ""), row.names = FALSE)
+write.csv(bbs_above, paste(BBS, "bbs_above.csv", sep = ""), row.names = FALSE)
 #updated 09/20 evening locally and on BioArk; not sure if data folder will reject on git
 #write.csv(bbs_above, "data/BBS/bbs_above.csv", row.names = FALSE)
 #updated 09/20
@@ -263,13 +281,13 @@ write.csv(bbs_above, paste(BBS, "bbs_above_75.csv", sep = ""), row.names = FALSE
 
 
 ####Merging across scales####
-bbs_above = read.csv(paste(BBS, "bbs_above_75.csv", sep = ""), header = TRUE)
-bbs_below = read.csv(paste(BBS, "bbs_below_avgs_75.csv", sep = ""), header = TRUE)
+bbs_above = read.csv(paste(BBS, "bbs_above.csv", sep = ""), header = TRUE)
+bbs_below = read.csv(paste(BBS, "bbs_below_avgs.csv", sep = ""), header = TRUE)
 
 #adding maxRadius column to bbs_below w/NA's + renaming and rearranging columns accordingly, creating area cols
 bbs_below2 = bbs_below %>% 
   mutate(maxdist = c("NA")) %>%
-  select(focalrte, scale, everything()) %>%
+  dplyr::select(focalrte, scale, everything()) %>%
   mutate(area = bbs_below$scale*(pi*(0.4^2)), 
          scale = paste("seg", scale, sep = ""))
 
@@ -284,9 +302,15 @@ bbs_above = bbs_above %>%
 bbs_above$scale = as.factor(bbs_above$scale)
 
 
-bbs_allscales_75.25 = rbind(bbs_below2, bbs_above) #rbind ok since all share column names
-#write.csv(bbs_allscales_75.25, paste(BBS, "bbs_above_75_25.csv", sep = ""), row.names = FALSE) #saved 03/06
+bbs_allscales = rbind(bbs_below2, bbs_above) #rbind ok since all share column names
 
+bbs_allscales$logA = log10(bbs_allscales$area)
+bbs_allscales$logN = log10(bbs_allscales$aveN)
+bbs_allscales$lnA = log(bbs_allscales$area) #log is the natural log 
+bbs_allscales$lnN = log(bbs_allscales$aveN)
+
+write.csv(bbs_allscales, paste(BBS, "bbs_allscales.csv", sep = ""), row.names = FALSE) #saved 03/12
+write.csv(bbs_allscales, "data/BBS/bbs_allscales.csv", row.names = FALSE)
 
 ##################################################################################################################
 ####3/4 & 1/4####
@@ -1188,10 +1212,17 @@ BBS = '//bioark.ad.unc.edu/HurlbertLab/Jenkins/Intermediate scripts/BBS scaled/'
 
 fifty_allyears = read.csv(paste(BBS, "fifty_allyears.csv", sep = ""), header = TRUE) #using updated version, 50 stop data, 07/12
 bbs_allscales = read.csv("data/BBS/bbs_allscales.csv", header = TRUE)
+#Paring down to 968 routes#
+dist.df = read.csv("scripts/R-scripts/scale_analysis/intermed/dist_df.csv", header = TRUE)
+#filter out to only routes that are up to 1000km radius away from each other before analyses 
+far = dist.df %>% arrange(rte1, dist) %>% group_by(rte1) %>% slice(66)
+hist(far$dist)
+far2 = far %>% filter(dist < 1000)
 
 fifty_bestAous = fifty_allyears %>% 
   filter(AOU > 2880 & !(AOU >= 3650 & AOU <= 3810) & !(AOU >= 3900 & AOU <= 3910) & 
-           !(AOU >= 4160 & AOU <= 4210) & AOU != 7010) #leaving out owls, waterbirds as less reliable data
+           !(AOU >= 4160 & AOU <= 4210) & AOU != 7010) %>% #leaving out owls, waterbirds as less reliable data
+  filter(stateroute %in% far2$rte1)
 
 #occ_counts function for calculating occupancy at any scale
 #countcolumns can refer to the stops in a stateroute OR 
@@ -1232,7 +1263,7 @@ for (s in b_scales) {
 
 min_dist = output
 #transformation into matrix unnecessary with ggplot version 
-#write.csv(min_dist, "//bioark.ad.unc.edu/HurlbertLab/Jenkins/BBS scaled/min_dist.csv", row.names = FALSE)
+#write.csv(min_dist, paste(BBS, "min_dist.csv", sep = ""), row.names = FALSE)
 min_dist = read.csv("//bioark.ad.unc.edu/HurlbertLab/Jenkins/BBS scaled/min_dist.csv", header = TRUE)
 
 
@@ -1260,7 +1291,7 @@ min_dist3 = min_dist %>%
   summarise(occ = mean(occ)) %>% dplyr::select(everything()) 
 
 min_out = as.data.frame(min_dist3)
-#write.csv(min_out, "//bioark.ad.unc.edu/HurlbertLab/Jenkins/BBS scaled/min_out.csv", row.names = FALSE)
+write.csv(min_out, "//bioark.ad.unc.edu/HurlbertLab/Jenkins/Intermediate scripts/BBS scaled/min_out.csv", row.names = FALSE)
 
 fig1b = ggplot(min_dist3, aes(occ, group = scale, color = scale))+
   geom_density(kernel = "gaussian", n = 2000, na.rm = TRUE)+
@@ -1269,9 +1300,14 @@ fig1b = ggplot(min_dist3, aes(occ, group = scale, color = scale))+
 fig1b 
 
 ####Fig 1c: distribution at the maximum scale####
-dist.df = read.csv("scripts/R-scripts/scale_analysis/dist_df.csv", header = TRUE)
-bbs_above_guide = read.csv("scripts/R-scripts/scale_analysis/bbs_above_guide.csv", header = TRUE)
+dist.df = read.csv("scripts/R-scripts/scale_analysis/intermed/dist_df.csv", header = TRUE)
+bbs_above_guide = read.csv("scripts/R-scripts/scale_analysis/intermed/bbs_above_guide.csv", header = TRUE)
 #groupcounts for each AOU for each year at scale of ONE stateroute 
+far = dist.df %>% arrange(rte1, dist) %>% group_by(rte1) %>% slice(66)
+hist(far$dist)
+far2 = far %>% filter(dist < 1000)
+
+bbs_above_guide = bbs_above_guide %>% filter(stateroute %in% far2$rte1)
 
 #occ_counts function for calculating occupancy at any scale
 #countcolumns can refer to the stops in a stateroute OR 
@@ -1316,7 +1352,7 @@ fig1c = ggplot(max_out, aes(occ))+
 #so it was the limits giving me crap in the original 
 fig1c
 
-write.csv(max_out, "//bioark.ad.unc.edu/HurlbertLab/Jenkins/BBS scaled/max_out.csv", row.names = FALSE)
+write.csv(max_out, "//bioark.ad.unc.edu/HurlbertLab/Jenkins/Intermediate scripts/BBS scaled/max_out.csv", row.names = FALSE)
 
 ####Figure 4 all graphs overlay####
 ## merge output, min, and max into single df while adding new column delineating which 
@@ -1324,10 +1360,10 @@ write.csv(max_out, "//bioark.ad.unc.edu/HurlbertLab/Jenkins/BBS scaled/max_out.c
 ## overlaid on single density plot 
 
 #read in min and single route scale occ density data 
-min_out = read.csv("//bioark.ad.unc.edu/HurlbertLab/Jenkins/BBS scaled/min_out.csv", header = TRUE)
+min_out = read.csv("//bioark.ad.unc.edu/HurlbertLab/Jenkins/Intermediate scripts/BBS scaled/min_out.csv", header = TRUE) #updated version
 #scales 2:66 agg routes 
-max_out = read.csv("//bioark.ad.unc.edu/HurlbertLab/Jenkins/BBS scaled/max_out.csv", header = TRUE)
-#updated 12/12 
+max_out = read.csv("//bioark.ad.unc.edu/HurlbertLab/Jenkins/Intermediate scripts/BBS scaled/max_out.csv", header = TRUE)
+#updated 03/13 
 
 
 #organize by scales; label and differentiate scales so that below-rtes are appropriately smaller
@@ -1347,8 +1383,8 @@ max_out = max_out %>%
 
 
 all_fig = rbind(max_out, min_out)
-write.csv(all_fig, "//bioark.ad.unc.edu/HurlbertLab/Jenkins/BBS scaled/all_figoutput.csv", row.names = FALSE)
-#stored in bioark folder 
+write.csv(all_fig, "//bioark.ad.unc.edu/HurlbertLab/Jenkins/Intermediate scripts/BBS scaled/all_figoutput.csv", row.names = FALSE)
+#stored in bioark folder updated 03/13
 
 
 ####Plotting how distributions change across scale, using area####
