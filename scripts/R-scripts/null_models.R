@@ -189,12 +189,7 @@ for(id in datasetIDs[,1]){
       
       null_output = rbind(null_output, c(r, id, site, logseries_weights_excl[,3], num_notrans))
       nwd = nrow(sad_data)
-      #curr.time = Sys.time()
-     # elapsed = curr.time - init.time
-      #percelltime = elapsed/i
-     # estimated.end = (nwd - i)*percelltime + curr.time
-     # print(paste(i, "out of",nwd, "; current time:", curr.time,
-                 # "; estimated end time:", estimated.end))
+      
     } # end r loop
   } # end site loop
 } # end dataset loop
@@ -208,7 +203,11 @@ null_output$site = as.character(null_output$site)
 null_output$SAD_excl = as.numeric(null_output$SAD_excl)
 null_output$Non_trans = as.numeric(null_output$Non_trans)
 
-
+# curr.time = Sys.time()
+# elapsed = curr.time - init.time
+# percelltime = elapsed/i
+# estimated.end = (nwd - i)*percelltime + curr.time
+# print(paste(i, "out of",nwd, "; current time:", curr.time,"; estimated end time:", estimated.end))'
 # write.csv(null_output, "output/tabular_data/null_output_SAD_100.csv", row.names = FALSE)
 null_output = read.csv("output/tabular_data/null_output_SAD_100.csv", header = TRUE)
 null_output$combo = paste(null_output$datasetID, null_output$site, sep = "_")
