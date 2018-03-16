@@ -220,9 +220,9 @@ write.csv(all_fig, paste(BBS, "all_figoutput.csv", sep = ""), row.names = FALSE)
 ####Plotting how distributions change across scale, using area####
 all_fig = read.csv("//bioark.ad.unc.edu/HurlbertLab/Jenkins/Intermediate scripts/BBS scaled/all_figoutput.csv", header = TRUE)
 #all_fig$area = as.factor(all_fig$area)
-all_fig$area_f = factor(signif(all_fig$area, digits = 2),
-                         levels = c(2.5, 5, 13, 25, 50, 100, 200, 400, 800, 1700),
-                         labels = c("2.5, 5 point count stops", "5", "13", "25, 1 BBS route", "50", "100", "200", "400", "800", "1700, 66 aggregate BBS routes")) 
+all_fig$area_f = factor(round(all_fig$area),
+                         levels = c(3, 5, 13, 25, 50, 101, 201, 402, 804, 1659), 
+                         labels = c("2.5, 5 point count stops", "5", "13", "25, 1 BBS route", "50", "101", "201", "402", "804", "1659, 66 aggregate BBS routes")) 
 all_fig = all_fig %>% 
   #first I have to take levels for area_f and lump everything together that isn't 50/25, 1 BBS route
   mutate(area_spec = as.numeric(area_f))
@@ -354,7 +354,7 @@ ggplot(scales_hetero_v, aes(x = scale, y = corr_r))+
   theme_classic()+
   geom_abline(intercept = 0, slope = 0)+
   theme_classic()+theme(text = element_text(size = 18))+
-  labs(color = "Environmental Heterogeneity", x = "Number of aggregated BBS Routes", y = "Pearson's correlation estimate")+theme(legend.position = c(0.84, 0.20))+
+  labs(color = "Environmental Heterogeneity", x = "Number of aggregated BBS Routes", y = "Pearson's correlation coefficient")+theme(legend.position = c(0.84, 0.20))+
   scale_color_viridis(begin = 0, end = 0.7, discrete = TRUE, option = "D") 
 
 
@@ -382,7 +382,7 @@ scales_hetero2 = scales_hetero %>%
 ggplot(scales_hetero2, aes(x = ind, y = corr_r))+
   geom_pointrange(aes(color = dep, shape = dep, ymin = lowr, ymax = uppr), size = 1.2, position = position_dodge(width = 0.35))+geom_abline(intercept = 0, slope = 0)+
   theme_classic()+theme(axis.title = element_text(size = 18), axis.text = element_text(size = 16), legend.position = c(0.55, 0.25), legend.text = element_text(size = 16), legend.title = element_text(size = 16))+
-  labs(x = "Occupancy-scale parameters", y = "Pearson's correlation estimate")+
+  labs(x = "Occupancy-scale parameters", y = "Pearson's correlation coefficient")+
   scale_x_discrete(limit = c("PCA.min", "PCA.mid","PCA.slope","PCA.curvature","PCA.max"),
                    labels = c(expression("p"["min"]), expression("Scale"[50]),"Slope","Curvature",expression("p"["max"])))+
   scale_y_continuous(breaks = c(-0.6, -0.4, -0.2, 0, 0.2, 0.4))+
@@ -390,7 +390,7 @@ ggplot(scales_hetero2, aes(x = ind, y = corr_r))+
                      values=c("#440154FF", "#55C667FF"),
                      labels = c("Elevation", "NDVI"))+
   scale_shape_manual(name = "Environmental Heterogeneity",
-                     values=c("1", "2"),
+                     values=c(16, 17),
                      labels = c("Elevation", "NDVI"))
 #likely #440154FF purple and #55C667FF
 
@@ -621,5 +621,5 @@ all_predplot = ggplot(pred_dist, aes(occ))+
   theme(axis.title = element_text(size = 18), axis.text = element_text(size = 16))+ 
   coord_cartesian(xlim = c(0.11, .95), ylim = c(0, 5.5))
 all_predplot + scale_color_manual(values = c("Observed" = "black", "Small scale" = "#287D8EFF", "Large scale" = "#FDE725FF"))+
-  theme(legend.position = c(0.45, 2.5), legend.text = element_text(size = 16), legend.title = element_blank())
+  theme(legend.position = c(0.45, 0.45), legend.text = element_text(size = 16), legend.title = element_blank())
 
