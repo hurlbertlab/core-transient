@@ -458,22 +458,21 @@ elev_ranked = env_all %>%
 #lowest var in elev: rtes 34027 (best, closest to normal avgs), mostly 34's, 35010, 
 #highest var in elev: rtes 17221, 6012, 17044, 6071, 85169, 14059 mostly 14's, 17's, and 6,000's
 
-central = bbs_allscales %>% #83% at largest
-  group_by(logA) %>%
-  summarize(pctC_avg = mean(pctCore)) %>%
+central_alt = bbs_allscales %>%  
+  dplyr::select(logA, pctCore) %>% 
+  transmute(pctCore_m = rollapply(pctCore, width = 1, FUN = mean, na.rm = TRUE, fill = NULL),
+            logA = logA) %>% 
   mutate(logA = round(logA, digits = 2)) %>%
   group_by(logA) %>%
-  summarize(pctCore = mean(pctC_avg, na.rm = TRUE)) %>% 
-  mutate(focalrte = "99999")
-
-#I need to make a focal rte dummy variable that says focalrte == "99999" with the titular level and a label of "mean" 
-# bbs_allscales$cen = rollmean(bbs_allscales$pctCore, k = 5, fill = "extend")
+  summarise(pctCore = mean(pctCore_m)) %>% 
+  mutate(focalrte = "99999", logA = logA) %>% 
+  dplyr::select(focalrte, logA, pctCore)
 
 bbs_allsub = bbs_allscales %>% 
   filter(focalrte == 34054 | focalrte == 85169) %>%
   dplyr::select(focalrte, logA, pctCore)
 
-bbs_allsub2 = rbind(bbs_allsub, central)
+bbs_allsub2 = rbind(bbs_allsub, central_alt)
   
 bbs_allsub2$focalrte = factor(bbs_allsub2$focalrte,
                              levels=c( "99999","34054", "85169"),
@@ -492,24 +491,22 @@ pred_plot = ggplot(bbs_allscales, aes(x = logA, y = pctCore))+geom_line(aes(grou
   theme(legend.position = c(0.74, 0.18)) 
 pred_plot #yellow = high variation in habhet, purple = low variation, low habhet 
 
-
-
-central2 = bbs_allscales %>% #84% at largest
-  group_by(logN) %>%
-  summarize(pctC_avg = mean(pctCore)) %>%
+central2_alt = bbs_allscales %>%  
+  dplyr::select(logN, pctCore) %>% 
+  transmute(pctCore_m = rollapply(pctCore, width = 1, FUN = mean, na.rm = TRUE, fill = NULL),
+            logN = logN) %>% 
   mutate(logN = round(logN, digits = 1)) %>%
   group_by(logN) %>%
-  summarize(pctCore = mean(pctC_avg, na.rm = TRUE)) %>% 
-  mutate(focalrte = "99999")
+  summarise(pctCore = mean(pctCore_m)) %>% 
+  mutate(focalrte = "99999", logN = logN) %>% 
+  dplyr::select(focalrte, logN, pctCore)
 
-#I need to make a focal rte dummy variable that says focalrte == "99999" with the titular level and a label of "mean" 
-# bbs_allscales$cen = rollmean(bbs_allscales$pctCore, k = 5, fill = "extend")
 
 bbs_allsub = bbs_allscales %>% 
   filter(focalrte == 34054 | focalrte == 85169) %>%
   dplyr::select(focalrte, logN, pctCore)
 
-bbs_allsub3 = rbind(bbs_allsub, central2)
+bbs_allsub3 = rbind(bbs_allsub, central2_alt)
 
 bbs_allsub3$focalrte = factor(bbs_allsub3$focalrte,
                               levels=c( "99999","34054", "85169"),
