@@ -501,6 +501,8 @@ central2_alt = bbs_allscales %>%
   mutate(focalrte = "99999", logN = logN) %>% 
   dplyr::select(focalrte, logN, pctCore)
 
+#calculate confidence intervals for central_alt and central2_alt vals
+
 
 bbs_allsub = bbs_allscales %>% 
   filter(focalrte == 34054 | focalrte == 85169) %>%
@@ -587,12 +589,17 @@ minplot
 local = rollmean(rexp(n = 75045, rate = 12), k = 5, fill = "extend")
 big = rollmean(rexp(n = 75045, rate= 139/144), k = 3000, fill = "extend")
 
-big2 = local+0.92
-# big2 = floor(big2)
-
-
+big2 = local+0.9
+big3 = sort(big2)
+big4 = c(big3[1:200] - 0.1346, big3[201:400] - 0.0970, big3[401:602] - 0.07958,
+         big3[603:1600] - 0.06898, big3[1601:2000] - 0.05340,  big3[2001:2400] - 0.0458, 
+         big3[2401:2800] - 0.01287, big3[2801:3200] - 0.00167, big3[3201:length(big3)])
+big5 = rollmean(big4, k = 500, fill = "extend")
+big6 = rollmean(big5, k = 5, fill = "extend")
 preds = cbind(single_rte, local)
-pred_dist = cbind(preds, big2)
+pred_dist = cbind(preds, big6)
+
+
 # pred_central = pred_dist %>%
 #   group_by(occ) %>%
 #   summarize(local2 = mean(local)) %>%
@@ -602,12 +609,13 @@ pred_dist = cbind(preds, big2)
 
   
 all_predplot = ggplot(pred_dist, aes(occ))+
-  stat_density(geom = "path", position = "identity", bw = "bcv", kernel = "gaussian", n = 4000, na.rm = TRUE, size = 1.5, color = "black")+
-  stat_density(aes(local), geom = "path", position = "identity", bw = "bcv", kernel = "gaussian", n = 4000, na.rm = TRUE, size = 1.5, color = "#287D8EFF", linetype = "dashed")+
-  stat_density(aes(big2), geom = "path", position = "identity", bw = "bcv", kernel = "gaussian", n = 4000, na.rm = TRUE, size = 1.5, color = "#FDE725FF", linetype = "dashed")+
+  geom_rect(aes(xmin = 0, ymin = 0, xmax = 0.33, ymax = 6), fill = "grey", alpha = 0.02)+
+  geom_rect(aes(xmin = .67, ymin = 0, xmax = 1, ymax = 6), fill = "grey", alpha = 0.02)+
+  stat_density(aes(color = "Observed"), geom = "path", position = "identity", bw = "bcv", kernel = "gaussian", n = 4000, na.rm = TRUE, size = 1.5)+
+  stat_density(aes(local, color = "Small scale"), geom = "path", position = "identity", bw = "bcv", kernel = "gaussian", n = 4000, na.rm = TRUE, size = 1.5, linetype = "dashed")+
+  stat_density(aes(big6, color = "Large scale"), geom = "path", position = "identity", bw = "bcv", kernel = "gaussian", n = 24, na.rm = TRUE, size = 1.5, linetype = "dashed")+
   labs(x = "Proportion of time present at site", y = "Probability Density")+theme_classic()+
   theme(axis.title = element_text(size = 18), axis.text = element_text(size = 16))+ 
-  coord_cartesian(xlim = c(0.11, .95), ylim = c(0, 5.5))+geom_segment(aes(x = 0.33, y = 0, xend = 0.33, yend = 1.6), linetype = "dotted", size = 1)+
-  geom_segment(aes(x = 0.67, y = 0, xend = 0.67, yend = 1.6), linetype = "dotted", size = 1)
-all_predplot
+  coord_cartesian(xlim = c(0.11, .95), ylim = c(0, 5.5))
+all_predplot + scale_color_manual(values = c("Observed" = "black", "Small scale" = "#287D8EFF", "Large scale" = "#FDE725FF"))
 
