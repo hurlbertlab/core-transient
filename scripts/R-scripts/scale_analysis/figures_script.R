@@ -380,7 +380,7 @@ scales_hetero2 = scales_hetero %>%
   filter(ind == "PCA.curvature" | ind == "PCA.max" | ind == "PCA.mid"| ind == "PCA.min" | ind == "PCA.slope")
 
 ggplot(scales_hetero2, aes(x = ind, y = corr_r))+
-  geom_pointrange(aes(color = dep, ymin = lowr, ymax = uppr), size = 1.2, position = position_dodge(width = 0.35))+geom_abline(intercept = 0, slope = 0)+
+  geom_pointrange(aes(color = dep, shape = dep, ymin = lowr, ymax = uppr), size = 1.2, position = position_dodge(width = 0.35))+geom_abline(intercept = 0, slope = 0)+
   theme_classic()+theme(axis.title = element_text(size = 18), axis.text = element_text(size = 16), legend.position = c(0.55, 0.25), legend.text = element_text(size = 16), legend.title = element_text(size = 16))+
   labs(x = "Occupancy-scale parameters", y = "Pearson's correlation estimate")+
   scale_x_discrete(limit = c("PCA.min", "PCA.mid","PCA.slope","PCA.curvature","PCA.max"),
@@ -388,6 +388,9 @@ ggplot(scales_hetero2, aes(x = ind, y = corr_r))+
   scale_y_continuous(breaks = c(-0.6, -0.4, -0.2, 0, 0.2, 0.4))+
   scale_color_manual(name = "Environmental Heterogeneity",
                      values=c("#440154FF", "#55C667FF"),
+                     labels = c("Elevation", "NDVI"))+
+  scale_shape_manual(name = "Environmental Heterogeneity",
+                     values=c("1", "2"),
                      labels = c("Elevation", "NDVI"))
 #likely #440154FF purple and #55C667FF
 
@@ -617,5 +620,6 @@ all_predplot = ggplot(pred_dist, aes(occ))+
   labs(x = "Proportion of time present at site", y = "Probability Density")+theme_classic()+
   theme(axis.title = element_text(size = 18), axis.text = element_text(size = 16))+ 
   coord_cartesian(xlim = c(0.11, .95), ylim = c(0, 5.5))
-all_predplot + scale_color_manual(values = c("Observed" = "black", "Small scale" = "#287D8EFF", "Large scale" = "#FDE725FF"))
+all_predplot + scale_color_manual(values = c("Observed" = "black", "Small scale" = "#287D8EFF", "Large scale" = "#FDE725FF"))+
+  theme(legend.position = c(0.45, 2.5), legend.text = element_text(size = 16), legend.title = element_blank())
 
