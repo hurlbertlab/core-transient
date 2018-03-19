@@ -208,7 +208,7 @@ null_output$Non_trans = as.numeric(null_output$Non_trans)
 # percelltime = elapsed/i
 # estimated.end = (nwd - i)*percelltime + curr.time
 # print(paste(i, "out of",nwd, "; current time:", curr.time,"; estimated end time:", estimated.end))'
-# write.csv(null_output, "output/tabular_data/null_output_SAD_10nofilter.csv", row.names = FALSE)
+# write.csv(null_output, "output/tabular_data/null_output_SAD_100.csv", row.names = FALSE)
 null_output = read.csv("output/tabular_data/null_output_SAD_100.csv", header = TRUE)
 null_output$combo = paste(null_output$datasetID, null_output$site, sep = "_")
 
