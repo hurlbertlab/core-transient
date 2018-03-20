@@ -220,9 +220,9 @@ write.csv(all_fig, paste(BBS, "all_figoutput.csv", sep = ""), row.names = FALSE)
 ####Plotting how distributions change across scale, using area####
 all_fig = read.csv("//bioark.ad.unc.edu/HurlbertLab/Jenkins/Intermediate scripts/BBS scaled/all_figoutput.csv", header = TRUE)
 #all_fig$area = as.factor(all_fig$area)
-all_fig$area_f = factor(signif(all_fig$area, digits = 2),
-                         levels = c(2.5, 5, 13, 25, 50, 100, 200, 400, 800, 1700),
-                         labels = c("2.5, 5 point count stops", "5", "13", "25, 1 BBS route", "50", "100", "200", "400", "800", "1700, 66 aggregate BBS routes")) 
+all_fig$area_f = factor(round(all_fig$area),
+                         levels = c(3, 5, 13, 25, 50, 101, 201, 402, 804, 1659), 
+                         labels = c("2.5, 5 point count stops", "5", "13", "25, 1 BBS route", "50", "101", "201", "402", "804", "1659, 66 aggregate BBS routes")) 
 all_fig = all_fig %>% 
   #first I have to take levels for area_f and lump everything together that isn't 50/25, 1 BBS route
   mutate(area_spec = as.numeric(area_f))
@@ -354,7 +354,7 @@ ggplot(scales_hetero_v, aes(x = scale, y = corr_r))+
   theme_classic()+
   geom_abline(intercept = 0, slope = 0)+
   theme_classic()+theme(text = element_text(size = 18))+
-  labs(color = "Environmental Heterogeneity", x = "Number of aggregated BBS Routes", y = "Pearson's correlation estimate")+theme(legend.position = c(0.84, 0.20))+
+  labs(color = "Environmental Heterogeneity", x = "Number of aggregated BBS Routes", y = "Pearson's correlation coefficient")+theme(legend.position = c(0.84, 0.20))+
   scale_color_viridis(begin = 0, end = 0.7, discrete = TRUE, option = "D") 
 
 
@@ -380,14 +380,17 @@ scales_hetero2 = scales_hetero %>%
   filter(ind == "PCA.curvature" | ind == "PCA.max" | ind == "PCA.mid"| ind == "PCA.min" | ind == "PCA.slope")
 
 ggplot(scales_hetero2, aes(x = ind, y = corr_r))+
-  geom_pointrange(aes(color = dep, ymin = lowr, ymax = uppr), size = 1.2, position = position_dodge(width = 0.35))+geom_abline(intercept = 0, slope = 0)+
+  geom_pointrange(aes(color = dep, shape = dep, ymin = lowr, ymax = uppr), size = 1.2, position = position_dodge(width = 0.35))+geom_abline(intercept = 0, slope = 0)+
   theme_classic()+theme(axis.title = element_text(size = 18), axis.text = element_text(size = 16), legend.position = c(0.55, 0.25), legend.text = element_text(size = 16), legend.title = element_text(size = 16))+
-  labs(x = "Occupancy-scale parameters", y = "Pearson's correlation estimate")+
+  labs(x = "Occupancy-scale parameters", y = "Pearson's correlation coefficient")+
   scale_x_discrete(limit = c("PCA.min", "PCA.mid","PCA.slope","PCA.curvature","PCA.max"),
                    labels = c(expression("p"["min"]), expression("Scale"[50]),"Slope","Curvature",expression("p"["max"])))+
   scale_y_continuous(breaks = c(-0.6, -0.4, -0.2, 0, 0.2, 0.4))+
   scale_color_manual(name = "Environmental Heterogeneity",
                      values=c("#440154FF", "#55C667FF"),
+                     labels = c("Elevation", "NDVI"))+
+  scale_shape_manual(name = "Environmental Heterogeneity",
+                     values=c(16, 17),
                      labels = c("Elevation", "NDVI"))
 #likely #440154FF purple and #55C667FF
 
@@ -458,22 +461,21 @@ elev_ranked = env_all %>%
 #lowest var in elev: rtes 34027 (best, closest to normal avgs), mostly 34's, 35010, 
 #highest var in elev: rtes 17221, 6012, 17044, 6071, 85169, 14059 mostly 14's, 17's, and 6,000's
 
-central = bbs_allscales %>% #83% at largest
-  group_by(logA) %>%
-  summarize(pctC_avg = mean(pctCore)) %>%
+central_alt = bbs_allscales %>%  
+  dplyr::select(logA, pctCore) %>% 
+  transmute(pctCore_m = rollapply(pctCore, width = 1, FUN = mean, na.rm = TRUE, fill = NULL),
+            logA = logA) %>% 
   mutate(logA = round(logA, digits = 2)) %>%
   group_by(logA) %>%
-  summarize(pctCore = mean(pctC_avg, na.rm = TRUE)) %>% 
-  mutate(focalrte = "99999")
-
-#I need to make a focal rte dummy variable that says focalrte == "99999" with the titular level and a label of "mean" 
-# bbs_allscales$cen = rollmean(bbs_allscales$pctCore, k = 5, fill = "extend")
+  summarise(pctCore = mean(pctCore_m)) %>% 
+  mutate(focalrte = "99999", logA = logA) %>% 
+  dplyr::select(focalrte, logA, pctCore)
 
 bbs_allsub = bbs_allscales %>% 
   filter(focalrte == 34054 | focalrte == 85169) %>%
   dplyr::select(focalrte, logA, pctCore)
 
-bbs_allsub2 = rbind(bbs_allsub, central)
+bbs_allsub2 = rbind(bbs_allsub, central_alt)
   
 bbs_allsub2$focalrte = factor(bbs_allsub2$focalrte,
                              levels=c( "99999","34054", "85169"),
@@ -492,24 +494,24 @@ pred_plot = ggplot(bbs_allscales, aes(x = logA, y = pctCore))+geom_line(aes(grou
   theme(legend.position = c(0.74, 0.18)) 
 pred_plot #yellow = high variation in habhet, purple = low variation, low habhet 
 
-
-
-central2 = bbs_allscales %>% #84% at largest
-  group_by(logN) %>%
-  summarize(pctC_avg = mean(pctCore)) %>%
+central2_alt = bbs_allscales %>%  
+  dplyr::select(logN, pctCore) %>% 
+  transmute(pctCore_m = rollapply(pctCore, width = 1, FUN = mean, na.rm = TRUE, fill = NULL),
+            logN = logN) %>% 
   mutate(logN = round(logN, digits = 1)) %>%
   group_by(logN) %>%
-  summarize(pctCore = mean(pctC_avg, na.rm = TRUE)) %>% 
-  mutate(focalrte = "99999")
+  summarise(pctCore = mean(pctCore_m)) %>% 
+  mutate(focalrte = "99999", logN = logN) %>% 
+  dplyr::select(focalrte, logN, pctCore)
 
-#I need to make a focal rte dummy variable that says focalrte == "99999" with the titular level and a label of "mean" 
-# bbs_allscales$cen = rollmean(bbs_allscales$pctCore, k = 5, fill = "extend")
+#calculate confidence intervals for central_alt and central2_alt vals
+
 
 bbs_allsub = bbs_allscales %>% 
   filter(focalrte == 34054 | focalrte == 85169) %>%
   dplyr::select(focalrte, logN, pctCore)
 
-bbs_allsub3 = rbind(bbs_allsub, central2)
+bbs_allsub3 = rbind(bbs_allsub, central2_alt)
 
 bbs_allsub3$focalrte = factor(bbs_allsub3$focalrte,
                               levels=c( "99999","34054", "85169"),
@@ -590,12 +592,17 @@ minplot
 local = rollmean(rexp(n = 75045, rate = 12), k = 5, fill = "extend")
 big = rollmean(rexp(n = 75045, rate= 139/144), k = 3000, fill = "extend")
 
-big2 = local+0.92
-# big2 = floor(big2)
-
-
+big2 = local+0.9
+big3 = sort(big2)
+big4 = c(big3[1:200] - 0.1346, big3[201:400] - 0.0970, big3[401:602] - 0.07958,
+         big3[603:1600] - 0.06898, big3[1601:2000] - 0.05340,  big3[2001:2400] - 0.0458, 
+         big3[2401:2800] - 0.01287, big3[2801:3200] - 0.00167, big3[3201:length(big3)])
+big5 = rollmean(big4, k = 500, fill = "extend")
+big6 = rollmean(big5, k = 5, fill = "extend")
 preds = cbind(single_rte, local)
-pred_dist = cbind(preds, big2)
+pred_dist = cbind(preds, big6)
+
+
 # pred_central = pred_dist %>%
 #   group_by(occ) %>%
 #   summarize(local2 = mean(local)) %>%
@@ -605,12 +612,14 @@ pred_dist = cbind(preds, big2)
 
   
 all_predplot = ggplot(pred_dist, aes(occ))+
-  stat_density(geom = "path", position = "identity", bw = "bcv", kernel = "gaussian", n = 4000, na.rm = TRUE, size = 1.5, color = "black")+
-  stat_density(aes(local), geom = "path", position = "identity", bw = "bcv", kernel = "gaussian", n = 4000, na.rm = TRUE, size = 1.5, color = "#287D8EFF", linetype = "dashed")+
-  stat_density(aes(big2), geom = "path", position = "identity", bw = "bcv", kernel = "gaussian", n = 4000, na.rm = TRUE, size = 1.5, color = "#FDE725FF", linetype = "dashed")+
+  geom_rect(aes(xmin = 0, ymin = 0, xmax = 0.33, ymax = 6), fill = "grey", alpha = 0.02)+
+  geom_rect(aes(xmin = .67, ymin = 0, xmax = 1, ymax = 6), fill = "grey", alpha = 0.02)+
+  stat_density(aes(color = "Observed"), geom = "path", position = "identity", bw = "bcv", kernel = "gaussian", n = 4000, na.rm = TRUE, size = 1.5)+
+  stat_density(aes(local, color = "Small scale"), geom = "path", position = "identity", bw = "bcv", kernel = "gaussian", n = 4000, na.rm = TRUE, size = 1.5, linetype = "dashed")+
+  stat_density(aes(big6, color = "Large scale"), geom = "path", position = "identity", bw = "bcv", kernel = "gaussian", n = 24, na.rm = TRUE, size = 1.5, linetype = "dashed")+
   labs(x = "Proportion of time present at site", y = "Probability Density")+theme_classic()+
   theme(axis.title = element_text(size = 18), axis.text = element_text(size = 16))+ 
-  coord_cartesian(xlim = c(0.11, .95), ylim = c(0, 5.5))+geom_segment(aes(x = 0.33, y = 0, xend = 0.33, yend = 1.6), linetype = "dotted", size = 1)+
-  geom_segment(aes(x = 0.67, y = 0, xend = 0.67, yend = 1.6), linetype = "dotted", size = 1)
-all_predplot
+  coord_cartesian(xlim = c(0.11, .95), ylim = c(0, 5.5))
+all_predplot + scale_color_manual(values = c("Observed" = "black", "Small scale" = "#287D8EFF", "Large scale" = "#FDE725FF"))+
+  theme(legend.position = c(0.45, 0.45), legend.text = element_text(size = 16), legend.title = element_blank())
 

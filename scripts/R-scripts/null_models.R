@@ -173,7 +173,7 @@ for(id in datasetIDs[,1]){
     num_notrans = length(notrans$propOcc)
     num_trans = length(trans$propOcc)
     
-    for(r in 1:100){
+    for(r in 1:10){
       print(paste(id, site, r, Sys.Date()))
       
       if(num_notrans >= num_trans) {
@@ -185,16 +185,11 @@ for(id in datasetIDs[,1]){
 
       logseries_weights_excl = null_sample %>%
         group_by(datasetID, site) %>% 
-        dplyr::summarize(weights = get_logseries_weight(abunds), treatment = 'Excluding')
+        dplyr::summarize(weights = get_logseries_weight(abunds), treatment = 'Null')
       
       null_output = rbind(null_output, c(r, id, site, logseries_weights_excl[,3], num_notrans))
       nwd = nrow(sad_data)
-      #curr.time = Sys.time()
-     # elapsed = curr.time - init.time
-      #percelltime = elapsed/i
-     # estimated.end = (nwd - i)*percelltime + curr.time
-     # print(paste(i, "out of",nwd, "; current time:", curr.time,
-                 # "; estimated end time:", estimated.end))
+      
     } # end r loop
   } # end site loop
 } # end dataset loop
@@ -208,12 +203,14 @@ null_output$site = as.character(null_output$site)
 null_output$SAD_excl = as.numeric(null_output$SAD_excl)
 null_output$Non_trans = as.numeric(null_output$Non_trans)
 
-
+# curr.time = Sys.time()
+# elapsed = curr.time - init.time
+# percelltime = elapsed/i
+# estimated.end = (nwd - i)*percelltime + curr.time
+# print(paste(i, "out of",nwd, "; current time:", curr.time,"; estimated end time:", estimated.end))'
 # write.csv(null_output, "output/tabular_data/null_output_SAD_100.csv", row.names = FALSE)
 null_output = read.csv("output/tabular_data/null_output_SAD_100.csv", header = TRUE)
 null_output$combo = paste(null_output$datasetID, null_output$site, sep = "_")
-
-# null_output1 = subset(null_output, number == 1)
 
 null_5a_sum = null_output %>%
   dplyr::group_by(datasetID, site) %>% 
@@ -222,9 +219,9 @@ null_5a_sum = null_output %>%
 # read in output from figure 5 script
 logseries_weights = read.csv("output/tabular_data/logseries_weights.csv", header = TRUE)
 logseries_all = subset(logseries_weights, treatment == "All")
-
-
 logseries_all = logseries_all[,c("datasetID", "site", "weights", "treatment")]
+
+
 null_output$weights = null_output$SAD_excl
 null_output$treatment = "Null"
 null_output = filter(null_output, number == 10)
@@ -235,10 +232,7 @@ null_output_excl = null_output[,c("datasetID", "site", "weights", "treatment")]
 SAD_plot = rbind(logseries_all, null_output_excl)
 
 #### ggplot fig1a #####
-
-colscale = c("dark orange2","yellow")
-
-excl = ggplot(SAD_plot,aes(x=weights,fill=treatment))+geom_histogram(bins = 20, position = "identity", alpha = 0.7)+ xlab("Transient Status") + ylab("Proportion of Species") + scale_y_continuous(breaks=c(0,500,1000, 1300)) + scale_fill_manual(labels = c("All species", "Excluding non-transients"),values = c("black", "gray"))+ theme_classic() + theme(axis.text.x=element_blank(), axis.ticks.x=element_blank(),axis.text.y=element_text(size=30, color = "black"),axis.title.y=element_text(size=46,angle=90,vjust = 8),axis.title.x=element_text(size=46, vjust = -7))  + ylab("Frequency") + xlab("Akaike Weight") +theme(plot.margin=unit(c(0.35,1,2,1.7),"cm")) + theme(legend.text = element_text(size = 15), legend.title = element_blank(), legend.position = "none")
+excl = ggplot(SAD_plot,aes(x=weights,fill=treatment))+geom_histogram(bins = 20, position = "identity", alpha = 0.7)+ xlab("Transient Status") + ylab("Proportion of Species") + scale_y_continuous(breaks=c(0,200,350)) + scale_fill_manual(labels = c("All species", "Excluding non-transients"),values = c("black", "gray"))+ theme_classic() + theme(axis.text.x=element_blank(), axis.ticks.x=element_blank(),axis.text.y=element_text(size=25, color = "black"),axis.title.y=element_text(size=30,angle=90,vjust = 8),axis.title.x=element_text(size=30, vjust = -7))  + ylab("Frequency") + xlab("Akaike Weight") +theme(plot.margin=unit(c(0.35,1,2,1.7),"cm")) + theme(legend.text = element_text(size = 15), legend.title = element_blank(), legend.position = "none")
 
 ggsave(file="C:/Git/core-transient/output/plots/1a_null.pdf", height = 10, width = 16)
 
@@ -246,7 +240,14 @@ ggsave(file="C:/Git/core-transient/output/plots/1a_null.pdf", height = 10, width
 ks.test(logseries_all$weights, null_output_excl$weights)
 # D = 0.24116, p-value < 2.2e-16 diff between true and null
 # D = 0.63701, p-value < 2.2e-16 diff between all and null
+logseries_weights = read.csv("output/tabular_data/logseries_weights.csv", header = TRUE)
+logseries_all = subset(logseries_weights, treatment == "All")
+SAD_hist = merge(logseries_all, null_output[,c("datasetID", "site", "SAD_excl")], by = c("datasetID", "site"))
+hist(SAD_hist$weights - SAD_hist$SAD_excl, xlab = "Excluding null transients - All species", cex.lab=1, cex.axis=2.5)
 
+
+ggplot(data=SAD_hist, aes(SAD_hist$weights - SAD_hist$SAD_excl)) + 
+  geom_histogram(bins = 12, col="black",  fill="white") + scale_y_continuous(breaks=c(0,250,500))+ theme_classic() + theme(axis.text.x=element_text(size=30,angle=90, color = "black"), axis.ticks.x=element_blank(),axis.text.y=element_text(size=25, color = "black"),axis.title.y=element_text(size=30,angle=90, vjust = 4),axis.title.x=element_text(size=30, vjust = -4))  + ylab("Frequency") + xlab("Excluding null transients - All species") +theme(plot.margin=unit(c(0.35,1,2,1.7),"cm")) 
 
 #### NULL 5B #####
 # read in route level ndvi and elevation data (radius = 40 km)
@@ -481,12 +482,9 @@ t.test(df_ttest_5c$notransturn,
 
 
 
+ggplot(data=turnover_taxa, aes(turnover_taxa$diff)) + 
+  geom_histogram(bins = 12, col="black",  fill="white") + scale_y_continuous(breaks=c(0,400,800))+ theme_classic() + theme(axis.text.x=element_text(size=30,angle=90, color = "black"), axis.ticks.x=element_blank(),axis.text.y=element_text(size=25, color = "black"),axis.title.y=element_text(size=30,angle=90, vjust = 4),axis.title.x=element_text(size=30, vjust = -4))  + ylab("Frequency") + xlab("Excluding null transients - All species") +theme(plot.margin=unit(c(0.35,1,2,1.7),"cm")) 
 
-hist(sad_excl_p$n, xlab = "", main = "Distribution of the number of null sites greater \n than logseries weights excluding transients")
-abline(v=mean(na.omit(logseries_excl$weights)), col = "blue", lwd = 2)
-
-hist(sad_incl_p$n, xlab = "", main = "Distribution of the number of null sites greater \n than logseries weights including transients")
-abline(v=mean(na.omit(logseries_incl$weights)), col = "blue", lwd = 2)
 ##### Figure 5d ##### only scaled vars
 bbs_below = read.csv("Z:/Snell/data/bbs_below.csv", header = TRUE)
 
