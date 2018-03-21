@@ -236,18 +236,18 @@ excl = ggplot(SAD_plot,aes(x=weights,fill=treatment))+geom_histogram(bins = 20, 
 
 ggsave(file="C:/Git/core-transient/output/plots/1a_null.pdf", height = 10, width = 16)
 
-
-ks.test(logseries_all$weights, null_output_excl$weights)
-# D = 0.24116, p-value < 2.2e-16 diff between true and null
-# D = 0.63701, p-value < 2.2e-16 diff between all and null
 logseries_weights = read.csv("output/tabular_data/logseries_weights.csv", header = TRUE)
-logseries_all = subset(logseries_weights, treatment == "All")
-SAD_hist = merge(logseries_all, null_output[,c("datasetID", "site", "SAD_excl")], by = c("datasetID", "site"))
+logseries_excl = subset(logseries_weights, treatment == "Excluding")
+SAD_hist = merge(logseries_excl, null_output[,c("datasetID", "site", "SAD_excl")], by = c("datasetID", "site"))
 hist(SAD_hist$weights - SAD_hist$SAD_excl, xlab = "Excluding null transients - All species", cex.lab=1, cex.axis=2.5)
 
-
 ggplot(data=SAD_hist, aes(SAD_hist$weights - SAD_hist$SAD_excl)) + 
-  geom_histogram(bins = 12, col="black",  fill="white") + scale_y_continuous(breaks=c(0,250,500))+ theme_classic() + theme(axis.text.x=element_text(size=30,angle=90, color = "black"), axis.ticks.x=element_blank(),axis.text.y=element_text(size=25, color = "black"),axis.title.y=element_text(size=30,angle=90, vjust = 4),axis.title.x=element_text(size=30, vjust = -4))  + ylab("Frequency") + xlab("Excluding null transients - All species") +theme(plot.margin=unit(c(0.35,1,2,1.7),"cm")) 
+  geom_histogram(bins = 12, col="black",  fill="white") + theme_classic() + theme(axis.text.x=element_text(size=30,angle=90, color = "black"), axis.ticks.x=element_blank(),axis.text.y=element_text(size=25, color = "black"),axis.title.y=element_text(size=30,angle=90, vjust = 4),axis.title.x=element_text(size=30, vjust = -4))  + ylab("Frequency") + xlab("Excluding non-transients - All species") +theme(plot.margin=unit(c(0.35,1,2,1.7),"cm")) 
+
+
+ks.test(logseries_all$weights, null_output_excl$weights)
+# D = 0.73906, p-value < 2.2e-16 diff between true and null
+# D = 0.18843, p-value < 2.2e-16 diff between all and null
 
 #### NULL 5B #####
 # read in route level ndvi and elevation data (radius = 40 km)
@@ -469,7 +469,7 @@ m <- ggplot(turnover_bbs, aes(x = TJ, y = notransturn))
 four_c <- m + geom_abline(intercept = 0,slope = 1, lwd =1.5,linetype="dashed")+geom_point(data = turnover_bbs, aes(colour = taxa),size = 2)+geom_point(data = turnover_else, aes(colour = taxa), size = 5) + xlab("Turnover (all species)") + ylab("Turnover \n (excluding non-transients)")  + scale_colour_manual(breaks = turnover_col$taxa,values = colscale) + theme_classic() + theme(axis.text.x=element_text(size=28, color = "black"),axis.text.y=element_text(size=28, color = "black"),axis.ticks.x=element_blank(),axis.title.x=element_text(size=42, color = "black"),axis.title.y=element_text(size=42,angle=90,vjust = 3))+ guides(colour = guide_legend(title = "Taxa"))
 ggsave(file="C:/Git/core-transient/output/plots/null_turnover_2.pdf", height = 10, width = 15)
 
-turnover_taxa$diff = turnover_taxa$notransturn-turnover_taxa$TJ
+turnover_taxa$diff = turnover_taxa$notransturn-turnover_taxa$TJnotrans
 hist(turnover_taxa$diff, xlab = "Excluding null transients - All species", cex.lab=1.5, cex.axis=1.5)
 
 ##### paired t-test #####
@@ -483,7 +483,7 @@ t.test(df_ttest_5c$notransturn,
 
 
 ggplot(data=turnover_taxa, aes(turnover_taxa$diff)) + 
-  geom_histogram(bins = 12, col="black",  fill="white") + scale_y_continuous(breaks=c(0,400,800))+ theme_classic() + theme(axis.text.x=element_text(size=30,angle=90, color = "black"), axis.ticks.x=element_blank(),axis.text.y=element_text(size=25, color = "black"),axis.title.y=element_text(size=30,angle=90, vjust = 4),axis.title.x=element_text(size=30, vjust = -4))  + ylab("Frequency") + xlab("Excluding null transients - All species") +theme(plot.margin=unit(c(0.35,1,2,1.7),"cm")) 
+  geom_histogram(bins = 12, col="black",  fill="white") + scale_y_continuous(breaks=c(0,400,800))+ theme_classic() + theme(axis.text.x=element_text(size=30,angle=90, color = "black"), axis.ticks.x=element_blank(),axis.text.y=element_text(size=25, color = "black"),axis.title.y=element_text(size=30,angle=90, vjust = 4),axis.title.x=element_text(size=30, vjust = -4))  + ylab("Frequency") + xlab("Excluding non-transients - All species") +theme(plot.margin=unit(c(0.35,1,2,1.7),"cm")) 
 
 ##### Figure 5d ##### only scaled vars
 bbs_below = read.csv("Z:/Snell/data/bbs_below.csv", header = TRUE)

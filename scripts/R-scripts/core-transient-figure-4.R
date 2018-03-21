@@ -143,7 +143,7 @@ pdf('output/plots/4a_4d.pdf', height = 10, width = 14)
 par(mfrow = c(2, 2), mar = c(5,5,1,1), cex = 1, oma = c(0,0,0,0), las = 1)
 palette(colors7)
 
-areamerge_fig = na.omit(areamerge_fig)
+areamerge_fig = subset(areamerge_fig, datasetID %in% scaleIDs)
 all = lm(areamerge_fig$pctTrans ~ log10(areamerge_fig$area))
 xnew = range(log10(areamerge_fig$area))
 xhat <- predict(all, newdata = data.frame((xnew)))
@@ -182,7 +182,7 @@ title(outer=FALSE,adj=0.02,main="A",cex.main=2,col="black",font=2,line=-1)
 par(new= FALSE)
 
 
-bbs_occ = na.omit(bbs_occ)
+bbs_occ = subset(bbs_occ, datasetID %in% scaleIDs)
 occ_all = lm(bbs_occ$pctTrans ~ log10(bbs_occ$meanAbundance))
 xnew = range(log10(bbs_occ$meanAbundance))
 xhat <- predict(occ_all, newdata = data.frame((xnew)))
