@@ -209,25 +209,19 @@ dev.off()
 
 # pseudo r2 area
 bbs_occ_area = merge(bbs_occ_pred, areamerge[,c("datasetID", "site", "area")], by = c("datasetID", "site"))
-mod4a = lmer(bbs_occ_area$pctTrans25~(1|datasetID) * taxa * log10(area), data=bbs_occ_area)
-mod_a = lm(bbs_occ_area$pctTrans25~predict(mod4a))
-summary(mod_a)
+mod4a = lmer(pctTrans25 ~ log10(area) * taxa + (log10(area)|datasetID), data = bbs_occ_area)
+rsquared(mod4a, aicc = FALSE)
 
 # pseudo r2 abun
-mod4b = lmer(pctTrans25~(1|datasetID) * taxa * log10(meanAbundance), data=bbs_occ_area)
-mod_r = lm(bbs_occ_area$pctTrans25~predict(mod4b))
-summary(mod_r)
-
+mod4b = lmer(pctTrans25 ~ log10(meanAbundance) * taxa + (log10(meanAbundance)|datasetID), data = bbs_occ_area)
+rsquared(mod4b, aicc = FALSE)
 
 # R2 area
 mod4 = lm(pctTrans25~log10(area), data=bbs_occ_area)
-area_r = na.omit(mod4)
-mod_r = lm(bbs_occ_area$pctTrans25~predict(mod4))
-summary(mod_r)
+summary(mod4)
 
 mod6 = lm(pctTrans25~log10(meanAbundance), data=bbs_occ_area)
-mod_ar = lm(bbs_occ_area$pctTrans25~predict(mod6))
-summary(mod_ar)
+summary(mod6)
 
 
 ##### 10 pct trans ######
@@ -331,7 +325,7 @@ title(outer=FALSE,adj=0.02,main="A",cex.main=2,col="black",font=2,line=-1)
 par(new= FALSE)
 
 
-abunModel = lmer(pctTrans25 ~ log10(meanAbundance) * taxa + (log10(meanAbundance) | datasetID), data = bbs_occ)
+abunModel = lmer(pctTrans10 ~ log10(meanAbundance) * taxa + (log10(meanAbundance) | datasetID), data = bbs_occ)
 r.squaredGLMM(abunModel)
 
 dats = bbs_occ %>% 
@@ -382,13 +376,11 @@ dev.off()
 # pseudo r2 area
 bbs_occ_area = merge(bbs_occ_pred, areamerge[,c("datasetID", "site", "area")], by = c("datasetID", "site"))
 mod5a = lmer(bbs_occ_area$pctTrans10~(1|datasetID) * taxa * log10(area), data=bbs_occ_area)
-mod_a10 = lm(bbs_occ_area$pctTrans10~predict(mod5a))
-summary(mod_a10)
+rsquared(mod5a, aicc = FALSE)
 
 # pseudo r2 abun
 mod6b = lmer(pctTrans10~(1|datasetID) * taxa * log10(meanAbundance), data=bbs_occ_area)
-mod_r10 = lm(bbs_occ_area$pctTrans10~predict(mod6b))
-summary(mod_r10)
+rsquared(mod6b, aicc = FALSE)
 
 
 # R2 area

@@ -107,18 +107,8 @@ predmod4d$order = c(1:3)
 
 # pseudo r2 area
 bbs_occ_area = merge(bbs_occ_pred, areamerge[,c("datasetID", "site", "area")], by = c("datasetID", "site"))
-bbs_occ_area = na.omit(bbs_occ_area)
 mod4a = lmer(pctTrans ~ log10(area) * taxa + (log10(area)|datasetID), data=bbs_occ_area)
 r.squaredGLMM(mod4a)
-mod_a = lm(bbs_occ_area$pctTrans~predict(mod4a))
-summary(mod_a)
-rsquared(mod4a, aicc = FALSE)
-
-# pseudo r2 abun
-mod4b = lmer(pctTrans ~ log10(meanAbundance) * taxa + (log10(meanAbundance)|datasetID), data = bbs_occ_area)
-mod_r = lm(bbs_occ_area$pctTrans~predict(mod4b))
-summary(mod_r)
-rsquared(mod4b, aicc = FALSE)
 
 # R2 area
 modar = lm(pctTrans~log10(area), data=bbs_occ_area)
@@ -126,6 +116,12 @@ summary(modar)
 
 mod6 = lm(pctTrans~log10(meanAbundance), data=bbs_occ_area)
 summary(mod6)
+
+# pseudo r2 abun
+mod4b = lmer(pctTrans ~ log10(meanAbundance) * taxa + (log10(meanAbundance)|datasetID), data = bbs_occ_area)
+rsquared(mod4b, aicc = FALSE)
+
+
 # The marginal R squared values are those associated with your fixed effects, 
 # the conditional ones are those of your fixed effects plus the random effects. 
 # Usually we will be interested in the marginal effects.
@@ -469,9 +465,8 @@ lat_scale_elev = data.frame(lat_scale_elev)
 
 lat_scale_rich = merge(lat_scale_elev, summ[,c("datasetID","site", "meanAbundance")], by = c("datasetID", "site"), all.x = TRUE)
 #  "spRichTrans", 
-write.csv(lat_scale_rich, "output/tabular_data/lat_scale_rich.csv", row.names = F)
-# lat_scale_rich = read.csv("output/tabular_data/lat_scale_rich.csv", header = TRUE)
-
+# write.csv(lat_scale_rich, "output/tabular_data/lat_scale_rich.csv", row.names = F)
+lat_scale_rich = read.csv("output/tabular_data/lat_scale_rich.csv", header = TRUE, stringsAsFactors = FALSE)
 
 # Model -  want 5 km radius here!!!!
 # same model structure (but only terrestrial datasets, not necessarily hierarchically scaled datasets) as used in 
