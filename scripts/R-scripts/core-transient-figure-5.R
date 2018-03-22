@@ -319,7 +319,7 @@ b <- ggplot(bray_bbs, aes(x = TJ, y = TJnotrans))
 bray <-b + geom_abline(intercept = 0,slope = 1, lwd =1.5,linetype="dashed")+ geom_point(aes(colour = taxa),size = 2)+geom_point(data = bray_else, aes(colour = taxa), size = 5) + xlab("Bray-Curtis Index (all species)") + ylab("Bray-Curtis \n (excluding transients)")  + scale_colour_manual(breaks = bray_col$taxa,values = colscale) + theme_classic() + theme(axis.text.x=element_text(size=30, color = "black"),axis.text.y=element_text(size=30, color = "black"),axis.ticks.x=element_blank(),axis.title.x=element_text(size=40, color = "black", vjust = 2),axis.title.y=element_text(size=40,angle=90,vjust = 3))+ guides(colour = guide_legend(title = "Taxa"))
 ggsave(file="C:/Git/core-transient/output/plots/5s_brayturnover.pdf", height = 10, width = 15)
 
-
+mean(na.omit(turnover_taxa$TJ - turnover_taxa$TJnotrans))
 ##### Figure 5d ##### only scaled vars
 bbs_uniq_area = bbs_abun_occ %>% dplyr::select(stateroute,scale,subrouteID,area) %>% unique()
 
@@ -334,8 +334,6 @@ allarea = left_join(allbbsscale, bbs_uniq_area)
 bbs_occ_scale = merge(allarea, noarea, by = c("stateroute", "scale", "subrouteID", "area"))
 bbs_occ_scale$subrouteID = gsub("Stop", "", bbs_occ_scale$subrouteID)
 bbs_occ_scale$site = paste(bbs_occ_scale$stateroute, bbs_occ_scale$scale, bbs_occ_scale$subrouteID, sep = "-")
-
-
 
 scaleIDs = unique(bbs_occ_scale$stateroute)
 slopes_bbs = data.frame(stateroute = NULL,
@@ -401,6 +399,11 @@ slopes$bbs = 'no'
 all_slopes =  rbind(slopes, slopes_bbs)
 
 plot_relationship = merge(slopes, taxcolors, by = "taxa")
+
+deviance = rbind(plot_relationship, slopes_bbs)
+mean(na.omit(deviance$areaSlope - deviance$areaSlope_noTrans))
+sd(na.omit(deviance$areaSlope - deviance$areaSlope_noTrans))
+
 plot_relationship$diff = plot_relationship$areaSlope_noTrans-plot_relationship$areaSlope
 hist(plot_relationship$diff, xlab = "Excluding transients - All Species")
 
