@@ -110,6 +110,9 @@ bbs_occ_area = merge(bbs_occ_pred, areamerge[,c("datasetID", "site", "area")], b
 mod4a = lmer(pctTrans ~ log10(area) * taxa + (log10(area)|datasetID), data=bbs_occ_area)
 r.squaredGLMM(mod4a)
 
+coefs <- data.frame(coef(summary(mod4b)))
+coefs$p.z <- 2 * (1 - pnorm(abs(coefs$t.value)))
+
 # R2 area
 modar = lm(pctTrans~log10(area), data=bbs_occ_area)
 summary(modar)

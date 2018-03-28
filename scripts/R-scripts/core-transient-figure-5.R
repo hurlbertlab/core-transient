@@ -400,7 +400,7 @@ all_slopes =  rbind(slopes, slopes_bbs)
 
 plot_relationship = merge(slopes, taxcolors, by = "taxa")
 
-deviance = rbind(plot_relationship, slopes_bbs)
+deviance = rbind(plot_relationship[,c("datasetID" ,"taxa","areaSlope","areaSlope_noTrans" ,"bbs")], slopes_bbs)
 mean(na.omit(deviance$areaSlope - deviance$areaSlope_noTrans))
 sd(na.omit(deviance$areaSlope - deviance$areaSlope_noTrans))
 

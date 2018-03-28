@@ -234,7 +234,7 @@ SAD_plot = rbind(logseries_all, null_output_excl)
 #### ggplot fig1a #####
 excl = ggplot(SAD_plot,aes(x=weights,fill=treatment))+geom_histogram(bins = 20, position = "identity", alpha = 0.7)+ xlab("Transient Status") + ylab("Proportion of Species") + scale_y_continuous(breaks=c(0,200,350)) + scale_fill_manual(labels = c("All species", "Excluding non-transients"),values = c("black", "gray"))+ theme_classic() + theme(axis.text.x=element_blank(), axis.ticks.x=element_blank(),axis.text.y=element_text(size=25, color = "black"),axis.title.y=element_text(size=30,angle=90,vjust = 8),axis.title.x=element_text(size=30, vjust = -7))  + ylab("Frequency") + xlab("Akaike Weight") +theme(plot.margin=unit(c(0.35,1,2,1.7),"cm")) + theme(legend.text = element_text(size = 15), legend.title = element_blank(), legend.position = "none")
 
-ggsave(file="C:/Git/core-transient/output/plots/1a_null.pdf", height = 10, width = 16)
+ggsave(file="C:/Git/core-transient/output/plots/1a_null.pdf", height = 8, width = 10)
 
 logseries_weights = read.csv("output/tabular_data/logseries_weights.csv", header = TRUE)
 logseries_excl = subset(logseries_weights, treatment == "Excluding")
@@ -243,7 +243,7 @@ hist(SAD_hist$weights - SAD_hist$SAD_excl, xlab = "Excluding null transients - A
 
 ggplot(data=SAD_hist, aes(SAD_hist$weights - SAD_hist$SAD_excl)) + 
   geom_histogram(bins = 12, col="black",  fill="white") + theme_classic() + theme(axis.text.x=element_text(size=30,angle=90, color = "black"), axis.ticks.x=element_blank(),axis.text.y=element_text(size=25, color = "black"),axis.title.y=element_text(size=30,angle=90, vjust = 4),axis.title.x=element_text(size=30, vjust = -4))  + ylab("Frequency") + xlab("Excluding non-transients - All species") +theme(plot.margin=unit(c(0.35,1,2,1.7),"cm")) 
-
+ggsave(file="C:/Git/core-transient/output/plots/1a_hist.pdf", height = 8, width = 10)
 
 ks.test(logseries_all$weights, null_output_excl$weights)
 # D = 0.73906, p-value < 2.2e-16 diff between true and null
