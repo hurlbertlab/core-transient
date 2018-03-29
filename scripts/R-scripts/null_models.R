@@ -237,18 +237,19 @@ excl = ggplot(SAD_plot,aes(x=weights,fill=treatment))+geom_histogram(bins = 20, 
 ggsave(file="C:/Git/core-transient/output/plots/1a_null.pdf", height = 8, width = 10)
 
 logseries_weights = read.csv("output/tabular_data/logseries_weights.csv", header = TRUE)
-logseries_excl = subset(logseries_weights, treatment == "Excluding")
+logseries_excl = subset(logseries_weights, treatment == "Excluding") # excl transients
 SAD_hist = merge(logseries_excl, null_output[,c("datasetID", "site", "SAD_excl")], by = c("datasetID", "site"))
-hist(SAD_hist$weights - SAD_hist$SAD_excl, xlab = "Excluding null transients - Excluding transients", cex.lab=1, cex.axis=2.5)
+hist(SAD_hist$SAD_excl - SAD_hist$weights, xlab = "Akaike weight difference \n Excluding null transients - Excluding transients", cex.lab=1, cex.axis=2.5)
 
-ggplot(data=SAD_hist, aes(SAD_hist$weights - SAD_hist$SAD_excl)) + 
-  geom_histogram(bins = 10, col="black",  fill="white") + theme_classic() + theme(axis.text.x=element_text(size=30,angle=90, color = "black"), axis.ticks.x=element_blank(),axis.text.y=element_text(size=30, color = "black"),axis.title.y=element_text(size=30,angle=90, vjust = 4),axis.title.x=element_text(size=30, vjust = -4))  + ylab("Frequency") + xlab("Excluding non-transients - Excluding transients") +theme(plot.margin=unit(c(0.35,1,2,1.7),"cm")) 
-ggsave(file="C:/Git/core-transient/output/plots/1a_hist.pdf", height = 8, width = 10.5)
+ggplot(data=SAD_hist, aes(SAD_hist$SAD_excl - SAD_hist$weights)) + 
+  geom_histogram(bins = 16, col="black",  fill="white") + theme_classic() + theme(axis.text.x=element_text(size=30,angle=90, color = "black"), axis.ticks.x=element_blank(),axis.text.y=element_text(size=30, color = "black"),axis.title.y=element_text(size=30,angle=90, vjust = 4),axis.title.x=element_text(size=30, vjust = -4))  + ylab("Frequency") + xlab("Akaike weight difference \n (excluding non-transients - excluding transients)") +theme(plot.margin=unit(c(0.35,1,2,1.7),"cm")) 
+ggsave(file="C:/Git/core-transient/output/plots/1a_hist.pdf", height = 8, width = 10.6)
 
 ks.test(logseries_all$weights, null_output_excl$weights)
 # D = 0.73906, p-value < 2.2e-16 diff between true and null
 # D = 0.18843, p-value < 2.2e-16 diff between all and null
 
+wilcox.test(SAD_hist$SAD_excl - SAD_hist$weights)
 #### NULL 5B #####
 # read in route level ndvi and elevation data (radius = 40 km)
 # we want to agg by month here
@@ -375,14 +376,20 @@ bbs$year = bbs$Year
 bbs_abun_occ = read.csv("data/BBS/bbs_abun_occ.csv", header = TRUE)
 bbs_abun_occ$species = bbs_abun_occ$AOU
 bbs_abun_occ$site = bbs_abun_occ$stateroute
+bbs_abun_occ = bbs_abun_occ[,c("species", "site", "occupancy")]
+bbs_abun_occ = unique(bbs_abun_occ)
 bbs_occ= merge(bbs_abun_occ[,c("species","site", "occupancy")],bbs, by.x = c("species","site"), by.y = c("aou","stateroute"))
 bbs_occ$propOcc = bbs_occ$occupancy
 bbs_occ$count = bbs_occ$speciestotal
 bbs_occ$datasetID = 1
 bbs_occ = bbs_occ[,c("datasetID", "site", "year", "species", "count", "propOcc")]
-
+bbs_w_aou = bbs_occ %>% filter(species > 2880) %>%
+  filter(species < 3650 | species > 3810) %>%
+  filter(species < 3900 | species > 3910) %>%
+  filter(species < 4160 | species > 4210) %>%
+  filter(species != 7010)
 # rbind to get single data frame
-all_data = rbind(all_data, bbs_occ)
+all_data = rbind(all_data, bbs_w_aou)
 
 
 null_5c = c()
