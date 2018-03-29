@@ -380,9 +380,10 @@ bbs_latlong$datasetID = 1
 bbs_latlong$taxa = "Bird"
 bbs_latlong$Lon = bbs_latlong$Longi
 bbs_latlong$Lat = bbs_latlong$Lati
-bbs_latlong$site = bbs_latlong$stateroute
+bbs_latlong$site = as.factor(bbs_latlong$stateroute)
 bbs_latlong = bbs_latlong[, c("datasetID", "taxa", "site", "Lat", "Lon")]
 all_latlongs = rbind(latlongs, bbs_latlong)
+all_latlongs = na.omit(all_latlongs)
 
 # Makes routes into a spatialPointsDataframe
 coordinates(all_latlongs)=c('Lon','Lat')
@@ -410,7 +411,7 @@ make.cir = function(p,r){
 }
 
 routes.laea@data$dId_site = paste(routes.laea@data$datasetID, routes.laea@data$site, sep = "_")
-routes.laea@data$unique = 1:571
+routes.laea@data$unique = 1:1077
 
 
 #Draw circles around all routes 
@@ -423,15 +424,14 @@ circs = sapply(1:nrow(routes.laea@data), function(x){
 circs.sp = SpatialPolygons(circs, proj4string=CRS("+proj=laea +lat_0=45.235 +lon_0=-106.675 +units=km"))
 
 # Check that circle locations look right
-plot(circs.sp, add = TRUE)
+# plot(circs.sp, add = TRUE)
 
 # read in elevation raster at 1 km resolution
 elev <- raster("Z:/GIS/DEM/sdat_10003_1_20170424_102000103.tif")
 NorthAm = readOGR("Z:/GIS/geography", "continent")
 NorthAm2 = spTransform(NorthAm, CRS("+proj=laea +lat_0=45.235 +lon_0=-106.675 +units=km"))
 
-plot(elevNA2)
-plot(NorthAm2)
+# plot(elevNA2), plot(NorthAm2)
 
 clip<-function(raster,shape) {
   a1_crop<-crop(raster,shape)
@@ -440,11 +440,11 @@ clip<-function(raster,shape) {
 
 
 elevNA2 = projectRaster(elev, crs = prj.string) #UNMASKED!
-elevNA3 <- raster::mask(elevNA2, NorthAm2)
+elevNA3 <- raster::mask(elev, NorthAm2)
 
-test = clip(elevNA2, NorthAm2)
+test = clip(elev, NorthAm2)
 
-#elev.point = raster::extract(elevNA3, routes.laea)
+elev.point = raster::extract(elevNA3, routes.laea)
 elev.mean = raster::extract(elevNA3, circs.sp, fun = mean, na.rm=T)
 elev.var = raster::extract(elevNA3, circs.sp, fun = var, na.rm=T)
 
@@ -463,9 +463,16 @@ lat_scale_elev = data.frame(lat_scale_elev)
 lat_scale_rich = merge(lat_scale_elev, summ[,c("datasetID","site", "meanAbundance")], by = c("datasetID", "site"), all.x = TRUE)
 #  "spRichTrans", 
 # write.csv(lat_scale_rich, "output/tabular_data/lat_scale_rich.csv", row.names = F)
-lat_scale_rich = read.csv("output/tabular_data/lat_scale_rich.csv", header = TRUE, stringsAsFactors = FALSE)
-lat_scale_rich_taxa = filter(lat_scale_rich, taxa == c("Bird", "Invertebrate", "Plant", "Mammal")) %>%
-                      filter(., datasetID == 1 & site ___)
+lat_scale = read.csv("output/tabular_data/lat_scale_rich_5km.csv", header = TRUE, stringsAsFactors = FALSE)
+
+lat_scale_rich_taxa = filter(lat_scale, datasetID == 1) %>% separate(., site, c("stateroute", "level", "number"), sep = "-") %>% filter(., level == 50)
+lat_scale_rich_taxa$site = lat_scale_rich_taxa$stateroute
+lat_scale_rich_taxa = lat_scale_rich_taxa[ -c(2:4) ]
+lat_scale_rich_taxa = lat_scale_rich_taxa[,c("datasetID","site", "unique", "taxa", "propTrans"  , "dId_site", "elev.point", "elev.mean" ,  "elev.var" ,"Lon","Lat", "optional","stateroute", "meanAbundance")]
+lat_scale = filter(lat_scale, datasetID != 1)
+lat_scale = lat_scale[ -13 ]
+
+lat_scale_rich = rbind(lat_scale, lat_scale_rich_taxa)
 
 # Model -  want 5 km radius here!!!!
 # same model structure (but only terrestrial datasets, not necessarily hierarchically scaled datasets) as used in 

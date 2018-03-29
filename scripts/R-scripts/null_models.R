@@ -368,10 +368,10 @@ datasetIDs = dataformattingtable %>%
 
 abund_data = get_abund_data(datasetIDs)
 propocc_data = get_propocc_data(datasetIDs)
-all_data = left_join(abund_data, propocc_data, by = c('datasetID', 'site', 'species'))
+all_data.5 = left_join(abund_data, propocc_data, by = c('datasetID', 'site', 'species'))
 # removing duplicate bbs routes
 dup_rtes= read.csv("data/BBS/rtes_duplicate_records.csv", header = TRUE)
-all_data = filter(all_data, !site %in% dup_rtes$stateroute)
+all_data = filter(all_data.5, !site %in% dup_rtes$stateroute)
 
 
 null_5c = c()
@@ -385,11 +385,11 @@ for (dataset in datasetIDs[,1]) {
     notrans = sitedata[sitedata$propOcc > 1/3,]
     trans = sitedata[sitedata$propOcc <= 1/3,]
     years = as.numeric(unique(sitedata$year))
-    num_notrans = length(unique(notrans$species))
-    num_trans = length(unique(trans$propOcc))
+    num_notrans = length(notrans$propOcc)
+    num_trans = length(trans$propOcc)
     TJ_notrans = c()
     
-    for(i in 1:10){
+    for(i in 1:100){
       print(c(i, dataset, site))
       if(num_notrans >= num_trans & length(years) > 0) {
         null_sample = sample_n(notrans, num_notrans - num_trans, replace = FALSE) %>%
@@ -397,15 +397,15 @@ for (dataset in datasetIDs[,1]) {
       } else {
         null_sample = sample_n(trans, num_notrans, replace = FALSE)  
       }
+      
+      for (year in years[1:(length(years)-1)]) {
         
-        for (year in years[1:(length(years)-1)]) {
-          
-          notrans2 = null_sample[null_sample$propOcc > 1/3,]
-          comm1_noT = unique(notrans2$species[notrans2$year == year])
-          comm2_noT = unique(notrans2$species[notrans2$year == year + 1])
-          T_J_notran = turnover(comm1_noT, comm2_noT)
-          TJ_notrans = c(TJ_notrans, T_J_notran)
-        }
+        notrans2 = null_sample[null_sample$propOcc > 1/3,]
+        comm1_noT = unique(notrans2$species[notrans2$year == year])
+        comm2_noT = unique(notrans2$species[notrans2$year == year + 1])
+        T_J_notran = turnover(comm1_noT, comm2_noT)
+        TJ_notrans = c(TJ_notrans, T_J_notran)
+      }
       
       null_5c = rbind(null_5c, c(i, dataset, site, T_J_notran, num_notrans))
       nwd = nrow(all_data)
@@ -414,14 +414,21 @@ for (dataset in datasetIDs[,1]) {
       percelltime = elapsed/i
       estimated.end = (nwd - i)*percelltime + curr.time
       print(paste(i, "out of",nwd, "; current time:", curr.time,
-           "; estimated end time:", estimated.end))
+                  "; estimated end time:", estimated.end))
     } # end r loop
   } # end site loop
 } # end dataset loop
 
 
+
 null_5c = data.frame(null_5c)
 colnames(null_5c) = c("r", "datasetID", "site", "notransturn", "numnon")
+null_5c$r = as.numeric(null_5c$r)
+null_5c$datasetID = as.numeric(null_5c$datasetID)
+null_5c$site = as.character(null_5c$site)
+null_5c$notransturn = as.numeric(as.character(null_5c$notransturn))
+null_5c$numnon = as.numeric(null_5c$numnon)
+
 # write.csv(null_5c, "output/tabular_data/null_5c100.csv", row.names = FALSE)
 # null_5c = read.csv("output/tabular_data/null_5c100.csv", header = TRUE)
 
@@ -434,7 +441,6 @@ taxcolors = read.csv("output/tabular_data/taxcolors.csv", header = TRUE)
 null_5cplot = subset(null_5cplot, r == 1)
 turnover_taxa = merge(null_5cplot,dataformattingtable[,c("dataset_ID", "taxa")], by.x = "datasetID", by.y = "dataset_ID")
 turnover_col = merge(turnover_taxa, taxcolors, by = "taxa")
-turnover_col$notransturn = as.numeric(turnover_col$notransturn)
 # bbs column for diff point symbols
 turnover_col$bbs =ifelse(turnover_col$datasetID == 1, "yes", "no")
 turnover_bbs = filter(turnover_col, bbs == "yes")
