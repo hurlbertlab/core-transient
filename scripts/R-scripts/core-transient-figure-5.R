@@ -286,7 +286,6 @@ ggsave(file="C:/Git/core-transient/output/plots/1b_M_H_hists.pdf", height = 10, 
 
 #### Figure 5c ####
 turnover = read.csv("output/tabular_data/temporal_turnover.csv", header = TRUE)
-turnover = filter(turnover, site !=  42101, 83013, 42034)
 turnover_taxa = merge(turnover,dataformattingtable[,c("dataset_ID", "taxa")], by.x = "datasetID", by.y = "dataset_ID")
 turnover_col = merge(turnover_taxa, taxcolors, by = "taxa")
 
@@ -312,7 +311,7 @@ colscale = c("#1D6A9B", "turquoise2","gold2", "purple4","red", "forestgreen")
 
 m <- ggplot(turnover_bbs, aes(x = TJ, y = TJnotrans))
 four_c <-m + geom_abline(intercept = 0,slope = 1, lwd =1.5,linetype="dashed")+geom_point(data = turnover_bbs, aes(colour = taxa),size = 2)+geom_point(data = turnover_else, aes(colour = taxa), size = 5) + xlab("Turnover (all species)") + ylab("Turnover \n (excluding transients)")  + scale_colour_manual(breaks = turnover_col$taxa,values = colscale) + theme_classic() + theme(axis.text.x=element_text(size=30, color = "black"),axis.text.y=element_text(size=30, color = "black"),axis.ticks.x=element_blank(),axis.title.x=element_text(size=46, color = "black"),axis.title.y=element_text(size=46,angle=90,vjust = 5))+ guides(colour = guide_legend(title = "Taxa"))
-ggsave(file="C:/Git/core-transient/output/plots/5c_spturnover.pdf", height = 10, width = 15)
+ggsave(file="C:/Git/core-transient/output/plots/5c_spturnover.pdf", height = 10, width = 15.5)
 
 
 
@@ -424,11 +423,11 @@ get_legend<-function(myggplot){
   legend <- tmp$grobs[[leg]]
   return(legend)
 }
-legenda <- get_legend(l)# + theme(legend.position="top")
+legenda <- get_legend(four_b)# + theme(legend.position="top")
 p1 = NULL
 pt1 <- plot_grid(k + theme(legend.position="none"),
                  NULL,
-                 l + theme(legend.position="none"),
+                # l + theme(legend.position="none"),
                  align = 'hv',
                  labels = c("A","", "B"),
                  label_size = 36,
@@ -436,7 +435,7 @@ pt1 <- plot_grid(k + theme(legend.position="none"),
                  rel_widths = c(1, 0.05, 1),
                  nrow = 1
 )
-p1 = plot_grid(pt1,legenda, ncol = 2, rel_widths = c(1, .1))
+#p1 = plot_grid(pt1,legenda, ncol = 2, rel_widths = c(1, .1))
 
 # ggsave(file="C:/Git/core-transient/output/plots/5a_5b.pdf", height = 10, width = 15,p1)
 
@@ -454,7 +453,7 @@ z <- plot_grid(four_c+ theme(legend.position="none"),
 p2 = plot_grid(z,legendc, ncol = 2) 
 # ggsave(file="C:/Git/core-transient/output/plots/5c_5d.pdf", height = 12, width = 16,p2)
 
-all4 = plot_grid(pt1, NULL, z, align = "hv", nrow = 2,rel_heights = c(1,1), rel_widths = c(1, 0.05,1))
+all4 = plot_grid(p1, NULL, z, align = "hv", nrow = 2,rel_heights = c(1,1), rel_widths = c(1, 0.05,1))
 all4
 
 #dev.off()

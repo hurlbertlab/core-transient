@@ -369,27 +369,9 @@ datasetIDs = dataformattingtable %>%
 abund_data = get_abund_data(datasetIDs)
 propocc_data = get_propocc_data(datasetIDs)
 all_data = left_join(abund_data, propocc_data, by = c('datasetID', 'site', 'species'))
-
-# add in bbs data (id, site, year, sp, count, propOcc)
-bbs = read.csv("data/BBS/bbs_2000_2014.csv", header = TRUE)
-bbs$year = bbs$Year
-bbs_abun_occ = read.csv("data/BBS/bbs_abun_occ.csv", header = TRUE)
-bbs_abun_occ$species = bbs_abun_occ$AOU
-bbs_abun_occ$site = bbs_abun_occ$stateroute
-bbs_abun_occ = bbs_abun_occ[,c("species", "site", "occupancy")]
-bbs_abun_occ = unique(bbs_abun_occ)
-bbs_occ= merge(bbs_abun_occ[,c("species","site", "occupancy")],bbs, by.x = c("species","site"), by.y = c("aou","stateroute"))
-bbs_occ$propOcc = bbs_occ$occupancy
-bbs_occ$count = bbs_occ$speciestotal
-bbs_occ$datasetID = 1
-bbs_occ = bbs_occ[,c("datasetID", "site", "year", "species", "count", "propOcc")]
-bbs_w_aou = bbs_occ %>% filter(species > 2880) %>%
-  filter(species < 3650 | species > 3810) %>%
-  filter(species < 3900 | species > 3910) %>%
-  filter(species < 4160 | species > 4210) %>%
-  filter(species != 7010)
-# rbind to get single data frame
-all_data = rbind(all_data, bbs_w_aou)
+# removing duplicate bbs routes
+dup_rtes= read.csv("data/BBS/rtes_duplicate_records.csv", header = TRUE)
+all_data = filter(all_data, !site %in% dup_rtes$stateroute)
 
 
 null_5c = c()
@@ -407,7 +389,7 @@ for (dataset in datasetIDs[,1]) {
     num_trans = length(trans$propOcc)
     TJ_notrans = c()
     
-    for(i in 1:100){
+    for(i in 1:10){
       print(c(i, dataset, site))
       if(num_notrans >= num_trans & length(years) > 0) {
         null_sample = sample_n(notrans, num_notrans - num_trans, replace = FALSE) %>%
@@ -441,27 +423,18 @@ for (dataset in datasetIDs[,1]) {
 null_5c = data.frame(null_5c)
 colnames(null_5c) = c("r", "datasetID", "site", "notransturn", "numnon")
 # write.csv(null_5c, "output/tabular_data/null_5c100.csv", row.names = FALSE)
-null_5c = read.csv("output/tabular_data/null_5c100.csv", header = TRUE)
+# null_5c = read.csv("output/tabular_data/null_5c100.csv", header = TRUE)
 
 # read in output from figure 5 script
 turnover_output = read.csv("output/tabular_data/temporal_turnover.csv", header = TRUE)
 null_5cplot = merge(turnover_output, null_5c, by = c("datasetID", "site"))
-
-turnover_excl = turnover_merge %>% group_by(datasetID, site) %>%
-  tally(TJnotrans >= notransturn)
-num_excl_5c = subset(turnover_excl, n > 0)
-
-turnover_incl = turnover_merge %>% group_by(datasetID, site) %>%
-  tally(TJ >= turnover)
-num_incl_5c = subset(turnover_incl, n > 0)
-
 
 ##### plot 5c ####
 taxcolors = read.csv("output/tabular_data/taxcolors.csv", header = TRUE)
 null_5cplot = subset(null_5cplot, r == 1)
 turnover_taxa = merge(null_5cplot,dataformattingtable[,c("dataset_ID", "taxa")], by.x = "datasetID", by.y = "dataset_ID")
 turnover_col = merge(turnover_taxa, taxcolors, by = "taxa")
-
+turnover_col$notransturn = as.numeric(turnover_col$notransturn)
 # bbs column for diff point symbols
 turnover_col$bbs =ifelse(turnover_col$datasetID == 1, "yes", "no")
 turnover_bbs = filter(turnover_col, bbs == "yes")

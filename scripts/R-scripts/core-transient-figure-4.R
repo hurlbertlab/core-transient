@@ -372,28 +372,17 @@ dev.off()
 
 ####### elev heterogeneity model ################
 latlongs = read.csv("data/latlongs/latlongs.csv", header =TRUE)
+latlongs = filter(latlongs, datasetID != 1)
+latlongs = filter(latlongs, taxa != "Fish")
 
-# merge multiple lat long file to propOcc to get naming convention correct
-latlong_w_sites = merge(latlongs, summ[,c("datasetID", "site", "propTrans")], by = c("datasetID", "site"), all.x = TRUE) 
-
-#drop BBS and add in below scale
-latlong_w_sites = subset(latlong_w_sites, !datasetID == 1)
-
-# reformat non multi grain lat longs
-dft = subset(dataformattingtable, countFormat == "count" & format_flag == 1) # only want count data for model
-dft = subset(dft, !dataset_ID %in% c(1,247,248,269,289,315))
-dft = dft[,c("CentralLatitude", "CentralLongitude","dataset_ID", "taxa")]
-names(dft) <- c("Lat","Lon", "datasetID", "taxa")
-dft2 = merge(dft, summ[, c("datasetID","site","propTrans")], by = "datasetID")
-
-# combining all lat longs, including scaled up data
-all_latlongs.5 = rbind(dft2, latlong_w_sites)
-
-# rbind in new BBS data
-bbs_be_lat = read.csv("data/BBS/bbs_be_lat.csv", header = TRUE)
-# rbind new bbs data to lat longs
-all_latlongs =  rbind(bbs_be_lat, all_latlongs.5)
-all_latlongs = na.omit(all_latlongs)
+bbs_latlong = read.csv("data/latlongs/bbs_2000_2014_latlongs.csv", header = TRUE)
+bbs_latlong$datasetID = 1
+bbs_latlong$taxa = "Bird"
+bbs_latlong$Lon = bbs_latlong$Longi
+bbs_latlong$Lat = bbs_latlong$Lati
+bbs_latlong$site = bbs_latlong$stateroute
+bbs_latlong = bbs_latlong[, c("datasetID", "taxa", "site", "Lat", "Lon")]
+all_latlongs = rbind(latlongs, bbs_latlong)
 
 # Makes routes into a spatialPointsDataframe
 coordinates(all_latlongs)=c('Lon','Lat')
@@ -405,7 +394,7 @@ routes.laea = spTransform(all_latlongs, CRS("+proj=laea +lat_0=45.235 +lon_0=-10
 
 ##### extracting elevation data ####
 # A function that draws a circle of radius r around a point: p (x,y)
-RADIUS = 40
+RADIUS = 5
 
 make.cir = function(p,r){
   points=c()
@@ -421,7 +410,7 @@ make.cir = function(p,r){
 }
 
 routes.laea@data$dId_site = paste(routes.laea@data$datasetID, routes.laea@data$site, sep = "_")
-routes.laea@data$unique = 1:16618
+routes.laea@data$unique = 1:571
 
 
 #Draw circles around all routes 
@@ -455,7 +444,7 @@ elevNA3 <- raster::mask(elevNA2, NorthAm2)
 
 test = clip(elevNA2, NorthAm2)
 
-elev.point = raster::extract(elevNA3, routes.laea)
+#elev.point = raster::extract(elevNA3, routes.laea)
 elev.mean = raster::extract(elevNA3, circs.sp, fun = mean, na.rm=T)
 elev.var = raster::extract(elevNA3, circs.sp, fun = var, na.rm=T)
 
@@ -475,6 +464,8 @@ lat_scale_rich = merge(lat_scale_elev, summ[,c("datasetID","site", "meanAbundanc
 #  "spRichTrans", 
 # write.csv(lat_scale_rich, "output/tabular_data/lat_scale_rich.csv", row.names = F)
 lat_scale_rich = read.csv("output/tabular_data/lat_scale_rich.csv", header = TRUE, stringsAsFactors = FALSE)
+lat_scale_rich_taxa = filter(lat_scale_rich, taxa == c("Bird", "Invertebrate", "Plant", "Mammal")) %>%
+                      filter(., datasetID == 1 & site ___)
 
 # Model -  want 5 km radius here!!!!
 # same model structure (but only terrestrial datasets, not necessarily hierarchically scaled datasets) as used in 

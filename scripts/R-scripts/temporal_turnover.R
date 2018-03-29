@@ -1,5 +1,5 @@
 library(dplyr)
-
+library(tidyr)
 #' Get table of species abundances
 #' 
 get_abund_data  = function(datasetIDs){
@@ -60,6 +60,9 @@ datasetIDs = unique(datasetIDs)
 abund_data = get_abund_data(datasetIDs)
 propocc_data = get_propocc_data(datasetIDs)
 all_data = left_join(abund_data, propocc_data, by = c('datasetID', 'site', 'species'))
+# removing duplicate bbs routes
+dup_rtes= read.csv("data/BBS/rtes_duplicate_records.csv", header = TRUE)
+all_data = filter(all_data, !site %in% dup_rtes$stateroute)
 
 turnover_output = data.frame()
 bray_output = data.frame()
