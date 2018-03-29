@@ -5,7 +5,7 @@
 # Input files are named propOcc_XXX.csv where
 # XXX is the dataset ID.
 
-setwd("C:/git/core-transient")
+# setwd("C:/git/core-transient")
 
 library(lme4)
 library(plyr) # for core-transient functions
@@ -64,15 +64,16 @@ bbs_abun = read.csv("data/BBS/bbs_allscales33.csv", header=TRUE)
 
 # read in bbs abundance data
 bbs_focal_occs_pctTrans = read.csv("data/BBS/bbs_focal_occs_pctTrans_Site.csv", header = TRUE)
-bbs_area2 = right_join(bbs_allscales33[, c("site", "area")], bbs_focal_occs_pctTrans, by = "site")
+bbs_area2 = right_join(bbs_abun[, c("site", "area")], bbs_focal_occs_pctTrans, by = "site")
 bbs_area2 = bbs_area2[!duplicated(bbs_area2), ]
 bbs_area2$pctTrans25 = bbs_area2$propTrans25
 bbs_area2$site = as.factor(bbs_area2$site)
 bbs_area2  = bbs_area2[, c("datasetID", "site", "taxa", "pctTrans25", "area")]
+bbs_area2$area = bbs_area2$area * 1000000
 
-#### Fig 3a Area #####
 area = read.csv("output/tabular_data/scaled_areas_3_2.csv", header = TRUE)
 
+#### Fig 3a Area #####
 areamerge.5 = merge(occ_taxa25[,c("datasetID", "site", "pctTrans25")], area, by = c("datasetID", "site"))
 areamerge  = areamerge.5[, c("datasetID", "site", "taxa", "pctTrans25", "area")]
 
@@ -123,6 +124,13 @@ areaids = areaids[! areaids %in% c(222)]
 areaModel = lmer(pctTrans25 ~ log10(area) * taxa + (log10(area) | datasetID), data = areamerge)
 r.squaredGLMM(areaModel)
 
+summary(lm(pctTrans25 ~ log10(area), data = areamerge))
+
+abunModel = lmer(pctTrans25 ~ log10(meanAbundance) * taxa + (log10(meanAbundance) | datasetID), data = bbs_occ_pred)
+r.squaredGLMM(abunModel)
+
+summary(lm(pctTrans25 ~ log10(meanAbundance), data = bbs_occ_pred))
+
 dats = areamerge %>% 
   group_by(datasetID, taxa) %>% 
   dplyr::summarize(minA = min(area), maxA = max(area))
@@ -159,10 +167,7 @@ segments(6.702913, range(area_plot$minApred)[1],-1.397940, range(area_plot$maxAp
 title(outer=FALSE,adj=0.02,main="A",cex.main=2,col="black",font=2,line=-1)
 par(new= FALSE)
 
-
-abunModel = lmer(pctTrans25 ~ log10(meanAbundance) * taxa + (log10(meanAbundance) | datasetID), data = bbs_occ)
-
-dats = bbs_occ %>% 
+dats = bbs_occ_pred %>% 
   group_by(datasetID, taxa) %>% 
   dplyr::summarize(minAb = min(meanAbundance), maxAb = max(meanAbundance))
 dats = data.frame(dats)
@@ -174,7 +179,7 @@ dats$minAbpred <- merTools::predictInterval(abunModel, minAb)$fit
 dats$maxAbpred <- merTools::predictInterval(abunModel, maxAb)$fit
 dats$taxa = NULL
 
-bbs_occ = merge(bbs_occ, dats, by = "datasetID")
+bbs_occ = merge(bbs_occ_pred, dats, by = "datasetID")
 
 plot(NA, xlim = c(0, 7), ylim = c(0,1), col = as.character(taxcolor$color), xlab = expression("log"[10]*" Community Size"), ylab = "% Transients", cex.lab = 2,frame.plot=FALSE, yaxt = "n", xaxt = "n", mgp = c(3.25,1,0))
 axis(1, cex.axis =  1.5)
@@ -205,27 +210,7 @@ mtext("25% Transients", 2, cex = 2, las = 0, line = 2.5)
 title(outer=FALSE,adj=0.02,main="D",cex.main=2,col="black",font=2,line=-1)
 dev.off()
 
-
-
-# pseudo r2 area
-bbs_occ_area = merge(bbs_occ_pred, areamerge[,c("datasetID", "site", "area")], by = c("datasetID", "site"))
-mod4a = lmer(pctTrans25 ~ log10(area) * taxa + (log10(area)|datasetID), data = bbs_occ_area)
-rsquared(mod4a, aicc = FALSE)
-
-# pseudo r2 abun
-mod4b = lmer(pctTrans25 ~ log10(meanAbundance) * taxa + (log10(meanAbundance)|datasetID), data = bbs_occ_area)
-rsquared(mod4b, aicc = FALSE)
-
-# R2 area
-mod4 = lm(pctTrans25~log10(area), data=bbs_occ_area)
-summary(mod4)
-
-mod6 = lm(pctTrans25~log10(meanAbundance), data=bbs_occ_area)
-summary(mod6)
-
-
 ##### 10 pct trans ######
-
 areamerge.5 = merge(occ_taxa10[,c("datasetID", "site", "pctTrans10")], area, by = c("datasetID", "site"))
 areamerge  = areamerge.5[, c("datasetID", "site", "taxa", "pctTrans10", "area")]
 
@@ -239,6 +224,7 @@ bbs_focal_occs_pctTrans = read.csv("data/BBS/bbs_focal_occs_pctTrans_Site.csv", 
 bbs_area2 = merge(bbs_abun[, c("site", "area", "meanAbundance")], bbs_focal_occs_pctTrans, by = "site")
 bbs_area2$pctTrans10 = bbs_area2$propTrans10
 bbs_area2$site = as.factor(bbs_area2$site)
+bbs_area2$area = bbs_area2$area * 1000000
 bbs_area3  = bbs_area2[, c("datasetID", "site", "taxa", "pctTrans10", "area")]
 
 #### Fig 3a Area #####

@@ -55,10 +55,13 @@ scaleIDs = filter(dataformattingtable, spatial_scale_variable == 'Y',
 scaleIDs = scaleIDs[! scaleIDs %in% c(207, 210, 217, 218, 222, 223, 225, 238, 241,258, 282, 322, 280,317)]
 bbs_abun = read.csv("data/BBS/bbs_allscales33.csv", header=TRUE)
 bbs_abun$pctTrans = bbs_abun$propTrans
+# convert km2 to m2
+bbs_abun$area = bbs_abun$area * 1000000
 #### Fig 4a Area #####
 area = read.csv("output/tabular_data/scaled_areas_3_2.csv", header = TRUE)
 
 areamerge.5 = merge(occ_taxa[,c("datasetID", "site", "pctTrans")], area, by = c("datasetID", "site"), na.rm = TRUE)
+areamerge.5$area = areamerge.5$area
 areamerge1  = areamerge.5 [, c("datasetID", "site", "taxa", "pctTrans", "area")]
 
 # read in bbs abundance data
@@ -110,7 +113,7 @@ bbs_occ_area = merge(bbs_occ_pred, areamerge[,c("datasetID", "site", "area")], b
 mod4a = lmer(pctTrans ~ log10(area) * taxa + (log10(area)|datasetID), data=bbs_occ_area)
 r.squaredGLMM(mod4a)
 
-coefs <- data.frame(coef(summary(mod4b)))
+coefs <- data.frame(coef(summary(mod4a)))
 coefs$p.z <- 2 * (1 - pnorm(abs(coefs$t.value)))
 
 # R2 area
@@ -124,6 +127,8 @@ summary(mod6)
 mod4b = lmer(pctTrans ~ log10(meanAbundance) * taxa + (log10(meanAbundance)|datasetID), data = bbs_occ_area)
 rsquared(mod4b, aicc = FALSE)
 
+coefs <- data.frame(coef(summary(mod4b)))
+coefs$p.z <- 2 * (1 - pnorm(abs(coefs$t.value)))
 
 # The marginal R squared values are those associated with your fixed effects, 
 # the conditional ones are those of your fixed effects plus the random effects. 
@@ -474,7 +479,7 @@ lat_scale_rich = read.csv("output/tabular_data/lat_scale_rich.csv", header = TRU
 # Model -  want 5 km radius here!!!!
 # same model structure (but only terrestrial datasets, not necessarily hierarchically scaled datasets) as used in 
 # core-transient-figure-4.R, but adding an elevational variance term
-mod1 = lmer(propTrans ~ (log10(meanAbundance)|datasetID) + log10(meanAbundance) * taxa +  log10(elev.var) , data=lat_scale_rich) 
+mod1 = lmer(propTrans ~ log10(meanAbundance) * taxa +  log10(elev.var) + (log10(meanAbundance)|datasetID) , data=lat_scale_rich) 
 
 summary(mod1)
 coefs <- data.frame(coef(summary(mod1)))
