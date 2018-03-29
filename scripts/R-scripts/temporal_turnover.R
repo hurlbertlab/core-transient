@@ -61,21 +61,6 @@ abund_data = get_abund_data(datasetIDs)
 propocc_data = get_propocc_data(datasetIDs)
 all_data = left_join(abund_data, propocc_data, by = c('datasetID', 'site', 'species'))
 
-# add in bbs data (id, site, year, sp, count, propOcc)
-bbs = read.csv("data/BBS/bbs_2000_2014.csv", header = TRUE)
-bbs$year = bbs$Year
-bbs_abun_occ = read.csv("data/BBS/bbs_abun_occ.csv", header = TRUE)
-bbs_abun_occ$species = bbs_abun_occ$AOU
-bbs_abun_occ$site = bbs_abun_occ$stateroute
-bbs_occ= merge(bbs_abun_occ[,c("species","site", "occupancy")],bbs, by.x = c("species","site"), by.y = c("aou","stateroute"))
-bbs_occ$propOcc = bbs_occ$occupancy
-bbs_occ$count = bbs_occ$speciestotal
-bbs_occ$datasetID = 1
-bbs_occ = bbs_occ[,c("datasetID", "site", "year", "species", "count", "propOcc")]
-
-# rbind to get single data frame
-all_data = rbind(all_data, bbs_occ)
-
 turnover_output = data.frame()
 bray_output = data.frame()
 for (dataset in datasetIDs[,1]) {
