@@ -385,8 +385,8 @@ for (dataset in datasetIDs[,1]) {
     notrans = sitedata[sitedata$propOcc > 1/3,]
     trans = sitedata[sitedata$propOcc <= 1/3,]
     years = as.numeric(unique(sitedata$year))
-    num_notrans = length(notrans$propOcc)
-    num_trans = length(trans$propOcc)
+    num_notrans = length(unique(notrans$species))
+    num_trans = length(unique(trans$propOcc))
     TJ_notrans = c()
     
     for(i in 1:10){
