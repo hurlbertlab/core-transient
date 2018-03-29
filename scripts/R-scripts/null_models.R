@@ -466,11 +466,16 @@ turnover_else$taxa = factor(as.character(turnover_else$taxa),
 colscale = c("#1D6A9B","turquoise2","gold2", "purple4","red", "forestgreen") 
 
 m <- ggplot(turnover_bbs, aes(x = TJ, y = notransturn))
-four_c <- m + geom_abline(intercept = 0,slope = 1, lwd =1.5,linetype="dashed")+geom_point(data = turnover_bbs, aes(colour = taxa),size = 2)+geom_point(data = turnover_else, aes(colour = taxa), size = 5) + xlab("Turnover (all species)") + ylab("Turnover \n (excluding non-transients)")  + scale_colour_manual(breaks = turnover_col$taxa,values = colscale) + theme_classic() + theme(axis.text.x=element_text(size=28, color = "black"),axis.text.y=element_text(size=28, color = "black"),axis.ticks.x=element_blank(),axis.title.x=element_text(size=42, color = "black"),axis.title.y=element_text(size=42,angle=90,vjust = 3))+ guides(colour = guide_legend(title = "Taxa"))
+four_c <- m + geom_abline(intercept = 0,slope = 1, lwd =1.5,linetype="dashed")+geom_point(data = turnover_bbs, aes(colour = taxa),size = 2)+geom_point(data = turnover_else, aes(colour = taxa), size = 5) + xlab("Turnover (all species)") + ylab("Turnover \n (excluding non-transients)")  + scale_colour_manual(breaks = turnover_col$taxa,values = colscale) + theme_classic() + theme(axis.text.x=element_text(size=30, color = "black"),axis.text.y=element_text(size=30, color = "black"),axis.ticks.x=element_blank(),axis.title.x=element_text(size=42, color = "black"),axis.title.y=element_text(size=42,angle=90,vjust = 3))+ guides(colour = guide_legend(title = "Taxa"))
 ggsave(file="C:/Git/core-transient/output/plots/null_turnover_2.pdf", height = 10, width = 15)
 
 turnover_taxa$diff = turnover_taxa$notransturn-turnover_taxa$TJnotrans
-hist(turnover_taxa$diff, xlab = "Excluding null transients - All species", cex.lab=1.5, cex.axis=1.5)
+hist(turnover_taxa$diff, xlab = "Excluding null transients - Excluding transients", cex.lab=1.5, cex.axis=1.5)
+
+
+ggplot(data=turnover_taxa, aes(turnover_taxa$notransturn-turnover_taxa$TJnotrans)) + 
+  geom_histogram(bins = 10, col="black",  fill="white") + theme_classic() + theme(axis.text.x=element_text(size=30,angle=90, color = "black"), axis.ticks.x=element_blank(),axis.text.y=element_text(size=30, color = "black"),axis.title.y=element_text(size=30,angle=90, vjust = 4),axis.title.x=element_text(size=30, vjust = -4))  + ylab("Frequency") + xlab("Excluding non-transients - Excluding transients") +theme(plot.margin=unit(c(0.35,1,2,1.7),"cm")) 
+ggsave(file="C:/Git/core-transient/output/plots/1c_hist.pdf", height = 10, width = 14)
 
 ##### paired t-test #####
 df_ttest_5c = merge(null_5c, turnover_output, by = c("datasetID", "site"))
