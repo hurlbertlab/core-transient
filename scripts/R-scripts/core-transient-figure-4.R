@@ -34,6 +34,7 @@ datasetIDs = datasetIDs[!datasetIDs %in% c(1)]
 
 #################### FIG 4 ######################### 
 occ_taxa=read.csv("output/tabular_data/occ_taxa.csv",header=TRUE)
+occ_all1 = read.csv("output/tabular_data/occ_taxa.csv",header=TRUE)
 
 colors7 = c(colors()[552], # plankton
             rgb(29/255, 106/255, 155/255), #bird
@@ -147,9 +148,9 @@ pdf('output/plots/4a_4d.pdf', height = 10, width = 14)
 par(mfrow = c(2, 2), mar = c(5,5,1,1), cex = 1, oma = c(0,0,0,0), las = 1)
 palette(colors7)
 
-areamerge_fig = subset(areamerge_fig, datasetID %in% scaleIDs)
-all = lm(areamerge_fig$pctTrans ~ log10(areamerge_fig$area))
-xnew = range(log10(areamerge_fig$area))
+areamerge_fig = subset(occ_all1, datasetID %in% scaleIDs)
+all = lm(occ_all1$pctTrans ~ log10(occ_all1$area))
+xnew = range(log10(occ_all1$area))
 xhat <- predict(all, newdata = data.frame((xnew)))
 xhats = range(xhat)
 lower = range(xhat)[1]
@@ -163,7 +164,7 @@ axis(1, cex.axis =  1.5)
 axis(2, cex.axis =  1.5)
 b1 = for(id in scaleIDs){
   print(id)
-  plotsub = subset(areamerge_fig,datasetID == id)
+  plotsub = subset(occ_all1,datasetID == id)
   taxa = as.character(unique(plotsub$taxa))
   mod4 = lm(plotsub$pctTrans ~ log10(plotsub$area))
   mod4.slope = summary(mod4)$coef[2,"Estimate"]
@@ -181,15 +182,15 @@ b1 = for(id in scaleIDs){
    # points(log10(plotsub$area), plotsub$pctTrans)
   par(new=TRUE)
 }
-lines(log10(areamerge_fig$area), fitted(all), col="black", lwd=3)
+lines(log10(occ_all1$area), fitted(all), col="black", lwd=3)
 title(outer=FALSE,adj=0.02,main="A",cex.main=2,col="black",font=2,line=-1)
 par(new= FALSE)
 
 
 bbs_occ = subset(bbs_occ, datasetID %in% scaleIDs)
-occ_all = lm(bbs_occ$pctTrans ~ log10(bbs_occ$meanAbundance))
-xnew = range(log10(bbs_occ$meanAbundance))
-xhat <- predict(occ_all, newdata = data.frame((xnew)))
+occ_all = lm(occ_all1$pctTrans ~ log10(occ_all1$meanAbundance))
+xnew = range(log10(occ_all1$meanAbundance))
+xhat <- predict(occ_all1, newdata = data.frame((xnew)))
 xhats = range(xhat)
 
 plot(NA, xlim = c(0, 7), ylim = c(0,1), col = as.character(taxcolor$color), xlab = expression("log"[10]*" Community Size"), ylab = "% Transients", cex.lab = 2,frame.plot=FALSE, yaxt = "n", xaxt = "n", mgp = c(3.25,1,0))
@@ -197,7 +198,7 @@ axis(1, cex.axis =  1.5)
 axis(2, cex.axis =  1.5)
 b2 = for(id in scaleIDs){
   print(id)
-  plotsub = subset(bbs_occ,datasetID == id)
+  plotsub = subset(occ_all1,datasetID == id)
   mod4 = lm(plotsub$pctTrans ~ log10(plotsub$meanAbundance))
   xnew = range(log10(plotsub$meanAbundance))
   xhat <- predict(mod4, newdata = data.frame((xnew)))
@@ -212,7 +213,7 @@ b2 = for(id in scaleIDs){
 abline(v = log10(102), lty = 'dotted', lwd = 2) 
 par(new=TRUE)
 title(outer=FALSE,adj=0.02,main="B",cex.main=2,col="black",font=2,line=-1)
-lines(log10(bbs_occ$meanAbundance), fitted(occ_all), col="black",lwd=3)
+lines(log10(occ_all1$meanAbundance), fitted(occ_all), col="black",lwd=3)
 legend('topright', legend = as.character(taxcolors$taxa), lty=1,lwd=3,col = as.character(taxcolors$color), cex = 1.5, bty = "n")
 par(new = FALSE)
 

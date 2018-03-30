@@ -58,8 +58,7 @@ symbols7 = c(16, 18, 167, 15, 17, 1, 3)
 taxcolors = read.csv("output/tabular_data/taxcolors.csv", header = TRUE)
 scaleIDs = filter(dataformattingtable, spatial_scale_variable == 'Y',
                   format_flag == 1)$dataset_ID
-# subsetting to only count ids 
-scaleIDs = scaleIDs[! scaleIDs %in% c(207, 210, 217, 218, 222, 223, 210, 238, 241,258, 282, 322, 280,317)]
+
 bbs_abun = read.csv("data/BBS/bbs_allscales33.csv", header=TRUE)
 
 # read in bbs abundance data
