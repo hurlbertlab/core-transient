@@ -34,7 +34,7 @@ datasetIDs = datasetIDs[!datasetIDs %in% c(1)]
 
 #################### FIG 4 ######################### 
 occ_taxa=read.csv("output/tabular_data/occ_taxa.csv",header=TRUE)
-occ_all1 = read.csv("output/tabular_data/occ_taxa.csv",header=TRUE)
+occ_all1 = read.csv("output/tabular_data/occ_taxa.csv",header=TRUE) # from scale test
 
 colors7 = c(colors()[552], # plankton
             rgb(29/255, 106/255, 155/255), #bird
