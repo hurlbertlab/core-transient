@@ -228,11 +228,21 @@ gimms_agg = gimms_ndvi %>% filter(month == c("may", "jun", "jul")) %>%
 lat_scale_rich = read.csv("output/tabular_data/lat_scale_rich_3_30.csv", header = TRUE)
 lat_scale_bbs = filter(lat_scale_rich, datasetID == 1)
 
-bbs_spRich = merge(allbbs, notransbbs[c("stateroute", "spRichnotrans")], by = "stateroute")
-bbs_spRich$site_id <- bbs_spRich$stateroute
-# merging ndvi and elevation to bbs data
-bbs_env = join(bbs_spRich, gimms_agg, type = "left")
-bbs_env = merge(bbs_env, lat_scale_bbs[,c("site", "elev.point", "elev.mean", "elev.var")], by.x = "site_id", by.y = "site")
+bbs_5km_elev = read.csv("data/BBS/bbs_elevation_5km.csv", header = TRUE)
+
+bbsocc = read.csv('data/propOcc_datasets/propOcc_1.csv', header=T, stringsAsFactors = F)
+rich = dplyr::count(bbsocc, site)
+rich_notrans = bbsocc %>% filter(propOcc > 1/3) %>% count(site)
+
+bbsocc_rich = left_join(bbsocc, rich)
+bbsocc_rich$spRich = bbsocc_rich$n
+bbsocc_rich = bbsocc_rich[ , !names(bbsocc_rich) %in% c("n")] 
+bbsocc_rich = left_join(bbsocc_rich, rich_notrans)
+bbsocc_rich$spRichnotrans = bbsocc_rich$n
+bbsocc_rich = bbsocc_rich[ , !names(bbsocc_rich) %in% c("n")] 
+
+bbs_env = left_join(bbsocc_rich, gimms_agg, c("site" = "site_id"))
+bbs_env = merge(bbs_env, lat_scale_bbs[,c("site", "elev.point", "elev.mean", "elev.var")], by = "site")
 
 # cor test not really working - need for loop?
 cor.test(bbs_env$spRich, bbs_env$ndvi)
@@ -436,7 +446,7 @@ legenda <- get_legend(four_b)# + theme(legend.position="top")
 p1 = NULL
 pt1 <- plot_grid(k + theme(legend.position="none"),
                  NULL,
-                # l + theme(legend.position="none"),
+                 l + theme(legend.position="none"),
                  align = 'hv',
                  labels = c("A","", "B"),
                  label_size = 36,
@@ -462,7 +472,7 @@ z <- plot_grid(four_c+ theme(legend.position="none"),
 p2 = plot_grid(z,legendc, ncol = 2) 
 # ggsave(file="C:/Git/core-transient/output/plots/5c_5d.pdf", height = 12, width = 16,p2)
 
-all4 = plot_grid(p1, NULL, z, align = "hv", nrow = 2,rel_heights = c(1,1), rel_widths = c(1, 0.05,1))
+all4 = plot_grid(pt1, NULL, z, align = "hv", nrow = 2,rel_heights = c(1,1), rel_widths = c(1, 0.05,1))
 all4
 
 #dev.off()

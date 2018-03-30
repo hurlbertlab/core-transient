@@ -80,6 +80,7 @@ areamerge  = areamerge.5[, c("datasetID", "site", "taxa", "pctTrans25", "area")]
 areamerge = rbind(bbs_area2, areamerge)
 areamerge = na.omit(areamerge)
 
+areamerge_mod = areamerge[! areamerge$datasetID %in% c(207, 210, 217, 218, 222, 223, 225, 241,258, 282, 322, 280, 248, 254, 279, 291),]
 
 bbs_spRich25 = merge(bbs_abun, bbs_focal_occs_pctTrans[,c("site", "propTrans25")], by = "site")  
 bbs_spRich25$pctTrans25 = bbs_spRich25$propTrans25
@@ -95,6 +96,8 @@ bbs_occ = bbs_occ[!bbs_occ$site %in% c("53800-5-6", "53800-25-2"),]
 #### Fig 3c/d predicted model ####
 bbs_occ_pred = bbs_occ[!bbs_occ$datasetID %in% c(207, 210, 217, 218, 222, 223, 225, 238, 241, 258, 282, 322, 280,317),]
 bbs_occ_pred = na.omit(bbs_occ_pred)
+bbs_occ_pred_mod = bbs_occ_pred[! bbs_occ_pred$datasetID %in% c(207, 210, 217, 218, 222, 223, 225, 241,258, 282, 322, 280, 248, 254, 279, 291),]
+
 mod3c = lmer(pctTrans25~log10(meanAbundance) * taxa + (log10(meanAbundance)|datasetID), data=bbs_occ_pred)
 summary(mod3c)
 r.squaredGLMM(mod3c)
@@ -118,18 +121,20 @@ predmod3d = merTools::predictInterval(mod3d, occ_pred_3d, n.sims=1000)
 predmod3d$order = c(1,2,3)
 
 #### panel plot ####
-areaids = unique(areamerge$datasetID)
-areaids = areaids[! areaids %in% c(222)] 
+areamerge_mod = areamerge[! areamerge$datasetID %in% c(207, 210, 217, 218, 222, 223, 225, 241,258, 282, 322, 280, 248, 254, 279, 291),]
 
-areaModel = lmer(pctTrans25 ~ log10(area) * taxa + (log10(area) | datasetID), data = areamerge)
+areaModel = lmer(pctTrans25 ~ log10(area) * taxa + (log10(area) | datasetID), data = areamerge_mod)
 r.squaredGLMM(areaModel)
 
-summary(lm(pctTrans25 ~ log10(area), data = areamerge))
+summary(lm(pctTrans25 ~ log10(area), data = areamerge_mod))
 
-abunModel = lmer(pctTrans25 ~ log10(meanAbundance) * taxa + (log10(meanAbundance) | datasetID), data = bbs_occ_pred)
+bbs_occ_pred_mod = bbs_occ_pred[! bbs_occ_pred$datasetID %in% c(207, 210, 217, 218, 222, 223, 225, 241,258, 282, 322, 280, 248, 254, 279, 291),]
+
+# r and pseudo r2 10%
+abunModel = lmer(pctTrans25 ~ log10(meanAbundance) * taxa + (log10(meanAbundance) | datasetID), data = bbs_occ_pred_mod)
 r.squaredGLMM(abunModel)
 
-summary(lm(pctTrans25 ~ log10(meanAbundance), data = bbs_occ_pred))
+summary(lm(pctTrans25 ~ log10(meanAbundance), data = bbs_occ_pred_mod))
 
 dats = areamerge %>% 
   group_by(datasetID, taxa) %>% 
@@ -211,9 +216,9 @@ title(outer=FALSE,adj=0.02,main="D",cex.main=2,col="black",font=2,line=-1)
 dev.off()
 
 ##### 10 pct trans ######
-areamerge.5 = merge(occ_taxa10[,c("datasetID", "site", "pctTrans10")], area, by = c("datasetID", "site"))
-areamerge  = areamerge.5[, c("datasetID", "site", "taxa", "pctTrans10", "area")]
-
+areamerge.25 = merge(occ_taxa10[,c("datasetID", "site", "pctTrans10")], area, by = c("datasetID", "site"))
+areamerge.5  = areamerge.25[, c("datasetID", "site", "taxa", "pctTrans10", "area")]
+areamerge = areamerge.5[! areamerge.5$datasetID %in% c(207, 210, 217, 218, 222, 223, 225, 241,258, 282, 322, 280, 248, 254, 279, 291),]
 
 #### Figures 3a-3c panel plot #####
 scaleIDs = filter(dataformattingtable, spatial_scale_variable == 'Y',
@@ -230,9 +235,6 @@ bbs_area3  = bbs_area2[, c("datasetID", "site", "taxa", "pctTrans10", "area")]
 #### Fig 3a Area #####
 area = read.csv("output/tabular_data/scaled_areas_3_2.csv", header = TRUE)
 
-areamerge.5 = merge(occ_taxa10[,c("datasetID", "site", "pctTrans10")], area, by = c("datasetID", "site"))
-areamerge  = areamerge.5[, c("datasetID", "site", "taxa", "pctTrans10", "area")]
-
 areamerge = rbind(bbs_area3, areamerge)
 areamerge = na.omit(areamerge)
 
@@ -242,8 +244,10 @@ occ_merge = occ_taxa10[,c("datasetID", "site","taxa", "meanAbundance", "pctTrans
 bbs_occ = rbind(occ_merge, bbs_spRich10)
 bbs_occ = bbs_occ[!bbs_occ$site %in% c("53800-5-6", "53800-25-2"),]
 #### Fig 3c/d predicted model ####
-bbs_occ_pred = bbs_occ[!bbs_occ$datasetID %in% c(207, 210, 217, 218, 222, 223, 225, 238, 241, 258, 282, 322, 280,317),]
-bbs_occ_pred = na.omit(bbs_occ_pred)
+bbs_occ_pred.5 = bbs_occ[!bbs_occ$datasetID %in% c(207, 210, 217, 218, 222, 223, 225, 238, 241, 258, 282, 322, 280,317),]
+bbs_occ_pred.5 = na.omit(bbs_occ_pred.5)
+bbs_occ_pred = bbs_occ_pred.5[! bbs_occ_pred.5$datasetID %in% c(207, 210, 217, 218, 222, 223, 225, 241,258, 282, 322, 280, 248, 254, 279, 291),]
+
 mod3c = lmer(pctTrans10~log10(meanAbundance) * taxa + (log10(meanAbundance) | datasetID), data=bbs_occ_pred)
 summary(mod3c)
 occ_sub_pred = data.frame(datasetID = 999, taxa = unique(bbs_occ_pred$taxa), meanAbundance =  102) # 102 is median abun for data frame (median(bbs_occ_pred$meanAbundance))
@@ -272,11 +276,12 @@ pdf('output/plots/3a_3d_10SUPP.pdf', height = 10, width = 12)
 par(mfrow = c(2, 2), mar = c(5,5,1,1), cex = 1, oma = c(0,0,0,0), las = 1)
 palette(colors7)
 
-areaids = unique(areamerge$datasetID)
-areaids = areaids[! areaids %in% c(222)] 
-
+# r and pseudo r2 10%
 areaModel = lmer(pctTrans10 ~ log10(area) * taxa + (log10(area) | datasetID), data = areamerge)
 r.squaredGLMM(areaModel)
+
+summary(lm(pctTrans10 ~ log10(area), data = areamerge))
+
 
 dats = areamerge %>% 
   group_by(datasetID, taxa) %>% 
@@ -313,6 +318,8 @@ par(new= FALSE)
 
 abunModel = lmer(pctTrans10 ~ log10(meanAbundance) * taxa + (log10(meanAbundance) | datasetID), data = bbs_occ)
 r.squaredGLMM(abunModel)
+summary(lm(pctTrans10 ~ log10(meanAbundance), data = bbs_occ))
+
 
 dats = bbs_occ %>% 
   group_by(datasetID, taxa) %>% 
@@ -359,19 +366,3 @@ dev.off()
 
 dev.off()
 
-# pseudo r2 area
-bbs_occ_area = merge(bbs_occ_pred, areamerge[,c("datasetID", "site", "area")], by = c("datasetID", "site"))
-mod5a = lmer(bbs_occ_area$pctTrans10~(1|datasetID) * taxa * log10(area), data=bbs_occ_area)
-rsquared(mod5a, aicc = FALSE)
-
-# pseudo r2 abun
-mod6b = lmer(pctTrans10~(1|datasetID) * taxa * log10(meanAbundance), data=bbs_occ_area)
-rsquared(mod6b, aicc = FALSE)
-
-
-# R2 area
-mod4 = lm(pctTrans10~log10(area), data=bbs_occ_area)
-summary(mod4)
-
-mod10 = lm(pctTrans10~log10(meanAbundance), data=bbs_occ_area)
-summary(mod10)

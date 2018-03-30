@@ -216,11 +216,22 @@ lat_scale_bbs = filter(lat_scale_rich, datasetID == 1)
 lat_scale_bbs$site_id = sapply(strsplit(as.character(lat_scale_bbs$site), split='-', fixed=TRUE), function(x) (x[1]))
 lat_scale_bbs$site_id = as.integer(lat_scale_bbs$site_id)
 
-bbs_spRich = merge(allbbs, notransbbs[c("stateroute", "spRichnotrans")], by = "stateroute")
-bbs_spRich$site_id <- bbs_spRich$stateroute
-# merging ndvi and elevation to bbs data
-bbs_env = join(bbs_spRich, gimms_agg, type = "left")
-bbs_env = merge(bbs_env, lat_scale_bbs[,c("site_id", "elev.point", "elev.mean", "elev.var")], by = "site_id")
+lat_scale_test = filter(lat_scale_bbs, datasetID == 1) %>% separate(., site, c("stateroute", "level", "number"), sep = "-") %>% filter(., level == 50)
+lat_scale_test$site = lat_scale_test$stateroute
+
+bbsocc = read.csv('data/propOcc_datasets/propOcc_1.csv', header=T, stringsAsFactors = F)
+rich = dplyr::count(bbsocc, site)
+rich_notrans = bbsocc %>% filter(propOcc > 1/4) %>% count(site)
+
+bbsocc_rich = left_join(bbsocc, rich)
+bbsocc_rich$spRich = bbsocc_rich$n
+bbsocc_rich = bbsocc_rich[ , !names(bbsocc_rich) %in% c("n")] 
+bbsocc_rich = left_join(bbsocc_rich, rich_notrans)
+bbsocc_rich$spRichnotrans = bbsocc_rich$n
+bbsocc_rich = bbsocc_rich[ , !names(bbsocc_rich) %in% c("n")] 
+
+bbs_env = left_join(bbsocc_rich, gimms_agg, c("site" = "site_id"))
+bbs_env = merge(bbs_env, lat_scale_test[,c("stateroute", "elev.point", "elev.mean", "elev.var")], by.x = "site", by.y = "stateroute")
 
 # cor test not really working - need for loop?
 cor.test(bbs_env$spRich, bbs_env$ndvi)
@@ -334,7 +345,7 @@ occ_trans_area = merge(areamerge[,c("datasetID", "site", "area")], datasetrich, 
 occ_trans_area = merge(occ_trans_area, dataformattingtable[,c("dataset_ID", "taxa")], by.x = "datasetID", by.y = "dataset_ID")
 scaleIDs = unique(occ_trans_area$datasetID)
 
-scaleIDs = scaleIDs[! scaleIDs %in% c(279,225,248,254, 282,291)] # 248 tbd
+scaleIDs = scaleIDs[! scaleIDs %in% c(279,225,248,254,274, 282,291)] # 248 tbd
 
 slopes = data.frame(datasetID = NULL,
                     taxa = NULL,
@@ -364,7 +375,7 @@ slopes_bbs = merge(slopes_bbs, taxcolors, by = "taxa")
 
 plot_relationship$taxa = factor(plot_relationship$taxa,
                                 levels = c('Invertebrate','Fish','Plankton','Mammal','Plant','Bird','Benthos'),ordered = TRUE)
-colscales = c("gray","#1D6A9B","turquoise2","gold2","purple4", "red", "forestgreen") 
+colscales = c("gray","#1D6A9B","turquoise2","gold2","purple4","red", "forestgreen") 
 
 p <- ggplot(plot_relationship, aes(x = areaSlope, y = areaSlope_noTrans))
 four_d <-p + geom_abline(intercept = 0,slope = 1, lwd =1.5,linetype="dashed") +geom_point(data=slopes_bbs, aes(colour = taxa),alpha = 5/100, size = 2)+  geom_point(aes(colour = taxa), size = 5)+ theme_classic() + scale_color_manual("Taxa", breaks = plot_relationship$taxa,values = colscales)+ xlab(expression(paste(italic("z "), "(all species)"))) + ylab(expression(paste(italic("z "), "(excluding transients)"))) +ylim(0,1)+xlim(0,1) + theme(axis.text.x=element_text(size=30,color = "black"),axis.ticks.x=element_blank(),axis.text.y=element_text(size=30,color = "black"),axis.title.x=element_text(size=40),axis.title.y=element_text(size=40,angle=90,vjust = 2))+ theme(legend.text = element_text(size = 14), legend.title = element_text(size = 16))
@@ -563,11 +574,22 @@ lat_scale_bbs = filter(lat_scale_rich, datasetID == 1)
 lat_scale_bbs$site_id = sapply(strsplit(as.character(lat_scale_bbs$site), split='-', fixed=TRUE), function(x) (x[1]))
 lat_scale_bbs$site_id = as.integer(lat_scale_bbs$site_id)
 
-bbs_spRich = merge(allbbs, notransbbs[c("stateroute", "spRichnotrans")], by = "stateroute")
-bbs_spRich$site_id <- bbs_spRich$stateroute
-# merging ndvi and elevation to bbs data
-bbs_env = join(bbs_spRich, gimms_agg, type = "left")
-bbs_env = merge(bbs_env, lat_scale_bbs[,c("site_id", "elev.point", "elev.mean", "elev.var")], by = "site_id")
+lat_scale_test = filter(lat_scale_bbs, datasetID == 1) %>% separate(., site, c("stateroute", "level", "number"), sep = "-") %>% filter(., level == 50)
+lat_scale_test$site = lat_scale_test$stateroute
+
+bbsocc = read.csv('data/propOcc_datasets/propOcc_1.csv', header=T, stringsAsFactors = F)
+rich = dplyr::count(bbsocc, site)
+rich_notrans = bbsocc %>% filter(propOcc > 1/10) %>% count(site)
+
+bbsocc_rich = left_join(bbsocc, rich)
+bbsocc_rich$spRich = bbsocc_rich$n
+bbsocc_rich = bbsocc_rich[ , !names(bbsocc_rich) %in% c("n")] 
+bbsocc_rich = left_join(bbsocc_rich, rich_notrans)
+bbsocc_rich$spRichnotrans = bbsocc_rich$n
+bbsocc_rich = bbsocc_rich[ , !names(bbsocc_rich) %in% c("n")] 
+
+bbs_env = left_join(bbsocc_rich, gimms_agg, c("site" = "site_id"))
+bbs_env = merge(bbs_env, lat_scale_test[,c("stateroute", "elev.point", "elev.mean", "elev.var")], by.x = "site", by.y = "stateroute")
 
 # cor test not really working - need for loop?
 cor.test(bbs_env$spRich, bbs_env$ndvi)
@@ -681,7 +703,7 @@ occ_trans_area = merge(areamerge[,c("datasetID", "site", "area")], datasetrich, 
 occ_trans_area = merge(occ_trans_area, dataformattingtable[,c("dataset_ID", "taxa")], by.x = "datasetID", by.y = "dataset_ID")
 scaleIDs = unique(occ_trans_area$datasetID)
 
-scaleIDs = scaleIDs[! scaleIDs %in% c(279,225,248,254, 282,291)] # 248 tbd
+scaleIDs = scaleIDs[! scaleIDs %in% c(279,225,248,254,274, 282,291)] # 248 tbd
 
 slopes = data.frame(datasetID = NULL,
                     taxa = NULL,
