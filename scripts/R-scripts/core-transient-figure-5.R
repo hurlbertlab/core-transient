@@ -5,6 +5,15 @@
 # Input files are named propOcc_XXX.csv where
 # XXX is the dataset ID.
 
+bbsocc = read.csv('data/propOcc_datasets/propOcc_1.csv', header=T, stringsAsFactors = F)
+head(bbsocc)
+length(unique(bbsocc$site))
+rich = dplyr::count(bbsocc, site)
+head(rich)
+rich_notrans = bbsocc %>% filter(propOcc > 1/3) %>% count(site)
+head(rich_notrans)
+
+
 
 library(lme4)
 library(plyr) # for core-transient functions

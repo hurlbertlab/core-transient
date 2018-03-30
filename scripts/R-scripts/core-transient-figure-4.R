@@ -454,12 +454,6 @@ env_elev = data.frame(unique = routes.laea@data$unique, elev.point = elev.point,
 lat_scale_elev = merge(routes.laea, env_elev, by = c("unique")) # checked to make sure order lined up, d/n seem to be another way to merge since DID keeps getting lost
 lat_scale_elev = data.frame(lat_scale_elev)
 
-# lat_scale_elev = subset(lat_scale_elev, unique < 26)
-# lat_scale_elev$stateroute = strsplit(as.character(lat_scale_elev$site), "-")
-# lat_scale_elev$stateroute = lapply(lat_scale_elev$stateroute, "[[", 1) 
-# lat_scale_elev$stateroute = unlist(lat_scale_elev$stateroute)
-# lat_scale_elev$stateroute = as.numeric(lat_scale_elev$stateroute)
-
 lat_scale_rich = merge(lat_scale_elev, summ[,c("datasetID","site", "meanAbundance")], by = c("datasetID", "site"), all.x = TRUE)
 #  "spRichTrans", 
 # write.csv(lat_scale_rich, "output/tabular_data/lat_scale_rich_3_30.csv", row.names = F)
