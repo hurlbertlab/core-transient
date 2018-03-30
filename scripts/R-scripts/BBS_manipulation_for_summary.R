@@ -62,7 +62,9 @@ bbs_occ = bbs_w_aou %>%
 write.csv(bbs_occ, "data/BBS/bbs_occ_2000_2014.csv", row.names = FALSE)
 
 #### getting spRich by route
-bbs_sprich = bbs_w_aou %>% group_by(aou,Year) %>%
+bbs_sprich = bbs_w_aou %>% 
+  dplyr::select(stateroute, aou) %>%
+  unique() %>%
   dplyr::count(stateroute) 
 
 #### BBS prep to merge with summ2 dataset #####
