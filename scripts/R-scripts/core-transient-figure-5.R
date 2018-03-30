@@ -225,16 +225,14 @@ gimms_ndvi = read.csv("output/tabular_data/gimms_ndvi_bbs_data.csv", header = TR
 gimms_agg = gimms_ndvi %>% filter(month == c("may", "jun", "jul")) %>% 
   group_by(site_id)  %>%  summarise(ndvi=mean(ndvi))
 
-lat_scale_rich = read.csv("output/tabular_data/lat_scale_rich.csv", header = TRUE)
+lat_scale_rich = read.csv("output/tabular_data/lat_scale_rich_3_30.csv", header = TRUE)
 lat_scale_bbs = filter(lat_scale_rich, datasetID == 1)
-lat_scale_bbs$site_id = sapply(strsplit(as.character(lat_scale_bbs$site), split='-', fixed=TRUE), function(x) (x[1]))
-lat_scale_bbs$site_id = as.integer(lat_scale_bbs$site_id)
 
 bbs_spRich = merge(allbbs, notransbbs[c("stateroute", "spRichnotrans")], by = "stateroute")
 bbs_spRich$site_id <- bbs_spRich$stateroute
 # merging ndvi and elevation to bbs data
 bbs_env = join(bbs_spRich, gimms_agg, type = "left")
-bbs_env = merge(bbs_env, lat_scale_bbs[,c("site_id", "elev.point", "elev.mean", "elev.var")], by = "site_id")
+bbs_env = merge(bbs_env, lat_scale_bbs[,c("site", "elev.point", "elev.mean", "elev.var")], by.x = "site_id", by.y = "site")
 
 # cor test not really working - need for loop?
 cor.test(bbs_env$spRich, bbs_env$ndvi)
@@ -308,6 +306,11 @@ turnover_else$taxa = factor(turnover_else$taxa,
                             levels = c('Invertebrate','Fish','Plankton','Mammal','Plant','Bird'),ordered = TRUE)
 
 colscale = c("#1D6A9B", "turquoise2","gold2", "purple4","red", "forestgreen") 
+
+# deviation
+mean(na.omit(turnover_taxa$TJnotrans) - na.omit(turnover_taxa$TJ))
+sd(na.omit(turnover_taxa$TJnotrans) - na.omit(turnover_taxa$TJ))
+
 
 m <- ggplot(turnover_bbs, aes(x = TJ, y = TJnotrans))
 four_c <-m + geom_abline(intercept = 0,slope = 1, lwd =1.5,linetype="dashed")+geom_point(data = turnover_bbs, aes(colour = taxa),size = 2)+geom_point(data = turnover_else, aes(colour = taxa), size = 5) + xlab("Turnover (all species)") + ylab("Turnover \n (excluding transients)")  + scale_colour_manual(breaks = turnover_col$taxa,values = colscale) + theme_classic() + theme(axis.text.x=element_text(size=30, color = "black"),axis.text.y=element_text(size=30, color = "black"),axis.ticks.x=element_blank(),axis.title.x=element_text(size=46, color = "black"),axis.title.y=element_text(size=46,angle=90,vjust = 5))+ guides(colour = guide_legend(title = "Taxa"))
@@ -409,6 +412,12 @@ slopes_bbs = merge(slopes_bbs, taxcolors, by = "taxa")
 plot_relationship$taxa = factor(plot_relationship$taxa,
                                 levels = c('Invertebrate','Fish','Plankton','Mammal','Plant','Bird','Benthos'),ordered = TRUE)
 colscales = c("gray","#1D6A9B", "turquoise2","gold2", "purple4","red", "forestgreen") 
+
+
+# deviation
+mean(na.omit(plot_relationship$areaSlope_noTrans) - na.omit(plot_relationship$areaSlope))
+sd(na.omit(plot_relationship$areaSlope_noTrans) - na.omit(plot_relationship$areaSlope))
+
 
 p <- ggplot(plot_relationship, aes(x = areaSlope, y = areaSlope_noTrans))
 four_d <-p + geom_abline(intercept = 0,slope = 1, lwd =1.5,linetype="dashed") +geom_point(data=slopes_bbs, aes(colour = taxa),alpha = 5/100, size = 2)+  geom_point(aes(colour = taxa), size = 5)+ theme_classic() + scale_color_manual("Taxa", breaks = plot_relationship$taxa,values = colscales)+ xlab(expression(paste(italic("z "), "(all species)"))) + ylab(expression(paste(italic("z "), "(excluding transients)"))) +ylim(0,1)+xlim(0,1) + theme(axis.text.x=element_text(size=30, color = "black"),axis.ticks.x=element_blank(),axis.text.y=element_text(size=30, color = "black"),axis.title.x=element_text(size=46, color = "black"),axis.title.y=element_text(size=46,angle=90,vjust = 2))+ theme(legend.text = element_text(size = 38), legend.title = element_blank(), legend.key.height=unit(3,"line")) #,legend.position = c(.75, .3))

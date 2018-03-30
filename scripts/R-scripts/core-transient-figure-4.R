@@ -462,14 +462,14 @@ lat_scale_elev = data.frame(lat_scale_elev)
 
 lat_scale_rich = merge(lat_scale_elev, summ[,c("datasetID","site", "meanAbundance")], by = c("datasetID", "site"), all.x = TRUE)
 #  "spRichTrans", 
-# write.csv(lat_scale_rich, "output/tabular_data/lat_scale_rich.csv", row.names = F)
+# write.csv(lat_scale_rich, "output/tabular_data/lat_scale_rich_3_30.csv", row.names = F)
 lat_scale = read.csv("output/tabular_data/lat_scale_rich_5km.csv", header = TRUE, stringsAsFactors = FALSE)
 
 lat_scale_rich_taxa = filter(lat_scale, datasetID == 1) %>% separate(., site, c("stateroute", "level", "number"), sep = "-") %>% filter(., level == 50)
 lat_scale_rich_taxa$site = lat_scale_rich_taxa$stateroute
-lat_scale_rich_taxa = lat_scale_rich_taxa[ -c(2:4) ]
+lat_scale_rich_taxa = lat_scale_rich_taxa[ -c(2:4)]
 lat_scale_rich_taxa = lat_scale_rich_taxa[,c("datasetID","site", "unique", "taxa", "propTrans"  , "dId_site", "elev.point", "elev.mean" ,  "elev.var" ,"Lon","Lat", "optional","stateroute", "meanAbundance")]
-lat_scale = filter(lat_scale, datasetID != 1)
+lat_scale = filter(lat_scale, datasetID != 1) %>% filter(., taxa != "Fish") %>% filter(., taxa != "Plankton") %>% filter(., taxa != "Benthos")
 lat_scale = lat_scale[ -13 ]
 
 lat_scale_rich = rbind(lat_scale, lat_scale_rich_taxa)

@@ -424,10 +424,10 @@ for (dataset in datasetIDs[,1]) {
 null_5c = data.frame(null_5c)
 colnames(null_5c) = c("r", "datasetID", "site", "notransturn", "numnon")
 null_5c$r = as.numeric(null_5c$r)
-null_5c$datasetID = as.numeric(null_5c$datasetID)
+null_5c$datasetID = as.numeric(as.character(null_5c$datasetID))
 null_5c$site = as.character(null_5c$site)
 null_5c$notransturn = as.numeric(as.character(null_5c$notransturn))
-null_5c$numnon = as.numeric(null_5c$numnon)
+null_5c$numnon = as.numeric(as.character(null_5c$numnon))
 
 # write.csv(null_5c, "output/tabular_data/null_5c100.csv", row.names = FALSE)
 # null_5c = read.csv("output/tabular_data/null_5c100.csv", header = TRUE)
@@ -460,10 +460,13 @@ hist(turnover_taxa$diff, xlab = "Excluding null transients - Excluding transient
 
 
 ggplot(data=turnover_taxa, aes(turnover_taxa$notransturn-turnover_taxa$TJnotrans)) + 
-  geom_histogram(bins = 10, col="black",  fill="white") + theme_classic() + theme(axis.text.x=element_text(size=30,angle=90, color = "black"), axis.ticks.x=element_blank(),axis.text.y=element_text(size=30, color = "black"),axis.title.y=element_text(size=30,angle=90, vjust = 4),axis.title.x=element_text(size=30, vjust = -4))  + ylab("Frequency") + xlab("Excluding non-transients - Excluding transients") +theme(plot.margin=unit(c(0.35,1,2,1.7),"cm")) 
+  geom_histogram(bins = 16, col="black",  fill="white") + theme_classic() + theme(axis.text.x=element_text(size=30,angle=90, color = "black"), axis.ticks.x=element_blank(),axis.text.y=element_text(size=30, color = "black"),axis.title.y=element_text(size=30,angle=90, vjust = 4),axis.title.x=element_text(size=30, vjust = -4))  + ylab("Frequency") + xlab("Akaike weight difference \n (excluding non-transients - excluding transients)") +theme(plot.margin=unit(c(0.35,1,2,1.7),"cm")) 
 ggsave(file="C:/Git/core-transient/output/plots/1c_hist.pdf", height = 10, width = 14)
 
+
 ##### paired t-test #####
+wilcox.test(turnover_taxa$notransturn-turnover_taxa$TJnotrans)
+
 df_ttest_5c = merge(null_5c, turnover_output, by = c("datasetID", "site"))
 
 t.test(df_ttest_5c$notransturn, 
