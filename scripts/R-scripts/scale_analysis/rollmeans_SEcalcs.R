@@ -18,12 +18,21 @@ central_altB = bbs_allscales %>%
   dplyr::select(focalrte, logA, pctCore, sdC)
 
 
-
+####Excerpt from ENEC stats classes but reliant on model preds for CI gen####
 parests = pctCore #mean pctcore estimates
 vcov(mod1)
 par.se = sd(x)/sqrt(sum(!is.na(x)))
-
-
 par.se <- sqrt(diag(vcov(mod1)))
 upper95 <- pctCore+par.se*qt(.975,df.residual(mod1))
 lower95 <- pctCore-par.se*qt(.975,df.residual(mod1))
+
+
+
+####Finding appropriate ranges and means for scaling parameters####
+core_coefs = read.csv("scripts/R-scripts/scale_analysis/core_coefs.csv", header = TRUE) #AUC etc.
+avgN = core_coefs %>% summarise(avg_mid = mean(PCN.mid))
+avgA = core_coefs %>% summarise(avg_mid = mean(PCA.mid))
+
+#look at range of PCN.mid and PCA.mid values sorted in core_coefs
+
+#wording - was I just confused about what he meant by confidence intervals? did he actually mean ranges? 
