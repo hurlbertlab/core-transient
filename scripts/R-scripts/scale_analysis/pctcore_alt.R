@@ -153,7 +153,6 @@ stateroutes = unique(bbs_allscales$focalrte)
 
 #do I even need a loop? can't I just group by stateroute and calc these ?
 
-
 for(s in stateroutes){
   logsub = subset(bbs_allscales, bbs_allscales$focalrte == s)  
   #PCA 
@@ -168,14 +167,15 @@ for(s in stateroutes){
   
   PCA.obline = logsub$pctCore #vector for a given focal rte s, actual values along the pos decel curve
   
-  b = PCA.min -(PCA.slope*min(logsub$logA)) # b = y1 - m*x1 i.e. b = starting point occ val (y1) - slope*starting point scale val 
+  b = PCA.min -(PCA.slope*min(logsub$logA)) # b = y1 - m*x1
   
   PCA.pline = PCA.slope*logsub$logA+b #the vector of y values/occs that lie between the min and max in a straight line
   
-  PCA.curvature = sum(PCA.obline-PCA.pline) #sum all of the differences between the observed and predicted occs
+  PCA.curvature = sum(PCA.obline-PCA.pline) 
   #AUC proxy - taking diff between actual and predicted mid vals at EVERY scale and adding together
+  
   PCAmodel = data.frame(stateroute = s, PCA.min, PCA.max, PCA.slope, 
-                       PCA.mid, PCA.curvature)
+                        PCA.mid, PCA.curvature)
   
   PCA.df = rbind(PCA.df, PCAmodel)
   #
@@ -183,29 +183,32 @@ for(s in stateroutes){
   #PCN 
   #PCNpred_df = data.frame(preds = predict(PCNlog), scale = logsub$scale, logN = logsub$logN)  #get preds -> is predicting unique per scale, all clear
   #ACTUAL stats (for plotting data pts): 
-  PCN.min = min(logsub$pctCore[logsub$logN == min(logsub$logN)])
+  PCN.min = logsub$pctCore[logsub$logN == min(logsub$logN)]
   PCN.max = logsub$pctCore[logsub$logN == max(logsub$logN)]
   PCN.mid = min(logsub$logN[logsub$pctCore >= 0.5]) 
-  PCN.slope = ((PCN.max - PCN.min)/(max(logsub$logN[logsub$pctCore == max(logsub$pctCore)]) - min(logsub$logN[logsub$pctCore == min(logsub$pctCore)])))
+  PCN.slope = ((PCN.max - PCN.min)/(max(logsub$logN) - min(logsub$logN)))
   #want the FIRST instance where it hits this range -> how? minimum scale at which it does that
   #save as an area, not a "scale" 
-  
+     
   PCN.obline = logsub$pctCore #vector for a given focal rte s, actual values along the pos decel curve
+  
   b2 = PCN.min -(PCN.slope*min(logsub$logN)) # b = y1 - m*x1
+  
   PCN.pline = PCN.slope*logsub$logN+b2 #the vector of y values/occs that lie between the min and max in a straight line
+  
   PCN.curvature = sum(PCN.obline-PCN.pline) 
   #NUC proxy - taking diff between actual and predicted mid vals at EVERY scale and adding together
-  PCNmodel = data.frame(stateroute = s, PCN.min, PCN.max, PCN.slope, 
-                       PCN.mid, PCN.curvature)
   
-  PCN.df = rbind(PCN.df, PCNmodel)
-  #
-}  
-
+  PCNmodel = data.frame(stateroute = s, PCN.min, PCN.max, 
+                        PCN.slope, PCN.mid, PCN.curvature)
+  
+  PCN.df = rbind(PCN.df, PCNmodel) #
+    
+  }  
 
 #join all together using inner_join by focal rte, not cbind 
 core_coefs = PCA.df %>% 
-  inner_join(PCN.df, PCA.df, by = "stateroute")
+  inner_join(PCN.df, PCA.df, by = "stateroute") %>% distinct()
 
 write.csv(core_coefs, "scripts/R-scripts/scale_analysis/core_coefs.csv", row.names = FALSE) 
 #updated 4/10, removal of redundant coefs and inclusion of ON, revised curvature est
