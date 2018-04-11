@@ -211,7 +211,7 @@ core_coefs = PCA.df %>%
   inner_join(PCN.df, PCA.df, by = "stateroute") %>% distinct()
 
 write.csv(core_coefs, "scripts/R-scripts/scale_analysis/core_coefs.csv", row.names = FALSE) 
-#updated 4/10, removal of redundant coefs and inclusion of ON, revised curvature est
+#updated 4/11, removal of redundant coefs and inclusion of ON, revised curvature est
 
 
 ####Env analysis####
