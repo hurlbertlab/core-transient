@@ -127,24 +127,25 @@ pred_plot
 
 
 ####Extract coefficients from scale-occupancy relationships for analysis####
-PCA.df = data.frame(stateroute = numeric(), PCA.min = numeric(), PCA.max = numeric(), 
-                   PCA.slope = numeric(), 
-                   PCA.mid = numeric(), 
-                   PCA.curvature = numeric())
-PCN.df = data.frame(stateroute = numeric(), PCN.min = numeric(), PCN.max = numeric(), 
-                   PCN.slope = numeric(), 
-                   PCN.mid = numeric(), 
-                   PCN.curvature = numeric())
-
-
 
 #read in data for processing
 bbs_allscales = read.csv("data/BBS/bbs_allscales.csv", header = TRUE)
 levels(bbs_allscales$scale)
 unique(bbs_allscales$scale)
 length(unique(bbs_allscales$focalrte))
-#bbs_allscales = na.omit(bbs_allscales)
-length(unique(bbs_allscales$focalrte)) #ommitted 2 routes w/missing data
+bbs_allscales = na.omit(bbs_allscales) #from 66792 to 66792 when maxdist left out so 
+#oh we DO want to cut out the below-route stuff bc we can't do the env analyses on these period
+length(unique(bbs_allscales$focalrte)) #968 rtes, 62920 obs
+
+
+PCA.df = data.frame(stateroute = numeric(), PCA.min = numeric(), PCA.max = numeric(), 
+                    PCA.slope = numeric(), 
+                    PCA.mid = numeric(), 
+                    PCA.curvature = numeric())
+PCN.df = data.frame(stateroute = numeric(), PCN.min = numeric(), PCN.max = numeric(), 
+                    PCN.slope = numeric(), 
+                    PCN.mid = numeric(), 
+                    PCN.curvature = numeric())
 
 
 ####coefs####
