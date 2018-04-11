@@ -159,17 +159,20 @@ for(s in stateroutes){
   #PCA 
   #PCApred_df = data.frame(preds = predict(PCAlog), scale = logsub$scale, logA = logsub$logA)  #get preds -> is predicting unique per scale, all clear
   #ACTUAL stats (for plotting data pts): 
-  PCA.min = min(logsub$pctCore[logsub$logA == min(logsub$logA)])
+  PCA.min = logsub$pctCore[logsub$logA == min(logsub$logA)]
   PCA.max = logsub$pctCore[logsub$logA == max(logsub$logA)]
   PCA.mid = min(logsub$logA[logsub$pctCore >= 0.5]) 
-  PCA.slope = ((PCA.max - PCA.min)/(max(logsub$logA[logsub$pctCore == max(logsub$pctCore)]) - min(logsub$logA[logsub$pctCore == min(logsub$pctCore)])))
+  PCA.slope = ((PCA.max - PCA.min)/(max(logsub$logA) - min(logsub$logA)))
   #want the FIRST instance where it hits this range -> how? minimum scale at which it does that
   #save as an area, not a "scale" 
   
   PCA.obline = logsub$pctCore #vector for a given focal rte s, actual values along the pos decel curve
-  b = PCA.min -(PCA.slope*min(logsub$logA)) # b = y1 - m*x1
+  
+  b = PCA.min -(PCA.slope*min(logsub$logA)) # b = y1 - m*x1 i.e. b = starting point occ val (y1) - slope*starting point scale val 
+  
   PCA.pline = PCA.slope*logsub$logA+b #the vector of y values/occs that lie between the min and max in a straight line
-  PCA.curvature = sum(PCA.obline-PCA.pline) 
+  
+  PCA.curvature = sum(PCA.obline-PCA.pline) #sum all of the differences between the observed and predicted occs
   #AUC proxy - taking diff between actual and predicted mid vals at EVERY scale and adding together
   PCAmodel = data.frame(stateroute = s, PCA.min, PCA.max, PCA.slope, 
                        PCA.mid, PCA.curvature)
