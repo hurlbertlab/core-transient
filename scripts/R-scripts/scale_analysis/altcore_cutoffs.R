@@ -901,34 +901,291 @@ plot(pctCore~logA, data = bbs_allscales, xlab = "Log Area" , ylab = "Proportion 
 plot(pctCore~logN, data = bbs_allscales, xlab = "Average Abundance" , ylab = "Proportion Core", main = "50/50 CT Distinction")
 
 
+####Revamped coef extraction loop for comparing differences in value distributions between cutoff categories####
+####Extract coefficients from scale-occupancy relationships for analysis####
+
+####normal cutoff of 67%#### 
+
+#read in data for processing
+bbs_allscales = read.csv("data/BBS/bbs_allscales.csv", header = TRUE)
+levels(bbs_allscales$scale)
+unique(bbs_allscales$scale)
+length(unique(bbs_allscales$focalrte))
+bbs_allscales = na.omit(bbs_allscales) #from 66792 to 66792 when maxdist left out so 
+#oh we DO want to cut out the below-route stuff bc we can't do the env analyses on these period
+length(unique(bbs_allscales$focalrte)) #968 rtes, 62920 obs
+
+
+PCA.df = data.frame(stateroute = numeric(), PCA.min = numeric(), PCA.max = numeric(), 
+                    PCA.slope = numeric(), 
+                    PCA.mid = numeric(), 
+                    PCA.curvature = numeric())
+PCN.df = data.frame(stateroute = numeric(), PCN.min = numeric(), PCN.max = numeric(), 
+                    PCN.slope = numeric(), 
+                    PCN.mid = numeric(), 
+                    PCN.curvature = numeric())
+
+
+####coefs####
+stateroutes = unique(bbs_allscales$focalrte)
+
+#do I even need a loop? can't I just group by stateroute and calc these ?
+
+for(s in stateroutes){
+  logsub = subset(bbs_allscales, bbs_allscales$focalrte == s)  
+  #PCA 
+  #PCApred_df = data.frame(preds = predict(PCAlog), scale = logsub$scale, logA = logsub$logA)  #get preds -> is predicting unique per scale, all clear
+  #ACTUAL stats (for plotting data pts): 
+  PCA.min = logsub$pctCore[logsub$logA == min(logsub$logA)]
+  PCA.max = logsub$pctCore[logsub$logA == max(logsub$logA)]
+  PCA.mid = min(logsub$logA[logsub$pctCore >= 0.5]) 
+  PCA.slope = ((PCA.max - PCA.min)/(max(logsub$logA) - min(logsub$logA)))
+  #want the FIRST instance where it hits this range -> how? minimum scale at which it does that
+  #save as an area, not a "scale" 
+  
+  PCA.obline = logsub$pctCore #vector for a given focal rte s, actual values along the pos decel curve
+  
+  b = PCA.min -(PCA.slope*min(logsub$logA)) # b = y1 - m*x1
+  
+  PCA.pline = PCA.slope*logsub$logA+b #the vector of y values/occs that lie between the min and max in a straight line
+  
+  PCA.curvature = sum(PCA.obline-PCA.pline) 
+  #AUC proxy - taking diff between actual and predicted mid vals at EVERY scale and adding together
+  
+  PCAmodel = data.frame(stateroute = s, PCA.min, PCA.max, PCA.slope, 
+                        PCA.mid, PCA.curvature)
+  
+  PCA.df = rbind(PCA.df, PCAmodel)
+  #
+  
+  #PCN 
+  #PCNpred_df = data.frame(preds = predict(PCNlog), scale = logsub$scale, logN = logsub$logN)  #get preds -> is predicting unique per scale, all clear
+  #ACTUAL stats (for plotting data pts): 
+  PCN.min = logsub$pctCore[logsub$logN == min(logsub$logN)]
+  PCN.max = logsub$pctCore[logsub$logN == max(logsub$logN)]
+  PCN.mid = min(logsub$logN[logsub$pctCore >= 0.5]) 
+  PCN.slope = ((PCN.max - PCN.min)/(max(logsub$logN) - min(logsub$logN)))
+  #want the FIRST instance where it hits this range -> how? minimum scale at which it does that
+  #save as an area, not a "scale" 
+  
+  PCN.obline = logsub$pctCore #vector for a given focal rte s, actual values along the pos decel curve
+  
+  b2 = PCN.min -(PCN.slope*min(logsub$logN)) # b = y1 - m*x1
+  
+  PCN.pline = PCN.slope*logsub$logN+b2 #the vector of y values/occs that lie between the min and max in a straight line
+  
+  PCN.curvature = sum(PCN.obline-PCN.pline) 
+  #NUC proxy - taking diff between actual and predicted mid vals at EVERY scale and adding together
+  
+  PCNmodel = data.frame(stateroute = s, PCN.min, PCN.max, 
+                        PCN.slope, PCN.mid, PCN.curvature)
+  
+  PCN.df = rbind(PCN.df, PCNmodel) #
+  
+}  
+
+#join all together using inner_join by focal rte, not cbind 
+core_coefs = PCA.df %>% 
+  inner_join(PCN.df, PCA.df, by = "stateroute") %>% distinct()
+
+write.csv(core_coefs, "scripts/R-scripts/scale_analysis/core_coefs.csv", row.names = FALSE) 
+#updated 4/11, removal of redundant coefs and inclusion of ON, revised curvature est
+
+
+
+####cutoff of 50%#### 
+
+#read in data for processing
+bbs_allscales = read.csv(paste(BBS, "bbs_allscales_50.csv", sep = ""), header = TRUE) #in intermediate BBS scales bioark folder
+#keeping code same except for files read in and names of files written to csv, probably a way to automate this  
+levels(bbs_allscales$scale)
+unique(bbs_allscales$scale)
+length(unique(bbs_allscales$focalrte))
+bbs_allscales = na.omit(bbs_allscales) #from 66792 to 66792 when maxdist left out so 
+#oh we DO want to cut out the below-route stuff bc we can't do the env analyses on these period
+length(unique(bbs_allscales$focalrte)) #968 rtes, 62920 obs
+
+
+PCA.df = data.frame(stateroute = numeric(), PCA.min = numeric(), PCA.max = numeric(), 
+                    PCA.slope = numeric(), 
+                    PCA.mid = numeric(), 
+                    PCA.curvature = numeric())
+PCN.df = data.frame(stateroute = numeric(), PCN.min = numeric(), PCN.max = numeric(), 
+                    PCN.slope = numeric(), 
+                    PCN.mid = numeric(), 
+                    PCN.curvature = numeric())
+
+
+####coefs####
+stateroutes = unique(bbs_allscales$focalrte)
+
+#do I even need a loop? can't I just group by stateroute and calc these ?
+
+for(s in stateroutes){
+  logsub = subset(bbs_allscales, bbs_allscales$focalrte == s)  
+  #PCA 
+  #PCApred_df = data.frame(preds = predict(PCAlog), scale = logsub$scale, logA = logsub$logA)  #get preds -> is predicting unique per scale, all clear
+  #ACTUAL stats (for plotting data pts): 
+  PCA.min = logsub$pctCore[logsub$logA == min(logsub$logA)]
+  PCA.max = logsub$pctCore[logsub$logA == max(logsub$logA)]
+  PCA.mid = min(logsub$logA[logsub$pctCore >= 0.5]) 
+  PCA.slope = ((PCA.max - PCA.min)/(max(logsub$logA) - min(logsub$logA)))
+  #want the FIRST instance where it hits this range -> how? minimum scale at which it does that
+  #save as an area, not a "scale" 
+  
+  PCA.obline = logsub$pctCore #vector for a given focal rte s, actual values along the pos decel curve
+  
+  b = PCA.min -(PCA.slope*min(logsub$logA)) # b = y1 - m*x1
+  
+  PCA.pline = PCA.slope*logsub$logA+b #the vector of y values/occs that lie between the min and max in a straight line
+  
+  PCA.curvature = sum(PCA.obline-PCA.pline) 
+  #AUC proxy - taking diff between actual and predicted mid vals at EVERY scale and adding together
+  
+  PCAmodel = data.frame(stateroute = s, PCA.min, PCA.max, PCA.slope, 
+                        PCA.mid, PCA.curvature)
+  
+  PCA.df = rbind(PCA.df, PCAmodel)
+  #
+  
+  #PCN 
+  #PCNpred_df = data.frame(preds = predict(PCNlog), scale = logsub$scale, logN = logsub$logN)  #get preds -> is predicting unique per scale, all clear
+  #ACTUAL stats (for plotting data pts): 
+  PCN.min = logsub$pctCore[logsub$logN == min(logsub$logN)]
+  PCN.max = logsub$pctCore[logsub$logN == max(logsub$logN)]
+  PCN.mid = min(logsub$logN[logsub$pctCore >= 0.5]) 
+  PCN.slope = ((PCN.max - PCN.min)/(max(logsub$logN) - min(logsub$logN)))
+  #want the FIRST instance where it hits this range -> how? minimum scale at which it does that
+  #save as an area, not a "scale" 
+  
+  PCN.obline = logsub$pctCore #vector for a given focal rte s, actual values along the pos decel curve
+  
+  b2 = PCN.min -(PCN.slope*min(logsub$logN)) # b = y1 - m*x1
+  
+  PCN.pline = PCN.slope*logsub$logN+b2 #the vector of y values/occs that lie between the min and max in a straight line
+  
+  PCN.curvature = sum(PCN.obline-PCN.pline) 
+  #NUC proxy - taking diff between actual and predicted mid vals at EVERY scale and adding together
+  
+  PCNmodel = data.frame(stateroute = s, PCN.min, PCN.max, 
+                        PCN.slope, PCN.mid, PCN.curvature)
+  
+  PCN.df = rbind(PCN.df, PCNmodel) #
+  
+}  
+
+#join all together using inner_join by focal rte, not cbind 
+core_coefs50 = PCA.df %>% 
+  inner_join(PCN.df, PCA.df, by = "stateroute") %>% distinct()
+
+write.csv(core_coefs50, "scripts/R-scripts/scale_analysis/core_coefs50.csv", row.names = FALSE) 
+#updated 4/11, removal of redundant coefs and inclusion of ON, revised curvature est
+
+
+####cutoff of 75%#### 
+
+#read in data for processing
+bbs_allscales = read.csv(paste(BBS, "bbs_allscales_75.csv", sep = ""), header = TRUE)
+levels(bbs_allscales$scale)
+unique(bbs_allscales$scale)
+length(unique(bbs_allscales$focalrte))
+bbs_allscales = na.omit(bbs_allscales) #from 66792 to 66792 when maxdist left out so 
+#oh we DO want to cut out the below-route stuff bc we can't do the env analyses on these period
+length(unique(bbs_allscales$focalrte)) #968 rtes, 62920 obs
+
+
+PCA.df = data.frame(stateroute = numeric(), PCA.min = numeric(), PCA.max = numeric(), 
+                    PCA.slope = numeric(), 
+                    PCA.mid = numeric(), 
+                    PCA.curvature = numeric())
+PCN.df = data.frame(stateroute = numeric(), PCN.min = numeric(), PCN.max = numeric(), 
+                    PCN.slope = numeric(), 
+                    PCN.mid = numeric(), 
+                    PCN.curvature = numeric())
+
+
+####coefs####
+stateroutes = unique(bbs_allscales$focalrte)
+
+#do I even need a loop? can't I just group by stateroute and calc these ?
+
+for(s in stateroutes){
+  logsub = subset(bbs_allscales, bbs_allscales$focalrte == s)  
+  #PCA 
+  #PCApred_df = data.frame(preds = predict(PCAlog), scale = logsub$scale, logA = logsub$logA)  #get preds -> is predicting unique per scale, all clear
+  #ACTUAL stats (for plotting data pts): 
+  PCA.min = logsub$pctCore[logsub$logA == min(logsub$logA)]
+  PCA.max = logsub$pctCore[logsub$logA == max(logsub$logA)]
+  PCA.mid = min(logsub$logA[logsub$pctCore >= 0.5]) 
+  PCA.slope = ((PCA.max - PCA.min)/(max(logsub$logA) - min(logsub$logA)))
+  #want the FIRST instance where it hits this range -> how? minimum scale at which it does that
+  #save as an area, not a "scale" 
+  
+  PCA.obline = logsub$pctCore #vector for a given focal rte s, actual values along the pos decel curve
+  
+  b = PCA.min -(PCA.slope*min(logsub$logA)) # b = y1 - m*x1
+  
+  PCA.pline = PCA.slope*logsub$logA+b #the vector of y values/occs that lie between the min and max in a straight line
+  
+  PCA.curvature = sum(PCA.obline-PCA.pline) 
+  #AUC proxy - taking diff between actual and predicted mid vals at EVERY scale and adding together
+  
+  PCAmodel = data.frame(stateroute = s, PCA.min, PCA.max, PCA.slope, 
+                        PCA.mid, PCA.curvature)
+  
+  PCA.df = rbind(PCA.df, PCAmodel)
+  #
+  
+  #PCN 
+  #PCNpred_df = data.frame(preds = predict(PCNlog), scale = logsub$scale, logN = logsub$logN)  #get preds -> is predicting unique per scale, all clear
+  #ACTUAL stats (for plotting data pts): 
+  PCN.min = logsub$pctCore[logsub$logN == min(logsub$logN)]
+  PCN.max = logsub$pctCore[logsub$logN == max(logsub$logN)]
+  PCN.mid = min(logsub$logN[logsub$pctCore >= 0.5]) 
+  PCN.slope = ((PCN.max - PCN.min)/(max(logsub$logN) - min(logsub$logN)))
+  #want the FIRST instance where it hits this range -> how? minimum scale at which it does that
+  #save as an area, not a "scale" 
+  
+  PCN.obline = logsub$pctCore #vector for a given focal rte s, actual values along the pos decel curve
+  
+  b2 = PCN.min -(PCN.slope*min(logsub$logN)) # b = y1 - m*x1
+  
+  PCN.pline = PCN.slope*logsub$logN+b2 #the vector of y values/occs that lie between the min and max in a straight line
+  
+  PCN.curvature = sum(PCN.obline-PCN.pline) 
+  #NUC proxy - taking diff between actual and predicted mid vals at EVERY scale and adding together
+  
+  PCNmodel = data.frame(stateroute = s, PCN.min, PCN.max, 
+                        PCN.slope, PCN.mid, PCN.curvature)
+  
+  PCN.df = rbind(PCN.df, PCNmodel) #
+  
+}  
+
+#join all together using inner_join by focal rte, not cbind 
+core_coefs75 = PCA.df %>% 
+  inner_join(PCN.df, PCA.df, by = "stateroute") %>% distinct()
+
+write.csv(core_coefs75, "scripts/R-scripts/scale_analysis/core_coefs75.csv", row.names = FALSE) 
+#updated 4/11, removal of redundant coefs and inclusion of ON, revised curvature est
+
+####Merge 3 core_coefs versions, add new factor column variable delineating cutoff category####
+
+
+
+####Supplemental figures: plotting differences in coef vals at diff cutoffs####
+
+
+
+
+
 
 #####################################################################################################################
 
 
-####Distributions (cutoffs not part of calculations, just temporal occupancy)####
-
-# setwd("C:/git/core-transient")
-#'#' Please download and install the following packages:
-library(raster)
-library(maps)
-library(sp)
-library(rgdal)
-library(maptools)
-library(rgeos)
-library(dplyr)
-library(fields)
-library(tidyr)
-library(ggplot2)
-library(nlme)
-library(gridExtra)
-library(wesanderson)
-library(stats)
-library(viridis)
-
+####Distributions check (cutoffs not part of calculations, just temporal occupancy)####
 # To run this script, you need temperature, precip, etc data, 
 # which are currently stored in the following directories off of github: 
-
-BBS = '//bioark.ad.unc.edu/HurlbertLab/Jenkins/Intermediate scripts/BBS scaled/'
 
 fifty_allyears = read.csv(paste(BBS, "fifty_allyears.csv", sep = ""), header = TRUE) #using updated version, 50 stop data, 07/12
 bbs_allscales = read.csv("data/BBS/bbs_allscales.csv", header = TRUE)
@@ -1119,3 +1376,4 @@ all_figplot = ggplot(all_fig, aes(occ, group = factor(signif(area, digits = 2)),
   theme(legend.text = element_text(size = 16), legend.title = element_text(size = 16))+
   theme(legend.position = c(0.50, 0.50))
 all_figplot
+
