@@ -67,15 +67,17 @@ coefs_tidy = coefs_supp %>%
 
 write.csv(coefs_tidy, "scripts/R-scripts/scale_analysis/coefs_tidy_supp.csv", row.names = FALSE)
 
-# 
-# 
-# coefs_supp$parm = factor(coefs_supp$parm, 
-#                          levels = c("PCA.min","PCA.mid", "PCA.slope","PCA.curvature", "PCA.max"),
-#                          labels = c(as.character(expression("p"["min"])), as.character(expression("Scale"[50])), "Slope", "Curvature", as.character(expression("p"["max"]))))
-
-
 ####Supplemental figures: plotting differences in coef vals at diff cutoffs####
 
+
+ggplot(coefs_tidy, aes(x = cutoff_lvl, y = parm_val))+
+  facet_wrap(~parm)+geom_boxplot() #, labeller = label_parsed)
+
+
+
+# coefs_tidy$parm = factor(coefs_tidy$parm, 
+#                          levels = c("PCA.min","PCA.mid", "PCA.slope","PCA.curvature", "PCA.max"),
+#                          labels = c(as.character(expression("p"["min"])), as.character(expression("Scale"[50])), "Slope", "Curvature", as.character(expression("p"["max"]))))
 
 
 
