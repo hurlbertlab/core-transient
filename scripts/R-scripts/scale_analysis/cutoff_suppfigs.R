@@ -68,16 +68,26 @@ coefs_tidy = coefs_supp %>%
 write.csv(coefs_tidy, "scripts/R-scripts/scale_analysis/coefs_tidy_supp.csv", row.names = FALSE)
 
 ####Supplemental figures: plotting differences in coef vals at diff cutoffs####
+coefs_tidy = read.csv("scripts/R-scripts/scale_analysis/coefs_tidy_supp.csv", header = TRUE)
+coefs_tidyA = coefs_tidy %>% filter(parm == "PCA.min"| parm == "PCA.mid"| parm == "PCA.slope"| parm == "PCA.curvature"| parm == "PCA.max")
+coefs_tidyN = coefs_tidy %>% filter(parm == "PCN.min"| parm == "PCN.mid"| parm == "PCN.slope"| parm == "PCN.curvature"| parm == "PCN.max")
+
+coefs_tidyA$parm = factor(coefs_tidyA$parm,
+                         levels = c("PCA.min","PCA.mid", "PCA.slope","PCA.curvature", "PCA.max"),
+                         labels = c(as.character(expression("p"["min"])), as.character(expression("Scale"[50])), "Slope", "Curvature", as.character(expression("p"["max"]))))
+
+coefs_tidyN$parm = factor(coefs_tidyN$parm,
+                          levels = c("PCN.min","PCN.mid", "PCN.slope","PCN.curvature", "PCN.max"),
+                          labels = c(as.character(expression("p"["min"])), as.character(expression("Scale"[50])), "Slope", "Curvature", as.character(expression("p"["max"]))))
 
 
-ggplot(coefs_tidy, aes(x = cutoff_lvl, y = parm_val))+
-  facet_wrap(~parm)+geom_boxplot() #, labeller = label_parsed)
 
+ggplot(coefs_tidyA, aes(x = cutoff_lvl, y = parm_val))+
+  geom_boxplot()+facet_wrap(~parm, scales = "free_y", labeller = label_parsed)+
+  theme_classic()+theme(text = element_text(size = 18))+
+  labs(x = "Proportion of Presence Required for Designation as Core", y = "Parameter values", title = "Parameters derived from proportion core-area scaling relationship")
 
-
-# coefs_tidy$parm = factor(coefs_tidy$parm, 
-#                          levels = c("PCA.min","PCA.mid", "PCA.slope","PCA.curvature", "PCA.max"),
-#                          labels = c(as.character(expression("p"["min"])), as.character(expression("Scale"[50])), "Slope", "Curvature", as.character(expression("p"["max"]))))
-
-
-
+ggplot(coefs_tidyN, aes(x = cutoff_lvl, y = parm_val))+
+  geom_boxplot()+facet_wrap(~parm, scales = "free_y", labeller = label_parsed)+
+  theme_classic()+theme(text = element_text(size = 18))+
+  labs(x = "Proportion of Presence Required for Designation as Core", y = "Parameter values", title = "Parameters derived from proportion core-abundance scaling relationship")
