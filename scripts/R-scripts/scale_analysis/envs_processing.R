@@ -195,3 +195,156 @@ bbs_envs = env_elev %>%
   filter(temp.mean != "NA", prec.mean != "NA", elev.mean != "NA", ndvi.mean != "NA") #945 routes when NA obs removed
 write.csv(bbs_envs, "scripts/R-scripts/scale_analysis/bbs_envs.csv", row.names = FALSE) 
 #current version 09/21
+
+
+####Pare down routes to exclude routes that are missing above OR below scale####
+bbs_envs = read.csv("scripts/R-scripts/scale_analysis/bbs_envs.csv", header = TRUE)
+bbs_allscales = read.csv("data/BBS/bbs_allscales.csv", header = TRUE)
+bbs_envs = filter(bbs_envs, stateroute %in% bbs_allscales$focalrte)
+
+####Calc z-scores, quantiles pre-variance loop####
+bbs_envs = read.csv("scripts/R-scripts/scale_analysis/bbs_envs.csv", header = TRUE)
+
+#alt simplistic standardization using z scores 
+#means (need for calc top scale variance)
+bbs_envs$temp_zm = (bbs_envs$temp.mean - mean(bbs_envs$temp.mean)) / sd(bbs_envs$temp.mean)
+bbs_envs$prec_zm = (bbs_envs$prec.mean - mean(bbs_envs$prec.mean)) / sd(bbs_envs$prec.mean)
+bbs_envs$elev_zm = (bbs_envs$elev.mean - mean(bbs_envs$elev.mean)) / sd(bbs_envs$elev.mean)
+bbs_envs$ndvi_zm = ((bbs_envs$ndvi.mean) - mean(na.exclude(bbs_envs$ndvi.mean))) / sd(na.exclude(bbs_envs$ndvi.mean)) 
+#NA's for ndvi vals around statertes in the 3000's
+#with z scores for convhull only, don't z scores of variances 
+
+write.csv(bbs_envs, "scripts/R-scripts/scale_analysis/bbs_envs.csv", row.names = FALSE) #updated 09/21 to reflect fixed above scale
+#conversion done for single-rte scale envs 
+#use pre-standardized means to calc above-rte variance and THEN convert to z scores for comparison to lower scales 
+
+####Convex polygon comparison of variables####
+#not variances yet 
+#notes on geometry package and min convex polygon:
+#convhulln from geometry package, optimized by qhull -> convex hull 
+#http://www.qhull.org/html/qconvex.htm#synopsis
+bbs_envs = read.csv("scripts/R-scripts/scale_analysis/intermed/bbs_envs.csv", header = TRUE)
+#subset to just appropriate dims for convhulln 
+#sub_envs = bbs_envs %>% select(temp_zm, prec_zm, elev_zm, ndvi_zm) %>% filter(ndvi_zm != 'NA') #cuts nothing, all there 
+
+# 
+# hull = convhulln(sub_envs, "FA")
+# hull$area #189.74 #4.502 
+# hull$vol #66.22 #0.54 second time around....
+# rtes = unique(bbs_envs$stateroute)
+# output = c()
+# for(s in rtes){
+#   sub_envs = bbs_envs %>% filter(stateroute == s)
+#   hull = convhulln(sub_envs, "FA")
+#   temp = summarize(stateroute = s, 
+#                     zhull = hull$vol)  
+#   output = rbind(output, temp) 
+# } 
+#   
+#not possible ! need 20 pts! 
+
+#bbs_envs has env data @ scale of single route 
+#following code compiles vars of env data @scale of 66 rtes
+
+#ALTERNATIVE: add together z scores as in early code using euclidean distance bet/points or ranking in euclidean space
+#- so between scale at 1 and scale at 66 
+
+
+####Pair env data to secondary rtes associated with each focal rte; calc variance across top scale for each focal rte####
+bbs_envs = read.csv("scripts/R-scripts/scale_analysis/bbs_envs.csv", header = TRUE) #10/06
+dist.df = read.csv("scripts/R-scripts/scale_analysis/dist_df.csv", header = TRUE)
+
+#need to pair down by routes existing in bbs_envs (which have been sorted appropriately) and then calculated the top n 66 based on distance
+dist.df2 = filter(dist.df, rte1 %in% bbs_envs$stateroute & rte2 %in% bbs_envs$stateroute) 
+
+#num of rows matches num of rows in dts.df, good 
+#now calc var for each focal rte (rte1)
+top_envhetero = data.frame(stateroute = NULL,
+                           scale = NULL, 
+                           reg_ndvi_v = NULL,
+                           reg_elev_v = NULL,
+                           reg_ndvi_m = NULL,
+                           reg_elev_m = NULL)
+
+focal_rtes = unique(bbs_envs$stateroute)
+#need to structure using focal_clustr template 
+scales = c(2:66)
+output = data.frame(stateroute = NULL,
+                    scale = NULL, 
+                    reg_ndvi_v = NULL,
+                    reg_elev_v = NULL,
+                    reg_ndvi_m = NULL,
+                    reg_elev_m = NULL)
+
+#add nu scale component for calculating means at each scale interval 
+for(r in focal_rtes){
+  for(nu in scales) { #just running for top scale for now 
+    #to characterize total var that can be encompassed on a rte
+    
+    #takes dist.df and generates a new list that changes based on which route in uniqrtes is being focused on 
+    #and the length of the list varies with the scale or nu 
+    rte_group = dist.df2 %>% 
+      filter(rte1 == r) %>% 
+      top_n(nu, desc(dist)) %>%
+      dplyr::select(rte2) %>% as.vector()
+    
+    tempenv = bbs_envs %>%
+      filter(stateroute %in% rte_group$rte2)
+    
+    #can I incorporate an if else conditional here -> 
+    #but would only have entry for one row, no, best do it outside
+    
+    #only want to do this at top scale of 66 rtes, maybe just do sep 
+    # tempenv_z = tempenv %>% #subset of tempenv for convhull calcs 
+    #   select(temp_zm, prec_zm, elev_zm, ndvi_zm) %>% #using means for convhull calc
+    #   filter(ndvi_zm != 'NA') #this is ok since for convhull 
+    #   zhull_df = convhulln(tempenv_z, "FA")
+    
+    #once hull calcs have been done, don't need to keep temp or precip in final df
+    
+    #get variance of rte means, calc across entire rte_group according to scale   
+    temp = data.frame(stateroute = r,
+                      scale = nu,
+                      reg_ndvi_v = var(tempenv$ndvi.mean, na.rm = TRUE), #fix missing values!!!!
+                      reg_elev_v = var(tempenv$elev.mean), #bc each of these values is calculated across the 2ndary rtes for each focal rte
+                      reg_ndvi_m = mean(tempenv$ndvi.mean), 
+                      reg_elev_m = mean(tempenv$elev.mean)) #a vector is going in and a single val is coming out
+    #top_zhull = zhull_df$vol)
+    
+    output = rbind(output, temp)
+  }
+  reg_envhetero = rbind(top_envhetero, output) #may need a second level of output rbinding here
+}
+#removed top scale z score calcs bc not necessary outside of polygon hull calcs 
+
+write.csv(reg_envhetero, "scripts/R-scripts/scale_analysis/reg_envhetero.csv", row.names = FALSE)
+#updated 10/06
+
+#naming convention for comparisons: #env.var_zv -> z score origin, variance/habheterogeneity at rt, from 40km buffer circle raster clip.  
+#topenv.var_zv -> z score origin, variance/habhet at landscape (var across rt buffermeans in top clustr (zm vector))
+#zm from 40 km buffer circle raster clip too
+
+####Coef vs env hetero models####
+reg_envhetero = read.csv("scripts/R-scripts/scale_analysis/intermed/reg_envhetero.csv", header = TRUE) #landscape habitat vars 2:66 scale
+bbs_envs = read.csv("scripts/R-scripts/scale_analysis/intermed/bbs_envs.csv", header = TRUE) #single rte habitat vars 1 scale
+
+#Merge top_envhetero to coefs for comparing env variation for a site to its associated AUC 
+#at the scale of a landscape and scale of a rte
+
+#also prep datasets for merge 
+bbs_envs = bbs_envs[, 1:5] %>% 
+  mutate(scale = 1)
+
+reg_envhetero = reg_envhetero %>% 
+  rename(elev.mean = reg_elev_m, 
+         elev.var = reg_elev_v, 
+         ndvi.mean = reg_ndvi_m, 
+         ndvi.var = reg_ndvi_v) 
+
+reg_envhetero$scale = as.numeric(reg_envhetero$scale)
+
+env_all = reg_envhetero %>% 
+  full_join(bbs_envs) %>% #fixed, but scales out of order with row position, but everything still where it should be 
+  arrange(stateroute, scale)
+
+write.csv(env_all, "scripts/R-scripts/scale_analysis/env_all.csv", row.names = FALSE)  

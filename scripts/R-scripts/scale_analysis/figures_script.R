@@ -243,18 +243,6 @@ all_figplot = ggplot(all_fig, aes(occ, group = area_f, color = area_f, linetype 
 all_figplot
 
 
-#make a new variable factor for linetype and then call up as linetype arg so no multiple stat density calls!!! 
-
-all_figplot = ggplot(all_fig)+
-  stat_density(aes(occ, group = area_f, color = area_f, linetype = "solid"), geom = "path", position = "identity", bw = "bcv", kernel = "gaussian", n = 4000, na.rm = TRUE, size = 1.3)+
-  stat_density(aes(occ_1, group = area_f, color = area_f, linetype = "dashed"), geom = "path", position = "identity", bw = "bcv", kernel = "gaussian", n = 4000, na.rm = TRUE, size = 1.6)+
-  labs(x = "Proportion of time present at site", y = "Probability Density")+theme_classic()+
-  scale_color_viridis(discrete = TRUE, name = expression("Spatial Scale in km"^{2}))+
-  theme(axis.title = element_text(size = 18), axis.text = element_text(size = 16))+
-  theme(legend.text = element_text(size = 16), legend.title = element_text(size = 16))+
-  theme(legend.position = c(0.50, 0.50))
-all_figplot
-
 #attempts to make 50 stop single rte density line different linetype met with resistance 
 #as continuous variable linetypes can't be customized manually...
 
@@ -355,7 +343,8 @@ ggplot(scales_hetero_v, aes(x = scale, y = corr_r))+
   geom_abline(intercept = 0, slope = 0)+
   theme_classic()+theme(text = element_text(size = 18))+
   labs(color = "Environmental Heterogeneity", x = "Number of aggregated BBS Routes", y = "Pearson's correlation coefficient")+theme(legend.position = c(0.84, 0.20))+
-  scale_color_viridis(begin = 0, end = 0.7, discrete = TRUE, option = "D") 
+  scale_color_viridis(begin = 0, end = 0.7, discrete = TRUE, option = "D")+
+  scale_y_continuous(breaks = c(-0.6, -0.4, -0.2, 0, 0.2, 0.4))
 
 
 
@@ -439,10 +428,14 @@ bbs_allscales = read.csv("data/BBS/bbs_allscales.csv", header = TRUE)
 bbs_allscales = bbs_allscales %>% 
   dplyr::filter(logN != "NA")
 
-core_coefs = read.csv("scripts/R-scripts/scale_analysis/intermed/core_coefs.csv", header = TRUE) #AUC etc.
+core_coefs = read.csv("scripts/R-scripts/scale_analysis/core_coefs.csv", header = TRUE) #AUC etc.
 
 coefs_ranked = core_coefs %>% 
   arrange(PCA.curvature) #middle teal line should be least curvy
+
+coefs_avgs = core_coefs %>% 
+  summarise_all(funs(mean, sd)) %>% 
+  mutate(focalrte = "99999") 
 
 
 #compare rtes in homogeneous vs heterogeneous regions, illustrate in color to prove point 
@@ -467,9 +460,10 @@ central_alt = bbs_allscales %>%
             logA = logA) %>% 
   mutate(logA = round(logA, digits = 2)) %>%
   group_by(logA) %>%
-  summarise(pctCore = mean(pctCore_m)) %>% 
+  summarise(pctCore = mean(pctCore_m),
+            sdC = sd(pctCore_m)) %>% 
   mutate(focalrte = "99999", logA = logA) %>% 
-  dplyr::select(focalrte, logA, pctCore)
+  dplyr::select(focalrte, logA, pctCore, sdC)
 
 bbs_allsub = bbs_allscales %>% 
   filter(focalrte == 34054 | focalrte == 85169) %>%
@@ -623,3 +617,86 @@ all_predplot = ggplot(pred_dist, aes(occ))+
 all_predplot + scale_color_manual(values = c("Observed" = "black", "Small scale" = "#287D8EFF", "Large scale" = "#FDE725FF"))+
   theme(legend.position = c(0.45, 0.45), legend.text = element_text(size = 16), legend.title = element_blank())
 
+
+####Supplemental figures####
+####Supp figures: comparing raw and core_coef patterns between 3 different cutoff vals for core species####
+# Alternate cutoffs of core and transient species in a community: are distributions changed?
+#This scripts pulls in bbsallscales, bbsallscales_50, and bbs_allscales80, as well as 
+#core_coefs, core_coefs_50, and core_coefs_80 for visual comparisons
+
+####Merge 3 core_coefs versions, add new factor column variable delineating cutoff category####
+core_coefs67 = read.csv("scripts/R-scripts/scale_analysis/core_coefs.csv", header = TRUE) 
+core_coefs50 = read.csv("scripts/R-scripts/scale_analysis/core_coefs50.csv", header = TRUE) 
+core_coefs80 = read.csv("scripts/R-scripts/scale_analysis/core_coefs80.csv", header = TRUE) 
+
+core_coefs50 = core_coefs50 %>% 
+  mutate(cutoff_lvl = "Core 50%") #1
+
+core_coefs67 = core_coefs67 %>% 
+  mutate(cutoff_lvl = "Core 67%") #2
+
+core_coefs80 = core_coefs80 %>% 
+  mutate(cutoff_lvl = "Core 80%") #3
+
+coefs_supp_pre = rbind(core_coefs50, core_coefs67) # could probably rbind or inner join, idk 
+coefs_supp = rbind(coefs_supp_pre, core_coefs80)
+
+coefs_supp$cutoff_lvl = factor(coefs_supp$cutoff_lvl, 
+                               levels = c("Core 50%","Core 67%", "Core 80%"),
+                               labels = c("Core 50%","Core 67%", "Core 80%"))
+
+#gather 
+
+coefs_tidy = coefs_supp %>% 
+  gather(key = parm,
+         value = parm_val, 
+         2:11)
+
+write.csv(coefs_tidy, "scripts/R-scripts/scale_analysis/coefs_tidy_supp.csv", row.names = FALSE)
+
+####Supplemental figures: plotting differences in coef vals at diff cutoffs####
+coefs_tidy = read.csv("scripts/R-scripts/scale_analysis/coefs_tidy_supp.csv", header = TRUE)
+coefs_tidyA = coefs_tidy %>% filter(parm == "PCA.min"| parm == "PCA.mid"| parm == "PCA.slope"| parm == "PCA.curvature"| parm == "PCA.max")
+coefs_tidyN = coefs_tidy %>% filter(parm == "PCN.min"| parm == "PCN.mid"| parm == "PCN.slope"| parm == "PCN.curvature"| parm == "PCN.max")
+
+coefs_tidyA$parm = factor(coefs_tidyA$parm,
+                          levels = c("PCA.min","PCA.mid", "PCA.slope","PCA.curvature", "PCA.max"),
+                          labels = c(as.character(expression("p"["min"])), as.character(expression("Scale"[50])), "Slope", "Curvature", as.character(expression("p"["max"]))))
+
+coefs_tidyN$parm = factor(coefs_tidyN$parm,
+                          levels = c("PCN.min","PCN.mid", "PCN.slope","PCN.curvature", "PCN.max"),
+                          labels = c(as.character(expression("p"["min"])), as.character(expression("Scale"[50])), "Slope", "Curvature", as.character(expression("p"["max"]))))
+
+
+
+ggplot(coefs_tidyA, aes(x = cutoff_lvl, y = parm_val))+
+  geom_boxplot()+facet_wrap(~parm, scales = "free_y", labeller = label_parsed)+
+  theme_classic()+theme(text = element_text(size = 18))+
+  labs(x = "Proportion of Presence Required for Designation as Core", y = "Parameter values", title = "Parameters derived from proportion core-area scaling relationship")
+
+ggplot(coefs_tidyN, aes(x = cutoff_lvl, y = parm_val))+
+  geom_boxplot()+facet_wrap(~parm, scales = "free_y", labeller = label_parsed)+
+  theme_classic()+theme(text = element_text(size = 18))+
+  labs(x = "Proportion of Presence Required for Designation as Core", y = "Parameter values", title = "Parameters derived from proportion core-abundance scaling relationship")
+
+
+
+
+####Summary stats for text####
+bbs_allscales = read.csv("data/BBS/bbs_allscales.csv", header = TRUE)
+bbs_allscales_minr = bbs_allscales %>% 
+  dplyr::filter(scale == "seg5")
+summary(bbs_allscales_minr$pctCore)
+stats::quantile(bbs_allscales_minr$pctCore, probs = c(0.025, 0.975))
+
+
+bbs_allscales_maxr = bbs_allscales %>% 
+  dplyr::filter(scale == 66)
+summary(bbs_allscales_maxr$pctCore)
+stats::quantile(bbs_allscales_maxr$pctCore, probs = c(0.025, 0.975))
+
+
+bbs_allscales_sing = bbs_allscales %>% 
+  dplyr::filter(scale == "seg50")
+summary(bbs_allscales_sing$pctCore)
+stats::quantile(bbs_allscales_sing$pctCore, probs = c(0.025, 0.975))
