@@ -79,13 +79,9 @@ write.csv(summaries, 'output/tabular_data/core-transient_summary.csv',
 
 # summ = addNewSummariesFun(threshold, reps, write = TRUE)
 
-
-#####################lump reptile and ampibian into herptile, get rid of invert if possible - other category?, do a table of communities
-
 # Plotting summary results across datasets for Core-Transient analysis
 summ = read.csv('output/tabular_data/core-transient_summary.csv', header=T)
 summ$taxa = factor(summ$taxa)
-summ$taxa[summ$taxa == "Arthropod"] <- "Invertebrate"
 summ$taxa[summ$taxa == "Reptile"] <- NA
 summ$system[summ$system == "Aquatic"] <- "Freshwater"
 summ$system = factor(summ$system)
@@ -93,9 +89,10 @@ summ = na.omit(summ)
 summ1 =  subset(summ, !datasetID %in% c(1, 99, 85, 90, 91, 92, 97, 124)) # excluding BBS to include below-scale route info
 summ1.5 = summ1[, c("datasetID","site","system","taxa","propCore", "propTrans", "meanAbundance")]
 write.csv(summ1.5, "output/tabular_data/summ1.5.csv", row.names = FALSE)
+
 # read in pre formatted bbs below dataset
 bbs_summ2 = read.csv("data/BBS/bbs_below_summ2.csv", header = TRUE)
-bbs_summ50 = bbs_summ2[grep("-50-", as.character(bbs_summ2$site)),]
+bbs_summ50 = bbs_summ2[grep("-50", as.character(bbs_summ2$site)),]
   
 summ2 = rbind(bbs_summ50,summ1.5)
 write.csv(summ2, "output/tabular_data/summ2.csv", row.names = FALSE)
@@ -135,7 +132,7 @@ taxcolors$abbrev = gsub("Plant", 'Pt', taxcolors$abbrev)
 
 write.csv(taxcolors, "output/tabular_data/taxcolors.csv", row.names = FALSE)
 
-
+# Create data summary figure as a 6-panel PDF
 pdf('output/plots/data_summary_hists.pdf', height = 8, width = 10)
 par(mfrow = c(3, 2), mar = c(4,4,1.2,1.2), cex = 1.25, oma = c(0,0,0,0), las = 1,
     cex.lab = 1)
@@ -158,7 +155,7 @@ axis(2, 0:3,labels=c("1","10","100","1000"))
 mtext(expression("Assemblages"), 2, cex = 1.25, las = 0, line = 3.5)
 title(outer=FALSE,adj=0.95,main="D",cex.main=1.5,col="black",font=2,line=-0.1)
 
-# numspp_comm 
+# species richness in community and number of study years
 summ1$taxa <-droplevels(summ1$taxa, exclude = c("","All","Amphibian", "Reptile"))
 summ1.col = merge(summ1, taxcolors, by = "taxa")
 summ1.col$taxa <- factor(summ1.col$taxa,
@@ -175,56 +172,3 @@ title(outer=FALSE,adj=1,main="F",cex.main=1.5,col="black",font=2,line=-0.1)
 
 dev.off()
 
-
-#### barplot of mean occ by taxa #####
-numCT = read.csv("output/tabular_data/numCT.csv", header=TRUE)
-
-# n calculates number of sites by taxa -nested sites
-numCT_taxa = numCT %>%
-  dplyr::count(site, taxa) %>%
-  group_by(taxa) %>%
-  tally(n)
-numCT_taxa = data.frame(n)
-# calculates number of sites by taxa -raw
-sitetally = summ %>%
-  dplyr::count(site, taxa) %>%
-  group_by(taxa) %>%
-  dplyr::tally()
-sitetally = data.frame(sitetally)
-
-numCT_box=merge(numCT_taxa, taxcolors, by="taxa")
-
-nrank = summ %>% 
-  group_by(taxa) %>%
-  dplyr::summarize(mean(mu)) 
-nrank = data.frame(nrank)
-nrank = arrange(nrank, desc(mean.mu.))
-
-summ_plot = merge(summ, nrank, by = "taxa", all.x=TRUE)
-
-summ$taxa <- factor(summ$taxa,
-                       levels = c('Bird','Mammal','Plankton','Benthos','Invertebrate','Plant','Fish'),ordered = TRUE)
-rankedtaxorder = c('Bird','Mammal','Plankton','Benthos','Invertebrate','Plant','Fish')
-
-dsetsBySystem = table(dsets$system)
-dsetsByTaxa = table(dsets$taxa)
-sitesBySystem = table(summ2$system)
-sitesByTaxa = table(summ2$taxa)
-
-colorsrank = c(rgb(29/255, 106/255, 155/255), #bird
-               colors()[551],#mammal
-               colors()[552], # plankton
-               colors()[17], # benthos
-               colors()[144], # arth
-               colors()[139],# plant
-               colors()[637]) #fish
-
-
-symbols7 = c(16, 18, 167, 15, 17, 1, 3) 
-taxcolorsrank = data.frame(taxa = unique(summ$taxa), color = colorsrank, pch = symbols7)
-
-w <- ggplot(summ, aes(factor(taxa), mu))+theme_classic()+
-  theme(axis.text.x=element_text(angle=90,size=10,vjust=0.5)) + xlab("Taxa") + ylab("Mean Occupancy\n")
-w + geom_boxplot(width=1, position=position_dodge(width=0.6),aes(x=taxa, y=mu), fill = taxcolorsrank$color)+
-  scale_fill_manual(labels = taxcolors$taxa, values = taxcolors$color)+theme(axis.ticks=element_blank(),axis.text.x=element_text(size=14),axis.text.y=element_text(size=14),axis.title.x=element_text(size=22),axis.title.y=element_text(size=22,angle=90,vjust = 1)) + guides(fill=guide_legend(title=""))+ theme(plot.margin = unit(c(.5,.5,.5,.5),"lines")) + annotate("text", x = nrank$taxa, y = 1.05, label = sitetally$n,size=5,vjust=0.8, color = "black")
-ggsave("C:/Git/core-transient/output/plots/meanOcc.pdf", height = 8, width = 12)

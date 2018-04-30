@@ -14,10 +14,6 @@ library(gridExtra)
 library(agricolae)
 library(maps)
 library(cowplot)
-#library(tidyr)
-# library(dplyr)
-# library(digest)
-# library(ggplot2)
 
 source('scripts/R-scripts/core-transient_functions.R')
 
@@ -54,16 +50,15 @@ propCT = merge(core, trans, by = "taxa")
 propCT = data.frame(propCT)
 propCT$mean.propNeither. = 1 - propCT$mean.propCore. - propCT$mean.propTrans.
 
-
 lm.hsd = lm(mean.propTrans. ~ taxa, data= propCT) #Tukeys HSD
 aov(lm.hsd)
-agricolae::HSD.test(lm.hsd, "taxa")
+# agricolae::HSD.test(lm.hsd, "taxa")
 
 propCT_long = gather(propCT, "class","value", c(mean.propCore.:mean.propNeither.))
 propCT_long = arrange(propCT_long, desc(class))
 propCT_long$taxa = as.factor(propCT_long$taxa)
 propCT_long$taxa = factor(propCT_long$taxa,
-                          levels = c('Benthos','Invertebrate','Fish','Plankton','Mammal','Plant','Bird'),ordered = TRUE)
+         levels = c('Benthos','Invertebrate','Fish','Plankton','Mammal','Plant','Bird'),ordered = TRUE)
 colscale = c("#c51b8a", "#fdd49e", "#225ea8")
 
 ### Fig 3b
@@ -89,40 +84,6 @@ datasetIDs = dataformattingtable$dataset_ID[dataformattingtable$format_flag == 1
 ### Have to cut out stuff that have mean abundance NA
 datasetIDs = datasetIDs[!datasetIDs %in% c(1, 67,270,271,317,319,325)]
 
-
-summaryTransFun = function(datasetID){
-  # Get data:
-  dataList = getDataList(datasetID)
-  sites  = as.character(dataList$siteSummary$site)
-  # Get summary stats for each site:       
-  outList = list(length = length(sites))
-  for(i in 1:length(sites)){
-    propOcc = subset(dataList$propOcc, site == sites[i])$propOcc
-    siteSummary = subset(dataList$siteSummary, site == sites[i])
-    nTime = siteSummary$nTime
-    spRichTotal = siteSummary$spRich
-    spRichCore33 = length(propOcc[propOcc > 2/3])
-    spRichTrans33 = length(propOcc[propOcc <= 1/3])
-    spRichTrans25 = length(propOcc[propOcc <= 1/4])
-    if(nTime > 9){
-      spRichTrans10 = length(propOcc[propOcc <= .1])
-      propTrans10 = spRichTrans10/spRichTotal
-    }
-    else{
-      propTrans10 = NA
-    }
-    propCore33 = spRichCore33/spRichTotal
-    propTrans33 = spRichTrans33/spRichTotal
-    propTrans25 = spRichTrans25/spRichTotal
-    
-    outList[[i]] = data.frame(datasetID, site = sites[i],
-                              system = dataList$system, taxa = dataList$taxa,
-                              nTime, spRichTotal, spRichCore33, spRichTrans33,
-                              propCore33,  propTrans33, propTrans25, propTrans10)
-  }
-  return(plyr::rbind.fill(outList))
-}
-
 percTransSummaries = c()
 for (d in datasetIDs) {
   percTransSumm = summaryTransFun(d)
@@ -131,6 +92,7 @@ for (d in datasetIDs) {
   print(d)
 }
 percTransSummaries = percTransSummaries[, c("datasetID","site","system","taxa","propCore33", "propTrans33", "propTrans25", "propTrans10")]
+
 #rbind threshold dataset with BBS thresholds
 bbs_focal_occs_pctTrans = read.csv("data/BBS/bbs_focal_occs_pctTrans.csv", header = TRUE)
 bbs_focal_occs_pctTrans$site = as.factor(bbs_focal_occs_pctTrans$site)
@@ -196,7 +158,7 @@ p2 = plot_grid(prow,legend, rel_widths = c(3, 0.7))
 p2
 ggsave(file="output/plots/3a_3b.pdf", height = 10, width = 15,p2)
 
-#### barplot of percent transients by taxa ---SUPP FIG
+#### barplot of percent transients by taxa --- Figure S3
 CT_long$taxa = as.factor(CT_long$taxa)
 CT_long$abbrev = CT_long$taxa
 CT_long$abbrev = gsub("Benthos", 'Be', CT_long$abbrev)

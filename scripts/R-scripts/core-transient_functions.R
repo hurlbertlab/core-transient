@@ -993,3 +993,38 @@ get_logseries_weight = function(abunds){
   }
   )
 }
+
+
+###################################################################
+summaryTransFun = function(datasetID){
+  # Get data:
+  dataList = getDataList(datasetID)
+  sites  = as.character(dataList$siteSummary$site)
+  # Get summary stats for each site:       
+  outList = list(length = length(sites))
+  for(i in 1:length(sites)){
+    propOcc = subset(dataList$propOcc, site == sites[i])$propOcc
+    siteSummary = subset(dataList$siteSummary, site == sites[i])
+    nTime = siteSummary$nTime
+    spRichTotal = siteSummary$spRich
+    spRichCore33 = length(propOcc[propOcc > 2/3])
+    spRichTrans33 = length(propOcc[propOcc <= 1/3])
+    spRichTrans25 = length(propOcc[propOcc <= 1/4])
+    if(nTime > 9){
+      spRichTrans10 = length(propOcc[propOcc <= .1])
+      propTrans10 = spRichTrans10/spRichTotal
+    }
+    else{
+      propTrans10 = NA
+    }
+    propCore33 = spRichCore33/spRichTotal
+    propTrans33 = spRichTrans33/spRichTotal
+    propTrans25 = spRichTrans25/spRichTotal
+    
+    outList[[i]] = data.frame(datasetID, site = sites[i],
+                              system = dataList$system, taxa = dataList$taxa,
+                              nTime, spRichTotal, spRichCore33, spRichTrans33,
+                              propCore33,  propTrans33, propTrans25, propTrans10)
+  }
+  return(plyr::rbind.fill(outList))
+}
