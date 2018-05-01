@@ -1,4 +1,3 @@
-###############################################
 # Code for running core-transient analysis
 # and data summaries over all formatted datasets.
 #
@@ -190,19 +189,10 @@ logseries_weights = rbind(logseries_weights_incl, logseries_weights_excl)
 # write.csv(logseries_weights, "output/tabular_data/logseries_weights.csv")
 # logseries_weights = read.csv("output/tabular_data/logseries_weights.csv", header = TRUE)
 
+
 colscale = c("dark orange2","yellow")
-k = ggplot(logseries_weights,aes(x=weights,fill=treatment))+geom_histogram(bins = 20, position = "identity", alpha = 0.7)+ xlab("Transient Status") + ylab("Proportion of Species") + scale_y_continuous(breaks=c(0,500,1000,1300)) + scale_fill_manual(labels = c("All species","All species excluding transients"),values = colscale)+ theme_classic() + theme(axis.text.x=element_blank(), axis.ticks.x=element_blank(),axis.text.y=element_text(size=30, color = "black"),axis.title.y=element_text(size=40,angle=90,vjust = 5),axis.title.x=element_text(size=40, vjust = -7))  + ylab("Frequency") + xlab("Akaike Weight") + theme(legend.position = "none") +theme(plot.margin=unit(c(0.35,1,2,1.7),"cm")) 
-pdf("output/plots/fig1a.pdf", height = 8, width = 10)
+k = ggplot(logseries_weights,aes(x=weights,fill=treatment))+geom_histogram(bins = 20, position = "identity", alpha = 0.7)+ xlab("Transient Status") + ylab("Proportion of Species") + scale_y_continuous(breaks=c(0,150,275)) + scale_fill_manual(labels = c("All species","All species excluding transients"),values = colscale)+ theme_classic() + theme(axis.text.x=element_blank(), axis.ticks.x=element_blank(),axis.text.y=element_text(size=30, color = "black"),axis.title.y=element_text(size=40,angle=90,vjust = 5),axis.title.x=element_text(size=40, vjust = -7))  + ylab("Frequency") + xlab("Akaike Weight") + theme(legend.position = "none") +theme(plot.margin=unit(c(0.35,1,2,1.7),"cm")) 
 k
-grid.text("lognormal",
-          x = unit(.24, "npc"), y = unit(0.2, "npc"), just = c("left", "bottom"), 
-          gp = gpar(fontface = "bold", fontsize = 18, col = "black"))
-grid.text("logseries",
-          x = unit(.95, "npc"), y = unit(0.2, "npc"), just = c("right", "bottom"), 
-          gp = gpar(fontface = "bold", fontsize = 18, col = "black"))
-dev.off()
-
-
 
 #### Figure 4b ####
 # read in route level ndvi and elevation data (radius = 40 km)
@@ -415,10 +405,9 @@ z <- plot_grid(four_c+ theme(legend.position="none"),
                rel_widths = c(1, 0.05, 1),
                nrow = 1)
 p2 = plot_grid(z,legendc, ncol = 2) 
-# ggsave(file="C:/Git/core-transient/output/plots/4c_4d.pdf", height = 12, width = 16,p2)
 
 all4 = plot_grid(pt1, NULL, z, align = "hv", nrow = 2,rel_heights = c(1,1), rel_widths = c(1, 0.05, 1))
-ggsave(file="C:/Git/core-transient/output/plots/4a_4d_25.pdf", height = 12, width = 16,all4)
+ggsave(file="C:/Git/core-transient/output/plots/5a_5d_25.pdf", height = 12, width = 16,all4)
 
 
 ##### 10  ######
@@ -551,16 +540,7 @@ logseries_weights = rbind(logseries_weights_incl, logseries_weights_excl)
 # write.csv(logseries_weights, "output/tabular_data/logseries_weights.csv")
 # logseries_weights = read.csv("output/tabular_data/logseries_weights.csv", header = TRUE)
 colscale = c("dark orange2","yellow")
-k = ggplot(logseries_weights,aes(x=weights,fill=treatment))+geom_histogram(bins = 20, position = "identity", alpha = 0.7)+ xlab("Transient Status") + ylab("Proportion of Species") + scale_y_continuous(breaks=c(0,50,100, 1000)) + scale_fill_manual(labels = c("All species","All species excluding transients"),values = colscale)+ theme_classic() + theme(axis.text.x=element_blank(), axis.ticks.x=element_blank(),axis.text.y=element_text(size=30, color = "black"),axis.title.y=element_text(size=40,angle=90,vjust = 5),axis.title.x=element_text(size=40, vjust = -7))  + ylab("Frequency") + xlab("Akaike Weight") + theme(legend.position = "none") +theme(plot.margin=unit(c(0.35,1,2,1.7),"cm")) 
-pdf("output/plots/fig1a.pdf", height = 8, width = 10)
-k
-grid.text("lognormal",
-          x = unit(.24, "npc"), y = unit(0.2, "npc"), just = c("left", "bottom"), 
-          gp = gpar(fontface = "bold", fontsize = 18, col = "black"))
-grid.text("logseries",
-          x = unit(.95, "npc"), y = unit(0.2, "npc"), just = c("right", "bottom"), 
-          gp = gpar(fontface = "bold", fontsize = 18, col = "black"))
-dev.off()
+k = ggplot(logseries_weights,aes(x=weights,fill=treatment))+geom_histogram(bins = 20, position = "identity", alpha = 0.7)+ xlab("Transient Status") + ylab("Proportion of Species") + scale_y_continuous(breaks=c(0,50,100, 150)) + scale_fill_manual(labels = c("All species","All species excluding transients"),values = colscale)+ theme_classic() + theme(axis.text.x=element_blank(), axis.ticks.x=element_blank(),axis.text.y=element_text(size=30, color = "black"),axis.title.y=element_text(size=40,angle=90,vjust = 5),axis.title.x=element_text(size=40, vjust = -7))  + ylab("Frequency") + xlab("Akaike Weight") + theme(legend.position = "none") +theme(plot.margin=unit(c(0.35,1,2,1.7),"cm")) 
 
 #### Figure 4b ####
 # read in route level ndvi and elevation data (radius = 40 km)
@@ -759,7 +739,6 @@ pt1 <- plot_grid(k + theme(legend.position="none"),
                  nrow = 1
 )
 p1 = plot_grid(pt1,legenda, ncol = 2, rel_widths = c(1, .1))
-# ggsave(file="C:/Git/core-transient/output/plots/4a_4b.pdf", height = 10, width = 15,p1)
 
 # c & d
 legendc <- get_legend(four_d)
@@ -773,7 +752,6 @@ z <- plot_grid(four_c+ theme(legend.position="none"),
                rel_widths = c(1, 0.05, 1),
                nrow = 1)
 p2 = plot_grid(z,legendc, ncol = 2) 
-# ggsave(file="C:/Git/core-transient/output/plots/4c_4d.pdf", height = 12, width = 16,p2)
 
 all4 = plot_grid(pt1, NULL, z, align = "hv", nrow = 2,rel_heights = c(1,1), rel_widths = c(1, 0.05, 1))
-ggsave(file="C:/Git/core-transient/output/plots/4a_4d_10.pdf", height = 12, width = 16,all4)
+ggsave(file="C:/Git/core-transient/output/plots/5a_5d_10.pdf", height = 12, width = 16,all4)

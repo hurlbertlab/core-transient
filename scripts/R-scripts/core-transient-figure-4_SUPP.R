@@ -30,9 +30,6 @@ dataformattingtable = read.csv('data_formatting_table.csv', header = T)
 
 datasetIDs = dataformattingtable$dataset_ID[dataformattingtable$format_flag == 1]
 
-# BBS (dataset 1) will be analyzed separately for now.
-# datasetIDs = datasetIDs[!datasetIDs %in% c(1)]
-
 #################### FIG 3 WITH LOWER THRESHOLDS ######################### 
 occ_taxa25=read.csv("output/tabular_data/occ_taxa_25.csv",header=TRUE)
 occ_taxa25$pctTrans25 = occ_taxa25$pctTrans
@@ -149,7 +146,7 @@ dats$taxa <- NULL
 
 area_plot = merge(areamerge, dats, by = "datasetID")
 
-pdf('output/plots/3a_3d_25SUPP.pdf', height = 10, width = 12)
+pdf('output/plots/4a_4d_25.pdf', height = 10, width = 12)
 par(mfrow = c(2, 2), mar = c(5,5,1,1), cex = 1, oma = c(0,0,0,0), las = 1)
 palette(colors7)
 
@@ -271,7 +268,7 @@ predmod3d$order = c(1:3)
 
 #### panel plot ####
 area_plot = data.frame()
-pdf('output/plots/3a_3d_10SUPP.pdf', height = 10, width = 12)
+pdf('output/plots/4a_4d_10.pdf', height = 10, width = 12)
 par(mfrow = c(2, 2), mar = c(5,5,1,1), cex = 1, oma = c(0,0,0,0), las = 1)
 palette(colors7)
 
