@@ -1,28 +1,28 @@
 # Alternate cutoffs of core and transient species in a community: are distributions changed?
 # author: Molly F. Jenkins
-# date: 03/05/2017
+# updated: 05/03/2017
 
-#The following script demonstrates 1 of 2 alternatives to the original cutoffs of >2/3 and <1/3, which can be viewed in the pctcore_alt.R script. 
+#The way the probability densities are calculated, they are just taking temporal occupancy as it is 
+#and not looking at a specific cutoff - it's literally just the data. 
+#You could draw the cutoffs at any point and would still have a bimodal distribution until it skewed unimodal on one extreme or the other 
+
+#The following script demonstrates the cutoffs of 50% 
 #This script explores cutoffs of: 
-#2/4 % 2/4
+#2/4 & 2/4 (original occ-scale-processing and creation of bbs_allscales.csv data)
+#The supplemental cutoff scripts can be viewed in allscales_coefs50.R and allscales_coefs80.R, original in core_scale_analyses.R
+
 ###################################################################################################################
-#cutoff of 50% 
-
-####bbsallscales50####
-
-####2/4 & 2/4####
-# setwd("C:/git/core-transient")
+####Original and working derivation 2/4 & 1/4 cutoffs####
+# setwd("C:/git/core_scale")
 #'#' Please download and install the following packages:
 library(raster)
+library(tidyverse)
+library(fields)
 library(maps)
 library(sp)
 library(rgdal)
 library(maptools)
 library(rgeos)
-library(dplyr)
-library(fields)
-library(tidyr)
-library(ggplot2)
 library(nlme)
 library(gridExtra)
 library(wesanderson)
@@ -39,17 +39,17 @@ BBS = '//bioark.ad.unc.edu/HurlbertLab/Jenkins/Intermediate scripts/BBS scaled/'
 #modify below code to rerun for bbs below 
 
 occ_counts2 = function(countData, countColumns, scale) {
-  bbssub = countData[, c("stateroute", "year", "AOU", countColumns)] #these are our grouping vars
+  bbssub = countData[, c("stateroute", "year", "aou", countColumns)] #these are our grouping vars
   bbssub$groupCount = rowSums(bbssub[, countColumns]) 
-  bbsu = unique(bbssub[bbssub[, "groupCount"]!= 0, c("stateroute", "year", "AOU", "groupCount")])
+  bbsu = unique(bbssub[bbssub[, "groupCount"]!= 0, c("stateroute", "year", "aou", "groupCount")])
   return(bbsu)
 }
 
 
-fifty_allyears = read.csv(paste(BBS, "fifty_allyears.csv", sep = ""), header = TRUE) #using updated version, 50 stop data, 07/12
+fifty_allyears = read.csv("intermed/fifty_allyears.csv", header = TRUE) #using updated version, 50 stop data, 07/12
 fifty_bestAous = fifty_allyears %>% 
-  filter(AOU > 2880 & !(AOU >= 3650 & AOU <= 3810) & !(AOU >= 3900 & AOU <= 3910) & 
-           !(AOU >= 4160 & AOU <= 4210) & AOU != 7010) #leaving out owls, waterbirds as less reliable data
+  filter(aou > 2880 & !(aou >= 3650 & aou <= 3810) & !(aou >= 3900 & aou <= 3910) & 
+           !(aou >= 4160 & aou <= 4210) & aou != 7010) #leaving out owls, waterbirds as less reliable data
 
 #should just return data for 50-1 scale, across all 50 stops 
 c_scales = c(5, 10, 25, 50) #just doing for one for now -> need to fix and expand to full selection
@@ -57,7 +57,7 @@ output = c()
 for (scale in c_scales) {
   numGroups = floor(50/scale)
   for (g in 1:numGroups) {
-    groupedCols = paste("Stop", ((g-1)*scale + 1):(g*scale), sep = "")
+    groupedCols = paste("stop", ((g-1)*scale + 1):(g*scale), sep = "")
     temp = occ_counts2(fifty_bestAous, groupedCols, scale)
     temp$scale = scale
     temp$seg = g #added segment specifier to aid in recalc
@@ -66,11 +66,60 @@ for (scale in c_scales) {
 }
 
 bbs_below_guide = data.frame(output)
-write.csv(bbs_below_guide, paste(BBS, "bbs_below_guide.csv", sep = ""), row.names = FALSE)
+write.csv(bbs_below_guide, "intermed/bbs_below_guide.csv", row.names = FALSE)
 
-####Paring down to 968 routes####
-dist.df = read.csv("scripts/R-scripts/scale_analysis/intermed/dist_df.csv", header = TRUE)
-bbs_below_guide = read.csv(paste(BBS, "bbs_below_guide.csv", sep = ""), header = TRUE)
+####Data prep for calculating occupancy above the scale of a BBS route####
+#Revised calcs workspace 
+#sort out bbs_below to ONLY those routes at 50-stop scale (occ calc'd for a single route)
+#use to aggregate 
+good_rtes2 = read.csv("intermed/good_rtes2.csv", header = TRUE) #using updated version, 05/03
+require(fields)
+#Distance calculation between all combination of routes to pair them by min dist for aggregation
+distances = rdist.earth(matrix(c(good_rtes2$longitude, good_rtes2$latitude), ncol=2),
+                        matrix(c(good_rtes2$longitude, good_rtes2$latitude), ncol=2),
+                        miles=FALSE, R=6371)
+dist.df = data.frame(rte1 = rep(good_rtes2$stateroute, each = nrow(good_rtes2)),
+                     rte2 = rep(good_rtes2$stateroute, times = nrow(good_rtes2)),
+                     dist = as.vector(distances))
+write.csv(dist.df, "intermed/dist_df.csv", row.names = FALSE) #for later calcs
+
+#occ_counts2
+#important to not remove AOU and stateroute data by year, but to halt at that step 
+#so can be guided thru original occ_counts, with secondary routes as "countColumns" 
+#have to gen new function
+
+occ_counts2 = function(countData, countColumns, scale) {
+  bbssub = countData[, c("stateroute", "year", "aou", countColumns)] #these are our grouping vars
+  bbssub$groupCount = rowSums(bbssub[, countColumns]) 
+  bbsu = unique(bbssub[bbssub[, "groupCount"]!= 0, c("stateroute", "year", "aou", "groupCount")])
+  return(bbsu)
+}
+
+
+fifty_allyears = read.csv("intermed/fifty_allyears.csv", header = TRUE) #using updated version, 50 stop data, 07/12
+fifty_bestAous = fifty_allyears %>% 
+  filter(aou > 2880 & !(aou >= 3650 & aou <= 3810) & !(aou >= 3900 & aou <= 3910) & 
+           !(aou >= 4160 & aou <= 4210) & aou != 7010) #leaving out owls, waterbirds as less reliable data
+
+#should just return data for 50-1 scale, across all 50 stops 
+c_scales = c(50)
+output = c()
+for (scale in c_scales) {
+  numGroups = floor(50/scale)
+  for (g in 1:numGroups) {
+    groupedCols = paste("stop", ((g-1)*scale + 1):(g*scale), sep = "")
+    temp = occ_counts2(fifty_bestAous, groupedCols, scale)
+    output = rbind(output, temp) 
+  }
+}
+
+bbs_above_guide = data.frame(output)
+write.csv(bbs_above_guide, "intermed/bbs_above_guide.csv", row.names = FALSE)
+
+####Paring bbs_below down to 983 routes####
+#updated 05/03/2017, along with all code preceding
+dist.df = read.csv("intermed/dist_df.csv", header = TRUE)
+bbs_below_guide = read.csv("intermed/bbs_below_guide.csv", header = TRUE)
 #groupcounts for each AOU for each year at scale of ONE stateroute 
 
 #filter out to only routes that are up to 1000km radius away from each other before analyses 
@@ -124,9 +173,9 @@ for (r in uniqrtes) { #for each focal route
         #increased likelihood that AOU will be present -> OH! I don't want stateroute in here! it doesn't matter! 
         #it just matters that it shows up in the cluster at all, not just the stateroutes that go in
         #how many years does each AOU show up in the cluster 
-        dplyr::select(year, AOU) %>% #duplicates remnant of distinct secondary routes - finally ID'd bug
+        dplyr::select(year, aou) %>% #duplicates remnant of distinct secondary routes - finally ID'd bug
         distinct() %>% #removing duplicates 09/20
-        count(AOU) %>% #how many times does that AOU show up in that clustr that year 
+        count(aou) %>% #how many times does that AOU show up in that clustr that year 
         mutate(occ = n/15, scale = nu) %>% #, subrouteID = countColumns[1]) #%>% countColumns not needed bc already pared down
         # group_by(r) %>% #don't want to group by stateroute though! want to calc for whole clustr
         summarize(focalrte = r, 
@@ -156,27 +205,25 @@ for (r in uniqrtes) { #for each focal route
 # may need to transpose rows to columns 
 
 
-bbs_below = as.data.frame(output)
-#write.csv(bbs_below, paste(BBS, "bbs_below_new.csv", sep = ""), row.names = FALSE)
+bbs_below50 = as.data.frame(output)
+write.csv(bbs_below50, "intermed/bbs_below50.csv", row.names = FALSE)
 
 #NOW I can average for unique scale-route combo (currently duplicates based on segments)
 
-bbs_below_avgs50 = bbs_below %>% 
+bbs_below_avgs50 = bbs_below50 %>% 
   group_by(focalrte, scale) %>% 
   summarize(meanOcc = mean(meanOcc), 
             pctCore = mean(pctCore), 
             pctTran = mean(pctTran), 
             aveN = mean(aveN))
 
-write.csv(bbs_below_avgs50, paste(BBS, "bbs_below_avgs50.csv", sep = ""), row.names = FALSE)
-# write.csv(bbs_below_avgs, "data/BBS/bbs_below_avgs.csv", row.names = FALSE)
-# successfully stored both avgs and new in bioark and data folder since small enough
-
+write.csv(bbs_below_avgs50, "intermed/bbs_below_avgs50.csv", row.names = FALSE)
+#below scale avgs updated 05/03/2018
 
 ####Above-scale and merging code####
 ####Calculating occupancy scales 2:66 loop####
-dist.df = read.csv("scripts/R-scripts/scale_analysis/intermed/dist_df.csv", header = TRUE)
-bbs_above_guide = read.csv("scripts/R-scripts/scale_analysis/intermed/bbs_above_guide.csv", header = TRUE)
+dist.df = read.csv("intermed/dist_df.csv", header = TRUE)
+bbs_above_guide = read.csv("intermed/bbs_above_guide.csv", header = TRUE)
 #groupcounts for each AOU for each year at scale of ONE stateroute 
 
 #filter out to only routes that are up to 1000km radius away from each other before analyses 
@@ -231,9 +278,9 @@ for (r in uniqrtes) { #for each focal route
       #increased likelihood that AOU will be present -> OH! I don't want stateroute in here! it doesn't matter! 
       #it just matters that it shows up in the cluster at all, not just the stateroutes that go in
       #how many years does each AOU show up in the cluster 
-      dplyr::select(year, AOU) %>% #duplicates remnant of distinct secondary routes - finally ID'd bug
+      dplyr::select(year, aou) %>% #duplicates remnant of distinct secondary routes - finally ID'd bug
       distinct() %>% #removing duplicates 09/20
-      count(AOU) %>% #how many times does that AOU show up in that clustr that year 
+      count(aou) %>% #how many times does that AOU show up in that clustr that year 
       mutate(occ = n/15, scale = nu) %>% #, subrouteID = countColumns[1]) #%>% countColumns not needed bc already pared down
       # group_by(r) %>% #don't want to group by stateroute though! want to calc for whole clustr
       summarize(focalrte = r, 
@@ -266,30 +313,27 @@ for (r in uniqrtes) { #for each focal route
 # may need to transpose rows to columns 
 
 
-bbs_above_50 = as.data.frame(output)
+bbs_above50 = as.data.frame(output)
 #Calc area for above route scale
 #bbs_above$area = bbs_above_v2$numrtes*50*(pi*(0.4^2)) #number of routes * fifty stops * area in sq km of a stop 
-write.csv(bbs_above_50, paste(BBS, "bbs_above_50.csv", sep = ""), row.names = FALSE)
-#updated 09/20 evening locally and on BioArk; not sure if data folder will reject on git
-#write.csv(bbs_above, "data/BBS/bbs_above.csv", row.names = FALSE)
-#updated 09/20
-
+write.csv(bbs_above50, "intermed/bbs_above50.csv", row.names = FALSE)
+#updated 05/03 with everything immediately preceding 
 
 ####Merging across scales####
-bbs_above = read.csv(paste(BBS, "bbs_above_50.csv", sep = ""), header = TRUE)
-bbs_below = read.csv(paste(BBS, "bbs_below_avgs50.csv", sep = ""), header = TRUE)
+bbs_above50 = read.csv("intermed/bbs_above50.csv", header = TRUE)
+bbs_below50 = read.csv("intermed/bbs_below_avgs50.csv", header = TRUE)
 
 #adding maxRadius column to bbs_below w/NA's + renaming and rearranging columns accordingly, creating area cols
-bbs_below2 = bbs_below %>% 
+bbs_below2 = bbs_below50 %>% 
   mutate(maxdist = c("NA")) %>%
   dplyr::select(focalrte, scale, everything()) %>%
-  mutate(area = bbs_below$scale*(pi*(0.4^2)), 
+  mutate(area = bbs_below50$scale*(pi*(0.4^2)), 
          scale = paste("seg", scale, sep = ""))
 
 #modify and split scale so that it's just the # of stops in each seg; not the seg order # preceded by a "-"
 
 
-bbs_above = bbs_above %>% 
+bbs_above = bbs_above50 %>% 
   dplyr::mutate(area = scale*50*(pi*(0.4^2))) %>% #area in km by # of routes * 50 stops in each rte * area of a stop (for above-route scale later)
   dplyr::select(focalrte, scale, meanOcc, pctCore, pctTran, aveN, maxdist, area) #%>% 
 # filter(scale == "2")
@@ -297,27 +341,28 @@ bbs_above = bbs_above %>%
 bbs_above$scale = as.factor(bbs_above$scale)
 
 
-bbs_allscales50 = rbind(bbs_below2, bbs_above) #rbind ok since all share column names
+bbs_allscales = rbind(bbs_below2, bbs_above) #rbind ok since all share column names
 
-bbs_allscales50$logA = log10(bbs_allscales50$area)
-bbs_allscales50$logN = log10(bbs_allscales50$aveN)
-bbs_allscales50$lnA = log(bbs_allscales50$area) #log is the natural log 
-bbs_allscales50$lnN = log(bbs_allscales50$aveN)
+bbs_allscales$logA = log10(bbs_allscales$area)
+bbs_allscales$logN = log10(bbs_allscales$aveN)
+bbs_allscales$lnA = log(bbs_allscales$area) #log is the natural log 
+bbs_allscales$lnN = log(bbs_allscales$aveN)
 
-write.csv(bbs_allscales50, paste(BBS, "bbs_allscales50.csv", sep = ""), row.names = FALSE) #saved 03/12
-write.csv(bbs_allscales50, "data/BBS/bbs_allscales50.csv", row.names = FALSE)
+write.csv(bbs_allscales, "intermed/bbs_allscales50.csv", row.names = FALSE) #saved 05/03
 
+####Revamped coef extraction loop for comparing differences in value distributions between cutoff categories####
+####Extract coefficients from scale-occupancy relationships for analysis####
 
-####core_coefs cutoff of 50%#### 
+####normal cutoff of 67%#### 
+
 #read in data for processing
-bbs_allscales = read.csv(paste(BBS, "bbs_allscales50.csv", sep = ""), header = TRUE) #in intermediate BBS scales bioark folder
-#keeping code same except for files read in and names of files written to csv, probably a way to automate this  
+bbs_allscales = read.csv("intermed/bbs_allscales50.csv", header = TRUE)
 levels(bbs_allscales$scale)
 unique(bbs_allscales$scale)
 length(unique(bbs_allscales$focalrte))
 bbs_allscales = na.omit(bbs_allscales) #from 66792 to 66792 when maxdist left out so 
 #oh we DO want to cut out the below-route stuff bc we can't do the env analyses on these period
-length(unique(bbs_allscales$focalrte)) #968 rtes, 62920 obs
+length(unique(bbs_allscales$focalrte)) #983 rtes, 62920 obs
 
 
 PCA.df = data.frame(stateroute = numeric(), PCA.min = numeric(), PCA.max = numeric(), 
@@ -392,6 +437,6 @@ for(s in stateroutes){
 core_coefs50 = PCA.df %>% 
   inner_join(PCN.df, PCA.df, by = "stateroute") %>% distinct()
 
-write.csv(core_coefs50, "scripts/R-scripts/scale_analysis/core_coefs50.csv", row.names = FALSE) 
-#updated 4/11, removal of redundant coefs and inclusion of ON, revised curvature est
+write.csv(core_coefs50, "intermed/core_coefs50.csv", row.names = FALSE) 
+#updated 05/03, removal of redundant coefs and inclusion of ON, revised curvature est
 
