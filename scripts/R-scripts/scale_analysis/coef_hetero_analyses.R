@@ -7,7 +7,7 @@
 # date: 06/27/2017
 
 
-# setwd("C:/git/core-transient")
+# setwd("C:/git/core_scale")
 #'#' Please download and install the following packages:
 library(raster)
 library(maps)
@@ -96,33 +96,25 @@ BBS = '//bioark.ad.unc.edu/HurlbertLab/Jenkins/Intermediate scripts/BBS scaled/'
 
 
 ####Env analysis####
-#Background data prep is just environmental data prep, nothing involving occupancy until env_all and core_coefs merge
+#Background data prep is just envs_processing script
+core_coefs = read.csv("intermed/core_coefs.csv", header = TRUE) 
+env_all = read.csv("intermed/env_all.csv", header = TRUE) 
 
-####abitat hetero measures and scale independent of coefs (for predictions)####   
-core_coefs = read.csv("scripts/R-scripts/scale_analysis/core_coefs.csv", header = TRUE) #AUC etc. 
-env_all = read.csv("scripts/R-scripts/scale_analysis/intermed/env_all.csv", header = TRUE) #AUC etc. 
-#calc areas of scales and run against logA consistently ? 
-
-env_all$area = env_all$scale #*40 etc etc etc
-
-####Coefs to habitat het####
-
-#coefs to top scale env characterizing data
 core_env_coefs = env_all %>%
-  inner_join(core_coefs, by = "stateroute") #and also join single rte
-
-#since now reflective of all scales, 62370 rows, 36 cols 
-write.csv(core_env_coefs, "scripts/R-scripts/scale_analysis/core_env_coefs.csv", row.names = FALSE)
-#updated 12/14
+  inner_join(core_coefs, by = "stateroute") %>%
+  dplyr::select(stateroute, scale, area, ndvi.var, elev.var, PCA.min, PCA.max, PCA.slope, PCA.mid, PCA.curvature,
+         PCN.min, PCN.max, PCN.slope, PCN.mid, PCN.curvature)
+write.csv(core_env_coefs, "intermed/core_env_coefs.csv", row.names = FALSE)
+#updated 05/07
 
 
 ####Coef & habitat heterogeneity models####
-core_env_coefs = read.csv("scripts/R-scripts/scale_analysis/core_env_coefs.csv", header = TRUE) #same # of cols as old 
+core_env_coefs = read.csv("intermed/core_env_coefs.csv", header = TRUE) #same # of cols as old 
 
 #check out cov matrix to inform model generation and predictions:
-covmatrix = round(cor(core_env_coefs[, 3:ncol(core_env_coefs)]), 2) #since clipped stateroute don't need to clip again - should I clip scale?
+covmatrix = round(cor(core_env_coefs[, 4:ncol(core_env_coefs)]), 2) #round to 2 decimal digits
 covmatrix = as.data.frame(covmatrix)
-write.csv(covmatrix, "scripts/R-scripts/scale_analysis/core_covmatrix.csv", row.names = FALSE)
+write.csv(covmatrix, "intermed/core_covmatrix.csv", row.names = FALSE)
 #mean and var - interpret how covary with coefs and direction - i.e. ndvi mean covaries positively with pmin, 
 #but elev mean covaries negatively with pmin 
 #and both variances covary negatively with pmin 
@@ -132,19 +124,14 @@ write.csv(covmatrix, "scripts/R-scripts/scale_analysis/core_covmatrix.csv", row.
 #hab het variance measures: pslope and pthresh positive, pmin and pmax both negative covariance
 
 
-####UP NEXT: run series of models and reassess/renew plots from spring####
+####UP NEXT: run series of models####
 # nested loop for examining variation in coefs/fitted curves explained by env heterogeneity 
-#so: response = coefficients = dependent; predictor = environmental heterogeneity = independent
-
-#first need to make sure JUST looking at variance characterizing site, not means -> filter out 
 
 core_rsqrd_hetero = data.frame(dep = character(), ind = character(), 
                           r2 = numeric(), adjr = numeric(), corr_r = numeric(), uppr = numeric(), lowr = numeric())
-#modify to include plotting of obs values for each stateroute vs pred line 
-#and plot these with r squared vals as annotations to plots too 
 
-for (d in 3:6) { #adjust columns appropriately -> make sure correct order of ind and dep vars!
-  for (i in 8:17) {
+for (d in 4:5) { #adjust columns appropriately -> make sure correct order of ind and dep vars!
+  for (i in 6:15) {
     tempmod = lm(core_env_coefs[,d] ~ core_env_coefs[,i])
     tempcor = cor.test(core_env_coefs[,d], core_env_coefs[,i], method = "pearson")
     
@@ -156,35 +143,23 @@ for (d in 3:6) { #adjust columns appropriately -> make sure correct order of ind
                         corr_r = as.numeric(tempcor$estimate), 
                         uppr = as.numeric(tempcor$conf.int[2]), 
                         lowr = as.numeric(tempcor$conf.int[1]))
-    
-    # templot = ggplot(data = env_coefs, aes(x = env_coefs[,i], y = env_coefs[,d]))+geom_point()+
-    #   geom_line(aes(y = predict(tempmod), color = 'Model'))+
-    #   labs(x = names(env_coefs)[i], y = names(env_coefs)[d])+guides(color = "none")+
-    #   annotate("text", x = 0.5*max(env_coefs[,i]), y = 0.5*max(env_coefs[,d]), 
-    #            label = paste("italic(R) ^ 2 ==", tempdf$r2, sep = ""), parse = TRUE, 
-    #            color = "red", size = 5.5) 
-    # ggsave(templot, filename=paste("env_coefs", names(env_coefs)[d], 
-    #                                names(env_coefs)[i],".png",sep=""))
-    
+
     core_rsqrd_hetero = rbind(core_rsqrd_hetero, tempdf)
   }
 }
 
 
-write.csv(core_rsqrd_hetero, "scripts/R-scripts/scale_analysis/core_rsqrd_hetero.csv", row.names = FALSE) 
-#updated 01/22 using corrected hab_het vals, only variances characterizing sites
+write.csv(core_rsqrd_hetero, "intermed/core_rsqrd_hetero.csv", row.names = FALSE) 
+#updated 05/07 using corrected hab_het vals, only variances characterizing sites
 
 
 ####Visually Characterizing measures of habitat heterogeneity####
-core_rsqrd_hetero = read.csv("scripts/R-scripts/scale_analysis/core_rsqrd_hetero.csv", header = TRUE)
+core_rsqrd_hetero = read.csv("intermed/core_rsqrd_hetero.csv", header = TRUE)
 # hab_het = read.csv("scripts/R-scripts/scale_analysis/hab_het.csv", header = TRUE)
 
 r_plot = ggplot(data = core_rsqrd_hetero, aes(y = corr_r))+geom_col(aes(x=dep))+facet_wrap(~ind)+
   theme_bw()
 r_plot 
-
-
-core_env_coefs = read.csv("scripts/R-scripts/scale_analysis/core_env_coefs.csv", header = TRUE)
 
 #scale on x and r on y, panel by coef of interest, line color by var measure
 
@@ -196,23 +171,22 @@ core_env_coefs = read.csv("scripts/R-scripts/scale_analysis/core_env_coefs.csv",
 #occ-scale relationship, that's fine - the hab_het vals will change though bc measures 
 #at each scale 
 #starting at scale of 1 since that's lowest res we have for habhet across scales, 
-#rerun previous dep/ind loop with new mods
 
+
+#rerun previous dep/ind loop with new mods
+core_env_coefs = read.csv("intermed/core_env_coefs.csv", header = TRUE)
 
 core_scales_hetero = data.frame(dep = character(), ind = character(), 
                            r2 = numeric(), adjr = numeric(), corr_r = numeric(), 
                            uppr = numeric(), lowr = numeric(), scale = numeric())
-#modify to include plotting of obs values for each stateroute vs pred line 
-#and plot these with r squared vals as annotations to plots too 
-#setwd("C:/git/core-transient/output/plots/Molly_Plots/habhet/")
 scales = unique(core_env_coefs$scale)
 
 
 for (s in scales) {
   env_coefs2 = core_env_coefs %>% 
     filter(scale == s)
-  for (d in 3:6) { #adjust columns appropriately -> make sure correct order of ind and dep vars!
-    for (i in 8:17) {
+  for (d in 4:5) { #adjust columns appropriately -> make sure correct order of ind and dep vars!
+    for (i in 6:15) {
       tempmod = lm(env_coefs2[,d] ~ env_coefs2[,i])
       tempcor = cor.test(env_coefs2[,d], env_coefs2[,i], method = "pearson")
       
@@ -226,22 +200,13 @@ for (s in scales) {
                           lowr = as.numeric(tempcor$conf.int[1]),
                           scale = s)
       
-      # templot = ggplot(data = env_coefs, aes(x = env_coefs[,i], y = env_coefs[,d]))+geom_point()+
-      #   geom_line(aes(y = predict(tempmod), color = 'Model'))+
-      #   labs(x = names(env_coefs)[i], y = names(env_coefs)[d])+guides(color = "none")+
-      #   annotate("text", x = 0.5*max(env_coefs[,i]), y = 0.5*max(env_coefs[,d]), 
-      #            label = paste("italic(R) ^ 2 ==", tempdf$r2, sep = ""), parse = TRUE, 
-      #            color = "red", size = 5.5) 
-      # ggsave(templot, filename=paste("env_coefs", names(env_coefs)[d], 
-      #                                names(env_coefs)[i],".png",sep=""))
-      
-      core_scales_hetero = rbind(core_scales_hetero, tempdf)
+     core_scales_hetero = rbind(core_scales_hetero, tempdf)
     }
   }
 }
 
-write.csv(core_scales_hetero, "scripts/R-scripts/scale_analysis/core_scales_hetero.csv", row.names = FALSE) 
-#updated 01/22 using corrected hab_het vals, only variances characterizing sites
+write.csv(core_scales_hetero, "intermed/core_scales_hetero.csv", row.names = FALSE) 
+#updated 05/07 using corrected hab_het vals, only variances characterizing sites
 
 #INTERPRETATION: 
 #elevation and ndvi at the highest scales explain more variation in the pmin and pthresh values 
@@ -259,7 +224,7 @@ write.csv(core_scales_hetero, "scripts/R-scripts/scale_analysis/core_scales_hete
 ####Alt figures for pct Core####
 
 ####Plotting how distributions change across scale, using area####
-all_fig = read.csv("//bioark.ad.unc.edu/HurlbertLab/Jenkins/Intermediate scripts/BBS scaled/all_figoutput.csv", header = TRUE)
+all_fig = read.csv("output/all_figoutput.csv", header = TRUE)
 #all_fig$area = as.factor(all_fig$area)
 
 all_figplot = ggplot(all_fig, aes(occ, group = factor(signif(area, digits = 2)), color = factor(signif(area, digits = 2))))+
@@ -272,8 +237,8 @@ all_figplot = ggplot(all_fig, aes(occ, group = factor(signif(area, digits = 2)),
 all_figplot
 
 ####Plotting NULL all routes with 3 highlighted "types####
-bbs_allscales = read.csv("data/BBS/bbs_allscales.csv", header = TRUE)
-core_coefs = read.csv("scripts/R-scripts/scale_analysis/core_coefs.csv", header = TRUE) #AUC etc.
+bbs_allscales = read.csv("intermed/bbs_allscales.csv", header = TRUE)
+core_coefs = read.csv("intermed/core_coefs.csv", header = TRUE) #AUC etc.
 
 coefs_ranked = core_coefs %>% 
   arrange(PCA.curvature) #middle teal line should be least curvy 
@@ -299,7 +264,7 @@ pred_abuns
 p1 = grid.arrange(pred_plot, pred_abuns, ncol = 2)
 
 ####Corrr_confints alternate with pctCore scale relationship coefs in lieu of original coefs####
-core_scales_hetero = read.csv("scripts/R-scripts/scale_analysis/core_scales_hetero.csv", header = TRUE)
+core_scales_hetero = read.csv("intermed/core_scales_hetero.csv", header = TRUE)
 
 scales_hetero_v = core_scales_hetero %>% 
   filter(dep == "elev.var" | dep == "ndvi.var") 
