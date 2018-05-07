@@ -235,7 +235,8 @@ reg_envhetero$scale = as.numeric(reg_envhetero$scale)
 
 env_all = reg_envhetero %>% 
   full_join(bbs_envs) %>% 
-  arrange(stateroute, scale)
+  arrange(stateroute, scale) %>% 
+  mutate(area = scale*50*(pi*(0.4^2)))
 
 write.csv(env_all, "intermed/env_all.csv", row.names = FALSE)  
 #updated 05/07 
