@@ -7,15 +7,10 @@ library(maps)
 library(sp)
 library(rgdal)
 library(maptools)
-library(rgeos)
-library(fields)
-library(gridExtra)
-library(wesanderson)
-library(stats)
-library(gimms)
-library(devtools)
-library(geometry)
 library(zoo)
+library(gridExtra)
+
+
 
 ####Dummy data and real data pre-plotting tidy for figures 1 & 4####
 fifty_allyears = read.csv("intermed/fifty_allyears.csv", header = TRUE) #using updated version, 50 stop data, 07/12
@@ -157,6 +152,8 @@ max_out = max_out2 %>%
 all_fig = rbind(max_out2, min_out2)
 length(unique(all_fig$stateroute)) #983, as it should be 
 write.csv(all_fig, "intermed/all_figoutput.csv", row.names = FALSE)
+write.csv(max_out, "intermed/max_out.csv", row.names = FALSE)
+write.csv(min_out, "intermed/min_out.csv", row.names = FALSE)
 #stored in intermed folder 
 
 ####################################################################################################
@@ -176,8 +173,7 @@ min_out = read.csv("intermed/min_out.csv", header = TRUE)
 
 #filter to scale == 50, check
 single_rte = min_out %>% 
-  filter(scale == "50") %>% 
-  mutate(area = scale*(pi*(0.4^2)))
+  filter(area > 25) #983 unique routes
 
 minplot = ggplot(single_rte, aes(occ))+
   stat_density(geom = "path", position = "identity", bw = "bcv", kernel = "gaussian", n = 4000, na.rm = TRUE, size = 1.3)+
@@ -186,8 +182,8 @@ minplot = ggplot(single_rte, aes(occ))+
   theme(axis.title = element_text(size = 18))+theme(legend.position = c(0.50, 0.50))
 minplot
 
-local = rollmean(rexp(n = 75045, rate = 12), k = 5, fill = "extend")
-big = rollmean(rexp(n = 75045, rate= 139/144), k = 3000, fill = "extend")
+local = rollmean(rexp(n = 76179, rate = 12), k = 5, fill = "extend")
+big = rollmean(rexp(n = 76179, rate= 139/144), k = 3000, fill = "extend")
 
 big2 = local+0.9
 big3 = sort(big2)
@@ -198,14 +194,6 @@ big5 = rollmean(big4, k = 500, fill = "extend")
 big6 = rollmean(big5, k = 5, fill = "extend")
 preds = cbind(single_rte, local)
 pred_dist = cbind(preds, big6)
-
-
-# pred_central = pred_dist %>%
-#   group_by(occ) %>%
-#   summarize(local2 = mean(local)) %>%
-#   mutate(occ = round(occ, digits = 2)) %>%
-#   group_by(occ) %>%
-#   summarize(local3 = mean(local2, na.rm = TRUE))
 
 
 all_predplot = ggplot(pred_dist, aes(occ))+
@@ -224,9 +212,9 @@ all_predplot + scale_color_manual(values = c("Observed" = "black", "Small scale"
 
 ####Fig 3####
 ##Make background grey, illustrate 66 points region in black, with red star centerpt 
-NorthAm = readOGR(dsn = "//bioark.ad.unc.edu/HurlbertLab/GIS/geography", layer = "continent")
+NorthAm = readOGR(dsn = "map_outline", layer = "continent")
 NorthAm2 = spTransform(NorthAm, CRS("+proj=laea +lat_0=45.235 +lon_0=-106.675 +units=km"))
-bbs_latlon = read.csv(paste(BBS, "good_rtes2.csv", sep = ""), header = TRUE)
+bbs_latlon = read.csv("intermed/good_rtes2.csv", header = TRUE)
 dist.df = read.csv("intermed/dist_df.csv", header = TRUE)
 
 dist.df_sub = dist.df %>% 
@@ -240,23 +228,23 @@ dist.df_sub2 = dist.df %>%
   arrange(dist) 
 
 #exclude routes that have missing above OR below scale data, such that sites are only calculated for routes that cover all 83 scales
-bbs_allscales = read.csv("data/BBS/bbs_allscales.csv", header = TRUE)
+bbs_allscales = read.csv("intermed/bbs_allscales.csv", header = TRUE)
 bbs_latlon = filter(bbs_latlon, stateroute %in% bbs_allscales$focalrte)
 bbs_latlon$stateroute = as.character(bbs_latlon$stateroute)
 bbs_secnd = filter(bbs_latlon, stateroute %in% dist.df_sub$rte2) #things get out of order! 
 bbs_thrd = filter(bbs_latlon, stateroute %in% dist.df_sub2$rte2)
 
-sites1 = data.frame(longitude = bbs_secnd$Longi, latitude = bbs_secnd$Lati) 
-sites2 = data.frame(longitude = bbs_thrd$Longi, latitude = bbs_thrd$Lati) 
+sites1 = data.frame(longitude = bbs_secnd$longitude, latitude = bbs_secnd$latitude) 
+sites2 = data.frame(longitude = bbs_thrd$longitude, latitude = bbs_thrd$latitude) 
 star1 = bbs_secnd %>% filter(stateroute == "2001")
 star2 = bbs_thrd %>% filter(stateroute == "89152")
 
 plot(NorthAm, xlim = c(-160, -60), ylim = c(25, 65))
-points(bbs_latlon$Longi, bbs_latlon$Lati, col= "grey", pch=16)
+points(bbs_latlon$longitude, bbs_latlon$latitude, col= "grey", pch=16)
 points(sites1$longitude, sites1$latitude, col = "#FDE725FF", pch = 16)
 points(sites2$longitude, sites2$latitude, col = viridis(1, begin = 0.5, end = 1, option = "D"), pch = 16)
-points(star1$Longi, star1$Lati, col = "black", pch = 17, cex = 2)
-points(star2$Longi, star2$Lati, col = "black", pch = 17, cex = 2)
+points(star1$longitude, star1$latitude, col = "black", pch = 17, cex = 2)
+points(star2$longitude, star2$latitude, col = "black", pch = 17, cex = 2)
 
 ####################################################################################################
 ####Results section figs####
@@ -290,11 +278,11 @@ all_figplot
 
 ####Figure 5A & B, with rollmeans moving window avgs####
 ####Plotting NULL all routes with 3 highlighted "types####
-bbs_allscales = read.csv("data/BBS/bbs_allscales.csv", header = TRUE)
+bbs_allscales = read.csv("intermed/bbs_allscales.csv", header = TRUE)
 bbs_allscales = bbs_allscales %>% 
   dplyr::filter(logN != "NA")
 
-core_coefs = read.csv("scripts/R-scripts/scale_analysis/core_coefs.csv", header = TRUE) #AUC etc.
+core_coefs = read.csv("intermed/core_coefs.csv", header = TRUE) #AUC etc.
 
 coefs_ranked = core_coefs %>% 
   arrange(PCA.curvature) #middle teal line should be least curvy
@@ -305,7 +293,7 @@ coefs_avgs = core_coefs %>%
 
 
 #compare rtes in homogeneous vs heterogeneous regions, illustrate in color to prove point 
-env_all = read.csv("scripts/R-scripts/scale_analysis/intermed/env_all.csv", header = TRUE) #AUC etc.
+env_all = read.csv("intermed/env_all.csv", header = TRUE) #AUC etc.
 ndvi_ranked = env_all %>% 
   group_by(stateroute) %>% 
   summarize(ndvi_m = mean(ndvi.var)) %>%
@@ -326,10 +314,9 @@ central_alt = bbs_allscales %>%
             logA = logA) %>% 
   mutate(logA = round(logA, digits = 2)) %>%
   group_by(logA) %>%
-  summarise(pctCore = mean(pctCore_m),
-            sdC = sd(pctCore_m)) %>% 
+  summarise(pctCore = mean(pctCore_m)) %>% 
   mutate(focalrte = "99999", logA = logA) %>% 
-  dplyr::select(focalrte, logA, pctCore, sdC)
+  dplyr::select(focalrte, logA, pctCore)
 
 bbs_allsub = bbs_allscales %>% 
   filter(focalrte == 34054 | focalrte == 85169) %>%
@@ -391,13 +378,15 @@ pred_abuns = ggplot(bbs_allscales, aes(x = logN, y = pctCore))+geom_line(aes(gro
 pred_abuns #yellow = high variation in habhet, purple = low variation, low habhet 
 
 
-p1 = grid.arrange(pred_plot, pred_abuns, ncol = 2, 
-                  left = textGrob("Proportion Core Species in Community", 
-                                  rot = 90, vjust = 1, gp = gpar(cex = 1.5)))
+p1 = gridExtra::grid.arrange(pred_plot, pred_abuns, ncol = 2, 
+                  left = ggpubr::text_grob("Proportion Core Species in Community", 
+                                  rot = 90, vjust = 1, size = 18))
 
 
 ####Figure 6####
 #at top scales, with just variances - diamond shape figure that parallels prediction table (alt to outcome table)
+scales_hetero = read.csv("intermed/core_scales_hetero.csv", header = TRUE) #pulling from core output
+
 scales_hetero2 = scales_hetero %>% 
   filter(scale == 66) %>% 
   filter(dep == "elev.var" | dep == "ndvi.var") %>% 
@@ -421,8 +410,6 @@ ggplot(scales_hetero2, aes(x = ind, y = corr_r))+
 
 ####Figure 7####
 #scales hetero derived at end of env_analysis script
-scales_hetero = read.csv("intermed/core_scales_hetero.csv", header = TRUE) #pulling from core output
-
 scales_hetero_v = scales_hetero %>% 
   filter(ind == "PCA.curvature" | ind == "PCA.max" | ind == "PCA.mid"| ind == "PCA.min" | ind == "PCA.slope")
 
@@ -447,42 +434,15 @@ ggplot(scales_hetero_v, aes(x = scale, y = corr_r))+
 
 ########################################################################################################
 ####Supplemental figures####
-
-
-
-
-
-
-
-######################################################################################################
-####Plot stateroutes 1 by 1, pick out some emblematic "types"####
-bbs_allscales = na.omit(read.csv("intermed/bbs_allscales.csv", header = TRUE))
-focalrtes = unique(bbs_allscales$focalrte)
-setwd("output/rte_imgs")
-
-for (r in focalrtes) {
-  bbs_allsub = bbs_allscales %>% filter(focalrte == r)
-  ggplot(bbs_allsub, aes(x = logA, y = meanOcc))+
-    geom_line()+ #coord_cartesian(xlim = c(0, 3.5), ylim = c(0, 1))+ tweak with 
-  theme_classic()+ labs(x = "Log Area", y = "Mean Community Occupancy", 
-                        title = r)
-  ggsave(paste("plot", r, ".tiff", sep = ""))
-}
-
-dev.off()
-
-
-
-####Supplemental figures####
 ####Supp figures: comparing raw and core_coef patterns between 3 different cutoff vals for core species####
 # Alternate cutoffs of core and transient species in a community: are distributions changed?
 #This scripts pulls in bbsallscales, bbsallscales_50, and bbs_allscales80, as well as 
 #core_coefs, core_coefs_50, and core_coefs_80 for visual comparisons
 
 ####Merge 3 core_coefs versions, add new factor column variable delineating cutoff category####
-core_coefs67 = read.csv("scripts/R-scripts/scale_analysis/core_coefs.csv", header = TRUE) 
-core_coefs50 = read.csv("scripts/R-scripts/scale_analysis/core_coefs50.csv", header = TRUE) 
-core_coefs80 = read.csv("scripts/R-scripts/scale_analysis/core_coefs80.csv", header = TRUE) 
+core_coefs67 = read.csv("intermed/core_coefs.csv", header = TRUE) 
+core_coefs50 = read.csv("intermed/core_coefs50.csv", header = TRUE) 
+core_coefs80 = read.csv("intermed/core_coefs80.csv", header = TRUE) 
 
 core_coefs50 = core_coefs50 %>% 
   mutate(cutoff_lvl = "Core 50%") #1
@@ -507,10 +467,10 @@ coefs_tidy = coefs_supp %>%
          value = parm_val, 
          2:11)
 
-write.csv(coefs_tidy, "scripts/R-scripts/scale_analysis/coefs_tidy_supp.csv", row.names = FALSE)
+write.csv(coefs_tidy, "intermed/coefs_tidy_supp.csv", row.names = FALSE)
 
 ####Supplemental figures: plotting differences in coef vals at diff cutoffs####
-coefs_tidy = read.csv("scripts/R-scripts/scale_analysis/coefs_tidy_supp.csv", header = TRUE)
+coefs_tidy = read.csv("intermed/coefs_tidy_supp.csv", header = TRUE)
 coefs_tidyA = coefs_tidy %>% filter(parm == "PCA.min"| parm == "PCA.mid"| parm == "PCA.slope"| parm == "PCA.curvature"| parm == "PCA.max")
 coefs_tidyN = coefs_tidy %>% filter(parm == "PCN.min"| parm == "PCN.mid"| parm == "PCN.slope"| parm == "PCN.curvature"| parm == "PCN.max")
 
@@ -535,9 +495,25 @@ ggplot(coefs_tidyN, aes(x = cutoff_lvl, y = parm_val))+
   labs(x = "Proportion of Presence Required for Designation as Core", y = "Parameter values", title = "Parameters derived from proportion core-abundance scaling relationship")
 
 
+####Plot stateroutes 1 by 1, pick out some emblematic "types"####
+bbs_allscales = na.omit(read.csv("intermed/bbs_allscales.csv", header = TRUE))
+focalrtes = unique(bbs_allscales$focalrte)
+setwd("output/rte_imgs")
+
+for (r in focalrtes) {
+  bbs_allsub = bbs_allscales %>% filter(focalrte == r)
+  ggplot(bbs_allsub, aes(x = logA, y = meanOcc))+
+    geom_line()+ #coord_cartesian(xlim = c(0, 3.5), ylim = c(0, 1))+ tweak with 
+    theme_classic()+ labs(x = "Log Area", y = "Mean Community Occupancy", 
+                          title = r)
+  ggsave(paste("plot", r, ".tiff", sep = ""))
+}
+
+dev.off()
+
 
 ####Summary stats for text####
-bbs_allscales = read.csv("data/BBS/bbs_allscales.csv", header = TRUE)
+bbs_allscales = read.csv("intermed/bbs_allscales.csv", header = TRUE)
 bbs_allscales_minr = bbs_allscales %>% 
   dplyr::filter(scale == "seg5")
 summary(bbs_allscales_minr$pctCore)
