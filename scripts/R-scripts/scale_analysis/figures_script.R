@@ -1,6 +1,5 @@
 #Figures and tables 
-#wd1: setwd("C:/git/core-transient")
-#wd2: setwd("\\bioark.ad.unc.edu\HurlbertLab\Jenkins\Final folder") 
+#wd1: setwd("C:/git/core_scale")
 library(viridis)
 library(tidyverse)
 library(raster)
@@ -18,43 +17,26 @@ library(devtools)
 library(geometry)
 library(zoo)
 
-#Figure 1: Bimodal dist images; number of spp on y vs # years present  
-#A: original bimodal dist 
-#B: distribution at smallest scales 
-#C: distribution at max scale 
-
-#refer to coylefig1a.R script in core-transient scripts folder for guidance 
-#need to recreate spp_matrix with current data 
-#AOU codes columns following first stateroute column 
-#individual occ values for spp at each stateroute across the 15 year window 
-
-
-BBS = '//bioark.ad.unc.edu/HurlbertLab/Jenkins/Intermediate scripts/BBS scaled/'
-
-fifty_allyears = read.csv(paste(BBS, "fifty_allyears.csv", sep = ""), header = TRUE) #using updated version, 50 stop data, 07/12
-bbs_allscales = read.csv("data/BBS/bbs_allscales.csv", header = TRUE)
+####Dummy data and real data pre-plotting tidy for figures 1 & 4####
+fifty_allyears = read.csv("intermed/fifty_allyears.csv", header = TRUE) #using updated version, 50 stop data, 07/12
+bbs_allscales = read.csv("intermed/bbs_allscales.csv", header = TRUE)
 
 fifty_bestAous = fifty_allyears %>% 
-  filter(AOU > 2880 & !(AOU >= 3650 & AOU <= 3810) & !(AOU >= 3900 & AOU <= 3910) & 
-           !(AOU >= 4160 & AOU <= 4210) & AOU != 7010) #leaving out owls, waterbirds as less reliable data
+  filter(aou > 2880 & !(aou >= 3650 & aou <= 3810) & !(aou >= 3900 & aou <= 3910) & 
+           !(aou >= 4160 & aou <= 4210) & aou != 7010) #leaving out owls, waterbirds as less reliable data
 
-#occ_counts function for calculating occupancy at any scale
-#countcolumns can refer to the stops in a stateroute OR 
-#it can refer to the associated secondary routes to aggregate across 
-#occ_counts function for calculating occupancy at any scale
-#countcolumns can refer to the stops in a stateroute OR 
-#it can refer to the associated secondary routes to aggregate across 
+#use occ_counts function for calculating occupancy at any scale to get raw occs for distribution plots
 occ_counts = function(countData, countColumns, scale) {
-  bbssub = countData[, c("stateroute", "year", "AOU", countColumns)] #these are our grouping vars
+  bbssub = countData[, c("stateroute", "year", "aou", countColumns)] #these are our grouping vars
   bbssub$groupCount = rowSums(bbssub[, countColumns]) 
-  bbsu = unique(bbssub[bbssub[, "groupCount"]!= 0, c("stateroute", "year", "AOU")]) 
+  bbsu = unique(bbssub[bbssub[, "groupCount"]!= 0, c("stateroute", "year", "aou")]) 
   
   abun.summ = bbssub %>% #abundance
     group_by(stateroute, year) %>%  
     summarize(totalN = sum(groupCount))  #we want to go further and summarize across focal + secondary rtes tho
   
   occ.summ = bbsu %>% #occupancy
-    count(stateroute, AOU) %>%
+    count(stateroute, aou) %>%
     mutate(occ = n/15, scale = scale) %>% #, #may want to get rid of, this is at the column-counting scale
     #scale = scale) %>%
     left_join(abun.summ, by = 'stateroute')
@@ -69,61 +51,42 @@ output = c()
 for (s in b_scales) {
   numGroups = floor(50/s)
   for (g in 1:numGroups) {
-    groupedCols = paste("Stop", ((g-1)*s + 1):(g*s), sep = "")
+    groupedCols = paste("stop", ((g-1)*s + 1):(g*s), sep = "")
     temp = occ_counts(fifty_bestAous, groupedCols, s) 
     output = rbind(output, temp) 
   } 
 }
 
 min_dist = output
-#transformation into matrix unnecessary with ggplot version 
-#write.csv(min_dist, "//bioark.ad.unc.edu/HurlbertLab/Jenkins/BBS scaled/min_dist.csv", row.names = FALSE)
-min_dist = read.csv("//bioark.ad.unc.edu/HurlbertLab/Jenkins/BBS scaled/min_dist.csv", header = TRUE)
+min_dist = min_dist[, -3] #removes vestigial "n" count column 
 
+#need to avg occs between unique stateroute-aou pairs since 5 for every 1 
+min_dist3 = min_dist %>% 
+  group_by(aou, stateroute, scale) %>% 
+  summarise(occ = mean(occ)) %>% dplyr::select(everything()) 
+min_out = as.data.frame(min_dist3)
 
-#filter to scale == 50, check
-min_dist2 = min_dist %>% 
+write.csv(min_out, "intermed/min_out.csv", row.names = FALSE)
+
+#check 
+min_out2 = min_out %>% 
   filter(scale == "50")
 
-fig1a = ggplot(min_dist2, aes(occ))+
+fig1a = ggplot(min_out2, aes(occ))+
   geom_density(bw = "bcv", kernel = "gaussian", n = 2000, na.rm = TRUE)+
   labs(x = "Proportion of time present at site", y = "Probability Density", title = "Single Route Scale")+ 
   theme_classic() #coord_cartesian(xlim = c(0, 1), ylim = c(0, 2.5))+
-fig1a
+fig1a #looks good!
 
-#repeat for scale of 5 stop segment and scale of 66 routes 
+#######################
 
-####Figure 1b: at scale of 5 stop segments####
-# Generic calculation of occupancy for a specified scale
-#fix to run all at once, so no sep run for above-scale, USE occ-counts for both 
-
-#scale of 5 segments (min) 
-min_dist = min_dist[, -3]
-#need to avg occs between unique stateroute-AOU pairs since 5 for every 1 
-min_dist3 = min_dist %>% 
-  group_by(AOU, stateroute, scale) %>% 
-  summarise(occ = mean(occ)) %>% dplyr::select(everything()) 
-
-min_out = as.data.frame(min_dist3)
-#write.csv(min_out, "//bioark.ad.unc.edu/HurlbertLab/Jenkins/BBS scaled/min_out.csv", row.names = FALSE)
-
-fig1b = ggplot(min_dist3, aes(occ, group = scale, color = scale))+
-  geom_density(kernel = "gaussian", n = 2000, na.rm = TRUE)+
-  labs(x = "Proportion of time present at site", y = "Probability Density", title = "Local Scales")+ 
-  theme_classic() #coord_cartesian(xlim = c(0, 1), ylim = c(0, 2.5))+
-fig1b 
-
-####Fig 1c: distribution at the maximum scale####
-dist.df = read.csv("scripts/R-scripts/scale_analysis/dist_df.csv", header = TRUE)
-bbs_above_guide = read.csv("scripts/R-scripts/scale_analysis/bbs_above_guide.csv", header = TRUE)
-#groupcounts for each AOU for each year at scale of ONE stateroute 
-
-#occ_counts function for calculating occupancy at any scale
-#countcolumns can refer to the stops in a stateroute OR 
-#it can refer to the associated secondary routes to aggregate across 
+#distribution at the 2-66 rte group scales#
+dist.df = read.csv("intermed/dist_df.csv", header = TRUE)
+bbs_above_guide = read.csv("intermed/bbs_above_guide.csv", header = TRUE) #generated by core_scale_analyses
+#groupcounts for each aou for each year at scale of ONE stateroute 
 
 uniqrtes = unique(bbs_above_guide$stateroute) #all routes present are unique, still 953 which is great
-scales = c(2, 4, 8, 16, 32, 66) # based on min common number in top 6 grid cells, see grid_sampling_justification script 
+scales = c(2, 4, 8, 16, 32, 66) 
 max_out = c()
 
 for (nu in scales){
@@ -142,9 +105,9 @@ for (nu in scales){
       filter(stateroute %in% tmp_rte_group$rte2) 
     
     occ.summ = focal_clustr %>% 
-      dplyr::select(year, AOU) %>% #duplicates remnant of distinct secondary routes - finally ID'd bug
+      dplyr::select(year, aou) %>% #duplicates remnant of distinct secondary routes - finally ID'd bug
       distinct() %>% #removing duplicates 09/20
-      count(AOU) %>% #how many times does that AOU show up in that clustr that year 
+      count(aou) %>% #how many times does that aou show up in that clustr that year 
       dplyr::mutate(occ = n/15, stateroute = r, scale = nu) 
     
     max_out = rbind(max_out, occ.summ)
@@ -152,7 +115,7 @@ for (nu in scales){
   }
 }
 
-max_out = max_out[, -2]
+max_out = max_out[, -2] #rm vistigal "n" column 
 max_out = as.data.frame(max_out)
 
 fig1c = ggplot(max_out, aes(occ))+
@@ -161,48 +124,15 @@ fig1c = ggplot(max_out, aes(occ))+
 #so it was the limits giving me crap in the original 
 fig1c
 
-write.csv(max_out, "//bioark.ad.unc.edu/HurlbertLab/Jenkins/BBS scaled/max_out.csv", row.names = FALSE)
+write.csv(max_out, "intermed/max_out.csv", row.names = FALSE)
+##################
 
-####Figure 4 all graphs overlay####
-## merge output, min, and max into single df while adding new column delineating which 
-## category: single, min, or max the data corresponds to so multiple lines can be 
-## overlaid on single density plot 
+#read in occ data for merge for all_fig output creation 
+min_out = read.csv("intermed/min_out.csv", header = TRUE)
+max_out = read.csv("intermed/max_out.csv", header = TRUE)
+dist.df = read.csv("intermed/dist_df.csv", header = TRUE)
+#groupcounts for each aou for each year at scale of ONE stateroute 
 
-# <<<<<<< HEAD
-# output$scale = 1
-# min_out2$scale = .10
-# # max_out$scale = c("Largest Scale")
-# =======
-# output$scale = c("Single Route Scale")
-# min_out2$scale = c("Local Scale")
-# max_out$scale = c("Regional Scale")
-# >>>>>>> f1c590e6043bf38c744f891e4c763df712f21b21
-
-
-#read in min and single route scale occ density data 
-min_out = read.csv("//bioark.ad.unc.edu/HurlbertLab/Jenkins/Intermediate scripts/BBS scaled/min_out.csv", header = TRUE)
-#scales 2:66 agg routes 
-max_out = read.csv("//bioark.ad.unc.edu/HurlbertLab/Jenkins/Intermediate scripts/BBS scaled/max_out.csv", header = TRUE)
-#updated 12/12 
-
-
-#organize by scales; label and differentiate scales so that below-rtes are appropriately smaller
-#do area calcs and color by area? 
-
-min_out = min_out %>% 
-  dplyr::select(stateroute, AOU, occ, scale) %>% 
-  dplyr::mutate(area = scale*(pi*(0.4^2))) %>% #scale corresponds to the number of stops
-  dplyr::select(stateroute, AOU, occ, area)
-
-
-max_out = max_out %>% 
-  dplyr::select(stateroute, AOU, occ, scale) %>% 
-  dplyr::mutate(area = scale*50*(pi*(0.4^2))) %>% #scale corresponds to the number of agg routes; 50 stops per rte
-  dplyr::select(stateroute, AOU, occ, area)
-
-
-dist.df = read.csv("scripts/R-scripts/scale_analysis/intermed/dist_df.csv", header = TRUE)
-#groupcounts for each AOU for each year at scale of ONE stateroute 
 #filter out to only routes that are up to 1000km radius away from each other before analyses 
 far = dist.df %>% arrange(rte1, dist) %>% group_by(rte1) %>% slice(66)
 hist(far$dist)
@@ -210,96 +140,104 @@ far2 = far %>% filter(dist < 1000)
 
 min_out2 = min_out %>% filter(stateroute %in% far2$rte1)
 max_out2 = max_out %>% filter(stateroute %in% far2$rte1)
+#updated 05/07
+
+#organize by scales; label and differentiate scales so that below-rtes are appropriately smaller
+min_out = min_out2 %>% 
+  dplyr::select(stateroute, aou, occ, scale) %>% 
+  dplyr::mutate(area = scale*(pi*(0.4^2))) %>% #scale corresponds to the number of stops
+  dplyr::select(stateroute, aou, occ, area)
+
+max_out = max_out2 %>% 
+  dplyr::select(stateroute, aou, occ, scale) %>% 
+  dplyr::mutate(area = scale*50*(pi*(0.4^2))) %>% #scale corresponds to the number of agg routes; 50 stops per rte
+  dplyr::select(stateroute, aou, occ, area)
+
 
 all_fig = rbind(max_out2, min_out2)
-length(unique(all_fig$stateroute)) #968, as it should be 
-write.csv(all_fig, paste(BBS, "all_figoutput.csv", sep = ""), row.names = FALSE)
-#stored in bioark folder 
+length(unique(all_fig$stateroute)) #983, as it should be 
+write.csv(all_fig, "intermed/all_figoutput.csv", row.names = FALSE)
+#stored in intermed folder 
+
+####################################################################################################
+####Figure 1: Bimodal dist images; number of spp on y vs # years present####  
+#A: original bimodal dist 
+#B: distribution at smallest scales 
+#C: distribution at max scale 
+
+#refer to coylefig1a.R script in core-transient scripts folder for guidance 
+#need to recreate spp_matrix with current data 
+#aou codes columns following first stateroute column 
+#individual occ values for spp at each stateroute across the 15 year window 
 
 
-####Plotting how distributions change across scale, using area####
-all_fig = read.csv("//bioark.ad.unc.edu/HurlbertLab/Jenkins/Intermediate scripts/BBS scaled/all_figoutput.csv", header = TRUE)
-#all_fig$area = as.factor(all_fig$area)
-all_fig$area_f = factor(round(all_fig$area),
-                         levels = c(3, 5, 13, 25, 50, 101, 201, 402, 804, 1659), 
-                         labels = c("2.5, 5 point count stops", "5", "13", "25, 1 BBS route", "50", "101", "201", "402", "804", "1659, 66 aggregate BBS routes")) 
-all_fig = all_fig %>% 
-  #first I have to take levels for area_f and lump everything together that isn't 50/25, 1 BBS route
-  mutate(area_spec = as.numeric(area_f))
+#base fig1 
+min_out = read.csv("intermed/min_out.csv", header = TRUE)
 
-all_fig$area_spec[all_fig$area_spec != 4] <- 0
+#filter to scale == 50, check
+single_rte = min_out %>% 
+  filter(scale == "50") %>% 
+  mutate(area = scale*(pi*(0.4^2)))
 
-all_fig$area_spec = factor(all_fig$area_spec)
-
-  
-all_figplot = ggplot(all_fig, aes(occ, group = area_f, color = area_f, linetype = area_spec))+
+minplot = ggplot(single_rte, aes(occ))+
   stat_density(geom = "path", position = "identity", bw = "bcv", kernel = "gaussian", n = 4000, na.rm = TRUE, size = 1.3)+
-  #stat_density(singlerte, aes(occ), geom = "path", position = "identity", bw = "bcv", kernel = "gaussian", n = 4000, na.rm = TRUE, size = 1.6)+
   labs(x = "Proportion of time present at site", y = "Probability Density")+theme_classic()+
-  scale_color_viridis(discrete = TRUE, name = expression("Spatial Scale in km"^{2}))+
-  theme(axis.title = element_text(size = 18), axis.text = element_text(size = 16))+
-  theme(legend.text = element_text(size = 16), legend.title = element_text(size = 16))+
-  theme(legend.position = c(0.50, 0.50))+guides(linetype = FALSE)
-all_figplot
-
-
-#attempts to make 50 stop single rte density line different linetype met with resistance 
-#as continuous variable linetypes can't be customized manually...
-
-# lins = c("2.5, 5 point count stops" = "solid", "5" = "solid", "13"= "solid", "25" = "solid",
-#          "50"= "dotted", "100"= "solid", "200"= "solid", "400"= "solid", "800"= "solid", "1700, 66 aggregate BBS routes"= "solid")
-# all_figplot + scale_linetype_manual(values= lins)
-# 
-# scale_linetype_manual(values = c(rep("solid", 10), rep("dashed", 6))) +
-#   scale_color_manual(values = c(brewer.pal(10, "Set3"), brewer.pal(6, "Set3")))
-# scale_color_viridis(discrete = TRUE, option = "B", end = 0.9, name = expression("Spatial Scale in km"^{2}))+
-
-  
-minplot = ggplot(min_out, aes(occ, group = factor(signif(min_out$area, digits = 2)), color = factor(signif(min_out$area, digits = 2))))+
-  stat_density(geom = "path", position = "identity", bw = "bcv", kernel = "gaussian", n = 4000, na.rm = TRUE)+
-  labs(x = "Proportion of time present at site", y = "Probability Density", title = "Local scales")+theme_classic()
+  coord_cartesian(xlim = c(0, 1), ylim = c(0, 2.5))+
+  theme(axis.title = element_text(size = 18))+theme(legend.position = c(0.50, 0.50))
 minplot
 
-#interesting problem - geom line does not permit lines to crisscross, but geom_density does 
-# - although then we have polygon problem again. How to fix? 
+local = rollmean(rexp(n = 75045, rate = 12), k = 5, fill = "extend")
+big = rollmean(rexp(n = 75045, rate= 139/144), k = 3000, fill = "extend")
+
+big2 = local+0.9
+big3 = sort(big2)
+big4 = c(big3[1:200] - 0.1346, big3[201:400] - 0.0970, big3[401:602] - 0.07958,
+         big3[603:1600] - 0.06898, big3[1601:2000] - 0.05340,  big3[2001:2400] - 0.0458, 
+         big3[2401:2800] - 0.01287, big3[2801:3200] - 0.00167, big3[3201:length(big3)])
+big5 = rollmean(big4, k = 500, fill = "extend")
+big6 = rollmean(big5, k = 5, fill = "extend")
+preds = cbind(single_rte, local)
+pred_dist = cbind(preds, big6)
 
 
-####Results Figure occ-scale: area and abundance####
-#Using same data from distribution plots, visualize occ and scale 
-#troubleshoot discrepancies in bbs_allscales occ calcs from occ_processing script
-
-BBS = '//bioark.ad.unc.edu/HurlbertLab/Jenkins/BBS scaled/'
-fifty_allyears = read.csv(paste(BBS, "fifty_allyears.csv", sep = ""), header = TRUE) #using updated version, 50 stop data, 07/12
-bbs_allscales = read.csv("data/BBS/bbs_allscales.csv", header = TRUE)
-fifty_bestAous = fifty_allyears %>% 
-  filter(AOU > 2880 & !(AOU >= 3650 & AOU <= 3810) & !(AOU >= 3900 & AOU <= 3910) & 
-           !(AOU >= 4160 & AOU <= 4210) & AOU != 7010) #leaving out owls, waterbirds as less reliable data
-
-plot(bbs_allscales$meanOcc~bbs_allscales$logA)
-plot(bbs_allscales$meanOcc~bbs_allscales$logN)
-#jump between 1 and 2 scales -> diagnose 
+# pred_central = pred_dist %>%
+#   group_by(occ) %>%
+#   summarize(local2 = mean(local)) %>%
+#   mutate(occ = round(occ, digits = 2)) %>%
+#   group_by(occ) %>%
+#   summarize(local3 = mean(local2, na.rm = TRUE))
 
 
+all_predplot = ggplot(pred_dist, aes(occ))+
+  geom_rect(aes(xmin = 0, ymin = 0, xmax = 0.33, ymax = 6), fill = "grey", alpha = 0.02)+
+  geom_rect(aes(xmin = .67, ymin = 0, xmax = 1, ymax = 6), fill = "grey", alpha = 0.02)+
+  stat_density(aes(color = "Observed"), geom = "path", position = "identity", bw = "bcv", kernel = "gaussian", n = 4000, na.rm = TRUE, size = 1.5)+
+  stat_density(aes(local, color = "Small scale"), geom = "path", position = "identity", bw = "bcv", kernel = "gaussian", n = 4000, na.rm = TRUE, size = 1.5, linetype = "dashed")+
+  stat_density(aes(big6, color = "Large scale"), geom = "path", position = "identity", bw = "bcv", kernel = "gaussian", n = 24, na.rm = TRUE, size = 1.5, linetype = "dashed")+
+  labs(x = "Proportion of time present at site", y = "Probability Density")+theme_classic()+
+  theme(axis.title = element_text(size = 18), axis.text = element_text(size = 16))+ 
+  coord_cartesian(xlim = c(0.11, .95), ylim = c(0, 5.5))
+all_predplot + scale_color_manual(values = c("Observed" = "black", "Small scale" = "#287D8EFF", "Large scale" = "#FDE725FF"))+
+  theme(legend.position = c(0.45, 0.45), legend.text = element_text(size = 16), legend.title = element_blank())
 
-
+####Fig 2 schematics generated in powerpoint####
 
 ####Fig 3####
 ##Make background grey, illustrate 66 points region in black, with red star centerpt 
 NorthAm = readOGR(dsn = "//bioark.ad.unc.edu/HurlbertLab/GIS/geography", layer = "continent")
 NorthAm2 = spTransform(NorthAm, CRS("+proj=laea +lat_0=45.235 +lon_0=-106.675 +units=km"))
 bbs_latlon = read.csv(paste(BBS, "good_rtes2.csv", sep = ""), header = TRUE)
-dist.df = read.csv("scripts/R-scripts/scale_analysis/intermed/dist_df.csv", header = TRUE)
+dist.df = read.csv("intermed/dist_df.csv", header = TRUE)
+
 dist.df_sub = dist.df %>% 
   filter(rte1 == "2001")%>% 
-  top_n(66, desc(dist)) %>% #fixed ordering by including arrange parm, 
+  top_n(66, desc(dist)) %>% 
   arrange(dist) 
 
 dist.df_sub2 = dist.df %>% 
   filter(rte1 == "89152") %>%
-  top_n(66, desc(dist)) %>% #fixed ordering by including arrange parm, 
+  top_n(66, desc(dist)) %>% 
   arrange(dist) 
-
-
 
 #exclude routes that have missing above OR below scale data, such that sites are only calculated for routes that cover all 83 scales
 bbs_allscales = read.csv("data/BBS/bbs_allscales.csv", header = TRUE)
@@ -320,109 +258,37 @@ points(sites2$longitude, sites2$latitude, col = viridis(1, begin = 0.5, end = 1,
 points(star1$Longi, star1$Lati, col = "black", pch = 17, cex = 2)
 points(star2$Longi, star2$Lati, col = "black", pch = 17, cex = 2)
 
+####################################################################################################
 ####Results section figs####
-#scales hetero derived at end of env_analysis script
-scales_hetero = read.csv("scripts/R-scripts/scale_analysis/core_scales_hetero.csv", header = TRUE) #pulling from core output
 
-scales_hetero_v = scales_hetero %>% 
-  filter(dep == "elev.var" | dep == "ndvi.var") %>%
-  filter(ind == "PCA.curvature" | ind == "PCA.max" | ind == "PCA.mid"| ind == "PCA.min" | ind == "PCA.slope")
+####Figure 4: Plotting how CT distributions change across scale, using area####
+all_fig = read.csv("intermed/all_figoutput.csv", header = TRUE)
+#all_fig$area = as.factor(all_fig$area)
+all_fig$area_f = factor(round(all_fig$area),
+                        levels = c(3, 5, 13, 25, 50, 101, 201, 402, 804, 1659), 
+                        labels = c("2.5, 5 point count stops", "5", "13", "25, 1 BBS route", "50", "101", "201", "402", "804", "1659, 66 aggregate BBS routes")) 
+all_fig = all_fig %>% 
+  #first I have to take levels for area_f and lump everything together that isn't 50/25, 1 BBS route
+  mutate(area_spec = as.numeric(area_f))
 
-scales_hetero_v$ind = factor(scales_hetero_v$ind, 
-                             levels = c("PCA.min","PCA.mid", "PCA.slope","PCA.curvature", "PCA.max"),
-                             labels = c(as.character(expression("p"["min"])), as.character(expression("Scale"[50])), "Slope", "Curvature", as.character(expression("p"["max"]))))
+all_fig$area_spec[all_fig$area_spec != 4] <- 0
 
-scales_hetero_v$dep = factor(scales_hetero_v$dep, 
-                                levels=c("elev.var", "ndvi.var"),
-                                labels=c("Elevation", "NDVI"))
-
-#scale on x and r on y, panel by coef of interest, line color by var measure
-ggplot(scales_hetero_v, aes(x = scale, y = corr_r))+
-  geom_line(aes(color = dep), size = 1.4)+facet_wrap(~ind, labeller = label_parsed)+
-  theme_classic()+
-  geom_abline(intercept = 0, slope = 0)+
-  theme_classic()+theme(text = element_text(size = 18))+
-  labs(color = "Environmental Heterogeneity", x = "Number of aggregated BBS Routes", y = "Pearson's correlation coefficient")+theme(legend.position = c(0.84, 0.20))+
-  scale_color_viridis(begin = 0, end = 0.7, discrete = TRUE, option = "D")+
-  scale_y_continuous(breaks = c(-0.6, -0.4, -0.2, 0, 0.2, 0.4))
+all_fig$area_spec = factor(all_fig$area_spec)
 
 
-
-# scale_shape_discrete(name="Habitat Heterogeneity",
-#                      breaks=c("elev.var", "ndvi.var"),
-#                      labels=c("Variance in Elevation", "Variance in NDVI"))+
-
-#I want a corr_r value for every dep and ind variable at every scale, for every focal
-#for every scale, for every focal route - will have a LOT - maybe just do a subset for meeting 
-
-#the correlation coefficients themselves won't change, bc representative of the overall 
-#occ-scale relationship, that's fine - the hab_het vals will change though bc measures 
-#at each scale 
-#starting at scale of 1 since that's lowest res we have for habhet across scales, 
-#rerun previous dep/ind loop with new mods
-
-
-#at top scales, with just variances - diamond shape figure that parallels prediction table (alt to outcome table)
-scales_hetero2 = scales_hetero %>% 
-  filter(scale == 66) %>% 
-  filter(dep == "elev.var" | dep == "ndvi.var") %>% 
-  filter(ind == "PCA.curvature" | ind == "PCA.max" | ind == "PCA.mid"| ind == "PCA.min" | ind == "PCA.slope")
-
-ggplot(scales_hetero2, aes(x = ind, y = corr_r))+
-  geom_pointrange(aes(color = dep, shape = dep, ymin = lowr, ymax = uppr), size = 1.2, position = position_dodge(width = 0.35))+geom_abline(intercept = 0, slope = 0)+
-  theme_classic()+theme(axis.title = element_text(size = 18), axis.text = element_text(size = 16), legend.position = c(0.55, 0.25), legend.text = element_text(size = 16), legend.title = element_text(size = 16))+
-  labs(x = "Occupancy-scale parameters", y = "Pearson's correlation coefficient")+
-  scale_x_discrete(limit = c("PCA.min", "PCA.mid","PCA.slope","PCA.curvature","PCA.max"),
-                   labels = c(expression("p"["min"]), expression("Scale"[50]),"Slope","Curvature",expression("p"["max"])))+
-  scale_y_continuous(breaks = c(-0.6, -0.4, -0.2, 0, 0.2, 0.4))+
-  scale_color_manual(name = "Environmental Heterogeneity",
-                     values=c("#440154FF", "#55C667FF"),
-                     labels = c("Elevation", "NDVI"))+
-  scale_shape_manual(name = "Environmental Heterogeneity",
-                     values=c(16, 17),
-                     labels = c("Elevation", "NDVI"))
-#likely #440154FF purple and #55C667FF
+all_figplot = ggplot(all_fig, aes(occ, group = area_f, color = area_f, linetype = area_spec))+
+  stat_density(geom = "path", position = "identity", bw = "bcv", kernel = "gaussian", n = 4000, na.rm = TRUE, size = 1.3)+
+  #stat_density(singlerte, aes(occ), geom = "path", position = "identity", bw = "bcv", kernel = "gaussian", n = 4000, na.rm = TRUE, size = 1.6)+
+  labs(x = "Proportion of time present at site", y = "Probability Density")+theme_classic()+
+  scale_color_viridis(discrete = TRUE, name = expression("Spatial Scale in km"^{2}))+
+  theme(axis.title = element_text(size = 18), axis.text = element_text(size = 16))+
+  theme(legend.text = element_text(size = 16), legend.title = element_text(size = 16))+
+  theme(legend.position = c(0.50, 0.50))+guides(linetype = FALSE)
+all_figplot
 
 
 
-####Plot stateroutes 1 by 1, pick out some emblematic "types"####
-bbs_allscales = na.omit(read.csv("C:/git/core-transient/data/BBS/bbs_allscales.csv", header = TRUE))
-focalrtes = unique(bbs_allscales$focalrte)
-setwd("C:/rte_imgs")
-
-for (r in focalrtes) {
-  bbs_allsub = bbs_allscales %>% filter(focalrte == r)
-  ggplot(bbs_allsub, aes(x = logA, y = meanOcc))+
-    geom_line()+ #coord_cartesian(xlim = c(0, 3.5), ylim = c(0, 1))+ tweak with 
-  theme_classic()+ labs(x = "Log Area", y = "Mean Community Occupancy", 
-                        title = r)
-  ggsave(paste("plot", r, ".tiff", sep = ""))
-}
-
-dev.off()
-
-
-
-####Plotting NULL all routes with 3 highlighted "types####
-bbs_allscales = read.csv("data/BBS/bbs_allscales.csv", header = TRUE)
-coefs = read.csv("scripts/R-scripts/scale_analysis/intermed/coefs.csv", header = TRUE) #AUC etc.
-
-coefs_ranked = coefs %>% 
-  arrange(OA.curvature) #middle teal line should be least curvy 
-
-
-bbs_allsub = bbs_allscales %>% filter(focalrte == 33901 | focalrte == 72035 | focalrte == 44032)
-bbs_allsub$focalrte = as.factor(bbs_allsub$focalrte)
-#use this to assign diff colors for each factor level per what color scheme is ideal?
-
-
-pred_plot = ggplot(bbs_allscales, aes(x = logA, y = meanOcc))+geom_line(aes(group = focalrte), color = "grey")+
-  theme_classic()+geom_line(data = bbs_allsub, aes(x = logA, y = meanOcc, group = as.factor(focalrte), color = as.factor(focalrte)), size = 2)+ #geom_smooth(model = lm, color = 'red')+
-  labs(x = "Log Area", y = "Mean Community Occupancy")+scale_color_viridis(discrete = TRUE)+
-  theme(axis.title = element_text(size = 18))+theme(legend.position = c(0.80, 0.25)) 
-pred_plot 
-
-#pctcore version 
+####Figure 5A & B, with rollmeans moving window avgs####
 ####Plotting NULL all routes with 3 highlighted "types####
 bbs_allscales = read.csv("data/BBS/bbs_allscales.csv", header = TRUE)
 bbs_allscales = bbs_allscales %>% 
@@ -470,12 +336,12 @@ bbs_allsub = bbs_allscales %>%
   dplyr::select(focalrte, logA, pctCore)
 
 bbs_allsub2 = rbind(bbs_allsub, central_alt)
-  
+
 bbs_allsub2$focalrte = factor(bbs_allsub2$focalrte,
-                             levels=c( "99999","34054", "85169"),
-                             labels=c("Mean",
-                                      "Low Heterogeneity",
-                                      "High Heterogeneity"))
+                              levels=c( "99999","34054", "85169"),
+                              labels=c("Mean",
+                                       "Low Heterogeneity",
+                                       "High Heterogeneity"))
 #use this to assign diff colors for each factor level per what color scheme is ideal?
 #72 is PA, 14 is Cali, 34 is Illinois, 17 is Colorado 
 
@@ -529,93 +395,82 @@ p1 = grid.arrange(pred_plot, pred_abuns, ncol = 2,
                   left = textGrob("Proportion Core Species in Community", 
                                   rot = 90, vjust = 1, gp = gpar(cex = 1.5)))
 
-# gp = gpar(fontface = "bold", cex = 1.5)),
-# left = textGrob("Global Y-axis Label", rot = 90, vjust = 1)
 
-####Dummy data and predicted vals for adapted Coyle et al. distribution figure, Figure 1####
-#base fig1a 
-min_out = read.csv("//bioark.ad.unc.edu/HurlbertLab/Jenkins/Intermediate scripts/BBS scaled/min_out.csv", header = TRUE)
+####Figure 6####
+#at top scales, with just variances - diamond shape figure that parallels prediction table (alt to outcome table)
+scales_hetero2 = scales_hetero %>% 
+  filter(scale == 66) %>% 
+  filter(dep == "elev.var" | dep == "ndvi.var") %>% 
+  filter(ind == "PCA.curvature" | ind == "PCA.max" | ind == "PCA.mid"| ind == "PCA.min" | ind == "PCA.slope")
 
-#filter to scale == 50, check
-single_rte = min_out %>% 
-  filter(scale == "50") %>% 
-  mutate(area = scale*(pi*(0.4^2)))
-
-minplot = ggplot(single_rte, aes(occ))+
-  stat_density(geom = "path", position = "identity", bw = "bcv", kernel = "gaussian", n = 4000, na.rm = TRUE, size = 1.3)+
-  labs(x = "Proportion of time present at site", y = "Probability Density")+theme_classic()+
-  coord_cartesian(xlim = c(0, 1), ylim = c(0, 2.5))+
-  theme(axis.title = element_text(size = 18))+theme(legend.position = c(0.50, 0.50))
-minplot
-
-# ##dummy data 
-# local_dummy = single_rte %>% 
-#   mutate(occ2 = 1-occ,
-#          scale = 5) %>% 
-#   dplyr::select(-occ) %>% 
-#   rename(occ = occ2) %>% 
-#   mutate(area = scale*(pi*(0.4^2)),
-#          occ = ifelse(occ >= 0.5, occ-0.5, occ)) #make it so occ vals greater than 0.5 are converted to 0.1
-#   
-# big_dummy = single_rte %>% 
-#   mutate(scale = 66, 
-#          occ2 = ifelse(occ < 0.2, 0.5+occ, occ),
-#          area = scale*50*(pi*(0.4^2))) %>% 
-#   dplyr::select(-occ) %>% 
-#   rename(occ = occ2) 
-# 
-# pred_dist_df = rbind(single_rte, local_dummy)
-# pred_dist = rbind(pred_dist_df, big_dummy)
+ggplot(scales_hetero2, aes(x = ind, y = corr_r))+
+  geom_pointrange(aes(color = dep, shape = dep, ymin = lowr, ymax = uppr), size = 1.2, position = position_dodge(width = 0.35))+geom_abline(intercept = 0, slope = 0)+
+  theme_classic()+theme(axis.title = element_text(size = 18), axis.text = element_text(size = 16), legend.position = c(0.55, 0.25), legend.text = element_text(size = 16), legend.title = element_text(size = 16))+
+  labs(x = "Occupancy-scale parameters", y = "Pearson's correlation coefficient")+
+  scale_x_discrete(limit = c("PCA.min", "PCA.mid","PCA.slope","PCA.curvature","PCA.max"),
+                   labels = c(expression("p"["min"]), expression("Scale"[50]),"Slope","Curvature",expression("p"["max"])))+
+  scale_y_continuous(breaks = c(-0.6, -0.4, -0.2, 0, 0.2, 0.4))+
+  scale_color_manual(name = "Environmental Heterogeneity",
+                     values=c("#440154FF", "#55C667FF"),
+                     labels = c("Elevation", "NDVI"))+
+  scale_shape_manual(name = "Environmental Heterogeneity",
+                     values=c(16, 17),
+                     labels = c("Elevation", "NDVI"))
+#likely #440154FF purple and #55C667FF
 
 
-#######
-# single_half_big = single_rte %>% 
-#   filter(occ > 0.6) %>%
-#   mutate(scale = 66, 
-#          area = scale*50*(pi*(0.4^2)))
-# 
-# single_half_small = single_rte %>% 
-#   filter(occ < 0.4) %>% 
-#   mutate(scale = 5, 
-#          area = scale*pi*(0.4^2))
-# 
-# doubl_dist = as.data.frame(rbind(single_half_small, single_half_small))
-# double_dist2 = as.data.frame(rbind(single_half_big, single_half_big))   
-# pred_dist = rbind(doubl_dist, double_dist2) 
+####Figure 7####
+#scales hetero derived at end of env_analysis script
+scales_hetero = read.csv("intermed/core_scales_hetero.csv", header = TRUE) #pulling from core output
 
-local = rollmean(rexp(n = 75045, rate = 12), k = 5, fill = "extend")
-big = rollmean(rexp(n = 75045, rate= 139/144), k = 3000, fill = "extend")
+scales_hetero_v = scales_hetero %>% 
+  filter(ind == "PCA.curvature" | ind == "PCA.max" | ind == "PCA.mid"| ind == "PCA.min" | ind == "PCA.slope")
 
-big2 = local+0.9
-big3 = sort(big2)
-big4 = c(big3[1:200] - 0.1346, big3[201:400] - 0.0970, big3[401:602] - 0.07958,
-         big3[603:1600] - 0.06898, big3[1601:2000] - 0.05340,  big3[2001:2400] - 0.0458, 
-         big3[2401:2800] - 0.01287, big3[2801:3200] - 0.00167, big3[3201:length(big3)])
-big5 = rollmean(big4, k = 500, fill = "extend")
-big6 = rollmean(big5, k = 5, fill = "extend")
-preds = cbind(single_rte, local)
-pred_dist = cbind(preds, big6)
+scales_hetero_v$ind = factor(scales_hetero_v$ind, 
+                             levels = c("PCA.min","PCA.mid", "PCA.slope","PCA.curvature", "PCA.max"),
+                             labels = c(as.character(expression("p"["min"])), as.character(expression("Scale"[50])), "Slope", "Curvature", as.character(expression("p"["max"]))))
+
+scales_hetero_v$dep = factor(scales_hetero_v$dep, 
+                             levels=c("elev.var", "ndvi.var"),
+                             labels=c("Elevation", "NDVI"))
+
+#scale on x and r on y, panel by coef of interest, line color by var measure
+ggplot(scales_hetero_v, aes(x = scale, y = corr_r))+
+  geom_line(aes(color = dep), size = 1.4)+facet_wrap(~ind, labeller = label_parsed)+
+  theme_classic()+
+  geom_abline(intercept = 0, slope = 0)+
+  theme_classic()+theme(text = element_text(size = 18))+
+  labs(color = "Environmental Heterogeneity", x = "Number of aggregated BBS Routes", y = "Pearson's correlation coefficient")+theme(legend.position = c(0.84, 0.20))+
+  scale_color_viridis(begin = 0, end = 0.7, discrete = TRUE, option = "D")+
+  scale_y_continuous(breaks = c(-0.6, -0.4, -0.2, 0, 0.2, 0.4))
 
 
-# pred_central = pred_dist %>%
-#   group_by(occ) %>%
-#   summarize(local2 = mean(local)) %>%
-#   mutate(occ = round(occ, digits = 2)) %>%
-#   group_by(occ) %>%
-#   summarize(local3 = mean(local2, na.rm = TRUE))
+########################################################################################################
+####Supplemental figures####
 
-  
-all_predplot = ggplot(pred_dist, aes(occ))+
-  geom_rect(aes(xmin = 0, ymin = 0, xmax = 0.33, ymax = 6), fill = "grey", alpha = 0.02)+
-  geom_rect(aes(xmin = .67, ymin = 0, xmax = 1, ymax = 6), fill = "grey", alpha = 0.02)+
-  stat_density(aes(color = "Observed"), geom = "path", position = "identity", bw = "bcv", kernel = "gaussian", n = 4000, na.rm = TRUE, size = 1.5)+
-  stat_density(aes(local, color = "Small scale"), geom = "path", position = "identity", bw = "bcv", kernel = "gaussian", n = 4000, na.rm = TRUE, size = 1.5, linetype = "dashed")+
-  stat_density(aes(big6, color = "Large scale"), geom = "path", position = "identity", bw = "bcv", kernel = "gaussian", n = 24, na.rm = TRUE, size = 1.5, linetype = "dashed")+
-  labs(x = "Proportion of time present at site", y = "Probability Density")+theme_classic()+
-  theme(axis.title = element_text(size = 18), axis.text = element_text(size = 16))+ 
-  coord_cartesian(xlim = c(0.11, .95), ylim = c(0, 5.5))
-all_predplot + scale_color_manual(values = c("Observed" = "black", "Small scale" = "#287D8EFF", "Large scale" = "#FDE725FF"))+
-  theme(legend.position = c(0.45, 0.45), legend.text = element_text(size = 16), legend.title = element_blank())
+
+
+
+
+
+
+######################################################################################################
+####Plot stateroutes 1 by 1, pick out some emblematic "types"####
+bbs_allscales = na.omit(read.csv("intermed/bbs_allscales.csv", header = TRUE))
+focalrtes = unique(bbs_allscales$focalrte)
+setwd("output/rte_imgs")
+
+for (r in focalrtes) {
+  bbs_allsub = bbs_allscales %>% filter(focalrte == r)
+  ggplot(bbs_allsub, aes(x = logA, y = meanOcc))+
+    geom_line()+ #coord_cartesian(xlim = c(0, 3.5), ylim = c(0, 1))+ tweak with 
+  theme_classic()+ labs(x = "Log Area", y = "Mean Community Occupancy", 
+                        title = r)
+  ggsave(paste("plot", r, ".tiff", sep = ""))
+}
+
+dev.off()
+
 
 
 ####Supplemental figures####
@@ -678,7 +533,6 @@ ggplot(coefs_tidyN, aes(x = cutoff_lvl, y = parm_val))+
   geom_boxplot()+facet_wrap(~parm, scales = "free_y", labeller = label_parsed)+
   theme_classic()+theme(text = element_text(size = 18))+
   labs(x = "Proportion of Presence Required for Designation as Core", y = "Parameter values", title = "Parameters derived from proportion core-abundance scaling relationship")
-
 
 
 
