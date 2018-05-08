@@ -149,7 +149,7 @@ max_out = max_out2 %>%
   dplyr::select(stateroute, aou, occ, area)
 
 
-all_fig = rbind(max_out2, min_out2)
+all_fig = rbind(max_out, min_out)
 length(unique(all_fig$stateroute)) #983, as it should be 
 write.csv(all_fig, "intermed/all_figoutput.csv", row.names = FALSE)
 write.csv(max_out, "intermed/max_out.csv", row.names = FALSE)
@@ -207,7 +207,7 @@ all_predplot = ggplot(pred_dist, aes(occ))+
   coord_cartesian(xlim = c(0.11, .95), ylim = c(0, 5.5))
 all_predplot + scale_color_manual(values = c("Observed" = "black", "Small scale" = "#287D8EFF", "Large scale" = "#FDE725FF"))+
   theme(legend.position = c(0.45, 0.45), legend.text = element_text(size = 16), legend.title = element_blank())
-
+ggsave(file = "output/Figure1.tiff", plot = last_plot())
 ####Fig 2 schematics generated in powerpoint####
 
 ####Fig 3####
@@ -239,12 +239,15 @@ sites2 = data.frame(longitude = bbs_thrd$longitude, latitude = bbs_thrd$latitude
 star1 = bbs_secnd %>% filter(stateroute == "2001")
 star2 = bbs_thrd %>% filter(stateroute == "89152")
 
+
+tiff(file = "output/E_W_comparison.tiff")
 plot(NorthAm, xlim = c(-160, -60), ylim = c(25, 65))
 points(bbs_latlon$longitude, bbs_latlon$latitude, col= "grey", pch=16)
 points(sites1$longitude, sites1$latitude, col = "#FDE725FF", pch = 16)
 points(sites2$longitude, sites2$latitude, col = viridis(1, begin = 0.5, end = 1, option = "D"), pch = 16)
 points(star1$longitude, star1$latitude, col = "black", pch = 17, cex = 2)
 points(star2$longitude, star2$latitude, col = "black", pch = 17, cex = 2)
+dev.off()
 
 ####################################################################################################
 ####Results section figs####
@@ -273,7 +276,7 @@ all_figplot = ggplot(all_fig, aes(occ, group = area_f, color = area_f, linetype 
   theme(legend.text = element_text(size = 16), legend.title = element_text(size = 16))+
   theme(legend.position = c(0.50, 0.50))+guides(linetype = FALSE)
 all_figplot
-
+ggsave(file = "output/Figure4.tiff", plot = all_figplot)
 
 
 ####Figure 5A & B, with rollmeans moving window avgs####
@@ -381,7 +384,7 @@ pred_abuns #yellow = high variation in habhet, purple = low variation, low habhe
 p1 = gridExtra::grid.arrange(pred_plot, pred_abuns, ncol = 2, 
                   left = ggpubr::text_grob("Proportion Core Species in Community", 
                                   rot = 90, vjust = 1, size = 18))
-
+ggsave(file = "output/Figure5.tiff", plot = p1)
 
 ####Figure 6####
 #at top scales, with just variances - diamond shape figure that parallels prediction table (alt to outcome table)
@@ -406,7 +409,7 @@ ggplot(scales_hetero2, aes(x = ind, y = corr_r))+
                      values=c(16, 17),
                      labels = c("Elevation", "NDVI"))
 #likely #440154FF purple and #55C667FF
-
+ggsave(file = "output/Figure6.tiff", plot = last_plot())
 
 ####Figure 7####
 #scales hetero derived at end of env_analysis script
@@ -430,7 +433,7 @@ ggplot(scales_hetero_v, aes(x = scale, y = corr_r))+
   labs(color = "Environmental Heterogeneity", x = "Number of aggregated BBS Routes", y = "Pearson's correlation coefficient")+theme(legend.position = c(0.84, 0.20))+
   scale_color_viridis(begin = 0, end = 0.7, discrete = TRUE, option = "D")+
   scale_y_continuous(breaks = c(-0.6, -0.4, -0.2, 0, 0.2, 0.4))
-
+ggsave(file = "output/Figure7.tiff", plot = last_plot())
 
 ########################################################################################################
 ####Supplemental figures####
@@ -458,7 +461,7 @@ coefs_supp = rbind(coefs_supp_pre, core_coefs80)
 
 coefs_supp$cutoff_lvl = factor(coefs_supp$cutoff_lvl, 
                                levels = c("Core 50%","Core 67%", "Core 80%"),
-                               labels = c("Core 50%","Core 67%", "Core 80%"))
+                               labels = c("50%","67%", "80%"))
 
 #gather 
 
@@ -488,28 +491,14 @@ ggplot(coefs_tidyA, aes(x = cutoff_lvl, y = parm_val))+
   geom_boxplot()+facet_wrap(~parm, scales = "free_y", labeller = label_parsed)+
   theme_classic()+theme(text = element_text(size = 18))+
   labs(x = "Proportion of Presence Required for Designation as Core", y = "Parameter values", title = "Parameters derived from proportion core-area scaling relationship")
+ggsave(file = "output/Figure8.tiff", plot = last_plot())
 
 ggplot(coefs_tidyN, aes(x = cutoff_lvl, y = parm_val))+
   geom_boxplot()+facet_wrap(~parm, scales = "free_y", labeller = label_parsed)+
   theme_classic()+theme(text = element_text(size = 18))+
   labs(x = "Proportion of Presence Required for Designation as Core", y = "Parameter values", title = "Parameters derived from proportion core-abundance scaling relationship")
+ggsave(file = "output/Figure9.tiff", plot = last_plot())
 
-
-####Plot stateroutes 1 by 1, pick out some emblematic "types"####
-bbs_allscales = na.omit(read.csv("intermed/bbs_allscales.csv", header = TRUE))
-focalrtes = unique(bbs_allscales$focalrte)
-setwd("output/rte_imgs")
-
-for (r in focalrtes) {
-  bbs_allsub = bbs_allscales %>% filter(focalrte == r)
-  ggplot(bbs_allsub, aes(x = logA, y = meanOcc))+
-    geom_line()+ #coord_cartesian(xlim = c(0, 3.5), ylim = c(0, 1))+ tweak with 
-    theme_classic()+ labs(x = "Log Area", y = "Mean Community Occupancy", 
-                          title = r)
-  ggsave(paste("plot", r, ".tiff", sep = ""))
-}
-
-dev.off()
 
 
 ####Summary stats for text####
@@ -530,3 +519,21 @@ bbs_allscales_sing = bbs_allscales %>%
   dplyr::filter(scale == "seg50")
 summary(bbs_allscales_sing$pctCore)
 stats::quantile(bbs_allscales_sing$pctCore, probs = c(0.025, 0.975))
+
+
+
+####Plot stateroutes 1 by 1, pick out some emblematic "types"####
+bbs_allscales = na.omit(read.csv("intermed/bbs_allscales.csv", header = TRUE))
+focalrtes = unique(bbs_allscales$focalrte)
+setwd("output/rte_imgs")
+
+for (r in focalrtes) {
+  bbs_allsub = bbs_allscales %>% filter(focalrte == r)
+  ggplot(bbs_allsub, aes(x = logA, y = meanOcc))+
+    geom_line()+ #coord_cartesian(xlim = c(0, 3.5), ylim = c(0, 1))+ tweak with 
+    theme_classic()+ labs(x = "Log Area", y = "Mean Community Occupancy", 
+                          title = r)
+  ggsave(paste("plot", r, ".tiff", sep = ""))
+}
+
+dev.off()
