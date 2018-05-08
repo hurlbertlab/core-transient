@@ -135,25 +135,39 @@ null_output_excl = null_output[,c("datasetID", "site", "weights", "treatment")]
 
 SAD_plot = rbind(logseries_all, null_output_excl)
 
+###### fig 5a from ms ######
+logseries_weights = read.csv("output/tabular_data/logseries_weights.csv", header = TRUE)
+
+colscale = c("dark orange2","yellow")
+k = ggplot(logseries_weights,aes(x=weights,fill=treatment))+geom_histogram(bins = 20, position = "identity", alpha = 0.7)+ xlab("Transient Status") + ylab("Proportion of Species") + scale_y_continuous(breaks=c(0,400,800,1200)) + scale_fill_manual(labels = c("All species","Excluding transients"),values = colscale)+ theme_classic() + theme(axis.text.x=element_blank(), axis.ticks.x=element_blank(),axis.text.y=element_text(size=25, color = "black"),axis.title.y=element_text(size=30,angle=90,vjust = 8),axis.title.x=element_text(size=30, vjust = -7))  + ylab("Frequency") + xlab("Akaike Weight") +theme(plot.margin=unit(c(0.35,1,2,1.7),"cm")) + theme(legend.text = element_text(size = 20), legend.title = element_blank(), legend.position = "none")
+
+
 #### ggplot fig1a #####
 excl = ggplot(SAD_plot,aes(x=weights,fill=treatment))+geom_histogram(bins = 20, position = "identity", alpha = 0.7)+ xlab("Transient Status") + ylab("Proportion of Species") + scale_y_continuous(breaks=c(0,200,350)) + scale_fill_manual(labels = c("All species", "Excluding non-transients"),values = c("dark orange2","yellow"))+ theme_classic() + theme(axis.text.x=element_blank(), axis.ticks.x=element_blank(),axis.text.y=element_text(size=25, color = "black"),axis.title.y=element_text(size=30,angle=90,vjust = 8),axis.title.x=element_text(size=30, vjust = -7))  + ylab("Frequency") + xlab("Akaike Weight") +theme(plot.margin=unit(c(0.35,1,2,1.7),"cm")) + theme(legend.text = element_text(size = 20), legend.title = element_blank(), legend.position = "none")
-
-ggsave(file="C:/Git/core-transient/output/plots/1a_null.pdf", height = 8, width = 10)
 
 logseries_weights = read.csv("output/tabular_data/logseries_weights.csv", header = TRUE)
 logseries_excl = subset(logseries_weights, treatment == "Excluding") # excl transients
 SAD_hist = merge(logseries_excl, null_output[,c("datasetID", "site", "SAD_excl")], by = c("datasetID", "site"))
 hist(SAD_hist$SAD_excl - SAD_hist$weights, xlab = "Akaike weight difference \n Excluding null transients - Excluding transients", cex.lab=1, cex.axis=2.5)
 
-ggplot(data=SAD_hist, aes(SAD_hist$SAD_excl - SAD_hist$weights)) + 
-  geom_histogram(bins = 16, col="black",  fill="white") + theme_classic() + theme(axis.text.x=element_text(size=30,angle=90, color = "black"), axis.ticks.x=element_blank(),axis.text.y=element_text(size=30, color = "black"),axis.title.y=element_text(size=30,angle=90, vjust = 4),axis.title.x=element_text(size=30, vjust = -4))  + ylab("Frequency") + xlab("Akaike weight difference \n (excluding non-transients - excluding transients)") +theme(plot.margin=unit(c(0.35,1,2,1.7),"cm")) 
-ggsave(file="C:/Git/core-transient/output/plots/1a_hist.pdf", height = 8, width = 10.6)
+onec = ggplot(data=SAD_hist, aes(SAD_hist$SAD_excl - SAD_hist$weights)) + 
+  geom_histogram(bins = 16, col="black",  fill="white") + theme_classic() + theme(axis.text.x=element_text(size=30,angle=90, color = "black"), axis.ticks.x=element_blank(),axis.text.y=element_text(size=30, color = "black"),axis.title.y=element_text(size=30,angle=90, vjust = 4),axis.title.x=element_text(size=30, vjust = -4))  + ylab("Frequency") + xlab("Akaike weight difference \n (excluding non-transients \n -  excluding transients)") +theme(plot.margin=unit(c(0.35,1,2,1.7),"cm")) 
+
 
 ks.test(logseries_all$weights, null_output_excl$weights)
 # D = 0.73906, p-value < 2.2e-16 diff between true and null
 # D = 0.18843, p-value < 2.2e-16 diff between all and null
 
 wilcox.test(SAD_hist$SAD_excl - SAD_hist$weights)
+
+z <- plot_grid(k+ theme(legend.position="none"),
+               excl+ theme(legend.position="none"),
+               onec + theme(legend.position="none"),
+               align = 'h',
+               labels = c("A","B", "C"),
+               label_size = 24,
+               nrow = 1)
+ggsave(file="C:/Git/core-transient/output/plots/appendix_2.pdf", height = 8, width = 20)
 
 #### Figure 5c ####
 source('scripts/R-scripts/temporal_turnover.R')
@@ -252,20 +266,51 @@ turnover_else = filter(turnover_col, bbs == "no")
 turnover_else$taxa = factor(as.character(turnover_else$taxa),
                             levels = c('Bird','Fish','Invertebrate','Mammal','Plankton','Plant'),ordered = TRUE)
 
+###### 5c plot ######
+turnover = read.csv("output/tabular_data/temporal_turnover.csv", header = TRUE)
+turnover_taxa = merge(turnover,dataformattingtable[,c("dataset_ID", "taxa")], by.x = "datasetID", by.y = "dataset_ID")
+turnover_col = merge(turnover_taxa, taxcolors, by = "taxa")
+
+# bbs column for diff point symbols
+turnover_col$bbs =ifelse(turnover_col$datasetID == 1, "yes", "no")
+turnover_bbs = filter(turnover_col, bbs == "yes")
+turnover_else = filter(turnover_col, bbs == "no")
+turnover_col$diff = turnover_col$TJnotrans-turnover_col$TJ
+hist(turnover_col$diff, xlab = "Excluding transients - All species", cex.lab=1.5, cex.axis=1.5)
+
+turnover_else$taxa = factor(turnover_else$taxa,
+                            levels = c('Invertebrate','Fish','Plankton','Mammal','Plant','Bird'),ordered = TRUE)
+
+colscale = c("#1D6A9B", "turquoise2","gold2", "purple4","red", "forestgreen") 
+
+l <- ggplot(turnover_bbs, aes(x = TJ, y = TJnotrans))
+five_c <-l + geom_abline(intercept = 0,slope = 1, lwd =1.5,linetype="dashed")+geom_point(data = turnover_bbs, aes(colour = taxa),size = 2)+geom_point(data = turnover_else, aes(colour = taxa), size = 5) + xlab("Turnover (all species)") + ylab("Turnover \n (excluding transients)")  + scale_colour_manual(breaks = turnover_col$taxa,values = colscale) + theme_classic() + theme(axis.text.x=element_text(size=24, color = "black"),axis.text.y=element_text(size=24, color = "black"),axis.ticks.x=element_blank(),axis.title.x=element_text(size=26, color = "black"),axis.title.y=element_text(size=26,angle=90,vjust = 5))+ guides(colour = guide_legend(title = "Taxa"))
+
+
+#### null c ####
 colscale = c("#1D6A9B","turquoise2","gold2", "purple4","red", "forestgreen") 
 
 m <- ggplot(turnover_bbs, aes(x = TJ, y = notransturn))
-four_c <- m + geom_abline(intercept = 0,slope = 1, lwd =1.5,linetype="dashed")+geom_point(data = turnover_bbs, aes(colour = taxa),size = 2)+geom_point(data = turnover_else, aes(colour = taxa), size = 5) + xlab("Turnover (all species)") + ylab("Turnover \n (excluding non-transients)")  + scale_colour_manual(breaks = turnover_col$taxa,values = colscale) + theme_classic() + theme(axis.text.x=element_text(size=30, color = "black"),axis.text.y=element_text(size=30, color = "black"),axis.ticks.x=element_blank(),axis.title.x=element_text(size=42, color = "black"),axis.title.y=element_text(size=42,angle=90,vjust = 3))+ guides(colour = guide_legend(title = "Taxa"))
+five_null <- m + geom_abline(intercept = 0,slope = 1, lwd =1.5,linetype="dashed")+geom_point(data = turnover_bbs, aes(colour = taxa),size = 2)+geom_point(data = turnover_else, aes(colour = taxa), size = 5) + xlab("Turnover (all species)") + ylab("Turnover \n (excluding non-transients)")  + scale_colour_manual(breaks = turnover_col$taxa,values = colscale) + theme_classic() + theme(axis.text.x=element_text(size=24, color = "black"),axis.text.y=element_text(size=24, color = "black"),axis.ticks.x=element_blank(),axis.title.x=element_text(size=26, color = "black"),axis.title.y=element_text(size=26,angle=90,vjust = 3))+ guides(colour = guide_legend(title = "Taxa"))
 ggsave(file="C:/Git/core-transient/output/plots/null_turnover_2.pdf", height = 10, width = 15)
 
 turnover_taxa$diff = turnover_taxa$notransturn-turnover_taxa$TJnotrans
 hist(turnover_taxa$diff, xlab = "Excluding null transients - Excluding transients", cex.lab=1.5, cex.axis=1.5)
 
 
-ggplot(data=turnover_taxa, aes(turnover_taxa$notransturn-turnover_taxa$TJnotrans)) + 
-  geom_histogram(bins = 16, col="black",  fill="white") + theme_classic() + theme(axis.text.x=element_text(size=30,angle=90, color = "black"), axis.ticks.x=element_blank(),axis.text.y=element_text(size=30, color = "black"),axis.title.y=element_text(size=30,angle=90, vjust = 4),axis.title.x=element_text(size=30, vjust = -4))  + ylab("Frequency") + xlab("Akaike weight difference \n (excluding non-transients - excluding transients)") +theme(plot.margin=unit(c(0.35,1,2,1.7),"cm")) 
+nullc = ggplot(data=turnover_taxa, aes(turnover_taxa$notransturn-turnover_taxa$TJnotrans)) + 
+  geom_histogram(bins = 16, col="black",  fill="white") + theme_classic() + theme(axis.text.x=element_text(size=24,angle=90, color = "black"), axis.ticks.x=element_blank(),axis.text.y=element_text(size=24, color = "black"),axis.title.y=element_text(size=24,angle=90, vjust = 4),axis.title.x=element_text(size=24, vjust = -4))  + ylab("Frequency") + xlab("Akaike weight difference \n (excluding non-transients \n - excluding transients)") +theme(plot.margin=unit(c(0.35,1,2,1.7),"cm")) 
 ggsave(file="C:/Git/core-transient/output/plots/1c_hist.pdf", height = 10, width = 14)
 
+z <- plot_grid(five_c+ theme(legend.position="none"),
+               five_null+ theme(legend.position="none"),
+               nullc + theme(legend.position="none"),
+               align = 'hv',
+               labels = c("A","B", "C"),
+               rel_widths = c(0.4, 0.4, 0.4),
+               label_size = 24,
+               nrow = 1)
+ggsave(file="C:/Git/core-transient/output/plots/appendix_2_c.pdf", height = 8, width = 20)
 
 ##### paired t-test #####
 wilcox.test(turnover_taxa$notransturn-turnover_taxa$TJnotrans)
