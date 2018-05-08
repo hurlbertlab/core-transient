@@ -754,4 +754,4 @@ z <- plot_grid(four_c+ theme(legend.position="none"),
 p2 = plot_grid(z,legendc, ncol = 2) 
 
 all4 = plot_grid(pt1, NULL, z, align = "hv", nrow = 2,rel_heights = c(1,1), rel_widths = c(1, 0.05, 1))
-ggsave(file="C:/Git/core-transient/output/plots/5a_5d_10.pdf", height = 12, width = 16,all4)
+ggsave(file="C:/Git/core-transient/output/plots/5a_5d_10.pdf", height = 13, width = 17,all4)
