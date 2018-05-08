@@ -359,11 +359,12 @@ write.csv(bbs_allscales, "intermed/bbs_allscales.csv", row.names = FALSE) #saved
 bbs_allscales = read.csv("intermed/bbs_allscales.csv", header = TRUE)
 levels(bbs_allscales$scale)
 unique(bbs_allscales$scale)
-length(unique(bbs_allscales$focalrte))
-bbs_allscales = na.omit(bbs_allscales) #from 66792 to 66792 when maxdist left out so 
+length(unique(bbs_allscales$scale))
+bbs_allscales2 = na.omit(bbs_allscales) #from 67827 to 67827 when maxdist left out so 
 #oh we DO want to cut out the below-route stuff bc we can't do the env analyses on these period
 length(unique(bbs_allscales$focalrte)) #983 rtes, 62920 obs
-
+#try taking out columns 2 and 7, select(-scale, -maxdist)
+bbs_allscales2 = bbs_allscales %>% dplyr::select(-scale, -maxdist)
 
 PCA.df = data.frame(stateroute = numeric(), PCA.min = numeric(), PCA.max = numeric(), 
                     PCA.slope = numeric(), 
@@ -376,12 +377,12 @@ PCN.df = data.frame(stateroute = numeric(), PCN.min = numeric(), PCN.max = numer
 
 
 ####coefs####
-stateroutes = unique(bbs_allscales$focalrte)
+stateroutes = unique(bbs_allscales2$focalrte)
 
 #do I even need a loop? can't I just group by stateroute and calc these ?
 
 for(s in stateroutes){
-  logsub = subset(bbs_allscales, bbs_allscales$focalrte == s)  
+  logsub = subset(bbs_allscales2, bbs_allscales2$focalrte == s)  
   #PCA 
   #PCApred_df = data.frame(preds = predict(PCAlog), scale = logsub$scale, logA = logsub$logA)  #get preds -> is predicting unique per scale, all clear
   #ACTUAL stats (for plotting data pts): 
@@ -438,5 +439,5 @@ core_coefs = PCA.df %>%
   inner_join(PCN.df, PCA.df, by = "stateroute") %>% distinct()
 
 write.csv(core_coefs, "intermed/core_coefs.csv", row.names = FALSE) 
-#updated 05/03, removal of redundant coefs and inclusion of ON, revised curvature est
+#updated 05/08, removal of redundant coefs and inclusion of ON, revised curvature est
 
