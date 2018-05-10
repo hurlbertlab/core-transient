@@ -1,6 +1,6 @@
 # Description of each R-script in folder
 
-### BBS_manipulation for summary
+#### BBS_manipulation for summary
 Script for formatting BBS data to use in all analyses.
 ### bbs_ndvi_richness_correlation
 Script acquiring the gimms ndvi data and to verify the NDVI-richness correlation in the breeding bird survey.
