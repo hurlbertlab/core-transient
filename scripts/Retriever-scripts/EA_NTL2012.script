@@ -1,9 +1,0 @@
-# NTL LTER Fish abundance, Retriever Script
-name: North Temperate Lakes LTER: Fish Abundance 1981-current
-description: Fish abundance dataset published by the North Temperate Lakes LTER in 2012
-shortname: NTL2012
-tags: Taxon > Fish, Spatial Scale > Local, Data Type > Time Series, Data Type > Observational
-
-table: fish, https://portal.lternet.edu/nis/dataviewer?packageid=knb-lter-ntl.7.10&entityid=fish_abundance
-
-# See metadata at: https://portal.lternet.edu/nis/metadataviewer?packageid=knb-lter-ntl.7.10

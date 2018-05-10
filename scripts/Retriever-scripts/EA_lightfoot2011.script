@@ -1,9 +1,0 @@
-# Lightfoot et al. 2011, LTER, Retriever Script
-name: Small Mammal Exclosure Study (SMES) Vegetation Data from the Chihuahuan Desert Grassland and Shrubland at the Sevilleta National Wildlife Refuge, New Mexico (2006-2009)
-description: Lightfoot et al. 2011. Data used in Baez et al. 2006. Data title is incorrect and the dataset spans from 1995 to 2009
-shortname: Lightfoot2011
-tags: Taxon > Plant, Spatial Scale > Local, Data Type > Time Series, Data Type > Experimental
-
-table: plant_quadrats, https://portal.lternet.edu/nis/dataviewer?packageid=knb-lter-sev.97.182096&entityid=3d3b97661820b784dee1ab7057f70028
-
-# See metadata at: https://portal.lternet.edu/nis/metadataviewer?packageid=knb-lter-sev.97.182096
