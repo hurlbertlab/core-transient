@@ -1,10 +1,9 @@
-# Core-transient
-Data and code for NSF funded research on core vs transient species
+# Description of each R-script in folder
 
-## Description of each R-script in folder.
-
-BBS_manipulation for summary: code for formatting BBS data to use in all analyses.
-bbs_ndvi_richness_correlation: code for how the gimms ndvi data was acquired. Code also used to verify the NDVI-richness correlation in the breeding bird survey.
+### BBS_manipulation for summary
+Code for formatting BBS data to use in all analyses.
+### bbs_ndvi_richness_correlation
+Code for how the gimms ndvi data was acquired. Code also used to verify the NDVI-richness correlation in the breeding bird survey.
 bimod_metric_simulations: Code to simulate the beta distributions that differ in bimodality to test H-W bimodality function.
 core-transient_functions: Code for all relevant functions used in analyses, most scripts will source this code.
 core-transient-figure-2: Code used to create Figure 2 in manuscript.
