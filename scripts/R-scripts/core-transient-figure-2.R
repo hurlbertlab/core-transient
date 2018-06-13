@@ -166,7 +166,7 @@ bar1 = boxplot(summ1.col$spRichTotal~summ1.col$taxa, cex.axis =1, frame.plot = F
 axis(side = 2) 
 mtext(expression("Species Richness"), 2, cex = 1.25, las = 0, line = 2.5)
 title(outer=FALSE,adj=1,main="E",cex.main=1.5,col="black",font=2,line=-0.1)
-bar2 = boxplot(summ1.col$nTime~summ1.col$taxa, xaxt = "n", frame.plot = FALSE, cex.axis =1,col = as.character(summ1.col$color[match(taxorder, summ1.col$taxa)]))
+bar2 = boxplot(summ1.col$nTime~summ1.col$taxa, xaxt = "n", frame.plot = FALSE, cex.axis =1,col = as.character(summ1.col$color[match(taxorder, summ1.col$taxa)]), ylim = c(0, 60))
 mtext(expression("Years"), 2, cex = 1.25, las = 0, line = 2.5)
 title(outer=FALSE,adj=1,main="F",cex.main=1.5,col="black",font=2,line=-0.1)
 

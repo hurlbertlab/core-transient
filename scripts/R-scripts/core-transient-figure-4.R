@@ -213,7 +213,7 @@ Hmisc::errbar(c(0.7, 1.9, 3.1, 4.3, 5.5, 6.7, 7.9), predmod$fit[predmod$order], 
 mtext("% Transients", 2, cex = 2, las = 0, line = 3, mgp = c(3.25,1,0))
 title(outer=FALSE,adj=0.02,main="C",cex.main=2,col="black",font=2,line=-1)
 
-b4 = barplot(predmod4d$fit[predmod4d$order], cex.names = 1.5,col = c('burlywood','skyblue','navy'), ylim = c(0, 0.8), yaxt = "n")
+b4 = barplot(predmod4d$fit[predmod4d$order], cex.names = 1.5,col = c('burlywood','skyblue','navy'), ylim = c(0, 0.9), yaxt = "n")
 axis(2, cex.axis = 1.5)
 Hmisc::errbar(c(0.7, 1.9, 3.1), predmod4d$fit[predmod4d$order], predmod4d$upr[predmod4d$order], predmod4d$lwr[predmod4d$order], add= TRUE, lwd = 1.25, pch = 3)
 mtext("% Transients", 2, cex = 2, las = 0, line = 3, mgp = c(3.25,1,0))
