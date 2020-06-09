@@ -127,16 +127,6 @@ dev.off()
 #### Figure 5b ####
 # read in route level ndvi and elevation data (radius = 40 km)
 # we want to agg by month here
-gimms_ndvi = read.csv("output/tabular_data/gimms_ndvi_bbs_data.csv", header = TRUE)
-gimms_agg = gimms_ndvi %>% filter(month == c("may", "jun", "jul")) %>% 
-  group_by(site_id)  %>%  summarise(ndvi=mean(ndvi))
-
-lat_scale_rich = read.csv("output/tabular_data/lat_scale_rich_3_30.csv", header = TRUE)
-lat_scale_bbs = filter(lat_scale_rich, datasetID == 1)
-
-bbs_5km_elev = read.csv("data/BBS/bbs_elevation_5km.csv", header = TRUE)
-
-bbsocc = read.csv('data/propOcc_datasets/propOcc_1.csv', header=T, stringsAsFactors = F)
 rich = dplyr::count(bbsocc, site)
 rich_notrans = bbsocc %>% filter(propOcc > 1/3) %>% count(site)
 
